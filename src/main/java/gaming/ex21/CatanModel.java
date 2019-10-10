@@ -205,8 +205,9 @@ public class CatanModel {
     }
 
     public Map<String, Object> row() {
-        return CatanLogger.row(getCurrentPlayer(), cards, userChart, usedCards, settlePoints, edges, deals,
-            resourcesToSelect, elements);
+        return new CatanLogBuilder().playerColor(getCurrentPlayer()).allCards(cards).userChart(userChart)
+            .usedCards(usedCards).settlePoints(settlePoints).edges(edges).deals(deals)
+            .resourcesToSelect(resourcesToSelect).elements(elements).build();
     }
 
     public void setCurrentPlayer(PlayerColor value) {

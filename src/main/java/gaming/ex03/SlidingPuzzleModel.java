@@ -12,7 +12,7 @@ import java.util.Objects;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import utils.StageHelper;
+import simplebuilder.SimpleDialogBuilder;
 
 /**
  *
@@ -81,7 +81,7 @@ public class SlidingPuzzleModel {
                             reset();
                             moves = 0;
                         };
-                        StageHelper.displayDialog(text, "Reset", c);
+                        new SimpleDialogBuilder().text(text).button("Reset", c).displayDialog();
                     }
                     return;
                 }

@@ -7,7 +7,7 @@ import javafx.beans.NamedArg;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
-import utils.StageHelper;
+import simplebuilder.SimpleDialogBuilder;
 
 public final class MusicHandler implements EventHandler<MouseEvent> {
     private final TableView<Music> musicaTable;
@@ -33,13 +33,13 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         }
 
         if (selectedItem.isNotMP3()) {
-            StageHelper.displayDialog(String.format("Convert%n%s", selectedItem.getArquivo().getName()),
-                "_Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()),
-                () -> Files.deleteIfExists(selectedItem.getArquivo().toPath()));
+            new SimpleDialogBuilder().text(String.format("Convert%n%s", selectedItem.getArquivo().getName()))
+                .button("_Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()),
+                    () -> Files.deleteIfExists(selectedItem.getArquivo().toPath()))
+                .displayDialog();
             return;
         }
         new EditSongController(selectedItem).show();
     }
-
 
 }

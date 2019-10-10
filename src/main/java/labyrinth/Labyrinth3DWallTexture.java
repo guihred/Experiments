@@ -20,8 +20,8 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import simplebuilder.SimpleDialogBuilder;
 import utils.MouseInScreenHandler;
-import utils.StageHelper;
 
 public class Labyrinth3DWallTexture extends Application implements CommomLabyrinth {
     private static final Color lightColor = Color.grayRgb(125);
@@ -60,12 +60,12 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
             ballsCount.set(ballsCount.get() - 1);
             if (ballsCount.get() == 0) {
                 movimentacao.stop();
-                StageHelper.displayDialog("Você Venceu", "Ok", () -> {
+                new SimpleDialogBuilder().text("Você Venceu").button("Ok", () -> {
                     camera.setTranslateY(0);
                     camera.setTranslateZ(0);
                     camera.setTranslateX(0);
                     movimentacao.start();
-                });
+                }).displayDialog();
             }
         }
     }

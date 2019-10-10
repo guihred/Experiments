@@ -100,8 +100,8 @@ public class DotsSquare extends Region {
         return j == other.j;
     }
 
-    public Double[] getCenter() {
-        return new Double[] { getLayoutX() + getWidth() / 2, getLayoutY() + getHeight() / 2 };
+    public double[] getCenter() {
+        return new double[] { getLayoutX() + getWidth() / 2, getLayoutY() + getHeight() / 2 };
     }
 
     public int getI() {

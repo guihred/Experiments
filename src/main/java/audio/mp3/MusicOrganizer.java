@@ -23,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
@@ -125,7 +126,7 @@ public class MusicOrganizer extends Application {
             MusicReader.saveMetadata(music);
             StageHelper.closeStage(vBox);
         }));
-        StageHelper.displayDialog("Fix Fields", vBox);
+        new SimpleDialogBuilder().text("Fix Fields").button(vBox).displayDialog();
 
     }
 

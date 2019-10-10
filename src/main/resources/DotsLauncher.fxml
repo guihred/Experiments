@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import javafx.scene.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.scene.shape.*?><?import gaming.ex11.*?><?import javafx.scene.text.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+styleClass="root">
+	<center>
+		<Group fx:id="gridPane"  onMouseDragged="#onMouseDraggedGroup0"
+			onMousePressed="#onMousePressedGroup0"
+			onMouseReleased="#onMouseReleasedGroup0">
+			<children>
+				<Line fx:id="line" />
+				<DotsSquare i="0" j="0" layoutX="0.0" layoutY="0.0" />
+				<DotsSquare i="0" j="1" layoutX="0.0" layoutY="40.0" />
+				<DotsSquare i="0" j="2" layoutX="0.0" layoutY="80.0" />
+				<DotsSquare i="0" j="3" layoutX="0.0" layoutY="120.0" />
+				<DotsSquare i="0" j="4" layoutX="0.0" layoutY="160.0" />
+				<DotsSquare i="0" j="5" layoutX="0.0" layoutY="200.0" />
+				<DotsSquare i="1" j="0" layoutX="40.0" layoutY="0.0" />
+				<DotsSquare i="1" j="1" layoutX="40.0" layoutY="40.0" />
+				<DotsSquare i="1" j="2" layoutX="40.0" layoutY="80.0" />
+				<DotsSquare i="1" j="3" layoutX="40.0" layoutY="120.0" />
+				<DotsSquare i="1" j="4" layoutX="40.0" layoutY="160.0" />
+				<DotsSquare i="1" j="5" layoutX="40.0" layoutY="200.0" />
+				<DotsSquare i="2" j="0" layoutX="80.0" layoutY="0.0" />
+				<DotsSquare i="2" j="1" layoutX="80.0" layoutY="40.0" />
+				<DotsSquare i="2" j="2" layoutX="80.0" layoutY="80.0" />
+				<DotsSquare i="2" j="3" layoutX="80.0" layoutY="120.0" />
+				<DotsSquare i="2" j="4" layoutX="80.0" layoutY="160.0" />
+				<DotsSquare i="2" j="5" layoutX="80.0" layoutY="200.0" />
+				<DotsSquare i="3" j="0" layoutX="120.0" layoutY="0.0" />
+				<DotsSquare i="3" j="1" layoutX="120.0" layoutY="40.0" />
+				<DotsSquare i="3" j="2" layoutX="120.0" layoutY="80.0" />
+				<DotsSquare i="3" j="3" layoutX="120.0" layoutY="120.0" />
+				<DotsSquare i="3" j="4" layoutX="120.0" layoutY="160.0" />
+				<DotsSquare i="3" j="5" layoutX="120.0" layoutY="200.0" />
+				<DotsSquare i="4" j="0" layoutX="160.0" layoutY="0.0" />
+				<DotsSquare i="4" j="1" layoutX="160.0" layoutY="40.0" />
+				<DotsSquare i="4" j="2" layoutX="160.0" layoutY="80.0" />
+				<DotsSquare i="4" j="3" layoutX="160.0" layoutY="120.0" />
+				<DotsSquare i="4" j="4" layoutX="160.0" layoutY="160.0" />
+				<DotsSquare i="4" j="5" layoutX="160.0" layoutY="200.0" />
+				<DotsSquare i="5" j="0" layoutX="200.0" layoutY="0.0" />
+				<DotsSquare i="5" j="1" layoutX="200.0" layoutY="40.0" />
+				<DotsSquare i="5" j="2" layoutX="200.0" layoutY="80.0" />
+				<DotsSquare i="5" j="3" layoutX="200.0" layoutY="120.0" />
+				<DotsSquare i="5" j="4" layoutX="200.0" layoutY="160.0" />
+				<DotsSquare i="5" j="5" layoutX="200.0" layoutY="200.0" />
+			</children>
+		</Group>
+	</center>
+	<top>
+		<HBox>
+			<children>
+				<Text fx:id="textEu" text="EU:0" />
+				<Text fx:id="textTu" text="TU:0" />
+			</children>
+		</HBox>
+	</top>
+</BorderPane>

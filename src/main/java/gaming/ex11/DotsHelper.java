@@ -1,20 +1,59 @@
 package gaming.ex11;
 
-
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
+import simplebuilder.SimpleTimelineBuilder;
 
 public final class DotsHelper {
     public static final int MAZE_SIZE = 6;
 
     private DotsHelper() {
+    }
+
+    public static void addBlueSquare(Iterable<Set<DotsSquare>> squaresFilled, Group gridPane2, Color value) {
+        for (Set<DotsSquare> collect2 : squaresFilled) {
+            double[] toArray = collect2.stream().flatMapToDouble(a -> DoubleStream.of(a.getCenter())).toArray();
+            Polygon polygon = new Polygon(toArray);
+            polygon.setFill(value);
+            gridPane2.getChildren().add(polygon);
+        }
+    }
+
+    public static void addPolygon(Group gridPane, double[] toArray, EventHandler<ActionEvent> onFinished, Color value,
+        ActionEvent f) {
+        Polygon polygon = new Polygon(toArray);
+        polygon.setFill(value);
+        addPolygonOnFinished(gridPane, polygon, onFinished, f);
+    }
+
+    public static void addPolygonOnFinished(Group gridPane, Polygon polygon, EventHandler<ActionEvent> onFinished,
+        ActionEvent f) {
+        if (onFinished != null) {
+            onFinished.handle(f);
+        }
+        gridPane.getChildren().add(polygon);
+
+    }
+
+    public static void bindText(String key, Text textEu2,
+        ObservableMap<String, ObservableSet<Set<DotsSquare>>> points2) {
+        textEu2.textProperty().bind(Bindings.createStringBinding(
+            () -> String.format("%s:%d", key, points2.get(key).size()), points2.get(key), points2));
     }
 
     public static boolean bNotContainsD(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
@@ -25,6 +64,12 @@ public final class DotsHelper {
         return a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a);
     }
 
+    public static Timeline createAnimation(int nplayed, double[] center, double[] center2, Line line2) {
+        return new SimpleTimelineBuilder().addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endXProperty(), center[0])
+            .addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endXProperty(), center2[0])
+            .addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endYProperty(), center[1])
+            .addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endYProperty(), center2[1]).build();
+    }
 
     public static boolean dNotContainsC(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
         return a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a);
@@ -71,6 +116,38 @@ public final class DotsHelper {
         return orderedPossibilities.getOrDefault(bestPossibility, Collections.emptyList());
     }
 
+    public static int getCountMap(DotsSquare a, DotsSquare b, DotsSquare[][] maze) {
+        a.addAdj(b);
+        int sum = 0;
+        int i = Integer.min(a.getI(), b.getI());
+        int j = Integer.min(a.getJ(), b.getJ());
+        if (a.getI() == b.getI()) {
+            if (i > 0) {
+                DotsSquare c = maze[i - 1][j];
+                DotsSquare d = maze[i - 1][j + 1];
+                sum = getSumBySquare(a, b, sum, c, d, maze);
+            }
+            if (i < DotsHelper.MAZE_SIZE - 1) {
+                DotsSquare c = maze[i + 1][j];
+                DotsSquare d = maze[i + 1][j + 1];
+                sum = getSumBySquare(a, b, sum, c, d, maze);
+            }
+        } else if (a.getJ() == b.getJ()) {
+            if (j > 0) {
+                DotsSquare c = maze[i][j - 1];
+                DotsSquare d = maze[i + 1][j - 1];
+                sum = getSumBySquare(a, b, sum, c, d, maze);
+            }
+            if (j < DotsHelper.MAZE_SIZE - 1) {
+                DotsSquare c = maze[i][j + 1];
+                DotsSquare d = maze[i + 1][j + 1];
+                sum = getSumBySquare(a, b, sum, c, d, maze);
+            }
+        }
+        a.removeAdj(b);
+        return sum;
+    }
+
     public static List<Map.Entry<DotsSquare, DotsSquare>> getPossibilities(DotsSquare[][] maze2) {
         List<Map.Entry<DotsSquare, DotsSquare>> possibilities = new ArrayList<>();
         for (int i = 0; i < DotsHelper.MAZE_SIZE; i++) {
@@ -114,7 +191,12 @@ public final class DotsHelper {
         }
     }
 
-    public static boolean isPointNeighborToCurrent(DotsSquare over,DotsSquare selected2) {
+    public static boolean isCountPolygonOver(Group gridPane2) {
+        int size = MAZE_SIZE - 1;
+        return gridPane2.getChildren().stream().filter(e -> e instanceof Polygon).count() == size * size;
+    }
+
+    public static boolean isPointNeighborToCurrent(DotsSquare over, DotsSquare selected2) {
         return Math.abs(over.getI() - selected2.getI()) + Math.abs(over.getJ() - selected2.getJ()) == 1
             && !over.contains(selected2);
     }
@@ -124,47 +206,11 @@ public final class DotsHelper {
         return possibilities.isEmpty() ? bestPossibilities2 : possibilities;
     }
 
-    public static Text pointsDisplay(String key,ObservableMap<String, ObservableSet<Set<DotsSquare>>> points) {
+    public static Text pointsDisplay(String key, ObservableMap<String, ObservableSet<Set<DotsSquare>>> points) {
         Text tuPoints = new Text("0");
-        tuPoints.textProperty().bind(
-            Bindings.createStringBinding(() -> String.format("%s:%d", key, points.get(key).size()), points.get(key),
-                points));
+        tuPoints.textProperty().bind(Bindings
+            .createStringBinding(() -> String.format("%s:%d", key, points.get(key).size()), points.get(key), points));
         return tuPoints;
-    }
-
-    static int getCountMap(DotsSquare a, DotsSquare b, DotsSquare[][] maze) {
-        a.addAdj(b);
-        int sum = 0;
-        int i = Integer.min(a.getI(), b.getI());
-        int j = Integer.min(a.getJ(), b.getJ());
-        if (a.getI() == b.getI()) {
-            if (i > 0) {
-                DotsSquare c = maze[i - 1][j];
-                DotsSquare d = maze[i - 1][j + 1];
-                sum = getSumBySquare(a, b, sum, c, d, maze);
-            }
-            if (i < DotsHelper.MAZE_SIZE - 1) {
-                DotsSquare c = maze[i + 1][j];
-                DotsSquare d = maze[i + 1][j + 1];
-                sum = getSumBySquare(a, b, sum, c, d, maze);
-            }
-        } else if (a.getJ() == b.getJ()) {
-            if (j > 0) {
-                DotsSquare c = maze[i][j - 1];
-                DotsSquare d = maze[i + 1][j - 1];
-                sum = getSumBySquare(a, b, sum, c, d, maze);
-            }
-            if (j < DotsHelper.MAZE_SIZE - 1) {
-                DotsSquare c = maze[i][j + 1];
-                DotsSquare d = maze[i + 1][j + 1];
-                sum = getSumBySquare(a, b, sum, c, d, maze);
-            }
-
-        }
-
-        a.removeAdj(b);
-
-        return sum;
     }
 
 }

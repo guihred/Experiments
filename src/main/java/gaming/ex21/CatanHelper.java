@@ -1,22 +1,14 @@
 package gaming.ex21;
 
-import static gaming.ex21.CatanResource.newImage;
-
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import simplebuilder.SimpleButtonBuilder;
 
 public final class CatanHelper {
     private CatanHelper() {
@@ -55,24 +47,6 @@ public final class CatanHelper {
         root.getChildren().addAll(settlePoints);
         return catanEdges;
 
-    }
-
-    public static void combinationGrid(GridPane value, Consumer<Combination> onClick, Predicate<Combination> isDisabled,
-        ObjectProperty<PlayerColor> currentPlayer, BooleanProperty diceThrown) {
-        Combination[] combinations = Combination.values();
-        for (int i = 0; i < combinations.length; i++) {
-            Combination combination = combinations[i];
-            List<ResourceType> resources = combination.getResources();
-            Button button = SimpleButtonBuilder.newButton(newImage(combination.getElement(), 30, 30), "" + combination,
-                e -> onClick.accept(combination));
-            button.setUserData(combination);
-            button.disableProperty()
-                .bind(Bindings.createBooleanBinding(() -> isDisabled.test(combination), currentPlayer, diceThrown));
-            value.addRow(i, button);
-            for (ResourceType resourceType : resources) {
-                value.addRow(i, newImage(resourceType.getPure(), 20));
-            }
-        }
     }
 
     public static void createSettlePoints(Terrain terrain, final double x, final double y,

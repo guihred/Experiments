@@ -20,7 +20,7 @@ import utils.RunnableEx;
 
 public class FXHibernateTest extends AbstractTestExecution {
 
-	private static final int WAIT_TIME = 1000;
+    private static final int WAIT_TIME = 5000;
 
     @Override
     public void init() throws Exception {

@@ -1,20 +1,39 @@
 package fxtests;
 
+import gaming.ex11.DotsLauncher;
+import gaming.ex11.DotsSquare;
 import gaming.ex13.CardStack;
 import gaming.ex13.SolitaireCard;
 import gaming.ex13.SolitaireLauncher;
 import gaming.ex13.SolitaireModel;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import org.junit.Test;
 
 public final class FXEngineSolitaireTest extends AbstractTestExecution {
 	@Test
+    public void verifyDots() throws Exception {
+        show(DotsLauncher.class);
+        Set<Node> queryAll = lookup(e -> e instanceof DotsSquare).queryAll().stream().limit(20)
+            .collect(Collectors.toSet());
+        Random random = new Random();
+        for (Node next : queryAll) {
+            drag(next, MouseButton.PRIMARY);
+            int a = random.nextBoolean() ? 1 : -1;
+            if (random.nextBoolean()) {
+                moveBy(a * DotsSquare.SQUARE_SIZE, 0);
+            } else {
+                moveBy(0, a * DotsSquare.SQUARE_SIZE);
+            }
+            drop();
+        }
+    }
+
+    @Test
 	public void verifySolitaire() throws Exception {
 		show(SolitaireLauncher.class);
 		List<CardStack> cardStacks = lookup(".cardstack").queryAllAs(CardStack.class).stream()

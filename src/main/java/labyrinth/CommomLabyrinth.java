@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import javafx.geometry.Bounds;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.shape.Sphere;
-import utils.StageHelper;
+import simplebuilder.SimpleDialogBuilder;
 
 public interface CommomLabyrinth {
     default boolean checkColision(Bounds boundsInParent) {
@@ -14,12 +14,12 @@ public interface CommomLabyrinth {
     }
 
     default void displayEndOfGame(Runnable run) {
-        StageHelper.displayDialog("Você Morreu", "Ok.", () -> {
+        new SimpleDialogBuilder().text("Você Morreu").button("Ok.", () -> {
             getCamera().setTranslateX(0);
             getCamera().setTranslateY(0);
             getCamera().setTranslateZ(0);
             run.run();
-        });
+        }).displayDialog();
     }
 
     default void endKeyboard() {

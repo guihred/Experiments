@@ -22,8 +22,8 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
+import simplebuilder.SimpleDialogBuilder;
 import utils.HasLogging;
-import utils.StageHelper;
 import utils.Xform;
 
 public class QuartoLauncher extends Application {
@@ -31,18 +31,18 @@ public class QuartoLauncher extends Application {
     private static final int HEIGHT = 700;
     private static final int WIDTH = 1000;
     private static final double ALT_MULTIPLIER = 0.5;
-	private static final double CONTROL_MULTIPLIER = 0.1;
-	private static final double SHIFT_MULTIPLIER = 0.1;
-	private static final double CAMERA_DISTANCE = 550;
-	private static final Logger LOG = HasLogging.log();
+    private static final double CONTROL_MULTIPLIER = 0.1;
+    private static final double SHIFT_MULTIPLIER = 0.1;
+    private static final double CAMERA_DISTANCE = 550;
+    private static final Logger LOG = HasLogging.log();
     private final PerspectiveCamera camera = new PerspectiveCamera(true);
     private final Xform cameraXform = new Xform();
     private final Xform cameraXform2 = new Xform();
     private final Xform cameraXform3 = new Xform();
-	private final QuartoModel model = new QuartoModel();
-	private final Group root = new Group();
+    private final QuartoModel model = new QuartoModel();
+    private final Group root = new Group();
 
-	private final Xform world = new Xform();
+    private final Xform world = new Xform();
 
     @Override
     public void start(Stage primaryStage) {
@@ -52,9 +52,9 @@ public class QuartoLauncher extends Application {
         buildAxes();
         Scene scene = new Scene(root, WIDTH, HEIGHT, true);
         scene.setFill(Color.GREY);
-		scene.setOnKeyPressed(this::handleKeyPressed);
-		scene.setOnMouseClicked(this::handleMouseClick);
-		scene.setOnMouseDragReleased(null);
+        scene.setOnKeyPressed(this::handleKeyPressed);
+        scene.setOnMouseClicked(this::handleMouseClick);
+        scene.setOnMouseDragReleased(null);
 
         primaryStage.setTitle("Quarto Application");
         primaryStage.setScene(scene);
@@ -65,45 +65,45 @@ public class QuartoLauncher extends Application {
     }
 
     private void buildAxes() {
-		final PhongMaterial blackMaterial = new PhongMaterial();
-		blackMaterial.setDiffuseColor(Color.BLACK);
-		blackMaterial.setSpecularColor(Color.GRAY);
-		final PhongMaterial grayMaterial = new PhongMaterial();
-		grayMaterial.setDiffuseColor(Color.DARKVIOLET);
-		grayMaterial.setSpecularColor(Color.BLACK);
-		final PhongMaterial whiteMaterial = new PhongMaterial();
-		whiteMaterial.setDiffuseColor(Color.WHITE);
-		whiteMaterial.setSpecularColor(Color.WHITE);
+        final PhongMaterial blackMaterial = new PhongMaterial();
+        blackMaterial.setDiffuseColor(Color.BLACK);
+        blackMaterial.setSpecularColor(Color.GRAY);
+        final PhongMaterial grayMaterial = new PhongMaterial();
+        grayMaterial.setDiffuseColor(Color.DARKVIOLET);
+        grayMaterial.setSpecularColor(Color.BLACK);
+        final PhongMaterial whiteMaterial = new PhongMaterial();
+        whiteMaterial.setDiffuseColor(Color.WHITE);
+        whiteMaterial.setSpecularColor(Color.WHITE);
         final Box board = new Box(240, 1, 240);
-		board.setMaterial(blackMaterial);
-		final Circle cs = new SimpleCircleBuilder().radius(110).fill(Color.BLACK).translateY(2)
-				.rotationAxis(Rotate.X_AXIS).rotate(90).build();
-		final Circle cs2 = new Circle(120, Color.WHITE);
-		cs2.setTranslateY(1);
-		cs2.setRotationAxis(Rotate.X_AXIS);
-		cs2.setRotate(90);
-		final Group group = new Group(board, cs2, cs);
-		for (int i = 0; i < 16; i++) {
+        board.setMaterial(blackMaterial);
+        final Circle cs = new SimpleCircleBuilder().radius(110).fill(Color.BLACK).translateY(2)
+            .rotationAxis(Rotate.X_AXIS).rotate(90).build();
+        final Circle cs2 = new Circle(120, Color.WHITE);
+        cs2.setTranslateY(1);
+        cs2.setRotationAxis(Rotate.X_AXIS);
+        cs2.setRotate(90);
+        final Group group = new Group(board, cs2, cs);
+        for (int i = 0; i < 16; i++) {
             final Circle circle = new SimpleCircleBuilder().radius(10).fill(Color.WHITE).translateX(getPosition(i % 4))
-                    .translateZ(getPosition(i / 4)).translateY(3).rotationAxis(Rotate.X_AXIS).rotate(90).build();
-			circle.fillProperty().bind(Bindings.when(circle.hoverProperty()).then(Color.BLUE).otherwise(Color.WHITE));
-			model.getMap()[i % 4][i / 4] = circle;
-			group.getChildren().add(circle);
+                .translateZ(getPosition(i / 4)).translateY(3).rotationAxis(Rotate.X_AXIS).rotate(90).build();
+            circle.fillProperty().bind(Bindings.when(circle.hoverProperty()).then(Color.BLUE).otherwise(Color.WHITE));
+            model.getMap()[i % 4][i / 4] = circle;
+            group.getChildren().add(circle);
 
-			final QuartoPiece piece = new QuartoPiece(i);
-			int j = i % 4;
-			int k = i / 4;
+            final QuartoPiece piece = new QuartoPiece(i);
+            int j = i % 4;
+            int k = i / 4;
             piece.setTranslateX(QuartoModel.getTranslate(j));
             piece.setTranslateZ(QuartoModel.getTranslate(k));
-			world.getChildren().add(piece);
-			model.getPieces().add(piece);
+            world.getChildren().add(piece);
+            model.getPieces().add(piece);
 
-		}
+        }
 
-		world.getChildren().addAll(group);
-	}
+        world.getChildren().addAll(group);
+    }
 
-	private void buildCamera() {
+    private void buildCamera() {
         root.getChildren().add(cameraXform);
         cameraXform.getChildren().add(cameraXform2);
         cameraXform2.getChildren().add(cameraXform3);
@@ -114,15 +114,15 @@ public class QuartoLauncher extends Application {
         camera.setNearClip(nearClip);
         final int farClip = 10000;
         camera.setFarClip(farClip);
-		camera.setTranslateZ(-CAMERA_DISTANCE);
+        camera.setTranslateZ(-CAMERA_DISTANCE);
         final int yRotation = 315;
         cameraXform.setRy(yRotation);
         final int xRotation = 45;
         cameraXform.setRx(xRotation);
     }
 
-	private void handleKeyPressed(KeyEvent event) {
-		switch (event.getCode()) {
+    private void handleKeyPressed(KeyEvent event) {
+        switch (event.getCode()) {
             case Z:
                 reset(event);
                 break;
@@ -140,91 +140,88 @@ public class QuartoLauncher extends Application {
                 break;
             default:
                 break;
-		}
-	}
+        }
+    }
 
     private void handleMouseClick(MouseEvent event) {
-		final EventTarget target = event.getTarget();
-		if (target instanceof Shape3D) {
-		    final Parent parent = ((Shape3D) target).getParent();
-			if (parent instanceof QuartoPiece
-					&& Stream.of(model.getMapQuarto()).flatMap(Stream::of).noneMatch(parent::equals)) {
-				((QuartoPiece) parent).setSelected(true);
-				model.getPieces().stream().filter(p -> !Objects.equals(p, parent) && p.isSelected())
-						.forEach((QuartoPiece p) -> p.setSelected(false));
-			}
-		}
-		if (target instanceof Circle && Stream.of(model.getMap()).flatMap(Stream::of).anyMatch(target::equals)) {
+        final EventTarget target = event.getTarget();
+        if (target instanceof Shape3D) {
+            final Parent parent = ((Shape3D) target).getParent();
+            if (parent instanceof QuartoPiece
+                && Stream.of(model.getMapQuarto()).flatMap(Stream::of).noneMatch(parent::equals)) {
+                ((QuartoPiece) parent).setSelected(true);
+                model.getPieces().stream().filter(p -> !Objects.equals(p, parent) && p.isSelected())
+                    .forEach((QuartoPiece p) -> p.setSelected(false));
+            }
+        }
+        if (target instanceof Circle && Stream.of(model.getMap()).flatMap(Stream::of).anyMatch(target::equals)) {
             List<QuartoPiece> selectedPiece = model.getPieces().stream().filter(QuartoPiece::isSelected)
-                    .collect(Collectors.toList());
-			for(QuartoPiece p:selectedPiece) {
-		        p.setTranslateX(((Circle) target).getTranslateX());
-		        p.setTranslateZ(((Circle) target).getTranslateZ());
-				p.setSelected(false);
-				setQuartoPiece(target, p);
-		        if (model.checkEnd()) {
+                .collect(Collectors.toList());
+            for (QuartoPiece p : selectedPiece) {
+                p.setTranslateX(((Circle) target).getTranslateX());
+                p.setTranslateZ(((Circle) target).getTranslateZ());
+                p.setSelected(false);
+                setQuartoPiece(target, p);
+                if (model.checkEnd()) {
                     LOG.info("{}", "ACABOU");
-                    StageHelper.displayDialog("You Got " + 0 + " points", "Reset", model::reset);
+                    new SimpleDialogBuilder().text("You Got " + 0 + " points").button("Reset", model::reset)
+                        .displayDialog();
 
-		        }
-			}
+                }
+            }
 
-		}
-	}
+        }
+    }
+
     private void moveSideways(KeyEvent event, int multiplier) {
-		if (event.isControlDown() && event.isShiftDown()) {
+        if (event.isControlDown() && event.isShiftDown()) {
             cameraXform2.setTx(cameraXform2.getTx() + multiplier * 10 * CONTROL_MULTIPLIER);
-		} else if (event.isAltDown() && event.isShiftDown()) {
+        } else if (event.isAltDown() && event.isShiftDown()) {
             cameraXform.setRy(cameraXform.getRotateY() - multiplier * 10 * ALT_MULTIPLIER); // -
-		} else if (event.isControlDown()) {
+        } else if (event.isControlDown()) {
             cameraXform2.setTx(cameraXform2.getTx() + multiplier * 1 * CONTROL_MULTIPLIER);
-		} else if (event.isAltDown()) {
+        } else if (event.isAltDown()) {
             cameraXform.setRy(cameraXform.getRotateY() - multiplier * 2 * ALT_MULTIPLIER); // -
-		}
-	}
+        }
+    }
 
-	private void moveUpAndDown(KeyEvent event, int multiplier) {
-		if (event.isControlDown() && event.isShiftDown()) {
+    private void moveUpAndDown(KeyEvent event, int multiplier) {
+        if (event.isControlDown() && event.isShiftDown()) {
             cameraXform2.setTy(cameraXform2.getTy() - multiplier * 10 * CONTROL_MULTIPLIER);
-		} else if (event.isAltDown() && event.isShiftDown()) {
+        } else if (event.isAltDown() && event.isShiftDown()) {
             cameraXform.setRx(cameraXform.getRotateX() - multiplier * 10 * ALT_MULTIPLIER);
-		} else if (event.isControlDown()) {
+        } else if (event.isControlDown()) {
             cameraXform2.setTy(cameraXform2.getTy() - multiplier * 1 * CONTROL_MULTIPLIER);
-		} else if (event.isAltDown()) {
+        } else if (event.isAltDown()) {
             cameraXform.setRx(cameraXform.getRotateX() - multiplier * 2 * ALT_MULTIPLIER);
-		} else if (event.isShiftDown()) {
-		    double z = camera.getTranslateZ();
+        } else if (event.isShiftDown()) {
+            double z = camera.getTranslateZ();
             double newZ = z + multiplier * 5 * SHIFT_MULTIPLIER;
-		    camera.setTranslateZ(newZ);
-		}
-	}
+            camera.setTranslateZ(newZ);
+        }
+    }
 
-
-
-	private void reset(KeyEvent event) {
+    private void reset(KeyEvent event) {
         if (event.isShiftDown()) {
             cameraXform.setRy(0);
             cameraXform.setRx(0);
-        	camera.setTranslateZ(-CAMERA_DISTANCE);
+            camera.setTranslateZ(-CAMERA_DISTANCE);
         }
         cameraXform2.setTx(0);
         cameraXform2.setTy(0);
     }
 
+    private void setQuartoPiece(final EventTarget target, QuartoPiece p) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (target == model.getMap()[i][j]) {
+                    model.getMapQuarto()[i][j] = p;
+                }
+            }
+        }
+    }
 
-
-
-	private void setQuartoPiece(final EventTarget target, QuartoPiece p) {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (target == model.getMap()[i][j]) {
-					model.getMapQuarto()[i][j] = p;
-				}
-			}
-		}
-	}
-
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         System.setProperty("prism.dirtyopts", "false");
         launch(args);
     }
@@ -234,4 +231,3 @@ public class QuartoLauncher extends Application {
         return i * spacing - 60;
     }
 }
-

@@ -14,8 +14,8 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
+import simplebuilder.SimpleDialogBuilder;
 import utils.ResourceFXUtils;
-import utils.StageHelper;
 
 public class Labyrinth3DKillerGhostsAndBalls extends Application implements CommomLabyrinth {
 
@@ -149,12 +149,12 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
         ghostCount.set(ghostCount.get() - 1);
         if (ghostCount.get() == 0) {
             movimentacao.stop();
-			StageHelper.displayDialog("Você Venceu", "Ok", () -> {
+			new SimpleDialogBuilder().text("Você Venceu").button("Ok", () -> {
                 movimentacao.start();
                 camera.setTranslateZ(0);
                 camera.setTranslateY(0);
                 camera.setTranslateX(0);
-            });
+            }).displayDialog();
         }
     }
 

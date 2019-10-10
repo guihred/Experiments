@@ -13,7 +13,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Rotate;
-import utils.StageHelper;
+import simplebuilder.SimpleDialogBuilder;
 
 /**
  *
@@ -68,7 +68,7 @@ public class RoundMazeModel {
                     RoundMazeHandler.createMaze(maze);
                     draw();
                 };
-                StageHelper.displayDialog("You Won", "_Reset", c);
+                new SimpleDialogBuilder().text("You Won").button("_Reset", c).displayDialog();
             }
         }
     }

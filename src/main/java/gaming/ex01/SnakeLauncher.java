@@ -10,8 +10,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.StageHelper;
 
 public class SnakeLauncher extends Application {
     public static final int UPDATE_MILLIS = 200;
@@ -41,8 +41,8 @@ public class SnakeLauncher extends Application {
             .cycleCount(Animation.INDEFINITE).build();
         timeline.play();
         stage.setScene(scene);
-		stage.setOnCloseRequest(e -> timeline.stop());
-		stage.show();
+        stage.setOnCloseRequest(e -> timeline.stop());
+        stage.show();
     }
 
     private void gameLoop() {
@@ -60,10 +60,11 @@ public class SnakeLauncher extends Application {
         if (newGameModel.updateMap()) {
             timeline.stop();
             if (primaryStage.isShowing()) {
-                StageHelper.displayDialog("You Got " + newGameModel.getSnake().size() + " points", "Reset", () -> {
-                    newGameModel.reset();
-                    timeline.play();
-                });
+                new SimpleDialogBuilder().text("You Got " + newGameModel.getSnake().size() + " points")
+                    .button("Reset", () -> {
+                        newGameModel.reset();
+                        timeline.play();
+                    }).displayDialog();
             }
         }
     }

@@ -16,8 +16,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import simplebuilder.SimpleDialogBuilder;
 import utils.CommonsFX;
-import utils.StageHelper;
 
 public class UserChart extends VBox {
     @FXML
@@ -120,14 +120,14 @@ public class UserChart extends VBox {
                 userPoints.setText(points + " Points");
             }
             if (points >= 10) {
-                StageHelper.displayDialog("Player " + playerColor + " Won", "Reset", () -> {
+                new SimpleDialogBuilder().text("Player " + playerColor + " Won").button("Reset", () -> {
                     BorderPane root = (BorderPane) availablePorts.getScene().getRoot();
                     Pane center = (Pane) root.getCenter();
                     center.getChildren().clear();
                     Pane right = (Pane) root.getLeft();
                     right.getChildren().clear();
                     onWin.accept(center, right);
-                });
+                }).displayDialog();
             }
         }
     }

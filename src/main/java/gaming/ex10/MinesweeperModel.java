@@ -17,7 +17,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import utils.StageHelper;
+import simplebuilder.SimpleDialogBuilder;
 
 /**
  *
@@ -93,7 +93,7 @@ public class MinesweeperModel {
                     reset();
 				}
 				if (mem.getScene().getWindow().isShowing()) {
-					StageHelper.displayDialog("You exploded!", "Reset", this::reset);
+					new SimpleDialogBuilder().text("You exploded!").button("Reset", this::reset).displayDialog();
 				}
             }
             if (mem.getMinesweeperImage() == MinesweeperImage.BLANK) {
@@ -102,7 +102,7 @@ public class MinesweeperModel {
             if (verifyEnd()) {
                 String text2 = "You won in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds! ";
 				if (mem.getScene().getWindow().isShowing()) {
-					StageHelper.displayDialog(text2, "Reset", this::reset);
+					new SimpleDialogBuilder().text(text2).button("Reset", this::reset).displayDialog();
 				}
             }
 

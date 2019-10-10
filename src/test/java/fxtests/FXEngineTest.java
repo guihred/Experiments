@@ -18,7 +18,6 @@ import gaming.ex07.MazeLauncher;
 import gaming.ex09.Maze3DLauncher;
 import gaming.ex10.MinesweeperLauncher;
 import gaming.ex10.MinesweeperSquare;
-import gaming.ex11.DotsLauncher;
 import gaming.ex11.DotsSquare;
 import gaming.ex14.PacmanLauncher;
 import gaming.ex15.RubiksCubeLauncher;
@@ -26,7 +25,9 @@ import gaming.ex17.PuzzleLauncher;
 import gaming.ex17.PuzzlePiece;
 import gaming.ex18.Square2048Launcher;
 import gaming.ex20.RoundMazeLauncher;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -81,23 +82,6 @@ public class FXEngineTest extends AbstractTestExecution {
         tryClickButtons();
     }
 
-    @Test
-    public void verifyDots() throws Exception {
-        show(DotsLauncher.class);
-        Set<Node> queryAll = lookup(e -> e instanceof DotsSquare).queryAll().stream().limit(20)
-            .collect(Collectors.toSet());
-        Random random = new Random();
-        for (Node next : queryAll) {
-            drag(next, MouseButton.PRIMARY);
-            int a = random.nextBoolean() ? 1 : -1;
-            if (random.nextBoolean()) {
-                moveBy(a * DotsSquare.SQUARE_SIZE, 0);
-            } else {
-                moveBy(0, a * DotsSquare.SQUARE_SIZE);
-            }
-            drop();
-        }
-    }
 
     @Test
     public void verifyEthicalHack() throws Exception {

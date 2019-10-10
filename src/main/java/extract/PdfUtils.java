@@ -3,7 +3,6 @@ package extract;
 import static utils.StringSigaUtils.removeMathematicalOperators;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,8 +53,7 @@ public final class PdfUtils {
                 int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
                 for (int i = start; i < nPag; i++) {
                     PrintImageLocations printImageLocations = new PrintImageLocations();
-                    PDPage page = pdDoc.getPage(i);
-                    List<PdfImage> pageImages = getPageImages(printImageLocations, i, page);
+                    List<PdfImage> pageImages = getPageImages(printImageLocations, i, pdDoc.getPage(i));
                     images.put(i, pageImages);
                     double current = i;
                     if (progress != null) {
@@ -80,10 +78,12 @@ public final class PdfUtils {
         }, "ERROR IN FILE " + file);
     }
 
-    public static COSDocument parseAndGet(RandomAccessFile source) throws IOException {
-        PDFParser parser = new PDFParser(source);
-        parser.parse();
-        return parser.getDocument();
+    public static COSDocument parseAndGet(RandomAccessFile source) {
+        return SupplierEx.remap(() -> {
+            PDFParser parser = new PDFParser(source);
+            parser.parse();
+            return parser.getDocument();
+        }, "ERROR IN " + source);
     }
 
     public static PdfInfo readFile(File file1) {
@@ -148,8 +148,7 @@ public final class PdfUtils {
         return pdfInfo;
     }
 
-    public static void runOnFile(File file, BiConsumer<String, List<TextPosition>> onTextPosition,
-        IntConsumer onPage,
+    public static void runOnFile(File file, BiConsumer<String, List<TextPosition>> onTextPosition, IntConsumer onPage,
         Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
         PdfUtils.extractImages(file);
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
@@ -157,8 +156,8 @@ public final class PdfUtils {
             PDDocument pdDoc = new PDDocument(cosDoc)) {
             PDFTextStripper pdfStripper = new PDFTextStripper() {
                 @Override
-                protected void writeString(String text1, List<TextPosition> textPositions) throws IOException {
-                    super.writeString(text1, textPositions);
+                protected void writeString(String text1, List<TextPosition> textPositions) {
+                    RunnableEx.remap(() -> super.writeString(text1, textPositions), "ERRO WRITING");
                     onTextPosition.accept(text1, textPositions);
                 }
             };
@@ -182,7 +181,6 @@ public final class PdfUtils {
 
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
         return SupplierEx.get(() -> printImageLocations.processPage(page, i), Collections.emptyList());
-
     }
 
 }

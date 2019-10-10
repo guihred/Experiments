@@ -17,7 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import utils.StageHelper;
+import simplebuilder.SimpleDialogBuilder;
 
 /**
  *
@@ -227,7 +227,7 @@ public class SolitaireModel {
 
     private void verifyEnd() {
         if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
-            StageHelper.displayDialog("You Win", "Reset", this::reset);
+            new SimpleDialogBuilder().text("You Win").button("Reset", this::reset).displayDialog();
         }
     }
 

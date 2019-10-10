@@ -29,6 +29,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import utils.ResourceFXUtils;
 import utils.StageHelper;
@@ -81,7 +82,7 @@ public final class EditSongHelper {
             StageHelper.closeStage(builder);
             stage.close();
         });
-        StageHelper.displayDialog(value, builder);
+        new SimpleDialogBuilder().text(value).button(builder).displayDialog();
         ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
             selectedItem.getTitulo());
     }
@@ -101,7 +102,7 @@ public final class EditSongHelper {
         Button splitButton = SimpleButtonBuilder.newButton("_Split", a -> EditSongHelper.splitInFiles(mediaPlayer, file,
             currentSlider, currentTime, music, progressIndicator, startTime));
         root.getChildren().addAll(splitButton);
-        StageHelper.displayDialog("Split Multiple", root);
+        new SimpleDialogBuilder().text("Split Multiple").button(root).displayDialog();
     }
 
     public static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,

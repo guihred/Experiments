@@ -15,6 +15,7 @@ import java.util.function.ObjIntConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -50,7 +51,8 @@ public class ContestQuestionEditingDisplay extends Application {
 
     public ContestQuestionEditingDisplay() {
         instance = IadesHelper.getContestQuestions(
-            ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), () -> current.set(0));
+            ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"),
+            () -> Platform.runLater(() -> current.set(0)));
         lessons = instance.getListQuestions();
     }
 

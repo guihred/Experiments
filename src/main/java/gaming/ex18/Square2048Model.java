@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import utils.StageHelper;
+import simplebuilder.SimpleDialogBuilder;
 
 /**
  *
@@ -89,16 +89,16 @@ public class Square2048Model {
         if (!emptySquares.isEmpty()) {
             emptySquares.remove(0).setNumber(newNumber());
         } else if (noPossibleMove()) {
-            StageHelper.displayDialog("You Lose", "_Reset", () -> {
+            new SimpleDialogBuilder().text("You Lose").button("_Reset", () -> {
                 gridPane.getChildren().clear();
                 initialize();
-            });
+            }).displayDialog();
         }
         if (mapAsList.stream().anyMatch(s -> s.getNumber() == MAIN_GOAL)) {
-            StageHelper.displayDialog("You Won", "_Reset", () -> {
+            new SimpleDialogBuilder().text("You Won").button("_Reset", () -> {
                 gridPane.getChildren().clear();
                 initialize();
-            });
+            }).displayDialog();
         }
 
     }

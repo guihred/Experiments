@@ -1,11 +1,19 @@
 package gaming.ex21;
 
+import static gaming.ex21.CatanResource.newImage;
 import static gaming.ex21.ResourceType.*;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
+import javafx.scene.layout.GridPane;
+import simplebuilder.SimpleButtonBuilder;
 
 public enum Combination {
     ROAD("road.png", WOOD, BRICK),
@@ -76,6 +84,24 @@ public enum Combination {
             elements2.add(new Road(currentPlayer2));
         } else if (DEVELOPMENT == this) {
             currentCards.add(new CatanCard(developmentCards2.remove(0), onCardSelect));
+        }
+    }
+
+    public static void combinationGrid(GridPane value, Consumer<Combination> onClick, Predicate<Combination> isDisabled,
+        ObjectProperty<PlayerColor> currentPlayer, BooleanProperty diceThrown) {
+        Combination[] combinations = values();
+        for (int i = 0; i < combinations.length; i++) {
+            Combination combination = combinations[i];
+            List<ResourceType> resources = combination.getResources();
+            Button button = SimpleButtonBuilder.newButton(newImage(combination.getElement(), 30, 30), "" + combination,
+                e -> onClick.accept(combination));
+            button.setUserData(combination);
+            button.disableProperty()
+                .bind(Bindings.createBooleanBinding(() -> isDisabled.test(combination), currentPlayer, diceThrown));
+            value.addRow(i, button);
+            for (ResourceType resourceType : resources) {
+                value.addRow(i, newImage(resourceType.getPure(), 20));
+            }
         }
     }
 

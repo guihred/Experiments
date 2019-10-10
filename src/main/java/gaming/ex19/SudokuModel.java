@@ -13,7 +13,7 @@ import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import utils.StageHelper;
+import simplebuilder.SimpleDialogBuilder;
 
 /**
  *
@@ -81,7 +81,7 @@ public class SudokuModel {
         }
         numberBoard.setVisible(false);
         if (isFullyFilled()) {
-            StageHelper.displayDialog("You Won", "Reset", this::reset);
+            new SimpleDialogBuilder().text("You Won").button("Reset", this::reset).displayDialog();
         }
     }
 
