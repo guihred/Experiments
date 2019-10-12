@@ -1,8 +1,6 @@
 package election;
 
 import static election.CandidatoHelper.*;
-import static simplebuilder.SimpleTableViewBuilder.equalColumns;
-import static simplebuilder.SimpleTableViewBuilder.setFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,7 +17,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.graph.PieGraph;
 import simplebuilder.SimpleTreeViewBuilder;
-import utils.*;
+import utils.CommonsFX;
+import utils.CrawlerTask;
+import utils.HibernateUtil;
 
 public class CandidatoApp extends Application {
     @FXML
@@ -53,17 +53,14 @@ public class CandidatoApp extends Application {
     private ObservableMap<String, Set<String>> fieldMap;
     @FXML
     private ObservableMap<String, CheckBox> portChecks;
+
     public void initialize() {
         CrawlerTask.insertProxyConfig();
         List<String> relevantFields = getRelevantFields();
         for (String field : relevantFields) {
             SimpleTreeViewBuilder.addToRoot(treeView0, field, distinct(field));
         }
-        fotoUrl.setCellFactory(ImageTableCell::new);
-        cidade.setCellFactory(setFormat(Cidade::getCity));
-        eleito.setCellFactory(setFormat(StringSigaUtils::simNao));
-        nascimento.setCellFactory(setFormat(DateFormatUtils::formatDate));
-        equalColumns(tableView2);
+        CandidatoHelper.configTable(fotoUrl, cidade, eleito, nascimento, tableView2);
         tableView2.setItems(CommonsFX.newFastFilter(filter, candidates.filtered(e -> true)));
         column.addListener((ob, o, n) -> updateTable(first, maxResult.get(), n, pieGraph, candidates, fieldMap));
         maxResult

@@ -1,5 +1,9 @@
 package election;
 
+import static simplebuilder.SimpleTableViewBuilder.equalColumns;
+import static simplebuilder.SimpleTableViewBuilder.setFormat;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,16 +15,31 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.text.Text;
 import ml.graph.PieGraph;
 import utils.ClassReflectionUtils;
+import utils.DateFormatUtils;
+import utils.ImageTableCell;
+import utils.StringSigaUtils;
 
 public final class CandidatoHelper {
     private static final int RELEVANT_FIELD_THRESHOLD = 410;
     private static CandidatoDAO candidatoDAO = new CandidatoDAO();
 
     CandidatoHelper() {
+    }
+
+    static void configTable(TableColumn<Candidato, String> fotoUrl, TableColumn<Candidato, Cidade> cidade,
+        TableColumn<Candidato, Boolean> eleito, TableColumn<Candidato, LocalDate> nascimento,
+        TableView<Candidato> tableView2) {
+        fotoUrl.setCellFactory(ImageTableCell::new);
+        cidade.setCellFactory(setFormat(Cidade::getCity));
+        eleito.setCellFactory(setFormat(StringSigaUtils::simNao));
+        nascimento.setCellFactory(setFormat(DateFormatUtils::formatDate));
+        equalColumns(tableView2);
     }
 
     public static void addIfChecked(String parent, Map<String, Set<String>> fieldMap, String value, Boolean val) {
