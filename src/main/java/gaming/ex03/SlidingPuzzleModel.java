@@ -81,7 +81,7 @@ public class SlidingPuzzleModel {
                             reset();
                             moves = 0;
                         };
-                        new SimpleDialogBuilder().text(text).button("Reset", c).displayDialog();
+                        new SimpleDialogBuilder().text(text).button("Reset", c).bindWindow(gridPane).displayDialog();
                     }
                     return;
                 }

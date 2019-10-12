@@ -93,7 +93,8 @@ public class MinesweeperModel {
                     reset();
 				}
 				if (mem.getScene().getWindow().isShowing()) {
-					new SimpleDialogBuilder().text("You exploded!").button("Reset", this::reset).displayDialog();
+                    new SimpleDialogBuilder().text("You exploded!").button("Reset", this::reset).bindWindow(gridPane)
+                        .displayDialog();
 				}
             }
             if (mem.getMinesweeperImage() == MinesweeperImage.BLANK) {

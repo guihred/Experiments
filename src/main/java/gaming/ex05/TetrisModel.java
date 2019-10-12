@@ -26,7 +26,6 @@ public class TetrisModel {
     private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection = new EnumMap<>(TetrisPiece.class);
 
     private SecureRandom random = new SecureRandom();
-
     public TetrisModel(GridPane gridPane) {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
@@ -118,8 +117,7 @@ public class TetrisModel {
                 new SimpleDialogBuilder().text("You Got " + 0 + " points").button("Reset", () -> {
                     reset();
                     timeline.play();
-                }).displayDialog();
-
+                }).bindWindow(map[0][0]).displayDialog();
             }
             for (int i = 0; i < MAP_HEIGHT; i++) {
                 boolean clearLine = isLineClear(i);

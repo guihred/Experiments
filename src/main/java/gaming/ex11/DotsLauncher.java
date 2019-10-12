@@ -182,7 +182,7 @@ public class DotsLauncher extends Application {
                 gridPane.getChildren().add(line);
                 DotsHelper.initializeMaze(gridPane, maze);
                 initialize();
-            }).displayDialog();
+            }).bindWindow(gridPane).displayDialog();
         }
     }
     public static void main(String[] args) {

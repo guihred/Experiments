@@ -172,6 +172,10 @@ public class JavaFileDependency {
     }
 
     public static Set<String> displayTestsToBeRun(Collection<String> asList, String name1) {
+        return displayTestsToBeRun(asList, name1, new ArrayList<>());
+    }
+
+    public static Set<String> displayTestsToBeRun(Collection<String> asList, String name1, List<String> allPaths) {
         List<JavaFileDependency> allFileDependencies = getAllFileDependencies();
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
@@ -185,6 +189,7 @@ public class JavaFileDependency {
                 if (!path.isEmpty()) {
                     List<String> collect = path.stream().map(JavaFileDependency::getFullName)
                         .collect(Collectors.toList());
+                    allPaths.addAll(collect);
                     HasLogging.log().info("{} {}", dependecy.getFullName(), collect);
                 }
                 testClasses.addAll(path.stream().filter(e -> e.getFullName().contains(name1))

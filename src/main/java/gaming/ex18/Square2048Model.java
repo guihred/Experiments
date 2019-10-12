@@ -92,13 +92,13 @@ public class Square2048Model {
             new SimpleDialogBuilder().text("You Lose").button("_Reset", () -> {
                 gridPane.getChildren().clear();
                 initialize();
-            }).displayDialog();
+            }).bindWindow(gridPane).displayDialog();
         }
         if (mapAsList.stream().anyMatch(s -> s.getNumber() == MAIN_GOAL)) {
             new SimpleDialogBuilder().text("You Won").button("_Reset", () -> {
                 gridPane.getChildren().clear();
                 initialize();
-            }).displayDialog();
+            }).bindWindow(gridPane).displayDialog();
         }
 
     }

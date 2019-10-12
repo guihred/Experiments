@@ -59,13 +59,11 @@ public class SnakeLauncher extends Application {
         }
         if (newGameModel.updateMap()) {
             timeline.stop();
-            if (primaryStage.isShowing()) {
-                new SimpleDialogBuilder().text("You Got " + newGameModel.getSnake().size() + " points")
-                    .button("Reset", () -> {
-                        newGameModel.reset();
-                        timeline.play();
-                    }).displayDialog();
-            }
+            new SimpleDialogBuilder().text("You Got " + newGameModel.getSnake().size() + " points")
+                .button("Reset", () -> {
+                    newGameModel.reset();
+                    timeline.play();
+                }).bindWindow(primaryStage).displayDialog();
         }
     }
 

@@ -154,7 +154,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
                 camera.setTranslateZ(0);
                 camera.setTranslateY(0);
                 camera.setTranslateX(0);
-            }).displayDialog();
+            }).bindWindow(root).displayDialog();
         }
     }
 

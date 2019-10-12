@@ -38,6 +38,31 @@ public final class EditSongHelper {
     private EditSongHelper() {
     }
 
+    public static void findImage(Music selectedItem, Stage stage, ObjectProperty<MediaPlayer> mediaPlayer) {
+        String value = MusicReader.getDescription(selectedItem);
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        children.add(new Text(value));
+
+        final int prefWidth = 300;
+        SimpleListViewBuilder<Node> listBuilder = new SimpleListViewBuilder<>();
+        ListView<Node> builder = listBuilder.items(children).prefWidth(prefWidth).build();
+        listBuilder.onDoubleClick(n -> {
+            if (n instanceof ImageView) {
+                ImageView view = (ImageView) n;
+                Image image = view.getImage();
+                selectedItem.setImage(image);
+                mediaPlayer.get().stop();
+                mediaPlayer.get().dispose();
+                MusicReader.saveMetadata(selectedItem);
+            }
+            StageHelper.closeStage(builder);
+            stage.close();
+        });
+        new SimpleDialogBuilder().text(value).button(builder).bindWindow(stage).displayDialog();
+        ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
+            selectedItem.getTitulo());
+    }
+
     public static void splitAndSave(Music selectedItem, Slider initialSlider, Slider finalSlider, File outFile,
         ProgressIndicator progressIndicator, ObjectProperty<MediaPlayer> mediaPlayer) {
         DoubleProperty progress = SongUtils.splitAudio(selectedItem.getArquivo(), outFile,
@@ -62,31 +87,6 @@ public final class EditSongHelper {
         });
     }
 
-    public static void findImage(Music selectedItem, Stage stage, ObjectProperty<MediaPlayer> mediaPlayer) {
-        String value = MusicReader.getDescription(selectedItem);
-        ObservableList<Node> children = FXCollections.observableArrayList();
-        children.add(new Text(value));
-
-        final int prefWidth = 300;
-        SimpleListViewBuilder<Node> listBuilder = new SimpleListViewBuilder<>();
-        ListView<Node> builder = listBuilder.items(children).prefWidth(prefWidth).build();
-        listBuilder.onDoubleClick(n -> {
-            if (n instanceof ImageView) {
-                ImageView view = (ImageView) n;
-                Image image = view.getImage();
-                selectedItem.setImage(image);
-                mediaPlayer.get().stop();
-                mediaPlayer.get().dispose();
-                MusicReader.saveMetadata(selectedItem);
-            }
-            StageHelper.closeStage(builder);
-            stage.close();
-        });
-        new SimpleDialogBuilder().text(value).button(builder).displayDialog();
-        ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
-            selectedItem.getTitulo());
-    }
-
     public static void splitAudio(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
         ObjectProperty<Duration> startTime) {
         Duration currentTime = mediaPlayer.get().getTotalDuration().multiply(currentSlider.getValue());
@@ -102,7 +102,7 @@ public final class EditSongHelper {
         Button splitButton = SimpleButtonBuilder.newButton("_Split", a -> EditSongHelper.splitInFiles(mediaPlayer, file,
             currentSlider, currentTime, music, progressIndicator, startTime));
         root.getChildren().addAll(splitButton);
-        new SimpleDialogBuilder().text("Split Multiple").button(root).displayDialog();
+        new SimpleDialogBuilder().text("Split Multiple").button(root).bindWindow(currentSlider).displayDialog();
     }
 
     public static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,

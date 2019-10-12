@@ -81,7 +81,8 @@ public class SudokuModel {
         }
         numberBoard.setVisible(false);
         if (isFullyFilled()) {
-            new SimpleDialogBuilder().text("You Won").button("Reset", this::reset).displayDialog();
+            new SimpleDialogBuilder().text("You Won").button("Reset", this::reset).bindWindow(numberBoard)
+                .displayDialog();
         }
     }
 

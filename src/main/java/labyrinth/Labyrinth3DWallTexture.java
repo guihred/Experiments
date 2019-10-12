@@ -65,7 +65,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
                     camera.setTranslateZ(0);
                     camera.setTranslateX(0);
                     movimentacao.start();
-                }).displayDialog();
+                }).bindWindow(root).displayDialog();
             }
         }
     }

@@ -68,7 +68,7 @@ public class RoundMazeModel {
                     RoundMazeHandler.createMaze(maze);
                     draw();
                 };
-                new SimpleDialogBuilder().text("You Won").button("_Reset", c).displayDialog();
+                new SimpleDialogBuilder().text("You Won").button("_Reset", c).bindWindow(canvas).displayDialog();
             }
         }
     }

@@ -227,7 +227,7 @@ public class SolitaireModel {
 
     private void verifyEnd() {
         if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
-            new SimpleDialogBuilder().text("You Win").button("Reset", this::reset).displayDialog();
+            new SimpleDialogBuilder().text("You Win").button("Reset", this::reset).bindWindow(gridPane).displayDialog();
         }
     }
 

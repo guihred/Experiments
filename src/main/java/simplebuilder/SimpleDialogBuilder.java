@@ -14,6 +14,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.RunnableEx;
@@ -23,10 +24,36 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     private static final Logger LOG = HasLogging.log();
 
     private Stage stage = new Stage();
-    private VBox group = new VBox(10);
+    private VBox group = new VBox(5);
+
+    private Node node;
 
     public SimpleDialogBuilder() {
         group.setAlignment(Pos.CENTER);
+    }
+
+    public SimpleDialogBuilder bindWindow(Node node1) {
+        node = node1;
+        Window window = node1.getScene().getWindow();
+        if (window == null) {
+            return this;
+        }
+
+        window.showingProperty().addListener((ob, old, n) -> {
+            if (!n) {
+                Platform.runLater(stage::close);
+            }
+        });
+        return this;
+    }
+
+    public SimpleDialogBuilder bindWindow(Window window) {
+        window.showingProperty().addListener((ob, old, n) -> {
+            if (!n) {
+                Platform.runLater(stage::close);
+            }
+        });
+        return this;
     }
 
     @Override
@@ -69,6 +96,13 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     }
 
     public Stage displayDialog() {
+        if (node != null) {
+            Scene scene = node.getScene();
+            if (scene == null || scene.getWindow() == null) {
+                return stage;
+            }
+        }
+
         stage.setScene(new Scene(group));
         stage.show();
         LOG.info("DIALOG {}", HasLogging.getCurrentLine(1));

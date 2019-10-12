@@ -36,7 +36,7 @@ public class TronLauncher extends Application {
                 new SimpleDialogBuilder().text(text2).button("Reset", () -> {
                     newGameModel.reset();
                     timeline.play();
-                }).displayDialog();
+                }).bindWindow(stage).displayDialog();
             }
         }).cycleCount(Animation.INDEFINITE).build();
         timeline.play();

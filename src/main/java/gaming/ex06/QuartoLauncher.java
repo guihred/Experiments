@@ -165,6 +165,7 @@ public class QuartoLauncher extends Application {
                 if (model.checkEnd()) {
                     LOG.info("{}", "ACABOU");
                     new SimpleDialogBuilder().text("You Got " + 0 + " points").button("Reset", model::reset)
+                        .bindWindow(p)
                         .displayDialog();
 
                 }

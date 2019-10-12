@@ -5,20 +5,21 @@ import static fxtests.FXTesting.measureTime;
 import graphs.app.JavaFileDependency;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.assertj.core.api.exception.RuntimeIOException;
+import org.junit.*;
 import org.junit.runners.MethodSorters;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import utils.ClassReflectionUtils;
 import utils.ConsumerEx;
+import utils.FunctionEx;
 import utils.HasLogging;
 
 @SuppressWarnings("static-method")
@@ -107,9 +108,9 @@ public class JavaDependencyTest {
     @Test
     public void testGTestUncovered() {
 
+        List<String> failedTests = new ArrayList<>();
         measureTime("JavaFileDependency.testUncovered", () -> {
             List<String> uncovered = getUncovered();
-
             List<String> collect = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream().distinct()
                 .sorted().collect(Collectors.toList());
             for (int i = 0; i < collect.size(); i++) {
@@ -119,18 +120,31 @@ public class JavaDependencyTest {
                 }
                 LOG.info("RUNNING TEST {} {}/{}", className, i + 1, collect.size());
                 Class<?> forName = Class.forName("fxtests." + className);
+                if (Modifier.isAbstract(forName.getModifiers())) {
+                    continue;
+                }
+                if (forName.getConstructors()[0].getParameterCount() != 0) {
+
+                    Collection<?> orElseThrow = ClassReflectionUtils.getAllMethodsRecursive(forName).stream()
+                        .filter(e -> e.getAnnotationsByType(Parameterized.Parameters.class).length > 0)
+                        .map(FunctionEx.makeFunction(e -> e.invoke(null))).findFirst()
+                        .map(e -> (Collection<?>) e)
+                        .orElseThrow(() -> new RuntimeIOException("DEVERIA TER"));
+                    for (Object object : orElseThrow) {
+                        Object ob = forName.getConstructors()[0].newInstance(object);
+                        runTest(failedTests, forName, ob);
+                    }
+                    continue;
+                }
                 Object ob = forName.newInstance();
-                List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(forName);
-                declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
-                    .forEach(e -> ClassReflectionUtils.invoke(ob, e));
-                declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
-                    .forEach(ConsumerEx.makeConsumer(e -> e.invoke(ob)));
-                declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
-                    .forEach(e -> ClassReflectionUtils.invoke(ob, e));
+                runTest(failedTests, forName, ob);
                 LOG.info(" TESTS RUN {} {}/{}", "fxtests." + className, i + 1, collect.size());
 
             }
         });
+        if (!failedTests.isEmpty()) {
+            Assert.fail(failedTests.stream().collect(Collectors.joining(",", "ERRORS IN ", "")));
+        }
     }
 
     @Test
@@ -138,6 +152,10 @@ public class JavaDependencyTest {
 
         measureTime("JavaFileDependency.testUncovered", () -> {
             List<String> uncovered = getUncovered();
+            ArrayList<String> allPaths = new ArrayList<>();
+            JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests", allPaths);
+            uncovered
+                .addAll(allPaths.stream().map(e -> e.replaceAll(".+\\.(\\w+)", "$1")).collect(Collectors.toList()));
             List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
             List<Class<? extends Application>> collect = classes.stream()
                 .filter(e -> uncovered.contains(e.getSimpleName())).collect(Collectors.toList());
@@ -156,5 +174,19 @@ public class JavaDependencyTest {
         b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 35);
         List<String> uncovered = b.list("CLASS");
         return uncovered;
+    }
+
+    private void runTest(List<String> failedTests, Class<?> forName, Object ob) {
+        List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(forName);
+        declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
+            .forEach(e -> ClassReflectionUtils.invoke(ob, e));
+        declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
+            .sorted(Comparator.comparing(Method::getName))
+            .forEach(ConsumerEx.make(e -> e.invoke(ob), (o, e) -> {
+                failedTests.add(o + "");
+                LOG.error("ERROR invoking " + o, e);
+            }));
+        declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
+            .forEach(e -> ClassReflectionUtils.invoke(ob, e));
     }
 }

@@ -127,7 +127,7 @@ public class UserChart extends VBox {
                     Pane right = (Pane) root.getLeft();
                     right.getChildren().clear();
                     onWin.accept(center, right);
-                }).displayDialog();
+                }).bindWindow(userPoints).displayDialog();
             }
         }
     }
