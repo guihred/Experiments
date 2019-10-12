@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" prefHeight="530.0"
+	spacing="10.0"
+	style="-fx-padding:10; -fx-background-color: linear-gradient(to bottom, lightblue, derive(lightblue, 20%));"
+	styleClass="root">
+	<fx:define>
+		<ToggleGroup fx:id="toggleGroup11" />
+	</fx:define>
+	<children>
+		<Label fx:id="label0"
+			style="-fx-font-weight: bold; -fx-text-fill: darkgreen;"
+			text="Click on any circle in the scene to the left to drag it around."
+			textFill="0x006400ff">
+		</Label>
+		<Label fx:id="label1"
+			text="Any intersecting bounds in the scene will be reported below." />
+		<ListView fx:id="intersectionView">
+			<padding>
+				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+			</padding>
+		</ListView>
+		<VBox spacing="10.0">
+			<children>
+				<Label fx:id="label4" style="-fx-font-weight: bold;"
+					text="Modify visual display aspects." />
+				<CheckBox fx:id="translateNodes" text="Translate circles" />
+				<CheckBox fx:id="effectNodes" selected="true"
+					text="Add an effect to circles" />
+				<CheckBox fx:id="strokeNodes" selected="true"
+					text="Add outside strokes to circles" />
+				<Label fx:id="label9" style="-fx-font-weight: bold;"
+					text="The gray squares represent layout bounds." />
+				<CheckBox fx:id="showBounds" selected="true"
+					text="Show Bounds" />
+			</children>
+		</VBox>
+		<VBox spacing="10.0">
+			<children>
+				<RadioButton fx:id="useLayoutBounds" selected="true"
+					text="Use Layout Bounds" toggleGroup="$toggleGroup11" />
+				<RadioButton fx:id="useBoundsInLocal"
+					text="Use Bounds in Local" toggleGroup="$toggleGroup11" />
+				<RadioButton fx:id="useBoundsInParent"
+					text="Use Bounds in Parent" toggleGroup="$toggleGroup11" />
+			</children>
+		</VBox>
+		<WebView fx:id="boundsExplanation" maxHeight="130.0"
+			minHeight="130.0" prefWidth="100.0"
+			style="-fx-background-color: transparent" />
+	</children>
+	<padding>
+		<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+	</padding>
+</VBox>

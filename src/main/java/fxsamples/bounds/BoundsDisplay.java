@@ -1,6 +1,7 @@
 package fxsamples.bounds;
 
 import javafx.beans.NamedArg;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
@@ -14,7 +15,7 @@ public class BoundsDisplay extends Rectangle {
     /**
      * 
      */
-    private BoundsPlayground boundsPlayground;
+    private ObjectProperty<BoundsType> boundsPlayground;
     // the shape to which the bounds display has been type.
     private Shape monitoredShape;
     private ChangeListener<Bounds> boundsChangeListener;
@@ -23,7 +24,7 @@ public class BoundsDisplay extends Rectangle {
         makeShape();
     }
 
-    public BoundsDisplay(@NamedArg("boundsPlayground") BoundsPlayground boundsPlayground,
+    public BoundsDisplay(@NamedArg("boundsPlayground") ObjectProperty<BoundsType> boundsPlayground,
         @NamedArg("monitoredShape") final Shape shape) {
         this.boundsPlayground = boundsPlayground;
         monitoredShape = shape;
@@ -31,7 +32,7 @@ public class BoundsDisplay extends Rectangle {
         makeShape();
     }
 
-    public BoundsPlayground getBoundsPlayground() {
+    public ObjectProperty<BoundsType> getBoundsPlayground() {
         return boundsPlayground;
     }
 
@@ -45,7 +46,7 @@ public class BoundsDisplay extends Rectangle {
         if (boundsChangeListener != null) {
             final ReadOnlyObjectProperty<Bounds> oldBounds;
             if (boundsPlayground != null) {
-                switch (boundsPlayground.getSelectedBoundsType().get()) {
+                switch (boundsPlayground.get()) {
                     case LAYOUT_BOUNDS:
                         oldBounds = monitoredShape.layoutBoundsProperty();
                         break;
@@ -91,7 +92,7 @@ public class BoundsDisplay extends Rectangle {
         }
     }
 
-    public void setBoundsPlayground(BoundsPlayground boundsPlayground) {
+    public void setBoundsPlayground(ObjectProperty<BoundsType> boundsPlayground) {
         this.boundsPlayground = boundsPlayground;
     }
 
