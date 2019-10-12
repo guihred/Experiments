@@ -11,15 +11,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.NamedArg;
 import org.junit.Ignore;
-import org.slf4j.Logger;
 
 public final class ClassReflectionUtils {
-    private static final Logger LOG = HasLogging.log();
     private static final String METHOD_REGEX = "is(\\w+)|get(\\w+)";
     private static final String METHOD_REGEX_SETTER = "set(\\w+)";
 
     private ClassReflectionUtils() {
-        LOG.error("");
     }
 
     public static List<Class<?>> allClasses(Class<?> targetClass) {
@@ -161,12 +158,7 @@ public final class ClassReflectionUtils {
     }
 
     public static Object invoke(Object ob, Method method, Object... args) {
-        try {
-            return method.invoke(ob, args);
-        } catch (Exception e) {
-            LOG.trace("", e);
-            return null;
-        }
+        return SupplierEx.get(() -> method.invoke(ob, args));
     }
 
     public static Object invoke(Object ob, String method, Object... args) {

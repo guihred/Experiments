@@ -3,6 +3,7 @@ package extract;
 import static utils.StringSigaUtils.removeMathematicalOperators;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -111,6 +112,22 @@ public final class PdfUtils {
         pdfInfo.setFile(file1);
         pdfInfo.setPageIndex(0);
         pdfInfo.getPages().clear();
+        RunnableEx.ignore(() -> read(pdfInfo, file1, out));
+        return pdfInfo;
+    }
+
+    public static void runOnFile(File file, BiConsumer<String, List<TextPosition>> onTextPosition, IntConsumer onPage,
+        Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
+        PdfUtils.extractImages(file);
+        RunnableEx.ignore(() -> runOnLines(file, onTextPosition, onPage, onLines, onImages));
+    }
+
+    private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
+        return SupplierEx.get(() -> printImageLocations.processPage(page, i), Collections.emptyList());
+    }
+
+    private static void read(PdfInfo pdfInfo, File file1, PrintStream out)
+        throws IOException{
         try (RandomAccessFile source = new RandomAccessFile(file1, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -140,17 +157,11 @@ public final class PdfUtils {
             pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages(), pdfInfo.getProgress()));
 
             pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
-
-        } catch (Exception e) {
-            LOG.error("", e);
         }
-
-        return pdfInfo;
     }
 
-    public static void runOnFile(File file, BiConsumer<String, List<TextPosition>> onTextPosition, IntConsumer onPage,
-        Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
-        PdfUtils.extractImages(file);
+    private static void runOnLines(File file, BiConsumer<String, List<TextPosition>> onTextPosition, IntConsumer onPage,
+        Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) throws IOException {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -174,13 +185,7 @@ public final class PdfUtils {
                 onLines.accept(lines);
                 onImages.accept(i, images);
             }
-        } catch (Throwable e) {
-            LOG.error("", e);
         }
-    }
-
-    private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
-        return SupplierEx.get(() -> printImageLocations.processPage(page, i), Collections.emptyList());
     }
 
 }
