@@ -5,8 +5,9 @@
 	<fx:define>
 		<ToggleGroup fx:id="alignments"
 			onSelectedToggleChange="#onAlignmentChange" />
-			<Rectangle fill="#00000000" fx:id="area" stroke="#000000" height="10" width="10" style="-fx-stroke-dash-array:2,1,2,1;"/>
-			<Text fx:id="text" managed="false"/>
+		<Rectangle fill="#00000000" fx:id="area" stroke="#000000"
+			height="10" width="10" style="-fx-stroke-dash-array:2,1,2,1;" />
+
 	</fx:define>
 	<children>
 		<VBox>
@@ -232,78 +233,88 @@
 							<String fx:value="Yu Gothic UI Light" />
 							<String fx:value="Yu Gothic UI Semibold" />
 							<String fx:value="Yu Gothic UI Semilight" />
-							<String fx:value="dbldwrsw" />
+
 						</FXCollections>
 					</items>
 				</ComboBox>
 			</children>
 		</VBox>
-		<VBox>
+
+
+
+		<HBox alignment="CENTER">
 			<children>
-				<Text text="Size" />
-				<ComboBox fx:id="fontSize" id="fontSize">
-					<items>
-						<FXCollections fx:factory="observableArrayList">
-							<Integer fx:value="8" />
-							<Integer fx:value="9" />
-							<Integer fx:value="10" />
-							<Integer fx:value="11" />
-							<Integer fx:value="12" />
-							<Integer fx:value="14" />
-							<Integer fx:value="16" />
-							<Integer fx:value="18" />
-							<Integer fx:value="20" />
-							<Integer fx:value="22" />
-							<Integer fx:value="24" />
-							<Integer fx:value="26" />
-							<Integer fx:value="28" />
-							<Integer fx:value="36" />
-							<Integer fx:value="48" />
-							<Integer fx:value="72" />
-						</FXCollections>
-					</items>
-					<value>
-						<Integer fx:value="14" />
-					</value>
-				</ComboBox>
-			</children>
-		</VBox>
-		<HBox>
-			<children>
-				<ToggleButton fx:id="bold" id="bold"
-					onAction="#onOptionsChanged">
-					<graphic>
-						<Text style="-fx-font-weight: bold;" text="B" />
-					</graphic>
-					<tooltip>
-						<Tooltip text="Bold" />
-					</tooltip>
-				</ToggleButton>
-				<ToggleButton fx:id="italic" id="italic"
-					onAction="#onOptionsChanged">
-					<graphic>
-						<Text style="-fx-font-style: italic;" text="I">
-							<font>
-								<Font name="Times New Roman Italic" size="12.0" />
-							</font>
-						</Text>
-					</graphic>
-				</ToggleButton>
-				<ToggleButton fx:id="underline" id="underline"
-					onAction="#onOptionsChanged">
-					<graphic>
-						<Text text="U" underline="true" />
-					</graphic>
-				</ToggleButton>
-				<ToggleButton fx:id="strikeThrough" id="strikeThrough"
-					onAction="#onOptionsChanged">
-					<graphic>
-						<Text strikethrough="true" text="S" />
-					</graphic>
-				</ToggleButton>
+				<VBox>
+					<children>
+						<Text text="Size" />
+						<ComboBox fx:id="fontSize" id="fontSize">
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<Integer fx:value="8" />
+									<Integer fx:value="9" />
+									<Integer fx:value="10" />
+									<Integer fx:value="11" />
+									<Integer fx:value="12" />
+									<Integer fx:value="14" />
+									<Integer fx:value="16" />
+									<Integer fx:value="18" />
+									<Integer fx:value="20" />
+									<Integer fx:value="22" />
+									<Integer fx:value="24" />
+									<Integer fx:value="26" />
+									<Integer fx:value="28" />
+									<Integer fx:value="36" />
+									<Integer fx:value="48" />
+									<Integer fx:value="72" />
+								</FXCollections>
+							</items>
+							<value>
+								<Integer fx:value="14" />
+							</value>
+						</ComboBox>
+					</children>
+				</VBox>
+				<VBox>
+					<Text text="" />
+					<HBox alignment="CENTER">
+						<children>
+							<ToggleButton fx:id="bold" id="bold"
+								onAction="#onOptionsChanged">
+								<graphic>
+									<Text style="-fx-font-weight: bold;" text="B" />
+								</graphic>
+								<tooltip>
+									<Tooltip text="Bold" />
+								</tooltip>
+							</ToggleButton>
+							<ToggleButton fx:id="italic" id="italic"
+								onAction="#onOptionsChanged">
+								<graphic>
+									<Text style="-fx-font-style: italic;" text="I">
+										<font>
+											<Font name="Times New Roman Italic" size="12.0" />
+										</font>
+									</Text>
+								</graphic>
+							</ToggleButton>
+							<ToggleButton fx:id="underline" id="underline"
+								onAction="#onOptionsChanged">
+								<graphic>
+									<Text text="U" underline="true" />
+								</graphic>
+							</ToggleButton>
+							<ToggleButton fx:id="strikeThrough"
+								id="strikeThrough" onAction="#onOptionsChanged">
+								<graphic>
+									<Text strikethrough="true" text="S" />
+								</graphic>
+							</ToggleButton>
+						</children>
+					</HBox>
+				</VBox>
 			</children>
 		</HBox>
-		<HBox>
+		<HBox alignment="CENTER">
 			<children>
 				<ToggleButton fx:id="toggleButton9"
 					styleClass="toggle-button left" toggleGroup="$alignments">
@@ -389,5 +400,8 @@
 				<TextArea fx:id="textArea" />
 			</children>
 		</VBox>
+		<fx:define>
+			<Text fx:id="text" managed="false" text="${textArea.text}" underline="${underline.selected}" strikeThrough="${strikeThrough.selected}" />
+		</fx:define>
 	</children>
 </VBox>

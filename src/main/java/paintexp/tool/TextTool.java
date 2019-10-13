@@ -38,10 +38,6 @@ public class TextTool extends PaintTool {
 	@FXML
 	private ToggleButton italic;
 	@FXML
-	private ToggleButton strikeThrough;
-	@FXML
-	private ToggleButton underline;
-	@FXML
 	private ToggleGroup alignments;
 	@FXML
 	private ComboBox<Integer> fontSize;
@@ -79,21 +75,18 @@ public class TextTool extends PaintTool {
 		FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
 		double size = fontSize.getSelectionModel().getSelectedItem();
 		text.setFont(Font.font(fontFamily.getSelectionModel().getSelectedItem(), weight, posture, size));
-		text.setUnderline(underline.isSelected());
-		text.setStrikethrough(strikeThrough.isSelected());
 	}
 
 	@Override
 	public void onSelected(final PaintModel model) {
 		model.getToolOptions().getChildren().clear();
-		if (options == null) {
+        if (options == null) {
 			options = CommonsFX.loadParent(ResourceFXUtils.toFile("TextTool.fxml"), this);
 			fontFamily
 					.setCellFactory(SimpleComboBoxBuilder.cellStyle(fontFamily, t -> "-fx-font-family:\"" + t + "\";"));
 			fontFamily.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
 			fontSize.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
-			text.textProperty().bind(textArea.textProperty());
-		}
+        }
 
 		model.getToolOptions().getChildren().addAll(options);
 	}
