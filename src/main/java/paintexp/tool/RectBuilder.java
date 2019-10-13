@@ -12,6 +12,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.image.*;
 import javafx.scene.image.PixelFormat.Type;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
 
@@ -246,9 +247,9 @@ public final class RectBuilder {
         return new RectBuilder();
     }
 
-    public static void copyImagePart(Image srcImage, WritableImage destImage, Bounds bounds) {
-        int x = (int) bounds.getMinX();
-        int y = (int) bounds.getMinY();
+    public static void copyImagePart(Image srcImage, WritableImage destImage, Rectangle bounds) {
+        int x = (int) bounds.getLayoutX();
+        int y = (int) bounds.getLayoutY();
         double width = bounds.getWidth();
         double height = bounds.getHeight();
         RectBuilder.build().startX(x).startY(y).width(width).height(height).copyImagePart(srcImage, destImage,

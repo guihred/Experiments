@@ -99,15 +99,15 @@ public class EllipseTool extends PaintTool {
     protected void onMouseReleased(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getRadiusX() > 2 && children.contains(getArea())) {
-            double a = getArea().getRadiusX();
-            double b = getArea().getRadiusY();
+            double xRad = getArea().getRadiusX();
+            double yRad = getArea().getRadiusY();
             if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
-                for (int i = 0; i < a; i++) {
-					PaintToolHelper.drawCircle(model.getImage(), initialX, initialY, i, b, model.getBackColor());
+                for (int i = 0; i < xRad; i++) {
+                    PaintToolHelper.drawCircle(model.getImage(), initialX, initialY, i, yRad, model.getBackColor());
                 }
             }
             if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
-                PaintToolHelper.drawCircle(model.getImage(), initialX, initialY, a, b, model.getFrontColor());
+                PaintToolHelper.drawCircle(model.getImage(), initialX, initialY, xRad, yRad, model.getFrontColor());
             }
         }
         children.remove(getArea());

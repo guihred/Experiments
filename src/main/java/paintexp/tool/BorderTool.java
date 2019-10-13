@@ -30,7 +30,7 @@ public class BorderTool extends RectangleTool {
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        PaintToolHelper.handleSlider(e, length, lengthSlider);
+        PaintTool.handleSlider(e, length, lengthSlider);
     }
 
     @Override

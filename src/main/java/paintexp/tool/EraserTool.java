@@ -69,7 +69,7 @@ public class EraserTool extends PaintTool {
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        PaintToolHelper.handleSlider(e, length, lengthSlider);
+        PaintTool.handleSlider(e, length, lengthSlider);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class EraserTool extends PaintTool {
     protected void onMousePressed(final MouseEvent e, final PaintModel model) {
         int y = (int) e.getY();
         int x = (int) e.getX();
-        int w = (int) getArea().getWidth();
+        double w = getArea().getWidth();
         RectBuilder builder = RectBuilder.build().startX(x - w).startY(y - w).width(w).height(w);
         if (e.getButton() == MouseButton.PRIMARY) {
             builder.drawRect(model.getImage(), model.getBackColor());
@@ -112,8 +112,8 @@ public class EraserTool extends PaintTool {
         }
         getArea().setLayoutX(e.getX() - w);
         getArea().setLayoutY(e.getY() - w);
-        lastX = x - w;
-        lastY = y - w;
+        lastX = (int) (x - w);
+        lastY = (int) (y - w);
     }
 
     private Slider getLengthSlider(final PaintModel model) {

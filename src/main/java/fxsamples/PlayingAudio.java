@@ -92,6 +92,7 @@ public class PlayingAudio extends Application {
             // change buttons to play and rewind
             mediaPlayer.stop();
         });
+        mainStage.setOnCloseRequest(e -> mediaPlayer.stop());
         // setup visualization (circle container)
         Group vizContainer = (Group) mainStage.getScene().lookup("#" + VIS_CONTAINER_ID);
         mediaPlayer

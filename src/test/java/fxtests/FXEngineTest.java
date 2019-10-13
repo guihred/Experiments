@@ -10,7 +10,10 @@ import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
 import fxpro.ch02.PongLauncher;
 import fxpro.ch07.Chart3dSampleApp;
-import fxsamples.*;
+import fxsamples.JewelViewer;
+import fxsamples.MoleculeSampleApp;
+import fxsamples.RaspiCycle;
+import fxsamples.SimpleScene3D;
 import gaming.ex01.SnakeLauncher;
 import gaming.ex04.TronLauncher;
 import gaming.ex05.TetrisLauncher;
@@ -49,7 +52,6 @@ import pdfreader.PdfReader;
 import schema.sngpc.SngpcViewer;
 import utils.ConsoleUtils;
 import utils.ConsumerEx;
-import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
@@ -135,12 +137,6 @@ public class FXEngineTest extends AbstractTestExecution {
         interactNoWait(currentStage::close);
     }
 
-    @Test
-    public void verifyPlayingAudio() throws Exception {
-        PlayingAudio show = show(PlayingAudio.class);
-        interactNoWait(() -> show.playMedia(ResourceFXUtils.toExternalForm("TeenTitans.mp3")));
-        tryClickButtons();
-    }
 
     @Test
     public void verifyPong() throws Exception {

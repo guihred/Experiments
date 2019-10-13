@@ -40,7 +40,7 @@ public class SprayTool extends PaintTool {
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
-        PaintToolHelper.handleSlider(e, length, lengthSlider);
+        PaintTool.handleSlider(e, length, lengthSlider);
     }
 
     @Override

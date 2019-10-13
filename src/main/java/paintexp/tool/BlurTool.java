@@ -31,7 +31,7 @@ public class BlurTool extends PaintTool {
 
 	@Override
 	public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-		PaintToolHelper.handleSlider(e, length, lengthSlider);
+		PaintTool.handleSlider(e, length, lengthSlider);
 	}
 
 	@Override

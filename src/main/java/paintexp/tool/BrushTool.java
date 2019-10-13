@@ -93,7 +93,7 @@ public class BrushTool extends PaintTool {
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        PaintToolHelper.handleSlider(e, lengthSlider.valueProperty(), lengthSlider);
+        PaintTool.handleSlider(e, lengthSlider.valueProperty(), lengthSlider);
     }
 
     @SuppressWarnings("unused")
@@ -205,7 +205,8 @@ public class BrushTool extends PaintTool {
         Color color, double op) {
         PaintToolHelper.drawSquareLine(model.getImage(), model.getImageVersions(), x2, y2, (int) r, color, op);
         if (fill) {
-            PaintToolHelper.drawAndFillSquare(model, x2, y2, r, color, op);
+            RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawRect(color, op, model.getImage(),
+            model.getImageVersions());
         }
     }
 }

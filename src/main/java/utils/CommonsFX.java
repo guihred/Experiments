@@ -85,6 +85,9 @@ public final class CommonsFX {
             return fxmlLoader.load();
         }, "ERROR IN " + file);
     }
+    public static Parent loadParent(String file, Object controller) {
+        return loadParent(ResourceFXUtils.toFile(file), controller);
+    }
 
     public static void loadRoot(String arquivo, Object root) {
         FXMLLoader fxmlLoader = new FXMLLoader(ResourceFXUtils.toURL(arquivo));

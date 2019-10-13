@@ -3,6 +3,7 @@ package fxtests;
 import audio.mp3.EditSongController;
 import audio.mp3.FilesComparator;
 import audio.mp3.MusicOrganizer;
+import fxsamples.PlayingAudio;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,6 +57,12 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         File[] listFiles = ResourceFXUtils.getUserFolder("Music").listFiles(File::isDirectory);
         application.addSongsToTable(query, listFiles[0]);
     }
+    @Test
+	    public void verifyPlayingAudio() throws Exception {
+	        PlayingAudio show = show(PlayingAudio.class);
+	        interactNoWait(() -> show.playMedia(ResourceFXUtils.toExternalForm("TeenTitans.mp3")));
+	        tryClickButtons();
+	    }
 
     private void typeIfLinux() {
 		// type(KeyCode.M);

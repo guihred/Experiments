@@ -106,7 +106,7 @@ public class WandTool extends AreaTool {
         if (!thresholdSlider.isFocused() || !exceptionKeys.contains(e.getCode())) {
             super.handleKeyEvent(e, model);
         }
-        PaintToolHelper.handleSlider(e, threshold, thresholdSlider);
+        PaintTool.handleSlider(e, threshold, thresholdSlider);
     }
 
     @Override

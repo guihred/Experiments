@@ -2,16 +2,28 @@ package paintexp.tool;
 
 import static utils.DrawOnPoint.withinImage;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import simplebuilder.SimpleSliderBuilder;
+import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 
 public final class PaintToolHelper {
     public static final int N_POINTS_MULTIPLIER = 16;
@@ -19,10 +31,59 @@ public final class PaintToolHelper {
     private PaintToolHelper() {
     }
 
-    public static void drawAndFillSquare(final PaintModel model, final int x2, final int y2, double r, Color color,
-        double op) {
-        RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawRect(color, op, model.getImage(),
-            model.getImageVersions());
+    public static void setClipboardContent(Image imageSelected2) {
+        Map<DataFormat, Object> content = new HashMap<>();
+        content.put(DataFormat.IMAGE, imageSelected2);
+    	Clipboard.getSystemClipboard().setContent(content);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static void addOptionsAccordingly(Object selectedItem, VBox effectsOptions) {
+        effectsOptions.getChildren().clear();
+        Map<String, Property> getters = ClassReflectionUtils.properties(selectedItem, selectedItem.getClass());
+        for (Map.Entry<String, Property> method : getters.entrySet()) {
+            String fieldName = method.getKey();
+            Property<?> value2 = method.getValue();
+            Object value = value2.getValue();
+            if (value == null) {
+                continue;
+            }
+            String changeCase = StringSigaUtils.changeCase(fieldName);
+            Text text2 = new Text(changeCase);
+            text2.textProperty()
+                .bind(Bindings.createStringBinding(() -> {
+                    if (value instanceof Double) {
+                        return String.format(Locale.ENGLISH, "%s %.2f", changeCase, value2.getValue());
+                    }
+                    return changeCase + " " + value2.getValue();
+                }, value2));
+            effectsOptions.getChildren().add(text2);
+            if (value instanceof Double) {
+                Double value3 = (Double) value;
+                Slider e = new SimpleSliderBuilder(0, value3 == 1 ? 1 : Math.max(50, value3), value3).build();
+                e.valueProperty().bindBidirectional((Property<Number>) value2);
+                effectsOptions.getChildren().add(e);
+            }
+            if (value instanceof Integer) {
+                Integer value3 = (Integer) value;
+                Slider e = new SimpleSliderBuilder(0, value3 == 1 ? 1 : Math.max(50, value3), value3).build();
+                e.valueProperty().bindBidirectional((Property<Number>) value2);
+                effectsOptions.getChildren().add(e);
+            }
+            if (value instanceof Color) {
+                ColorPicker colorPicker = new ColorPicker((Color) value);
+                ((Property<Color>) value2).bind(colorPicker.valueProperty());
+                effectsOptions.getChildren().add(colorPicker);
+            }
+            if (value instanceof Enum<?>) {
+                Enum<?> value3 = (Enum<?>) value;
+                ComboBox comboBox = new ComboBox<>(
+                    FXCollections.observableArrayList(value3.getClass().getEnumConstants()));
+                value2.bind(comboBox.getSelectionModel().selectedItemProperty());
+                comboBox.setValue(value3);
+                effectsOptions.getChildren().add(comboBox);
+            }
+        }
     }
 
     public static void drawCircle(WritableImage image, int centerX, int centerY, double radiusX, double radiusY,
@@ -115,17 +176,6 @@ public final class PaintToolHelper {
 
     }
 
-    public static void handleSlider(KeyEvent e, Property<Number> property, Slider slider) {
-        if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
-            property
-                .setValue(Math.min(slider.getMax(), slider.getBlockIncrement() + property.getValue().doubleValue()));
-        }
-        if (e.getCode() == KeyCode.SUBTRACT || e.getCode() == KeyCode.MINUS) {
-            property
-                .setValue(Math.max(slider.getMin(), property.getValue().doubleValue() - slider.getBlockIncrement()));
-        }
-    }
-
     public static boolean isEqualImage(WritableImage image, WritableImage image2) {
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
@@ -135,25 +185,6 @@ public final class PaintToolHelper {
             }
         }
         return true;
-    }
-
-    public static void moveArea(KeyCode code, Rectangle area2) {
-        switch (code) {
-            case RIGHT:
-                area2.setLayoutX(area2.getLayoutX() + 1);
-                break;
-            case LEFT:
-                area2.setLayoutX(area2.getLayoutX() - 1);
-                break;
-            case DOWN:
-                area2.setLayoutY(area2.getLayoutY() + 1);
-                break;
-            case UP:
-                area2.setLayoutY(area2.getLayoutY() - 1);
-                break;
-            default:
-                break;
-        }
     }
 
 }

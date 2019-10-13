@@ -1,12 +1,16 @@
 package paintexp.tool;
 
+import javafx.beans.property.Property;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Slider;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Rectangle;
 
 @SuppressWarnings({ "unused", "static-method" })
 public abstract class PaintTool extends Group {
@@ -86,6 +90,36 @@ public abstract class PaintTool extends Group {
         }
         if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             onMouseReleased(model);
+        }
+    }
+
+    public static void handleSlider(KeyEvent e, Property<Number> property, Slider slider) {
+        if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
+            property
+                .setValue(Math.min(slider.getMax(), slider.getBlockIncrement() + property.getValue().doubleValue()));
+        }
+        if (e.getCode() == KeyCode.SUBTRACT || e.getCode() == KeyCode.MINUS) {
+            property
+                .setValue(Math.max(slider.getMin(), property.getValue().doubleValue() - slider.getBlockIncrement()));
+        }
+    }
+
+    public static void moveArea(KeyCode code, Rectangle area2) {
+        switch (code) {
+            case RIGHT:
+                area2.setLayoutX(area2.getLayoutX() + 1);
+                break;
+            case LEFT:
+                area2.setLayoutX(area2.getLayoutX() - 1);
+                break;
+            case DOWN:
+                area2.setLayoutY(area2.getLayoutY() + 1);
+                break;
+            case UP:
+                area2.setLayoutY(area2.getLayoutY() - 1);
+                break;
+            default:
+                break;
         }
     }
 

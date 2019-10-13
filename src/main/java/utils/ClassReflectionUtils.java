@@ -187,13 +187,14 @@ public final class ClassReflectionUtils {
             .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m))).test(fieldName);
     }
 
-    public static Map<String, Property<?>> properties(Object o, Class<?> c) {
+    @SuppressWarnings("rawtypes")
+    public static Map<String, Property> properties(Object o, Class<?> c) {
         String regex = "(\\w+)Property";
         return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
             .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
             .filter(m -> m.getParameterCount() == 0)
             .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
-            .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property<?>) invoke(o, t)));
+            .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property) invoke(o, t)));
     }
 
     private static <T> String getDescription(T obj, Class<?> class1,

@@ -30,21 +30,19 @@ public class PaintModel {
     private VBox toolOptions;
     private File currentFile;
     private final ObservableList<WritableImage> imageVersions = FXCollections.observableArrayList();
-	private PixelatedImageView rectangleBorder;
+    private PixelatedImageView rectangleBorder;
     private ZoomableScrollPane scrollPane;
 
     public ObjectProperty<Color> backColorProperty() {
         return backColor;
     }
 
-
     public void createImageVersion() {
 
-		WritableImage e = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
-		if (imageVersions.isEmpty()
-				|| !PaintToolHelper.isEqualImage(e, imageVersions.get(imageVersions.size() - 1))) {
-			imageVersions.add(e);
-		}
+        WritableImage e = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
+        if (imageVersions.isEmpty() || !PaintToolHelper.isEqualImage(e, imageVersions.get(imageVersions.size() - 1))) {
+            imageVersions.add(e);
+        }
         if (imageVersions.size() > MAX_VERSIONS) {
             imageVersions.remove(0);
         }
@@ -63,9 +61,7 @@ public class PaintModel {
         return currentFile;
     }
 
-
-
-	public Color getFrontColor() {
+    public Color getFrontColor() {
         return frontColor.get();
     }
 
@@ -79,7 +75,7 @@ public class PaintModel {
 
     public Group getImageStack() {
         if (imageStack == null) {
-			ImageView imageView = new PixelatedImageView(getImage());
+            ImageView imageView = new PixelatedImageView(getImage());
             imageView.setLayoutX(0);
             imageView.setLayoutY(0);
             imageView.setManaged(false);
@@ -102,13 +98,12 @@ public class PaintModel {
         return mousePosition;
     }
 
-	public PixelatedImageView getRectangleBorder(final ImageView imageView) {
+    public PixelatedImageView getRectangleBorder(final ImageView imageView) {
         if (rectangleBorder == null) {
-			WritableImage pattern = DrawOnPoint.drawTransparentPattern(500);
+            WritableImage pattern = DrawOnPoint.drawTransparentPattern(500);
 
-
-			rectangleBorder = new PixelatedImageView(pattern);
-			rectangleBorder.setManaged(false);
+            rectangleBorder = new PixelatedImageView(pattern);
+            rectangleBorder.setManaged(false);
         }
         rectangleBorder.layoutXProperty().bind(imageView.layoutXProperty());
         rectangleBorder.layoutYProperty().bind(imageView.layoutYProperty());
@@ -124,9 +119,6 @@ public class PaintModel {
 
         return scrollPane;
     }
-
-
-
 
     public VBox getToolOptions() {
         if (toolOptions == null) {
@@ -161,7 +153,6 @@ public class PaintModel {
         this.currentFile = currentFile;
     }
 
-
     public void setFrontColor(final Color frontColor) {
         this.frontColor.set(frontColor);
     }
@@ -184,14 +175,13 @@ public class PaintModel {
 
     public void takeSnapshot(Node line2) {
         ImageView imageView = new PixelatedImageView(image);
-        RectBuilder.takeSnapshot(line2, image, getImageStack(), imageView, getRectangleBorder(imageView),getBackColor());
+        RectBuilder.takeSnapshot(line2, image, getImageStack(), imageView, getRectangleBorder(imageView),
+            getBackColor());
     }
 
     public void takeSnapshotFill(Node line2) {
-		ImageView imageView = new PixelatedImageView(image);
-		RectBuilder.takeSnapshotFill(line2, image, getImageStack(), imageView, getRectangleBorder(imageView));
+        ImageView imageView = new PixelatedImageView(image);
+        RectBuilder.takeSnapshotFill(line2, image, getImageStack(), imageView, getRectangleBorder(imageView));
     }
-
-
 
 }
