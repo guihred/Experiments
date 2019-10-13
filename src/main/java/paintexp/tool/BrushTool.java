@@ -10,7 +10,6 @@ import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
@@ -20,7 +19,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import utils.CommonsFX;
-import utils.ResourceFXUtils;
 
 public class BrushTool extends PaintTool {
 
@@ -107,8 +105,7 @@ public class BrushTool extends PaintTool {
     public void onSelected(final PaintModel model) {
 		mouseCursor = null;
         model.getToolOptions().getChildren().clear();
-        Parent loadParent = CommonsFX.loadParent(ResourceFXUtils.toFile("BrushTool.fxml"), this);
-        model.getToolOptions().getChildren().add(loadParent);
+        CommonsFX.loadRoot("BrushTool.fxml", model.getToolOptions(), this);
 
     }
 

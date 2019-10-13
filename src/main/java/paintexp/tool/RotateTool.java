@@ -47,19 +47,14 @@ public class RotateTool extends AreaTool {
     protected void addRect(final PaintModel model) {
         double hvalue = model.getScrollPane().getHvalue();
         double vvalue = model.getScrollPane().getVvalue();
+        super.addRect(model);
         if (!model.getImageStack().getChildren().containsAll(getCircles(model))) {
             model.getImageStack().getChildren().addAll(getCircles(model));
         }
-        super.addRect(model);
         getArea().setRotate(0);
         dragged = false;
         model.getScrollPane().setHvalue(hvalue);
         model.getScrollPane().setVvalue(vvalue);
-    }
-
-    @Override
-    protected boolean containsPoint(final Node area2, final double localX, final double localY) {
-        return getArea().contains(localX, localY);
     }
 
     @Override

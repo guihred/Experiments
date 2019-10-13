@@ -28,8 +28,9 @@ public class PictureTool extends PaintTool {
 
     @Override
     public SVGPath createIcon() {
-        SVGPath icon = PictureOption.STAR_5.toSVG();
-        icon.setContent(PictureOption.STAR_5.getCorrectedPath());
+        PictureOption star5 = PictureOption.STAR_5;
+        SVGPath icon = star5.toSVG();
+        icon.setContent(star5.getCorrectedPath());
         icon.setFill(Color.TRANSPARENT);
 		icon.setScaleX(3. / 4);
 		icon.setScaleY(3. / 4);

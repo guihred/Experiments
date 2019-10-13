@@ -81,7 +81,7 @@ public final class PaintToolHelper {
     }
 
     public static void drawSquareLine(WritableImage image, int startX, int startY, int w, Color color) {
-        for (int x = 0; x < w; x++) {
+        for (int x = 0; x <= w; x++) {
             drawPoint(image, startX + x, startY, color);
             drawPoint(image, startX, startY + x, color);
             drawPoint(image, startX + x, startY + w, color);

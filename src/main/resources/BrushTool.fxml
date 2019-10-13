@@ -5,7 +5,7 @@
 <?import javafx.beans.property.*?>
 <?import javafx.scene.shape.*?>
 <?import paintexp.tool.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" spacing="5.0" alignment="CENTER">
+<fx:root type="javafx.scene.layout.VBox"  xmlns:fx="http://javafx.com/fxml"  alignment="CENTER">
 	<fx:define>
 		<ToggleGroup fx:id="optionGroup" onSelectedToggleChange="#onOptionChange" />
 		<Circle fx:id="circle" radius="${lengthSlider.value}" managed="false" />
@@ -23,7 +23,7 @@
 
 		<Text fx:id="text7" text="Opacity" />
 		<Slider blockIncrement="0.01" fx:id="opacitySlider" max="1.0"
-			min="0" value="1" />
+			min="0" value="1" prefWidth="50.0" />
 
 		<ToggleButton fx:id="toggleButton3" selected="true"
 			styleClass="toggle-button circle" toggleGroup="$optionGroup">
@@ -75,4 +75,4 @@
 		</ToggleButton>
 	</children>
 
-</VBox>
+</fx:root>

@@ -93,6 +93,13 @@ public final class CommonsFX {
         RunnableEx.remap(fxmlLoader::load, "ERROR LOADING "+arquivo);
     }
 
+    public static void loadRoot(String arquivo, Object root, Object controller) {
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceFXUtils.toURL(arquivo));
+        fxmlLoader.setRoot(root);
+        fxmlLoader.setController(controller);
+        RunnableEx.remap(fxmlLoader::load, "ERROR LOADING " + arquivo);
+    }
+
     public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
         CheckBox checkBox = new CheckBox(name);
         checkBox.setSelected(showWeight.get());

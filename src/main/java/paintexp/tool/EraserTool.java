@@ -83,7 +83,7 @@ public class EraserTool extends PaintTool {
     @Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
         int w = (int) getArea().getWidth();
-        RectBuilder.build().startX(lastX).startY(lastY).endX(e.getX()).endY(e.getY()).drawLine(model.getImage(),
+        RectBuilder.build().startX(lastX).startY(lastY).endX(e.getX() - w).endY(e.getY() - w).drawLine(model.getImage(),
             (x, y) -> {
                 if (e.getButton() == MouseButton.PRIMARY) {
                     PaintToolHelper.drawSquareLine(model.getImage(), x, y, w, model.getBackColor());
@@ -93,10 +93,10 @@ public class EraserTool extends PaintTool {
                 }
             });
 
-        getArea().setLayoutX(e.getX());
-        getArea().setLayoutY(e.getY());
-        lastX = (int) e.getX();
-        lastY = (int) e.getY();
+        getArea().setLayoutX(e.getX() - w);
+        getArea().setLayoutY(e.getY() - w);
+        lastX = (int) e.getX() - w;
+        lastY = (int) e.getY() - w;
     }
 
     @Override
@@ -104,16 +104,16 @@ public class EraserTool extends PaintTool {
         int y = (int) e.getY();
         int x = (int) e.getX();
         int w = (int) getArea().getWidth();
-        RectBuilder builder = RectBuilder.build().startX(x).startY(y).width(w).height(w);
+        RectBuilder builder = RectBuilder.build().startX(x - w).startY(y - w).width(w).height(w);
         if (e.getButton() == MouseButton.PRIMARY) {
             builder.drawRect(model.getImage(), model.getBackColor());
         } else {
             builder.drawRect(PixelHelper.toArgb(model.getFrontColor()), model.getImage(), model.getBackColor());
         }
-        getArea().setLayoutX(e.getX());
-        getArea().setLayoutY(e.getY());
-        lastX = x;
-        lastY = y;
+        getArea().setLayoutX(e.getX() - w);
+        getArea().setLayoutY(e.getY() - w);
+        lastX = x - w;
+        lastY = y - w;
     }
 
     private Slider getLengthSlider(final PaintModel model) {
@@ -129,12 +129,13 @@ public class EraserTool extends PaintTool {
         if (!children.contains(getArea())) {
             children.add(getArea());
         }
+        int w = (int) getArea().getWidth();
         getArea().setFill(model.getBackColor());
         Color invert = model.getBackColor().invert();
         Color color = new Color(invert.getRed(), invert.getGreen(), invert.getBlue(), 1);
         getArea().setStroke(color);
-        getArea().setLayoutX(e.getX());
-        getArea().setLayoutY(e.getY());
+        getArea().setLayoutX(e.getX() - w);
+        getArea().setLayoutY(e.getY() - w);
     }
 
 }

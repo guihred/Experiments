@@ -115,7 +115,7 @@ public class TextTool extends PaintTool {
 		if (children.contains(area)) {
 			if (containsPoint(area, e.getX(), e.getY())
 					|| helpers.stream().anyMatch(n -> n.contains(e.getX(), e.getY()))) {
-				return;
+                return;
 			}
 			takeSnapshot(model);
 			return;
