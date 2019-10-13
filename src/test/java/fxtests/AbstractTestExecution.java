@@ -28,7 +28,12 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         currentStage.setY(0);
     }
 
-    protected <T extends Application> T show(Class<T> c) {
+    @Override
+    public void stop() throws Exception {
+        currentStage.close();
+    }
+
+	protected <T extends Application> T show(Class<T> c) {
         try {
             HasLogging.log(1).info("SHOWING {}", c.getSimpleName());
             T newInstance = c.newInstance();
@@ -38,13 +43,13 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
             throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
         }
     }
-
-	protected <T extends Application> void show(T application) {
+    protected <T extends Application> void show(T application) {
         interactNoWait(RunnableEx.make(() -> {
             HasLogging.log(1).info("SHOWING {}", application.getClass().getSimpleName());
             application.start(currentStage);
         }, e -> getLogger().error(String.format("ERRO IN %s", application), e)));
     }
+
     protected void tryClickButtons() {
         lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
     }
