@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.NamedArg;
+import javafx.beans.property.Property;
 import org.junit.Ignore;
 
 public final class ClassReflectionUtils {
@@ -36,14 +37,16 @@ public final class ClassReflectionUtils {
     public static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
         Class<?> a = targetClass;
         List<Method> getters = new ArrayList<>();
-        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
+        for (int i = 0; i < 10; i++, a = a.getSuperclass()) {
             List<Method> getters2 = Arrays.asList(a.getDeclaredMethods());
             getters.addAll(getters2);
             Class<?>[] interfaces = a.getInterfaces();
             for (Class<?> class1 : interfaces) {
                 getters.addAll(Arrays.asList(class1.getDeclaredMethods()));
             }
-
+            if (a == Object.class) {
+                break;
+            }
         }
         return getters;
     }
@@ -162,6 +165,9 @@ public final class ClassReflectionUtils {
     }
 
     public static Object invoke(Object ob, String method, Object... args) {
+        if (ob == null) {
+            return null;
+        }
         return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
             .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(Objects::nonNull).findFirst().orElse(null);
     }
@@ -171,7 +177,7 @@ public final class ClassReflectionUtils {
             .anyMatch(e -> e.getParameterCount() == 0 && Modifier.isPublic(e.getModifiers()));
     }
 
-	public static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
+    public static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
         Map<String, Class<?>> namedArgsMap = ClassReflectionUtils.getNamedArgsMap(parent.getClass());
         if (namedArgsMap.containsKey(fieldName)) {
             return typesFit(fieldValue, namedArgsMap.get(fieldName));
@@ -179,6 +185,15 @@ public final class ClassReflectionUtils {
         return PredicateEx.makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass())
             .stream().filter(m -> m.getParameterCount() == 1)
             .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m))).test(fieldName);
+    }
+
+    public static Map<String, Property<?>> properties(Object o, Class<?> c) {
+        String regex = "(\\w+)Property";
+        return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
+            .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
+            .filter(m -> m.getParameterCount() == 0)
+            .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
+            .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property<?>) invoke(o, t)));
     }
 
     private static <T> String getDescription(T obj, Class<?> class1,

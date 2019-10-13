@@ -182,6 +182,11 @@ public class PaintModel {
         this.toolSize = toolSize;
     }
 
+    public void takeSnapshot(Node line2) {
+        ImageView imageView = new PixelatedImageView(image);
+        RectBuilder.takeSnapshot(line2, image, getImageStack(), imageView, getRectangleBorder(imageView),getBackColor());
+    }
+
     public void takeSnapshotFill(Node line2) {
 		ImageView imageView = new PixelatedImageView(image);
 		RectBuilder.takeSnapshotFill(line2, image, getImageStack(), imageView, getRectangleBorder(imageView));

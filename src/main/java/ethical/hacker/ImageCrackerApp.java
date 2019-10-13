@@ -25,7 +25,10 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
-import utils.*;
+import utils.CrawlerTask;
+import utils.HasLogging;
+import utils.ImageFXUtils;
+import utils.RunnableEx;
 
 public class ImageCrackerApp extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -108,7 +111,7 @@ public class ImageCrackerApp extends Application {
             imageView.setImage(createSelectedImage);
             String cracked = ImageCracker.crackImage(createSelectedImage);
             LOG.info("cracked Image = {} tries={}", cracked, i + 1);
-            String crackImage = cracked.replaceAll("\\D", "");
+            String crackImage = cracked.replaceAll("[^0-9]", "");
             if (isValid(crackImage)) {
                 runInPlatform(setValue("captchaId", crackImage));
                 if(isClickable()) {

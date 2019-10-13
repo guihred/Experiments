@@ -255,6 +255,23 @@ public final class RectBuilder {
             Color.TRANSPARENT);
     }
 
+    public static void takeSnapshot(Node line2, WritableImage image, Group imageStack, ImageView imageView,
+        Node rectangleBorder, Color color) {
+        Bounds bounds = line2.getBoundsInParent();
+        int width = (int) bounds.getWidth() + 2;
+        int height = (int) bounds.getHeight() + 2;
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        WritableImage textImage = line2.snapshot(params, new WritableImage(width, height));
+        int x = (int) bounds.getMinX();
+        int y = (int) bounds.getMinY();
+        build().startX(0).startY(0).width(width).height(height).endX(x).endY(y).copyImagePart(textImage, image,
+            color);
+        imageStack.getChildren().clear();
+        imageStack.getChildren().add(rectangleBorder);
+        imageStack.getChildren().add(imageView);
+    }
+
     public static void takeSnapshotFill(Node line2, WritableImage image, Group imageStack, ImageView imageView,
 			Node rectangleBorder) {
         Bounds bounds = line2.getBoundsInParent();

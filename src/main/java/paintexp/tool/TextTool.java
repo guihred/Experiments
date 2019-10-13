@@ -2,31 +2,37 @@ package paintexp.tool;
 
 import static utils.DrawOnPoint.getWithinRange;
 
-import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.effect.Effect;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import simplebuilder.SimpleComboBoxBuilder;
+import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
+import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.RotateUtils;
+import utils.StringSigaUtils;
 
 public class TextTool extends PaintTool {
 
 	private double initialX;
 	private double initialY;
 	private boolean pressed;
-	private List<? extends Node> helpers;
 	@FXML
 	private Text text;
 	@FXML
@@ -40,8 +46,12 @@ public class TextTool extends PaintTool {
 	@FXML
 	private ToggleGroup alignments;
 	@FXML
+    private VBox effectsOptions;
+    @FXML
 	private ComboBox<Integer> fontSize;
 	@FXML
+    private ComboBox<Effect> effects;
+    @FXML
 	private ComboBox<String> fontFamily;
 	private Parent options;
 
@@ -70,14 +80,18 @@ public class TextTool extends PaintTool {
 		model.createImageVersion();
 	}
 
-	public void onOptionsChanged() {
+    public void onOptionsChanged() {
 		FontWeight weight = bold.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL;
 		FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
 		double size = fontSize.getSelectionModel().getSelectedItem();
 		text.setFont(Font.font(fontFamily.getSelectionModel().getSelectedItem(), weight, posture, size));
+        Effect selectedItem = effects.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            addOptionsAccordingly(selectedItem, effectsOptions);
+        }
 	}
 
-	@Override
+    @Override
 	public void onSelected(final PaintModel model) {
 		model.getToolOptions().getChildren().clear();
         if (options == null) {
@@ -86,6 +100,7 @@ public class TextTool extends PaintTool {
 					.setCellFactory(SimpleComboBoxBuilder.cellStyle(fontFamily, t -> "-fx-font-family:\"" + t + "\";"));
 			fontFamily.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
 			fontSize.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
+            effects.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
         }
 
 		model.getToolOptions().getChildren().addAll(options);
@@ -106,8 +121,7 @@ public class TextTool extends PaintTool {
 	protected void onMousePressed(final MouseEvent e, final PaintModel model) {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (children.contains(area)) {
-			if (containsPoint(area, e.getX(), e.getY())
-					|| helpers.stream().anyMatch(n -> n.contains(e.getX(), e.getY()))) {
+            if (containsPoint(area, e.getX(), e.getY())) {
                 return;
 			}
 			takeSnapshot(model);
@@ -136,16 +150,18 @@ public class TextTool extends PaintTool {
 		ObservableList<Node> children = model.getImageStack().getChildren();
 		if (!children.contains(area)) {
 			children.add(area);
-			helpers = RotateUtils.createDraggableRectangle(area);
 			area.setStroke(Color.BLACK);
 			area.setManaged(false);
 			area.setFill(Color.TRANSPARENT);
 			area.setLayoutX(initialX);
 			area.setLayoutY(initialY);
+            area.setWidth(1);
+            area.setHeight(1);
 		}
 		if (!children.contains(text)) {
 			children.add(text);
 			text.fillProperty().bind(model.frontColorProperty());
+
 			text.layoutXProperty().bind(area.layoutXProperty());
 			text.layoutYProperty()
 					.bind(Bindings.createDoubleBinding(() -> area.layoutYProperty().get() + text.getFont().getSize(),
@@ -162,8 +178,57 @@ public class TextTool extends PaintTool {
 	}
 
 	private void takeSnapshot(final PaintModel model) {
-		model.takeSnapshotFill(text);
+        model.takeSnapshot(text);
 		textArea.setText("");
 	}
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static void addOptionsAccordingly(Effect selectedItem, VBox effectsOptions) {
+        effectsOptions.getChildren().clear();
+        Map<String, Property<?>> getters = ClassReflectionUtils.properties(selectedItem, selectedItem.getClass());
+        for (Map.Entry<String, Property<?>> method : getters.entrySet()) {
+            String fieldName = method.getKey();
+            Property<?> value2 = method.getValue();
+            Object value = value2.getValue();
+            if (value == null) {
+                continue;
+            }
+            String changeCase = StringSigaUtils.changeCase(fieldName);
+            Text text2 = new Text(changeCase);
+            text2.textProperty()
+                .bind(Bindings.createStringBinding(() -> {
+                    if (value instanceof Double) {
+                        return String.format(Locale.ENGLISH, "%s %.2f", changeCase, value2.getValue());
+                    }
+                    return changeCase + " " + value2.getValue();
+                }, value2));
+            effectsOptions.getChildren().add(text2);
+            if (value instanceof Double) {
+                Double value3 = (Double) value;
+                Slider e = new SimpleSliderBuilder(0, value3 == 1 ? 1 : Math.max(50, value3), value3).build();
+                e.valueProperty().bindBidirectional((Property<Number>) value2);
+                effectsOptions.getChildren().add(e);
+            }
+            if (value instanceof Integer) {
+                Integer value3 = (Integer) value;
+                Slider e = new SimpleSliderBuilder(0, value3 == 1 ? 1 : Math.max(50, value3), value3).build();
+                e.valueProperty().bindBidirectional((Property<Number>) value2);
+                effectsOptions.getChildren().add(e);
+            }
+            if (value instanceof Color) {
+                ColorPicker colorPicker = new ColorPicker((Color) value);
+                ((Property<Color>) value2).bind(colorPicker.valueProperty());
+                effectsOptions.getChildren().add(colorPicker);
+            }
+            if (value instanceof Enum<?>) {
+                Enum<?> value3 = (Enum<?>) value;
+                ComboBox comboBox = new ComboBox<>(
+                    FXCollections.observableArrayList(value3.getClass().getEnumConstants()));
+                value2.bind(comboBox.getSelectionModel().selectedItemProperty());
+                comboBox.setValue(value3);
+                effectsOptions.getChildren().add(comboBox);
+            }
+        }
+    }
 
 }
