@@ -44,21 +44,8 @@ public class BoundsDisplay extends Rectangle {
     public final void monitorBounds(final BoundsType boundsType) {
         // remove the shape's previous boundsType.
         if (boundsChangeListener != null) {
-            final ReadOnlyObjectProperty<Bounds> oldBounds;
             if (boundsPlayground != null) {
-                switch (boundsPlayground.get()) {
-                    case LAYOUT_BOUNDS:
-                        oldBounds = monitoredShape.layoutBoundsProperty();
-                        break;
-                    case BOUNDS_IN_LOCAL:
-                        oldBounds = monitoredShape.boundsInLocalProperty();
-                        break;
-                    case BOUNDS_IN_PARENT:
-                        oldBounds = monitoredShape.boundsInParentProperty();
-                        break;
-                    default:
-                        oldBounds = null;
-                }
+				final ReadOnlyObjectProperty<Bounds> oldBounds = getOldBounds();
                 if (oldBounds != null) {
                     oldBounds.removeListener(boundsChangeListener);
                 }
@@ -92,13 +79,26 @@ public class BoundsDisplay extends Rectangle {
         }
     }
 
-    public void setBoundsPlayground(ObjectProperty<BoundsType> boundsPlayground) {
-        this.boundsPlayground = boundsPlayground;
-    }
+	public void setBoundsPlayground(ObjectProperty<BoundsType> boundsPlayground) {
+		this.boundsPlayground = boundsPlayground;
+	}
 
     public void setMonitoredShape(Shape monitoredShape) {
         this.monitoredShape = monitoredShape;
     }
+
+    private ReadOnlyObjectProperty<Bounds> getOldBounds() {
+		switch (boundsPlayground.get()) {
+		    case LAYOUT_BOUNDS:
+				return monitoredShape.layoutBoundsProperty();
+		    case BOUNDS_IN_LOCAL:
+				return monitoredShape.boundsInLocalProperty();
+		    case BOUNDS_IN_PARENT:
+				return monitoredShape.boundsInParentProperty();
+		    default:
+				return null;
+		}
+	}
 
     private void makeShape() {
         setFill(Color.LIGHTGRAY.deriveColor(1, 1, 1, 7. / 20));

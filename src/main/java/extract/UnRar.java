@@ -51,6 +51,10 @@ public final class UnRar {
 		extractRarFiles(file);
 	}
 
+	private static boolean doesNotExist(File file) {
+		return file == null || !file.exists();
+	}
+
 	private static void printSummary() {
         LOGGER.info("\nSuccessfully tested archives:\n");
 		for (String sf : successfulFiles) {
@@ -72,7 +76,7 @@ public final class UnRar {
 	}
 
 	private static void recurseDirectory(File file, File output) {
-		if (file == null || !file.exists()) {
+		if (doesNotExist(file)) {
 			return;
 		}
 		if (file.isDirectory()) {
@@ -89,7 +93,7 @@ public final class UnRar {
 	}
 
 	private static void testFile(File file, File output) {
-		if (file == null || !file.exists()) {
+		if (doesNotExist(file)) {
             LOGGER.info("error file {} does not exist", file);
 			return;
 		}
