@@ -39,50 +39,12 @@ public class Square2048Model {
         return map;
     }
 
-    public void handleKeyPressed(KeyEvent e) {
+	public void handleKeyPressed(KeyEvent e) {
         final KeyCode code = e.getCode();
-        int x = 0;
-        int y = 0;
+        int x = getX(code);
+        int y = getY(code);
 
-        switch (code) {
-            case UP:
-            case W:
-                y = -1;
-                break;
-            case LEFT:
-            case A:
-                x = -1;
-                break;
-            case RIGHT:
-            case D:
-                x = 1;
-                break;
-            case DOWN:
-            case S:
-                y = 1;
-                break;
-            default:
-        }
-        boolean changed = true;
-
-        while (changed) {
-            changed = false;
-            for (int i = 0; i < getMap().length; i++) {
-                for (int j = 0; j < getMap()[i].length; j++) {
-                    if (!getMap()[i][j].isEmpty() && withinRange(x, y, i, j, MAP_WIDTH, MAP_HEIGHT)) {
-                        if (getMap()[i + x][j + y].isEmpty()) {
-                            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber());
-                            getMap()[i][j].setNumber(0);
-                            changed = true;
-                        } else if (getMap()[i + x][j + y].getNumber() == getMap()[i][j].getNumber()) {
-                            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber() * 2);
-                            getMap()[i][j].setNumber(0);
-                            changed = true;
-                        }
-                    }
-                }
-            }
-        }
+		changeMap(x, y);
         
         List<Square2048> emptySquares = mapAsList.stream().filter(Square2048::isEmpty).collect(Collectors.toList());
         Collections.shuffle(emptySquares);
@@ -103,7 +65,30 @@ public class Square2048Model {
 
     }
 
-    private void initialize() {
+	private void changeMap(int x, int y) {
+		boolean changed = true;
+
+        while (changed) {
+            changed = false;
+            for (int i = 0; i < getMap().length; i++) {
+                for (int j = 0; j < getMap()[i].length; j++) {
+                    if (!getMap()[i][j].isEmpty() && withinRange(x, y, i, j, MAP_WIDTH, MAP_HEIGHT)) {
+                        if (getMap()[i + x][j + y].isEmpty()) {
+                            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber());
+                            getMap()[i][j].setNumber(0);
+                            changed = true;
+                        } else if (getMap()[i + x][j + y].getNumber() == getMap()[i][j].getNumber()) {
+                            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber() * 2);
+                            getMap()[i][j].setNumber(0);
+                            changed = true;
+                        }
+                    }
+                }
+            }
+        }
+	}
+
+	private void initialize() {
         for (int i = 0; i < getMap().length; i++) {
             for (int j = 0; j < getMap()[i].length; j++) {
                 getMap()[i][j] = new Square2048();
@@ -120,7 +105,7 @@ public class Square2048Model {
         }
     }
 
-    private int newNumber() {
+	private int newNumber() {
         return (random.nextInt(2) + 1) * 2;
     }
 
@@ -140,6 +125,32 @@ public class Square2048Model {
             }
         }
         return true;
+    }
+
+    private static int getX(KeyCode code) {
+        switch (code) {
+            case LEFT:
+            case A:
+                return -1;
+            case RIGHT:
+            case D:
+            	return 1;
+            default:
+        }
+        return 0;
+	}
+
+    private static int getY(KeyCode code) {
+    	switch (code) {
+    		case UP:
+            case W:
+                return -1;
+            case DOWN:
+            case S:
+                return 1;
+    		default:
+    			return 0;
+    	}
     }
 
     private static boolean within(int i, int x) {
