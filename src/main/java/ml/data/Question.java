@@ -23,19 +23,23 @@ class Question {
 		if (type == QuestionType.EQ) {
 			return Objects.equals(test, ob) || Objects.equals(test, Objects.toString(ob));
 		}
-		if (type == QuestionType.GE) {
-			return test instanceof Number && ((Number) test).doubleValue() >= ((Number) ob).doubleValue();
+		if (!(test instanceof Number) || !(ob instanceof Number)) {
+			return false;
 		}
-		if (type == QuestionType.GT) {
-			return test instanceof Number && ((Number) test).doubleValue() > ((Number) ob).doubleValue();
+		double number0 = ((Number) test).doubleValue();
+		double number1 = ((Number) ob).doubleValue();
+		switch (type) {
+			case GE:
+				return number0 >= number1;
+			case GT:
+				return number0 > number1;
+			case LE:
+				return number0 <= number1;
+			case LT:
+				return number0 < number1;
+			default:
+				return false;
 		}
-		if (type == QuestionType.LE) {
-			return test instanceof Number && ((Number) test).doubleValue() <= ((Number) ob).doubleValue();
-		}
-		if (type == QuestionType.LT) {
-			return test instanceof Number && ((Number) test).doubleValue() < ((Number) ob).doubleValue();
-		}
-		return false;
 	}
 
 	public String getColName() {

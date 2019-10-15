@@ -5,7 +5,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -68,38 +67,14 @@ public class SnakeLauncher extends Application {
     }
 
     private void handleKeyPressed(KeyEvent e) {
-        final KeyCode code = e.getCode();
-        switch (code) {
-            case UP:
-            case W:
-                if (newGameModel.getDirection() != SnakeDirection.DOWN) {
-                    newGameModel.setDirection(SnakeDirection.UP);
-                }
-                break;
-            case LEFT:
-            case A:
-                if (newGameModel.getDirection() != SnakeDirection.RIGHT) {
-                    newGameModel.setDirection(SnakeDirection.LEFT);
-                }
-                break;
-            case RIGHT:
-            case S:
-                if (newGameModel.getDirection() != SnakeDirection.LEFT) {
-                    newGameModel.setDirection(SnakeDirection.RIGHT);
-                }
-                break;
-            case DOWN:
-            case D:
-                if (newGameModel.getDirection() != SnakeDirection.UP) {
-                    newGameModel.setDirection(SnakeDirection.DOWN);
-                }
-                break;
-            default:
+		SnakeDirection byKeyCode = SnakeDirection.getByKeyCode(e.getCode());
+		if (SnakeDirection.isNotOpposite(byKeyCode, newGameModel.getDirection())) {
+			newGameModel.setDirection(byKeyCode);
         }
         newGameModel.updateMap();
     }
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         launch(SnakeLauncher.class, args);
     }
 }

@@ -122,15 +122,14 @@ public class TreeElement<T> {
         }
 
         List<Method> fields = getGetterMethodsRecursive(cl);
-        if (ob1 instanceof Parent && ob2 instanceof Parent && compareTree((Parent) ob1, (Parent) ob2)) {
+		if (equalParents(ob1, ob2)) {
             fields.removeIf(e -> CHILDREN_FIELD.equals(getFieldNameCase(e)));
         }
         for (Method f : fields) {
             Object fieldValue = invoke(ob1, f);
             Object fieldValue2 = invoke(ob2, f);
             if (fieldValue != null && !Objects.equals(fieldValue, fieldValue2)) {
-                if (fieldValue instanceof Parent && fieldValue2 instanceof Parent
-                    && compareTree((Parent) fieldValue, (Parent) fieldValue2)) {
+				if (equalParents(fieldValue, fieldValue2)) {
                     continue;
                 }
                 String fieldName = getFieldNameCase(f);
@@ -141,7 +140,7 @@ public class TreeElement<T> {
         return diffFields;
     }
 
-    private static void displayStyleClass(String left, Node node, StringBuilder str) {
+	private static void displayStyleClass(String left, Node node, StringBuilder str) {
         String arg1 = left + node.getClass().getSimpleName();
         if (node instanceof Labeled) {
             str.append(String.format("%s = .%s = \"%s\"%n", arg1, node.getStyleClass(), ((Labeled) node).getText()));
@@ -158,5 +157,9 @@ public class TreeElement<T> {
             childrenUnmodifiable.forEach(t -> displayStyleClass(left + "-", t, str));
         }
     }
+
+    private static boolean equalParents(Object ob1, Object ob2) {
+		return ob1 instanceof Parent && ob2 instanceof Parent && compareTree((Parent) ob1, (Parent) ob2);
+	}
 
 }

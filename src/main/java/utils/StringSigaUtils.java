@@ -31,10 +31,6 @@ public class StringSigaUtils extends StringUtils {
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
         Double.class);
 
-    public static String simNao(Boolean a) {
-        return a ? "Sim" : "Não";
-    }
-
     public static String changeCase(String simpleName) {
         if (Character.isLowerCase(simpleName.charAt(0))) {
             return simpleName.substring(0, 1).toUpperCase() + simpleName.substring(1);
@@ -232,6 +228,10 @@ public class StringSigaUtils extends StringUtils {
         return valor;
     }
 
+    public static String simNao(Boolean a) {
+        return a ? "Sim" : "Não";
+    }
+
     public static String substituirNaoNumeros(String numero) {
         if (StringUtils.isBlank(numero)) {
             return null;
@@ -293,14 +293,18 @@ public class StringSigaUtils extends StringUtils {
         }, valor);
     }
 
+    private static boolean hasBom(byte[] input) {
+		return input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB && (input[2] & 0xFF) == 0xBF;
+	}
+
     private static boolean paragraphEnd(String str) {
         return str.endsWith(".") || str.endsWith(".”") || str.matches("Texto \\d+");
     }
 
-    private static boolean validUTF8(byte[] input) {
+	private static boolean validUTF8(byte[] input) {
         int i = 0;
         // Check for BOM
-        if (input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB && (input[2] & 0xFF) == 0xBF) {
+        if (hasBom(input)) {
             i = 3;
         }
 

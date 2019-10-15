@@ -345,7 +345,8 @@ public final class ClassReflectionUtils {
     }
 
     private static boolean isSameEnumerationClass(Class<?> objClass, Object invoke) {
-        return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0 && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(objClass.getName());
+		return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
+				&& invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(objClass.getName());
     }
 
     private static boolean parameterTypesMatch(Object fieldValue, Executable m) {

@@ -77,11 +77,7 @@ public class MinesweeperModel {
 
     private void handleClick(MouseEvent event, MinesweeperSquare mem) {
         if (event.getButton() == MouseButton.SECONDARY) {
-            if (mem.getState() == State.HIDDEN) {
-                mem.setState(MinesweeperSquare.State.FLAGGED);
-            } else if (mem.getState() == State.FLAGGED) {
-                mem.setState(MinesweeperSquare.State.HIDDEN);
-            }
+			toggleFlag(mem);
             return;
         }
 
@@ -110,7 +106,7 @@ public class MinesweeperModel {
         }
     }
 
-    private void reset() {
+	private void reset() {
 		if (!gridPane.getScene().getWindow().isShowing()) {
 			return;
 		}
@@ -175,10 +171,18 @@ public class MinesweeperModel {
 
     }
 
-    private boolean verifyEnd() {
+	private boolean verifyEnd() {
         return Stream.of(map).flatMap(Stream::of).noneMatch(s -> s.getState().equals(MinesweeperSquare.State.HIDDEN)
             && !s.getMinesweeperImage().equals(MinesweeperImage.BOMB));
     }
+
+    private static void toggleFlag(MinesweeperSquare mem) {
+		if (mem.getState() == State.HIDDEN) {
+		    mem.setState(MinesweeperSquare.State.FLAGGED);
+		} else if (mem.getState() == State.FLAGGED) {
+		    mem.setState(MinesweeperSquare.State.HIDDEN);
+		}
+	}
 
     private static boolean withinRange(int i, int k, int mapWidth) {
         return i + k >= 0 && i + k < mapWidth;

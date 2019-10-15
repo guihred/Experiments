@@ -48,11 +48,15 @@ public class TronLauncher extends Application {
 
     private void handleKeyPressed(KeyEvent e) {
         TronDirection byKeyCode = TronDirection.getByKeyCode(e.getCode());
-        if (byKeyCode != null && newGameModel.getDirection().ordinal() != (byKeyCode.ordinal() + 2) % 4) {
+		if (notOppositeDirections(byKeyCode)) {
             newGameModel.setDirection(byKeyCode);
         }
         newGameModel.updateMap();
     }
+
+	private boolean notOppositeDirections(TronDirection byKeyCode) {
+		return byKeyCode != null && newGameModel.getDirection().ordinal() != (byKeyCode.ordinal() + 2) % 4;
+	}
 
     public static void main(String[] args) {
         launch(TronLauncher.class, args);

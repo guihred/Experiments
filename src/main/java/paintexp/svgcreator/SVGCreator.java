@@ -68,8 +68,7 @@ public class SVGCreator extends Application {
                 handleSimple(e);
             }
         }
-        if (MouseEvent.MOUSE_DRAGGED == e.getEventType() && pointStage == 0
-            || MouseEvent.MOUSE_MOVED == e.getEventType() && pointStage > 0) {
+		if (isSimpleHandle(e)) {
             handleSimple(e);
         }
         if (MouseEvent.MOUSE_RELEASED == e.getEventType()) {
@@ -85,7 +84,7 @@ public class SVGCreator extends Application {
 
     }
 
-    public void initialize() {
+	public void initialize() {
         svgChanger = new SVGChanger(path.contentProperty());
         stack.addEventHandler(MouseEvent.ANY, this::handleEvent);
         slider.valueProperty().bindBidirectional(svgChanger.scaleProperty());
@@ -159,6 +158,11 @@ public class SVGCreator extends Application {
         contentField.setText(format);
         setContent(initialContent);
     }
+
+    private boolean isSimpleHandle(MouseEvent e) {
+		return MouseEvent.MOUSE_DRAGGED == e.getEventType() && pointStage == 0
+            || MouseEvent.MOUSE_MOVED == e.getEventType() && pointStage > 0;
+	}
 
     private void rescale() {
         if (slider.isValueChanging()) {
