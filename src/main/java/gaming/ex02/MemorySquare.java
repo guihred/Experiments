@@ -38,7 +38,7 @@ public class MemorySquare extends Region {
 	}
 
 	public Shape getFinalShape() {
-        if (shape == null) {
+        if (shape == null && memoryImage.get() != null) {
             shape = memoryImage.get().getShape();
             shape.setFill(Color.WHITE);
             shape.fillProperty().bind(Bindings.when(state.isEqualTo(State.HIDDEN)).then(Color.WHITE).otherwise(color));
