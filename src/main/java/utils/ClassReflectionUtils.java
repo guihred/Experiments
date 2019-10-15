@@ -236,10 +236,8 @@ public final class ClassReflectionUtils {
         List<Method> infoMethod = getGetterMethods(objClass, getterMethods);
         infoMethod.forEach(ConsumerEx.makeConsumer((Method o) -> {
             Object invoke = o.invoke(obj);
-            if (invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0) {
-                if (invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(objClass.getName())) {
-                    return;
-                }
+            if (isSameEnumerationClass(objClass, invoke)) {
+                return;
             }
             String fieldName = getFieldName(o);
             StringBuilder description = new StringBuilder("\n");
@@ -344,6 +342,10 @@ public final class ClassReflectionUtils {
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {
         return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
             && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(class1.getName());
+    }
+
+    private static boolean isSameEnumerationClass(Class<?> objClass, Object invoke) {
+        return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0 && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(objClass.getName());
     }
 
     private static boolean parameterTypesMatch(Object fieldValue, Executable m) {
