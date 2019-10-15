@@ -12,49 +12,49 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class TronLauncher extends Application {
-	private static final int UPDATE_MILLIS = 40;
-	private static final int WIDTH = 400;
-	private final TronModel newGameModel = new TronModel();
-	private Timeline timeline;
+    private static final int UPDATE_MILLIS = 40;
+    private static final int WIDTH = 400;
+    private final TronModel newGameModel = new TronModel();
+    private Timeline timeline;
 
-	@Override
-	public void start(Stage stage) throws Exception {
-		final GridPane gridPane = new GridPane();
-		for (int i = 0; i < TronSquare.MAP_SIZE; i++) {
-			for (int j = 0; j < TronSquare.MAP_SIZE; j++) {
-				gridPane.add(newGameModel.getMap()[i][j], i, j);
-			}
-		}
+    @Override
+    public void start(Stage stage) throws Exception {
+        final GridPane gridPane = new GridPane();
+        for (int i = 0; i < TronSquare.MAP_SIZE; i++) {
+            for (int j = 0; j < TronSquare.MAP_SIZE; j++) {
+                gridPane.add(newGameModel.getMap()[i][j], i, j);
+            }
+        }
 
-		final Scene scene = new Scene(gridPane);
-		scene.setOnKeyPressed(this::handleKeyPressed);
-		timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.millis(UPDATE_MILLIS), t -> {
-			if (newGameModel.updateMap()) {
-				timeline.stop();
-				String text2 = "You Got " + newGameModel.getSnake().size() + " points";
-				new SimpleDialogBuilder().text(text2).button("Reset", () -> {
-					newGameModel.reset();
-					timeline.play();
-				}).bindWindow(stage).displayDialog();
-			}
-		}).cycleCount(Animation.INDEFINITE).build();
-		timeline.play();
-		stage.setScene(scene);
-		stage.setWidth(WIDTH);
-		stage.setHeight(WIDTH);
-		stage.setOnCloseRequest(e -> timeline.stop());
-		stage.show();
-	}
+        final Scene scene = new Scene(gridPane);
+        scene.setOnKeyPressed(this::handleKeyPressed);
+        timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.millis(UPDATE_MILLIS), t -> {
+            if (newGameModel.updateMap()) {
+                timeline.stop();
+                String text2 = "You Got " + newGameModel.getSnake().size() + " points";
+                new SimpleDialogBuilder().text(text2).button("Reset", () -> {
+                    newGameModel.reset();
+                    timeline.play();
+                }).bindWindow(stage).displayDialog();
+            }
+        }).cycleCount(Animation.INDEFINITE).build();
+        timeline.play();
+        stage.setScene(scene);
+        stage.setWidth(WIDTH);
+        stage.setHeight(WIDTH);
+        stage.setOnCloseRequest(e -> timeline.stop());
+        stage.show();
+    }
 
-	private void handleKeyPressed(KeyEvent e) {
-		TronDirection byKeyCode = TronDirection.getByKeyCode(e.getCode());
-		if (byKeyCode != null && newGameModel.getDirection().ordinal() != (byKeyCode.ordinal() + 2) % 4) {
-			newGameModel.setDirection(byKeyCode);
-		}
-		newGameModel.updateMap();
-	}
+    private void handleKeyPressed(KeyEvent e) {
+        TronDirection byKeyCode = TronDirection.getByKeyCode(e.getCode());
+        if (byKeyCode != null && newGameModel.getDirection().ordinal() != (byKeyCode.ordinal() + 2) % 4) {
+            newGameModel.setDirection(byKeyCode);
+        }
+        newGameModel.updateMap();
+    }
 
-	public static void main(String[] args) {
-		launch(TronLauncher.class, args);
-	}
+    public static void main(String[] args) {
+        launch(TronLauncher.class, args);
+    }
 }

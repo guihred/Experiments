@@ -118,6 +118,7 @@ public class JavaDependencyTest {
                 if (className.equals("JavaDependencyTest")) {
                     continue;
                 }
+                LOG.info("RUN TESTS {}", collect.subList(i, collect.size()));
                 LOG.info("RUNNING TEST {} {}/{}", className, i + 1, collect.size());
                 Class<?> forName = Class.forName("fxtests." + className);
                 if (Modifier.isAbstract(forName.getModifiers())) {

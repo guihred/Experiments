@@ -26,65 +26,21 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 		KeyCode keycode = event.getCode();
 		keysPressed.add(keycode);
 		if (keysPressed.contains(KeyCode.W)) {
-			double sin = Math.sin(Math.toRadians(camera.getRotate()))
-					* change;
-			double cos = Math.cos(Math.toRadians(camera.getRotate()))
-					* change;
-
-			camera.setTranslateX(camera.getTranslateX() + sin);
-			if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
-				camera.setTranslateX(camera.getTranslateX() - sin);
-			}
-			camera.setTranslateZ(camera.getTranslateZ() + cos);
-			if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
-				camera.setTranslateZ(camera.getTranslateZ() - cos);
-			}
+            moveForward(change);
 		}
 		if (keysPressed.contains(KeyCode.S)) {
-			double sin = Math.sin(Math.toRadians(camera.getRotate()))
-					* change;
-			double cos = Math.cos(Math.toRadians(camera.getRotate()))
-					* change;
-
-			camera.setTranslateX(camera.getTranslateX() - sin);
-			if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
-				camera.setTranslateX(camera.getTranslateX() + sin);
-			}
-			camera.setTranslateZ(camera.getTranslateZ() - cos);
-			if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
-				camera.setTranslateZ(camera.getTranslateZ() + cos);
-			}
+            moveBackward(change);
 		}
 		// Step 2d: Add Strafe controls
 		if (keysPressed.contains(KeyCode.A)) {
 
-			double sin = Math.sin(Math.toRadians(camera.getRotate() + 90)) * change;
-			double cos = Math.cos(Math.toRadians(camera.getRotate() + 90)) * change;
-
-			camera.setTranslateX(camera.getTranslateX() - sin);
-			if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
-				camera.setTranslateX(camera.getTranslateX() + sin);
-			}
-			camera.setTranslateZ(camera.getTranslateZ() - cos);
-			if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
-				camera.setTranslateZ(camera.getTranslateZ() + cos);
-			}
+            moveLeft(change);
 		}
 		if (keysPressed.contains(KeyCode.DOWN)) {
 			camera.setTranslateY(camera.getTranslateY() + change);
 		}
 		if (keysPressed.contains(KeyCode.D)) {
-			double sin = Math.sin(Math.toRadians(camera.getRotate() - 90)) * change;
-			double cos = Math.cos(Math.toRadians(camera.getRotate() - 90)) * change;
-
-			camera.setTranslateX(camera.getTranslateX() - sin);
-			if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
-				camera.setTranslateX(camera.getTranslateX() + sin);
-			}
-			camera.setTranslateZ(camera.getTranslateZ() - cos);
-			if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
-				camera.setTranslateZ(camera.getTranslateZ() + cos);
-			}
+            moveRight(change);
 		}
 		if (keysPressed.contains(KeyCode.UP)) {
 			camera.setTranslateY(camera.getTranslateY() - change);
@@ -93,8 +49,64 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
 		labyrinth3dWallTexture.endKeyboard();
 	}
 
-	public void keyReleased(KeyEvent event) {
-		KeyCode keycode = event.getCode();
-		keysPressed.remove(keycode);
-	}
+    public void keyReleased(KeyEvent event) {
+        KeyCode keycode = event.getCode();
+        keysPressed.remove(keycode);
+    }
+
+    private void moveBackward(double change) {
+        double sin = Math.sin(Math.toRadians(camera.getRotate())) * change;
+        double cos = Math.cos(Math.toRadians(camera.getRotate())) * change;
+
+        camera.setTranslateX(camera.getTranslateX() - sin);
+        if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
+            camera.setTranslateX(camera.getTranslateX() + sin);
+        }
+        camera.setTranslateZ(camera.getTranslateZ() - cos);
+        if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
+            camera.setTranslateZ(camera.getTranslateZ() + cos);
+        }
+    }
+
+    private void moveForward(double change) {
+        double sin = Math.sin(Math.toRadians(camera.getRotate())) * change;
+        double cos = Math.cos(Math.toRadians(camera.getRotate())) * change;
+
+        camera.setTranslateX(camera.getTranslateX() + sin);
+        if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
+            camera.setTranslateX(camera.getTranslateX() - sin);
+        }
+        camera.setTranslateZ(camera.getTranslateZ() + cos);
+        if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
+            camera.setTranslateZ(camera.getTranslateZ() - cos);
+        }
+    }
+
+    private void moveLeft(double change) {
+        double sin = Math.sin(Math.toRadians(camera.getRotate() + 90)) * change;
+        double cos = Math.cos(Math.toRadians(camera.getRotate() + 90)) * change;
+
+        camera.setTranslateX(camera.getTranslateX() - sin);
+        if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
+        	camera.setTranslateX(camera.getTranslateX() + sin);
+        }
+        camera.setTranslateZ(camera.getTranslateZ() - cos);
+        if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
+        	camera.setTranslateZ(camera.getTranslateZ() + cos);
+        }
+    }
+
+	private void moveRight(double change) {
+        double sin = Math.sin(Math.toRadians(camera.getRotate() - 90)) * change;
+        double cos = Math.cos(Math.toRadians(camera.getRotate() - 90)) * change;
+
+        camera.setTranslateX(camera.getTranslateX() - sin);
+        if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
+        	camera.setTranslateX(camera.getTranslateX() + sin);
+        }
+        camera.setTranslateZ(camera.getTranslateZ() - cos);
+        if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
+        	camera.setTranslateZ(camera.getTranslateZ() + cos);
+        }
+    }
 }

@@ -206,15 +206,9 @@ public final class FXMLCreator {
                 processMethod(element, fieldName, fieldValue, parent);
                 return;
             }
-            if (!referenceClasses.contains(fieldValue.getClass())) {
-                LOG.info("{} added to referenceClasses", fieldValue.getClass());
-            }
             referenceClasses.add(fieldValue.getClass());
         }
         if (getNamedArgs(parent.getClass()).contains(fieldName) && hasPublicConstructor(fieldValue.getClass())) {
-            if (!referenceClasses.contains(fieldValue.getClass())) {
-                LOG.info("{} added to referenceClasses", fieldValue.getClass());
-            }
             referenceClasses.add(fieldValue.getClass());
         }
         if (hasClass(referenceClasses, fieldValue.getClass())) {

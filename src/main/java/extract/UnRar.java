@@ -55,6 +55,10 @@ public final class UnRar {
 		return file == null || !file.exists();
 	}
 
+	private static boolean isUnicode(FileHeader fh) {
+        return fh.isFileHeader() && fh.isUnicode();
+    }
+
 	private static void printSummary() {
         LOGGER.info("\nSuccessfully tested archives:\n");
 		for (String sf : successfulFiles) {
@@ -92,14 +96,14 @@ public final class UnRar {
 		}
 	}
 
-	private static void testFile(File file, File output) {
+    private static void testFile(File file, File output) {
 		if (doesNotExist(file)) {
             LOGGER.info("error file {} does not exist", file);
 			return;
 		}
-		String s = file.toString();
+        String s = file.toString();
 
-		s = s.substring(s.length() - 3);
+        s = s.substring(s.length() - 3);
 		if ("rar".equalsIgnoreCase(s)) {
             LOGGER.info("{}", file);
 			try (FileInputStream fileInputStream = new FileInputStream(file);
@@ -117,7 +121,7 @@ public final class UnRar {
 						return;
 					}
                     LOGGER.info("extracting file: {}", fh.getFileNameString());
-					if (fh.isFileHeader() && fh.isUnicode()) {
+					if (isUnicode(fh)) {
                         LOGGER.info("unicode name: {}", fh.getFileNameW());
 					}
                     LOGGER.info("start: {}", LocalTime.now());

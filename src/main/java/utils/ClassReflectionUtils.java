@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.joining;
 import static utils.StringSigaUtils.changeCase;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -110,11 +109,8 @@ public final class ClassReflectionUtils {
         String signature = "()";
         Class<? extends Object> valueClass = fieldValue.getClass();
         Class<?> class1 = valueClass.getInterfaces()[0];
-        TypeVariable<?>[] typeParameters = class1.getTypeParameters();
-        if (typeParameters.length > 0) {
-            TypeVariable<?> typeVariable = typeParameters[0];
-            Type[] bounds = typeVariable.getBounds();
-            for (Type type : bounds) {
+        if (class1.getTypeParameters().length > 0) {
+            for (Type type : class1.getTypeParameters()[0].getBounds()) {
                 String typeName = type.getTypeName();
                 String[] split2 = typeName.split("\\.");
                 String packageName = Stream.of(split2).limit(split2.length - 1L).collect(joining("."));
@@ -241,8 +237,7 @@ public final class ClassReflectionUtils {
         infoMethod.forEach(ConsumerEx.makeConsumer((Method o) -> {
             Object invoke = o.invoke(obj);
             if (invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0) {
-                Type type = invoke.getClass().getGenericInterfaces()[0];
-                if (type.getTypeName().contains(objClass.getName())) {
+                if (invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(objClass.getName())) {
                     return;
                 }
             }
@@ -320,21 +315,9 @@ public final class ClassReflectionUtils {
 
     private static Map<String, Class<?>> getNamedArgsMap(Class<?> targetClass) {
         Map<String, Class<?>> args = new HashMap<>();
-        Constructor<?>[] constructors = targetClass.getConstructors();
-        for (Constructor<?> constructor : constructors) {
-            Parameter[] parameters = constructor.getParameters();
-            for (Parameter parameter : parameters) {
-                Class<?> type = parameter.getType();
-                Annotation[] annotations = parameter.getAnnotations();
-                for (Annotation annotation : annotations) {
-                    if (annotation instanceof NamedArg) {
-                        NamedArg a = (NamedArg) annotation;
-                        String value = a.value();
-                        args.put(value, type);
-                    }
-                }
-            }
-        }
+        Stream.of(targetClass.getConstructors()).flatMap(c -> Stream.of(c.getParameters())).forEach(
+            parameter -> Stream.of(parameter.getAnnotations()).filter(annotation -> annotation instanceof NamedArg)
+                .map(a -> (NamedArg) a).forEach(a -> args.put(a.value(), parameter.getType())));
         return args;
     }
 
@@ -348,10 +331,9 @@ public final class ClassReflectionUtils {
     }
 
     private static boolean hasSetterMethods(Class<?> targetClass, String field) {
-        Class<?> a = targetClass;
-
-        for (int i = 0; a != Object.class && i < 10; i++, a = a.getSuperclass()) {
-            List<Method> gett = setters(a);
+        Class<?> cur = targetClass;
+        for (int i = 0; cur != Object.class && i < 10; i++, cur = cur.getSuperclass()) {
+            List<Method> gett = setters(cur);
             if (gett.stream().anyMatch(m -> getFieldNameCase(m).equals(field))) {
                 return true;
             }
@@ -365,8 +347,7 @@ public final class ClassReflectionUtils {
     }
 
     private static boolean parameterTypesMatch(Object fieldValue, Executable m) {
-        Parameter[] parameters = m.getParameters();
-        Class<?> type = parameters[0].getType();
+        Class<?> type = m.getParameters()[0].getType();
         if (type == Object.class) {
             return false;
         }

@@ -188,6 +188,15 @@ public class ContestReader implements HasLogging {
         option = 0;
     }
 
+    private void addTextIfMatches(String[] linhas, int i) {
+        String[] split = linhas[i + 1].split("\\D+");
+        if (split.length > 1 && Stream.of(split).allMatch(StringUtils::isNumeric)) {
+            setState(ReaderState.TEXT);
+            text.setMin(intValue(split[0]));
+            text.setMax(intValue(split[1]));
+        }
+    }
+
     private void executeAppending(String str, String[] linhas, int i) {
         if (getState() == ReaderState.IGNORE) {
             contestQuestion.setContest(contest);
@@ -264,6 +273,13 @@ public class ContestReader implements HasLogging {
             && StringUtils.isNotBlank(text.getText()) && !isBetween();
     }
 
+    private void logIndicative(int i, String s) {
+        if (StringUtils.isNotBlank(s)) {
+            int size = getIndicative(i);
+            getLogger().info("{} {} - {}", getState(), size, s);
+        }
+    }
+
     private void mapImages(int currentPage, List<PdfImage> images) {
         List<HasImage> imageElements = Stream.concat(texts.stream(), listQuestions.stream())
             .collect(Collectors.toList());
@@ -295,12 +311,7 @@ public class ContestReader implements HasLogging {
             return;
         }
         if (isTextPattern(linhas, i, s)) {
-            String[] split = linhas[i + 1].split("\\D+");
-            if (split.length > 1 && Stream.of(split).allMatch(StringUtils::isNumeric)) {
-                setState(ReaderState.TEXT);
-                text.setMin(intValue(split[0]));
-                text.setMax(intValue(split[1]));
-            }
+            addTextIfMatches(linhas, i);
         }
         if (s.matches(LINE_PATTERN)) {
             return;
@@ -345,10 +356,7 @@ public class ContestReader implements HasLogging {
 
         executeAppending(s, linhas, i);
 
-        if (StringUtils.isNotBlank(s)) {
-            int size = getIndicative(i);
-            getLogger().info("{} {} - {}", getState(), size, s);
-        }
+        logIndicative(i, s);
     }
 
     private void tryReadQuestionFromLines(String[] lines) {

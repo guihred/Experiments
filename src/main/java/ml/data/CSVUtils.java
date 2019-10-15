@@ -145,7 +145,7 @@ public class CSVUtils {
             } else if (ch == customQuote) {
                 inQuotes = true;
                 // Fixed : allow "" in empty quote enclosed
-                if (chars[0] != '"' && customQuote == '\"' || startCollectChar) {
+                if (isAppendQuote(customQuote, startCollectChar, chars)) {
                     curVal.append('"');
                 }
             } else if (ch == separators) {
@@ -159,6 +159,10 @@ public class CSVUtils {
             }
         }
         return curVal;
+    }
+
+    private static boolean isAppendQuote(char customQuote, boolean startCollectChar, char[] chars) {
+        return chars[0] != '"' && customQuote == '\"' || startCollectChar;
     }
 
     private static Writer newWrite(File source, String firstLine, String string) throws IOException {

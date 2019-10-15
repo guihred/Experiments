@@ -43,12 +43,10 @@ public class BoundsDisplay extends Rectangle {
     // set the type of the shape's bounds to monitor for the bounds display.
     public final void monitorBounds(final BoundsType boundsType) {
         // remove the shape's previous boundsType.
-        if (boundsChangeListener != null) {
-            if (boundsPlayground != null) {
-				final ReadOnlyObjectProperty<Bounds> oldBounds = getOldBounds();
-                if (oldBounds != null) {
-                    oldBounds.removeListener(boundsChangeListener);
-                }
+        if (boundsChangeListener != null && boundsPlayground != null) {
+            final ReadOnlyObjectProperty<Bounds> oldBounds = getOldBounds();
+            if (oldBounds != null) {
+                oldBounds.removeListener(boundsChangeListener);
             }
         }
         // determine the shape's bounds for the given boundsType.
