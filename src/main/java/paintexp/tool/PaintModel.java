@@ -175,8 +175,9 @@ public class PaintModel {
 
     public void takeSnapshot(Node line2) {
         ImageView imageView = new PixelatedImageView(image);
+        createImageVersion();
         RectBuilder.takeSnapshot(line2, image, getImageStack(), imageView, getRectangleBorder(imageView),
-            getBackColor());
+            getImageVersions());
     }
 
     public void takeSnapshotFill(Node line2) {

@@ -5,10 +5,12 @@ import static utils.DrawOnPoint.withinImage;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
@@ -17,9 +19,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import org.apache.commons.lang3.StringUtils;
+import simplebuilder.SimpleConverter;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
@@ -31,58 +35,17 @@ public final class PaintToolHelper {
     private PaintToolHelper() {
     }
 
-    public static void setClipboardContent(Image imageSelected2) {
-        Map<DataFormat, Object> content = new HashMap<>();
-        content.put(DataFormat.IMAGE, imageSelected2);
-    	Clipboard.getSystemClipboard().setContent(content);
-    }
+    @SuppressWarnings({ "rawtypes" })
+    public static void addOptionsAccordingly(Object selectedItem, Pane effectsOptions, Map<Object, Double> maxMap,
+        ObservableList<?> effects) {
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static void addOptionsAccordingly(Object selectedItem, VBox effectsOptions) {
         effectsOptions.getChildren().clear();
+        if (selectedItem == null) {
+            return;
+        }
         Map<String, Property> getters = ClassReflectionUtils.properties(selectedItem, selectedItem.getClass());
         for (Map.Entry<String, Property> method : getters.entrySet()) {
-            String fieldName = method.getKey();
-            Property<?> value2 = method.getValue();
-            Object value = value2.getValue();
-            if (value == null) {
-                continue;
-            }
-            String changeCase = StringSigaUtils.changeCase(fieldName);
-            Text text2 = new Text(changeCase);
-            text2.textProperty()
-                .bind(Bindings.createStringBinding(() -> {
-                    if (value instanceof Double) {
-                        return String.format(Locale.ENGLISH, "%s %.2f", changeCase, value2.getValue());
-                    }
-                    return changeCase + " " + value2.getValue();
-                }, value2));
-            effectsOptions.getChildren().add(text2);
-            if (value instanceof Double) {
-                Double value3 = (Double) value;
-                Slider e = new SimpleSliderBuilder(0, value3 == 1 ? 1 : Math.max(50, value3), value3).build();
-                e.valueProperty().bindBidirectional((Property<Number>) value2);
-                effectsOptions.getChildren().add(e);
-            }
-            if (value instanceof Integer) {
-                Integer value3 = (Integer) value;
-                Slider e = new SimpleSliderBuilder(0, value3 == 1 ? 1 : Math.max(50, value3), value3).build();
-                e.valueProperty().bindBidirectional((Property<Number>) value2);
-                effectsOptions.getChildren().add(e);
-            }
-            if (value instanceof Color) {
-                ColorPicker colorPicker = new ColorPicker((Color) value);
-                ((Property<Color>) value2).bind(colorPicker.valueProperty());
-                effectsOptions.getChildren().add(colorPicker);
-            }
-            if (value instanceof Enum<?>) {
-                Enum<?> value3 = (Enum<?>) value;
-                ComboBox comboBox = new ComboBox<>(
-                    FXCollections.observableArrayList(value3.getClass().getEnumConstants()));
-                value2.bind(comboBox.getSelectionModel().selectedItemProperty());
-                comboBox.setValue(value3);
-                effectsOptions.getChildren().add(comboBox);
-            }
+            addOptions(selectedItem, effectsOptions, maxMap, effects, method);
         }
     }
 
@@ -185,6 +148,85 @@ public final class PaintToolHelper {
             }
         }
         return true;
+    }
+
+    public static void setClipboardContent(Image imageSelected2) {
+        Map<DataFormat, Object> content = new HashMap<>();
+        content.put(DataFormat.IMAGE, imageSelected2);
+        Clipboard.getSystemClipboard().setContent(content);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static void addOptions(Object selectedItem, Pane effectsOptions, Map<Object, Double> maxMap,
+        ObservableList<?> effects, Map.Entry<String, Property> method) {
+        String fieldName = method.getKey();
+        Property value2 = method.getValue();
+        String changeCase = StringSigaUtils.changeCase(fieldName);
+        Text text2 = new Text(changeCase);
+        text2.textProperty().bind(Bindings.createStringBinding(() -> propValue(value2, changeCase), value2));
+        effectsOptions.getChildren().add(text2);
+        Object value = value2.getValue();
+        if (value instanceof Number) {
+            double value3 = ((Number) value).doubleValue();
+            Double max = maxMap.computeIfAbsent(value2, v -> getMax(value3));
+            Slider e = new SimpleSliderBuilder(0, max, value3).build();
+            e.valueProperty().bindBidirectional(value2);
+            effectsOptions.getChildren().add(e);
+            return;
+        }
+        if (value instanceof Boolean) {
+            CheckBox e = new CheckBox();
+            e.selectedProperty().bindBidirectional(value2);
+            effectsOptions.getChildren().add(e);
+            return;
+        }
+        if (value instanceof Color) {
+            ColorPicker colorPicker = new ColorPicker((Color) value);
+            ((Property<Color>) value2).bind(colorPicker.valueProperty());
+            effectsOptions.getChildren().add(colorPicker);
+            return;
+        }
+        if (value instanceof Enum<?>) {
+            Enum<?> value3 = (Enum<?>) value;
+            ComboBox comboBox = new ComboBox<>(FXCollections.observableArrayList(value3.getClass().getEnumConstants()));
+            value2.bind(comboBox.getSelectionModel().selectedItemProperty());
+            comboBox.setValue(value3);
+            effectsOptions.getChildren().add(comboBox);
+            return;
+        }
+        if (value != null && ClassReflectionUtils.hasSetterMethods(value.getClass(), "color")) {
+            Map<String, Property> properties = ClassReflectionUtils.properties(value, value.getClass());
+            Property property = properties.get("color");
+            Color value3 = (Color) property.getValue();
+            ColorPicker colorPicker = new ColorPicker(value3);
+
+            property.bind(colorPicker.valueProperty());
+            effectsOptions.getChildren().add(colorPicker);
+            return;
+        }
+        Class<?> setterType = ClassReflectionUtils.getSetterType(selectedItem.getClass(), fieldName);
+        if (setterType.isAssignableFrom(selectedItem.getClass())) {
+            ComboBox comboBox = new ComboBox<>(effects.filtered(v -> selectedItem != v));
+            comboBox.setConverter(new SimpleConverter("class.simpleName"));
+            value2.bind(comboBox.getSelectionModel().selectedItemProperty());
+            effectsOptions.getChildren().add(comboBox);
+        }
+    }
+
+    private static double getMax(double value3) {
+        return value3 == 1 ? 1 : Math.max(50., value3);
+    }
+
+    private static String propValue(Property<?> value2, String changeCase) {
+        Object value = value2.getValue();
+        String string = Objects.toString(value, "");
+        if (StringUtils.isBlank(string) || string.matches("[\\.\\w\\$]+@[0-9a-fA-F]+")) {
+            return changeCase;
+        }
+        if (value instanceof Double) {
+            return String.format(Locale.ENGLISH, "%s %.2f", changeCase, value);
+        }
+        return changeCase + " " + value2.getValue();
     }
 
 }

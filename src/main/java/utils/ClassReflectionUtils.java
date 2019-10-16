@@ -105,6 +105,16 @@ public final class ClassReflectionUtils {
         return getNamedArgsMap(targetClass).keySet().stream().collect(Collectors.toList());
     }
 
+    public static Method getSetter(Class<?> cl, String f) {
+        return ClassReflectionUtils.getAllMethodsRecursive(cl).stream().filter(m -> m.getParameterCount() == 1)
+            .filter(m -> getFieldNameCase(m).equals(f)).findFirst().orElse(null);
+    }
+
+    public static Class<?> getSetterType(Class<?> cl, String f) {
+        Method setter = ClassReflectionUtils.getSetter(cl, f);
+        return setter == null ? null : setter.getParameters()[0].getType();
+    }
+
     public static String getSignature(Object parent, String fieldName, Object fieldValue, Collection<String> packages) {
         String signature = "()";
         Class<? extends Object> valueClass = fieldValue.getClass();
@@ -156,6 +166,17 @@ public final class ClassReflectionUtils {
             && Stream.of(class1.getConstructors()).anyMatch(e1 -> Modifier.isPublic(e1.getModifiers()));
     }
 
+    public static boolean hasSetterMethods(Class<?> targetClass, String field) {
+        Class<?> cur = targetClass;
+        for (int i = 0; cur != Object.class && i < 10; i++, cur = cur.getSuperclass()) {
+            List<Method> gett = setters(cur);
+            if (gett.stream().anyMatch(m -> getFieldNameCase(m).equals(field))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static Object invoke(Object ob, Method method, Object... args) {
         return SupplierEx.get(() -> method.invoke(ob, args));
     }
@@ -186,11 +207,14 @@ public final class ClassReflectionUtils {
     @SuppressWarnings("rawtypes")
     public static Map<String, Property> properties(Object o, Class<?> c) {
         String regex = "(\\w+)Property";
-        return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
+        return getAllMethodsRecursive(c).stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
             .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
-            .filter(m -> m.getParameterCount() == 0)
+            .filter(m -> m.getParameterCount() == 0).filter(e -> Property.class.isAssignableFrom(e.getReturnType()))
+            .filter(m -> m.getAnnotationsByType(Deprecated.class).length == 0)
             .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
-            .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property) invoke(o, t)));
+            .collect(
+                Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property) invoke(o, t), (u, v) -> u,
+                    LinkedHashMap::new));
     }
 
     private static <T> String getDescription(T obj, Class<?> class1,
@@ -319,25 +343,10 @@ public final class ClassReflectionUtils {
         return args;
     }
 
-    private static Method getSetter(Class<?> cl, String f) {
-        return ClassReflectionUtils.getAllMethodsRecursive(cl).stream().filter(m -> m.getParameterCount() == 1)
-            .filter(m -> getFieldNameCase(m).equals(f)).findFirst().orElse(null);
-    }
-
     private static boolean hasBuiltArg(Class<?> targetClass, String field) {
         return getNamedArgs(targetClass).contains(field);
     }
 
-    private static boolean hasSetterMethods(Class<?> targetClass, String field) {
-        Class<?> cur = targetClass;
-        for (int i = 0; cur != Object.class && i < 10; i++, cur = cur.getSuperclass()) {
-            List<Method> gett = setters(cur);
-            if (gett.stream().anyMatch(m -> getFieldNameCase(m).equals(field))) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {
         return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
@@ -345,8 +354,8 @@ public final class ClassReflectionUtils {
     }
 
     private static boolean isSameEnumerationClass(Class<?> objClass, Object invoke) {
-		return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
-				&& invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(objClass.getName());
+        return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
+            && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(objClass.getName());
     }
 
     private static boolean parameterTypesMatch(Object fieldValue, Executable m) {

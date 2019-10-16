@@ -137,14 +137,8 @@ public class PictureTool extends PaintTool {
         getArea().setScaleY(1);
         initialY = (int) e.getY();
         getArea().setLayoutY(initialY);
-        getArea().setStroke(Color.TRANSPARENT);
-        getArea().setFill(Color.TRANSPARENT);
-        if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
-            getArea().setStroke(model.getFrontColor());
-        }
-        if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
-            getArea().setFill(model.getBackColor());
-        }
+        getArea().setStroke(option.isStroke() ? model.getFrontColor() : Color.TRANSPARENT);
+        getArea().setFill(option.isFill() ? model.getBackColor() : Color.TRANSPARENT);
     }
 
     @Override

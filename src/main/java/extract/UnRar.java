@@ -138,7 +138,7 @@ public final class UnRar {
                 LOGGER.info("successfully tested archive: {}", file);
 				successfulFiles.add(file.toString());
 			} catch (Exception e) {
-                LOGGER.info("file: {} extraction error - does the file exist? {}", file, e);
+                LOGGER.trace("file: {} extraction error - does the file exist? {}", file, e);
 				errorFiles.add(file.toString());
 			}
 

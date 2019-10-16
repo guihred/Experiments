@@ -80,6 +80,28 @@ public final class RectBuilder {
         }
     }
 
+    public void copyImagePartTransparency(Image srcImage, WritableImage destImage,
+        ObservableList<WritableImage> imageVersions) {
+        PixelReader pixelReader = srcImage.getPixelReader();
+        double srcWidth = srcImage.getWidth();
+        double srcHeight = srcImage.getHeight();
+        double destWidth = destImage.getWidth();
+        double destHeight = destImage.getHeight();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (within(i + endX, destWidth) && within(j + endY, destHeight) && within(i + startX, srcWidth)
+                    && within(j + startY, srcHeight)) {
+                    Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
+                    Color color = PixelHelper.asColor(PixelHelper.toArgb(color2) | 0xFF000000);
+                    PaintToolHelper.drawPointTransparency(i + (int) endX, j + (int) endY, color,
+                        color2.getOpacity(),
+                        destImage, imageVersions);
+                }
+
+            }
+        }
+    }
+
     public void drawCircle(WritableImage image, ObservableList<WritableImage> imageVersions, Color color,
         double opacity) {
         double nPoints = Math.max(width, height) * PaintToolHelper.N_POINTS_MULTIPLIER;
@@ -257,7 +279,7 @@ public final class RectBuilder {
     }
 
     public static void takeSnapshot(Node line2, WritableImage image, Group imageStack, ImageView imageView,
-        Node rectangleBorder, Color color) {
+        Node rectangleBorder, ObservableList<WritableImage> imageVersions) {
         Bounds bounds = line2.getBoundsInParent();
         int width = (int) bounds.getWidth() + 2;
         int height = (int) bounds.getHeight() + 2;
@@ -266,8 +288,8 @@ public final class RectBuilder {
         WritableImage textImage = line2.snapshot(params, new WritableImage(width, height));
         int x = (int) bounds.getMinX();
         int y = (int) bounds.getMinY();
-        build().startX(0).startY(0).width(width).height(height).endX(x).endY(y).copyImagePart(textImage, image,
-            color);
+        build().startX(0).startY(0).width(width).height(height).endX(x).endY(y).copyImagePartTransparency(textImage,
+            image, imageVersions);
         imageStack.getChildren().clear();
         imageStack.getChildren().add(rectangleBorder);
         imageStack.getChildren().add(imageView);
