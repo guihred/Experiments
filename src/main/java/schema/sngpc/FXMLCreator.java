@@ -183,9 +183,7 @@ public final class FXMLCreator {
             processList(element, fieldName, parent, (Collection<?>) fieldValue);
             return;
         }
-        if (hasClass(FXMLConstants.getAttributeClasses(), fieldValue.getClass())
-            && hasField(parent.getClass(), fieldName)
-            && (fieldValue instanceof String || isSetterMatches(fieldName, fieldValue, parent))) {
+        if (isSuitableAsAttribute(fieldName, fieldValue, parent)) {
             Object mapProperty2 = mapProperty(fieldValue);
             element.setAttribute(fieldName, mapProperty2 + "");
             return;
@@ -429,6 +427,12 @@ public final class FXMLCreator {
 
     private static boolean containsSame(List<Object> allNode, Object fieldValue) {
         return allNode.stream().anyMatch(ob -> ob == fieldValue);
+    }
+
+    private static boolean isSuitableAsAttribute(String fieldName, Object fieldValue, Object parent) {
+        return hasClass(FXMLConstants.getAttributeClasses(), fieldValue.getClass())
+            && hasField(parent.getClass(), fieldName)
+            && (fieldValue instanceof String || isSetterMatches(fieldName, fieldValue, parent));
     }
 
     private static String mapUrl(String st) {

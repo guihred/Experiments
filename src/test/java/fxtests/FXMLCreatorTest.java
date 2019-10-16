@@ -19,7 +19,7 @@ public final class FXMLCreatorTest {
 
     @Test
     public void testAllClasses() {
-		List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
+        List<Class<? extends Application>> classes = JavaDependencyTest.getUncoveredApplications();
         testApplications(classes);
     }
 

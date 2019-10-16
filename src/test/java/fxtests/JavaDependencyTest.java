@@ -128,17 +128,16 @@ public class JavaDependencyTest {
 
                     Collection<?> orElseThrow = ClassReflectionUtils.getAllMethodsRecursive(forName).stream()
                         .filter(e -> e.getAnnotationsByType(Parameterized.Parameters.class).length > 0)
-                        .map(FunctionEx.makeFunction(e -> e.invoke(null))).findFirst()
-                        .map(e -> (Collection<?>) e)
+                        .map(FunctionEx.makeFunction(e -> e.invoke(null))).findFirst().map(e -> (Collection<?>) e)
                         .orElseThrow(() -> new RuntimeIOException("DEVERIA TER"));
                     for (Object object : orElseThrow) {
                         Object ob = forName.getConstructors()[0].newInstance(object);
-                        runTest(failedTests, forName, ob);
+                        runTest(forName, ob, failedTests);
                     }
                     continue;
                 }
                 Object ob = forName.newInstance();
-                runTest(failedTests, forName, ob);
+                runTest(forName, ob, failedTests);
                 LOG.info(" TESTS RUN {} {}/{}", "fxtests." + className, i + 1, collect.size());
 
             }
@@ -152,19 +151,29 @@ public class JavaDependencyTest {
     public void testHTestUncovered() {
 
         measureTime("JavaFileDependency.testUncovered", () -> {
-            List<String> uncovered = getUncovered();
-            ArrayList<String> allPaths = new ArrayList<>();
-            JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests", allPaths);
-            uncovered
-                .addAll(allPaths.stream().map(e -> e.replaceAll(".+\\.(\\w+)", "$1")).collect(Collectors.toList()));
-            List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
-            List<Class<? extends Application>> collect = classes.stream()
-                .filter(e -> uncovered.contains(e.getSimpleName())).collect(Collectors.toList());
+            List<Class<? extends Application>> collect = getUncoveredApplications();
             FXTesting.testApps(collect);
         });
     }
 
-    private List<String> getUncovered() {
+    private void runTest(Class<?> testClass, Object test, List<String> failedTests) {
+        FXTesting.measureTime(testClass.getSimpleName(), () -> {
+            List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
+            declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
+                .forEach(e -> ClassReflectionUtils.invoke(test, e));
+            declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
+                .sorted(Comparator.comparing(Method::getName))
+                .forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
+                    failedTests.add(o + "");
+                    LOG.error("ERROR invoking " + o, e);
+                }));
+            declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
+                .forEach(e -> ClassReflectionUtils.invoke(test, e));
+        });
+
+    }
+
+    public static List<String> getUncovered() {
         File csvFile = new File("target/site/jacoco/jacoco.csv");
         if (!csvFile.exists()) {
             return Collections.emptyList();
@@ -177,17 +186,14 @@ public class JavaDependencyTest {
         return uncovered;
     }
 
-    private void runTest(List<String> failedTests, Class<?> forName, Object ob) {
-        List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(forName);
-        declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
-            .forEach(e -> ClassReflectionUtils.invoke(ob, e));
-        declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
-            .sorted(Comparator.comparing(Method::getName))
-            .forEach(ConsumerEx.make(e -> e.invoke(ob), (o, e) -> {
-                failedTests.add(o + "");
-                LOG.error("ERROR invoking " + o, e);
-            }));
-        declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
-            .forEach(e -> ClassReflectionUtils.invoke(ob, e));
+    public static List<Class<? extends Application>> getUncoveredApplications() {
+        List<String> uncovered = getUncovered();
+        ArrayList<String> allPaths = new ArrayList<>();
+        JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests", allPaths);
+        uncovered.addAll(allPaths.stream().map(e -> e.replaceAll(".+\\.(\\w+)", "$1")).collect(Collectors.toList()));
+        List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
+        List<Class<? extends Application>> collect = classes.stream().filter(e -> uncovered.contains(e.getSimpleName()))
+            .collect(Collectors.toList());
+        return collect;
     }
 }

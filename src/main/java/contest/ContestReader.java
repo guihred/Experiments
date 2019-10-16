@@ -197,6 +197,12 @@ public class ContestReader implements HasLogging {
         }
     }
 
+    private void addTextIfNeeded() {
+        if (getState() == ReaderState.TEXT) {
+            addNewText();
+        }
+    }
+
     private void executeAppending(String str, String[] linhas, int i) {
         if (getState() == ReaderState.IGNORE) {
             contestQuestion.setContest(contest);
@@ -255,6 +261,16 @@ public class ContestReader implements HasLogging {
             qp.setPage(pageNumber);
             getLogger().trace("{} at ({},{}) page {}", qp.getLine(), qp.getX(), qp.getY(), pageNumber);
             questionPosition.add(qp);
+        }
+    }
+
+    private void insertOptionIfNeeded(String s) {
+        if (getState() == ReaderState.OPTION && StringUtils.isBlank(s)) {
+            contestQuestion.addOption(answer);
+            if (option == OPTIONS_PER_QUESTION) {
+                addQuestion();
+            }
+            setState(ReaderState.IGNORE);
         }
     }
 
@@ -317,9 +333,7 @@ public class ContestReader implements HasLogging {
             return;
         }
         if (isQuestionPattern(s)) {
-            if (getState() == ReaderState.TEXT) {
-                addNewText();
-            }
+            addTextIfNeeded();
             contestQuestion.setNumber(intValue(s));
             setState(ReaderState.QUESTION);
             getLogger().info(s);
@@ -346,13 +360,7 @@ public class ContestReader implements HasLogging {
 
             setState(ReaderState.IGNORE);
         }
-        if (getState() == ReaderState.OPTION && StringUtils.isBlank(s)) {
-            contestQuestion.addOption(answer);
-            if (option == OPTIONS_PER_QUESTION) {
-                addQuestion();
-            }
-            setState(ReaderState.IGNORE);
-        }
+        insertOptionIfNeeded(s);
 
         executeAppending(s, linhas, i);
 

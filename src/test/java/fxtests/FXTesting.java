@@ -91,7 +91,8 @@ public final class FXTesting implements HasLogging {
 	    return appClass;
 	}
 
-	public static void measureTime(String name, RunnableEx runnable) {
+
+    public static void measureTime(String name, RunnableEx runnable) {
         long currentTimeMillis = System.currentTimeMillis();
         Logger log = HasLogging.log(1);
         try {
@@ -136,12 +137,12 @@ public final class FXTesting implements HasLogging {
         }
     }
 
-    @SafeVarargs
+	@SafeVarargs
     public static void testApps(Class<? extends Application>... applicationClasses) {
         new FXTesting().testApplications(Arrays.asList(applicationClasses));
     }
 
-	public static void testApps(List<Class<? extends Application>> applicationClasses) {
+    public static void testApps(List<Class<? extends Application>> applicationClasses) {
 		new FXTesting().testApplications(applicationClasses);
 	}
 
