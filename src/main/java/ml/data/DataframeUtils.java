@@ -25,11 +25,6 @@ public final class DataframeUtils extends DataframeML {
     private DataframeUtils() {
     }
 
-    public static List<Entry<Number, Number>> createNumberEntries(DataframeML dataframe, String feature,
-        String target) {
-        return DataframeStatisticAccumulator.createNumberEntries(dataframe.getDataframe(), dataframe.size, feature,
-            target);
-    }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static List<Double> crossFeature(DataframeML dataframe, String header, ToDoubleFunction<double[]> mapper,
