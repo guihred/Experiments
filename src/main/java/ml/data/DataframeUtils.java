@@ -47,14 +47,14 @@ public final class DataframeUtils extends DataframeML {
         return mappedColumn;
     }
 
-    public static void describe(DataframeML dataframeML) {
+    public static void describe(BaseDataframe dataframeML) {
         if (dataframeML.stats == null) {
             dataframeML.stats = DataframeUtils.makeStats(dataframeML);
         }
         DataframeUtils.displayStats(dataframeML.stats);
     }
 
-    public static void displayCorrelation(DataframeML dataframe) {
+    public static void displayCorrelation(BaseDataframe dataframe) {
         Map<String, DataframeStatisticAccumulator> stats = makeStats(dataframe);
 
         StringBuilder s = new StringBuilder();
@@ -78,7 +78,7 @@ public final class DataframeUtils extends DataframeML {
         LOG.info(correlationTable);
     }
 
-    public static void displayStats(DataframeML dataframe) {
+    public static void displayStats(BaseDataframe dataframe) {
         displayStats(makeStats(dataframe));
     }
 
@@ -111,11 +111,11 @@ public final class DataframeUtils extends DataframeML {
         return list != null && j < list.size() ? list.get(j) : null;
     }
 
-    public static Map<Double, Long> histogram(DataframeML dataframeML, String header, int bins) {
+    public static Map<Double, Long> histogram(BaseDataframe dataframeML, String header, int bins) {
         return DataframeStatisticAccumulator.histogram(dataframeML.getDataframe(), header, bins);
     }
 
-    public static Map<String, DataframeStatisticAccumulator> makeStats(DataframeML dataframe) {
+    public static Map<String, DataframeStatisticAccumulator> makeStats(BaseDataframe dataframe) {
         return dataframe.getDataframe().entrySet().stream().collect(Collectors.toMap(
             Entry<String, List<Object>>::getKey,
             e -> e.getValue().stream().collect(

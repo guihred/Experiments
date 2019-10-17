@@ -71,10 +71,4 @@ public class MemorySquare extends Region {
 		return state;
 	}
 
-	public enum State {
-        HIDDEN,
-        SHOWN,
-        FOUND
-    }
-
 }

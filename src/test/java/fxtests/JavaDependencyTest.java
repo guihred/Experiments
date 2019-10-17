@@ -144,10 +144,7 @@ public class JavaDependencyTest {
     @Test
     public void testHTestUncovered() {
 
-        measureTime("JavaFileDependency.testUncovered", () -> {
-            List<Class<? extends Application>> collect = getUncoveredApplications();
-            FXTesting.testApps(collect);
-        });
+        measureTime("JavaFileDependency.testUncoveredApps", () -> FXTesting.testApps(getUncoveredApplications()));
     }
 
     private void runTest(Class<?> testClass, Object test, List<String> failedTests) {
@@ -156,8 +153,7 @@ public class JavaDependencyTest {
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
-                .sorted(Comparator.comparing(Method::getName))
-                .forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
+                .sorted(Comparator.comparing(Method::getName)).forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
                     failedTests.add(o + "");
                     LOG.error("ERROR invoking " + o, e);
                 }));
@@ -175,19 +171,30 @@ public class JavaDependencyTest {
         DataframeML b = DataframeBuilder.build(csvFile);
         DataframeUtils.crossFeature(b, "PERCENTAGE", arr -> arr[1] / (arr[0] + arr[1]) * 100, "LINE_MISSED",
             "LINE_COVERED");
-        b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 35);
+        b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 30);
         List<String> uncovered = b.list("CLASS");
         return uncovered;
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
         List<String> uncovered = getUncovered();
-        ArrayList<String> allPaths = new ArrayList<>();
-        JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests", allPaths);
-        uncovered.addAll(allPaths.stream().map(e -> e.replaceAll(".+\\.(\\w+)", "$1")).collect(Collectors.toList()));
+        List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
+        for (JavaFileDependency dependecy : allFileDependencies) {
+            dependecy.setDependents(allFileDependencies);
+        }
+        List<JavaFileDependency> visited = new ArrayList<>();
+        List<JavaFileDependency> path = new ArrayList<>();
         List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
-        List<Class<? extends Application>> collect = classes.stream().filter(e -> uncovered.contains(e.getSimpleName()))
-            .collect(Collectors.toList());
-        return collect;
+        List<String> collect2 = allFileDependencies
+            .stream().filter(e -> uncovered.contains(e.getName()))
+            .filter(d -> d.search(m -> contains(classes, m), visited, path))
+            .distinct().map(JavaFileDependency::getName).collect(Collectors.toList());
+        uncovered.addAll(collect2);
+        uncovered.addAll(path.stream().map(JavaFileDependency::getName).collect(Collectors.toList()));
+        return classes.stream().filter(e -> uncovered.contains(e.getSimpleName())).collect(Collectors.toList());
+    }
+
+    private static boolean contains(List<Class<? extends Application>> classes, JavaFileDependency m) {
+        return classes.stream().anyMatch(cl -> cl.getSimpleName().equals(m.getName()));
     }
 }

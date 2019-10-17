@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class BaseDataframe {
+public class BaseDataframe {
 
 	protected int maxSize = Integer.MAX_VALUE;
 

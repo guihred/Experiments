@@ -9,11 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.animation.KeyValue;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
@@ -55,11 +52,9 @@ public class MemoryModel {
         return map;
     }
 
-    final EventHandler<MouseEvent> createMouseClickedEvento(MemorySquare mem) {
-        EventHandler<MouseEvent> mouseClicked = event -> displayIfHidden(mem);
-        mem.getFinalShape().setOnMouseClicked(mouseClicked);
-        mem.setOnMouseClicked(mouseClicked);
-        return mouseClicked;
+    final void createMouseClickedEvento(MemorySquare mem) {
+        mem.getFinalShape().setOnMouseClicked(event -> displayIfHidden(mem));
+        mem.setOnMouseClicked(event -> displayIfHidden(mem));
     }
 
     private void addMemoryImage(final MemoryImage value, Color color, List<MemorySquare> emptySquares) {
@@ -70,19 +65,21 @@ public class MemoryModel {
     }
 
     private void displayIfHidden(MemorySquare mem) {
-        if (mem.getState() == MemorySquare.State.HIDDEN) {
+        if (mem.getState() == State.HIDDEN) {
             nPlayed.set(nPlayed.get() + 1);
-            mem.setState(MemorySquare.State.SHOWN);
+            mem.setState(State.SHOWN);
             if (nPlayed.get() % 2 == 0) {
                 final List<MemorySquare> shownSquares = Stream.of(map).flatMap(Stream::of)
-                    .filter(s -> s.getState() == MemorySquare.State.SHOWN).collect(Collectors.toList());
+                    .filter(s -> s.getState() == State.SHOWN).collect(Collectors.toList());
                 if (shownSquares.stream().map(MemorySquare::getMemoryImage).distinct().count() == 1
                     && shownSquares.stream().map(MemorySquare::getColor).distinct().count() == 1) {
-                    shownSquares.forEach((MemorySquare c) -> c.setState(MemorySquare.State.FOUND));
-                } else {
-                    shownSquares.forEach((MemorySquare c) -> new SimpleTimelineBuilder()
-                        .addKeyFrame(Duration.seconds(1), new KeyValue(c.stateProperty(), MemorySquare.State.HIDDEN))
-                        .build().play());
+                    shownSquares.forEach((MemorySquare c) -> c.setState(State.FOUND));
+                    nPlayed.set(0);
+                    return;
+                }
+                for (MemorySquare c : shownSquares) {
+                    new SimpleTimelineBuilder()
+                        .addKeyFrame(Duration.seconds(1), c.stateProperty(), State.HIDDEN).build().play();
                 }
                 nPlayed.set(0);
             }

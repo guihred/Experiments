@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -64,6 +65,10 @@ public class JavaFileDependency {
 
     public List<JavaFileDependency> getDependents() {
         return dependents;
+    }
+
+    public List<JavaFileDependency> getDependsOn() {
+        return dependsOn;
     }
 
     public String getFullName() {
@@ -141,10 +146,10 @@ public class JavaFileDependency {
         return methodsMap;
     }
 
-    public boolean search(String name1, List<JavaFileDependency> visited, List<JavaFileDependency> path) {
-        visited.add(this);
+    public boolean search(Predicate<JavaFileDependency> test, List<JavaFileDependency> visited,
+        List<JavaFileDependency> path) {
         for (JavaFileDependency d : getDependents()) {
-            if (d.getFullName().contains(name1)) {
+            if (test.test(d)) {
                 path.add(d);
             }
         }
@@ -152,12 +157,17 @@ public class JavaFileDependency {
             path.add(this);
         }
 
+        visited.add(this);
         boolean anyMatch = getDependents().stream().filter(t -> !visited.contains(t))
-            .anyMatch(d -> d.search(name1, visited, path));
+            .anyMatch(d -> d.search(test, visited, path));
         if (anyMatch) {
             path.add(this);
         }
-        return anyMatch;
+        return test.test(this) || anyMatch;
+    }
+
+    public boolean search(String name1, List<JavaFileDependency> visited, List<JavaFileDependency> path) {
+        return search(d->d.getFullName().contains(name1), visited, path);
     }
 
     public void setDependents(Collection<JavaFileDependency> dependents) {
