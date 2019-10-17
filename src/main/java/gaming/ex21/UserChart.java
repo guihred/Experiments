@@ -1,63 +1,14 @@
 package gaming.ex21;
 
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.fxml.FXML;
-import javafx.scene.Group;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import simplebuilder.SimpleDialogBuilder;
-import utils.CommonsFX;
 
-public class UserChart extends VBox {
-    @FXML
-    private ImageView userImage;
-    @FXML
-    private ImageView greenImage;
-    @FXML
-    private ImageView redImage;
-    @FXML
-    private ImageView blueImage;
-    @FXML
-    private ImageView yellowImage;
-    @FXML
-    private Text userPoints;
-    @FXML
-    private Dice dice1;
-    @FXML
-    private Dice dice2;
-    @FXML
-    private ObjectProperty<PlayerColor> color;
-
-    @FXML
-    private VBox availablePorts;
-    @FXML
-    private ExtraPoint largestArmy;
-    @FXML
-    private ExtraPoint longestRoad;
-    @FXML
-    private Text greenPoints;
-    @FXML
-    private Text redPoints;
-    @FXML
-    private Text bluePoints;
-    @FXML
-    private Text yellowPoints;
-    @FXML
-    private Group cardGroup;
-    private EnumMap<PlayerColor, SimpleLongProperty> playersPoints = new EnumMap<>(PlayerColor.class);
-    private Runnable onWin;
-
-    public UserChart() {
-        load();
-    }
+public class UserChart extends UserChartVariables {
 
     public long countPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
         Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
@@ -85,10 +36,6 @@ public class UserChart extends VBox {
         return pointsCount;
     }
 
-    public PlayerColor getColor() {
-        return color.get();
-    }
-
     public PlayerColor getWinner(List<SettlePoint> settlePoints2, Map<PlayerColor, List<DevelopmentType>> usedCards2,
         List<EdgeCatan> edges2, Map<PlayerColor, List<CatanCard>> cards2) {
         return PlayerColor.vals().stream()
@@ -99,15 +46,6 @@ public class UserChart extends VBox {
 
     public void setCards(List<CatanCard> currentCards) {
         CatanCard.placeCards(currentCards, cardGroup);
-    }
-
-    public void setColor(PlayerColor newV) {
-        userImage.setImage(CatanResource.newImage(CatanResource.USER_PNG, newV));
-        color.setValue(newV);
-    }
-
-    public void setOnWin(Runnable onWin) {
-        this.onWin = onWin;
     }
 
     public void setPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
@@ -145,26 +83,6 @@ public class UserChart extends VBox {
                 availablePorts.getChildren().add(newStatus);
                 newStatus.visibleProperty().bind(currentPlayer.isEqualTo(newV));
             });
-    }
-
-    private void bindText(PlayerColor player, Text points, ImageView image) {
-        points.textProperty().bind(playersPoints.get(player).asString());
-        points.visibleProperty().bind(color.isEqualTo(player).not());
-        image.setImage(CatanResource.newImage(CatanResource.USER_PNG, player));
-    }
-
-    private final void load() {
-        CommonsFX.loadRoot("UserChart.fxml", this);
-        for (PlayerColor playerColor : PlayerColor.values()) {
-            playersPoints.put(playerColor, new SimpleLongProperty(0));
-        }
-        bindText(PlayerColor.RED, redPoints, redImage);
-        bindText(PlayerColor.GREEN, greenPoints, greenImage);
-        bindText(PlayerColor.BLUE, bluePoints, blueImage);
-        bindText(PlayerColor.YELLOW, yellowPoints, yellowImage);
-        largestArmy.visibleProperty().bind(color.isEqualTo(largestArmy.playerProperty()));
-        longestRoad.visibleProperty().bind(color.isEqualTo(longestRoad.playerProperty()));
-        userImage.setImage(CatanResource.newImage(CatanResource.USER_PNG, PlayerColor.BLUE));
     }
 
 }

@@ -3,7 +3,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.*?>
 <?import javafx.beans.property.*?>
-<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml">
+<fx:root type="gaming.ex21.UserChartVariables" xmlns:fx="http://javafx.com/fxml">
 	<fx:define>
 	    <SimpleObjectProperty fx:id="color"  >
 	        <value>
