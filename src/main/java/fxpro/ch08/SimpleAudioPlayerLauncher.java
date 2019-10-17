@@ -5,7 +5,6 @@
  */
 package fxpro.ch08;
 
-import java.net.URL;
 import javafx.application.Application;
 import javafx.collections.MapChangeListener;
 import javafx.geometry.Insets;
@@ -55,13 +54,7 @@ public class SimpleAudioPlayerLauncher extends Application {
         createControls();
         createMedia();
         final Scene scene = new Scene(createGridPane());
-        try {
-
-            final URL stylesheet = Chapter8Resource.MEDIA.getURL();
-            scene.getStylesheets().add(stylesheet.toString());
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
+        scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simple Audio Player");
         primaryStage.show();

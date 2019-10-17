@@ -17,7 +17,9 @@
 			onSelectedToggleChange="#onAlignmentChange" />
 		<Rectangle fill="#00000000" fx:id="area" stroke="#000000"
 			height="10" width="10" style="-fx-stroke-dash-array:2,1,2,1;" />
-
+        <SVGPath content="M108 40 L 150.0 140.0 H 128.0 L 115.0 110.0 H 85.0 L 70.0 140.0 H 60.0Z  M 100.0 75.0 L 112.0 103.0 H 87.0 Z"
+            fill="#000000" fx:id="icon" stroke="#000000" fillRule="EVEN_ODD"/>
+        <FXCollections fx:factory="observableHashMap" fx:id="maxMap"/>
 	</fx:define>
 	<children>
 		<VBox>
@@ -448,6 +450,9 @@
 			<Text fx:id="text" managed="false" text="${textArea.text}"
 				underline="${underline.selected}"
 				strikethrough="${strikeThrough.selected}"
+				layoutX="${area.layoutX}"
+				layoutY="${area.layoutY + text.font.size}"
+				wrappingWidth="${area.width}"
 				effect="${effects.selectionModel.selectedItem}" />
 		</fx:define>
 	</children>

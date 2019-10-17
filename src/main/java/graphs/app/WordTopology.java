@@ -45,7 +45,7 @@ public class WordTopology extends BaseTopology {
 
     private String[] getWords() {
         try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("alice.txt"))) {
-            return lines.flatMap((String e) -> Stream.of(e.split("[^a-zA-Z]"))).filter(s -> s.length() == 4)
+            return lines.flatMap(e -> Stream.of(e.split("[^a-zA-Z]"))).filter(s -> s.length() == 4)
                 .map(String::toLowerCase).distinct().sorted().limit(getSize()).toArray(String[]::new);
         } catch (IOException e) {
             LOG.error("", e);

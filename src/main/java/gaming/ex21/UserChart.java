@@ -4,15 +4,12 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -55,14 +52,14 @@ public class UserChart extends VBox {
     private Text yellowPoints;
     @FXML
     private Group cardGroup;
-    private EnumMap<PlayerColor, LongProperty> playersPoints = new EnumMap<>(PlayerColor.class);
-    private BiConsumer<Pane, Pane> onWin;
+    private EnumMap<PlayerColor, SimpleLongProperty> playersPoints = new EnumMap<>(PlayerColor.class);
+    private Runnable onWin;
 
     public UserChart() {
-		load();
+        load();
     }
 
-	public long countPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
+    public long countPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
         Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
         long pointsCount = settlePoints.stream().filter(s -> s.getElement() instanceof Village)
             .filter(e -> e.getElement().getPlayer() == newPlayer).count();
@@ -94,7 +91,10 @@ public class UserChart extends VBox {
 
     public PlayerColor getWinner(List<SettlePoint> settlePoints2, Map<PlayerColor, List<DevelopmentType>> usedCards2,
         List<EdgeCatan> edges2, Map<PlayerColor, List<CatanCard>> cards2) {
-        return getWinner(this, settlePoints2, usedCards2, edges2, cards2);
+        return PlayerColor.vals().stream()
+            .max(Comparator.comparing((PlayerColor e) -> countPoints(e, settlePoints2, usedCards2, edges2))
+                .thenComparing(e -> cards2.get(e).size()))
+            .orElse(getColor());
     }
 
     public void setCards(List<CatanCard> currentCards) {
@@ -106,9 +106,8 @@ public class UserChart extends VBox {
         color.setValue(newV);
     }
 
-    public void setOnWin(BiConsumer<Pane, Pane> onWin) {
+    public void setOnWin(Runnable onWin) {
         this.onWin = onWin;
-
     }
 
     public void setPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
@@ -126,7 +125,7 @@ public class UserChart extends VBox {
                     center.getChildren().clear();
                     Pane right = (Pane) root.getLeft();
                     right.getChildren().clear();
-                    onWin.accept(center, right);
+                    onWin.run();
                 }).bindWindow(userPoints).displayDialog();
             }
         }
@@ -142,7 +141,7 @@ public class UserChart extends VBox {
             .filter(p -> settlePoints.stream().filter(s -> s.getElement() != null)
                 .filter(s -> s.getElement().getPlayer() == newV).anyMatch(p.getPoints()::contains))
             .forEach(p -> {
-                HBox newStatus = p.getStatus();
+                Pane newStatus = p.getStatus();
                 availablePorts.getChildren().add(newStatus);
                 newStatus.visibleProperty().bind(currentPlayer.isEqualTo(newV));
             });
@@ -155,7 +154,7 @@ public class UserChart extends VBox {
     }
 
     private final void load() {
-		CommonsFX.loadRoot("UserChart.fxml", this);
+        CommonsFX.loadRoot("UserChart.fxml", this);
         for (PlayerColor playerColor : PlayerColor.values()) {
             playersPoints.put(playerColor, new SimpleLongProperty(0));
         }
@@ -166,14 +165,6 @@ public class UserChart extends VBox {
         largestArmy.visibleProperty().bind(color.isEqualTo(largestArmy.playerProperty()));
         longestRoad.visibleProperty().bind(color.isEqualTo(longestRoad.playerProperty()));
         userImage.setImage(CatanResource.newImage(CatanResource.USER_PNG, PlayerColor.BLUE));
-	}
-
-    public static PlayerColor getWinner(UserChart userChart2, List<SettlePoint> settlePoints2,
-        Map<PlayerColor, List<DevelopmentType>> usedCards2, List<EdgeCatan> edges2,
-        Map<PlayerColor, List<CatanCard>> cards2) {
-        return PlayerColor.vals().stream()
-            .max(Comparator.comparing((PlayerColor e) -> userChart2.countPoints(e, settlePoints2, usedCards2, edges2))
-                .thenComparing(e -> cards2.get(e).size()))
-            .orElse(userChart2.getColor());
     }
+
 }

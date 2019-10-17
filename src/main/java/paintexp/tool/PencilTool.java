@@ -18,7 +18,7 @@ public class PencilTool extends PaintTool {
 
 	@Override
 	public Node createIcon() {
-	    return PaintToolHelper.getIconByURL("Pencil.png");
+	    return PaintTool.getIconByURL("Pencil.png");
 	}
 
     @Override

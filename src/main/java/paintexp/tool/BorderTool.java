@@ -24,7 +24,7 @@ public class BorderTool extends RectangleTool {
 
     @Override
     public ImageView createIcon() {
-        return PaintToolHelper.getIconByURL("Border.png");
+        return PaintTool.getIconByURL("Border.png");
 
     }
 

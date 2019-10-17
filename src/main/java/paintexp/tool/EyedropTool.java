@@ -18,7 +18,7 @@ public class EyedropTool extends PaintTool {
 
     @Override
     public Node createIcon() {
-        return PaintToolHelper.getIconByURL("eyedrop.png");
+        return PaintTool.getIconByURL("eyedrop.png");
     }
 
     public Rectangle getArea() {

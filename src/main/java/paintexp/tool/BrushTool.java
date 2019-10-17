@@ -48,7 +48,7 @@ public class BrushTool extends PaintTool {
 
 	@Override
 	public Node createIcon() {
-		return PaintToolHelper.getIconByURL("brush.png");
+		return PaintTool.getIconByURL("brush.png");
 	}
 
 	@Override

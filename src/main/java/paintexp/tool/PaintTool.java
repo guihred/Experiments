@@ -2,18 +2,22 @@ package paintexp.tool;
 
 import javafx.beans.property.Property;
 import javafx.event.EventType;
+import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
+import utils.ResourceFXUtils;
 
 @SuppressWarnings({ "unused", "static-method" })
 public abstract class PaintTool extends Group {
+    @FXML
     private Node icon;
 
     public PaintTool() {
@@ -91,6 +95,22 @@ public abstract class PaintTool extends Group {
         if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             onMouseReleased(model);
         }
+    }
+
+    public static ImageView getIconByURL(String src) {
+        return getIconByURL(src, 30);
+    
+    }
+
+    public static ImageView getIconByURL(String src, double width) {
+        ImageView icon1 = new ImageView(ResourceFXUtils.toExternalForm("paint/" + src));
+        icon1.setPreserveRatio(true);
+        icon1.setFitWidth(width);
+        icon1.setFitHeight(width);
+        icon1.maxWidth(width);
+        icon1.maxHeight(width);
+        return icon1;
+    
     }
 
     public static void handleSlider(KeyEvent e, Property<Number> property, Slider slider) {

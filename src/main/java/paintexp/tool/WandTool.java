@@ -34,7 +34,7 @@ public class WandTool extends AreaTool {
 
     @Override
     public Node createIcon() {
-        return PaintToolHelper.getIconByURL("wand.png");
+        return PaintTool.getIconByURL("wand.png");
     }
 
     @Override

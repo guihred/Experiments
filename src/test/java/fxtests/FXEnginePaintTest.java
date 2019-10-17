@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
@@ -80,6 +81,13 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             drag(MouseButton.PRIMARY);
             moveBy(randomMove(bound), randomMove(bound));
             drop();
+            for (ComboBox<?> node : lookup("#tools .combo-box").queryAllAs(ComboBox.class)) {
+                ObservableList<?> items = node.getItems();
+                for (int i = 0; i < 10 && i < items.size(); i++) {
+                    int j = i;
+                    interact(() -> node.getSelectionModel().select(j));
+                }
+            }
             Set<Node> queryAll2 = lookup("#tools .toggle-button").queryAll();
             queryAll2.forEach(e -> {
                 ConsumerEx.ignore((Node f) -> clickOn(f)).accept(e);

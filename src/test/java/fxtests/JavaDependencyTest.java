@@ -12,7 +12,6 @@ import javafx.application.Application;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.junit.runners.Parameterized;
@@ -80,12 +79,7 @@ public class JavaDependencyTest {
     public void testEJavaDependency() {
 
         measureTime("JavaFileDependency.displayTestsToBeRun", () -> {
-            List<String> asList = Arrays.asList("ConcentricLayout", "JavaFileDependency", "ConvergeLayout",
-                "CircleLayout", "CatanDragContext", "DataframeML", "PhotoViewerHelper", "CatanModel", "EdgeCatan",
-                "Deal", "CatanLogger", "CatanAppMain", "CatanCard", "Terrain", "CommonsFX", "CatanHelper",
-                "MouseGestures", "City", "PackageTopology", "CSVUtils", "Chapter4", "MethodsTopology", "ListHelper",
-                "Combination", "ContestApplicationController", "PlayerColor", "EditSongController", "SolitaireModel",
-                "CircleTopology", "GraphMain", "PhotoViewer", "SettlePoint", "DevelopmentType", "UserChart");
+            List<String> asList = Arrays.asList();
 
             Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(asList, "fxtests");
             String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
@@ -129,7 +123,7 @@ public class JavaDependencyTest {
                     Collection<?> orElseThrow = ClassReflectionUtils.getAllMethodsRecursive(forName).stream()
                         .filter(e -> e.getAnnotationsByType(Parameterized.Parameters.class).length > 0)
                         .map(FunctionEx.makeFunction(e -> e.invoke(null))).findFirst().map(e -> (Collection<?>) e)
-                        .orElseThrow(() -> new RuntimeIOException("DEVERIA TER"));
+                        .orElseGet(() -> Collections.emptyList());
                     for (Object object : orElseThrow) {
                         Object ob = forName.getConstructors()[0].newInstance(object);
                         runTest(forName, ob, failedTests);

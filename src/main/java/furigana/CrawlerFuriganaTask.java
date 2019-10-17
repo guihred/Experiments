@@ -91,48 +91,36 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                     mapReading.put(key, string);
                     return string;
                 }
-                List<String> ofuriganaMatches = kunReadings.stream().filter(e -> e.contains(".") && !e.contains("-"))
-                    .filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).collect(Collectors.toList());
-                if (!ofuriganaMatches.isEmpty()) {
-                    String string = ofuriganaMatches.get(0).split("\\.")[0];
+                Optional<String> ofuriganaMatches = kunReadings.stream()
+                    .filter(e -> e.contains(".") && !e.contains("-"))
+                    .filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
+                if (ofuriganaMatches.isPresent()) {
+                    String string = ofuriganaMatches.get().split("\\.")[0];
                     mapReading.put(key, string);
                     return string;
                 }
-                if (kunReadings.stream().anyMatch(JapaneseVerbConjugate::isVerb)) {
-                    Optional<String> conjugatedReadings = kunReadings.stream().filter(e -> e.contains(".")).peek(e -> {
-                        String[] split = e.split("\\.");
-                        mapReading.put(currentWord + split[1].charAt(0), split[0]);
-                    }).filter(JapaneseVerbConjugate::isVerb)
-                        .flatMap(e -> JapaneseVerbConjugate.conjugateVerb(e).stream()).peek(e -> {
-                            String[] split = e.split("\\.");
-                            mapReading.put(currentWord + split[1].charAt(0), split[0]);
-                        }).filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
-                    if (conjugatedReadings.isPresent()) {
-                        String finalReading = conjugatedReadings.get().split("\\.")[0];
-                        mapReading.put(key, finalReading);
-                        return finalReading;
-                    }
-
-                }
-
-            }
-
-            for (Element element : parse.select(".concept_light-representation ")) {
-                if (matchesCurrentWord(currentWord, currentLetter, element.select(".text").first())) {
-                    String text = element.select(".furigana").text();
-                    mapReading.put(key, text);
-                    return text;
-                }
-            }
-            Elements twoWord = parse.select(".japanese_word__furigana ");
-            if (!twoWord.isEmpty()) {
-                String text = twoWord.text();
-                if (text.equals(currentWord)) {
-                    mapReading.put(key, text);
-                    return text;
+                Optional<String> conjugatedReadings = conjugate(currentWord, currentLetter, kunReadings);
+                if (conjugatedReadings.isPresent()) {
+                    String finalReading = conjugatedReadings.get().split("\\.")[0];
+                    mapReading.put(key, finalReading);
+                    return finalReading;
                 }
             }
 
+            Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
+                .filter(element -> matchesCurrentWord(currentWord, currentLetter, element.select(".text").first()))
+                .findFirst();
+            if (firstRepresentation.isPresent()) {
+                String text = firstRepresentation.get().select(".furigana").text();
+                mapReading.put(key, text);
+                return text;
+            }
+
+            String text = parse.select(".japanese_word__furigana ").text();
+            if (text.equals(currentWord)) {
+                mapReading.put(key, text);
+                return text;
+            }
         } catch (Exception e) {
             LOG.error("ERRO " + currentWord, e);
             if (recursive < 2) {
@@ -192,6 +180,21 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         updateAll(total, total);
 
         return "Completed at " + LocalTime.now();
+    }
+
+    private Optional<String> conjugate(String currentWord, char currentLetter, List<String> kunReadings) {
+        if (kunReadings.stream().noneMatch(JapaneseVerbConjugate::isVerb)) {
+            return Optional.empty();
+        }
+
+        return kunReadings.stream().filter(e -> e.contains(".")).peek(e -> {
+            String[] split = e.split("\\.");
+            mapReading.put(currentWord + split[1].charAt(0), split[0]);
+        }).filter(JapaneseVerbConjugate::isVerb).flatMap(e -> JapaneseVerbConjugate.conjugateVerb(e).stream())
+            .peek(e -> {
+                String[] split = e.split("\\.");
+                mapReading.put(currentWord + split[1].charAt(0), split[0]);
+            }).filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
     }
 
     private StringBuilder placeFurigana(String line) {

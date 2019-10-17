@@ -35,7 +35,7 @@ public class SprayTool extends PaintTool {
 
     @Override
     public Node createIcon() {
-        return PaintToolHelper.getIconByURL("spray.png");
+        return PaintTool.getIconByURL("spray.png");
     }
 
     @Override

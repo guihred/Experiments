@@ -9,10 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,8 +22,6 @@ public class StringSigaUtils extends StringUtils {
     private static final int TAMANHO_CPF = 11;
     private static final int TAMANHO_CEP = 8;
     private static final int TAMANHO_CNPJ = 14;
-    private static final int TAMANHO_MATRICULA = 7;
-    private static final int TAMANHO_PAP = 9;
 
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
         Double.class);
@@ -157,21 +152,16 @@ public class StringSigaUtils extends StringUtils {
         return cpf;
     }
 
-    public static String getMatriculaFormatado(String matricula) {
-        if (StringUtils.isNotBlank(matricula)) {
-            String formatado = StringUtils.leftPad(getApenasNumeros(matricula), TAMANHO_MATRICULA, "0");
-            return formatar("#.###.###", formatado);
+    public static List<String> getLinks(String content) {
+        List<String> links = new ArrayList<>();
+        Pattern p = Pattern.compile("(?i)href=\"http://(.*?)\"");
+        Matcher m = p.matcher(content);
+        while (m.find()) {
+            links.add(m.group(1));
         }
-        return matricula;
+        return links;
     }
 
-    public static String getPAPFormatado(String pap) {
-        if (StringUtils.isNotBlank(pap)) {
-            String formatado = StringUtils.leftPad(pap, TAMANHO_PAP, "0");
-            return formatar("#####/####", formatado);
-        }
-        return pap;
-    }
 
     public static String intFormating(int length) {
         return "\t%" + length + "d";
@@ -183,7 +173,6 @@ public class StringSigaUtils extends StringUtils {
         } catch (NumberFormatException e) {
             HasLogging.log(1).trace("NUMBER NOT PARSED", e);
             HasLogging.log(1).error("NUMBER NOT PARSED \"{}\" {}", v, HasLogging.getCurrentLine(1));
-
             return null;
         }
     }
@@ -243,7 +232,6 @@ public class StringSigaUtils extends StringUtils {
         if (numero instanceof Number) {
             return ((Number) numero).intValue();
         }
-
         return get(() -> toInteger(Objects.toString(numero, "")), 0);
     }
 

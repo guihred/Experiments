@@ -3,92 +3,16 @@ package gaming.ex21;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
 
-public class CatanModel {
-    private final List<Terrain> terrains = FXCollections.observableArrayList();
-    private final List<SettlePoint> settlePoints = FXCollections.observableArrayList();
-    private List<EdgeCatan> edges;
-    private final Map<PlayerColor, List<CatanCard>> cards = PlayerColor.newMapList();
-    private final Map<PlayerColor, List<DevelopmentType>> usedCards = PlayerColor.newMapList();
-    private final SimpleObjectProperty<PlayerColor> currentPlayer = new SimpleObjectProperty<>();
-    private final ObservableList<CatanResource> elements = FXCollections.observableArrayList();
-    private final CatanDragContext dragContext = new CatanDragContext();
-    private final SimpleBooleanProperty diceThrown = new SimpleBooleanProperty(false);
-    private SelectResourceType resourcesToSelect = SelectResourceType.DEFAULT;
-    private int turnCount;
-    private final ObservableList<Deal> deals = FXCollections.observableArrayList();
-    private final Thief thief = new Thief();
-    private final List<Port> ports = Port.getPorts();
-    private final List<DevelopmentType> developmentCards = DevelopmentType.getDevelopmentCards();
-    private Node resourceChoices;
-    private Node exchangeButton;
-    private Node makeDeal;
-    private UserChart userChart;
+public class CatanModel extends CatanVariables {
 
     public boolean anyPlayerPoints(int minPoints) {
         return PlayerColor.vals().stream().mapToLong(e -> userChart.countPoints(e, settlePoints, usedCards, edges))
             .max().orElse(0) >= minPoints;
     }
 
-    public SimpleObjectProperty<PlayerColor> currentPlayerProperty() {
-        return currentPlayer;
-    }
-
     public boolean disableCombination(Combination combination) {
         return combination.disableCombination(getCurrentPlayer(), cards, settlePoints, edges, developmentCards);
-    }
-
-    public Map<PlayerColor, List<CatanCard>> getCards() {
-        return cards;
-    }
-
-    public PlayerColor getCurrentPlayer() {
-        return currentPlayer.get();
-    }
-
-    public ObservableList<Deal> getDeals() {
-        return deals;
-    }
-
-    public List<DevelopmentType> getDevelopmentCards() {
-        return developmentCards;
-    }
-
-    public SimpleBooleanProperty getDiceThrown() {
-        return diceThrown;
-    }
-
-    public CatanDragContext getDragContext() {
-        return dragContext;
-    }
-
-    public List<EdgeCatan> getEdges() {
-        return edges;
-    }
-
-    public ObservableList<CatanResource> getElements() {
-        return elements;
-    }
-
-    public PlayerColor getPlayerWinner() {
-        return userChart.getWinner(settlePoints, usedCards, edges, cards);
-    }
-
-    public List<Port> getPorts() {
-        return ports;
-    }
-
-    public List<SettlePoint> getSettlePoints() {
-        return settlePoints;
-    }
-
-    public List<Terrain> getTerrains() {
-        return terrains;
     }
 
     public void handleMouseReleased(double x, double y) {
@@ -210,39 +134,7 @@ public class CatanModel {
             .resourcesToSelect(resourcesToSelect).elements(elements).build();
     }
 
-    public void setCurrentPlayer(PlayerColor value) {
-        currentPlayer.set(value);
-    }
 
-    public void setEdges(List<EdgeCatan> addTerrains) {
-        edges = addTerrains;
-    }
-
-    public void setExchangeButton(Node exchangeButton) {
-        this.exchangeButton = exchangeButton;
-    }
-
-    public void setMakeDeal(Node makeDeal) {
-        this.makeDeal = makeDeal;
-    }
-
-    public void setResourceChoices(Node resourceChoices) {
-        this.resourceChoices = resourceChoices;
-    }
-
-    public void setResourceSelect(SelectResourceType deal) {
-        if (resourcesToSelect == SelectResourceType.DEFAULT) {
-            resourcesToSelect = deal;
-            resourceChoices.setVisible(true);
-        }
-        if (deal == SelectResourceType.MAKE_DEAL) {
-            makeDeal.setDisable(true);
-        }
-    }
-
-    public void setUserChart(UserChart userChart) {
-        this.userChart = userChart;
-    }
 
     public void throwDice() {
         int diceValue = userChart.throwDice();
@@ -335,7 +227,7 @@ public class CatanModel {
             Terrain terrain = edgeHovered.get();
             terrain.setThief(thief);
             stealResource(terrain);
-            elements.removeIf(e -> e == thief);
+            elements.remove(thief);
         } else {
             elements.add(0, dragContext.getElement());
         }

@@ -13,8 +13,8 @@ enum SelectOption {
     public static List<Node> createSelectOptions(ChangeListener<? super Toggle> listener, Object option) {
 		final int size = 30;
         return new SimpleToggleGroupBuilder()
-            .addToggle(PaintToolHelper.getIconByURL("opaqueSelection.png", size), SelectOption.OPAQUE)
-            .addToggle(PaintToolHelper.getIconByURL("transparentSelection.png", size), SelectOption.TRANSPARENT)
+            .addToggle(PaintTool.getIconByURL("opaqueSelection.png", size), SelectOption.OPAQUE)
+            .addToggle(PaintTool.getIconByURL("transparentSelection.png", size), SelectOption.TRANSPARENT)
             .onChange(listener).select(option).getTogglesAs(Node.class);
     }
 

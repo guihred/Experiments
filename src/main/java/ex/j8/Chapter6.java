@@ -18,16 +18,11 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import utils.CrawlerTask;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.SupplierEx;
+import utils.*;
 
 public final class Chapter6 {
     private static final String ALICE_TXT = "alice.txt";
@@ -80,7 +75,7 @@ public final class Chapter6 {
     public static void ex10() {
         CrawlerTask.insertProxyConfig();
         String url = "http://www.google.com";
-        CompletableFuture.supplyAsync(() -> readPage(url)).thenApply(Chapter6::getLinks)
+        CompletableFuture.supplyAsync(() -> readPage(url)).thenApply(StringSigaUtils::getLinks)
             .thenAccept(l -> l.forEach(LOGGER::info));
         ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
 
@@ -237,16 +232,6 @@ public final class Chapter6 {
         Arrays.parallelPrefix(a, (t, u) -> t.multiply(u));
 
         LOGGER.trace("{}", a[a.length - 1].mat[0][0]);
-    }
-
-    public static List<String> getLinks(String content) {
-        List<String> links = new ArrayList<>();
-        Pattern p = Pattern.compile("(?i)href=\"http://(.*?)\"");
-        Matcher m = p.matcher(content);
-        while (m.find()) {
-            links.add(m.group(1));
-        }
-        return links;
     }
 
     public static void main(String[] args) {

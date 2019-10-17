@@ -3,23 +3,19 @@ package paintexp.tool;
 import static simplebuilder.SimpleComboBoxBuilder.cellStyle;
 import static utils.DrawOnPoint.getWithinRange;
 
-import java.util.HashMap;
 import java.util.Map;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.control.*;
-import javafx.scene.effect.Effect;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.FillRule;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
-import simplebuilder.SimpleSvgPathBuilder;
 import utils.CommonsFX;
 
 public class TextTool extends PaintTool {
@@ -38,25 +34,23 @@ public class TextTool extends PaintTool {
     @FXML
     private ToggleButton italic;
     @FXML
-    private ToggleGroup alignments;
-    @FXML
-    private VBox effectsOptions;
+    private Pane effectsOptions;
     @FXML
     private ComboBox<Integer> fontSize;
+    @SuppressWarnings("rawtypes")
     @FXML
-    private ComboBox<Effect> effects;
+    private ComboBox effects;
     @FXML
     private ComboBox<String> fontFamily;
-    private Parent options;
+    private Node options;
 
-    private Map<Object, Double> maxMap = new HashMap<>();
+    @FXML
+    private Map<Object, Double> maxMap;
 
     @Override
     public Node createIcon() {
-        return new SimpleSvgPathBuilder()
-            .content("M108 40 L 150.0 140.0 H 128.0 L 115.0 110.0 H 85.0 L 70.0 140.0 H 60.0"
-                + " Z  M 100.0 75.0 L 112.0 103.0 H 87.0 Z")
-            .stroke(Color.BLACK).fillRule(FillRule.EVEN_ODD).fill(Color.BLACK).build();
+        loadParent();
+        return getIcon();
     }
 
     @Override
@@ -80,24 +74,13 @@ public class TextTool extends PaintTool {
         FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
         double size = fontSize.getSelectionModel().getSelectedItem();
         text.setFont(Font.font(fontFamily.getSelectionModel().getSelectedItem(), weight, posture, size));
-        Effect selectedItem = effects.getSelectionModel().getSelectedItem();
-        PaintToolHelper.addOptionsAccordingly(selectedItem, effectsOptions, maxMap, effects.getItems());
+        PaintToolHelper.addOptionsAccordingly(effects.getSelectionModel().getSelectedItem(),
+            effectsOptions.getChildren(), maxMap, effects.getItems());
     }
 
     @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
-        if (options == null) {
-            options = CommonsFX.loadParent("TextTool.fxml", this);
-            fontFamily.setCellFactory(cellStyle(fontFamily, t -> "-fx-font-family:\"" + t + "\";"));
-            fontFamily.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
-            fontSize.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
-            effects.getItems().add(0, null);
-            effects.getProperties().put("anchor", 0);
-            effects.getProperties().put("isDefaultAnchor", true);
-            effects.getSelectionModel().selectedIndexProperty().addListener(e -> onOptionsChanged());
-        }
-
         model.getToolOptions().getChildren().addAll(options);
     }
 
@@ -114,8 +97,7 @@ public class TextTool extends PaintTool {
 
     @Override
     protected void onMousePressed(final MouseEvent e, final PaintModel model) {
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (children.contains(area)) {
+        if (model.getImageStack().getChildren().contains(area)) {
             if (containsPoint(area, e.getX(), e.getY())) {
                 return;
             }
@@ -131,10 +113,9 @@ public class TextTool extends PaintTool {
 
     @Override
     protected void onMouseReleased(final PaintModel model) {
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (area.getWidth() < 2 && children.contains(area)) {
+        if (area.getWidth() < 2 && model.getImageStack().getChildren().contains(area)) {
 
-            children.remove(area);
+            model.getImageStack().getChildren().remove(area);
         }
         pressed = false;
         textArea.requestFocus();
@@ -142,9 +123,8 @@ public class TextTool extends PaintTool {
     }
 
     private void addRect(final PaintModel model) {
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (!children.contains(area)) {
-            children.add(area);
+        if (!model.getImageStack().getChildren().contains(area)) {
+            model.getImageStack().getChildren().add(area);
             area.setStroke(Color.BLACK);
             area.setManaged(false);
             area.setFill(Color.TRANSPARENT);
@@ -153,15 +133,9 @@ public class TextTool extends PaintTool {
             area.setWidth(1);
             area.setHeight(1);
         }
-        if (!children.contains(text)) {
-            children.add(text);
+        if (!model.getImageStack().getChildren().contains(text)) {
+            model.getImageStack().getChildren().add(text);
             text.fillProperty().bind(model.frontColorProperty());
-
-            text.layoutXProperty().bind(area.layoutXProperty());
-            text.layoutYProperty()
-                .bind(Bindings.createDoubleBinding(() -> area.layoutYProperty().get() + text.getFont().getSize(),
-                    area.layoutYProperty(), text.fontProperty()));
-            text.wrappingWidthProperty().bind(area.widthProperty());
         }
     }
 
@@ -170,6 +144,16 @@ public class TextTool extends PaintTool {
         area.setLayoutY(Math.min(y, initialY));
         area.setWidth(Math.abs(x - initialX));
         area.setHeight(Math.abs(y - initialY));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadParent() {
+        options = CommonsFX.loadParent("TextTool.fxml", this);
+        fontFamily.setCellFactory(cellStyle(fontFamily, t -> "-fx-font-family:\"" + t + "\";"));
+        fontFamily.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
+        fontSize.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
+        effects.getItems().add(0, null);
+        effects.getSelectionModel().selectedIndexProperty().addListener(e -> onOptionsChanged());
     }
 
     private void takeSnapshot(final PaintModel model) {

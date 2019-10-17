@@ -25,7 +25,7 @@ public class EraserTool extends PaintTool {
 
     @Override
     public Node createIcon() {
-        return PaintToolHelper.getIconByURL("eraser.png");
+        return PaintTool.getIconByURL("eraser.png");
     }
 
     public Rectangle getArea() {

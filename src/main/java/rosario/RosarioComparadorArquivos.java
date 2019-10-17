@@ -1,7 +1,6 @@
 package rosario;
 
 import java.io.IOException;
-import java.net.URL;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,8 +13,7 @@ public class RosarioComparadorArquivos extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        URL file = ResourceFXUtils.toURL("RosarioComparadorArquivos.fxml");
-        Parent content = FXMLLoader.load(file);
+        Parent content = FXMLLoader.load(ResourceFXUtils.toURL("RosarioComparadorArquivos.fxml"));
         Scene scene = new Scene(content, 1000, 500, Color.WHITE);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Comparação Estoque e ANVISA");
