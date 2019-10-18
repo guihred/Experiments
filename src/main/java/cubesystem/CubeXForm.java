@@ -49,6 +49,13 @@ public class CubeXForm extends Group {
 		return rx;
 	}
 
+	public void setRx(Rotate value) {
+	    copy(rx, value);
+	}
+	
+	public void setRy(Rotate value) {
+	    copy(ry, value);
+	}
 	public Rotate getRy() {
 		return ry;
 	}
@@ -57,13 +64,6 @@ public class CubeXForm extends Group {
 		return rz;
 	}
 
-    public void setRx(Rotate value) {
-        copy(rx, value);
-    }
-
-    public void setRy(Rotate value) {
-        copy(ry, value);
-    }
 
     public void setRz(Rotate value) {
         copy(rz, value);

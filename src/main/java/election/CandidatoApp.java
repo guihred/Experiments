@@ -2,57 +2,15 @@ package election;
 
 import static election.CandidatoHelper.*;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
-import javafx.application.Application;
 import javafx.beans.Observable;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import ml.graph.PieGraph;
 import simplebuilder.SimpleTreeViewBuilder;
 import utils.CommonsFX;
 import utils.CrawlerTask;
 import utils.HibernateUtil;
 
-public class CandidatoApp extends Application {
-    @FXML
-    private Text text18;
-    @FXML
-    private TableColumn<Candidato, String> fotoUrl;
-    @FXML
-    private TableColumn<Candidato, Boolean> eleito;
-    @FXML
-    private Slider slider20;
-    @FXML
-    private TreeView<String> treeView0;
-    @FXML
-    private TextField filter;
-    @FXML
-    private TableColumn<Candidato, LocalDate> nascimento;
-    @FXML
-    private TableView<Candidato> tableView2;
-    @FXML
-    private TableColumn<Candidato, Cidade> cidade;
-    @FXML
-    private PieGraph pieGraph;
-    @FXML
-    private SimpleIntegerProperty maxResult;
-    @FXML
-    private SimpleStringProperty column;
-    private SimpleIntegerProperty first = new SimpleIntegerProperty(0);
-    @FXML
-    private ObservableList<Candidato> candidates;
-    @FXML
-    private ObservableMap<String, Set<String>> fieldMap;
-    @FXML
-    private ObservableMap<String, CheckBox> portChecks;
+public class CandidatoApp extends CandidatoAppVariables {
 
     public void initialize() {
         CrawlerTask.insertProxyConfig();
