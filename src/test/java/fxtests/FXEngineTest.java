@@ -5,6 +5,9 @@ import static fxtests.FXTesting.measureTime;
 import ethical.hacker.EthicalHackApp;
 import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
+import fxsamples.AnchorCircle;
+import fxsamples.LineManipulator;
+import fxsamples.PhotoViewer;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -56,7 +59,6 @@ public class FXEngineTest extends AbstractTestExecution {
         tryClickButtons();
     }
 
-
     @Test
     public void verifyEthicalHack() throws Exception {
         show(EthicalHackApp.class);
@@ -64,8 +66,6 @@ public class FXEngineTest extends AbstractTestExecution {
             .forEach(ConsumerEx.ignore(this::clickOn));
         ConsoleUtils.waitAllProcesses();
     }
-
-
 
     @Test
     public void verifyImageCracker() throws Exception {
@@ -75,7 +75,22 @@ public class FXEngineTest extends AbstractTestExecution {
         ImageCrackerApp.waitABit();
     }
 
+    @Test
+    public void verifyLineManipulator() throws Exception {
+        show(LineManipulator.class);
+        lookup(AnchorCircle.class::isInstance).queryAll().forEach(e -> {
+            drag(e, MouseButton.PRIMARY);
+            moveRandom(50);
+            drag(e, MouseButton.PRIMARY);
+        });
+    }
 
+    @Test
+    public void verifyPhotoViewer() throws Exception {
+
+        show(PhotoViewer.class);
+        tryClickButtons();
+    }
 
     @Test
     public void verifyScroll() throws Exception {
@@ -86,7 +101,6 @@ public class FXEngineTest extends AbstractTestExecution {
             }), WorldMapExample.class, WorldMapExample2.class));
 
     }
-
 
     @Test
     public void verifySngpcViewer() throws Exception {
@@ -99,8 +113,6 @@ public class FXEngineTest extends AbstractTestExecution {
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
     }
 
-
-
     @Test
     public void verifyWordSuggetion() throws Exception {
         show(WordSuggetionApp.class);
@@ -109,6 +121,5 @@ public class FXEngineTest extends AbstractTestExecution {
             write("new york ");
         }));
     }
-
 
 }

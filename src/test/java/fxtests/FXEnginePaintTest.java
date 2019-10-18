@@ -3,7 +3,10 @@ package fxtests;
 import static javafx.scene.input.KeyCode.*;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
@@ -27,7 +30,6 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 
     private static final String TEST_FILE = "test.png";
 
-    private Random random = new Random();
 
     @Test
     public void testaToolsVerify() throws Exception {
@@ -57,12 +59,12 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             clickOn(next);
             lookup("#tools .slider").queryAll().forEach(f -> {
                 drag(f, MouseButton.PRIMARY);
-                moveBy(randomMove(50), 0);
+                moveBy(randomNumber(50), 0);
                 drop();
             });
             moveTo(stack);
             drag(MouseButton.PRIMARY);
-            moveBy(randomMove(bound), randomMove(bound));
+            moveRandom(bound);
             drop();
 
 			if (userData instanceof AreaTool) {
@@ -77,9 +79,9 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             }
 
             lookup(".text-area").queryAll().forEach(e -> write(getRandomString()));
-            moveBy(randomMove(bound), randomMove(bound));
+            moveRandom(bound);
             drag(MouseButton.PRIMARY);
-            moveBy(randomMove(bound), randomMove(bound));
+            moveRandom(bound);
             drop();
             for (ComboBox<?> node : lookup("#tools .combo-box").queryAllAs(ComboBox.class)) {
                 ObservableList<?> items = node.getItems();
@@ -93,13 +95,13 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 ConsumerEx.ignore((Node f) -> clickOn(f)).accept(e);
                 scroll(1, VerticalDirection.DOWN);
                 moveTo(stack);
-                moveBy(randomMove(bound), randomMove(bound));
+                moveRandom(bound);
                 drag(MouseButton.PRIMARY);
-                moveBy(randomMove(bound), randomMove(bound));
-                moveBy(randomMove(bound), randomMove(bound));
+                moveRandom(bound);
+                moveRandom(bound);
                 drop();
                 drag(MouseButton.PRIMARY);
-                moveBy(randomMove(bound), randomMove(bound));
+                moveRandom(bound);
                 drop();
                 lookup(".text-area").queryAll().forEach(f -> {
                     interactNoWait(() -> f.requestFocus());
@@ -114,9 +116,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         return Long.toString(Math.abs(random.nextLong()) + 1000, Character.MAX_RADIX).substring(0, 4);
     }
 
-    private int randomMove(int bound) {
-        return random.nextInt(bound) - bound / 2;
-    }
+
 
     private void testMenus(final Node stack) {
         List<MenuButton> node = lookup(MenuButton.class::isInstance).queryAllAs(MenuButton.class).stream()
@@ -154,7 +154,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 lookup("Resize").queryAll().forEach(this::clickOn);
                 lookup(".slider").queryAll().forEach(m -> {
                     drag(m, MouseButton.PRIMARY);
-                    moveBy(randomMove(50), 0);
+                    moveBy(randomNumber(50), 0);
                     drop();
                 });
                 lookup("Adjust").queryAll().forEach(t -> {

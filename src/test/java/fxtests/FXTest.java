@@ -1,7 +1,6 @@
 package fxtests;
 
 import ex.j8.Chapter4;
-import fxsamples.PhotoViewer;
 import javafx.application.Application;
 import org.junit.Test;
 
@@ -17,9 +16,5 @@ public final class FXTest {
             Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class);
     }
 
-    @Test
-    public void testPhotoViewer() throws Throwable {
-        FXTesting.testApps(PhotoViewer.class);
-    }
 
 }

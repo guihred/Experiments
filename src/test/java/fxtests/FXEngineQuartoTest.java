@@ -1,7 +1,6 @@
 package fxtests;
 
 import gaming.ex06.QuartoLauncher;
-import java.util.Random;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -11,8 +10,6 @@ import org.junit.Test;
 import utils.RunnableEx;
 
 public class FXEngineQuartoTest extends AbstractTestExecution {
-
-	Random random = new Random();
 
 	public double randAngle(int  r) {
 		return random.nextInt(r) * Math.PI * 2 / r;

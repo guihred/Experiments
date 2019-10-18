@@ -1,7 +1,6 @@
 package graphs.app;
 
 import graphs.entities.Cell;
-import graphs.entities.Edge;
 import graphs.entities.Graph;
 import graphs.entities.GraphModelAlgorithms;
 import java.util.Collection;
@@ -24,33 +23,6 @@ public class RandomLayout extends Layout {
 		layoutRandomly(cells, width, height);
     }
 
-    public static void layoutRandom(List<Cell> cells, List<Edge> allEdges, double width) {
-        double bound = width;
-
-        for (Cell cell : cells) {
-            int i = 0;
-            int minIntersection = Integer.MAX_VALUE;
-            double miny = 0;
-            double minx = 0;
-            List<Edge> edges = GraphModelAlgorithms.edges(cell, allEdges);
-            do {
-                double x = BaseTopology.rndPositive(bound);
-                double y = BaseTopology.rndPositive(bound);
-                cell.relocate(x, y);
-                int j = 0;
-                for (Edge edge : edges) {
-                    j += GraphModelAlgorithms.intersection(allEdges, edge);
-                }
-                if (minIntersection > j && !GraphModelAlgorithms.anyIntersection(cells, cell)) {
-                    minx = x;
-                    miny = y;
-                    minIntersection = j;
-                }
-            } while (minIntersection == Integer.MAX_VALUE
-                || i++ < 10 && GraphModelAlgorithms.anyIntersection(edges, allEdges));
-            cell.relocate(minx, miny);
-        }
-    }
 
 	public static void layoutRandomly(Collection<Cell> cells, double width, double height) {
 		for (Cell cell : cells) {

@@ -2,13 +2,8 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 import static fxtests.FXTesting.measureTimeExpectException;
-import static japstudy.JapanRefactoring.TXT_FILE;
-import static japstudy.JapanRefactoring.refactorJapaneseFile;
-import static japstudy.JapanRefactoring.renameFile;
 
 import ex.j8.*;
-import extract.ExcelService;
-import extract.WordService;
 import furigana.JapaneseVerbConjugate;
 import fxpro.ch03.JavaFXBeanController;
 import fxpro.ch03.MultipleBindingExample;
@@ -22,14 +17,10 @@ import graphs.*;
 import japstudy.CompareAnswers;
 import java.io.File;
 import java.math.BigInteger;
-import java.util.*;
-import javafx.collections.ObservableList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
-import rosario.LeitorArquivos;
-import rosario.Medicamento;
-import utils.FunctionEx;
-import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
 public final class JavaExercisesTest {
@@ -117,30 +108,7 @@ public final class JavaExercisesTest {
         }
     }
 
-    @Test
-    public void testExcelAndWordFile() throws Exception {
-        ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
-            () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
-        Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();
-        campos.put("Registro", Medicamento::getRegistro);
-        campos.put("Codigo", Medicamento::getCodigo);
-        campos.put("Lote", Medicamento::getLote);
-        campos.put("Nome", Medicamento::getNome);
-        campos.put("Quantidade", Medicamento::getQuantidade);
-        measureTime("ExcelService.exportList",
-            () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
-        measureTime("WordService.getPowerPointImages",
-            () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
-        measureTime("WordService.getWord", () -> {
-            Map<String, Object> mapaSubstituicao = new HashMap<>();
-            File file = ResourceFXUtils.getOutFile("resultado.docx");
-            mapaSubstituicao.put("443", "444");
-            WordService.getWord(mapaSubstituicao, "CONTROLE_DCDF_RDMs.docx", file);
 
-        });
-        measureTime("JapanRefactoring.refactorJapaneseFile",
-            () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
-    }
 
     @Test
     public void testJapaneseConjugate() throws Exception {

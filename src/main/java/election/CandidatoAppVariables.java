@@ -45,4 +45,4 @@ public abstract class CandidatoAppVariables extends Application {
     @FXML
     protected ObservableMap<String, CheckBox> portChecks;
 
-    }
+}

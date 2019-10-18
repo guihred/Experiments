@@ -6,7 +6,10 @@ import gaming.ex13.CardStack;
 import gaming.ex13.SolitaireCard;
 import gaming.ex13.SolitaireLauncher;
 import gaming.ex13.SolitaireModel;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -20,7 +23,6 @@ public final class FXEngineSolitaireTest extends AbstractTestExecution {
         show(DotsLauncher.class);
         Set<Node> queryAll = lookup(e -> e instanceof DotsSquare).queryAll().stream().limit(20)
             .collect(Collectors.toSet());
-        Random random = new Random();
         for (Node next : queryAll) {
             drag(next, MouseButton.PRIMARY);
             int a = random.nextBoolean() ? 1 : -1;

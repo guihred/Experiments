@@ -48,8 +48,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 	public void verify() throws Exception {
         ImageFXUtils.setShowImage(false);
         lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
-        closeCurrentWindow();
-	}
+    }
 
 	@SuppressWarnings("rawtypes")
 	@Test
@@ -78,7 +77,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 		Set<Node> queryButtons = lookup(Cell.class::isInstance).queryAll();
 		queryButtons.forEach(e -> {
             RunnableEx.ignore(() -> clickOn(e));
-            drag(e, MouseButton.PRIMARY);
+            RunnableEx.ignore(() -> drag(e, MouseButton.PRIMARY));
 			moveBy(100, 100);
 			drop();
 		});

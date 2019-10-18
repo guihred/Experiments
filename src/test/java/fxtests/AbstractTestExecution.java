@@ -1,6 +1,7 @@
 package fxtests;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.scene.input.KeyCode;
@@ -22,11 +23,12 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     protected boolean isLinux = SystemUtils.IS_OS_LINUX;
     private final Logger logger = HasLogging.super.getLogger();
 
+    protected Random random = new Random();
+
     @Override
     public Logger getLogger() {
         return logger;
     }
-
     @Override
     public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
@@ -38,6 +40,14 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     @Override
     public void stop() throws Exception {
         currentStage.close();
+    }
+
+    protected void moveRandom(int bound) {
+        moveBy(randomNumber(bound), randomNumber(bound));
+    }
+
+    protected int randomNumber(int bound) {
+        return random.nextInt(bound) - bound / 2;
     }
 
 	protected <T extends Application> T show(Class<T> c) {

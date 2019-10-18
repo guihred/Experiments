@@ -25,7 +25,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public class PhotoViewer extends Application {
-    private static final Logger LOGGER = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
     @FXML
     private ProgressIndicator progressIndicator;
     @FXML
@@ -64,7 +64,7 @@ public class PhotoViewer extends Application {
     }
 
     public void onMousePressedButton1() {
-        LOGGER.info("busy loading? {}", loading.get());
+        LOG.info("busy loading? {}", loading.get());
         // if no previous image or currently loading.
         if (loading.get()) {
             return;
@@ -76,7 +76,7 @@ public class PhotoViewer extends Application {
     }
 
     public void onMousePressedButton2() {
-        LOGGER.info("busy loading? {}", loading.get());
+        LOG.info("busy loading? {}", loading.get());
         // if no next image or currently loading.
         if (loading.get()) {
             return;

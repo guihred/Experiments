@@ -18,8 +18,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 
 	private static final int MAX_TRIES = 100;
 
-    private Random random = new Random();
-
     @Test
     public void testDecisions() throws Exception {
 		CatanAppMain newInstance = show(CatanAppMain.class);

@@ -2,7 +2,6 @@ package fxtests;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
@@ -13,8 +12,6 @@ import org.junit.Test;
 import paintexp.svgcreator.SVGCreator;
 
 public class FXEngineSVGCreatorTest extends AbstractTestExecution {
-
-    private Random random = new Random();
 
     @Test
 	public void testaToolsVerify() throws Exception {
@@ -27,18 +24,18 @@ public class FXEngineSVGCreatorTest extends AbstractTestExecution {
             clickOn(next);
             moveTo(stack);
 			drag(MouseButton.PRIMARY);
-            moveBy(randomMove(bound), randomMove(bound));
+            moveRandom(bound);
 			drop();
 
-            moveBy(randomMove(bound), randomMove(bound));
+            moveRandom(bound);
             drag(MouseButton.PRIMARY);
-            moveBy(randomMove(bound), randomMove(bound));
+            moveRandom(bound);
             drop();
 
             moveTo(stack);
-            moveBy(randomMove(bound), randomMove(bound));
+            moveRandom(bound);
             drag(MouseButton.PRIMARY);
-            moveBy(randomMove(bound), randomMove(bound));
+            moveRandom(bound);
             drop();
 
 		}

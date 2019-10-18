@@ -95,7 +95,7 @@ public class IndependentTest {
         measureTime("Ch3.IntSequence.of", () -> Ch3.IntSequence.of(1, 2, 3).foreach(e -> LOGGER.trace("{}", e)));
         measureTime("new Ch3.SquareSequence",
             () -> new Ch3.SquareSequence().limit(10).foreach(e -> LOGGER.trace("{}", e)));
-        measureTime("Ch3.isSorted", () -> Ch3.isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo));
+        measureTime("Ch3.isSorted", () -> QuickSortML.isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo));
         measureTime("Ch3.luckySort",
             () -> Ch3.luckySort(Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e"), String::compareTo));
         measureTime("Ch3.subdirectories", () -> Ch3.subdirectories(new File(".")));
@@ -205,7 +205,7 @@ public class IndependentTest {
         List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
         Comparator<Integer> c = Integer::compareTo;
         measureTime("QuickSortML.sort", () -> QuickSortML.sort(input, c.reversed()));
-        Assert.assertTrue("List should be sorted", Ch3.isSorted(input, c.reversed()));
+        Assert.assertTrue("List should be sorted", QuickSortML.isSorted(input, c.reversed()));
 
     }
 

@@ -3,6 +3,9 @@ package fxtests;
 import static ethical.hacker.ImageCracker.crackImage;
 import static ethical.hacker.ImageCracker.createSelectedImage;
 import static fxtests.FXTesting.measureTime;
+import static japstudy.JapanRefactoring.TXT_FILE;
+import static japstudy.JapanRefactoring.refactorJapaneseFile;
+import static japstudy.JapanRefactoring.renameFile;
 import static java.nio.file.Files.deleteIfExists;
 import static utils.ResourceFXUtils.getOutFile;
 import static utils.ResourceFXUtils.toExternalForm;
@@ -16,7 +19,9 @@ import ex.j9.ch4.Point;
 import ex.j9.ch4.PrimaryColor;
 import ex.j9.ch4.Rectangle;
 import extract.ExcelService;
+import extract.WordService;
 import gaming.ex16.MadEdge;
+import gaming.ex16.MadEdgeDistance;
 import graphs.EdgeElement;
 import graphs.entities.EdgeDistancePack;
 import graphs.entities.Linha;
@@ -59,6 +64,31 @@ public class FXFileReadersTest extends ApplicationTest {
     }
 
     @Test
+    public void testExcelAndWordFile() throws Exception {
+        ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
+            () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
+        Map<String, FunctionEx<Medicamento, Object>> campos = new LinkedHashMap<>();
+        campos.put("Registro", Medicamento::getRegistro);
+        campos.put("Codigo", Medicamento::getCodigo);
+        campos.put("Lote", Medicamento::getLote);
+        campos.put("Nome", Medicamento::getNome);
+        campos.put("Quantidade", Medicamento::getQuantidade);
+        measureTime("ExcelService.exportList",
+            () -> ExcelService.getExcel(medicamentosSNGPCPDF, campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
+        measureTime("WordService.getPowerPointImages",
+            () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
+        measureTime("WordService.getWord", () -> {
+            Map<String, Object> mapaSubstituicao = new HashMap<>();
+            File file = ResourceFXUtils.getOutFile("resultado.docx");
+            mapaSubstituicao.put("443", "444");
+            WordService.getWord(mapaSubstituicao, "CONTROLE_DCDF_RDMs.docx", file);
+
+        });
+        measureTime("JapanRefactoring.refactorJapaneseFile",
+            () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
+    }
+
+    @Test
     public void testExcelService() {
         ObservableList<Medicamento> medicamentosSNGPCPDF = LeitorArquivos
             .getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf"));
@@ -90,7 +120,6 @@ public class FXFileReadersTest extends ApplicationTest {
                 campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
 
     }
-
     @Test
     public void testExcelService3() {
         String arquivo = "anvisa2208.xlsx";
@@ -176,7 +205,7 @@ public class FXFileReadersTest extends ApplicationTest {
             List<Object> equalsTest = Arrays.asList(new Point(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,
                 new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5),
                 new Rectangle(new Point(2, 4), 3, 5), new EdgeElement(), new Contest(), new LessonPK(),
-                new MadEdge(null, null));
+                new MadEdge(null, null), new MadEdgeDistance(null, 2F));
             equalsTest.forEach(e -> equalsTest.contains(e));
         });
     }

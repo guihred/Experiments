@@ -57,6 +57,7 @@ public class GraphMain extends Application {
     private Timeline timeline;
 
     public void initialize() {
+
         convergeLayout.addEventHandler(timeline);
         borderPane.setCenter(graph.getScrollPane());
         networkField.setText(networkTopology.getNetworkAddress());

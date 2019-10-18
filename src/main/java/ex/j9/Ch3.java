@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import ml.data.QuickSortML;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
@@ -25,15 +26,6 @@ public class Ch3 {
      */
     public static Runnable inOrder(Runnable... runnables) {
         return () -> runInOrder(runnables);
-    }
-
-    public static <T> boolean isSorted(List<T> a, Comparator<T> comp) {
-        for (int i = 0; i < a.size() - 1; i++) {
-            if (comp.compare(a.get(i), a.get(i + 1)) > 0) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /*
@@ -63,7 +55,7 @@ public class Ch3 {
      * comparator.
      */
     public static void luckySort(List<String> strings, Comparator<String> comp) {
-        while (!isSorted(strings, comp)) {
+        while (!QuickSortML.isSorted(strings, comp)) {
             Collections.shuffle(strings);
         }
 
