@@ -9,6 +9,7 @@ import org.apache.commons.lang.SystemUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
 import org.testfx.framework.junit.ApplicationTest;
 import utils.ConsumerEx;
 import utils.HasLogging;
@@ -19,6 +20,12 @@ import utils.RunnableEx;
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
     protected Stage currentStage;
     protected boolean isLinux = SystemUtils.IS_OS_LINUX;
+    private final Logger logger = HasLogging.super.getLogger();
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -35,7 +42,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
 	protected <T extends Application> T show(Class<T> c) {
         try {
-            HasLogging.log(1).info("SHOWING {}", c.getSimpleName());
+            logger.info("SHOWING {}", c.getSimpleName());
             T newInstance = c.newInstance();
             interactNoWait(RunnableEx.make(() -> newInstance.start(currentStage)));
             return newInstance;
@@ -43,11 +50,12 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
             throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
         }
     }
+
     protected <T extends Application> void show(T application) {
         interactNoWait(RunnableEx.make(() -> {
-            HasLogging.log(1).info("SHOWING {}", application.getClass().getSimpleName());
+            logger.info("SHOWING {}", application.getClass().getSimpleName());
             application.start(currentStage);
-        }, e -> getLogger().error(String.format("ERRO IN %s", application), e)));
+        }, e -> logger.error(String.format("ERRO IN %s", application), e)));
     }
 
     protected void tryClickButtons() {

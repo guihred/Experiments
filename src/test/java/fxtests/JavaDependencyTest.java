@@ -172,8 +172,7 @@ public class JavaDependencyTest {
         DataframeUtils.crossFeature(b, "PERCENTAGE", arr -> arr[1] / (arr[0] + arr[1]) * 100, "LINE_MISSED",
             "LINE_COVERED");
         b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 30);
-        List<String> uncovered = b.list("CLASS");
-        return uncovered;
+        return b.list("CLASS");
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {

@@ -4,6 +4,7 @@ import static utils.PredicateEx.makeTest;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -84,7 +85,8 @@ public final class FXTesting implements HasLogging {
 			ClassPath.from(FXTesting.class.getClassLoader()).getTopLevelClasses().stream()
 	            .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
 	            .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
-	            .map(e -> (Class<? extends T>) e).forEach(appClass::add);
+                .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
+                .forEach(appClass::add);
 	    } catch (Exception e) {
 			HasLogging.log().error("", e);
 	    }

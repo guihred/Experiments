@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.shape.*?><?import javafx.scene.input.*?><?import javafx.scene.web.*?><?import javafx.geometry.*?><?import javafx.scene.image.*?><?import javafx.scene.control.cell.*?><?import javafx.collections.*?><?import java.lang.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+	styleClass="root">
+	<fx:define>
+		<ToggleGroup fx:id="toggleGroup14" />
+		<Image fx:id="image29"
+			url="https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png" />
+		<Image fx:id="image45"
+			url="https://cdn0.iconfinder.com/data/icons/16x16-free-toolbar-icons/16/2.png" />
+		<ToggleGroup fx:id="toggleGroup46" />
+	</fx:define>
+	<center>
+		<TabPane fx:id="tabPane0" layoutY="59.0" tabMaxHeight="22.0"
+			tabMinHeight="22.0">
+			<tabs>
+				<Tab closable="false" text="TableView">
+					<content>
+						<TableView fx:id="tableView4">
+							<columns>
+								<TableColumn fx:id="firstName" id="firstName"
+									prefWidth="150.0" text="First Name">
+									<cellValueFactory>
+										<PropertyValueFactory
+											property="firstName" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn fx:id="lastName" id="lastName"
+									prefWidth="150.0" text="Last Name">
+									<cellValueFactory>
+										<PropertyValueFactory property="lastName" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn fx:id="phone" id="phone"
+									prefWidth="150.0" text="Phone Number">
+									<cellValueFactory>
+										<PropertyValueFactory property="phone" />
+									</cellValueFactory>
+								</TableColumn>
+							</columns>
+						</TableView>
+					</content>
+				</Tab>
+				<Tab closable="false" text="Accordion/TitledPane">
+					<content>
+						<Accordion fx:id="accordion5">
+							<expandedPane>
+								<TitledPane fx:id="titledPane21"
+									styleClass="titled-pane first-titled-pane" text="TitledPane A"
+									textFill="0x333333ff">
+									<content>
+										<TextArea fx:id="textArea30" layoutX="1.0"
+
+											text="TitledPane A content" />
+									</content>
+								</TitledPane>
+							</expandedPane>
+							<panes>
+								<fx:reference source="titledPane21" />
+								<TitledPane expanded="false" fx:id="titledPane22"
+									layoutY="623.0" text="TitledPane B">
+									<content>
+										<TextArea fx:id="textArea31" layoutX="1.0"
+											layoutY="-19.0" text="TitledPane B content" visible="false" />
+									</content>
+								</TitledPane>
+								<TitledPane expanded="false" fx:id="titledPane23"
+									layoutY="648.0" text="TitledPane C">
+									<content>
+										<TextArea fx:id="textArea32" layoutX="1.0"
+											layoutY="-19.0" text="TitledPane C content" visible="false" />
+									</content>
+								</TitledPane>
+							</panes>
+							<clip>
+								<Rectangle height="673.0" width="784.0" />
+							</clip>
+						</Accordion>
+					</content>
+				</Tab>
+				<Tab closable="false" text="SplitPane/TreeView/ListView">
+					<content>
+						<SplitPane fx:id="splitPane6">
+							<items>
+								<TreeView fx:id="treeView24" showRoot="false">
+									<root>
+										<TreeItem expanded="true" value="Root">
+											<children>
+												<TreeItem value="Animal">
+													<children>
+														<TreeItem value="Lion" />
+														<TreeItem value="Tiger" />
+														<TreeItem value="Bear" />
+													</children>
+												</TreeItem>
+												<TreeItem value="Vegetable">
+													<children>
+														<TreeItem value="Arugula" />
+														<TreeItem value="Broccoli" />
+														<TreeItem value="Cabbage" />
+													</children>
+												</TreeItem>
+												<TreeItem value="Mineral">
+													<children>
+														<TreeItem value="Copper" />
+														<TreeItem value="Diamond" />
+														<TreeItem value="Quartz" />
+													</children>
+												</TreeItem>
+											</children>
+										</TreeItem>
+									</root>
+								</TreeView>
+								<ListView fx:id="listView25" />
+							</items>
+						</SplitPane>
+					</content>
+				</Tab>
+				<Tab closable="false" text="ScrollPane/Miscellaneous">
+					<content>
+						<ScrollPane fx:id="scrollPane7" hbarPolicy="NEVER"
+							onMousePressed="#onMousePressedScrollPane7">
+							<content>
+								<VBox spacing="10.0">
+									<children>
+										<Button alignment="CENTER" fx:id="button" id="Button"
+											layoutX="10.0" layoutY="10.0" onAction="#onActionButton"
+											text="Button" textFill="0x333333ff">
+											<padding>
+												<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+											</padding>
+										</Button>
+										<CheckBox fx:id="checkBox34" layoutX="10.0"
+											layoutY="45.0" onAction="#onActionCheckBox34" text="CheckBox"
+											textFill="0x333333ff" />
+										<HBox layoutX="10.0" layoutY="72.0" spacing="10.0">
+											<children>
+												<RadioButton fx:id="radioButton47"
+													selected="true" text="RadioButton1" textFill="0x333333ff"
+													toggleGroup="$toggleGroup46" />
+												<RadioButton fx:id="radioButton48"
+													layoutX="104.0" text="RadioButton2" textFill="0x333333ff"
+													toggleGroup="$toggleGroup46" />
+											</children>
+										</HBox>
+										<Hyperlink fx:id="hyperlink35" layoutX="10.0"
+											layoutY="99.0" onAction="#onActionHyperlink35"
+											text="Hyperlink" textFill="0x0096c9ff">
+											<padding>
+												<Insets bottom="2.0" left="3.0" right="3.0" top="2.0" />
+											</padding>
+										</Hyperlink>
+										<ChoiceBox fx:id="choiceBox36" layoutX="10.0"
+											layoutY="132.0" value="Choice A">
+											<items>
+												<FXCollections
+													fx:factory="observableArrayList">
+													<String fx:value="Choice A" />
+													<String fx:value="Choice B" />
+													<String fx:value="Choice C" />
+													<String fx:value="Choice D" />
+												</FXCollections>
+											</items>
+										</ChoiceBox>
+										<MenuButton alignment="CENTER" fx:id="menuButton37"
+											layoutX="10.0" layoutY="167.0" text="MenuButton"
+											textFill="0x333333ff">
+											<items>
+												<MenuItem fx:id="menuItem49"
+													onAction="#onActionMenuItem49" text="MenuItem A" />
+												<MenuItem text="MenuItem B" />
+											</items>
+										</MenuButton>
+										<SplitMenuButton fx:id="splitMenuButton38"
+											layoutX="10.0" layoutY="202.0"
+											onAction="#onActionSplitMenuButton38" text="SplitMenuButton">
+											<items>
+												<MenuItem fx:id="menuItem50"
+													onAction="#onActionMenuItem50" text="MenuItem A" />
+												<MenuItem text="MenuItem B" />
+											</items>
+										</SplitMenuButton>
+										<TextField fx:id="textField39" layoutX="10.0"
+											layoutY="237.0" prefColumnCount="16"
+											promptText="Enter user name">
+											<padding>
+												<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
+											</padding>
+										</TextField>
+										<PasswordField fx:id="passwordField40"
+											layoutX="10.0" layoutY="272.0" prefColumnCount="16"
+											promptText="Enter password">
+											<padding>
+												<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
+											</padding>
+										</PasswordField>
+										<HBox layoutX="10.0" layoutY="307.0" spacing="10.0">
+											<children>
+												<Label fx:id="label51" text="TextArea:"
+													textFill="0x333333ff" />
+												<TextArea fx:id="textArea52" layoutX="60.0"
+													prefColumnCount="12" prefRowCount="4" />
+											</children>
+										</HBox>
+										<ProgressIndicator
+											fx:id="progressIndicator41" layoutX="10.0" layoutY="402.0"
+											prefWidth="200.0" progress="0.0" />
+										<Slider blockIncrement="80.01" fx:id="slider42"
+											layoutX="10.0" layoutY="452.0" max="8000.0" min="-1.0"
+											prefWidth="200.0" />
+										<ProgressBar fx:id="progressBar43" layoutX="10.0"
+											layoutY="476.0" prefWidth="200.0" progress="0.0" />
+										<ScrollBar fx:id="scrollBar44" layoutX="10.0"
+											layoutY="504.0" max="300.0" min="-1.0" prefWidth="200.0"
+											visibleAmount="0.0" />
+									</children>
+									<padding>
+										<Insets bottom="10.0" left="10.0" right="10.0"
+											top="10.0" />
+									</padding>
+								</VBox>
+							</content>
+						</ScrollPane>
+					</content>
+				</Tab>
+				<Tab closable="false" text="HTMLEditor">
+					<content>
+						<BorderPane>
+							<bottom>
+								<Button BorderPane.alignment="CENTER" alignment="CENTER"
+									fx:id="viewHTML" id="View HTML" layoutX="354.0" layoutY="638.0"
+									onAction="#onActionViewHTML" text="View HTML"
+									textFill="0x333333ff">
+									<padding>
+										<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+									</padding>
+								</Button>
+							</bottom>
+							<center>
+								<HTMLEditor fx:id="hTMLEditor27"
+									htmlText="&lt;p&gt;Replace this text&lt;/p&gt;">
+									<padding>
+										<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+									</padding>
+								</HTMLEditor>
+							</center>
+						</BorderPane>
+					</content>
+				</Tab>
+				<Tab closable="false" fx:id="tab1"
+					onSelectionChanged="#onSelectionChangedTab1" text="WebView">
+					<content>
+						<WebView fx:id="webView8" />
+					</content>
+				</Tab>
+			</tabs>
+			<clip>
+				<Rectangle height="702.0" width="784.0" />
+			</clip>
+		</TabPane>
+	</center>
+	<top>
+		<VBox>
+			<children>
+				<MenuBar fx:id="menuBar2">
+					<menus>
+						<Menu text="File">
+							<items>
+								<MenuItem accelerator="Ctrl+N" fx:id="new28"
+									id="New..." onAction="#onActionNew28" text="New...">
+									<graphic>
+										<ImageView image="$image45" />
+									</graphic>
+								</MenuItem>
+								<MenuItem id="Save" text="Save" />
+							</items>
+						</Menu>
+						<Menu text="Edit">
+							<items>
+								<MenuItem id="Cut" text="Cut" />
+								<MenuItem id="Copy" text="Copy" />
+								<MenuItem id="Paste" text="Paste" />
+							</items>
+						</Menu>
+					</menus>
+					<padding>
+						<Insets bottom="0.0" left="8.0" right="8.0" top="0.0" />
+					</padding>
+				</MenuBar>
+				<ToolBar fx:id="toolBar3" layoutY="25.0">
+					<items>
+						<Button alignment="CENTER" fx:id="newButton" id="newButton"
+							onAction="#onActionNewButton" textFill="0x333333ff">
+							<graphic>
+								<ImageView image="$image29" layoutX="8.0"
+									layoutY="4.0" mouseTransparent="true" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="New Document... Ctrl+N" />
+							</tooltip>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</Button>
+						<Button alignment="CENTER" fx:id="editButton"
+							id="editButton" layoutX="36.0" textFill="0x333333ff">
+							<graphic>
+								<Circle fill="0x008000ff" layoutX="16.0" layoutY="12.0"
+									radius="8.0" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</Button>
+						<Button alignment="CENTER" fx:id="deleteButton"
+							id="deleteButton" layoutX="72.0" textFill="0x333333ff">
+							<graphic>
+								<Circle fill="0x0000ffff" layoutX="16.0" layoutY="12.0"
+									radius="8.0" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</Button>
+						<ToggleButton fx:id="boldButton" id="boldButton"
+							layoutX="108.0" onAction="#onActionBoldButton"
+							textFill="0x333333ff">
+							<graphic>
+								<Circle fill="0x800000ff" layoutX="16.0" layoutY="12.0"
+									radius="8.0" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</ToggleButton>
+						<ToggleButton fx:id="italicButton" id="italicButton"
+							layoutX="144.0" onAction="#onActionBoldButton"
+							textFill="0x333333ff">
+							<graphic>
+								<Circle fill="0xffff00ff" layoutX="16.0" layoutY="12.0"
+									radius="8.0" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</ToggleButton>
+						<ToggleButton fx:id="leftAlignButton"
+							id="leftAlignButton" layoutX="180.0" selected="true"
+							textFill="0x333333ff" toggleGroup="$toggleGroup14">
+							<graphic>
+								<Circle fill="0x800080ff" layoutX="16.0" layoutY="12.0"
+									radius="8.0" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</ToggleButton>
+						<ToggleButton fx:id="centerAlignButton"
+							id="centerAlignButton" layoutX="216.0" textFill="0x333333ff"
+							toggleGroup="$toggleGroup14">
+							<graphic>
+								<Circle fill="0xffa500ff" layoutX="16.0" layoutY="12.0"
+									radius="8.0" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</ToggleButton>
+						<ToggleButton fx:id="rightAlignButton"
+							id="rightAlignButton" layoutX="252.0" textFill="0x333333ff"
+							toggleGroup="$toggleGroup14">
+							<graphic>
+								<Circle fill="0x00ffffff" layoutX="16.0" layoutY="12.0"
+									radius="8.0" />
+							</graphic>
+							<padding>
+								<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+							</padding>
+						</ToggleButton>
+					</items>
+					<padding>
+						<Insets bottom="5.0" left="6.0" right="6.0" top="5.0" />
+					</padding>
+				</ToolBar>
+			</children>
+		</VBox>
+	</top>
+</BorderPane>
