@@ -23,9 +23,9 @@ public class SudokuLauncher extends Application {
     public void initialize() {
         sudokuModel = new SudokuModel(numberBoard);
         sudokuModel.getNumberOptions().addAll(
-            gridPane0.lookupAll(".numberButton").stream().map(NumberButton.class::cast).collect(Collectors.toList()));
+            borderPane.lookupAll(".numberButton").stream().map(NumberButton.class::cast).collect(Collectors.toList()));
         sudokuModel.getSudokuSquares().addAll(
-            gridPane0.lookupAll(".sudokuSquare").stream().map(SudokuSquare.class::cast).collect(Collectors.toList()));
+            borderPane.lookupAll(".sudokuSquare").stream().map(SudokuSquare.class::cast).collect(Collectors.toList()));
         sudokuModel.reset();
         gridPane0.minWidthProperty().bind(borderPane.widthProperty());
         gridPane0.sceneProperty().addListener(e -> {
@@ -55,8 +55,8 @@ public class SudokuLauncher extends Application {
         sudokuModel.handleMousePressed(e);
     }
 
-    public void onMouseReleasedGridPane0(MouseEvent e) {
-        sudokuModel.handleMouseReleased(e);
+    public void onMouseReleasedGridPane0() {
+        sudokuModel.handleMouseReleased();
     }
 
     @Override

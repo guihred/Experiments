@@ -3,12 +3,12 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml"
 	styleClass="root">
 	<center>
-		<StackPane fx:id="borderPane">
+		<StackPane fx:id="borderPane" onMouseDragged="#onMouseDraggedGridPane0"
+                    onMousePressed="#onMousePressedGridPane0"
+                    onMouseReleased="#onMouseReleasedGridPane0">
 			<children>
 				<GridPane fx:id="gridPane0" minWidth="349.0"
-					onMouseDragged="#onMouseDraggedGridPane0"
-					onMousePressed="#onMousePressedGridPane0"
-					onMouseReleased="#onMouseReleasedGridPane0" prefHeight="371.0"
+					 prefHeight="371.0"
 					prefWidth="394.0">
 					<children>
 						<SudokuSquare GridPane.columnIndex="0"
@@ -260,63 +260,33 @@
 					<children>
 						<NumberButton GridPane.columnIndex="0"
 							GridPane.rowIndex="0" number="1">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 						<NumberButton GridPane.columnIndex="1" number="2"
 							GridPane.rowIndex="0">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 						<NumberButton GridPane.columnIndex="2" number="3"
 							GridPane.rowIndex="0">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 						<NumberButton GridPane.columnIndex="0" number="4"
 							GridPane.rowIndex="1">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 						<NumberButton GridPane.columnIndex="1" number="5"
 							GridPane.rowIndex="1">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 						<NumberButton GridPane.columnIndex="2" number="6"
 							GridPane.rowIndex="1">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 						<NumberButton GridPane.columnIndex="0" number="7"
 							GridPane.rowIndex="2">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 						<NumberButton GridPane.columnIndex="1" number="8"
 							GridPane.rowIndex="2">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 						<NumberButton GridPane.columnIndex="2" number="9"
 							GridPane.rowIndex="2">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 						<NumberButton GridPane.columnIndex="3" number="0"
 							GridPane.rowIndex="0">
-							<effect>
-								<InnerShadow />
-							</effect>
 						</NumberButton>
 					</children>
 				</GridPane>

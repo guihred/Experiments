@@ -13,12 +13,13 @@ import javafx.scene.text.TextAlignment;
 public final class NumberButton extends Region {
 
     private final int number;
-    private BooleanProperty over = new SimpleBooleanProperty(false);
+    private final BooleanProperty over = new SimpleBooleanProperty(false);
 
     public NumberButton(@NamedArg("number") int i) {
         number = i;
         styleProperty().bind(
-            Bindings.when(over).then("-fx-background-color: white;").otherwise("-fx-background-color: lightgray;"));
+            Bindings.when(over).then("-fx-background-color: white;")
+                .otherwise("-fx-background-color: lightgray;"));
         setEffect(new InnerShadow());
         Text text = new Text(i == 0 ? "X" : Integer.toString(i));
         text.wrappingWidthProperty().bind(widthProperty());
@@ -32,6 +33,10 @@ public final class NumberButton extends Region {
 
     public int getNumber() {
         return number;
+    }
+
+    public boolean isOver() {
+        return over.get();
     }
 
     public void setOver(boolean over) {

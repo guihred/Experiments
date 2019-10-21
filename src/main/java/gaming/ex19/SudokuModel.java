@@ -60,7 +60,11 @@ public class SudokuModel {
     }
 
     public void handleMouseMoved(MouseEvent s) {
-        numberOptions.forEach(e -> e.setOver(e.getBoundsInParent().contains(s.getX(), s.getY())));
+        numberOptions.forEach(e -> {
+            double x = s.getX() - e.getParent().getBoundsInParent().getMinX();
+            double y = s.getY() - e.getParent().getBoundsInParent().getMinY();
+            e.setOver(e.getBoundsInParent().contains(x, y));
+        });
     }
 
     public void handleMousePressed(MouseEvent ev) {
@@ -80,9 +84,9 @@ public class SudokuModel {
         handleMouseMoved(ev);
     }
 
-    public void handleMouseReleased(MouseEvent s) {
+    public void handleMouseReleased() {
         Optional<NumberButton> findFirst = numberOptions.stream()
-            .filter(e -> e.getBoundsInParent().contains(s.getX(), s.getY())).findFirst();
+            .filter(NumberButton::isOver).findFirst();
         if (pressedSquare != null && findFirst.isPresent()) {
             NumberButton node = findFirst.get();
             pressedSquare.setNumber(node.getNumber());
