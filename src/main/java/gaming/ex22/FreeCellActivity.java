@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import simplebuilder.SimpleButtonBuilder;
 
 public class FreeCellActivity extends Application {
 
@@ -11,7 +12,9 @@ public class FreeCellActivity extends Application {
     public void start(Stage primaryStage) throws Exception {
 		FreeCellView freeCellView = new FreeCellView();
 
-        primaryStage.setScene(new Scene(new BorderPane(freeCellView)));
+        BorderPane root = new BorderPane(freeCellView);
+        root.setBottom(SimpleButtonBuilder.newButton("Back", e -> freeCellView.getBackInHistory()));
+        primaryStage.setScene(new Scene(root));
 		primaryStage.show();
     }
 

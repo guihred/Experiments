@@ -18,7 +18,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
@@ -29,10 +28,8 @@ import utils.HasLogging;
  * @author Note
  */
 public class FreeCellView extends Canvas {
-    public static final int ANIMATION_DURATION = 100;
+    private static final int ANIMATION_DURATION = 500;
     private static final Logger LOG = HasLogging.log();
-
-    public static final int DARK_GREEN = 0xFF008800;
     private final FreeCellStack[] ascendingStacks = new FreeCellStack[4];
     private final FreeCellStack[] supportingStacks = new FreeCellStack[4];
     private final DragContext dragContext = new DragContext();
@@ -40,7 +37,6 @@ public class FreeCellView extends Canvas {
     private final List<MotionHistory> history = new ArrayList<>();
     private final FreeCellStack[] simpleStacks = new FreeCellStack[8];
     private boolean youWin;
-    private Rectangle returnButton = new Rectangle();
 
     public FreeCellView() {
         super(500, 500);
@@ -51,6 +47,14 @@ public class FreeCellView extends Canvas {
 
     public void draw() {
         onDraw(getGraphicsContext2D());
+    }
+
+    public void getBackInHistory() {
+        if (!history.isEmpty()) {
+            MotionHistory remove = history.remove(history.size() - 1);
+            remove.cards.forEach(e -> createMovingCardAnimation(remove.targetStack, remove.originStack, e));
+            dragContext.reset();
+        }
     }
 
     public boolean onTouchEvent(MouseEvent event) {
@@ -87,10 +91,6 @@ public class FreeCellView extends Canvas {
             simpleStacks[i].setMaxHeight(getHeight());
             simpleStacks[i].adjust();
         }
-        returnButton.setX(getWidth() - FreeCellCard.getCardWidth());
-        returnButton.setY(getHeight() - FreeCellCard.getCardWidth());
-        returnButton.setWidth(getWidth());
-        returnButton.setHeight(getHeight());
     }
 
     public void reset() {
@@ -129,10 +129,9 @@ public class FreeCellView extends Canvas {
 
     private void automaticCard() {
 
-        int solitaireNumber =
-
-            Stream.of(ascendingStacks).map(e -> e.getLastCards() != null ? e.getLastCards().getNumber().getNumber() : 0)
-                .min(Comparator.comparing(e -> e)).orElse(1);
+        int solitaireNumber = Stream.of(ascendingStacks)
+            .map(e -> e.getLastCards() != null ? e.getLastCards().getNumber().getNumber() : 0)
+            .min(Comparator.comparing(e -> e)).orElse(1);
         List<FreeCellStack> collect = Stream.concat(Stream.of(simpleStacks), Stream.of(supportingStacks))
             .collect(Collectors.toList());
         for (FreeCellStack stack : collect) {
@@ -171,10 +170,12 @@ public class FreeCellView extends Canvas {
         solitaireCard.setLayoutX(x);
         solitaireCard.setLayoutY(y);
         double value = targetStack.adjust();
+        GraphicsContext gc = getGraphicsContext2D();
         Timeline eatingAnimation = new SimpleTimelineBuilder()
+            .onUpdate(Duration.millis(ANIMATION_DURATION), e -> onDraw(gc))
             .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutXProperty(), 0)
             .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutYProperty(), value)
-            .addKeyFrame(ANIMATION_DURATION, e -> draw()).build();
+            .build();
         originStack.adjust();
         eatingAnimation.setOnFinished(e -> automaticCard());
         eatingAnimation.play();
@@ -194,10 +195,12 @@ public class FreeCellView extends Canvas {
 
         solitaireCard.setLayoutX(x);
         solitaireCard.setLayoutY(y);
+        GraphicsContext gc = getGraphicsContext2D();
         Timeline eatingAnimation = new SimpleTimelineBuilder()
+            .onUpdate(Duration.millis(ANIMATION_DURATION), e -> onDraw(gc))
             .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutXProperty(), 0)
             .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutYProperty(), adjust)
-            .addKeyFrame(ANIMATION_DURATION, e -> draw()).build();
+            .build();
         originStack.adjust();
         if (first) {
             eatingAnimation.setOnFinished(e -> automaticCard());
@@ -229,12 +232,6 @@ public class FreeCellView extends Canvas {
     private void handleMousePressed(MouseEvent event) {
         double x = event.getX();
         double y = event.getY();
-        if (returnButton.contains((int) x, (int) y) && !history.isEmpty()) {
-            MotionHistory remove = history.remove(history.size() - 1);
-            remove.cards.forEach(e -> createMovingCardAnimation(remove.targetStack, remove.originStack, e));
-            dragContext.reset();
-            return;
-        }
 
         FreeCellStack stack = cardStackList.stream().filter(e -> e.getBoundsF().contains(x, y)).findFirst()
             .orElse(null);
@@ -364,7 +361,6 @@ public class FreeCellView extends Canvas {
             }
         }
         gc.setFill(Color.ALICEBLUE);
-        gc.fillRect(returnButton.getX(), returnButton.getY(), returnButton.getWidth(), returnButton.getHeight());
 
     }
 

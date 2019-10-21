@@ -4,6 +4,8 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.WritableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -39,7 +41,7 @@ public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, Simp
     }
 
     public <T> SimpleTimelineBuilder addKeyFrame(Duration time, WritableValue<T> target, T endValue,
-            Interpolator interpolator) {
+        Interpolator interpolator) {
         timeline.getKeyFrames().add(new KeyFrame(time, new KeyValue(target, endValue, interpolator)));
         return this;
     }
@@ -53,6 +55,13 @@ public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, Simp
 		timeline.getKeyFrames().setAll(elements);
 		return this;
 	}
+
+    public SimpleTimelineBuilder onUpdate(Duration time,InvalidationListener listener) {
+        SimpleDoubleProperty target = new SimpleDoubleProperty(0);
+        target.addListener(listener);
+        timeline.getKeyFrames().add(new KeyFrame(time, new KeyValue(target, 1)));
+        return this;
+    }
 
 
 }
