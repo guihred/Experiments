@@ -1,8 +1,8 @@
 package gaming.ex22;
 
 public class StackOfCards {
-    protected double layoutX;
-    protected double layoutY;
+    private double layoutX;
+    private double layoutY;
 
     public double getLayoutX() {
         return layoutX;
@@ -19,4 +19,5 @@ public class StackOfCards {
     public void setLayoutY(double layoutY) {
         this.layoutY = layoutY;
     }
+
 }

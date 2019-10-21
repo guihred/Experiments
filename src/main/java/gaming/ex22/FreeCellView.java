@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.Timeline;
 import javafx.event.EventType;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.Group;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
@@ -27,26 +27,28 @@ import utils.HasLogging;
 /**
  * @author Note
  */
-public class FreeCellView extends Canvas {
-    private static final int ANIMATION_DURATION = 500;
+public class FreeCellView extends Group {
+    private static final int SIZE = 500;
+    private static final int ANIMATION_DURATION = 200;
     private static final Logger LOG = HasLogging.log();
     private final FreeCellStack[] ascendingStacks = new FreeCellStack[4];
     private final FreeCellStack[] supportingStacks = new FreeCellStack[4];
-    private final DragContext dragContext = new DragContext();
+    private final DragContext dragContext;
     private final List<FreeCellStack> cardStackList = new LinkedList<>();
     private final List<MotionHistory> history = new ArrayList<>();
     private final FreeCellStack[] simpleStacks = new FreeCellStack[8];
     private boolean youWin;
 
     public FreeCellView() {
-        super(500, 500);
+        dragContext = new DragContext(this);
         onLayout();
         addEventHandler(MouseEvent.ANY, this::onTouchEvent);
-        draw();
-    }
+        Rectangle e = new Rectangle(getWidth(), getHeight());
+        e.setManaged(false);
+        e.setFill(Color.DARKGREEN);
+        e.setStroke(Color.BLACK);
+        getChildren().add(0, e);
 
-    public void draw() {
-        onDraw(getGraphicsContext2D());
     }
 
     public void getBackInHistory() {
@@ -66,7 +68,6 @@ public class FreeCellView extends Canvas {
         } else if (action == MouseEvent.MOUSE_RELEASED) {
             handleMouseReleased();
         }
-        draw();
         return true;
     }
 
@@ -94,6 +95,7 @@ public class FreeCellView extends Canvas {
     }
 
     public void reset() {
+        getChildren().clear();
         youWin = false;
         cardStackList.clear();
         history.clear();
@@ -124,6 +126,7 @@ public class FreeCellView extends Canvas {
             card.setShown(true);
             simpleStacks[i % 8].addCardsVertically(card);
         }
+        getChildren().addAll(cardStackList);
         LOG.info("SOLITAIRE {}", "RESET");
     }
 
@@ -159,7 +162,6 @@ public class FreeCellView extends Canvas {
 
     private void createMovingCardAnimation(FreeCellStack originStack, FreeCellStack targetStack,
         FreeCellCard solitaireCard) {
-
         cardStackList.remove(targetStack);
         cardStackList.add(targetStack);
         solitaireCard.setShown(true);
@@ -170,13 +172,11 @@ public class FreeCellView extends Canvas {
         solitaireCard.setLayoutX(x);
         solitaireCard.setLayoutY(y);
         double value = targetStack.adjust();
-        GraphicsContext gc = getGraphicsContext2D();
         Timeline eatingAnimation = new SimpleTimelineBuilder()
-            .onUpdate(Duration.millis(ANIMATION_DURATION), e -> onDraw(gc))
             .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutXProperty(), 0)
-            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutYProperty(), value)
-            .build();
+            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutYProperty(), value).build();
         originStack.adjust();
+        targetStack.toFront();
         eatingAnimation.setOnFinished(e -> automaticCard());
         eatingAnimation.play();
     }
@@ -192,26 +192,22 @@ public class FreeCellView extends Canvas {
         double y = -targetStack.getLayoutY() + originStack.getLayoutY() + solitaireCard.getLayoutY();
         targetStack.addCards(solitaireCard);
         double adjust = targetStack.adjust(cards);
-
         solitaireCard.setLayoutX(x);
         solitaireCard.setLayoutY(y);
-        GraphicsContext gc = getGraphicsContext2D();
         Timeline eatingAnimation = new SimpleTimelineBuilder()
-            .onUpdate(Duration.millis(ANIMATION_DURATION), e -> onDraw(gc))
             .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutXProperty(), 0)
-            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutYProperty(), adjust)
-            .build();
+            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutYProperty(), adjust).build();
         originStack.adjust();
         if (first) {
             eatingAnimation.setOnFinished(e -> automaticCard());
         }
+        targetStack.toFront();
         eatingAnimation.play();
-
     }
 
     private Collection<FreeCellStack> getHoveredStacks(FreeCellStack[] stacks) {
         FreeCellCard next = dragContext.cards.iterator().next();
-        return Stream.of(stacks).filter(s -> s.getBoundsF().intersects(next.getBounds().getBoundsInParent()))
+        return Stream.of(stacks).filter(s -> s.getBoundsInParent().intersects(next.getBoundsInParent()))
             .collect(Collectors.toList());
     }
 
@@ -233,7 +229,7 @@ public class FreeCellView extends Canvas {
         double x = event.getX();
         double y = event.getY();
 
-        FreeCellStack stack = cardStackList.stream().filter(e -> e.getBoundsF().contains(x, y)).findFirst()
+        FreeCellStack stack = cardStackList.stream().filter(e -> e.getBoundsInParent().contains(x, y)).findFirst()
             .orElse(null);
         if (stack == null) {
             dragContext.reset();
@@ -349,21 +345,6 @@ public class FreeCellView extends Canvas {
             || Objects.equals(cardStack, dragContext.stack);
     }
 
-    private void onDraw(GraphicsContext gc) {
-        gc.setFill(Color.DARKGREEN);
-        gc.fillRect(0, 0, getWidth(), getHeight());
-        for (FreeCellStack e : cardStackList) {
-            e.draw(gc);
-        }
-        if (!isNullOrEmpty(dragContext.cards)) {
-            for (FreeCellCard e : dragContext.cards) {
-                e.draw(gc, 0, 0);
-            }
-        }
-        gc.setFill(Color.ALICEBLUE);
-
-    }
-
     private void onLayout() {
         double cardWidth = FreeCellCard.getCardWidth();
         FreeCellCard.setCardWidth(getWidth() / 8);
@@ -440,6 +421,14 @@ public class FreeCellView extends Canvas {
         return allCards;
     }
 
+    private static double getHeight() {
+        return SIZE;
+    }
+
+    private static double getWidth() {
+        return SIZE;
+    }
+
     private static boolean isCompatibleAscending(FreeCellCard first, FreeCellStack e) {
         return first.getNumber() == FreeCellNumber.ACE && e.getCards().isEmpty()
             || !e.getCards().isEmpty() && first.getSuit() == e.getLastCards().getSuit()
@@ -488,36 +477,6 @@ public class FreeCellView extends Canvas {
 
     private static boolean isStackEmptyAndCardIsNotAce(FreeCellStack cardStack, FreeCellCard solitaireCard) {
         return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != FreeCellNumber.ACE;
-    }
-
-    private static class DragContext {
-        final List<FreeCellCard> cards = new ArrayList<>();
-        protected double x;
-        protected double y;
-        FreeCellStack stack;
-
-        void reset() {
-            cards.clear();
-            stack = null;
-        }
-    }
-
-    private static class MotionHistory {
-        final List<FreeCellCard> cards = new ArrayList<>();
-        FreeCellStack originStack;
-        FreeCellStack targetStack;
-
-        MotionHistory(Collection<FreeCellCard> cards, FreeCellStack originStack, FreeCellStack targetStack) {
-            this.originStack = originStack;
-            this.targetStack = targetStack;
-            this.cards.addAll(cards);
-        }
-
-        MotionHistory(FreeCellCard cards, FreeCellStack originStack, FreeCellStack targetStack) {
-            this.originStack = originStack;
-            this.targetStack = targetStack;
-            this.cards.add(cards);
-        }
     }
 
 }

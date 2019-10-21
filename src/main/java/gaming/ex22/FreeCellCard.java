@@ -1,54 +1,43 @@
 package gaming.ex22;
 
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.text.Text;
 
 public class FreeCellCard extends Group {
     protected static DoubleProperty cardWidth = new SimpleDoubleProperty(0);
     private final FreeCellNumber number;
     private final FreeCellSuit suit;
     private boolean autoMoved;
-    private Rectangle bounds;
 
     private boolean shown;
 
     public FreeCellCard(FreeCellNumber number, FreeCellSuit suit) {
         this.number = number;
         this.suit = suit;
-    }
+        setManaged(false);
+        Rectangle rectangle = new Rectangle();
+        rectangle.widthProperty().bind(FreeCellCard.cardWidth());
+        rectangle.heightProperty().bind(FreeCellCard.cardWidth());
+        rectangle.setFill(Color.WHITE);
+        rectangle.setStroke(Color.BLACK);
+        rectangle.setArcWidth(5);
+        rectangle.setArcHeight(5);
+        getChildren().add(rectangle);
+        Text e = new Text(number.getRepresentation());
+        e.layoutXProperty().bind(FreeCellCard.cardWidth().divide(8));
+        e.layoutYProperty().bind(FreeCellCard.cardWidth().divide(4));
+        SVGPath shape = suit.getShape();
+        shape.layoutXProperty().bind(FreeCellCard.cardWidth().divide(3));
+        shape.layoutYProperty().bind(FreeCellCard.cardWidth().divide(10));
+        getChildren().add(e);
+        getChildren().add(shape);
 
-    public void draw(GraphicsContext gc, double layoutX1, double layoutY1) {
-        double w = FreeCellCard.getCardWidth();
-        double h = FreeCellCard.getCardWidth();
-        gc.setFill(Color.WHITE);
-        gc.fillRoundRect(layoutX1 + getLayoutX(), layoutY1 + getLayoutY(), w, h, 5, 5);
-        gc.setStroke(Color.BLACK);
-        gc.strokeRoundRect(layoutX1 + getLayoutX(), layoutY1 + getLayoutY(), w, h, 5, 5);
-        double left = layoutX1 + getLayoutX() + FreeCellCard.getCardWidth() / 3;
-        double top = layoutY1 + getLayoutY() + FreeCellCard.getCardWidth() / 10 / 2;
-        gc.beginPath();
-        gc.moveTo(left, top);
-        gc.appendSVGPath(suit.getResource());
-        gc.setFill(suit.getColor());
-        gc.fill();
-        getBounds().setX(getLayoutX() + layoutX1);
-        getBounds().setY(getLayoutY() + layoutY1);
-        gc.closePath();
-        gc.strokeText(number.getRepresentation(), left - FreeCellCard.getCardWidth() / 4.,
-            top + FreeCellCard.getCardWidth() / 4.);
-    }
-
-    public Rectangle getBounds() {
-        if (bounds == null) {
-            bounds = new Rectangle();
-        }
-        bounds.setWidth(FreeCellCard.getCardWidth());
-        bounds.setHeight(FreeCellCard.getCardWidth());
-        return bounds;
     }
 
     public FreeCellNumber getNumber() {
@@ -87,10 +76,14 @@ public class FreeCellCard extends Group {
     }
 
     public static double getCardWidth() {
-        return cardWidth.get() * 4 / 5;
+        return cardWidth().get();
     }
 
     public static void setCardWidth(double cardWidth) {
         FreeCellCard.cardWidth.set(cardWidth);
+    }
+
+    private static DoubleBinding cardWidth() {
+        return cardWidth.multiply(4).divide(5);
     }
 }

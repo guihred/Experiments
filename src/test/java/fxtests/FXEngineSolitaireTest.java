@@ -6,6 +6,8 @@ import gaming.ex13.CardStack;
 import gaming.ex13.SolitaireCard;
 import gaming.ex13.SolitaireLauncher;
 import gaming.ex13.SolitaireModel;
+import gaming.ex22.FreeCellActivity;
+import gaming.ex22.FreeCellStack;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +20,7 @@ import javafx.scene.input.MouseButton;
 import org.junit.Test;
 
 public final class FXEngineSolitaireTest extends AbstractTestExecution {
-	@Test
+    @Test
     public void verifyDots() throws Exception {
         show(DotsLauncher.class);
         Set<Node> queryAll = lookup(e -> e instanceof DotsSquare).queryAll().stream().limit(20)
@@ -32,6 +34,25 @@ public final class FXEngineSolitaireTest extends AbstractTestExecution {
                 moveBy(0, a * DotsSquare.SQUARE_SIZE);
             }
             drop();
+        }
+    }
+
+    @Test
+    public void verifyFreeCell() throws Exception {
+        show(FreeCellActivity.class);
+        List<FreeCellStack> cardStacks = lookup(FreeCellStack.class::isInstance).queryAllAs(FreeCellStack.class)
+            .stream().collect(Collectors.toList());
+        for (FreeCellStack cardStack : cardStacks) {
+            if (cardStack.getCards().isEmpty()) {
+                continue;
+            }
+            if (!random.nextBoolean()) {
+                drag(cardStack, MouseButton.PRIMARY);
+                moveRandom(20);
+                drop();
+            } else {
+                clickOn(cardStack);
+            }
         }
     }
 

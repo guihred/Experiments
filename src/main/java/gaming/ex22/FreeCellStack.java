@@ -1,21 +1,39 @@
 package gaming.ex22;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javafx.geometry.BoundingBox;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
+import javafx.scene.Group;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
-class FreeCellStack extends StackOfCards {
+public class FreeCellStack extends Group {
     final StackType type;
     private final int n;
-    private final List<FreeCellCard> cards = new ArrayList<>();
+    private final ObservableList<FreeCellCard> cards = FXCollections.observableArrayList();
     private double maxHeight;
 
     public FreeCellStack(StackType type, int n) {
         this.type = type;
         this.n = n;
+        setManaged(false);
+        Rectangle e = new Rectangle(getLayoutX(), getLayoutY(), FreeCellCard.getCardWidth(),
+            FreeCellCard.getCardWidth());
+        e.setFill(Color.DARKGREEN);
+        e.setStroke(Color.BLACK);
+        e.setArcWidth(5);
+        e.setArcHeight(5);
+        getChildren().add(e);
+
+        cards.addListener((Change<? extends FreeCellCard> c) -> {
+            while (c.next()) {
+                getChildren().addAll(c.getAddedSubList());
+                getChildren().removeAll(c.getRemoved());
+            }
+        });
+
     }
 
     public void addCards(Collection<FreeCellCard> cards1) {
@@ -60,9 +78,9 @@ class FreeCellStack extends StackOfCards {
             solitaireCard.setLayoutY(layout);
             layout += FreeCellCard.getCardWidth() / 3;
         }
-        double spaceToDisplay = maxHeight - layoutY - FreeCellCard.getCardWidth() / 3F;
+        double spaceToDisplay = maxHeight - getLayoutY() - FreeCellCard.getCardWidth() / 3.;
         if (FreeCellCard.getCardWidth() / 3 * cards1 <= spaceToDisplay) {
-            return layout - FreeCellCard.getCardWidth() / 3F;
+            return layout - FreeCellCard.getCardWidth() / 3;
         }
         double newGap = spaceToDisplay / cards1;
         layout = 0;
@@ -72,21 +90,6 @@ class FreeCellStack extends StackOfCards {
             layout += newGap;
         }
         return layout - newGap;
-    }
-
-    public void draw(GraphicsContext gc) {
-        gc.setStroke(Color.BLACK);
-        gc.strokeRoundRect(getLayoutX(), getLayoutY(), FreeCellCard.getCardWidth(), FreeCellCard.getCardWidth(), 5, 5);
-        for (FreeCellCard card : cards) {
-            card.draw(gc, layoutX, layoutY);
-        }
-    }
-
-    public BoundingBox getBoundsF() {
-        double right = FreeCellCard.getCardWidth();
-        double bottom = cards.isEmpty() ? FreeCellCard.getCardWidth() + layoutY
-            : getLastCards().getBounds().getY() + FreeCellCard.getCardWidth();
-        return new BoundingBox(layoutX, layoutY, right, bottom);
     }
 
     public List<FreeCellCard> getCards() {

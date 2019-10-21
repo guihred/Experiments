@@ -39,11 +39,9 @@ import utils.RunnableEx;
 
 public class FXEngineGamingTest extends AbstractTestExecution {
 
-
-
     @Test
     public void verifyMinesweeper() throws Exception {
-		show(MinesweeperLauncher.class);
+        show(MinesweeperLauncher.class);
         List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll().parallelStream()
             .collect(Collectors.toList());
         Collections.shuffle(queryAll);
@@ -75,7 +73,6 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         interactNoWait(currentStage::close);
     }
 
-
     @Test
     public void verifyPong() throws Exception {
         show(PongLauncher.class);
@@ -93,7 +90,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         show(PuzzleLauncher.class);
         List<Node> queryAll = lookup(e -> e instanceof PuzzlePiece).queryAll().stream().filter(e -> e.isVisible())
             .collect(Collectors.toList());
-		double squareSize = DotsSquare.SQUARE_SIZE;
+        double squareSize = DotsSquare.SQUARE_SIZE;
         for (int i = 0; i < queryAll.size() / 5; i++) {
             Node next = queryAll.get(i);
             RunnableEx.ignore(() -> drag(next, MouseButton.PRIMARY));
@@ -101,18 +98,17 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             drop();
         }
     }
+
     @Test
     public void verifySnake() throws Exception {
         show(SnakeLauncher.class);
         type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
     }
 
-
     @Test
     public void verifySquare() throws Exception {
         show(Square2048Launcher.class);
         type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
     }
-
 
 }
