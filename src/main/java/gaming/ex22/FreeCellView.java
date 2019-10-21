@@ -29,7 +29,7 @@ import utils.HasLogging;
  * @author Note
  */
 public class FreeCellView extends Canvas {
-    public static final int ANIMATION_DURATION = 125;
+    public static final int ANIMATION_DURATION = 100;
     private static final Logger LOG = HasLogging.log();
 
     public static final int DARK_GREEN = 0xFF008800;
@@ -44,9 +44,9 @@ public class FreeCellView extends Canvas {
 
     public FreeCellView() {
         super(500, 500);
-
         onLayout();
-        reset();
+        addEventHandler(MouseEvent.ANY, this::onTouchEvent);
+        draw();
     }
 
     public void draw() {
@@ -172,8 +172,8 @@ public class FreeCellView extends Canvas {
         solitaireCard.setLayoutY(y);
         double value = targetStack.adjust();
         Timeline eatingAnimation = new SimpleTimelineBuilder()
-            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutX, 0)
-            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutY, value)
+            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutXProperty(), 0)
+            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutYProperty(), value)
             .addKeyFrame(ANIMATION_DURATION, e -> draw()).build();
         originStack.adjust();
         eatingAnimation.setOnFinished(e -> automaticCard());
@@ -195,8 +195,9 @@ public class FreeCellView extends Canvas {
         solitaireCard.setLayoutX(x);
         solitaireCard.setLayoutY(y);
         Timeline eatingAnimation = new SimpleTimelineBuilder()
-            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutX, 0)
-            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutY, adjust).build();
+            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutXProperty(), 0)
+            .addKeyFrame(Duration.millis(ANIMATION_DURATION), solitaireCard.layoutYProperty(), adjust)
+            .addKeyFrame(ANIMATION_DURATION, e -> draw()).build();
         originStack.adjust();
         if (first) {
             eatingAnimation.setOnFinished(e -> automaticCard());

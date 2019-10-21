@@ -1,15 +1,20 @@
 package gaming.ex22;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.Group;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class FreeCellCard extends Card {
-    protected static double cardWidth;
+public class FreeCellCard extends Group {
+    protected static DoubleProperty cardWidth = new SimpleDoubleProperty(0);
     private final FreeCellNumber number;
     private final FreeCellSuit suit;
     private boolean autoMoved;
     private Rectangle bounds;
+
+    private boolean shown;
 
     public FreeCellCard(FreeCellNumber number, FreeCellSuit suit) {
         this.number = number;
@@ -30,8 +35,8 @@ public class FreeCellCard extends Card {
         gc.appendSVGPath(suit.getResource());
         gc.setFill(suit.getColor());
         gc.fill();
-        getBounds().setX(layoutX.get() + layoutX1);
-        getBounds().setY(layoutY.get() + layoutY1);
+        getBounds().setX(getLayoutX() + layoutX1);
+        getBounds().setY(getLayoutY() + layoutY1);
         gc.closePath();
         gc.strokeText(number.getRepresentation(), left - FreeCellCard.getCardWidth() / 4.,
             top + FreeCellCard.getCardWidth() / 4.);
@@ -58,6 +63,11 @@ public class FreeCellCard extends Card {
         return autoMoved;
     }
 
+    public boolean isShown() {
+        return shown;
+    }
+
+    @Override
     public void relocate(double layoutX1, double layoutY1) {
         setLayoutX(layoutX1);
         setLayoutY(layoutY1);
@@ -67,16 +77,20 @@ public class FreeCellCard extends Card {
         this.autoMoved = autoMoved;
     }
 
+    public void setShown(boolean value) {
+        shown = value;
+    }
+
     @Override
     public String toString() {
         return getNumber().getRepresentation() + " " + suit;
     }
 
     public static double getCardWidth() {
-        return cardWidth * 4 / 5;
+        return cardWidth.get() * 4 / 5;
     }
 
     public static void setCardWidth(double cardWidth) {
-        FreeCellCard.cardWidth = cardWidth;
+        FreeCellCard.cardWidth.set(cardWidth);
     }
 }

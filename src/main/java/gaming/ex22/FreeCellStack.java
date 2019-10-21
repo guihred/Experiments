@@ -3,16 +3,15 @@ package gaming.ex22;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javafx.geometry.BoundingBox;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 class FreeCellStack extends StackOfCards {
     final StackType type;
     private final int n;
     private final List<FreeCellCard> cards = new ArrayList<>();
     private double maxHeight;
-    private Rectangle boundsF;
 
     public FreeCellStack(StackType type, int n) {
         this.type = type;
@@ -83,17 +82,11 @@ class FreeCellStack extends StackOfCards {
         }
     }
 
-    public Rectangle getBoundsF() {
-        if (boundsF == null) {
-            boundsF = new Rectangle();
-        }
+    public BoundingBox getBoundsF() {
         double right = FreeCellCard.getCardWidth();
-        double bottom = cards.isEmpty() ? FreeCellCard.getCardWidth() : getLastCards().getBounds().getHeight();
-        boundsF.setX(layoutX);
-        boundsF.setY(layoutY);
-        boundsF.setWidth(right);
-        boundsF.setHeight(bottom);
-        return boundsF;
+        double bottom = cards.isEmpty() ? FreeCellCard.getCardWidth() + layoutY
+            : getLastCards().getBounds().getY() + FreeCellCard.getCardWidth();
+        return new BoundingBox(layoutX, layoutY, right, bottom);
     }
 
     public List<FreeCellCard> getCards() {

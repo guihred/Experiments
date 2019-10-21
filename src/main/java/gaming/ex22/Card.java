@@ -6,7 +6,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 public class Card {
     protected final DoubleProperty layoutX = new SimpleDoubleProperty(0);
     protected final DoubleProperty layoutY = new SimpleDoubleProperty(0);
-    protected boolean shown;
 
     public double getLayoutX() {
 		return layoutX.get();
@@ -16,9 +15,6 @@ public class Card {
 		return layoutY.get();
     }
 
-    public boolean isShown() {
-        return shown;
-    }
 
     public void setLayoutX(double layoutX) {
 		this.layoutX.set(layoutX);
@@ -28,8 +24,5 @@ public class Card {
 		this.layoutY.set(layoutY);
     }
 
-    public void setShown(boolean value) {
-        shown = value;
-    }
 
 }
