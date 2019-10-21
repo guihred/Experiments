@@ -23,9 +23,9 @@ public class SudokuLauncher extends Application {
     public void initialize() {
         sudokuModel = new SudokuModel(numberBoard);
         sudokuModel.getNumberOptions().addAll(
-            borderPane.lookupAll(".numberButton").stream().map(NumberButton.class::cast).collect(Collectors.toList()));
+            numberBoard.getChildren().stream().map(NumberButton.class::cast).collect(Collectors.toList()));
         sudokuModel.getSudokuSquares().addAll(
-            borderPane.lookupAll(".sudokuSquare").stream().map(SudokuSquare.class::cast).collect(Collectors.toList()));
+            gridPane0.getChildren().stream().map(SudokuSquare.class::cast).collect(Collectors.toList()));
         sudokuModel.reset();
         gridPane0.minWidthProperty().bind(borderPane.widthProperty());
         gridPane0.sceneProperty().addListener(e -> {
