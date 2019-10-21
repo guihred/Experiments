@@ -56,7 +56,9 @@ public class BackgroundProcesses extends Application {
         cancelButton.setOnAction((ActionEvent event) -> {
             startButton.setDisable(false);
             cancelButton.setDisable(true);
-            copyWorker.cancel(true);
+			if (copyWorker != null) {
+				copyWorker.cancel(true);
+			}
             // reset
             progressBar.progressProperty().unbind();
             progressBar.setProgress(0);

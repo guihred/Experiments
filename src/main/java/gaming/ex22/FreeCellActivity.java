@@ -11,7 +11,6 @@ public class FreeCellActivity extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 		FreeCellView freeCellView = new FreeCellView();
-
         BorderPane root = new BorderPane(freeCellView);
         root.setBottom(SimpleButtonBuilder.newButton("Back", e -> freeCellView.getBackInHistory()));
         primaryStage.setScene(new Scene(root));

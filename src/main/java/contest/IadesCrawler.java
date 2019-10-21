@@ -91,6 +91,10 @@ public class IadesCrawler extends Application {
 
     private void getNewLinks(TreeItem<Map.Entry<String, String>> newValue, Set<String> links,
         TreeView<Map.Entry<String, String>> build) {
+		if (newValue == null) {
+			return;
+		}
+
         Entry<String, String> entry = newValue.getValue();
         String url = entry.getValue();
 

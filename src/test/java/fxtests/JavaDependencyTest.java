@@ -99,7 +99,7 @@ public class JavaDependencyTest {
         });
     }
 
-    @Test
+	@Test
     public void testGTestUncovered() {
 
         List<String> failedTests = new ArrayList<>();
@@ -137,12 +137,12 @@ public class JavaDependencyTest {
             }
         });
         if (!failedTests.isEmpty()) {
-            Assert.fail(failedTests.stream().collect(Collectors.joining(",", "ERRORS IN ", "")));
+			Assert.fail(failedTests.stream().collect(Collectors.joining("\n", "ERRORS IN {\n", "\n}")));
         }
     }
 
     @Test
-    public void testHTestUncovered() {
+	public void testHTestUncoveredApps() {
 
         measureTime("JavaFileDependency.testUncoveredApps", () -> FXTesting.testApps(getUncoveredApplications()));
     }

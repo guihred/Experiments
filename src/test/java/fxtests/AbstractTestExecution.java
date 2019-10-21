@@ -1,7 +1,9 @@
 package fxtests;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.scene.input.KeyCode;
@@ -12,10 +14,7 @@ import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.testfx.framework.junit.ApplicationTest;
-import utils.ConsumerEx;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
@@ -24,6 +23,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     private final Logger logger = HasLogging.super.getLogger();
 
     protected Random random = new Random();
+	private Map<String, Object> initialStage;
 
     @Override
     public Logger getLogger() {
@@ -33,6 +33,12 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
         currentStage = stage;
+		initialStage = ClassReflectionUtils.getGetterMethodsRecursive(Stage.class).stream()
+				.filter(e -> ClassReflectionUtils.invoke(stage, e) != null)
+				.filter(f -> ClassReflectionUtils.hasSetterMethods(Stage.class,
+						ClassReflectionUtils.getFieldNameCase(f)))
+				.collect(Collectors.toMap(e -> ClassReflectionUtils.getFieldNameCase(e),
+						e -> ClassReflectionUtils.invoke(stage, e)));
         currentStage.setX(0);
         currentStage.setY(0);
     }
@@ -52,6 +58,9 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
 	protected <T extends Application> T show(Class<T> c) {
         try {
+			logger.info("{}", initialStage);
+			initialStage.forEach((f, v) -> ClassReflectionUtils.invoke(initialStage, f, v));
+
             logger.info("SHOWING {}", c.getSimpleName());
             T newInstance = c.newInstance();
             interactNoWait(RunnableEx.make(() -> newInstance.start(currentStage)));

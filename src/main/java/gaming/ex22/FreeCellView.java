@@ -28,7 +28,9 @@ import utils.HasLogging;
  * @author Note
  */
 public class FreeCellView extends Group {
-    private static final int SIZE = 500;
+    private static final String RESET = "Reset";
+	private static final String YOU_WON = "You Won";
+	private static final int SIZE = 500;
     private static final int ANIMATION_DURATION = 200;
     private static final Logger LOG = HasLogging.log();
     private final FreeCellStack[] ascendingStacks = new FreeCellStack[4];
@@ -155,7 +157,7 @@ public class FreeCellView extends Group {
         if (!youWin
             && Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == FreeCellNumber.values().length)) {
             youWin = true;
-            new SimpleDialogBuilder().text("You Won").button("Reset", this::reset).displayDialog();
+            new SimpleDialogBuilder().text(YOU_WON).button(RESET, this::reset).displayDialog();
         }
 
     }
@@ -269,7 +271,7 @@ public class FreeCellView extends Group {
         if (!youWin
             && Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == FreeCellNumber.values().length)) {
             youWin = true;
-            new SimpleDialogBuilder().text("You Won").button("Reset", this::reset).displayDialog();
+            new SimpleDialogBuilder().text(YOU_WON).button(RESET, this::reset).displayDialog();
         }
         if (isNullOrEmpty(dragContext.cards)) {
             return;
@@ -333,7 +335,7 @@ public class FreeCellView extends Group {
                 if (!youWin && Stream.of(ascendingStacks)
                     .allMatch(e -> e.getCards().size() == FreeCellNumber.values().length)) {
                     youWin = true;
-                    new SimpleDialogBuilder().text("You Won").button("Reset", this::reset).displayDialog();
+                    new SimpleDialogBuilder().text(YOU_WON).button(RESET, this::reset).displayDialog();
                 }
                 return true;
             }
