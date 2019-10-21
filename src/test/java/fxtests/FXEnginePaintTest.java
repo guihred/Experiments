@@ -24,6 +24,7 @@ import paintexp.PaintMain;
 import paintexp.tool.AreaTool;
 import utils.ConsumerEx;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 import utils.ZoomableScrollPane;
 
 public class FXEnginePaintTest extends AbstractTestExecution {
@@ -56,7 +57,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 clickOn(colors.remove(random.nextInt(colors.size())),
                     random.nextInt(5) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY);
             }
-            clickOn(next);
+            RunnableEx.run(() -> clickOn(next));
             lookup("#tools .slider").queryAll().forEach(f -> {
                 drag(f, MouseButton.PRIMARY);
                 moveBy(randomNumber(50), 0);

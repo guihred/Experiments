@@ -23,16 +23,6 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    public SimpleMenuBarBuilder addCheckMenuItem(final String text, final EventHandler<ActionEvent> action) {
-        CheckMenuItem item = new CheckMenuItem(text);
-        item.setOnAction(action);
-        if (subMenu != null) {
-            subMenu.getItems().add(item);
-        } else {
-            menu.getItems().add(item);
-        }
-        return this;
-    }
 
     public SimpleMenuBarBuilder addMenu(final String text) {
         menu = new Menu(text);
@@ -152,9 +142,5 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return menuBar;
     }
 
-    public SimpleMenuBarBuilder endSubMenu() {
-        subMenu = null;
-        return this;
-    }
 
 }

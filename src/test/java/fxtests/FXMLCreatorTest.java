@@ -1,6 +1,6 @@
 package fxtests;
 
-import fxpro.ch05.TableVisualizationExample;
+import gaming.ex19.SudokuLauncher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +25,7 @@ public final class FXMLCreatorTest {
 
     @Test
 	public  void testClassesNotClose() {
-        List<Class<? extends Application>> classes = Arrays.asList(TableVisualizationExample.class);
+        List<Class<? extends Application>> classes = Arrays.asList(SudokuLauncher.class);
         FXMLCreatorHelper.testApplications(classes, false);
     }
 

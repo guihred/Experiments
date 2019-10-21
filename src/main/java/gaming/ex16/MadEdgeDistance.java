@@ -25,7 +25,6 @@ public class MadEdgeDistance implements Comparable<MadEdgeDistance> {
         if (obj == null) {
             return false;
         }
-
         if (!getClass().isInstance(obj)) {
             return false;
         }

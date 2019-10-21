@@ -20,15 +20,11 @@ public class SimplePaneBuilder<T extends Pane, Z extends SimpleBuilder<T>> exten
 	}
 
 
-	public Z padding(Insets insets) {
-		pane.setPadding(insets);
-		return (Z) this;
-	}
-
-    public Z padding(int insets) {
-        pane.setPadding(new Insets(insets));
+    public Z padding(Insets insets) {
+        pane.setPadding(insets);
         return (Z) this;
     }
+
 
     public Z padding(int top, int right, int bottom, int left) {
         pane.setPadding(new Insets(top, right, bottom, left));

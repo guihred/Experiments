@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.scene.control.*?><?import gaming.ex19.*?><?import javafx.collections.*?><?import java.lang.*?><?import javafx.geometry.*?><?import javafx.scene.effect.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+	styleClass="root">
+	<center>
+		<StackPane fx:id="borderPane">
+			<children>
+				<GridPane fx:id="gridPane0" minWidth="349.0"
+					onMouseDragged="#onMouseDraggedGridPane0"
+					onMousePressed="#onMousePressedGridPane0"
+					onMouseReleased="#onMouseReleasedGridPane0" prefHeight="371.0"
+					prefWidth="394.0">
+					<children>
+						<SudokuSquare GridPane.columnIndex="0"
+							GridPane.rowIndex="0" col="0" permanent="false" row="0">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="0"
+							GridPane.rowIndex="1" col="1" row="0">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="0"
+							GridPane.rowIndex="2" col="2" permanent="false" row="0">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="0"
+							GridPane.rowIndex="3" col="3" row="0">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="0"
+							GridPane.rowIndex="4" col="4" permanent="false" row="0">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="0"
+							GridPane.rowIndex="5" col="5" permanent="false" row="0">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="0"
+							GridPane.rowIndex="6" col="6" permanent="false" row="0">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="0"
+							GridPane.rowIndex="7" col="7" row="0">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="0"
+							GridPane.rowIndex="8" col="8" permanent="false" row="0">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="1"
+							GridPane.rowIndex="0" col="0" permanent="false" row="1">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="1"
+							GridPane.rowIndex="1" col="1" permanent="false" row="1">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="1"
+							GridPane.rowIndex="2" col="2" permanent="false" row="1">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="1"
+							GridPane.rowIndex="3" col="3" permanent="false" row="1">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="1"
+							GridPane.rowIndex="4" col="4" permanent="false" row="1">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="1"
+							GridPane.rowIndex="5" col="5" row="1">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="1"
+							GridPane.rowIndex="6" col="6" permanent="false" row="1">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="1"
+							GridPane.rowIndex="7" col="7" row="1">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="1"
+							GridPane.rowIndex="8" col="8" permanent="false" row="1">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="2"
+							GridPane.rowIndex="0" col="0" permanent="false" row="2">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="2"
+							GridPane.rowIndex="1" col="1" permanent="false" row="2">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="2"
+							GridPane.rowIndex="2" col="2" permanent="false" row="2">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="2"
+							GridPane.rowIndex="3" col="3" row="2">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="2"
+							GridPane.rowIndex="4" col="4" row="2">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="2"
+							GridPane.rowIndex="5" col="5" row="2">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="2"
+							GridPane.rowIndex="6" col="6" permanent="false" row="2">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="2"
+							GridPane.rowIndex="7" col="7" permanent="false" row="2">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="2"
+							GridPane.rowIndex="8" col="8" permanent="false" row="2">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="3"
+							GridPane.rowIndex="0" col="0" permanent="false" row="3">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="3"
+							GridPane.rowIndex="1" col="1" permanent="false" row="3">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="3"
+							GridPane.rowIndex="2" col="2" permanent="false" row="3">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="3"
+							GridPane.rowIndex="3" col="3" permanent="false" row="3">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="3"
+							GridPane.rowIndex="4" col="4" permanent="false" row="3">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="3"
+							GridPane.rowIndex="5" col="5" permanent="false" row="3">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="3"
+							GridPane.rowIndex="6" col="6" permanent="false" row="3">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="3"
+							GridPane.rowIndex="7" col="7" permanent="false" row="3">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="3"
+							GridPane.rowIndex="8" col="8" permanent="false" row="3">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="4"
+							GridPane.rowIndex="0" col="0" permanent="false" row="4">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="4"
+							GridPane.rowIndex="1" col="1" row="4">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="4"
+							GridPane.rowIndex="2" col="2" permanent="false" row="4">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="4"
+							GridPane.rowIndex="3" col="3" permanent="false" row="4">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="4"
+							GridPane.rowIndex="4" col="4" row="4">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="4"
+							GridPane.rowIndex="5" col="5" permanent="false" row="4">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="4"
+							GridPane.rowIndex="6" col="6" permanent="false" row="4">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="4"
+							GridPane.rowIndex="7" col="7" row="4">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="4"
+							GridPane.rowIndex="8" col="8" row="4">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="5"
+							GridPane.rowIndex="0" col="0" permanent="false" row="5">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="5"
+							GridPane.rowIndex="1" col="1" permanent="false" row="5">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="5"
+							GridPane.rowIndex="2" col="2" row="5">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="5"
+							GridPane.rowIndex="3" col="3" row="5">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="5"
+							GridPane.rowIndex="4" col="4" row="5">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="5"
+							GridPane.rowIndex="5" col="5" permanent="false" row="5">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="5"
+							GridPane.rowIndex="6" col="6" row="5">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="5"
+							GridPane.rowIndex="7" col="7" permanent="false" row="5">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="5"
+							GridPane.rowIndex="8" col="8" permanent="false" row="5">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="6"
+							GridPane.rowIndex="0" col="0" permanent="false" row="6">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="6"
+							GridPane.rowIndex="1" col="1" permanent="false" row="6">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="6"
+							GridPane.rowIndex="2" col="2" row="6">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="6"
+							GridPane.rowIndex="3" col="3" row="6">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="6"
+							GridPane.rowIndex="4" col="4" permanent="false" row="6">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="6"
+							GridPane.rowIndex="5" col="5" permanent="false" row="6">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="6"
+							GridPane.rowIndex="6" col="6" permanent="false" row="6">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="6"
+							GridPane.rowIndex="7" col="7" permanent="false" row="6">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="6"
+							GridPane.rowIndex="8" col="8" row="6">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="7"
+							GridPane.rowIndex="0" col="0" permanent="false" row="7">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="7"
+							GridPane.rowIndex="1" col="1" row="7">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="7"
+							GridPane.rowIndex="2" col="2" row="7">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="7"
+							GridPane.rowIndex="3" col="3" permanent="false" row="7">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="7"
+							GridPane.rowIndex="4" col="4" permanent="false" row="7">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="7"
+							GridPane.rowIndex="5" col="5" permanent="false" row="7">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="7"
+							GridPane.rowIndex="6" col="6" row="7">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="7"
+							GridPane.rowIndex="7" col="7" permanent="false" row="7">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="7"
+							GridPane.rowIndex="8" col="8" permanent="false" row="7">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="8"
+							GridPane.rowIndex="0" col="0" row="8">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="8"
+							GridPane.rowIndex="1" col="1" row="8">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="8"
+							GridPane.rowIndex="2" col="2" permanent="false" row="8">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="8"
+							GridPane.rowIndex="3" col="3" permanent="false" row="8">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="8"
+							GridPane.rowIndex="4" col="4" permanent="false" row="8">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="8"
+							GridPane.rowIndex="5" col="5" permanent="false" row="8">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="8"
+							GridPane.rowIndex="6" col="6" permanent="false" row="8">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="8"
+							GridPane.rowIndex="7" col="7" permanent="false" row="8">
+						</SudokuSquare>
+						<SudokuSquare GridPane.columnIndex="8"
+							GridPane.rowIndex="8" col="8" row="8">
+						</SudokuSquare>
+					</children>
+				</GridPane>
+				<GridPane fx:id="numberBoard" visible="false">
+					<children>
+						<NumberButton GridPane.columnIndex="0"
+							GridPane.rowIndex="0" number="1">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+						<NumberButton GridPane.columnIndex="1" number="2"
+							GridPane.rowIndex="0">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+						<NumberButton GridPane.columnIndex="2" number="3"
+							GridPane.rowIndex="0">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+						<NumberButton GridPane.columnIndex="0" number="4"
+							GridPane.rowIndex="1">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+						<NumberButton GridPane.columnIndex="1" number="5"
+							GridPane.rowIndex="1">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+						<NumberButton GridPane.columnIndex="2" number="6"
+							GridPane.rowIndex="1">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+						<NumberButton GridPane.columnIndex="0" number="7"
+							GridPane.rowIndex="2">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+						<NumberButton GridPane.columnIndex="1" number="8"
+							GridPane.rowIndex="2">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+						<NumberButton GridPane.columnIndex="2" number="9"
+							GridPane.rowIndex="2">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+						<NumberButton GridPane.columnIndex="3" number="0"
+							GridPane.rowIndex="0">
+							<effect>
+								<InnerShadow />
+							</effect>
+						</NumberButton>
+					</children>
+				</GridPane>
+			</children>
+		</StackPane>
+	</center>
+	<left>
+		<VBox>
+			<children>
+				<Button alignment="CENTER" fx:id="blank" id="Blank"
+					onAction="#onActionBlank" text="Blank">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="reset" id="Reset"
+					onAction="#onActionReset" text="Reset">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="solve" id="Solve"
+					onAction="#onActionSolve" text="Solve">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+			</children>
+		</VBox>
+	</left>
+</BorderPane>

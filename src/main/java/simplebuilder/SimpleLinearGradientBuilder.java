@@ -52,11 +52,6 @@ public class SimpleLinearGradientBuilder implements SimpleBuilder<LinearGradient
 		return this;
 	}
 
-	public SimpleLinearGradientBuilder stops(List<Stop> v) {
-		stopsp.clear();
-		stopsp.addAll(v);
-		return this;
-	}
 	public SimpleLinearGradientBuilder stops(Stop... v) {
 		stopsp.clear();
 		for (Stop element : v) {

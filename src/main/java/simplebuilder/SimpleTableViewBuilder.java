@@ -33,16 +33,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public <S> SimpleTableViewBuilder<T> addColumn(final String columnName, FunctionEx<S, String> func,
-        final String propertyName) {
-        final TableColumn<T, S> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
-        column.setCellFactory(setFormat(func));
-
-        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-        table.getColumns().add(column);
-        return this;
-    }
 
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
@@ -63,16 +53,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName,
-        final Callback<TableColumn<T, String>, TableCell<T, String>> value) {
-        final TableColumn<T, String> column = new TableColumn<>(columnName);
-        column.setId(propertyName);
-        column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
-        column.setCellFactory(value);
-        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-        table.getColumns().add(column);
-        return this;
-    }
 
     public SimpleTableViewBuilder<T> addColumns(final String... columnName) {
         for (String columnProp : columnName) {

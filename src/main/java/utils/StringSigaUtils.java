@@ -22,7 +22,6 @@ public class StringSigaUtils extends StringUtils {
     private static final int TAMANHO_CPF = 11;
     private static final int TAMANHO_CEP = 8;
     private static final int TAMANHO_CNPJ = 14;
-
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
         Double.class);
 

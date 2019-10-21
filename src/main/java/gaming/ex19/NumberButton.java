@@ -27,7 +27,7 @@ public final class NumberButton extends Region {
         text.setTextAlignment(TextAlignment.CENTER);
         getChildren().add(text);
         setPrefSize(30, 30);
-
+        getStyleClass().add("numberButton");
     }
 
     public int getNumber() {

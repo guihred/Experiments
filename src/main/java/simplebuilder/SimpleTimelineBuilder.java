@@ -4,8 +4,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.WritableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,25 +11,15 @@ import javafx.util.Duration;
 
 public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, SimpleTimelineBuilder> {
 
-	protected Timeline timeline;
+    protected Timeline timeline;
 
-	public SimpleTimelineBuilder() {
-		super(new Timeline());
-		timeline = animation;
-	}
-
-	public SimpleTimelineBuilder addKeyFrame(double time, EventHandler<ActionEvent> eventHandler) {
-	    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(time), eventHandler));
-	    return this;
-	}
+    public SimpleTimelineBuilder() {
+        super(new Timeline());
+        timeline = animation;
+    }
 
     public SimpleTimelineBuilder addKeyFrame(Duration time, EventHandler<ActionEvent> eventHandler) {
         timeline.getKeyFrames().add(new KeyFrame(time, eventHandler));
-        return this;
-    }
-
-    public SimpleTimelineBuilder addKeyFrame(Duration time, KeyValue... values) {
-        timeline.getKeyFrames().add(new KeyFrame(time, values));
         return this;
     }
 
@@ -52,16 +40,8 @@ public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, Simp
     }
 
     public SimpleTimelineBuilder keyFrames(KeyFrame... elements) {
-		timeline.getKeyFrames().setAll(elements);
-		return this;
-	}
-
-    public SimpleTimelineBuilder onUpdate(Duration time,InvalidationListener listener) {
-        SimpleDoubleProperty target = new SimpleDoubleProperty(0);
-        target.addListener(listener);
-        timeline.getKeyFrames().add(new KeyFrame(time, new KeyValue(target, 1)));
+        timeline.getKeyFrames().setAll(elements);
         return this;
     }
-
 
 }

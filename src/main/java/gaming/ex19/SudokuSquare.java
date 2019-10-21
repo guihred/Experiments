@@ -68,6 +68,7 @@ public final class SudokuSquare extends Region {
         possibilitiesText.textProperty().bind(Bindings.createStringBinding(this::displayPossibilities, possibilities));
         possibilitiesText.wrappingWidthProperty().bind(widthProperty());
         getChildren().add(possibilitiesText);
+        getStyleClass().add("sudokuSquare");
 
     }
 

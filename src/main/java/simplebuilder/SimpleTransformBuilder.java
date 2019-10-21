@@ -17,8 +17,8 @@ public class SimpleTransformBuilder<T extends Transform, Z extends SimpleBuilder
 		return transform;
 	}
 
-	public Z onTransformChange(EventHandler<? super TransformChangedEvent> value) {
-		transform.setOnTransformChanged(value);
-		return (Z) this;
-	}
+    public Z onTransformChange(EventHandler<? super TransformChangedEvent> value) {
+        transform.setOnTransformChanged(value);
+        return (Z) this;
+    }
 }

@@ -59,10 +59,6 @@ public class SimpleRadialGradientBuilder implements SimpleBuilder<RadialGradient
 		return this;
 	}
 
-	public SimpleRadialGradientBuilder stops(List<Stop> v) {
-		stopsRG = v;
-		return this;
-	}
 	public SimpleRadialGradientBuilder stops(Stop... v) {
 		stopsRG.clear();
 		for (Stop element : v) {

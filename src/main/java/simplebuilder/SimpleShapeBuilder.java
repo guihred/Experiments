@@ -35,11 +35,6 @@ public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> ext
         return (Z) this;
     }
 
-    public Z strokeDashArray(Double... elements) {
-        shape.getStrokeDashArray().clear();
-        shape.getStrokeDashArray().addAll(elements);
-        return (Z) this;
-    }
 
 	public Z strokeDashArray(int... elements) {
         shape.getStrokeDashArray().clear();

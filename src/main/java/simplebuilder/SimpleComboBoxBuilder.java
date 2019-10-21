@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
@@ -21,30 +20,10 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
 
     protected ComboBox<T> comboBox;
 
-	public SimpleComboBoxBuilder() {
+    public SimpleComboBoxBuilder() {
         super(new ComboBox<>());
         comboBox = region;
 
-    }
-
-    public SimpleComboBoxBuilder<T> bind(Property<T> column) {
-        column.bind(comboBox.getSelectionModel().selectedItemProperty());
-        return this;
-    }
-
-    public SimpleComboBoxBuilder<T> converter(Function<T, String> func) {
-        comboBox.setConverter(new SimpleConverter<>(func));
-        return this;
-    }
-
-    public SimpleComboBoxBuilder<T> converter(String func) {
-        comboBox.setConverter(new SimpleConverter<>(func));
-        return this;
-    }
-
-    public SimpleComboBoxBuilder<T> converter(StringConverter<T> value) {
-        comboBox.setConverter(value);
-        return this;
     }
 
     public SimpleComboBoxBuilder<T> items(Collection<T> value) {
@@ -90,7 +69,7 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
 
     public SimpleComboBoxBuilder<T> onChange(BiConsumer<T, T> obj) {
         comboBox.getSelectionModel().selectedItemProperty()
-                .addListener((ob, old, newValue) -> obj.accept(old, newValue));
+            .addListener((ob, old, newValue) -> obj.accept(old, newValue));
         return this;
     }
 
@@ -109,15 +88,6 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         return this;
     }
 
-    public T selectedItem() {
-        return comboBox.getSelectionModel().getSelectedItem();
-    }
-
-    public SimpleComboBoxBuilder<T> styleFunction(Function<T, String> func) {
-        comboBox.setCellFactory(cellStyle(comboBox, func));
-        return this;
-    }
-
     public SimpleComboBoxBuilder<T> tooltip(String text) {
         comboBox.setTooltip(new Tooltip(text));
         return this;
@@ -129,7 +99,5 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
             cell.setStyle(func.apply(item));
         });
     }
-
-
 
 }

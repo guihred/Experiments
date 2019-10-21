@@ -26,7 +26,7 @@ public class SimplePathBuilder extends SimpleShapeBuilder<Path, SimplePathBuilde
     }
 
     public SimplePathBuilder cubicCurveTo(double controlX1, double controlY1, double controlX2, double controlY2,
-            double x, double y) {
+        double x, double y) {
         return add(new CubicCurveTo(controlX1, controlY1, controlX2, controlY2, x, y));
     }
 
@@ -34,7 +34,7 @@ public class SimplePathBuilder extends SimpleShapeBuilder<Path, SimplePathBuilde
         return add(new HLineTo(x));
     }
 
-    public SimplePathBuilder lineTo(double x,double y) {
+    public SimplePathBuilder lineTo(double x, double y) {
         return add(new LineTo(x, y));
     }
 

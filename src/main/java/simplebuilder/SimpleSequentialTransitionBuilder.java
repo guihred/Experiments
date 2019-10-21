@@ -37,10 +37,6 @@ public class SimpleSequentialTransitionBuilder
         return this;
     }
 
-    public SimpleSequentialTransitionBuilder addFadeTransition(Duration duration, Node node) {
-        sequentialTransition.getChildren().add(new FadeTransition(duration, node));
-        return this;
-    }
 
     public SimpleSequentialTransitionBuilder addTranslateTransition(Node node, double durationMillis,
             ObservableValue<? extends Number> fromX, ObservableValue<? extends Number> toX) {

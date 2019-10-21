@@ -54,10 +54,6 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
         return (Z) this;
     }
 
-	public Z onMouseClicked(final EventHandler<? super MouseEvent> object) {
-	    node.setOnMouseClicked(object);
-	    return (Z) this;
-	}
 
 	public Z onMouseDragged(final EventHandler<? super MouseEvent> value) {
 		node.setOnMouseDragged(value);

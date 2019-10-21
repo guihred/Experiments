@@ -1,9 +1,7 @@
 package simplebuilder;
 
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.layout.FlowPane;
 
 public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlowPaneBuilder> {
@@ -13,11 +11,6 @@ public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlo
 	public SimpleFlowPaneBuilder() {
 		super(new FlowPane());
 		flowPane = node;
-	}
-
-	public SimpleFlowPaneBuilder alignment(Pos left) {
-		flowPane.setAlignment(left);
-		return this;
 	}
 
 	public SimpleFlowPaneBuilder columnHalignment(HPos left) {
@@ -35,11 +28,6 @@ public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlo
 		return this;
 	}
 
-	@Override
-	public SimpleFlowPaneBuilder padding(Insets insets) {
-		flowPane.setPadding(insets);
-		return this;
-	}
 
 	public SimpleFlowPaneBuilder vgap(double i) {
 		flowPane.setVgap(i);

@@ -25,12 +25,14 @@ public class SudokuModel {
     private GridPane numberBoard = new GridPane();
     private List<NumberButton> numberOptions = new ArrayList<>();
     private List<SudokuSquare> sudokuSquares = new ArrayList<>();
-
     private SudokuSquare pressedSquare;
 
     public SudokuModel() {
         initialize();
+    }
 
+    public SudokuModel(GridPane numberBoard) {
+        this.numberBoard = numberBoard;
     }
 
     public void blank() {
@@ -47,6 +49,14 @@ public class SudokuModel {
 
     public Region getNumberBoard() {
         return numberBoard;
+    }
+
+    public List<NumberButton> getNumberOptions() {
+        return numberOptions;
+    }
+
+    public List<SudokuSquare> getSudokuSquares() {
+        return sudokuSquares;
     }
 
     public void handleMouseMoved(MouseEvent s) {
@@ -85,6 +95,29 @@ public class SudokuModel {
                 .displayDialog();
         }
     }
+
+    public void initialize() {
+        numberBoard.setVisible(false);
+        for (int i1 = 0; i1 < MAP_N_SQUARED; i1++) {
+            for (int j1 = 0; j1 < MAP_N_SQUARED; j1++) {
+                SudokuSquare sudokuSquare = new SudokuSquare(i1, j1);
+                sudokuSquare.setPermanent(false);
+                sudokuSquares.add(sudokuSquare);
+            }
+        }
+        for (int i = 0; i < SudokuSquare.MAP_NUMBER; i++) {
+            for (int j = 0; j < SudokuSquare.MAP_NUMBER; j++) {
+                NumberButton child = new NumberButton(i * SudokuSquare.MAP_NUMBER + j + 1);
+                numberOptions.add(child);
+                numberBoard.add(child, j, i);
+            }
+        }
+        NumberButton child = new NumberButton(0);
+        numberOptions.add(child);
+        numberBoard.add(child, 3, 0);
+        reset();
+    }
+
 
     public void reset() {
         createRandomNumbers();
@@ -206,28 +239,6 @@ public class SudokuModel {
     private List<SudokuSquare> getRow(int i, int number) {
         return sudokuSquares.stream().filter(e1 -> e1.isEmpty() && e1.isInRow(i))
             .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
-    }
-
-    private void initialize() {
-        numberBoard.setVisible(false);
-        for (int i1 = 0; i1 < MAP_N_SQUARED; i1++) {
-            for (int j1 = 0; j1 < MAP_N_SQUARED; j1++) {
-                SudokuSquare sudokuSquare = new SudokuSquare(i1, j1);
-                sudokuSquare.setPermanent(false);
-                sudokuSquares.add(sudokuSquare);
-            }
-        }
-        for (int i = 0; i < SudokuSquare.MAP_NUMBER; i++) {
-            for (int j = 0; j < SudokuSquare.MAP_NUMBER; j++) {
-                NumberButton child = new NumberButton(i * SudokuSquare.MAP_NUMBER + j + 1);
-                numberOptions.add(child);
-                numberBoard.add(child, j, i);
-            }
-        }
-        NumberButton child = new NumberButton(0);
-        numberOptions.add(child);
-        numberBoard.add(child, 3, 0);
-        reset();
     }
 
     private boolean isFullyFilled() {

@@ -16,13 +16,6 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggle(final Node node) {
-        Toggle e = new ToggleButton(null, node);
-        e.setUserData(node);
-
-        e.setToggleGroup(toggleGroup);
-        return this;
-    }
 
 	public SimpleToggleGroupBuilder addToggle(final Node node, final Object userData) {
         ToggleButton toggleButton = new ToggleButton(null, node);
@@ -41,24 +34,8 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggle(final String text) {
-        ToggleButton node = new ToggleButton(text);
-        node.setToggleGroup(toggleGroup);
-        return this;
-    }
 
-    public SimpleToggleGroupBuilder addToggle(final String text, final Node node) {
-        ToggleButton node2 = new ToggleButton(text, node);
-        node2.setToggleGroup(toggleGroup);
-        return this;
-    }
 
-    public SimpleToggleGroupBuilder addToggle(final String text, final Node node, final String id) {
-        ToggleButton e = new ToggleButton(text, node);
-        e.setId(id);
-        e.setToggleGroup(toggleGroup);
-        return this;
-    }
 
     public SimpleToggleGroupBuilder addToggle(final String node, final Object userData) {
 	    ToggleButton toggleButton = new ToggleButton(node);
@@ -69,10 +46,6 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
 	    return this;
 	}
 
-    public  SimpleToggleGroupBuilder addToggle(final Toggle toggle) {
-        toggle.setToggleGroup(toggleGroup);
-        return this;
-    }
 
     public SimpleToggleGroupBuilder addToggleTooltip(final Node node, final String text) {
         ToggleButton toggleButton = new ToggleButton(null, node);

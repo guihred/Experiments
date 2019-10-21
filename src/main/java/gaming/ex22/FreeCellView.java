@@ -280,6 +280,44 @@ public class FreeCellView extends Group {
         }
 
         FreeCellCard first = dragContext.cards.iterator().next();
+        if (handleSingleCard(first)) {
+            return;
+        }
+
+        if (handleSimpleStack(first)) {
+            return;
+        }
+        cardStackList.sort(
+            Comparator.comparing((FreeCellStack e) -> e.type).thenComparing((FreeCellStack e) -> -e.getCards().size()));
+
+        if (tryToPlaceCard(first)) {
+            return;
+        }
+        dragContext.stack.addCards(dragContext.cards);
+        dragContext.reset();
+    }
+
+    private boolean handleSimpleStack(FreeCellCard first) {
+        for (FreeCellStack cardStack : getHoveredStacks(simpleStacks)) {
+            while (dragContext.cards.size() > pileMaxSize(cardStack)) {
+                FreeCellCard remove = dragContext.cards.remove(0);
+                dragContext.stack.addCards(remove);
+            }
+            if (notAcceptsCard(first, cardStack)) {
+                continue;
+            }
+
+            MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, cardStack);
+            history.add(motionHistory);
+            cardStack.addCards(dragContext.cards);
+            dragContext.reset();
+            automaticCard();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleSingleCard(FreeCellCard first) {
         if (dragContext.cards.size() == 1) {
             Collection<FreeCellStack> hoveredStacks = getHoveredStacks(ascendingStacks);
             hoveredStacks.addAll(getHoveredStacks(supportingStacks));
@@ -297,39 +335,10 @@ public class FreeCellView extends Group {
                     youWin = true;
                     new SimpleDialogBuilder().text("You Won").button("Reset", this::reset).displayDialog();
                 }
-                return;
+                return true;
             }
         }
-
-        for (FreeCellStack cardStack : getHoveredStacks(simpleStacks)) {
-            while (dragContext.cards.size() > pileMaxSize(cardStack)) {
-                FreeCellCard remove = dragContext.cards.remove(0);
-                dragContext.stack.addCards(remove);
-            }
-            if (notAcceptsCard(first, cardStack)) {
-                continue;
-            }
-
-            MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, cardStack);
-            history.add(motionHistory);
-            cardStack.addCards(dragContext.cards);
-            dragContext.reset();
-            automaticCard();
-            return;
-        }
-        cardStackList.sort(
-            Comparator.comparing((FreeCellStack e) -> e.type).thenComparing((FreeCellStack e) -> -e.getCards().size()));
-
-        for (FreeCellStack e : cardStackList) {
-            if (Objects.equals(e, dragContext.stack)) {
-                continue;
-            }
-            if (placeCard(first, e)) {
-                return;
-            }
-        }
-        dragContext.stack.addCards(dragContext.cards);
-        dragContext.reset();
+        return false;
     }
 
     private boolean notAccept(FreeCellCard first, FreeCellStack cardStack) {
@@ -346,9 +355,8 @@ public class FreeCellView extends Group {
     }
 
     private void onLayout() {
-        double cardWidth = FreeCellCard.getCardWidth();
         FreeCellCard.setCardWidth(getWidth() / 8);
-        if (cardWidth == 0) {
+        if (cardStackList.isEmpty()) {
             reset();
         } else {
             rescale();
@@ -403,6 +411,18 @@ public class FreeCellView extends Group {
             history.add(motionHistory);
             dragContext.reset();
             return true;
+        }
+        return false;
+    }
+
+    private boolean tryToPlaceCard(FreeCellCard first) {
+        for (FreeCellStack e : cardStackList) {
+            if (Objects.equals(e, dragContext.stack)) {
+                continue;
+            }
+            if (placeCard(first, e)) {
+                return true;
+            }
         }
         return false;
     }

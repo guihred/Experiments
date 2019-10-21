@@ -14,20 +14,12 @@ public class SimpleArcBuilder extends SimpleShapeBuilder<Arc, SimpleArcBuilder> 
 	}
 
 
-	public SimpleArcBuilder centerX(double value) {
-		arc.setCenterX(value);
-		return this;
-	}
 
 	public SimpleArcBuilder centerX(ObservableValue<? extends Number> observable) {
 		arc.centerXProperty().bind(observable);
 		return this;
 	}
 
-	public SimpleArcBuilder centerY(double value) {
-		arc.setCenterY(value);
-		return this;
-	}
 
 	public SimpleArcBuilder centerY(ObservableValue<? extends Number> observable) {
 		arc.centerYProperty().bind(observable);
@@ -53,10 +45,6 @@ public class SimpleArcBuilder extends SimpleShapeBuilder<Arc, SimpleArcBuilder> 
 		return this;
 	}
 
-	public SimpleArcBuilder radiusY(ObservableValue<? extends Number> observable) {
-		arc.radiusYProperty().bind(observable);
-		return this;
-	}
 
 	public SimpleArcBuilder startAngle(double value) {
 		arc.setStartAngle(value);

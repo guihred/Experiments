@@ -47,10 +47,6 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
         return this;
     }
 
-    public SimpleSliderBuilder onChange(ChangeListener<? super Number> listener) {
-        onChange(slider, listener);
-        return this;
-    }
 
     public SimpleSliderBuilder orientation(Orientation value) {
         node.setOrientation(value);

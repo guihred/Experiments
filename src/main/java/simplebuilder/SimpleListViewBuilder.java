@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.util.Callback;
 
 public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, SimpleListViewBuilder<T>> {
@@ -45,16 +44,8 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     }
 
 
-    public SimpleListViewBuilder<T> scrollTo(int value) {
-        table.scrollTo(value);
-        return this;
-    }
 
 
-    public SimpleListViewBuilder<T> selectionMode(SelectionMode value) {
-        table.getSelectionModel().setSelectionMode(value);
-        return this;
-    }
 
     @SuppressWarnings("unchecked")
     public static <C, V extends ListCell<C>> Callback<ListView<C>, ListCell<C>> newCellFactory(
