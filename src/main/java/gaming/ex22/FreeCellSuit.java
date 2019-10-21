@@ -5,11 +5,12 @@ import javafx.scene.shape.SVGPath;
 import simplebuilder.SimpleSvgPathBuilder;
 
 public enum FreeCellSuit {
-    SPADES(Color.BLACK, "M 60,0 a-20,20,0,1,1,34.6,20 a20,20,0,1,0,34.6,-20 l-34.6,-40 z M 85,48 l20,0  l-10,-35 z "),
-    DIAMONDS(Color.RED, "M 60,0 l34.6,40 l-34.6,40 l-34.6,-40 z "),
+    SPADES(Color.BLACK,
+        "m-5 10 a -5 5 0 1 0 8.65 5.00a 5 5 0 1 0 8.65 -5.00l-8.65 -10 zm6.25 12 l5 0 l-2.52 -8.75 z"),
+    DIAMONDS(Color.RED, "m5 0 l8.65 10 l-8.65 10 l-8.65 -10 z"),
     CLUBS(Color.BLACK,
-        "M 60,0 a-20,20,0,1,1,16,27.7 a20,20,0,1,0,16,-27.7 a20,20,0,1,0,-32,0 z M 61,60 l30,0  l-15,-35 z "),
-    HEARTS(Color.RED, "M 60,0 a-20,-20,0,1,1,34.6,-20 a20,-20,0,1,0,34.6,20 l-34.6,40 z ");
+        "m0 10 a -5 5 0 1 0 4 6.93a 5 5 0 1 0 4 -6.93a 5 5 0 1 0 -8 0.00zm0.25 15 l7.49 0 l-3.75 -8.75 z"),
+    HEARTS(Color.RED, "m-5 10 a -5 -5 0 1 1 8.65 -5.00a 5 -5 0 1 1 8.65 5.00l-8.65 10 z");
 
     private final String resource;
     private final Color color;

@@ -182,8 +182,8 @@
 				<VBox GridPane.columnIndex="0" GridPane.columnSpan="2"
 					GridPane.rowIndex="15" GridPane.rowSpan="1">
 					<children>
-						<Text fx:id="text19" text="Scale" />
-						<Slider blockIncrement="0.005" fx:id="slider" max="2.0"
+						<Text fx:id="scaleText" text="Scale" />
+						<Slider blockIncrement="0.05" fx:id="slider" max="2.0"
 							min="0.5" value="1.0" />
 						<Text text="Stroke" />
 						<Slider blockIncrement="0.5" fx:id="thickness" max="20"

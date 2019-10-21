@@ -33,6 +33,8 @@ public class SVGCreator extends Application {
     @FXML
     private Slider slider;
     @FXML
+    private Text scaleText;
+    @FXML
     private Text width;
     @FXML
     private Text height;
@@ -178,6 +180,7 @@ public class SVGCreator extends Application {
             image.setFitWidth(image2.getWidth() * scale);
         }
         lastScale = scale;
+        scaleText.setText(String.format("Scale %.2f", scale));
     }
 
     public static void main(final String[] args) {

@@ -1,62 +1,48 @@
 package gaming.ex22;
 
-import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.SVGPath;
 
 public class FreeCellCard extends Card {
-
-    protected static int cardWidth;
+    protected static double cardWidth;
     private final FreeCellNumber number;
     private final FreeCellSuit suit;
-    private final SVGPath drawable;
     private boolean autoMoved;
     private Rectangle bounds;
-	private Rectangle boundsF;
 
-    FreeCellCard(FreeCellNumber number, FreeCellSuit suit) {
+    public FreeCellCard(FreeCellNumber number, FreeCellSuit suit) {
         this.number = number;
         this.suit = suit;
-//        paint.setStyle(Paint.Style.STROKE);
-        drawable = suit.getShape();
     }
 
-	public void draw(Canvas canvas, double layoutX1, double layoutY1) {
-        Rectangle Rectangle = getBoundsF();
-        double w = Rectangle.getWidth();
-        double h = Rectangle.getHeight();
-//        paint.setStyle(Paint.Style.FILL);
-//        paint.setColor(Color.WHITE);
-        canvas.getGraphicsContext2D().setFill(Color.WHITE);
-		canvas.getGraphicsContext2D().fillRoundRect(layoutX1, layoutY1, w, h, 5, 5);
-        canvas.getGraphicsContext2D().setStroke(Color.BLACK);
-		canvas.getGraphicsContext2D().strokeRoundRect(layoutX1, layoutY1, w, h, 5, 5);
-        if (!shown) {
-            return;
-        }
-//        paint.setTextSize(getCardWidth() / 4F);
-		int left = (int) (layoutX1 + getLayoutX()) + FreeCellCard.getCardWidth() / 3;
-		int top = (int) (layoutY1 + getLayoutY()) + FreeCellCard.getCardWidth() / 10 / 2;
-//        drawable.setBounds(left, top, left + getCardWidth() / 4, top + getCardWidth() / 4);
-//        drawable.draw(canvas);
-
-        canvas.getGraphicsContext2D().strokeText(number.getRepresentation(), left - FreeCellCard.getCardWidth() / 4.,
+    public void draw(GraphicsContext gc, double layoutX1, double layoutY1) {
+        double w = FreeCellCard.getCardWidth();
+        double h = FreeCellCard.getCardWidth();
+        gc.setFill(Color.WHITE);
+        gc.fillRoundRect(layoutX1 + getLayoutX(), layoutY1 + getLayoutY(), w, h, 5, 5);
+        gc.setStroke(Color.BLACK);
+        gc.strokeRoundRect(layoutX1 + getLayoutX(), layoutY1 + getLayoutY(), w, h, 5, 5);
+        double left = layoutX1 + getLayoutX() + FreeCellCard.getCardWidth() / 3;
+        double top = layoutY1 + getLayoutY() + FreeCellCard.getCardWidth() / 10 / 2;
+        gc.beginPath();
+        gc.moveTo(left, top);
+        gc.appendSVGPath(suit.getResource());
+        gc.setFill(suit.getColor());
+        gc.fill();
+        getBounds().setX(layoutX.get() + layoutX1);
+        getBounds().setY(layoutY.get() + layoutY1);
+        gc.closePath();
+        gc.strokeText(number.getRepresentation(), left - FreeCellCard.getCardWidth() / 4.,
             top + FreeCellCard.getCardWidth() / 4.);
     }
-
-
-
 
     public Rectangle getBounds() {
         if (bounds == null) {
             bounds = new Rectangle();
         }
-
-		boundsF.setX(layoutX.get());
-		boundsF.setY(layoutY.get());
-        boundsF.setWidth(FreeCellCard.getCardWidth());
-        boundsF.setHeight(FreeCellCard.getCardWidth());
+        bounds.setWidth(FreeCellCard.getCardWidth());
+        bounds.setHeight(FreeCellCard.getCardWidth());
         return bounds;
     }
 
@@ -64,44 +50,33 @@ public class FreeCellCard extends Card {
         return number;
     }
 
+    public FreeCellSuit getSuit() {
+        return suit;
+    }
+
+    public boolean isAutoMoved() {
+        return autoMoved;
+    }
+
+    public void relocate(double layoutX1, double layoutY1) {
+        setLayoutX(layoutX1);
+        setLayoutY(layoutY1);
+    }
+
+    public void setAutoMoved(boolean autoMoved) {
+        this.autoMoved = autoMoved;
+    }
+
     @Override
     public String toString() {
         return getNumber().getRepresentation() + " " + suit;
     }
 
-    Rectangle getBoundsF() {
-        if (boundsF == null) {
-            boundsF = new Rectangle();
-        }
-		boundsF.setX(layoutX.get());
-		boundsF.setY(layoutY.get());
-        boundsF.setWidth(FreeCellCard.getCardWidth());
-        boundsF.setHeight(FreeCellCard.getCardWidth());
-        return boundsF;
+    public static double getCardWidth() {
+        return cardWidth * 4 / 5;
     }
 
-    FreeCellSuit getSuit() {
-        return suit;
+    public static void setCardWidth(double cardWidth) {
+        FreeCellCard.cardWidth = cardWidth;
     }
-
-    boolean isAutoMoved() {
-        return autoMoved;
-    }
-
-    void relocate(double layoutX1, double layoutY1) {
-        setLayoutX(layoutX1);
-        setLayoutY(layoutY1);
-    }
-
-    void setAutoMoved(boolean autoMoved) {
-        this.autoMoved = autoMoved;
-    }
-
-	public static int getCardWidth() {
-	    return cardWidth * 4 / 5;
-	}
-
-	public static void setCardWidth(int cardWidth) {
-		FreeCellCard.cardWidth = cardWidth;
-	}
 }

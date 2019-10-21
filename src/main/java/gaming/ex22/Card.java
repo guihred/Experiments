@@ -4,8 +4,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class Card {
-	protected DoubleProperty layoutX = new SimpleDoubleProperty(0);
-	protected DoubleProperty layoutY = new SimpleDoubleProperty(0);
+    protected final DoubleProperty layoutX = new SimpleDoubleProperty(0);
+    protected final DoubleProperty layoutY = new SimpleDoubleProperty(0);
     protected boolean shown;
 
     public double getLayoutX() {
