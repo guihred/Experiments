@@ -58,9 +58,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
 	protected <T extends Application> T show(Class<T> c) {
         try {
-			logger.info("{}", initialStage);
-			initialStage.forEach((f, v) -> ClassReflectionUtils.invoke(initialStage, f, v));
-
+			resetStage();
             logger.info("SHOWING {}", c.getSimpleName());
             T newInstance = c.newInstance();
             interactNoWait(RunnableEx.make(() -> newInstance.start(currentStage)));
@@ -70,8 +68,9 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }
     }
 
-    protected <T extends Application> void show(T application) {
+	protected <T extends Application> void show(T application) {
         interactNoWait(RunnableEx.make(() -> {
+        	resetStage();
             logger.info("SHOWING {}", application.getClass().getSimpleName());
             application.start(currentStage);
         }, e -> logger.error(String.format("ERRO IN %s", application), e)));
@@ -80,6 +79,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     protected void tryClickButtons() {
         lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
     }
+
+    private void resetStage() {
+		initialStage.forEach((f, v) -> ClassReflectionUtils.invoke(initialStage, f, v));
+	}
 
     @SuppressWarnings("deprecation")
 	protected static KeyCode[] typeText(String txt) {
