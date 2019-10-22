@@ -76,6 +76,9 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             }
             int k = j;
             Thread thread = new Thread(() -> {
+                if (isCancelled()) {
+                    return;
+                }
                 String line = lines.get(k);
                 StringBuilder currentLine = placeFurigana(line);
                 LOG.trace("{}", currentLine);
@@ -89,20 +92,19 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 count = ths.stream().filter(Thread::isAlive).count();
                 long i = ths.size() - count;
                 updateAll(i, total);
+                if (isCancelled()) {
+                    return "Cancelled";
+                }
             }
-
             updateProgress(j, lines.size());
         }
-
         while (ths.stream().anyMatch(Thread::isAlive)) {
             long count = ths.stream().filter(Thread::isAlive).count();
             long i = ths.size() - count;
             updateAll(i, total);
         }
         endTask(lines);
-
         updateAll(total, total);
-
         return "Completed at " + LocalTime.now();
     }
 
