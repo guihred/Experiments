@@ -175,6 +175,14 @@ public class ContestReader implements HasLogging {
         text = new ContestText(contest);
     }
 
+    private void addOptionIfStateOption() {
+        if (getState() == ReaderState.OPTION) {
+            contestQuestion.addOption(answer);
+            answer = new ContestQuestionAnswer();
+            answer.setExercise(contestQuestion);
+        }
+    }
+
     private void addQuestion() {
         if (!contestQuestion.getOptions().isEmpty() && contestQuestion.getOptions().size() < OPTIONS_PER_QUESTION) {
             contestQuestion.addOption(answer);
@@ -188,12 +196,14 @@ public class ContestReader implements HasLogging {
         option = 0;
     }
 
-    private void addTextIfMatches(String[] linhas, int i) {
-        String[] split = linhas[i + 1].split("\\D+");
-        if (split.length > 1 && Stream.of(split).allMatch(StringUtils::isNumeric)) {
-            setState(ReaderState.TEXT);
-            text.setMin(intValue(split[0]));
-            text.setMax(intValue(split[1]));
+    private void addTextIfMatches(String[] linhas, int i, String s) {
+        if (isTextPattern(linhas, i, s)) {
+            String[] split = linhas[i + 1].split("\\D+");
+            if (split.length > 1 && Stream.of(split).allMatch(StringUtils::isNumeric)) {
+                setState(ReaderState.TEXT);
+                text.setMin(intValue(split[0]));
+                text.setMax(intValue(split[1]));
+            }
         }
     }
 
@@ -326,9 +336,8 @@ public class ContestReader implements HasLogging {
             subject = linhas[i].split("[-–\\(]")[0].toUpperCase();
             return;
         }
-        if (isTextPattern(linhas, i, s)) {
-            addTextIfMatches(linhas, i);
-        }
+
+        addTextIfMatches(linhas, i, s);
         if (s.matches(LINE_PATTERN)) {
             return;
         }
@@ -340,11 +349,7 @@ public class ContestReader implements HasLogging {
             return;
         }
         if (s.matches(OPTION_PATTERN)) {
-            if (getState() == ReaderState.OPTION) {
-                contestQuestion.addOption(answer);
-                answer = new ContestQuestionAnswer();
-                answer.setExercise(contestQuestion);
-            }
+            addOptionIfStateOption();
             if (containsAllOptions(s)) {
                 addAllOptions(s);
                 return;

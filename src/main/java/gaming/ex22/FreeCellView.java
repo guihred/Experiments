@@ -237,7 +237,7 @@ public class FreeCellView extends Group {
         }
         dragContext.x = stack.getLayoutX() - event.getX();
         dragContext.y = stack.getLayoutY() - event.getY();
-        if (stack.type == SIMPLE || stack.type == SUPPORT) {
+        if (stack.getType() == SIMPLE || stack.getType() == SUPPORT) {
             List<FreeCellCard> cards = stack.getCards();
             List<FreeCellCard> lastCards = new ArrayList<>();
             List<FreeCellCard> showCards = cards.stream().filter(FreeCellCard::isShown).collect(Collectors.toList());
@@ -288,7 +288,7 @@ public class FreeCellView extends Group {
             return;
         }
         cardStackList.sort(
-            Comparator.comparing((FreeCellStack e) -> e.type).thenComparing((FreeCellStack e) -> -e.getCards().size()));
+            Comparator.comparing((FreeCellStack e) -> e.getType()).thenComparing((FreeCellStack e) -> -e.getCards().size()));
 
         if (tryToPlaceCard(first)) {
             return;
@@ -341,10 +341,32 @@ public class FreeCellView extends Group {
         return false;
     }
 
+    private boolean moveFromSimpleStack(FreeCellCard firstCard, FreeCellStack currentStack) {
+        if (currentStack.getType() == SIMPLE && isSimpleStackCompatible(firstCard, currentStack)
+            && isStackContinuous(dragContext.cards)) {
+            while (dragContext.cards.size() > pileMaxSize(currentStack)) {
+                FreeCellCard remove = dragContext.cards.remove(0);
+                dragContext.stack.addCards(remove);
+            }
+            dragContext.stack.addCards(dragContext.cards);
+            boolean firstC = true;
+            int finalSize = dragContext.cards.size() + currentStack.getShownCards();
+            for (FreeCellCard c : dragContext.cards) {
+                createMovingCardAnimation(dragContext.stack, currentStack, c, firstC, finalSize);
+                firstC = false;
+            }
+            MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, currentStack);
+            history.add(motionHistory);
+            dragContext.reset();
+            return true;
+        }
+        return false;
+    }
+
     private boolean notAccept(FreeCellCard first, FreeCellStack cardStack) {
         return Objects.equals(cardStack, dragContext.stack)
-            || cardStack.type == ASCENDING && isNotAscendingStackCompatible(cardStack, first)
-            || cardStack.type == SUPPORT && !cardStack.getCards().isEmpty();
+            || cardStack.getType() == ASCENDING && isNotAscendingStackCompatible(cardStack, first)
+            || cardStack.getType() == SUPPORT && !cardStack.getCards().isEmpty();
     }
 
     private boolean notAcceptsCard(FreeCellCard first, FreeCellStack cardStack) {
@@ -374,39 +396,23 @@ public class FreeCellView extends Group {
         return supporting * stackCount;
     }
 
-    private boolean placeCard(FreeCellCard first, FreeCellStack currentStack) {
-        if (currentStack.type == SIMPLE && isSimpleStackCompatible(first, currentStack)
-            && isStackContinuous(dragContext.cards)) {
-            while (dragContext.cards.size() > pileMaxSize(currentStack)) {
-                FreeCellCard remove = dragContext.cards.remove(0);
-                dragContext.stack.addCards(remove);
-            }
+    private boolean placeCard(FreeCellCard firstCard, FreeCellStack currentStack) {
+        if(moveFromSimpleStack(firstCard, currentStack)) {
+            return true;
+        }
+        if (currentStack.getType() == ASCENDING && dragContext.cards.size() == 1
+            && isCompatibleAscending(firstCard, currentStack)) {
             dragContext.stack.addCards(dragContext.cards);
-            boolean firstCard = true;
-            int finalSize = dragContext.cards.size() + currentStack.getShownCards();
-            for (FreeCellCard c : dragContext.cards) {
-                createMovingCardAnimation(dragContext.stack, currentStack, c, firstCard, finalSize);
-                firstCard = false;
-            }
+            createMovingCardAnimation(dragContext.stack, currentStack, firstCard);
             MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, currentStack);
             history.add(motionHistory);
             dragContext.reset();
             return true;
         }
-
-        if (currentStack.type == ASCENDING && dragContext.cards.size() == 1
-            && isCompatibleAscending(first, currentStack)) {
-            dragContext.stack.addCards(dragContext.cards);
-            createMovingCardAnimation(dragContext.stack, currentStack, first);
-            MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, currentStack);
-            history.add(motionHistory);
-            dragContext.reset();
-            return true;
-        }
-        if (dragContext.stack.type == SIMPLE && currentStack.type == SUPPORT && currentStack.getCards().isEmpty()
+        if (dragContext.stack.getType() == SIMPLE && currentStack.getType() == SUPPORT && currentStack.getCards().isEmpty()
             && dragContext.cards.size() == 1) {
             dragContext.stack.addCards(dragContext.cards);
-            createMovingCardAnimation(dragContext.stack, currentStack, first);
+            createMovingCardAnimation(dragContext.stack, currentStack, firstCard);
             MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, currentStack);
             history.add(motionHistory);
             dragContext.reset();

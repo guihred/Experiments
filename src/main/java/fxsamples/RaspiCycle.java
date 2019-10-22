@@ -42,26 +42,10 @@ public class RaspiCycle extends Application {
     private AnimationTimer animTimer;
 
     public void handleKeyPress(KeyEvent event) {
-        boolean isNewDir = false;
-        if (event.getCode() == KeyCode.LEFT && curDir != Direction.LEFT) {
-            curDir = Direction.LEFT;
-            isNewDir = true;
-        } else if (event.getCode() == KeyCode.RIGHT && curDir != Direction.RIGHT) {
-            curDir = Direction.RIGHT;
-            isNewDir = true;
-        } else if (event.getCode() == KeyCode.UP && curDir != Direction.UP) {
-            curDir = Direction.UP;
-            isNewDir = true;
-        } else if (event.getCode() == KeyCode.DOWN && curDir != Direction.DOWN) {
-            curDir = Direction.DOWN;
-            isNewDir = true;
-        } else if (event.getCode() == KeyCode.DIGIT1) {
-            speed = 1;
-        } else if (event.getCode() == KeyCode.DIGIT2) {
-            speed = 2;
-        } else if (event.getCode() == KeyCode.DIGIT3) {
-            speed = 3;
-        } else if (event.getCode() == KeyCode.ESCAPE) {
+        boolean isNewDir = getNewDir(event);
+        seSpeed(event);
+
+        if (event.getCode() == KeyCode.ESCAPE) {
             animTimer.stop();
         }
         if (isNewDir) {
@@ -150,6 +134,7 @@ public class RaspiCycle extends Application {
                 LOG.info("COLLISION!");
             });
     }
+
     private void drawGameGrid() {
         int boxSize = (int) (Math.min(SCREEN_WIDTH, SCREEN_HEIGHT) / 10);
         int i;
@@ -182,6 +167,22 @@ public class RaspiCycle extends Application {
         // Left wall
         gc.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX(), bounds.getMaxY());
     }
+    private boolean getNewDir(KeyEvent event) {
+        if (event.getCode() == KeyCode.LEFT && curDir != Direction.LEFT) {
+            curDir = Direction.LEFT;
+            return true;
+        } else if (event.getCode() == KeyCode.RIGHT && curDir != Direction.RIGHT) {
+            curDir = Direction.RIGHT;
+            return true;
+        } else if (event.getCode() == KeyCode.UP && curDir != Direction.UP) {
+            curDir = Direction.UP;
+            return true;
+        } else if (event.getCode() == KeyCode.DOWN && curDir != Direction.DOWN) {
+            curDir = Direction.DOWN;
+            return true;
+        }
+        return false;
+    }
 
     private void runLightCycle() {
         calculateDestination();
@@ -190,6 +191,16 @@ public class RaspiCycle extends Application {
         gc.strokeLine(curPos.getX(), curPos.getY(), newPos.getX(), newPos.getY());
         curPos = newPos;
         checkCollision();
+    }
+
+    private void seSpeed(KeyEvent event) {
+        if (event.getCode() == KeyCode.DIGIT1) {
+            speed = 1;
+        } else if (event.getCode() == KeyCode.DIGIT2) {
+            speed = 2;
+        } else if (event.getCode() == KeyCode.DIGIT3) {
+            speed = 3;
+        }
     }
 
     /**

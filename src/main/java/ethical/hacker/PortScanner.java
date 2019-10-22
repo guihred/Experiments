@@ -96,7 +96,7 @@ public class PortScanner {
     private static void addPort(ObservableMap<String, List<String>> hostsPorts, StringProperty host,
         Change<? extends String> c) {
         while (c.next()) {
-            for (String line : c.getAddedSubList()) {
+            c.getAddedSubList().forEach(line -> {
                 if (line.matches(TracerouteScanner.NMAP_SCAN_REGEX)) {
                     host.set(line.replaceAll(TracerouteScanner.NMAP_SCAN_REGEX, "$1$3"));
                     hostsPorts.put(host.get(), new ArrayList<>());
@@ -106,15 +106,12 @@ public class PortScanner {
                     }
                 }
                 if (line.matches(PORT_REGEX)) {
-                    if (!hostsPorts.containsKey(host.get())) {
-                        hostsPorts.put(host.get(), new ArrayList<>());
-                    }
-                    List<String> list = hostsPorts.get(host.get());
+                    List<String> list = hostsPorts.computeIfAbsent(host.get(), e -> new ArrayList<>());
                     list.add(line);
                     hostsPorts.remove(host.get());
                     hostsPorts.put(host.get(), new ArrayList<>(list));
                 }
-            }
+            });
         }
     }
 

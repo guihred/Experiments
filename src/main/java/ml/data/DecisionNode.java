@@ -51,6 +51,35 @@ public class DecisionNode {
         if (a == null || a.isLeaf()) {
             return this;
         }
+        randomSwap(a, b, aBoolean, bBoolean);
+        if (RANDOM.nextBoolean()) {
+            trueNode.shuffle();
+        }
+        if (RANDOM.nextBoolean()) {
+            falseNode.shuffle();
+        }
+        return this;
+    }
+
+    public int size() {
+        if (isLeaf()) {
+            return 1;
+        }
+        return Math.max(trueNode.size(), falseNode.size()) + 1;
+    }
+
+    @Override
+    public String toString() {
+        if (isLeaf()) {
+            return "  " + result;
+        }
+        String trueBranch = trueNode.toString().replaceAll(" {2}( *)", "    $1");
+        String falseBranch = falseNode.toString().replaceAll(" {2}( *)", "    $1");
+        return String.format("%n  if(%s){%n  %s%n  }else{%n  %s%n  }", question, trueBranch, falseBranch)
+            .replaceAll("\n\\s*\n", "\n");
+    }
+
+	private void randomSwap(DecisionNode a, DecisionNode b, boolean aBoolean, boolean bBoolean) {
         if (RANDOM.nextBoolean()) {
             if (bBoolean) {
                 trueNode = a;
@@ -72,31 +101,6 @@ public class DecisionNode {
                 }
             }
         }
-        if (RANDOM.nextBoolean()) {
-            trueNode.shuffle();
-        }
-        if (RANDOM.nextBoolean()) {
-            falseNode.shuffle();
-        }
-        return this;
-    }
-
-    public int size() {
-        if (isLeaf()) {
-            return 1;
-        }
-        return Math.max(trueNode.size(), falseNode.size()) + 1;
-    }
-
-	@Override
-    public String toString() {
-        if (isLeaf()) {
-            return "  " + result;
-        }
-        String trueBranch = trueNode.toString().replaceAll(" {2}( *)", "    $1");
-        String falseBranch = falseNode.toString().replaceAll(" {2}( *)", "    $1");
-        return String.format("%n  if(%s){%n  %s%n  }else{%n  %s%n  }", question, trueBranch, falseBranch)
-            .replaceAll("\n\\s*\n", "\n");
     }
 
 }

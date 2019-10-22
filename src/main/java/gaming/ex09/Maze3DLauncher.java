@@ -45,6 +45,15 @@ public class Maze3DLauncher extends Application {
         launch(args);
     }
 
+    private static void changeFieldOfView(PerspectiveCamera camera, int change, KeyCode keycode) {
+        if (keycode == KeyCode.SPACE) {
+		    camera.setFieldOfView(camera.getFieldOfView() + change);
+		}
+		if (keycode == KeyCode.BACK_SPACE) {
+		    camera.setFieldOfView(camera.getFieldOfView() - change);
+		}
+    }
+
     private static void handleKeyboard(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera) {
 
         scene.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
@@ -71,7 +80,16 @@ public class Maze3DLauncher extends Application {
 			KeyEvent event) {
 		int change = 1;
 		KeyCode keycode = event.getCode();
-		double changeX = 0;
+        moveBackAndForth(scene, translate, rotate, camera, keycode);
+        translateUpDown(translate, keycode);
+
+        moveLeftRight(rotate, change, keycode);
+        changeFieldOfView(camera, change, keycode);
+    }
+
+    private static void moveBackAndForth(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera,
+        KeyCode keycode) {
+        double changeX = 0;
 		double changeZ = 0;
 		if (keycode == KeyCode.W) {
             changeX = 5 * Math.sin(Math.toRadians(rotate.getAngle()));
@@ -81,14 +99,7 @@ public class Maze3DLauncher extends Application {
             changeX = -5 * Math.sin(Math.toRadians(rotate.getAngle()));
             changeZ = -5 * Math.cos(Math.toRadians(rotate.getAngle()));
 		}
-		if (keycode == KeyCode.UP) {
-			translate.setY(translate.getY() + 5);
-		}
-		if (keycode == KeyCode.DOWN) {
-			translate.setY(translate.getY() - 5);
-		}
 		translate.setZ(translate.getZ() + changeZ);
-
 		if (scene.getRoot().getChildrenUnmodifiable().stream()
 		        .filter(Parent.class::isInstance)
 		        .map(Parent.class::cast)
@@ -106,18 +117,23 @@ public class Maze3DLauncher extends Application {
 		        .anyMatch(s -> s.intersects(camera.getBoundsInParent()))) {
 		    translate.setX(translate.getX() - changeX);
 		}
+    }
 
-		if (keycode == KeyCode.A) {
-		    rotate.setAngle(rotate.getAngle() - change);
+    private static void moveLeftRight(Rotate rotate, int change, KeyCode keycode) {
+        if (keycode == KeyCode.A) {
+            rotate.setAngle(rotate.getAngle() - change);
+        }
+        if (keycode == KeyCode.D) {
+            rotate.setAngle(rotate.getAngle() + change);
+        }
+    }
+
+    private static void translateUpDown(Translate translate, KeyCode keycode) {
+        if (keycode == KeyCode.UP) {
+			translate.setY(translate.getY() + 5);
 		}
-		if (keycode == KeyCode.D) {
-		    rotate.setAngle(rotate.getAngle() + change);
+		if (keycode == KeyCode.DOWN) {
+			translate.setY(translate.getY() - 5);
 		}
-		if (keycode == KeyCode.SPACE) {
-		    camera.setFieldOfView(camera.getFieldOfView() + change);
-		}
-		if (keycode == KeyCode.BACK_SPACE) {
-		    camera.setFieldOfView(camera.getFieldOfView() - change);
-		}
-	}
+    }
 }

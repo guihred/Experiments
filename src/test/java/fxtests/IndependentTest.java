@@ -13,7 +13,7 @@ import ethical.hacker.AlarmClock;
 import ethical.hacker.NetworkInformationScanner;
 import ex.j9.Ch1;
 import ex.j9.Ch3;
-import ex.j9.Ch3.Employee;
+import ex.j9.Employee;
 import ex.j9.ch4.Ch4;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.LineCh4;

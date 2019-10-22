@@ -64,6 +64,24 @@ public class SolitaireModel {
         return false;
     }
 
+    private boolean checkHoveredAscendingStacks() {
+        if (dragContext.cards.size() == 1) {
+            for (CardStack cardStack : getHoveredStacks(ascendingStacks)) {
+                if (isNotAscendingStackCompatible(cardStack, dragContext.cards.get(0))) {
+                    continue;
+                }
+                cardStack.addCards(dragContext.cards);
+                if (isStackAllHidden(dragContext.stack)) {
+                    dragContext.stack.getLastCards().setShown(true);
+                }
+                dragContext.cards = null;
+                verifyEnd();
+                return true;
+            }
+        }
+        return false;
+    }
+
     private List<SolitaireCard> getAllCards() {
         SolitaireNumber[] solitaireNumbers = SolitaireNumber.values();
         SolitaireSuit[] solitaireSuits = SolitaireSuit.values();
@@ -150,22 +168,9 @@ public class SolitaireModel {
         if (checkAscendingCards(event)) {
             return;
         }
-
-        if (dragContext.cards.size() == 1) {
-            for (CardStack cardStack : getHoveredStacks(ascendingStacks)) {
-                if (isNotAscendingStackCompatible(cardStack, dragContext.cards.get(0))) {
-                    continue;
-                }
-                cardStack.addCards(dragContext.cards);
-                if (isStackAllHidden(dragContext.stack)) {
-                    dragContext.stack.getLastCards().setShown(true);
-                }
-                dragContext.cards = null;
-                verifyEnd();
-                return;
-            }
+        if (checkHoveredAscendingStacks()) {
+            return;
         }
-
         for (CardStack cardStack : getHoveredStacks(simpleStacks)) {
             if (isCardNotCompatibleWithStack(cardStack, dragContext.cards.get(0))) {
                 continue;

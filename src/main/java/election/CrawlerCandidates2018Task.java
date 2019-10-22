@@ -75,9 +75,7 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
                     candidato.setVotos(convertNumerico(element.select(".number-votes").first().text()));
                     String text2 = element.select(".elect-state").text().trim();
                     boolean equals = "Eleito".equals(text2);
-                    if (equals) {
-                        umEleito = true;
-                    }
+                    umEleito |= equals;
                     candidato.setEleito(equals);
                     Document detailsDocument = getDocument(ELEICOES_2018_URL + href);
                     Map<String, String> fields = new HashMap<>();
@@ -90,21 +88,13 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
                     candidato.setOcupacao(children.get(5).child(1).text());
                     candidato.setGrauInstrucao(children.get(6).child(1).text());
                     Elements children2 = detailsDocument.select(".info-candidato").get(1).children();
-                    children2.forEach(e -> {
-                        String text3 = e.child(0).text();
-                        fields.put(text3, e.child(1).text());
-                    });
-                    children.forEach(e -> {
-                        String text3 = e.child(0).text();
-                        fields.put(text3, e.child(1).text());
-                    });
+                    children2.forEach(e -> fields.put(e.child(0).text(), e.child(1).text()));
+                    children.forEach(e -> fields.put(e.child(0).text(), e.child(1).text()));
                     candidato.setColigacao(fields.get("Composição"));
                     candidatoDAO.saveOrUpdate(candidato);
                 }
                 if (select.isEmpty()) {
-                    if (i == 1) {
-                        LOG.error("NOT FOUND {}", estado);
-                    }
+                    logIfNotFound(estado, i);
                     break;
                 }
                 if (!umEleito) {
@@ -118,11 +108,17 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
             }
         }
     }
+
     private static String getUrl(String estado, int i) {
         if (i == 1) {
             return ELEICOES_2018_URL + "/eleicoes-2018/" + estado + "/";
         }
         return ELEICOES_2018_URL + "/eleicoes-2018/" + estado + "/" + i + "/";
+    }
+    private static void logIfNotFound(String estado, int i) {
+        if (i == 1) {
+            LOG.error("NOT FOUND {}", estado);
+        }
     }
 
 }

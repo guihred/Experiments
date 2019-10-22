@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class FreeCellStack extends Group {
-    final StackType type;
+    private final StackType type;
     private final int n;
     private final ObservableList<FreeCellCard> cards = FXCollections.observableArrayList();
     private double maxHeight;
@@ -105,6 +105,10 @@ public class FreeCellStack extends Group {
 
     public int getShownCards() {
         return (int) cards.stream().filter(FreeCellCard::isShown).count();
+    }
+
+    public StackType getType() {
+        return type;
     }
 
     public void removeCards(List<FreeCellCard> cards1) {

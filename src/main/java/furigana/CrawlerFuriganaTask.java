@@ -8,15 +8,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.CrawlerTask;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
+import utils.*;
 
 public class CrawlerFuriganaTask extends CrawlerTask {
 
@@ -29,7 +29,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS,
         UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
         UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D);
-
+    private static final Pattern NUMBERS = Pattern.compile("^[\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b"
+        + "\u4e5d\u5341\u5341\u4e00\u5341\u4e8c\u4e8c\u5341\u4e94\u5341\u767e\u5343\u4e07\u5104\u5146]+");
     private Map<String, String> mapReading = Collections.synchronizedMap(new HashMap<>());
 
     public void addFuriganaReading() {
@@ -47,7 +48,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                     }
                     if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() != 0) {
                         String w = currentWord.toString();
-                        log(w, getReading(w, currentLetter));
+                        getReading(w, currentLetter);
                         currentWord.delete(0, currentWord.length());
                     }
                     currentBlock = of;
@@ -69,58 +70,13 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     public String getReading(String currentWord, char currentLetter, int recursive) {
-        String key = currentWord + currentLetter;
+        final String key = currentWord + currentLetter;
         if (mapReading.containsKey(key)) {
             return mapReading.get(key);
         }
         try {
-            Document parse = getDocument("http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8"));
-
-            Elements kun = parse.select(".readings .japanese_gothic a");
-            if (existsKunReading(currentWord, kun)) {
-                if (kun.size() == 1) {
-                    String string = kun.text().split("\\.")[0];
-                    mapReading.put(key, string);
-                    return string;
-                }
-                List<String> kunReadings = kun.stream().map(Element::text).collect(Collectors.toList());
-                List<String> kunWithOfurigana = kunReadings.stream().map(e -> e.split("\\.")[0]).distinct()
-                    .collect(Collectors.toList());
-                if (kunWithOfurigana.size() == 1) {
-                    String string = kunWithOfurigana.get(0);
-                    mapReading.put(key, string);
-                    return string;
-                }
-                Optional<String> ofuriganaMatches = kunReadings.stream()
-                    .filter(e -> e.contains(".") && !e.contains("-"))
-                    .filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
-                if (ofuriganaMatches.isPresent()) {
-                    String string = ofuriganaMatches.get().split("\\.")[0];
-                    mapReading.put(key, string);
-                    return string;
-                }
-                Optional<String> conjugatedReadings = conjugate(currentWord, currentLetter, kunReadings);
-                if (conjugatedReadings.isPresent()) {
-                    String finalReading = conjugatedReadings.get().split("\\.")[0];
-                    mapReading.put(key, finalReading);
-                    return finalReading;
-                }
-            }
-
-            Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
-                .filter(element -> matchesCurrentWord(currentWord, currentLetter, element.select(".text").first()))
-                .findFirst();
-            if (firstRepresentation.isPresent()) {
-                String text = firstRepresentation.get().select(".furigana").text();
-                mapReading.put(key, text);
-                return text;
-            }
-
-            String text = parse.select(".japanese_word__furigana ").text();
-            if (text.equals(currentWord)) {
-                mapReading.put(key, text);
-                return text;
-            }
+            return mapReading.computeIfAbsent(key,
+                k -> SupplierEx.remap(() -> computeReading(currentWord, currentLetter), "ERRO " + currentWord));
         } catch (Exception e) {
             LOG.error("ERRO " + currentWord, e);
             if (recursive < 2) {
@@ -182,6 +138,43 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return "Completed at " + LocalTime.now();
     }
 
+    private String computeReading(String currentWord, char currentLetter) throws IOException {
+        String url = "http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8");
+        Document parse = getDocument(url);
+        Elements kun = parse.select(".readings .japanese_gothic a");
+        if (existsKunReading(currentWord, kun)) {
+            if (kun.size() == 1) {
+                return kun.text().split("\\.")[0];
+            }
+            List<String> kunReadings = kun.stream().map(Element::text).collect(Collectors.toList());
+            List<String> kunWithOfurigana = kunReadings.stream().map(e -> e.split("\\.")[0]).distinct()
+                .collect(Collectors.toList());
+            if (kunWithOfurigana.size() == 1) {
+                return kunWithOfurigana.get(0);
+            }
+            Optional<String> ofuriganaMatches = kunReadings.stream().filter(e -> e.contains(".") && !e.contains("-"))
+                .filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
+            if (ofuriganaMatches.isPresent()) {
+                return ofuriganaMatches.get().split("\\.")[0];
+            }
+            Optional<String> conjugatedReadings = conjugate(currentWord, currentLetter, kunReadings);
+            if (conjugatedReadings.isPresent()) {
+                return conjugatedReadings.get().split("\\.")[0];
+            }
+        }
+        Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
+            .filter(element -> matchesCurrentWord(currentWord, currentLetter, element.select(".text").first()))
+            .findFirst();
+        if (firstRepresentation.isPresent()) {
+            return firstRepresentation.get().select(".furigana").text();
+        }
+        if (currentWord.length() > 1) {
+            return splitWord(currentWord, currentLetter);
+        }
+
+        return currentWord;
+    }
+
     private Optional<String> conjugate(String currentWord, char currentLetter, List<String> kunReadings) {
         if (kunReadings.stream().noneMatch(JapaneseVerbConjugate::isVerb)) {
             return Optional.empty();
@@ -195,6 +188,20 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 String[] split = e.split("\\.");
                 mapReading.put(currentWord + split[1].charAt(0), split[0]);
             }).filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
+    }
+
+    private String getOnReadings(String currentWord) throws IOException {
+        String url = "http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8");
+        Document parse = getDocument(url);
+        Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
+            .filter(element -> element.select(".text").first().text().equals(currentWord)).findFirst();
+        if (firstRepresentation.isPresent() && currentWord.length() > 1) {
+            return firstRepresentation.get().select(".furigana").text();
+        }
+        Elements kun = parse.select(".readings .japanese_gothic a");
+        List<String> kunReadings = kun.stream().map(Element::text).collect(Collectors.toList());
+        return kunReadings.stream().sorted(Comparator.comparing((String e) -> isNotKatakana(e))).findFirst()
+            .orElse(null);
     }
 
     private StringBuilder placeFurigana(String line) {
@@ -226,9 +233,31 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return currentLine;
     }
 
-    public static void main(String[] args) {
-        new CrawlerFuriganaTask().addFuriganaReading();
+    private String splitWord(String currentWord, char currentLetter) throws IOException {
+        Matcher matcher = NUMBERS.matcher(currentWord);
+        if (matcher.find()) {
+            String group = matcher.group();
+            String sb = currentWord.substring(group.length());
+            String computeReading = mapReading.computeIfAbsent(group,
+                FunctionEx.makeFunction(b -> computeReading(b, sb.charAt(0))));
+
+            String onReadings = mapReading.computeIfAbsent(sb, FunctionEx.makeFunction(this::getOnReadings));
+            if (onReadings == null || !isNotKatakana(onReadings) && sb.length() > 1) {
+                onReadings = getOnReadings(sb.substring(0, 1)) + computeReading(sb.substring(1), currentLetter);
+            }
+
+            return computeReading + onReadings;
+        }
+        String firstPart = currentWord.substring(0, currentWord.length() - 1);
+        String secondPart = currentWord.substring(currentWord.length() - 1, currentWord.length());
+        String computeReading = computeReading(firstPart, secondPart.charAt(0));
+        String computeReading2 = computeReading(secondPart, currentLetter);
+        return computeReading + computeReading2;
     }
+
+//    public static void main(String[] args) {
+//        new CrawlerFuriganaTask().addFuriganaReading();
+//    }
 
     private static boolean existsKunReading(String currentWord, Elements kun) {
         return currentWord.length() == 1 && !kun.isEmpty();
@@ -244,8 +273,12 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return lines;
     }
 
+    private static boolean isNotKatakana(String e) {
+        return e.codePoints().allMatch(a -> UnicodeBlock.KATAKANA != UnicodeBlock.of(a));
+    }
+
     private static void log(Object a, Object b) {
-        LOG.trace("{}={}", a, b);
+        LOG.info("{}={}", a, b);
     }
 
     private static boolean matchesCurrentWord(String currentWord, char currentLetter, Element link) {

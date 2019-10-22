@@ -188,23 +188,15 @@ public final class FXMLCreator {
             element.setAttribute(fieldName, mapProperty2 + "");
             return;
         }
-        if (hasClass(FXMLConstants.getConditionalTagClasses(), fieldValue.getClass())
-            && hasField(parent.getClass(), fieldName)) {
-            Element createElement2 = document.createElement(fieldName);
-            element.appendChild(createElement2);
-            addToAllNode(fieldValue, createElement2);
+        if (tryCreateAttribute(element, fieldName, fieldValue, parent)) {
             return;
         }
         if (fieldValue instanceof Map) {
             processMap(element, fieldValue, fieldName);
             return;
         }
-        if (FXMLConstants.getMethodClasses().stream().anyMatch(c -> c.isInstance(fieldValue))) {
-            if (!hasPublicConstructor(fieldValue.getClass())) {
-                processMethod(element, fieldName, fieldValue, parent);
-                return;
-            }
-            referenceClasses.add(fieldValue.getClass());
+        if (tryCreateMethod(element, fieldName, fieldValue, parent)) {
+            return;
         }
         if (getNamedArgs(parent.getClass()).contains(fieldName) && hasPublicConstructor(fieldValue.getClass())) {
             referenceClasses.add(fieldValue.getClass());
@@ -216,18 +208,14 @@ public final class FXMLCreator {
         if (!hasField(parent.getClass(), fieldName)) {
             return;
         }
-        if (!hasClass(FXMLConstants.getAttributeClasses(), fieldValue.getClass())) {
-            Class<? extends Object> class1 = fieldValue.getClass();
-            List<Class<?>> allClasses = allClasses(class1);
-            LOG.info(" {} not in ATTRIBUTE_CLASSES", allClasses);
-        }
+        logIfNotAttribute(fieldValue);
 
         LOG.info("{} does have {}", parent.getClass(), fieldName);
 
     }
 
     private void processList(Element element, String fieldName, Object parent, Collection<?> list) {
-        if (list.isEmpty() || list.stream().allMatch(Objects::isNull)) {
+        if (notNullNorEmpty(list)) {
             return;
         }
         if (FXMLConstants.getFormatList().containsKey(fieldName)) {
@@ -252,10 +240,7 @@ public final class FXMLCreator {
                 addReferenceList(element, fieldName, parent, list);
                 return;
             }
-            if (!"children".equals(fieldName)) {
-                Class<? extends Object> parentClass = parent.getClass();
-                LOG.info("{} of {} not set", fieldName, parentClass);
-            }
+            logIfNotChildren(fieldName, parent);
             return;
         }
 
@@ -415,6 +400,29 @@ public final class FXMLCreator {
         element.setAttribute(fieldName, "$" + referencedNodes.get(fieldValue));
     }
 
+    private boolean tryCreateAttribute(Element element, String fieldName, Object fieldValue, Object parent) {
+        boolean a =false;
+        if (hasClass(FXMLConstants.getConditionalTagClasses(), fieldValue.getClass())
+            && hasField(parent.getClass(), fieldName)) {
+            Element createElement2 = document.createElement(fieldName);
+            element.appendChild(createElement2);
+            addToAllNode(fieldValue, createElement2);
+            a =true;
+        }
+        return a;
+    }
+
+    private boolean tryCreateMethod(Element element, String fieldName, Object fieldValue, Object parent) {
+        if (FXMLConstants.getMethodClasses().stream().anyMatch(c -> c.isInstance(fieldValue))) {
+            if (!hasPublicConstructor(fieldValue.getClass())) {
+                processMethod(element, fieldName, fieldValue, parent);
+                return true;
+            }
+            referenceClasses.add(fieldValue.getClass());
+        }
+        return false;
+    }
+
     private static void addDifferences(Class<?> cl, Map<String, Object> diffFields, Object ob1, Object ob2) {
         if (ob2 == null) {
             return;
@@ -435,6 +443,21 @@ public final class FXMLCreator {
             && (fieldValue instanceof String || isSetterMatches(fieldName, fieldValue, parent));
     }
 
+    private static void logIfNotAttribute(Object fieldValue) {
+        if (!hasClass(FXMLConstants.getAttributeClasses(), fieldValue.getClass())) {
+            Class<? extends Object> class1 = fieldValue.getClass();
+            List<Class<?>> allClasses = allClasses(class1);
+            LOG.info(" {} not in ATTRIBUTE_CLASSES", allClasses);
+        }
+    }
+
+    private static void logIfNotChildren(String fieldName, Object parent) {
+        if (!"children".equals(fieldName)) {
+            Class<? extends Object> parentClass = parent.getClass();
+            LOG.info("{} of {} not set", fieldName, parentClass);
+        }
+    }
+
     private static String mapUrl(String st) {
         String s = "file:/" + getOutFile().getParentFile().toString().replaceAll("\\\\", "/");
         return st.replace(s, "@");
@@ -445,5 +468,9 @@ public final class FXMLCreator {
             return ((Enum<?>) node2).name();
         }
         return Objects.toString(node2, "");
+    }
+
+    private static boolean notNullNorEmpty(Collection<?> list) {
+        return list.isEmpty() || list.stream().allMatch(Objects::isNull);
     }
 }

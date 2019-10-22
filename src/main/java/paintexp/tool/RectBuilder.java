@@ -136,24 +136,8 @@ public final class RectBuilder {
         double b = Double.isNaN(a) ? Double.NaN : endY - a * endX;
         // y = x * a + b
 
-        double minX = Math.min(startX, endX);
-        double maxX = Math.max(startX, endX);
-        double minY = Math.min(startY, endY);
-        double maxY = Math.max(startY, endY);
-        for (int x = (int) minX; x < maxX; x++) {
-            int y = (int) (!Double.isNaN(a) ? Math.round(a * x + b) : endY);
-            if (withinImage(x, y, image) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
-                onPoint.draw(x, y);
-            }
-        }
-        for (int y = (int) minY; y < maxY; y++) {
-            if (a != 0) {
-                int x = (int) (Double.isNaN(a) ? startX : Math.round((y - b) / a));
-                if (withinImage(x, y, image) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
-                    onPoint.draw(x, y);
-                }
-            }
-        }
+        drawXAxis(image, onPoint, a, b);
+        drawYAxis(image, onPoint, a, b);
     }
 
     public void drawLine(WritableImage image, ObservableList<WritableImage> imageVersions, Color color,
@@ -254,6 +238,34 @@ public final class RectBuilder {
         width = value;
         update();
         return this;
+    }
+
+    private void drawXAxis(WritableImage image, DrawOnPoint onPoint, double a, double b) {
+        double minX = Math.min(startX, endX);
+        double maxX = Math.max(startX, endX);
+        double minY = Math.min(startY, endY);
+        double maxY = Math.max(startY, endY);
+        for (int x = (int) minX; x < maxX; x++) {
+            int y = (int) (!Double.isNaN(a) ? Math.round(a * x + b) : endY);
+            if (withinImage(x, y, image) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
+                onPoint.draw(x, y);
+            }
+        }
+    }
+
+    private void drawYAxis(WritableImage image, DrawOnPoint onPoint, double a, double b) {
+        double minX = Math.min(startX, endX);
+        double maxX = Math.max(startX, endX);
+        double minY = Math.min(startY, endY);
+        double maxY = Math.max(startY, endY);
+        for (int y = (int) minY; y < maxY; y++) {
+            if (a != 0) {
+                int x = (int) (Double.isNaN(a) ? startX : Math.round((y - b) / a));
+                if (withinImage(x, y, image) && within(x, minX - 1, maxX + 1) && within(y, minY - 1, maxY + 1)) {
+                    onPoint.draw(x, y);
+                }
+            }
+        }
     }
 
     private void update() {
