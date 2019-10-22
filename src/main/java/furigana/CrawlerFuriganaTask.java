@@ -22,7 +22,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private static final Logger LOG = HasLogging.log();
 
-    private static final int NUMBER_THREADS = 5;
+    private static final int NUMBER_THREADS = 10;
 
     protected static final List<UnicodeBlock> KANJI_BLOCK = Arrays.asList(UnicodeBlock.CJK_COMPATIBILITY,
         UnicodeBlock.CJK_COMPATIBILITY_FORMS, UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
@@ -33,31 +33,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         + "\u4e5d\u5341\u5341\u4e00\u5341\u4e8c\u4e8c\u5341\u4e94\u5341\u767e\u5343\u4e07\u5104\u5146]+");
     private Map<String, String> mapReading = Collections.synchronizedMap(new HashMap<>());
 
-    public void addFuriganaReading() {
-        CrawlerTask.insertProxyConfig();
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
-            lines.forEach(line -> {
-                String[] split = line.split("");
-                StringBuilder currentWord = new StringBuilder();
-                UnicodeBlock currentBlock = null;
-                for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
-                    char currentLetter = split[i].charAt(0);
-                    UnicodeBlock of = UnicodeBlock.of(currentLetter);
-                    if (KANJI_BLOCK.contains(of)) {
-                        currentWord.append(currentLetter);
-                    }
-                    if (KANJI_BLOCK.contains(currentBlock) && !KANJI_BLOCK.contains(of) && currentWord.length() != 0) {
-                        String w = currentWord.toString();
-                        getReading(w, currentLetter);
-                        currentWord.delete(0, currentWord.length());
-                    }
-                    currentBlock = of;
-                }
-            });
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
-    }
 
     public String getReading(String currentWord, char currentLetter) {
         String key = currentWord + currentLetter;
@@ -124,14 +99,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             long i = ths.size() - count;
             updateAll(i, total);
         }
-        try (PrintStream printStream = new PrintStream(ResourceFXUtils.getOutFile("hp1Tex2Converted.tex"),
-            StandardCharsets.UTF_8.displayName())) {
-            for (String s : lines) {
-                printStream.println(s);
-            }
-        } catch (Exception e) {
-            LOG.error("ERROR ", e);
-        }
+        endTask(lines);
 
         updateAll(total, total);
 
@@ -222,7 +190,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 } else {
                     currentLine.append(String.format("$\\stackrel{\\text{%s}}{\\text{%s}}$", reading, currentWord));
                 }
-                log(currentWord, reading);
                 currentWord.delete(0, currentWord.length());
             }
             if (!KANJI_BLOCK.contains(of)) {
@@ -250,9 +217,18 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         }
         String firstPart = currentWord.substring(0, currentWord.length() - 1);
         String secondPart = currentWord.substring(currentWord.length() - 1, currentWord.length());
-        String computeReading = computeReading(firstPart, secondPart.charAt(0));
-        String computeReading2 = computeReading(secondPart, currentLetter);
-        return computeReading + computeReading2;
+        return computeReading(firstPart, secondPart.charAt(0)) + computeReading(secondPart, currentLetter);
+    }
+
+    private static void endTask(List<String> lines) {
+        try (PrintStream printStream = new PrintStream(ResourceFXUtils.getOutFile("hp1Tex2Converted.tex"),
+            StandardCharsets.UTF_8.displayName())) {
+            for (String s : lines) {
+                printStream.println(s);
+            }
+        } catch (Exception e) {
+            LOG.error("ERROR ", e);
+        }
     }
 
 //    public static void main(String[] args) {
