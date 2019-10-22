@@ -15,9 +15,9 @@ import com.google.common.collect.ImmutableMap;
 import contest.db.Contest;
 import ethical.hacker.PortServices;
 import ex.j9.ch4.LabeledPoint;
-import ex.j9.ch4.Point;
+import ex.j9.ch4.PointCh4;
 import ex.j9.ch4.PrimaryColor;
-import ex.j9.ch4.Rectangle;
+import ex.j9.ch4.RectangleCh4;
 import extract.ExcelService;
 import extract.WordService;
 import gaming.ex16.MadEdge;
@@ -202,9 +202,9 @@ public class FXFileReadersTest extends ApplicationTest {
     @Test
     public void testPoints() {
         measureTime("Test.equals", () -> {
-            List<Object> equalsTest = Arrays.asList(new Point(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,
+            List<Object> equalsTest = Arrays.asList(new PointCh4(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,
                 new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5),
-                new Rectangle(new Point(2, 4), 3, 5), new EdgeElement(), new Contest(), new LessonPK(),
+                new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(), new Contest(), new LessonPK(),
                 new MadEdge(null, null), new MadEdgeDistance(null, 2F));
             equalsTest.forEach(e -> equalsTest.contains(e));
         });

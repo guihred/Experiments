@@ -3,7 +3,6 @@ package fxtests;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.scene.input.KeyCode;
@@ -33,12 +32,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
         currentStage = stage;
-		initialStage = ClassReflectionUtils.getGetterMethodsRecursive(Stage.class).stream()
-				.filter(e -> ClassReflectionUtils.invoke(stage, e) != null)
-				.filter(f -> ClassReflectionUtils.hasSetterMethods(Stage.class,
-						ClassReflectionUtils.getFieldNameCase(f)))
-				.collect(Collectors.toMap(e -> ClassReflectionUtils.getFieldNameCase(e),
-						e -> ClassReflectionUtils.invoke(stage, e)));
+        initialStage = ClassReflectionUtils.getFieldMap(stage, Stage.class);
         currentStage.setX(0);
         currentStage.setY(0);
     }
@@ -81,7 +75,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     private void resetStage() {
-		initialStage.forEach((f, v) -> ClassReflectionUtils.invoke(initialStage, f, v));
+        initialStage.forEach((f, v) -> ClassReflectionUtils.invoke(currentStage, f, v));
 	}
 
     @SuppressWarnings("deprecation")

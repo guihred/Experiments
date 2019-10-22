@@ -43,7 +43,7 @@ public class Ch4 {
     }
 
     public static void main(String[] args) {
-        String cyclicToString = cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3)));
+        String cyclicToString = cyclicToString(new LineCh4(new PointCh4(2, 3), new LabeledPoint("a", 3, 3)));
         LOGGER.info("{}", cyclicToString);
     }
 

@@ -53,7 +53,7 @@ public class WorldMapExample extends Application {
             .onSelect(canvas.valueHeaderProperty()::set)
             .build();
 
-        DataframeML x = DataframeBuilder.builder("out/WDIDataEG.ELC.ACCS.ZS.csv").build();
+        DataframeML x = DataframeBuilder.builder("out/" + list[0]).build();
         canvas.valueHeaderProperty().set("2016");
         canvas.setDataframe(x,
             x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));

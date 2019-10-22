@@ -98,7 +98,7 @@ public class TextTool extends PaintTool {
     @Override
     protected void onMousePressed(final MouseEvent e, final PaintModel model) {
         if (model.getImageStack().getChildren().contains(area)) {
-            if (containsPoint(area, e.getX(), e.getY())) {
+            if (CommonsFX.containsMouse(area, e)) {
                 return;
             }
             takeSnapshot(model);

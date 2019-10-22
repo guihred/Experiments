@@ -15,7 +15,7 @@ import java.util.Objects;
  * preceding exercise.
  */
 
-public class LabeledPoint extends Point {
+public class LabeledPoint extends PointCh4 {
 
     private String label;
 

@@ -22,6 +22,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTimelineBuilder;
+import utils.CommonsFX;
 import utils.HasLogging;
 
 /**
@@ -228,10 +229,7 @@ public class FreeCellView extends Group {
     }
 
     private void handleMousePressed(MouseEvent event) {
-        double x = event.getX();
-        double y = event.getY();
-
-        FreeCellStack stack = cardStackList.stream().filter(e -> e.getBoundsInParent().contains(x, y)).findFirst()
+        FreeCellStack stack = cardStackList.stream().filter(e -> CommonsFX.containsMouse(e, event)).findFirst()
             .orElse(null);
         if (stack == null) {
             dragContext.reset();

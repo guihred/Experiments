@@ -16,8 +16,8 @@ import ex.j9.Ch3;
 import ex.j9.Ch3.Employee;
 import ex.j9.ch4.Ch4;
 import ex.j9.ch4.LabeledPoint;
-import ex.j9.ch4.Line;
-import ex.j9.ch4.Point;
+import ex.j9.ch4.LineCh4;
+import ex.j9.ch4.PointCh4;
 import extract.PdfUtils;
 import extract.UnRar;
 import extract.UnZip;
@@ -108,7 +108,7 @@ public class IndependentTest {
     @Test
     public void testCh4() {
         measureTime("Ch4.cyclicToString",
-            () -> Ch4.cyclicToString(new Line(new Point(2, 3), new LabeledPoint("a", 3, 3))));
+            () -> Ch4.cyclicToString(new LineCh4(new PointCh4(2, 3), new LabeledPoint("a", 3, 3))));
     }
 
     @Test

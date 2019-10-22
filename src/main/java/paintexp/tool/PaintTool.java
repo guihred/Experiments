@@ -3,7 +3,6 @@ package paintexp.tool;
 import javafx.beans.property.Property;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -62,12 +61,6 @@ public abstract class PaintTool extends Group {
 
     public void setIcon(Node icon) {
         this.icon = icon;
-    }
-
-    protected boolean containsPoint(Node area2, double localX, double localY) {
-        Bounds bounds = area2.getBoundsInParent();
-        return area2.getLayoutX() < localX && localX < area2.getLayoutX() + bounds.getWidth()
-            && area2.getLayoutY() < localY && localY < area2.getLayoutY() + bounds.getHeight();
     }
 
     protected void onMouseDragged(MouseEvent e, PaintModel model) {

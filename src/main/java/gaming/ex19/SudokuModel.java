@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import simplebuilder.SimpleDialogBuilder;
+import utils.CommonsFX;
 
 /**
  *
@@ -60,16 +61,12 @@ public class SudokuModel {
     }
 
     public void handleMouseMoved(MouseEvent s) {
-        numberOptions.forEach(e -> {
-            double x = s.getX() - e.getParent().getBoundsInParent().getMinX();
-            double y = s.getY() - e.getParent().getBoundsInParent().getMinY();
-            e.setOver(e.getBoundsInParent().contains(x, y));
-        });
+        numberOptions.forEach(e -> e.setOver(CommonsFX.containsMouse(e, s)));
     }
 
     public void handleMousePressed(MouseEvent ev) {
         Optional<SudokuSquare> pressed = sudokuSquares.stream().filter(e -> !e.isPermanent())
-            .filter(s -> s.getBoundsInParent().contains(ev.getX(), ev.getY())).findFirst();
+            .filter(s -> CommonsFX.containsMouse(s, ev)).findFirst();
         if (!pressed.isPresent()) {
             pressedSquare = null;
             return;
@@ -122,7 +119,6 @@ public class SudokuModel {
         reset();
     }
 
-
     public void reset() {
         createRandomNumbers();
         List<SudokuSquare> all = sudokuSquares.stream().collect(Collectors.toList());
@@ -141,6 +137,7 @@ public class SudokuModel {
         }
         updatePossibilities();
     }
+
 
     public void solve() {
         updatePossibilities();

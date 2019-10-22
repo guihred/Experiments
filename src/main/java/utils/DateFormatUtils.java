@@ -24,12 +24,7 @@ public final class DateFormatUtils {
     }
 
     public static LocalDate extractDate(final String children) {
-        try {
-            return LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        } catch (Exception e) {
-            HasLogging.log(1).trace("", e);
-            return null;
-        }
+        return SupplierEx.get(() -> LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     }
 
     public static String format(TemporalAccessor text) {

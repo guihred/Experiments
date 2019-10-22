@@ -19,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import simplebuilder.SimpleRectangleBuilder;
+import utils.CommonsFX;
 import utils.RunnableEx;
 
 public abstract class AreaTool extends PaintTool {
@@ -191,7 +192,7 @@ public abstract class AreaTool extends PaintTool {
 		double hvalue = model.getScrollPane().getHvalue();
 		double vvalue = model.getScrollPane().getVvalue();
 		if (model.getImageStack().getChildren().contains(getArea())) {
-			if (containsPoint(getArea(), e.getX(), e.getY())) {
+            if (CommonsFX.containsMouse(area, e)) {
 				createSelectedImage(model);
 				dragX = e.getX() - getArea().getLayoutX();
 				dragY = e.getY() - getArea().getLayoutY();

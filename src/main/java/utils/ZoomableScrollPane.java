@@ -53,33 +53,8 @@ public class ZoomableScrollPane extends ScrollPane {
         this.scaleValue.set(scaleValue);
     }
 
-    public void zoomActual() {
-        setScaleValue(1);
-        zoomTo(getScaleValue());
 
-    }
 
-    public void zoomIn() {
-
-        setScaleValue(getScaleValue() + DELTA_ZOOM);
-
-        if (Double.compare(getScaleValue(), 10) > 0) {
-            setScaleValue(10);
-        }
-
-        zoomTo(getScaleValue());
-
-    }
-
-    public void zoomOut() {
-        setScaleValue(getScaleValue() - DELTA_ZOOM);
-
-        if (Double.compare(getScaleValue(), DELTA_ZOOM) < 0) {
-            setScaleValue(DELTA_ZOOM);
-        }
-
-        zoomTo(getScaleValue());
-    }
 
     public void zoomTo(double scaleValue1) {
 
@@ -90,39 +65,6 @@ public class ZoomableScrollPane extends ScrollPane {
 
     }
 
-    public void zoomToActual() {
-        zoomTo(1.0);
-    }
 
-    /**
-     * 
-     * @param minimizeOnly
-     *            If the content fits already into the viewport, then we don't
-     *            zoom if this parameter is true.
-     */
-    public void zoomToFit(boolean minimizeOnly) {
-
-        double scaleX = getViewportBounds().getWidth() / getContent().getBoundsInLocal().getWidth();
-        double scaleY = getViewportBounds().getHeight() / getContent().getBoundsInLocal().getHeight();
-
-        // consider current scale (in content calculation)
-        scaleX *= getScaleValue();
-        scaleY *= getScaleValue();
-
-        // distorted zoom: we don't want it => we search the minimum scale
-        // factor and apply it
-        double scale = Math.min(scaleX, scaleY);
-
-        // check precondition
-        // check if zoom factor would be an enlargement and if so, just set
-        // it to 1
-        if (minimizeOnly && Double.compare(scale, 1) > 0) {
-            scale = 1;
-        }
-
-        // apply zoom
-        zoomTo(scale);
-
-    }
 
 }

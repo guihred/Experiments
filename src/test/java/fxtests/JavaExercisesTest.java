@@ -136,7 +136,7 @@ public final class JavaExercisesTest {
         Assert.assertEquals("Reverse of reverse should be equal", link.toString(), reverseReverse.toString());
 
         Integer nodeSum = measureTime("Node.sum", () -> {
-            Node tree = new Node(16);
+            NodeGraph tree = new NodeGraph(16);
             tree.put(8);
             tree.put(4);
             tree.put(32);

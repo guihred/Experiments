@@ -68,6 +68,13 @@ public final class ClassReflectionUtils {
 
     }
 
+    public static Map<String, Object> getFieldMap(Object ob, Class<?> cl) {
+        return ClassReflectionUtils.getGetterMethodsRecursive(cl).stream()
+            .filter(e -> ClassReflectionUtils.invoke(ob, e) != null)
+            .filter(f -> ClassReflectionUtils.hasSetterMethods(cl, ClassReflectionUtils.getFieldNameCase(f)))
+            .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase, e -> ClassReflectionUtils.invoke(ob, e)));
+    }
+
     public static String getFieldNameCase(Member t) {
         return changeCase(getFieldName(t));
     }
@@ -212,9 +219,8 @@ public final class ClassReflectionUtils {
             .filter(m -> m.getParameterCount() == 0).filter(e -> Property.class.isAssignableFrom(e.getReturnType()))
             .filter(m -> m.getAnnotationsByType(Deprecated.class).length == 0)
             .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
-            .collect(
-                Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property) invoke(o, t), (u, v) -> u,
-                    LinkedHashMap::new));
+            .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property) invoke(o, t),
+                (u, v) -> u, LinkedHashMap::new));
     }
 
     private static <T> String getDescription(T obj, Class<?> class1,
@@ -346,7 +352,6 @@ public final class ClassReflectionUtils {
     private static boolean hasBuiltArg(Class<?> targetClass, String field) {
         return getNamedArgs(targetClass).contains(field);
     }
-
 
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {
         return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0

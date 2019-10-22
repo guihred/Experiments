@@ -9,8 +9,6 @@ import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.transformation.FilteredList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -18,7 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +24,16 @@ import org.apache.commons.lang3.StringUtils;
 public final class CommonsFX {
 
     private CommonsFX() {
+    }
+
+    public static boolean containsMouse(Node node, MouseEvent event) {
+        double x = event.getX();
+        double y = event.getY();
+        for (Node parent = node; event.getSource() != parent.getParent(); parent = parent.getParent()) {
+            x -= parent.getParent().getBoundsInParent().getMinX();
+            y -= parent.getParent().getBoundsInParent().getMinY();
+        }
+        return node.getBoundsInParent().contains(x, y);
     }
 
     public static Node[] createField(String nome, StringProperty propriedade) {
@@ -135,13 +143,5 @@ public final class CommonsFX {
         return textField;
     }
 
-    public static ToggleButton newToggleButton(final String id, final Node graphic,
-        final EventHandler<ActionEvent> onAction) {
-        ToggleButton button = new ToggleButton();
-        button.setId(id);
-        button.setGraphic(graphic);
-        button.setOnAction(onAction);
-        return button;
-    }
 
 }
