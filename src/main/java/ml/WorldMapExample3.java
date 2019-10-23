@@ -11,6 +11,7 @@ import ml.graph.WorldMapGraph;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CommonsFX;
 import utils.ImageFXUtils;
 
 public class WorldMapExample3 extends Application {
@@ -27,6 +28,7 @@ public class WorldMapExample3 extends Application {
 
         root.getChildren().add(SimpleSliderBuilder.newSlider("Labels", 1, 10, canvas.binsProperty()));
         root.getChildren().add(SimpleSliderBuilder.newSlider("Font Size", 1, 60, canvas.fontSizeProperty()));
+        root.getChildren().add(CommonsFX.newCheck("Neighbors", canvas.showNeighborsProperty()));
 		DataframeML x = DataframeBuilder.build("WDICountry.csv");
         canvas.valueHeaderProperty().set("Currency Unit");
         canvas.setDataframe(x,

@@ -61,7 +61,7 @@ public class WorldMapGraph2 extends WorldMapGraph {
         if (dataframeML != null && lonHeader != null && latHeader != null) {
             drawPoints();
         }
-        if (showNeighbors) {
+        if (showNeighborsProperty().get()) {
             drawNeighbors(countries);
         }
     }

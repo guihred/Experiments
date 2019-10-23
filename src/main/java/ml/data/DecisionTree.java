@@ -155,6 +155,8 @@ public class DecisionTree {
         LOG.trace("\n{}", buildTree);
         LOG.trace("{}", buildTree.size());
         LOG.trace("\n{}", buildTree.shuffle());
+        LOG.trace("\n{}", buildTree.shuffle());
+        LOG.trace("\n{}", buildTree.shuffle());
     }
 
     private static boolean isRedundantNode(DecisionNode trueTree, DecisionNode falseTree) {

@@ -11,10 +11,13 @@ import fxsamples.PhotoViewer;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -91,7 +94,7 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifyMapGraph() throws Exception {
         show(MapGraph.class);
         SVGPath randomItem = randomItem(lookup(SVGPath.class));
-        moveTo(randomItem);
+        RunnableEx.run(() -> moveTo(randomItem));
     }
 
     @Test
@@ -103,10 +106,20 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyScroll() throws Exception {
         measureTime("Test.verifyScroll",
-            () -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
-                scroll(2, VerticalDirection.DOWN);
-                scroll(2, VerticalDirection.UP);
-            }), WorldMapExample.class, WorldMapExample2.class));
+            () -> FXTesting.verifyAndRun(this, currentStage, () -> {
+                lookup(".button").queryAll().forEach(t -> {
+                    scroll(2, VerticalDirection.DOWN);
+                    scroll(2, VerticalDirection.UP);
+                });
+                lookup(CheckBox.class).forEach(this::clickOn);
+                lookup(ComboBox.class).forEach(e -> {
+                    ObservableList<?> items = e.getItems();
+                    for (int i = 0; i < items.size(); i++) {
+                        int j = i;
+                        interact(() -> e.getSelectionModel().select(j));
+                    }
+                });
+            }, WorldMapExample.class, WorldMapExample2.class));
 
     }
 
@@ -114,9 +127,8 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifySngpcViewer() throws Exception {
         show(SngpcViewer.class);
         sleep(500);
-        Node tree = lookupFirst(TreeView.class);
         targetPos(Pos.TOP_CENTER);
-        clickOn(tree);
+        clickOn(lookupFirst(TreeView.class));
         targetPos(Pos.CENTER);
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
     }

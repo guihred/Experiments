@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXMLLoader;
@@ -110,6 +111,12 @@ public final class CommonsFX {
         RunnableEx.remap(fxmlLoader::load, "ERROR LOADING " + arquivo);
     }
 
+    public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
+        CheckBox checkBox = new CheckBox(name);
+        checkBox.setSelected(showWeight.get());
+        showWeight.bind(checkBox.selectedProperty());
+        return checkBox;
+    }
 
     public static CheckBox newCheckBox(final String text, final boolean disabled) {
         CheckBox build = new CheckBox(text);

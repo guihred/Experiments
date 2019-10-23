@@ -33,7 +33,7 @@ public class WorldMapGraph extends Canvas {
     protected IntegerProperty bins = new SimpleIntegerProperty(7);
     protected GraphicsContext gc;
     protected DataframeML dataframeML;
-    protected boolean showNeighbors;
+    private final BooleanProperty showNeighbors = new SimpleBooleanProperty(false);
     protected DoubleSummaryStatistics summary;
     protected String header = "Country";
     protected Map<String, Predicate<Object>> filters = new HashMap<>();
@@ -80,7 +80,7 @@ public class WorldMapGraph extends Canvas {
             drawCountry(values[i]);
         }
 
-        if (showNeighbors) {
+        if (showNeighbors.get()) {
             drawLinks(values);
         }
     }
@@ -108,6 +108,10 @@ public class WorldMapGraph extends Canvas {
         drawGraph();
     }
 
+    public BooleanProperty showNeighborsProperty() {
+        return showNeighbors;
+    }
+
     public void takeSnapshot() {
         ImageFXUtils.take(this, getScale().getX() * getWidth(), getScale().getY() * getHeight());
     }
@@ -116,7 +120,7 @@ public class WorldMapGraph extends Canvas {
         return valueHeader;
     }
 
-    protected void createCategoryLabels(double x, double y0, double step) {
+	protected void createCategoryLabels(double x, double y0, double step) {
 		double y = y0;
         gc.setFill(Color.GRAY);
         gc.setStroke(Color.BLACK);
@@ -138,7 +142,7 @@ public class WorldMapGraph extends Canvas {
         }
     }
 
-	protected void createCategoryMap() {
+    protected void createCategoryMap() {
 
         if (dataframeML == null) {
             categoryMap.put(NO_INFO, Color.GRAY);
@@ -291,6 +295,7 @@ public class WorldMapGraph extends Canvas {
             drawGraph();
         });
         bins.addListener(ob -> drawGraph());
+        showNeighbors.addListener(ob -> drawGraph());
         fontSize.addListener(ob -> drawGraph());
         pattern.addListener(ob -> drawGraph());
         drawGraph();

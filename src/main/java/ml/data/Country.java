@@ -7,9 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 public enum Country {
     // ASIA
@@ -234,7 +233,6 @@ public enum Country {
         loadPaths();
     }
 
-    private static final Logger LOG = HasLogging.log();
     private final String countryName;
 
     private final String code;
@@ -406,17 +404,16 @@ public enum Country {
     }
 
     public static void loadPaths() {
-        File file = ResourceFXUtils.toFile("countries.csv");
-
-        try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
-            while (scanner.hasNext()) {
-                String firstLine = scanner.nextLine();
-                String[] split = firstLine.split(";");
-                Country.valueOf(split[0]).path = split[1];
+        RunnableEx.run(() -> {
+            File file = ResourceFXUtils.toFile("countries.csv");
+            try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
+                while (scanner.hasNext()) {
+                    String firstLine = scanner.nextLine();
+                    String[] split = firstLine.split(";");
+                    Country.valueOf(split[0]).path = split[1];
+                }
             }
-        } catch (Exception e) {
-            LOG.error("ERROR ", e);
-        }
+        });
     }
 
 }
