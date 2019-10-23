@@ -8,13 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import org.junit.Test;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class ContestReaderTest extends AbstractTestExecution {
+public class FXContestReaderTest extends AbstractTestExecution {
 
     private Logger log = HasLogging.log();
 
@@ -44,13 +45,17 @@ public class ContestReaderTest extends AbstractTestExecution {
     @Test
     public void testIades() {
         show(IadesCrawler.class);
+		clickOn(lookupFirst(TreeView.class));
         type(KeyCode.SPACE);
         type(KeyCode.RIGHT);
-        type(KeyCode.DOWN, 9);
+		type(KeyCode.DOWN, 9);
         type(KeyCode.RIGHT);
-        type(KeyCode.DOWN, 9);
+
+		type(KeyCode.DOWN, 30);
         type(KeyCode.TAB);
+
         type(KeyCode.DOWN, 9);
+
         type(KeyCode.TAB);
         type(KeyCode.SPACE);
         type(KeyCode.DOWN, 1);

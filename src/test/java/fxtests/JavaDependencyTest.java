@@ -89,7 +89,6 @@ public class JavaDependencyTest {
 
     @Test
     public void testFJavaCoverage() {
-
         measureTime("JavaFileDependency.javaCoverage", () -> {
             List<String> uncovered = getUncovered();
             LOG.info("Uncovered classes ={}", uncovered);

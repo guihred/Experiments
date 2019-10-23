@@ -86,8 +86,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }, e -> logger.error(String.format("ERRO IN %s", application), e)));
     }
 
-    protected void tryClickButtons() {
-        lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
+	protected boolean tryClickButtons() {
+        Set<Node> queryAll = lookup(".button").queryAll();
+		queryAll.forEach(ConsumerEx.ignore(this::clickOn));
+		return !queryAll.isEmpty();
     }
 
     private void resetStage() {

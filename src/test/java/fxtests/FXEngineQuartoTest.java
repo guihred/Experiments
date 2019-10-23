@@ -56,6 +56,9 @@ public class FXEngineQuartoTest extends AbstractTestExecution {
 			randButton(width, height);
 			clickOn(width * (1 - ratio) + randDistance(height), height / 2, MouseButton.PRIMARY);
 			randButton(width, height);
+			if (tryClickButtons()) {
+				break;
+			}
 		}
 	}
 

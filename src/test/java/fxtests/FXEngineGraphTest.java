@@ -74,7 +74,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 
     @Test
 	public void verifyZoomable() throws Exception {
-        lookup(Cell.class).forEach(e -> {
+		lookup(Cell.class).stream().limit(10).forEach(e -> {
             RunnableEx.ignore(() -> clickOn(e));
             RunnableEx.ignore(() -> drag(e, MouseButton.PRIMARY));
 			moveBy(100, 100);

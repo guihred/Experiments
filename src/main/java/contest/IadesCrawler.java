@@ -43,9 +43,11 @@ public class IadesCrawler extends Application {
     public void start(Stage primaryStage) throws Exception {
         CrawlerTask.insertProxyConfig();
         primaryStage.setTitle("IADES Crawler");
-        primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
+		Parent node = createSplitTreeListDemoNode();
+		primaryStage.setScene(new Scene(node));
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
         primaryStage.show();
+		// TreeElement.displayStyleClass(node);
     }
 
     private Parent createSplitTreeListDemoNode() {
