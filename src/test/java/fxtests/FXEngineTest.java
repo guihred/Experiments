@@ -11,10 +11,10 @@ import fxsamples.PhotoViewer;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -25,6 +25,7 @@ import javafx.scene.shape.SVGPath;
 import ml.WordSuggetionApp;
 import ml.WorldMapExample;
 import ml.WorldMapExample2;
+import ml.WorldMapExample3;
 import ml.graph.MapGraph;
 import org.junit.Test;
 import paintexp.ColorChooser;
@@ -107,19 +108,19 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifyScroll() throws Exception {
         measureTime("Test.verifyScroll",
             () -> FXTesting.verifyAndRun(this, currentStage, () -> {
-                lookup(".button").queryAll().forEach(t -> {
+                lookup(Canvas.class).forEach(t -> {
+                    moveTo(t);
                     scroll(2, VerticalDirection.DOWN);
                     scroll(2, VerticalDirection.UP);
                 });
                 lookup(CheckBox.class).forEach(this::clickOn);
                 lookup(ComboBox.class).forEach(e -> {
-                    ObservableList<?> items = e.getItems();
-                    for (int i = 0; i < items.size(); i++) {
+                    for (int i = 0; i < 5 && i < e.getItems().size(); i++) {
                         int j = i;
                         interact(() -> e.getSelectionModel().select(j));
                     }
                 });
-            }, WorldMapExample.class, WorldMapExample2.class));
+            }, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class));
 
     }
 
