@@ -24,7 +24,6 @@ public class BackgroundProcesses extends Application {
         // ... Layout and UI controls code here
         VBox root = new VBox(10);
         root.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(root, Color.WHITE);
         final Label label = new Label("Files Transfer:");
         final ProgressBar progressBar = new ProgressBar(0);
         final ProgressIndicator progressIndicator = new ProgressIndicator(0);
@@ -68,6 +67,7 @@ public class BackgroundProcesses extends Application {
         });
 
         root.getChildren().addAll(label, progressBar, progressIndicator, startButton, cancelButton, textArea);
+        Scene scene = new Scene(root, Color.WHITE);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

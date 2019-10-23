@@ -19,15 +19,12 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 import utils.DateFormatUtils;
-import utils.HasLogging;
 
 public class JapaneseLessonEditingDisplay extends Application {
     public static final long NANO_IN_A_MILLI_SECOND = 1_000_000;
-    private static final Logger LOG = HasLogging.log();
     protected SimpleIntegerProperty current = new SimpleIntegerProperty(1);
     protected ObservableList<JapaneseLesson> lessons = getLessons();
     protected Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
@@ -127,10 +124,6 @@ public class JapaneseLessonEditingDisplay extends Application {
             Duration totalDuration = mediaPlayer.get().getTotalDuration();
             Duration startDuration = totalDuration.multiply(toMilli(start) / totalDuration.toMillis());
 
-            LOG.info("current:{}", mediaPlayer.get().getCurrentTime());
-            LOG.info(" start:{}", mediaPlayer.get().getStartTime());
-            LOG.info(" stop:{}", mediaPlayer.get().getStopTime());
-            LOG.info(" seek: {}", startDuration);
             // sound.get
             mediaPlayer.get().seek(startDuration);
             // mediaPlayer.onS

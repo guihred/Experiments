@@ -23,10 +23,14 @@ import gaming.ex15.RubiksCubeLauncher;
 import gaming.ex17.PuzzleLauncher;
 import gaming.ex17.PuzzlePiece;
 import gaming.ex18.Square2048Launcher;
+import gaming.ex19.NumberButton;
+import gaming.ex19.SudokuLauncher;
+import gaming.ex19.SudokuSquare;
 import gaming.ex20.RoundMazeLauncher;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
@@ -42,7 +46,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
     public void verifyMinesweeper() throws Exception {
         show(MinesweeperLauncher.class);
-        List<Node> queryAll = lookup(e -> e instanceof MinesweeperSquare).queryAll().parallelStream()
+        List<MinesweeperSquare> queryAll = lookup(MinesweeperSquare.class).parallelStream()
             .collect(Collectors.toList());
         Collections.shuffle(queryAll);
         for (int i = 0; i < 30; i++) {
@@ -77,7 +81,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     public void verifyPong() throws Exception {
         show(PongLauncher.class);
         tryClickButtons();
-        for (Node next : lookup(e -> e instanceof Rectangle && e.isVisible()).queryAll()) {
+        for (Node next : lookup(Rectangle.class).stream().filter(e -> e.isVisible()).collect(Collectors.toSet())) {
             drag(next, MouseButton.PRIMARY);
             moveBy(0, DotsSquare.SQUARE_SIZE);
             moveBy(0, -DotsSquare.SQUARE_SIZE);
@@ -88,7 +92,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
     public void verifyPuzzle() throws Exception {
         show(PuzzleLauncher.class);
-        List<Node> queryAll = lookup(e -> e instanceof PuzzlePiece).queryAll().stream().filter(e -> e.isVisible())
+        List<Node> queryAll = lookup(PuzzlePiece.class).stream().filter(e -> e.isVisible())
             .collect(Collectors.toList());
         double squareSize = DotsSquare.SQUARE_SIZE;
         for (int i = 0; i < queryAll.size() / 5; i++) {
@@ -109,6 +113,21 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     public void verifySquare() throws Exception {
         show(Square2048Launcher.class);
         type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
+    }
+
+    @Test
+    public void verifySudokuLauncher() throws Exception {
+        show(SudokuLauncher.class);
+        Set<Node> queryAll = lookup(SudokuSquare.class).stream().filter(e -> !e.isPermanent())
+            .collect(Collectors.toSet());
+        for (Node next : queryAll) {
+            drag(next, MouseButton.PRIMARY);
+            List<NumberButton> collect = lookup(NumberButton.class).stream()
+                .collect(Collectors.toList());
+            NumberButton randomItem = randomItem(collect);
+            moveTo(randomItem);
+            drop();
+        }
     }
 
 }

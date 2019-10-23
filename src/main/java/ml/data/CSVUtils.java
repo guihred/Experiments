@@ -26,20 +26,16 @@ public class CSVUtils {
     private static final char DEFAULT_QUOTE = '"';
     private char separators;
     private char customQuote;
-
-    boolean inQuotes = false;
-
-    boolean startCollectChar = false;
-
-    boolean doubleQuotesInColumn = false;
+    private boolean inQuotes = false;
+    private boolean startCollectChar = false;
+    private boolean doubleQuotesInColumn = false;
 
     public CSVUtils(char separators, char customQuote) {
         this.separators = separators;
         this.customQuote = customQuote;
     }
 
-    private StringBuilder getCurrentVal(List<String> result, StringBuilder curVal,
-        char[] chars, char ch) {
+    private StringBuilder getCurrentVal(List<String> result, StringBuilder curVal, char[] chars, char ch) {
         if (!inQuotes) {
             if (ch != customQuote) {
                 if (ch == separators) {

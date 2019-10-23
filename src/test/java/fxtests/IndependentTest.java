@@ -232,25 +232,27 @@ public class IndependentTest {
 
     @Test
     public void testStringSiga() {
-        String nome = "32154";
-        measureTime("StringSigaUtils.codificar", () -> codificar(nome));
-        measureTime("StringSigaUtils.corrigirProblemaEncoding", () -> corrigirProblemaEncoding(nome));
-        measureTime("StringSigaUtils.decodificar", () -> decodificar(nome));
-        measureTime("StringSigaUtils.fixEncoding", () -> fixEncoding(nome));
-        measureTime("StringSigaUtils.fixEncoding", () -> fixEncoding(nome));
-        measureTime("StringSigaUtils.getApenasNumeros", () -> getApenasNumeros(nome));
-        measureTime("StringSigaUtils.getApenasNumerosInt", () -> getApenasNumerosInt(nome));
-        measureTime("StringSigaUtils.getCEPFormatado", () -> getCEPFormatado(nome));
-        measureTime("StringSigaUtils.getCEPFormatado", () -> getCEPFormatado(nome));
-        measureTime("StringSigaUtils.getCnpjFormatado", () -> getCnpjFormatado(nome));
-        measureTime("StringSigaUtils.getCnpjFormatado", () -> getCnpjFormatado(nome));
-        measureTime("StringSigaUtils.getCpfDesformatado", () -> getCpfDesformatado(nome));
-        measureTime("StringSigaUtils.getCpfFormatado", () -> getCpfFormatado(nome));
-        measureTime("StringSigaUtils.getCpfFormatado", () -> getCpfFormatado(nome));
-        measureTime("StringSigaUtils.removerDiacritico", () -> removerDiacritico(nome));
-        measureTime("StringSigaUtils.retirarMascara", () -> retirarMascara(nome));
-        measureTime("StringSigaUtils.substituirNaoNumeros", () -> substituirNaoNumeros(nome));
-        measureTime("StringSigaUtils.toInteger", () -> toInteger(nome));
+        List<String> asList = Arrays.asList("32154", null);
+        for (String nome : asList) {
+            measureTime("StringSigaUtils.codificar", () -> codificar(nome));
+            measureTime("StringSigaUtils.corrigirProblemaEncoding", () -> corrigirProblemaEncoding(nome));
+            measureTime("StringSigaUtils.decodificar", () -> decodificar(nome));
+            measureTime("StringSigaUtils.fixEncoding", () -> fixEncoding(nome));
+            measureTime("StringSigaUtils.fixEncoding", () -> fixEncoding(nome));
+            measureTime("StringSigaUtils.getApenasNumeros", () -> getApenasNumeros(nome));
+            measureTime("StringSigaUtils.getApenasNumerosInt", () -> getApenasNumerosInt(nome));
+            measureTime("StringSigaUtils.getCEPFormatado", () -> getCEPFormatado(nome));
+            measureTime("StringSigaUtils.getCEPFormatado", () -> getCEPFormatado(nome));
+            measureTime("StringSigaUtils.getCnpjFormatado", () -> getCnpjFormatado(nome));
+            measureTime("StringSigaUtils.getCnpjFormatado", () -> getCnpjFormatado(nome));
+            measureTime("StringSigaUtils.getCpfDesformatado", () -> getCpfDesformatado(nome));
+            measureTime("StringSigaUtils.getCpfFormatado", () -> getCpfFormatado(nome));
+            measureTime("StringSigaUtils.getCpfFormatado", () -> getCpfFormatado(nome));
+            measureTime("StringSigaUtils.removerDiacritico", () -> removerDiacritico(nome));
+            measureTime("StringSigaUtils.retirarMascara", () -> retirarMascara(nome));
+            measureTime("StringSigaUtils.substituirNaoNumeros", () -> substituirNaoNumeros(nome));
+            measureTime("StringSigaUtils.toInteger", () -> toInteger(nome));
+        }
     }
 
     @Test

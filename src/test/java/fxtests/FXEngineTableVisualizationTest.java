@@ -1,7 +1,6 @@
 package fxtests;
 
 import fxpro.ch05.TableVisualizationExample;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
@@ -34,14 +33,11 @@ public class FXEngineTableVisualizationTest extends AbstractTestExecution {
                 .forEach(ConsumerEx.ignore((n) -> clickOn(n)));
 
         }
-        Set<Node> queryAll3 = lookup(ToggleButton.class::isInstance).queryAll();
-        for (Node node : queryAll3) {
+        for (Node node : lookup(ToggleButton.class)) {
             RunnableEx.ignore(() -> clickOn(node));
         }
-        List<MenuButton> node1 = lookup(MenuButton.class::isInstance).queryAllAs(MenuButton.class).stream()
-            .collect(Collectors.toList());
-        for (int i = 0; i < node1.size(); i++) {
-            ObservableList<MenuItem> items = node1.get(i).getItems();
+        for (MenuButton menuButton : lookup(MenuButton.class)) {
+            ObservableList<MenuItem> items = menuButton.getItems();
             for (int j = items.size() - 1; j >= 0; j--) {
                 MenuItem menu = items.get(j);
                 interact(menu::fire);

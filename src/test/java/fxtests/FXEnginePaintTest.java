@@ -35,13 +35,13 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     @Test
     public void testaToolsVerify() throws Exception {
         show(PaintMain.class);
-        Node stack = lookup(e -> e instanceof ZoomableScrollPane).queryAs(ZoomableScrollPane.class).getContent();
+        Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
 		testTools(stack);
         testMenus(stack);
     }
 
     protected void testTools(final Node stack) {
-        List<Node> queryAll = lookup(e -> e instanceof ToggleButton).queryAll().stream().collect(Collectors.toList());
+        List<Node> queryAll = lookup(ToggleButton.class).stream().collect(Collectors.toList());
         Collections.shuffle(queryAll);
         List<Node> colors = lookup("#colorGrid").queryAllAs(GridPane.class).stream()
             .flatMap(e -> e.getChildren().stream()).collect(Collectors.toList());
@@ -120,8 +120,6 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 
 
     private void testMenus(final Node stack) {
-        List<MenuButton> node = lookup(MenuButton.class::isInstance).queryAllAs(MenuButton.class).stream()
-            .collect(Collectors.toList());
         File defaultFile = ResourceFXUtils.toFile("out");
         PaintFileUtils.setDefaultFile(defaultFile);
         File file = new File(defaultFile, TEST_FILE);
@@ -129,8 +127,10 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             file.delete();
         }
         lookup("#SelectRectTool").queryAll().forEach(this::clickOn);
+        List<MenuButton> node = lookup(MenuButton.class).stream().collect(Collectors.toList());
         for (int i = 0; i < node.size(); i++) {
-            ObservableList<MenuItem> items = node.get(i).getItems();
+            MenuButton menuButton = node.get(i);
+            ObservableList<MenuItem> items = menuButton.getItems();
             for (int j = items.size() - 1; j >= 0; j--) {
                 if (i == 0 && j > 0 && items.size() != j + 1) {
                     continue;

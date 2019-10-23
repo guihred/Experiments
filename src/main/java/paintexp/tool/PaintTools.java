@@ -1,7 +1,6 @@
 package paintexp.tool;
 
 import java.util.stream.Stream;
-import javafx.scene.Cursor;
 import javafx.scene.Group;
 
 public enum PaintTools {
@@ -28,14 +27,9 @@ public enum PaintTools {
 
     private PaintTool tool = new DummyTool();
 
-    PaintTools() {
-    }
 
     PaintTools(final PaintTool paintTool) {
         tool = paintTool;
-    }
-    public Cursor getCursor() {
-        return tool.getCursor();
     }
 
     public PaintTool getTool() {

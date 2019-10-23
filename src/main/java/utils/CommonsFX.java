@@ -6,7 +6,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXMLLoader;
@@ -111,12 +110,6 @@ public final class CommonsFX {
         RunnableEx.remap(fxmlLoader::load, "ERROR LOADING " + arquivo);
     }
 
-    public static CheckBox newCheck(final String name, final BooleanProperty showWeight) {
-        CheckBox checkBox = new CheckBox(name);
-        checkBox.setSelected(showWeight.get());
-        showWeight.bind(checkBox.selectedProperty());
-        return checkBox;
-    }
 
     public static CheckBox newCheckBox(final String text, final boolean disabled) {
         CheckBox build = new CheckBox(text);
@@ -124,12 +117,6 @@ public final class CommonsFX {
         return build;
     }
 
-    public static TextField newFastFilter(FilteredList<?> filteredData) {
-        TextField filterField = new TextField();
-        filterField.textProperty().addListener((o, old, value) -> filteredData
-            .setPredicate(row -> StringUtils.isBlank(value) || StringUtils.containsIgnoreCase(row.toString(), value)));
-        return filterField;
-    }
 
     public static <T> FilteredList<T> newFastFilter(TextField filterField, FilteredList<T> filteredData) {
         filterField.textProperty().addListener((o, old, value) -> filteredData

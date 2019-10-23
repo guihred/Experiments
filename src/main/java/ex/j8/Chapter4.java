@@ -31,6 +31,7 @@ import javafx.util.Duration;
 import simplebuilder.*;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
+import utils.StageHelper;
 
 public final class Chapter4 {
     private Chapter4() {
@@ -242,6 +243,7 @@ public final class Chapter4 {
             stage.setScene(scene);
             stage.setTitle("EX6");
             stage.show();
+            StageHelper.displayCSSStyler(scene, "chapter4.css");
         }
     }
 

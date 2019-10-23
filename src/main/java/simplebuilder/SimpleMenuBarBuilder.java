@@ -3,7 +3,6 @@ package simplebuilder;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 
@@ -67,20 +66,6 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 		return this;
 	}
 
-    public SimpleMenuBarBuilder addMenuItem(final String text, final Node graphic, final String combination,
-        final EventHandler<ActionEvent> action) {
-        MenuItem item = new MenuItem(text);
-		item.setId(text);
-        item.setOnAction(action);
-        item.setGraphic(graphic);
-        item.setAccelerator(KeyCombination.keyCombination(combination));
-        if (subMenu != null) {
-            subMenu.getItems().add(item);
-        } else {
-            menu.getItems().add(item);
-        }
-        return this;
-    }
 
     public SimpleMenuBarBuilder addMenuItem(final String text, final String combination,
         final EventHandler<ActionEvent> action) {

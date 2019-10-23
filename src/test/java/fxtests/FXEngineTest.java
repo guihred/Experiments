@@ -18,9 +18,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.shape.SVGPath;
 import ml.WordSuggetionApp;
 import ml.WorldMapExample;
 import ml.WorldMapExample2;
+import ml.graph.MapGraph;
 import org.junit.Test;
 import paintexp.ColorChooser;
 import pdfreader.PdfReader;
@@ -78,7 +80,7 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyLineManipulator() throws Exception {
         show(LineManipulator.class);
-        lookup(AnchorCircle.class::isInstance).queryAll().forEach(e -> {
+        lookup(AnchorCircle.class).forEach(e -> {
             drag(e, MouseButton.PRIMARY);
             moveRandom(50);
             drag(e, MouseButton.PRIMARY);
@@ -86,8 +88,14 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyPhotoViewer() throws Exception {
+    public void verifyMapGraph() throws Exception {
+        show(MapGraph.class);
+        SVGPath randomItem = randomItem(lookup(SVGPath.class));
+        moveTo(randomItem);
+    }
 
+    @Test
+    public void verifyPhotoViewer() throws Exception {
         show(PhotoViewer.class);
         tryClickButtons();
     }
@@ -106,7 +114,7 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifySngpcViewer() throws Exception {
         show(SngpcViewer.class);
         sleep(500);
-        Node tree = lookup(e -> e instanceof TreeView).queryAll().stream().limit(1).findFirst().orElse(null);
+        Node tree = lookupFirst(TreeView.class);
         targetPos(Pos.TOP_CENTER);
         clickOn(tree);
         targetPos(Pos.CENTER);

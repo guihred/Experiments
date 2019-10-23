@@ -1,14 +1,9 @@
 package paintexp.tool;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-import org.slf4j.Logger;
-import utils.ConsumerEx;
-import utils.HasLogging;
 
 enum PictureOption {
     TRIANGLE("M 12,4 L 20,20 4,20 12,4z"),
@@ -26,8 +21,6 @@ enum PictureOption {
     HEART("M15.53 1A5.52 5.52 0 0 0 11 6 5.52 5.52 0 0 0 0 6C0 12.37 11 20 11 20s11-7.63 11-13.42"
         + "A5.53 5.53 0 0 0 15.53 1z"),;
 
-    private static final Logger LOG = HasLogging.log();
-
     private static final int PREF_WIDTH = 20;
 
     private String path;
@@ -39,24 +32,8 @@ enum PictureOption {
 
     }
 
-    public String getCorrectedPath() {
-        return path;
-	}
-
-	public String getCorrectedPath(final int prefWidth) {
-		return correctPath(path, prefWidth);
-    }
-
-    public double getHeight() {
-        return height;
-    }
-
     public String getPath() {
         return path;
-    }
-
-    public double getWidth() {
-        return width;
     }
 
     @Override
@@ -75,9 +52,9 @@ enum PictureOption {
         return sb.toString();
     }
 
-	public SVGPath toSVG() {
+    public SVGPath toSVG() {
         SVGPath svgPath = new SVGPath();
-        svgPath.setContent(getCorrectedPath());
+        svgPath.setContent(getPath());
         svgPath.maxWidth(PREF_WIDTH);
         width = svgPath.getBoundsInLocal().getWidth();
         height = svgPath.getBoundsInLocal().getHeight();
@@ -88,41 +65,6 @@ enum PictureOption {
         svgPath.setScaleX(PREF_WIDTH / width);
         svgPath.setScaleY(PREF_WIDTH / height);
         return svgPath;
-    }
-
-    public static String correctPath(final String path, final int prefWidth) {
-        Pattern compile = Pattern.compile("([\\d\\.]+)");
-        Matcher a = compile.matcher(path);
-        double max = 1;
-        while (a.find()) {
-            String group = a.group(1);
-            max = Math.max(Double.parseDouble(group), max);
-        }
-        a.reset();
-        StringBuffer sb = new StringBuffer();
-        while (a.find()) {
-            String group = a.group(1);
-            double parseDouble = Double.parseDouble(group);
-            int indexOf = group.indexOf('.');
-            if (indexOf == -1) {
-                indexOf = 0;
-            } else {
-                indexOf = group.length() - indexOf - 1;
-
-            }
-            String format = "%." + indexOf + "f";
-            a.appendReplacement(sb, String.format(Locale.ENGLISH, format, parseDouble * prefWidth / max));
-        }
-        a.appendTail(sb);
-        return sb.toString();
-    }
-
-    public static void main(final String[] args) {
-        Stream.of(PictureOption.values()).filter(e -> e.path != null).forEach(ConsumerEx.makeConsumer(e -> {
-            LOG.info("{}", e);
-            LOG.info("{}", e.path);
-			LOG.info("{}", correctPath(e.path, PREF_WIDTH));
-        }));
     }
 
 }

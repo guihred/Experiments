@@ -81,6 +81,7 @@ public class MapGraph extends Application {
             svgPath.toFront();
             updateLayout(country, text);
             texts.forEach(Node::toFront);
+
             imageView.setLayoutX(country.getCenterX());
             imageView.setLayoutY(country.getCenterY());
             imageView.toFront();

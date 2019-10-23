@@ -64,10 +64,8 @@ public class TetrisModel {
         final int[][] get = pieceDirection.get(piece).get(direction);
         for (int i = 0; i < get.length; i++) {
             for (int j = 0; j < get[i].length; j++) {
-                if (get[i][j] == 1) {
-                    if (hasCollision(nextI, nextJ, i, j)) {
-                        return true;
-                    }
+                if (get[i][j] == 1 && hasCollision(nextI, nextJ, i, j)) {
+                    return true;
                 }
             }
         }

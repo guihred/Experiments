@@ -9,14 +9,12 @@ import furigana.FuriganaCrawlerApp;
 import fxpro.ch06.TaskProgressApp;
 import fxsamples.BackgroundProcesses;
 import japstudy.*;
-import java.util.Set;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import org.junit.AfterClass;
 import org.junit.Test;
-import utils.CrawlerTask;
 import utils.HibernateUtil;
 import utils.RunnableEx;
-
 
 public class FXHibernateTest extends AbstractTestExecution {
 
@@ -28,12 +26,9 @@ public class FXHibernateTest extends AbstractTestExecution {
         HibernateUtil.getSessionFactory();
         HibernateUtil.setShutdownEnabled(false);
     }
+
     @Test
-    public void verify() throws Exception {
-        measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
-        show(new JapaneseLessonApplication());
-        clickAllButtons();
-        closeCurrentWindow();
+    public void verifyApplications() throws Exception {
         show(new BackgroundProcesses());
         clickAllButtons();
         show(new FuriganaCrawlerApp());
@@ -49,9 +44,11 @@ public class FXHibernateTest extends AbstractTestExecution {
         show(new JapaneseLessonDisplay());
         clickAllButtons();
         show(new ContestApplication());
-        CrawlerTask.insertProxyConfig();
+    }
+
+    @Test
+    public void verifyCandidatoApp() {
         show(new CandidatoApp());
-        sleep(WAIT_TIME * 2);
     }
 
     @Test
@@ -66,10 +63,21 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickAllButtons();
     }
 
+    @Test
+    public void verifyJapaneseLessonApplication() throws Exception {
+        show(new JapaneseLessonApplication());
+        clickAllButtons();
+    }
+
+    @Test
+    @SuppressWarnings("static-method")
+    public void verifyLessons() {
+        measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
+    }
+
     private void clickAllButtons() {
-        Set<Node> queryButtons = lookup(".button").queryAll();
-        for (Node e : queryButtons) {
-			RunnableEx.run(() -> clickOn(e));
+        for (Node e : lookup(Button.class)) {
+            RunnableEx.ignore(() -> clickOn(e));
             sleep(WAIT_TIME);
         }
     }

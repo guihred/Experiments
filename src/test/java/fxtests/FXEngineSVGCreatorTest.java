@@ -16,8 +16,8 @@ public class FXEngineSVGCreatorTest extends AbstractTestExecution {
     @Test
 	public void testaToolsVerify() throws Exception {
         show(SVGCreator.class);
-        Node stack = lookup(StackPane.class::isInstance).queryAs(StackPane.class);
-        List<Node> queryAll = lookup(ToggleButton.class::isInstance).queryAll().stream().collect(Collectors.toList());
+        Node stack = lookupFirst(StackPane.class);
+        List<Node> queryAll = lookup(ToggleButton.class).stream().collect(Collectors.toList());
 		Collections.shuffle(queryAll);
         int bound = (int) (stack.getBoundsInParent().getWidth() / 4);
 		for (Node next : queryAll) {

@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -181,8 +182,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             .orElse(null);
     }
 
-    private String onReading(String substring) {
-        return mapReading.computeIfAbsent(substring, FunctionEx.makeFunction(this::getOnReadings));
+    private String onReading(String str) {
+        return Objects.toString(mapReading.computeIfAbsent(str, FunctionEx.makeFunction(this::getOnReadings)), "");
     }
 
     private StringBuilder placeFurigana(String line) {
@@ -222,7 +223,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 return computeReading(group);
             }
             String onReadings = onReading(sb);
-            if (sb.length() > 1 && (onReadings == null || !isNotKatakana(onReadings))) {
+            if (sb.length() > 1 && (StringUtils.isBlank(onReadings) || !isNotKatakana(onReadings))) {
                 onReadings = onReading(sb.substring(0, 1)) + computeReading(sb.substring(1) + currentLetter);
             }
             String computeReading = computeReading(group + sb.charAt(0));

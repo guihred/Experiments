@@ -30,7 +30,7 @@ public class PictureTool extends PaintTool {
     public SVGPath createIcon() {
         PictureOption star5 = PictureOption.STAR_5;
         SVGPath icon = star5.toSVG();
-        icon.setContent(star5.getCorrectedPath());
+        icon.setContent(star5.getPath());
         icon.setFill(Color.TRANSPARENT);
 		icon.setScaleX(3. / 4);
 		icon.setScaleY(3. / 4);
@@ -46,7 +46,7 @@ public class PictureTool extends PaintTool {
             area.setStroke(Color.BLACK);
             area.setManaged(false);
         }
-        area.setContent(pic.getCorrectedPath());
+        area.setContent(pic.getPath());
         return area;
     }
 

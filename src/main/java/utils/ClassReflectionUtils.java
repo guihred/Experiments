@@ -193,6 +193,7 @@ public final class ClassReflectionUtils {
             return null;
         }
         return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
+            .filter(m -> m.getParameterCount() == args.length)
             .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(Objects::nonNull).findFirst().orElse(null);
     }
 

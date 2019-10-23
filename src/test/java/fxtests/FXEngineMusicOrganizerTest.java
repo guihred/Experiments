@@ -25,7 +25,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         clickOn("Carregar _Vídeos");
         typeIfLinux();
         sleep(1000);
-        lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
+        doubleClickOn(lookupFirst(TableRow.class));
 		WaitForAsyncUtils.waitForFxEvents();
         lookup("_Convert to Mp3").queryAll().forEach(this::clickOn);
 		WaitForAsyncUtils.waitForFxEvents();
@@ -33,7 +33,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
         clickOn("Carregar _Musicas");
 		typeIfLinux();
-		lookup(e -> e instanceof TableRow).tryQuery().ifPresent(this::doubleClickOn);
+        doubleClickOn(lookupFirst(TableRow.class));
         lookup("_Play/Pause").queryAll().forEach(this::clickOn);
 		lookup("_Split").queryAll().forEach(this::clickOn);
 	}
@@ -51,9 +51,10 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void verifyFileComparator() throws Exception {
         FilesComparator application = show(FilesComparator.class);
-        TableView<File> query = lookup(e -> e instanceof TableView).query();
+        TableView<File> query = lookupFirst(TableView.class);
         File[] listFiles = ResourceFXUtils.getUserFolder("Music").listFiles(File::isDirectory);
         application.addSongsToTable(query, listFiles[0]);
     }
