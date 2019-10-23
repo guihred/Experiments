@@ -73,22 +73,14 @@ public class Square2048Model {
             for (int i = 0; i < getMap().length; i++) {
                 for (int j = 0; j < getMap()[i].length; j++) {
                     if (!getMap()[i][j].isEmpty() && withinRange(x, y, i, j, MAP_WIDTH, MAP_HEIGHT)) {
-                        if (getMap()[i + x][j + y].isEmpty()) {
-                            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber());
-                            getMap()[i][j].setNumber(0);
-                            changed = true;
-                        } else if (getMap()[i + x][j + y].getNumber() == getMap()[i][j].getNumber()) {
-                            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber() * 2);
-                            getMap()[i][j].setNumber(0);
-                            changed = true;
-                        }
+                        changed = tryChange(x, y, changed, i, j);
                     }
                 }
             }
         }
 	}
 
-	private void initialize() {
+    private void initialize() {
         for (int i = 0; i < getMap().length; i++) {
             for (int j = 0; j < getMap()[i].length; j++) {
                 getMap()[i][j] = new Square2048();
@@ -109,7 +101,7 @@ public class Square2048Model {
         return (random.nextInt(2) + 1) * 2;
     }
 
-    private boolean noPossibleMove() {
+	private boolean noPossibleMove() {
         int[][] directions= {{1,0},{0,1},{-1,0},{0,-1}};
         for (int[] dir : directions) {
             int x = dir[0];
@@ -125,6 +117,19 @@ public class Square2048Model {
             }
         }
         return true;
+    }
+
+    private boolean tryChange(int x, int y, boolean changed, int i, int j) {
+        if (getMap()[i + x][j + y].isEmpty()) {
+            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber());
+            getMap()[i][j].setNumber(0);
+            return true;
+        } else if (getMap()[i + x][j + y].getNumber() == getMap()[i][j].getNumber()) {
+            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber() * 2);
+            getMap()[i][j].setNumber(0);
+            return true;
+        }
+        return changed;
     }
 
     private static int getX(KeyCode code) {

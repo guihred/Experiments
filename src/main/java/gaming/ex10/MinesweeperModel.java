@@ -77,40 +77,34 @@ public class MinesweeperModel {
 
     private void handleClick(MouseEvent event, MinesweeperSquare mem) {
         if (event.getButton() == MouseButton.SECONDARY) {
-			toggleFlag(mem);
+            toggleFlag(mem);
             return;
         }
-
-        if (mem.getState() == MinesweeperSquare.State.HIDDEN) {
-            nPlayed.set(nPlayed.get() + 1);
-            mem.setState(MinesweeperSquare.State.SHOWN);
-            if (mem.getMinesweeperImage() == MinesweeperImage.BOMB) {
-                if (nPlayed.get() == 0) {
-                    reset();
-				}
-				if (mem.getScene().getWindow().isShowing()) {
-                    new SimpleDialogBuilder().text("You exploded!").button("Reset", this::reset).bindWindow(gridPane)
-                        .displayDialog();
-				}
+        if (mem.getState() != MinesweeperSquare.State.HIDDEN) {
+            return;
+        }
+        nPlayed.set(nPlayed.get() + 1);
+        mem.setState(MinesweeperSquare.State.SHOWN);
+        if (mem.getMinesweeperImage() == MinesweeperImage.BOMB) {
+            if (nPlayed.get() != 0) {
+                showDialog("You exploded!");
+                return;
             }
-            if (mem.getMinesweeperImage() == MinesweeperImage.BLANK) {
-                showNeighbours(mem.getI(), mem.getJ());
-            }
-            if (verifyEnd()) {
-                String text2 = "You won in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds! ";
-				if (mem.getScene().getWindow().isShowing()) {
-					new SimpleDialogBuilder().text(text2).button("Reset", this::reset).displayDialog();
-				}
-            }
-
+            reset();
+        }
+        if (mem.getMinesweeperImage() == MinesweeperImage.BLANK) {
+            showNeighbours(mem.getI(), mem.getJ());
+        }
+        if (verifyEnd()) {
+            showDialog("You won in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds! ");
         }
     }
 
-	private void reset() {
-		if (!gridPane.getScene().getWindow().isShowing()) {
-			return;
-		}
-		nPlayed.set(0);
+    private void reset() {
+        if (!gridPane.getScene().getWindow().isShowing()) {
+            return;
+        }
+        nPlayed.set(0);
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 map[i][j].setFinalShape(null);
@@ -152,37 +146,45 @@ public class MinesweeperModel {
         }
     }
 
+    private void showDialog(String text2) {
+        new SimpleDialogBuilder().text(text2).button("Reset", this::reset).bindWindow(gridPane).displayDialog();
+    }
+
     private void showNeighbours(int i, int j) {
         map[i][j].setState(MinesweeperSquare.State.SHOWN);
         for (int k = -1; k <= 1; k++) {
             for (int l = -1; l <= 1; l++) {
-                if (l == 0 && k == 0) {
-                    continue;
-                }
-                if (withinRange(i, k, MAP_WIDTH) && withinRange(j, l, MAP_HEIGHT)) {
-                    if (map[i + k][j + l].getMinesweeperImage() == MinesweeperImage.BLANK
-                        && map[i + k][j + l].getState() == MinesweeperSquare.State.HIDDEN) {
-                        showNeighbours(i + k, j + l);
-                    }
-                    map[i + k][j + l].setState(MinesweeperSquare.State.SHOWN);
-                }
+                showWhiteSquares(i, j, k, l);
             }
         }
 
     }
 
-	private boolean verifyEnd() {
+    private void showWhiteSquares(int i, int j, int k, int l) {
+        if (l == 0 && k == 0) {
+            return;
+        }
+        if (withinRange(i, k, MAP_WIDTH) && withinRange(j, l, MAP_HEIGHT)) {
+            if (map[i + k][j + l].getMinesweeperImage() == MinesweeperImage.BLANK
+                && map[i + k][j + l].getState() == MinesweeperSquare.State.HIDDEN) {
+                showNeighbours(i + k, j + l);
+            }
+            map[i + k][j + l].setState(MinesweeperSquare.State.SHOWN);
+        }
+    }
+
+    private boolean verifyEnd() {
         return Stream.of(map).flatMap(Stream::of).noneMatch(s -> s.getState().equals(MinesweeperSquare.State.HIDDEN)
             && !s.getMinesweeperImage().equals(MinesweeperImage.BOMB));
     }
 
     private static void toggleFlag(MinesweeperSquare mem) {
-		if (mem.getState() == State.HIDDEN) {
-		    mem.setState(MinesweeperSquare.State.FLAGGED);
-		} else if (mem.getState() == State.FLAGGED) {
-		    mem.setState(MinesweeperSquare.State.HIDDEN);
-		}
-	}
+        if (mem.getState() == State.HIDDEN) {
+            mem.setState(MinesweeperSquare.State.FLAGGED);
+        } else if (mem.getState() == State.FLAGGED) {
+            mem.setState(MinesweeperSquare.State.HIDDEN);
+        }
+    }
 
     private static boolean withinRange(int i, int k, int mapWidth) {
         return i + k >= 0 && i + k < mapWidth;

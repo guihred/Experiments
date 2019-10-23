@@ -42,7 +42,7 @@ public class RaspiCycle extends Application {
     private AnimationTimer animTimer;
 
     public void handleKeyPress(KeyEvent event) {
-        boolean isNewDir = getNewDir(event);
+        boolean isNewDir = isNewDir(event);
         seSpeed(event);
 
         if (event.getCode() == KeyCode.ESCAPE) {
@@ -167,7 +167,8 @@ public class RaspiCycle extends Application {
         // Left wall
         gc.strokeLine(bounds.getMinX(), bounds.getMinY(), bounds.getMinX(), bounds.getMaxY());
     }
-    private boolean getNewDir(KeyEvent event) {
+
+    private boolean isNewDir(KeyEvent event) {
         if (event.getCode() == KeyCode.LEFT && curDir != Direction.LEFT) {
             curDir = Direction.LEFT;
             return true;

@@ -22,7 +22,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private static final Logger LOG = HasLogging.log();
 
-    private static final int NUMBER_THREADS = 10;
+    private static final int NUMBER_THREADS = 20;
 
     protected static final List<UnicodeBlock> KANJI_BLOCK = Arrays.asList(UnicodeBlock.CJK_COMPATIBILITY,
         UnicodeBlock.CJK_COMPATIBILITY_FORMS, UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
@@ -31,11 +31,14 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D);
     private static final Pattern NUMBERS = Pattern.compile("^[\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b"
         + "\u4e5d\u5341\u5341\u4e00\u5341\u4e8c\u4e8c\u5341\u4e94\u5341\u767e\u5343\u4e07\u5104\u5146]+");
+    private static final int STEP = 10;
+
     private Map<String, String> mapReading = Collections.synchronizedMap(new HashMap<>());
 
+    private List<Character> skipCharacters = Arrays.asList('、', 'を', '？', '}', '　', '』', '！', '…', '。');
 
     public String getReading(String currentWord, char currentLetter) {
-        String key = currentWord + currentLetter;
+        String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
         boolean notContains = !mapReading.containsKey(key);
         String reading = getReading(currentWord, currentLetter, 0);
         if (notContains) {
@@ -45,7 +48,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     public String getReading(String currentWord, char currentLetter, int recursive) {
-        final String key = currentWord + currentLetter;
+        final String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
         if (mapReading.containsKey(key)) {
             return mapReading.get(key);
         }
@@ -68,21 +71,21 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         updateTitle("Example Task");
         updateMessage("Starting...");
         int total = lines.size();
-        updateProgress(0, total);
         List<Thread> ths = new ArrayList<>();
-        for (int j = 0; j < lines.size(); j++) {
+        for (int j = 0; j < lines.size(); j += STEP) {
             if (isCancelled()) {
                 return "Cancelled";
             }
             int k = j;
             Thread thread = new Thread(() -> {
-                if (isCancelled()) {
-                    return;
+                for (int i = 0; i < STEP && k + i < lines.size(); i++) {
+                    if (isCancelled()) {
+                        return;
+                    }
+                    String line = lines.get(k + i);
+                    StringBuilder currentLine = placeFurigana(line);
+                    lines.set(k + i, currentLine.toString());
                 }
-                String line = lines.get(k);
-                StringBuilder currentLine = placeFurigana(line);
-                LOG.trace("{}", currentLine);
-                lines.set(k, currentLine.toString());
 
             });
             ths.add(thread);
@@ -91,21 +94,25 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             while (count > NUMBER_THREADS) {
                 count = ths.stream().filter(Thread::isAlive).count();
                 long i = ths.size() - count;
-                updateAll(i, total);
+                updateAll(i, total / STEP);
                 if (isCancelled()) {
                     return "Cancelled";
                 }
             }
-            updateProgress(j, lines.size());
         }
         while (ths.stream().anyMatch(Thread::isAlive)) {
             long count = ths.stream().filter(Thread::isAlive).count();
             long i = ths.size() - count;
-            updateAll(i, total);
+            updateAll(i, total / STEP);
         }
         endTask(lines);
-        updateAll(total, total);
+        updateAll(total / STEP, total / STEP);
         return "Completed at " + LocalTime.now();
+    }
+
+    private String computeReading(String key) {
+        return mapReading.computeIfAbsent(key, FunctionEx
+            .makeFunction((String k) -> computeReading(k.substring(0, k.length() - 1), k.charAt(k.length() - 1))));
     }
 
     private String computeReading(String currentWord, char currentLetter) throws IOException {
@@ -170,8 +177,12 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         }
         Elements kun = parse.select(".readings .japanese_gothic a");
         List<String> kunReadings = kun.stream().map(Element::text).collect(Collectors.toList());
-        return kunReadings.stream().sorted(Comparator.comparing((String e) -> isNotKatakana(e))).findFirst()
+        return kunReadings.stream().sorted(Comparator.comparing(CrawlerFuriganaTask::isNotKatakana)).findFirst()
             .orElse(null);
+    }
+
+    private String onReading(String substring) {
+        return mapReading.computeIfAbsent(substring, FunctionEx.makeFunction(this::getOnReadings));
     }
 
     private StringBuilder placeFurigana(String line) {
@@ -202,24 +213,24 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return currentLine;
     }
 
-    private String splitWord(String currentWord, char currentLetter) throws IOException {
+    private String splitWord(String currentWord, char currentLetter) {
         Matcher matcher = NUMBERS.matcher(currentWord);
         if (matcher.find()) {
             String group = matcher.group();
             String sb = currentWord.substring(group.length());
-            String computeReading = mapReading.computeIfAbsent(group,
-                FunctionEx.makeFunction(b -> computeReading(b, sb.charAt(0))));
-
-            String onReadings = mapReading.computeIfAbsent(sb, FunctionEx.makeFunction(this::getOnReadings));
-            if (onReadings == null || !isNotKatakana(onReadings) && sb.length() > 1) {
-                onReadings = getOnReadings(sb.substring(0, 1)) + computeReading(sb.substring(1), currentLetter);
+            if (sb.isEmpty()) {
+                return computeReading(group);
             }
-
+            String onReadings = onReading(sb);
+            if (sb.length() > 1 && (onReadings == null || !isNotKatakana(onReadings))) {
+                onReadings = onReading(sb.substring(0, 1)) + computeReading(sb.substring(1) + currentLetter);
+            }
+            String computeReading = computeReading(group + sb.charAt(0));
             return computeReading + onReadings;
         }
         String firstPart = currentWord.substring(0, currentWord.length() - 1);
         String secondPart = currentWord.substring(currentWord.length() - 1, currentWord.length());
-        return computeReading(firstPart, secondPart.charAt(0)) + computeReading(secondPart, currentLetter);
+        return computeReading(firstPart + secondPart.charAt(0)) + computeReading(secondPart + currentLetter);
     }
 
     private static void endTask(List<String> lines) {
@@ -232,10 +243,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             LOG.error("ERROR ", e);
         }
     }
-
-//    public static void main(String[] args) {
-//        new CrawlerFuriganaTask().addFuriganaReading();
-//    }
 
     private static boolean existsKunReading(String currentWord, Elements kun) {
         return currentWord.length() == 1 && !kun.isEmpty();

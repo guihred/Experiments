@@ -26,6 +26,7 @@ public class TetrisModel {
     private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection = new EnumMap<>(TetrisPiece.class);
 
     private SecureRandom random = new SecureRandom();
+
     public TetrisModel(GridPane gridPane) {
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
@@ -64,13 +65,7 @@ public class TetrisModel {
         for (int i = 0; i < get.length; i++) {
             for (int j = 0; j < get[i].length; j++) {
                 if (get[i][j] == 1) {
-                    if (nextI + i >= MAP_WIDTH || nextI < 0) {
-                        return true;
-                    }
-                    if (nextJ + j >= MAP_HEIGHT) {
-                        return true;
-                    }
-                    if (map[nextI + i][nextJ + j].getState() == TetrisPieceState.SETTLED) {
+                    if (hasCollision(nextI, nextJ, i, j)) {
                         return true;
                     }
                 }
@@ -147,6 +142,11 @@ public class TetrisModel {
                 }
             }
         }
+    }
+
+    private boolean hasCollision(int nextI, int nextJ, int i, int j) {
+        return nextI + i >= MAP_WIDTH || nextI < 0 || nextJ + j >= MAP_HEIGHT
+            || map[nextI + i][nextJ + j].getState() == TetrisPieceState.SETTLED;
     }
 
     private boolean isLineClear(int i) {

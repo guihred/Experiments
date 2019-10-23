@@ -30,8 +30,8 @@ import utils.HasLogging;
  */
 public class FreeCellView extends Group {
     private static final String RESET = "Reset";
-	private static final String YOU_WON = "You Won";
-	private static final int SIZE = 500;
+    private static final String YOU_WON = "You Won";
+    private static final int SIZE = 500;
     private static final int ANIMATION_DURATION = 200;
     private static final Logger LOG = HasLogging.log();
     private final FreeCellStack[] ascendingStacks = new FreeCellStack[4];
@@ -288,7 +288,7 @@ public class FreeCellView extends Group {
             return;
         }
         cardStackList.sort(
-            Comparator.comparing((FreeCellStack e) -> e.getType()).thenComparing((FreeCellStack e) -> -e.getCards().size()));
+            Comparator.comparing(FreeCellStack::getType).thenComparing((FreeCellStack e) -> -e.getCards().size()));
 
         if (tryToPlaceCard(first)) {
             return;
@@ -397,7 +397,7 @@ public class FreeCellView extends Group {
     }
 
     private boolean placeCard(FreeCellCard firstCard, FreeCellStack currentStack) {
-        if(moveFromSimpleStack(firstCard, currentStack)) {
+        if (moveFromSimpleStack(firstCard, currentStack)) {
             return true;
         }
         if (currentStack.getType() == ASCENDING && dragContext.cards.size() == 1
@@ -409,8 +409,8 @@ public class FreeCellView extends Group {
             dragContext.reset();
             return true;
         }
-        if (dragContext.stack.getType() == SIMPLE && currentStack.getType() == SUPPORT && currentStack.getCards().isEmpty()
-            && dragContext.cards.size() == 1) {
+        if (dragContext.stack.getType() == SIMPLE && currentStack.getType() == SUPPORT
+            && currentStack.getCards().isEmpty() && dragContext.cards.size() == 1) {
             dragContext.stack.addCards(dragContext.cards);
             createMovingCardAnimation(dragContext.stack, currentStack, firstCard);
             MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, currentStack);

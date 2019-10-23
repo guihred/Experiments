@@ -24,35 +24,95 @@ public class CSVUtils {
     private static final Logger LOGGER = HasLogging.log();
     private static final char DEFAULT_SEPARATOR = ',';
     private static final char DEFAULT_QUOTE = '"';
+    private char separators;
+    private char customQuote;
+
+    boolean inQuotes = false;
+
+    boolean startCollectChar = false;
+
+    boolean doubleQuotesInColumn = false;
+
+    public CSVUtils(char separators, char customQuote) {
+        this.separators = separators;
+        this.customQuote = customQuote;
+    }
+
+    private StringBuilder getCurrentVal(List<String> result, StringBuilder curVal,
+        char[] chars, char ch) {
+        if (!inQuotes) {
+            if (ch != customQuote) {
+                if (ch == separators) {
+                    result.add(curVal.toString().replaceFirst("" + DEFAULT_QUOTE, ""));
+                    startCollectChar = false;
+                    return new StringBuilder();
+                }
+                if (ch != '\r') {
+                    curVal.append(ch);
+                }
+                return curVal;
+            }
+            inQuotes = true;
+            // Fixed : allow "" in empty quote enclosed
+            if (isAppendQuote(customQuote, startCollectChar, chars)) {
+                curVal.append('"');
+            }
+            return curVal;
+        }
+        startCollectChar = true;
+        if (ch != customQuote) {
+            if (ch == '\"') {
+                if (!doubleQuotesInColumn) {
+                    curVal.append(ch);
+                    doubleQuotesInColumn = true;
+                }
+                return curVal;
+            }
+            curVal.append(ch);
+            return curVal;
+        }
+        inQuotes = false;
+        doubleQuotesInColumn = false;
+        return curVal;
+    }
+
+    private StringBuilder getField(String cvsLine, List<String> result) {
+        StringBuilder curVal = new StringBuilder();
+        char[] chars = cvsLine.toCharArray();
+        for (int i = 0; i < chars.length && chars[i] != '\n'; i++) {
+            curVal = getCurrentVal(result, curVal, chars, chars[i]);
+        }
+        return curVal;
+    }
 
     public static void appendLine(File file, Map<String, Object> rowMap) {
-    	boolean exists = file.exists();
+        boolean exists = file.exists();
         String collect = rowMap.keySet().stream().collect(Collectors.joining(",", "", ""));
-    	if (exists) {
-    		try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
-    			String nextLine = scanner.nextLine();
-    			if (!collect.equals(nextLine)) {
-    				exists = false;
-    			}
-    		} catch (Exception e) {
+        if (exists) {
+            try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
+                String nextLine = scanner.nextLine();
+                if (!collect.equals(nextLine)) {
+                    exists = false;
+                }
+            } catch (Exception e) {
                 LOGGER.error("{}", e);
-    		}
-    		if (!exists) {
+            }
+            if (!exists) {
                 RunnableEx.run(() -> Files.deleteIfExists(file.toPath()));
-    		}
-    	}
-    
-    	try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true)) {
-    		if (!exists) {
-    			fw.append(collect + "\n");
-    		}
+            }
+        }
+
+        try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true)) {
+            if (!exists) {
+                fw.append(collect + "\n");
+            }
             List<String> cols = rowMap.keySet().stream().collect(Collectors.toList());
-    
+
             fw.append(rowMap.entrySet().stream().sorted(Comparator.comparing(t -> cols.indexOf(t.getKey())))
                 .map(Entry<String, Object>::getValue).map(Object::toString).collect(Collectors.joining(",", "", "\n")));
-    	} catch (Exception e1) {
+        } catch (Exception e1) {
             LOGGER.error("{}", e1);
-    	}
+        }
     }
 
     public static void main(String[] args) {
@@ -73,15 +133,9 @@ public class CSVUtils {
         if (cvsLine == null || cvsLine.isEmpty()) {
             return result;
         }
-        char customQuote = quote;
-        if (customQuote == ' ') {
-            customQuote = DEFAULT_QUOTE;
-        }
-        char separators = separator;
-        if (separators == ' ') {
-            separators = DEFAULT_SEPARATOR;
-        }
-        StringBuilder curVal = getField(cvsLine, result, separators, customQuote);
+        char customQuote = quote == ' ' ? DEFAULT_QUOTE : quote;
+        char separators = separator == ' ' ? DEFAULT_SEPARATOR : separator;
+        StringBuilder curVal = new CSVUtils(separators, customQuote).getField(cvsLine, result);
         result.add(curVal.toString());
         return result;
     }
@@ -119,46 +173,6 @@ public class CSVUtils {
             LOGGER.trace("file {} created {}", csvFile, created);
             return new BufferedWriter(new FileWriterWithEncoding(csvFile, StandardCharsets.UTF_8, true));
         }, "ERROR CREATING WRITER");
-    }
-
-    private static StringBuilder getField(String cvsLine, List<String> result, char separators, char customQuote) {
-        boolean inQuotes = false;
-        boolean startCollectChar = false;
-        boolean doubleQuotesInColumn = false;
-        StringBuilder curVal = new StringBuilder();
-        char[] chars = cvsLine.toCharArray();
-        for (char ch : chars) {
-            if (inQuotes) {
-                startCollectChar = true;
-                if (ch == customQuote) {
-                    inQuotes = false;
-                    doubleQuotesInColumn = false;
-                } else if (ch == '\"') {
-                    if (!doubleQuotesInColumn) {
-                        curVal.append(ch);
-                        doubleQuotesInColumn = true;
-                    }
-                } else {
-                    curVal.append(ch);
-                }
-
-            } else if (ch == customQuote) {
-                inQuotes = true;
-                // Fixed : allow "" in empty quote enclosed
-                if (isAppendQuote(customQuote, startCollectChar, chars)) {
-                    curVal.append('"');
-                }
-            } else if (ch == separators) {
-                result.add(curVal.toString().replaceFirst("" + DEFAULT_QUOTE, ""));
-                curVal = new StringBuilder();
-                startCollectChar = false;
-            } else if (ch == '\n') {
-                break;
-            } else if (ch != '\r') {
-                curVal.append(ch);
-            }
-        }
-        return curVal;
     }
 
     private static boolean isAppendQuote(char customQuote, boolean startCollectChar, char[] chars) {

@@ -69,26 +69,7 @@ public class Maze3DModel {
 			if (!check.isEmpty()) {
 				history.add(maze[row][column]);
 				final String direction = check.get(random.nextInt(check.size()));
-				if ("L".equals(direction)) {
-					maze[row][column].setWest(true);
-					column = column - 1;
-					maze[row][column].setEast(true);
-				}
-				if ("U".equals(direction)) {
-					maze[row][column].setNorth(true);
-					row = row - 1;
-					maze[row][column].setSouth(true);
-				}
-				if ("R".equals(direction)) {
-					maze[row][column].setEast(true);
-					column = column + 1;
-					maze[row][column].setWest(true);
-				}
-				if ("D".equals(direction)) {
-					maze[row][column].setSouth(true);
-					row = row + 1;
-					maze[row][column].setNorth(true);
-				}
+                setWalls(direction);
             } else if (goBackIn(history)) {
 				return;
 			}
@@ -110,7 +91,7 @@ public class Maze3DModel {
 		return false;
 	}
 
-	private void initializeMaze(GridPane gridPane) {
+    private void initializeMaze(GridPane gridPane) {
 		for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
                 maze[i][j] = new Maze3DSquare();
@@ -130,6 +111,29 @@ public class Maze3DModel {
             }
         }
 	}
+
+	private void setWalls(final String direction) {
+        if ("L".equals(direction)) {
+        	maze[row][column].setWest(true);
+        	column = column - 1;
+        	maze[row][column].setEast(true);
+        }
+        if ("U".equals(direction)) {
+        	maze[row][column].setNorth(true);
+        	row = row - 1;
+        	maze[row][column].setSouth(true);
+        }
+        if ("R".equals(direction)) {
+        	maze[row][column].setEast(true);
+        	column = column + 1;
+        	maze[row][column].setWest(true);
+        }
+        if ("D".equals(direction)) {
+        	maze[row][column].setSouth(true);
+        	row = row + 1;
+        	maze[row][column].setNorth(true);
+        }
+    }
     public static Maze3DModel create(GridPane gridPane) {
 		return new Maze3DModel(gridPane);
 	}

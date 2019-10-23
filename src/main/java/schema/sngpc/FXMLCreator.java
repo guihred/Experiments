@@ -171,9 +171,6 @@ public final class FXMLCreator {
     }
 
     private void processField(Element element, String fieldName, Object fieldValue, Object parent) {
-        if (FXMLConstants.getIgnore().contains(fieldName)) {
-            return;
-        }
         if (containsSame(allNode, fieldValue)) {
             processNamedArgs(element, fieldName, fieldValue, parent);
             return;
@@ -198,7 +195,7 @@ public final class FXMLCreator {
         if (tryCreateMethod(element, fieldName, fieldValue, parent)) {
             return;
         }
-        if (getNamedArgs(parent.getClass()).contains(fieldName) && hasPublicConstructor(fieldValue.getClass())) {
+        if (isStarterArgument(fieldName, fieldValue, parent)) {
             referenceClasses.add(fieldValue.getClass());
         }
         if (hasClass(referenceClasses, fieldValue.getClass())) {
@@ -340,7 +337,7 @@ public final class FXMLCreator {
             }
 
             fields.forEach((fieldName, fieldValue) -> {
-                if (fieldValue != null) {
+                if (fieldValue != null && !FXMLConstants.getIgnore().contains(fieldName)) {
                     processField(createElement, fieldName, fieldValue, node2);
                 }
             });
@@ -435,6 +432,10 @@ public final class FXMLCreator {
 
     private static boolean containsSame(List<Object> allNode, Object fieldValue) {
         return allNode.stream().anyMatch(ob -> ob == fieldValue);
+    }
+
+    private static boolean isStarterArgument(String fieldName, Object fieldValue, Object parent) {
+        return getNamedArgs(parent.getClass()).contains(fieldName) && hasPublicConstructor(fieldValue.getClass());
     }
 
     private static boolean isSuitableAsAttribute(String fieldName, Object fieldValue, Object parent) {

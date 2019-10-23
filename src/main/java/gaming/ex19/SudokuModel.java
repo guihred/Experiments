@@ -148,21 +148,7 @@ public class SudokuModel {
             setSquareWithOnePossibility();
             for (int i = 0; i < MAP_N_SQUARED; i++) {
                 for (int number = 1; number <= MAP_N_SQUARED; number++) {
-                    List<SudokuSquare> area = getArea(i, number);
-                    if (area.size() == 1) {
-                        oneSolution(number, area);
-                        changed = true;
-                    }
-                    List<SudokuSquare> row = getRow(i, number);
-                    if (row.size() == 1) {
-                        oneSolution(number, row);
-                        changed = true;
-                    }
-                    List<SudokuSquare> col = getCol(i, number);
-                    if (col.size() == 1) {
-                        oneSolution(number, col);
-                        changed = true;
-                    }
+                    changed = tryToSolve(changed, i, number);
                 }
             }
             setSquareWithOnePossibility();
@@ -345,6 +331,26 @@ public class SudokuModel {
                 .forEach(sq -> sq.setNumber(sq.getPossibilities().get(0)));
             updatePossibilities();
         }
+    }
+
+    private boolean tryToSolve(boolean isChanged, int i, int number) {
+        boolean changed=isChanged;
+        List<SudokuSquare> area = getArea(i, number);
+        if (area.size() == 1) {
+            oneSolution(number, area);
+            changed = true;
+        }
+        List<SudokuSquare> row = getRow(i, number);
+        if (row.size() == 1) {
+            oneSolution(number, row);
+            changed = true;
+        }
+        List<SudokuSquare> col = getCol(i, number);
+        if (col.size() == 1) {
+            oneSolution(number, col);
+            changed = true;
+        }
+        return changed;
     }
 
     private void updatePossibilities() {

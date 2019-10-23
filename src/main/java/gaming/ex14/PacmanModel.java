@@ -219,21 +219,26 @@ public class PacmanModel {
         for (int i = 0; i < PacmanBall.MAZE_SIZE; i++) {
             for (int j = 0; j < PacmanBall.MAZE_SIZE; j++) {
                 maze[i][j] = new MazeSquare(i, j);
-                if (i == 0) {
-                    maze[i][j].setNorth(false);
-                }
-                if (j == 0) {
-                    maze[i][j].setWest(false);
-                }
-                if (PacmanBall.MAZE_SIZE - 1 == j && i % 3 == 0) {
-                    maze[i][j].setEast(true);
-                }
-                if (PacmanBall.MAZE_SIZE - 1 == i && j % 3 == 0) {
-                    maze[i][j].setSouth(true);
-                }
+                MazeSquare mazeSquare = maze[i][j];
+                setOusideWalls(i, j, mazeSquare);
             }
         }
         return maze;
+    }
+
+    private static void setOusideWalls(int i, int j, MazeSquare mazeSquare) {
+        if (i == 0) {
+            mazeSquare.setNorth(false);
+        }
+        if (j == 0) {
+            mazeSquare.setWest(false);
+        }
+        if (PacmanBall.MAZE_SIZE - 1 == j && i % 3 == 0) {
+            mazeSquare.setEast(true);
+        }
+        if (PacmanBall.MAZE_SIZE - 1 == i && j % 3 == 0) {
+            mazeSquare.setSouth(true);
+        }
     }
 
 }
