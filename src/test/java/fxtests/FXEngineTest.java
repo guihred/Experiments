@@ -22,10 +22,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.SVGPath;
-import ml.WordSuggetionApp;
-import ml.WorldMapExample;
-import ml.WorldMapExample2;
-import ml.WorldMapExample3;
+import ml.*;
 import ml.graph.MapGraph;
 import org.junit.Test;
 import paintexp.ColorChooser;
@@ -120,7 +117,8 @@ public class FXEngineTest extends AbstractTestExecution {
                         interact(() -> e.getSelectionModel().select(j));
                     }
                 });
-            }, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class));
+            }, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class,
+                PopulacionalPyramidExample.class));
 
     }
 

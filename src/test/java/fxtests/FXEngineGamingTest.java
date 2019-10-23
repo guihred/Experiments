@@ -36,8 +36,7 @@ import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.Rectangle;
-import labyrinth.Labyrinth3DMouseControl;
-import labyrinth.Labyrinth3DWallTexture;
+import labyrinth.*;
 import org.junit.Test;
 import utils.RunnableEx;
 
@@ -63,6 +62,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             moveBy(-1000, 0);
             moveBy(1000, 0);
             type(W, 20);
+            clickOn();
             for (KeyCode keyCode : Arrays.asList(W, S, A, DOWN, D, UP, R, L, U, D, B, F, Z, X, LEFT, RIGHT)) {
                 press(keyCode).release(keyCode);
                 press(CONTROL, keyCode).release(keyCode);
@@ -73,7 +73,8 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         }, RubiksCubeLauncher.class, TetrisLauncher.class, SimpleScene3D.class, Maze3DLauncher.class,
             Labyrinth3DMouseControl.class, TronLauncher.class, JewelViewer.class, MoleculeSampleApp.class,
             DeathStar.class, Chart3dSampleApp.class, PacmanLauncher.class, RoundMazeLauncher.class, MazeLauncher.class,
-            Labyrinth3DWallTexture.class, RaspiCycle.class);
+            Labyrinth3DCollisions.class, Labyrinth3D.class, Labyrinth2D.class, Labyrinth3DWallTexture.class,
+            RaspiCycle.class);
         interactNoWait(currentStage::close);
     }
 
