@@ -36,7 +36,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     public void testaToolsVerify() throws Exception {
         show(PaintMain.class);
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
-		testTools(stack);
+        testTools(stack);
         testMenus(stack);
     }
 
@@ -129,9 +129,6 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             MenuButton menuButton = node.get(i);
             ObservableList<MenuItem> items = menuButton.getItems();
             for (int j = items.size() - 1; j >= 0; j--) {
-                if (i == 0 && j > 0 && items.size() != j + 1) {
-                    continue;
-                }
                 MenuItem menu = items.get(j);
                 moveTo(stack);
                 double bound2 = stack.getBoundsInParent().getWidth();
@@ -139,11 +136,15 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 drag(MouseButton.PRIMARY);
                 moveBy(bound2 / 2, bound2 / 2);
                 drop();
+                getLogger().info("FIRING {}", menu.getId());
                 if (i == 0 && items.size() == j + 1) {
-                    new Thread(() -> typeInParallel()).start();
+                    new Thread(this::typeInParallel).start();
                 }
-				getLogger().info("FIRING {}", menu.getId());
                 interact(menu::fire);
+                if (i == 0 && j > 0 && items.size() != j + 1) {
+                    new Thread(this::typeInParallel).start();
+                    continue;
+                }
                 lookup(".text-field").queryAll().forEach(e -> {
                     clickOn(e);
                     eraseText(3);

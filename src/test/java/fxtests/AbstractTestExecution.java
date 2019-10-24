@@ -1,11 +1,15 @@
 package fxtests;
 
+import static utils.RunnableEx.ignore;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.scene.Node;
+import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.apache.commons.lang.SystemUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
@@ -57,6 +61,14 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected void moveRandom(int bound) {
         moveBy(randomNumber(bound), randomNumber(bound));
+    }
+
+    protected void moveSliders(int bound) {
+        for (Node m : lookup(Slider.class)) {
+            ignore(() -> drag(m, MouseButton.PRIMARY));
+            moveRandom(bound);
+            drop();
+        }
     }
 
     protected <T extends Enum<?>> T randomEnum(Class<T> cl) {

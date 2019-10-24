@@ -55,7 +55,7 @@ public class FXEngineTest extends AbstractTestExecution {
             }
             Node m = queryAll.get(i);
             ignore(() -> drag(m, MouseButton.PRIMARY));
-            moveBy(Math.random() * 10 - 5, 0);
+            moveRandom(10);
             drop();
         }
         tryClickButtons();

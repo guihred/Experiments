@@ -64,6 +64,19 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         }
     }
     @Test
+    public void verifyEditSong2() throws Exception {
+        EditSongController show = show(EditSongController.class);
+        show.setClose(false);
+        List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
+        for (int i = 0; i < queryAll.size(); i++) {
+            Node node = queryAll.get(i);
+            RunnableEx.ignore(() -> clickOn(node));
+            moveSliders(10);
+            RunnableEx.ignore(() -> sleep(1000));
+        }
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void verifyFileComparator() throws Exception {
         FilesComparator application = show(FilesComparator.class);

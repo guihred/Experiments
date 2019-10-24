@@ -57,6 +57,7 @@ public class PaintMain extends Application {
 		stage.setX(0);
 		stage.setTitle("Paint");
 		final int width = 800;
+
 		Scene scene = new Scene(root, width, width);
 		scene.addEventHandler(KeyEvent.ANY, controller::handleKeyBoard);
 		stage.setScene(scene);

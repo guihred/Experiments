@@ -39,22 +39,26 @@ public final class PaintFileUtils {
     public static void openFile(final Window ownerWindow, PaintModel paintModel) {
         FileChooser fileChooser2 = new FileChooser();
         fileChooser2.setTitle("Open File");
+        if (defaultFile != null) {
+            fileChooser2.setInitialDirectory(defaultFile);
+        }
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
         paintModel.setCurrentFile(fileChooser2.showOpenDialog(ownerWindow));
-        if (paintModel.getCurrentFile() != null) {
-            RunnableEx.run(() -> {
-                Image image2 = new Image(new FileInputStream(paintModel.getCurrentFile()));
-                int w = (int) image2.getWidth();
-                int h = (int) image2.getHeight();
-                paintModel.setImage(new WritableImage(w, h));
-                paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
-                paintModel.getImageStack().getChildren().clear();
-                ImageView imageView = new PixelatedImageView(paintModel.getImage());
-                paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-                paintModel.getImageStack().getChildren().add(imageView);
-                paintModel.createImageVersion();
-            });
+        if (paintModel.getCurrentFile() == null) {
+            return;
         }
+        RunnableEx.run(() -> {
+            Image image2 = new Image(new FileInputStream(paintModel.getCurrentFile()));
+            int w = (int) image2.getWidth();
+            int h = (int) image2.getHeight();
+            paintModel.setImage(new WritableImage(w, h));
+            paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, image2.getPixelReader(), 0, 0);
+            paintModel.getImageStack().getChildren().clear();
+            ImageView imageView = new PixelatedImageView(paintModel.getImage());
+            paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+            paintModel.getImageStack().getChildren().add(imageView);
+            paintModel.createImageVersion();
+        });
     }
 
     public static void saveAsFile(final Window primaryStage, PaintModel paintModel) {

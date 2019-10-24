@@ -78,7 +78,7 @@ public class OthersTests {
         ESTABLISHED(of(APP_CLOSE, FIN_WAIT_1, RCV_FIN, CLOSE_WAIT)),
         SYN_RCVD(of(APP_CLOSE, Estado.FIN_WAIT_1, RCV_ACK, ESTABLISHED)),
         SYN_SENT(of("RCV_SYN", SYN_RCVD, "RCV_SYN_ACK", ESTABLISHED, APP_CLOSE, CLOSED)),
-        LISTEN(of("RCV_SYN", Estado.SYN_RCVD, "APP_SEND", Estado.SYN_SENT, APP_CLOSE, Estado.CLOSED));
+        LISTEN(of("RCV_SYN", Estado.SYN_RCVD, "APP_SEND", SYN_SENT, APP_CLOSE, Estado.CLOSED));
         private Map<String, Estado> map;
 
 		Estado(Map<String, Estado> map) {
