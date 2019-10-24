@@ -46,9 +46,12 @@ public class TimelineExample extends Application {
         root.setLeft(left);
         TimelineGraph canvas = new TimelineGraph();
 
-        DataframeML x = DataframeBuilder.builder("out/WDIDataGC.TAX.TOTL.GD.ZS.csv")
+        String[] list = ResourceFXUtils.toFile("out")
+            .list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
+        DataframeML x = DataframeBuilder.builder("out/" + list[0])
                 .setMaxSize(MAX_ROWS)
                 .build();
+        LOG.info("Available Columns {}", x.cols());
         canvas.prefWidth(500);
         canvas.setTitle(x.list("Indicator Name").get(0).toString());
         left.getChildren().add(SimpleSliderBuilder.newSlider("Radius", 1, 500, canvas.radiusProperty()));
@@ -63,13 +66,11 @@ public class TimelineExample extends Application {
 		Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = new MapCallback<>(
                 canvas.colorsProperty(), canvas::drawGraph);
         listVies.setCellFactory(
-                list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
+            l -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
 
-        LOG.info("Available Columns {}", x.cols());
         String countryNameColumn = x.cols().stream().findFirst().orElse("﻿Country Name");
         canvas.setHistogram(x, countryNameColumn);
         itens.setAll(sortedLabels(canvas.colorsProperty()));
-        String[] list = ResourceFXUtils.toFile("out").list((dir, name) -> name.endsWith(".csv"));
         ComboBox<String> indicators = new SimpleComboBoxBuilder<String>().items(list)
             .select(0).onSelect(s -> {
                 DataframeML x2 = DataframeBuilder.builder("out/" + s).setMaxSize(MAX_ROWS).build();

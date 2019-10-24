@@ -47,7 +47,6 @@ public class IadesCrawler extends Application {
 		primaryStage.setScene(new Scene(node));
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
         primaryStage.show();
-		// TreeElement.displayStyleClass(node);
     }
 
     private Parent createSplitTreeListDemoNode() {
@@ -60,7 +59,7 @@ public class IadesCrawler extends Application {
         ListView<String> vagasView = new ListView<>();
         vagasView.setItems(FXCollections.observableArrayList());
         vagasView.getSelectionModel().selectedItemProperty()
-            .addListener((ob, old, value) -> saveContestValues(concurso, value));
+            .addListener((ob, old, value) -> saveContestValues(concurso, value, vagasView));
         TableView<Concurso> tableView = new SimpleTableViewBuilder<Concurso>().items(concursos).addColumns("nome")
             .onSelect((old, value) -> {
                 concurso.setValue(value);

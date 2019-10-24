@@ -35,6 +35,7 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
 
 		scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
         primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(e -> songModel.getMediaPlayer().dispose());
         primaryStage.setTitle("Basic Audio Player With Control");
         primaryStage.show();
         songModel.getPlayer().play();

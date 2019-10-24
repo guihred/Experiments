@@ -136,7 +136,7 @@ public class JavaDependencyTest {
             }
         });
         if (!failedTests.isEmpty()) {
-			Assert.fail(failedTests.stream().collect(Collectors.joining("\n", "ERRORS IN {\n", "\n}")));
+            Assert.fail(failedTests.stream().collect(Collectors.joining("\n\t", "ERRORS IN {\n\t", "\n}")));
         }
     }
 

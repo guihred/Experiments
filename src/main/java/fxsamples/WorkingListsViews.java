@@ -39,8 +39,8 @@ public class WorkingListsViews extends Application {
         // Heroes label
         Label heroesLbl = new Label("Heroes");
         gridpane.add(heroesLbl, 2, 0);
-        GridPane.setHalignment(heroesLbl, HPos.CENTER);
         // Candidates
+        GridPane.setHalignment(heroesLbl, HPos.CENTER);
         final ObservableList<String> candidates = FXCollections.observableArrayList("Superman", "Spiderman",
             "Wolverine", "Police", "Fire Rescue", "Soldiers", "Dad & Mom", "Doctor", "Politician", "Pastor", "Teacher");
         final ListView<String> candidatesListView = new ListView<>(candidates);

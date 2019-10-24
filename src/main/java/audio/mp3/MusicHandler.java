@@ -3,11 +3,13 @@ package audio.mp3;
 import extract.Music;
 import extract.SongUtils;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import javafx.beans.NamedArg;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import simplebuilder.SimpleDialogBuilder;
+import utils.ResourceFXUtils;
 
 public final class MusicHandler implements EventHandler<MouseEvent> {
     private final TableView<Music> musicaTable;
@@ -35,7 +37,11 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         if (selectedItem.isNotMP3()) {
             new SimpleDialogBuilder().text(String.format("Convert%n%s", selectedItem.getArquivo().getName()))
                 .button("_Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()),
-                    () -> Files.deleteIfExists(selectedItem.getArquivo().toPath()))
+                    () -> {
+                        Path path = selectedItem.getArquivo().toPath();
+                        Files.copy(path, ResourceFXUtils.getOutFile(path.toFile().getName()).toPath());
+                        Files.deleteIfExists(path);
+                    })
                 .displayDialog();
             return;
         }

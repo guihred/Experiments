@@ -40,8 +40,7 @@ public final class StageHelper {
     }
 
     public static void closeStage(EventTarget button) {
-        Node button2 = (Node) button;
-        ((Stage) button2.getScene().getWindow()).close();
+        ((Stage) ((Node) button).getScene().getWindow()).close();
     }
 
     public static void displayCSSStyler(Scene scene, String pathname) {
@@ -131,14 +130,7 @@ public final class StageHelper {
     }
 
     private static String getText(File file) {
-        try {
-            if (file.exists()) {
-                return Files.toString(file, StandardCharsets.UTF_8);
-            }
-        } catch (Exception e2) {
-            LOG.error("", e2);
-        }
-        return "";
+        return file.exists() ? SupplierEx.get(() -> Files.toString(file, StandardCharsets.UTF_8), "") : "";
     }
 
     private static Button newButton(String nome, EventHandler<ActionEvent> onAction) {

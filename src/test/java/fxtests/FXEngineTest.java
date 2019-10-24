@@ -1,6 +1,7 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
+import static utils.RunnableEx.ignore;
 
 import ethical.hacker.EthicalHackApp;
 import ethical.hacker.ImageCrackerApp;
@@ -8,6 +9,8 @@ import ex.j8.Chapter4;
 import fxsamples.AnchorCircle;
 import fxsamples.LineManipulator;
 import fxsamples.PhotoViewer;
+import fxsamples.WorkingListsViews;
+import fxsamples.person.PersonTableController;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -15,10 +18,7 @@ import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.shape.SVGPath;
@@ -30,7 +30,6 @@ import pdfreader.PdfReader;
 import schema.sngpc.SngpcViewer;
 import utils.ConsoleUtils;
 import utils.ConsumerEx;
-import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
@@ -39,7 +38,7 @@ public class FXEngineTest extends AbstractTestExecution {
         measureTime("Test.testButtons",
             () -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
                 sleep(1000);
-                RunnableEx.ignore(() -> clickOn(t));
+                ignore(() -> clickOn(t));
                 type(KeyCode.ESCAPE);
             }), Chapter4.Ex9.class, Chapter4.Ex10.class, PdfReader.class));
 
@@ -55,7 +54,7 @@ public class FXEngineTest extends AbstractTestExecution {
                 lookup(".tab").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
             }
             Node m = queryAll.get(i);
-            RunnableEx.ignore(() -> drag(m, MouseButton.PRIMARY));
+            ignore(() -> drag(m, MouseButton.PRIMARY));
             moveBy(Math.random() * 10 - 5, 0);
             drop();
         }
@@ -68,6 +67,12 @@ public class FXEngineTest extends AbstractTestExecution {
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
             .forEach(ConsumerEx.ignore(this::clickOn));
         ConsoleUtils.waitAllProcesses();
+    }
+
+    @Test
+    public void verifyHistogramExample() throws Exception {
+        show(HistogramExample.class);
+        lookup(CheckBox.class).forEach(this::clickOn);
     }
 
     @Test
@@ -92,7 +97,14 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifyMapGraph() throws Exception {
         show(MapGraph.class);
         SVGPath randomItem = randomItem(lookup(SVGPath.class));
-        RunnableEx.run(() -> moveTo(randomItem));
+        ignore(() -> moveTo(randomItem));
+    }
+
+    @Test
+    public void verifyPersonTableController() throws Exception {
+        show(PersonTableController.class);
+        clickOn(lookupFirst(TextField.class));
+        type(typeText(getRandomString()));
     }
 
     @Test
@@ -103,22 +115,20 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyScroll() throws Exception {
-        measureTime("Test.verifyScroll",
-            () -> FXTesting.verifyAndRun(this, currentStage, () -> {
-                lookup(Canvas.class).forEach(t -> {
-                    moveTo(t);
-                    scroll(2, VerticalDirection.DOWN);
-                    scroll(2, VerticalDirection.UP);
-                });
-                lookup(CheckBox.class).forEach(this::clickOn);
-                lookup(ComboBox.class).forEach(e -> {
-                    for (int i = 0; i < 5 && i < e.getItems().size(); i++) {
-                        int j = i;
-                        interact(() -> e.getSelectionModel().select(j));
-                    }
-                });
-            }, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class,
-                PopulacionalPyramidExample.class));
+        measureTime("Test.verifyScroll", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
+            lookup(Canvas.class).forEach(t -> {
+                moveTo(t);
+                scroll(2, VerticalDirection.DOWN);
+                scroll(2, VerticalDirection.UP);
+            });
+            lookup(CheckBox.class).forEach(this::clickOn);
+            lookup(ComboBox.class).forEach(e -> {
+                for (int i = 0; i < 5 && i < e.getItems().size(); i++) {
+                    int j = i;
+                    interact(() -> e.getSelectionModel().select(j));
+                }
+            });
+        }, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class, PopulacionalPyramidExample.class));
 
     }
 
@@ -139,6 +149,19 @@ public class FXEngineTest extends AbstractTestExecution {
             clickOn(t);
             write("new york ");
         }));
+    }
+
+    @Test
+    public void verifyWorkingListsViews() throws Exception {
+        show(WorkingListsViews.class);
+        List<Node> lookup = lookup(ListView.class).stream().collect(Collectors.toList());
+        List<Button> buttons = lookup(Button.class).stream().collect(Collectors.toList());
+        for (int i = 0; i < lookup.size(); i++) {
+            Node queryAs = from(lookup.get(i)).lookup(ListCell.class::isInstance).query();
+            ignore(() -> clickOn(queryAs));
+            clickOn(buttons.get(i));
+        }
+
     }
 
 }

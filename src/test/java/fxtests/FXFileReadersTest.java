@@ -20,12 +20,14 @@ import ex.j9.ch4.PrimaryColor;
 import ex.j9.ch4.RectangleCh4;
 import extract.ExcelService;
 import extract.WordService;
+import gaming.ex01.SnakeSquare;
 import gaming.ex16.MadEdge;
 import gaming.ex16.MadEdgeDistance;
 import graphs.EdgeElement;
 import graphs.entities.EdgeDistancePack;
 import graphs.entities.Linha;
 import graphs.entities.Ponto;
+import japstudy.JapaneseLesson;
 import japstudy.LessonPK;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,7 +60,6 @@ public class FXFileReadersTest extends ApplicationTest {
     @Test
     public void testCSVUtils() {
         measureTime("CSVUtils.splitFile", () -> CSVUtils.splitFile(getOutFile("WDIData.csv").getAbsolutePath(), 3));
-
         measureTime("CSVUtils.splitFile",
             () -> CSVUtils.splitFile(getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3));
     }
@@ -120,6 +121,7 @@ public class FXFileReadersTest extends ApplicationTest {
                 campos, ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
 
     }
+
     @Test
     public void testExcelService3() {
         String arquivo = "anvisa2208.xlsx";
@@ -163,7 +165,6 @@ public class FXFileReadersTest extends ApplicationTest {
             () -> crackImage(createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
     }
 
-
     @Test
     public void testLeitorArquivos() {
 
@@ -198,15 +199,12 @@ public class FXFileReadersTest extends ApplicationTest {
         });
     }
 
-
     @Test
     public void testPoints() {
         measureTime("Test.equals", () -> {
-            List<Object> equalsTest = Arrays.asList(new PointCh4(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,
-                new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5),
-                new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(), new Contest(), new LessonPK(),
-                new MadEdge(null, null), new MadEdgeDistance(null, 2F));
-            equalsTest.forEach(e -> equalsTest.contains(e));
+            Set<Object> equalsTest = new LinkedHashSet<>(getList());
+            Set<Object> equalsTest2 = new LinkedHashSet<>(getList());
+            equalsTest.forEach(e -> equalsTest2.contains(e));
         });
     }
 
@@ -220,6 +218,13 @@ public class FXFileReadersTest extends ApplicationTest {
         File file = Word2VecExample.getPathToSave();
         deleteIfExists(file.toPath());
         measureTime("Word2VecExample.createWord2Vec", Word2VecExample::createWord2Vec);
+    }
+
+    private List<Object> getList() {
+        return Arrays.asList(new PointCh4(2, 4), new LabeledPoint("Oi", 3, 5),
+            PrimaryColor.RED, new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5),
+            new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(), new Contest(), new LessonPK(),
+            new MadEdge(null, null), new MadEdgeDistance(null, 2F), new SnakeSquare(), new JapaneseLesson());
     }
 
 }

@@ -34,16 +34,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
 
     public SimpleDialogBuilder bindWindow(Node node1) {
         node = node1;
-        Window window = node1.getScene().getWindow();
-        if (window == null) {
-            return this;
-        }
-
-        window.showingProperty().addListener((ob, old, n) -> {
-            if (!n) {
-                Platform.runLater(stage::close);
-            }
-        });
+        bindWindow(stage, node1);
         return this;
     }
 
@@ -112,6 +103,20 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     public SimpleDialogBuilder text(String text) {
         group.getChildren().add(new Text(text));
         return this;
+    }
+
+    public static Stage bindWindow(Stage stage, Node node1) {
+        Window window = node1.getScene().getWindow();
+        if (window == null) {
+            return stage;
+        }
+
+        window.showingProperty().addListener((ob, old, n) -> {
+            if (!n) {
+                Platform.runLater(stage::close);
+            }
+        });
+        return stage;
     }
 
     public static void closeStage(EventTarget button) {

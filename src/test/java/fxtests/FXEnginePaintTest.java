@@ -113,9 +113,6 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         }
     }
 
-    private String getRandomString() {
-        return Long.toString(Math.abs(random.nextLong()) + 1000, Character.MAX_RADIX).substring(0, 4);
-    }
 
 
 

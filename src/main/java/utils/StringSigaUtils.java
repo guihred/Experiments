@@ -33,7 +33,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String codificar(String nome) {
-        return get(() -> URLEncoder.encode(nome, "UTF-8"), nome);
+        return get(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
 
     public static String corrigirProblemaEncoding(String nomeEncoding) {
@@ -45,7 +45,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String decodificar(String nome) {
-        return get(() -> URLDecoder.decode(nome, "UTF-8"), nome);
+        return get(() -> URLDecoder.decode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
 
     public static String fixEncoding(String latin1) {
@@ -206,7 +206,8 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String removerDiacritico(String string) {
-        return Normalizer.normalize(string, Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return Normalizer.normalize(Objects.toString(string, ""), Form.NFD)
+            .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 
     public static String retirarMascara(String valor) {
@@ -235,8 +236,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static Integer toInteger(String numero) {
-        String replaceAll = numero.replaceAll("\\D", "");
-        return Integer.valueOf(replaceAll);
+        return get(() -> Integer.valueOf(numero.replaceAll("\\D", "")), 0);
     }
 
     public static <T extends Comparable<?>> Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,

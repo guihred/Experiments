@@ -53,13 +53,11 @@ public abstract class BaseEntity implements Serializable, HasLogging {
     }
 
     public static Object getFieldValue(Object ob, Field e) {
-        try {
+        return SupplierEx.get(() -> {
             e.setAccessible(true);
             return e.get(ob);
-        } catch (Exception e1) {
-            HasLogging.log(1).error("", e1);
-        }
-        return null;
+        });
+
     }
 
     public static Object mapProperty(Object e) {

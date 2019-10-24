@@ -42,7 +42,9 @@ public class DataframeBuilder extends DataframeML {
 
 	public static DataframeML build(File csvFile) {
 		DataframeML dataframeML = new DataframeML();
-		DataframeUtils.readCSV(csvFile, dataframeML);
+        if (csvFile.exists()) {
+            DataframeUtils.readCSV(csvFile, dataframeML);
+        }
 		return dataframeML;
 	}
 	public static DataframeML build(String csvFile) {

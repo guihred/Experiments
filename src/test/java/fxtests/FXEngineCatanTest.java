@@ -229,8 +229,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     }
 
     private CatanAction getRandomAction() {
-        CatanAction[] values = CatanAction.values();
-        return values[random.nextInt(values.length)];
+        return randomEnum(CatanAction.class);
     }
 
     private boolean makeDecision(CatanAction predict, List<EdgeCatan> allEdge, List<Village> allVillages,

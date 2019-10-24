@@ -10,7 +10,6 @@ import extract.FilesComparatorHelper;
 import extract.Music;
 import extract.MusicReader;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -36,10 +35,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.HasLogging;
-import utils.PredicateEx;
-import utils.ResourceFXUtils;
-import utils.StageHelper;
+import utils.*;
 
 public class FilesComparator extends Application {
 
@@ -111,7 +107,6 @@ public class FilesComparator extends Application {
                 c.getStyleClass().add(itemClass);
             }).onDoubleClick(e -> MusicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
         table1.setId(nome);
-//        new 
         directoryMap.put(nome, dir);
         Button files1 = StageHelper.selectDirectory(nome, "Carregar Pasta de Músicas",
             selectedFile -> addSongsToTable(table1, selectedFile));
@@ -180,12 +175,10 @@ public class FilesComparator extends Application {
         for (File file : selectedItems) {
             File selectedItem = file;
             if (selectedItem != null) {
-                try {
+                RunnableEx.run(() -> {
                     Files.delete(selectedItem.toPath());
                     table1.getItems().remove(selectedItem);
-                } catch (IOException e1) {
-                    LOG.error("", e1);
-                }
+                });
             }
         }
         updateCells(table1);

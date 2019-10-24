@@ -11,6 +11,8 @@ import fxsamples.MoleculeSampleApp;
 import fxsamples.RaspiCycle;
 import fxsamples.SimpleScene3D;
 import gaming.ex01.SnakeLauncher;
+import gaming.ex02.MemoryLauncher;
+import gaming.ex02.MemorySquare;
 import gaming.ex04.TronLauncher;
 import gaming.ex05.TetrisLauncher;
 import gaming.ex07.MazeLauncher;
@@ -18,6 +20,7 @@ import gaming.ex09.Maze3DLauncher;
 import gaming.ex10.MinesweeperLauncher;
 import gaming.ex10.MinesweeperSquare;
 import gaming.ex11.DotsSquare;
+import gaming.ex12.PlatformMain;
 import gaming.ex14.PacmanLauncher;
 import gaming.ex15.RubiksCubeLauncher;
 import gaming.ex17.PuzzleLauncher;
@@ -43,6 +46,16 @@ import utils.RunnableEx;
 public class FXEngineGamingTest extends AbstractTestExecution {
 
     @Test
+    public void verifyMemoryLauncher() throws Exception {
+        show(MemoryLauncher.class);
+        Set<MemorySquare> lookup = lookup(MemorySquare.class);
+        for (int i = 0; i < 5; i++) {
+            MemorySquare randomItem = randomItem(lookup);
+            ignore(() -> clickOn(randomItem));
+        }
+    }
+
+    @Test
     public void verifyMinesweeper() throws Exception {
         show(MinesweeperLauncher.class);
         List<MinesweeperSquare> queryAll = lookup(MinesweeperSquare.class).parallelStream()
@@ -51,9 +64,9 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         for (int i = 0; i < 30; i++) {
             Node next = queryAll.get(i);
             ignore(() -> clickOn(next));
-			if (tryClickButtons()) {
-				return;
-			}
+            if (tryClickButtons()) {
+                return;
+            }
         }
     }
 
@@ -64,7 +77,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             moveBy(-1000, 0);
             moveBy(1000, 0);
             type(W, 20);
-			clickOn(".root");
+            clickOn(".root");
             for (KeyCode keyCode : Arrays.asList(W, S, A, DOWN, D, UP, R, L, U, D, B, F, Z, X, LEFT, RIGHT)) {
                 press(keyCode).release(keyCode);
                 press(CONTROL, keyCode).release(keyCode);
@@ -75,10 +88,12 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         }, RubiksCubeLauncher.class, TetrisLauncher.class, SimpleScene3D.class, Maze3DLauncher.class,
             Labyrinth3DMouseControl.class, TronLauncher.class, JewelViewer.class, MoleculeSampleApp.class,
             DeathStar.class, Chart3dSampleApp.class, PacmanLauncher.class, RoundMazeLauncher.class, MazeLauncher.class,
-            Labyrinth3DCollisions.class, Labyrinth3D.class, Labyrinth2D.class, Labyrinth3DWallTexture.class,
+            Labyrinth3DCollisions.class, PlatformMain.class, Labyrinth3D.class, Labyrinth2D.class,
+            Labyrinth3DWallTexture.class,
             RaspiCycle.class);
         interactNoWait(currentStage::close);
     }
+
 
     @Test
     public void verifyPong() throws Exception {
@@ -125,8 +140,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             .collect(Collectors.toSet());
         for (Node next : queryAll) {
             drag(next, MouseButton.PRIMARY);
-            List<NumberButton> collect = lookup(NumberButton.class).stream()
-                .collect(Collectors.toList());
+            List<NumberButton> collect = lookup(NumberButton.class).stream().collect(Collectors.toList());
             NumberButton randomItem = randomItem(collect);
             moveTo(randomItem);
             drop();

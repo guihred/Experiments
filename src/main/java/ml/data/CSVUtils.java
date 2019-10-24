@@ -26,9 +26,9 @@ public class CSVUtils {
     private static final char DEFAULT_QUOTE = '"';
     private char separators;
     private char customQuote;
-    private boolean inQuotes = false;
-    private boolean startCollectChar = false;
-    private boolean doubleQuotesInColumn = false;
+    private boolean inQuotes;
+    private boolean startCollectChar;
+    private boolean doubleQuotesInColumn;
 
     public CSVUtils(char separators, char customQuote) {
         this.separators = separators;
@@ -139,24 +139,24 @@ public class CSVUtils {
     public static void splitFile(String csvFile, int columnIndex) {
         Map<String, Writer> writersBytype = new HashMap<>();
         File source = Paths.get(csvFile).toFile();
-        try (Scanner scanner = new Scanner(source, StandardCharsets.UTF_8.displayName())) {
-            String firstLine = null;
-            while (scanner.hasNext()) {
-                String nextLine = scanner.nextLine();
-                List<String> parseLine = CSVUtils.parseLine(nextLine);
-                if (parseLine.size() > columnIndex) {
-                    if (firstLine == null) {
-                        firstLine = nextLine;
+        RunnableEx.run(() -> {
+            try (Scanner scanner = new Scanner(source, StandardCharsets.UTF_8.displayName())) {
+                String firstLine = null;
+                while (scanner.hasNext()) {
+                    String nextLine = scanner.nextLine();
+                    List<String> parseLine = CSVUtils.parseLine(nextLine);
+                    if (parseLine.size() > columnIndex) {
+                        if (firstLine == null) {
+                            firstLine = nextLine;
+                        }
+                        final String fline = firstLine;
+                        String string = parseLine.get(columnIndex);
+                        writersBytype.computeIfAbsent(string, makeFunction(s -> newWrite(source, fline, s)))
+                            .append(nextLine + "\n");
                     }
-                    final String fline = firstLine;
-                    String string = parseLine.get(columnIndex);
-                    writersBytype.computeIfAbsent(string, makeFunction(s -> newWrite(source, fline, s)))
-                        .append(nextLine + "\n");
                 }
             }
-        } catch (Exception e) {
-            LOGGER.error("ERROR ", e);
-        }
+        });
     }
 
     private static Writer createWriter(String csvFile) {

@@ -1,6 +1,7 @@
 package contest;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static simplebuilder.SimpleDialogBuilder.bindWindow;
 
 import contest.db.ContestQuestion;
 import extract.PdfUtils;
@@ -22,6 +23,7 @@ import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -144,11 +146,10 @@ public final class IadesHelper {
         return path.toFile().getName().contains(number) && path.toFile().getName().endsWith(".pdf");
     }
 
-    public static void saveContestValues(Property<Concurso> concurso, String vaga) {
+    public static void saveContestValues(Property<Concurso> concurso, String vaga, Node vagasView) {
         if (vaga == null) {
             return;
         }
-
         Concurso value = concurso.getValue();
         ObservableList<Entry<String, String>> linksFound = value.getLinksFound();
         String number = Objects.toString(vaga).replaceAll("\\D", "");
@@ -164,11 +165,11 @@ public final class IadesHelper {
             return;
         }
         File file2 = getPDF(number, file);
-        getContestQuestions(file2, entities -> saveQuestions(concurso, vaga, linksFound, number, entities));
+        getContestQuestions(file2, entities -> saveQuestions(concurso, vaga, linksFound, number, entities, vagasView));
     }
 
     public static void saveQuestions(Property<Concurso> concurso, String vaga,
-        ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities) {
+        ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities, Node vagasView) {
         entities.getContest().setName(concurso.getValue().getNome());
         entities.getContest().setJob(vaga);
         entities.saveAll();
@@ -200,7 +201,8 @@ public final class IadesHelper {
             contestQuestion.setAnswer(answers.charAt(i));
         }
         entities.saveAll();
-        Platform.runLater(() -> new ContestApplication(entities).start(new Stage()));
+        Platform.runLater(
+            () -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
     }
 
 }

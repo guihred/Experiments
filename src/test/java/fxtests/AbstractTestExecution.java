@@ -43,6 +43,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         currentStage.close();
     }
 
+    protected String getRandomString() {
+        return Long.toString(Math.abs(random.nextLong()) + 1000, Character.MAX_RADIX).substring(0, 4);
+    }
+
     protected <M extends Node> Set<M> lookup(Class<M> cl) {
         return lookup(e -> cl.isInstance(e)).queryAllAs(cl);
     }
@@ -55,9 +59,14 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         moveBy(randomNumber(bound), randomNumber(bound));
     }
 
+    protected <T extends Enum<?>> T randomEnum(Class<T> cl) {
+        T[] values = cl.getEnumConstants();
+        return values[random.nextInt(values.length)];
+    }
     protected <T> T randomItem(Collection<T> bound) {
         return randomItem(bound.stream().collect(Collectors.toList()));
     }
+
     protected <T> T randomItem(List<T> bound) {
         return bound.get(random.nextInt(bound.size()));
     }
