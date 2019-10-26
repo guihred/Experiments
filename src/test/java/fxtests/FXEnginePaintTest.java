@@ -85,11 +85,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             moveRandom(bound);
             drop();
             for (ComboBox<?> node : lookup("#tools .combo-box").queryAllAs(ComboBox.class)) {
-                ObservableList<?> items = node.getItems();
-                for (int i = 0; i < 10 && i < items.size(); i++) {
-                    int j = i;
-                    interact(() -> node.getSelectionModel().select(j));
-                }
+                selectComboItems(node, 10);
             }
             Set<Node> queryAll2 = lookup("#tools .toggle-button").queryAll();
             queryAll2.forEach(e -> {
@@ -137,14 +133,10 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 moveBy(bound2 / 2, bound2 / 2);
                 drop();
                 getLogger().info("FIRING {}", menu.getId());
-                if (i == 0 && items.size() == j + 1) {
+                if (i == 0 && items.size() == j + 1 || i == 0 && j > 0 && items.size() != j + 1) {
                     new Thread(this::typeInParallel).start();
                 }
                 interact(menu::fire);
-                if (i == 0 && j > 0 && items.size() != j + 1) {
-                    new Thread(this::typeInParallel).start();
-                    continue;
-                }
                 lookup(".text-field").queryAll().forEach(e -> {
                     clickOn(e);
                     eraseText(3);

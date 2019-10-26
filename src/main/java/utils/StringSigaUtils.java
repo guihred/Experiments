@@ -236,7 +236,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static Integer toInteger(String numero) {
-        return get(() -> Integer.valueOf(numero.replaceAll("\\D", "")), 0);
+        return SupplierEx.getIgnore(() -> Integer.valueOf(Objects.toString(numero, "").replaceAll("\\D", "")), 0);
     }
 
     public static <T extends Comparable<?>> Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,

@@ -29,6 +29,19 @@ public interface SupplierEx<T> {
         }
     }
 
+    static <A> A getIgnore(SupplierEx<A> run, A orElse) {
+        try {
+            A a = run.get();
+            if (a == null) {
+                return orElse;
+            }
+            return a;
+        } catch (Exception e) {
+            HasLogging.log(1).trace("", e);
+            return orElse;
+        }
+    }
+
     static <A> Supplier<A> makeSupplier(SupplierEx<A> run) {
         return () -> {
             try {

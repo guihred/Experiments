@@ -113,10 +113,6 @@ public class PlayingAudio extends Application {
             });
     }
 
-    /**
-     * @param args the command line arguments
-     */
-
     @Override
     public void start(Stage primaryStage) {
         mainStage = primaryStage;

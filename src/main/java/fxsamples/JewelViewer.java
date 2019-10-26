@@ -17,28 +17,24 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
+import utils.Xform;
 
 public class JewelViewer extends Application {
     private static final Logger LOGGER = HasLogging.log();
     private static final Color JEWEL_COLOR = Color.BURLYWOOD;
     private static final Color LIGHT_COLOR = Color.rgb(125, 125, 125);
-    public static final String ORIGINAL_FILENAME = ResourceFXUtils.toFullPath("original.stl");
-
-    private static final double MODEL_SCALE_FACTOR = 4;
-
-    private static final double MODEL_X_OFFSET = 0; // standard
-    private static final double MODEL_Y_OFFSET = 0; // standard
-
+    private static final String ORIGINAL_FILENAME = "original.stl";
+    private static final double MODEL_SCALE_FACTOR = 16;
     private static final double VIEWPORT_SIZE = 800;
-
     private static final double CAMERA_MODIFIER = 50.0;
     private static final double CAMERA_QUANTITY = 10.0;
 
     private static final Color AMBIENT_COLOR = Color.grayRgb(80);
     private PerspectiveCamera camera;
-    private PointLight pointLight;
 
     private Group root;
+    private Xform obj3d;
 
     @Override
     public void start(Stage primaryStage) {
@@ -46,8 +42,6 @@ public class JewelViewer extends Application {
         group.setScaleX(2);
         group.setScaleY(2);
         group.setScaleZ(2);
-        group.setTranslateX(50);
-        group.setTranslateY(50);
 
         Scene scene = new Scene(group, VIEWPORT_SIZE, VIEWPORT_SIZE, true);
         scene.setFill(Color.grayRgb(10));
@@ -55,9 +49,9 @@ public class JewelViewer extends Application {
         scene.setOnMouseClicked(event -> {
             Node picked = event.getPickResult().getIntersectedNode();
             if (null != picked) {
-                double scalar = 2;
-                if (picked.getScaleX() > 1) {
-                    scalar = 1;
+                double scalar = MODEL_SCALE_FACTOR;
+                if (picked.getScaleX() > MODEL_SCALE_FACTOR / 2) {
+                    scalar = MODEL_SCALE_FACTOR / 2;
                 }
                 picked.setScaleX(scalar);
                 picked.setScaleY(scalar);
@@ -86,27 +80,7 @@ public class JewelViewer extends Application {
     }
 
     private Group buildScene() {
-        MeshView meshViews = loadMeshViews();
-        meshViews.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
-        meshViews.setTranslateY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
-        meshViews.setTranslateZ(VIEWPORT_SIZE / 2);
-        meshViews.setScaleX(MODEL_SCALE_FACTOR);
-        meshViews.setScaleY(MODEL_SCALE_FACTOR);
-        meshViews.setScaleZ(MODEL_SCALE_FACTOR);
-        PhongMaterial sample = new PhongMaterial(JEWEL_COLOR);
-        sample.setSpecularColor(LIGHT_COLOR);
-        sample.setSpecularPower(16);
-        meshViews.setMaterial(sample);
-        meshViews.getTransforms().setAll(new Rotate(0, Rotate.Z_AXIS), new Rotate(-90, Rotate.X_AXIS));
-        pointLight = new PointLight(LIGHT_COLOR);
-        pointLight.setTranslateY(VIEWPORT_SIZE / 2);
-        pointLight.setTranslateZ(VIEWPORT_SIZE / 2);
-        pointLight.setTranslateX(VIEWPORT_SIZE * 3 / 4);
-        AmbientLight ambient = new AmbientLight(AMBIENT_COLOR);
-        root = new Group(meshViews);
-        root.getChildren().add(pointLight);
-        root.getChildren().add(ambient);
-
+        loadMeshViews(ResourceFXUtils.toFile(ORIGINAL_FILENAME));
         return root;
     }
 
@@ -117,17 +91,23 @@ public class JewelViewer extends Application {
         KeyCode keycode = event.getCode();
         // Step 2c: Add Zoom controls
         if (keycode == KeyCode.W) {
-            camera.setTranslateZ(camera.getTranslateZ() + change);
+            obj3d.setRx(obj3d.getRx() - change);
         }
         if (keycode == KeyCode.S) {
-            camera.setTranslateZ(camera.getTranslateZ() - change);
+            obj3d.setRx(obj3d.getRx() + change);
         }
         // Step 2d: Add Strafe controls
+        if (keycode == KeyCode.Z) {
+            obj3d.setRz(obj3d.getRz() - change);
+        }
+        if (keycode == KeyCode.X) {
+            obj3d.setRz(obj3d.getRz() + change);
+        }
         if (keycode == KeyCode.A) {
-            camera.setRotate(camera.getRotate() - 1);
+            obj3d.setRy(obj3d.getRy() - change);
         }
         if (keycode == KeyCode.D) {
-            camera.setRotate(camera.getRotate() + 1);
+            obj3d.setRy(obj3d.getRy() + change);
         }
     }
 
@@ -161,30 +141,33 @@ public class JewelViewer extends Application {
 
     private void loadMeshViews(File file) {
         Mesh mesh = ResourceFXUtils.importStlMesh(file);
-        MeshView meshViews = new MeshView(mesh);
-        meshViews.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
-        meshViews.setTranslateZ(VIEWPORT_SIZE / 2);
-        meshViews.setTranslateY(VIEWPORT_SIZE / 2 + MODEL_Y_OFFSET);
-        meshViews.setScaleX(MODEL_SCALE_FACTOR);
-        meshViews.setScaleZ(MODEL_SCALE_FACTOR);
-        meshViews.setScaleY(MODEL_SCALE_FACTOR);
-
+        MeshView meshViews1 = new MeshView(mesh);
+        meshViews1.setScaleX(MODEL_SCALE_FACTOR);
+        meshViews1.setScaleY(MODEL_SCALE_FACTOR);
+        meshViews1.setScaleZ(MODEL_SCALE_FACTOR);
         PhongMaterial sample = new PhongMaterial(JEWEL_COLOR);
-        sample.setSpecularPower(16);
         sample.setSpecularColor(LIGHT_COLOR);
-        meshViews.setMaterial(sample);
-
-        meshViews.getTransforms().setAll(new Rotate(0, Rotate.Z_AXIS), new Rotate(-90, Rotate.X_AXIS));
-
-        pointLight = new PointLight(LIGHT_COLOR);
-        pointLight.setTranslateX(VIEWPORT_SIZE * 3 / 4);
-        pointLight.setTranslateY(VIEWPORT_SIZE / 2);
-        pointLight.setTranslateZ(VIEWPORT_SIZE / 2);
-
-        AmbientLight ambient = new AmbientLight(AMBIENT_COLOR);
-        root.getChildren().clear();
+        sample.setSpecularPower(16);
+        meshViews1.setMaterial(sample);
+        obj3d = new Xform(meshViews1);
+        obj3d.setTx(VIEWPORT_SIZE / 2);
+        obj3d.setTy(VIEWPORT_SIZE / 2);
+        if (root == null) {
+            root = new Group(obj3d);
+        } else {
+            root.getChildren().clear();
+            root.getChildren().add(obj3d);
+        }
+        PointLight pointLight = new PointLight(LIGHT_COLOR);
+        Rotate e = new Rotate();
+        e.setAxis(Rotate.Y_AXIS);
+        e.setPivotX(VIEWPORT_SIZE / 4);
+        e.setPivotY(VIEWPORT_SIZE / 4);
+        pointLight.getTransforms().add(e);
+        pointLight.setTranslateX(VIEWPORT_SIZE / 4);
+        pointLight.setTranslateY(VIEWPORT_SIZE / 4);
         root.getChildren().add(pointLight);
-        root.getChildren().add(ambient);
+        root.getChildren().add(new AmbientLight(AMBIENT_COLOR));
 
     }
 
@@ -194,16 +177,11 @@ public class JewelViewer extends Application {
     }
 
     private void tryLoadMeshViews(String url) {
-        try {
-            loadMeshViews(new File(new URL(url).getFile()));
-        } catch (Exception e) {
-            LOGGER.error("USELESS EXCEPTION", e);
-        }
+        RunnableEx.run(() -> loadMeshViews(new File(new URL(url).getFile())));
     }
 
-    public  static MeshView loadMeshViews() {
-        Mesh mesh = ResourceFXUtils.importStlMesh(ORIGINAL_FILENAME);
-        return new MeshView(mesh);
+    public static MeshView loadMeshViews() {
+        return new MeshView(ResourceFXUtils.importStlMesh(ORIGINAL_FILENAME));
     }
 
     public static void main(String[] args) {

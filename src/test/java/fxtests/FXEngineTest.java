@@ -6,11 +6,11 @@ import static utils.RunnableEx.ignore;
 import ethical.hacker.EthicalHackApp;
 import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
-import fxsamples.AnchorCircle;
-import fxsamples.LineManipulator;
-import fxsamples.PhotoViewer;
-import fxsamples.WorkingListsViews;
+import fxpro.ch06.ResponsiveUIApp;
+import fxpro.ch06.ThreadInformationApp;
+import fxsamples.*;
 import fxsamples.person.PersonTableController;
+import fxsamples.person.WorkingWithTableView;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -34,7 +34,7 @@ import utils.ConsumerEx;
 public class FXEngineTest extends AbstractTestExecution {
 
     @Test
-    public void verifyButtons() throws Exception {
+    public void verifyButtons() {
         measureTime("Test.testButtons",
             () -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
                 sleep(1000);
@@ -45,7 +45,7 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyColorChooser() throws Exception {
+    public void verifyColorChooser() {
         show(ColorChooser.class);
 
         List<Node> queryAll = lookup(".slider").queryAll().stream().collect(Collectors.toList());
@@ -62,7 +62,7 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyEthicalHack() throws Exception {
+    public void verifyEthicalHack() {
         show(EthicalHackApp.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
             .forEach(ConsumerEx.ignore(this::clickOn));
@@ -70,13 +70,13 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyHistogramExample() throws Exception {
+    public void verifyHistogramExample() {
         show(HistogramExample.class);
-        lookup(CheckBox.class).forEach(this::clickOn);
+        lookup(CheckBox.class).forEach(ConsumerEx.ignore(this::clickOn));
     }
 
     @Test
-    public void verifyImageCracker() throws Exception {
+    public void verifyImageCracker() {
         ImageCrackerApp show = show(ImageCrackerApp.class);
         show.setClickable(false);
         Platform.runLater(show::loadURL);
@@ -84,7 +84,13 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyLineManipulator() throws Exception {
+    public void verifyInlineModelViewer() {
+        show(InlineModelViewer.class);
+        lookup(CheckBox.class).forEach(this::clickOn);
+    }
+
+    @Test
+    public void verifyLineManipulator() {
         show(LineManipulator.class);
         lookup(AnchorCircle.class).forEach(e -> {
             drag(e, MouseButton.PRIMARY);
@@ -94,27 +100,33 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyMapGraph() throws Exception {
+    public void verifyMapGraph() {
         show(MapGraph.class);
         SVGPath randomItem = randomItem(lookup(SVGPath.class));
         ignore(() -> moveTo(randomItem));
     }
 
     @Test
-    public void verifyPersonTableController() throws Exception {
+    public void verifyPersonTableController() {
         show(PersonTableController.class);
         clickOn(lookupFirst(TextField.class));
         type(typeText(getRandomString()));
     }
 
     @Test
-    public void verifyPhotoViewer() throws Exception {
+    public void verifyPhotoViewer() {
         show(PhotoViewer.class);
         tryClickButtons();
     }
 
     @Test
-    public void verifyScroll() throws Exception {
+    public void verifyResponsiveUIApp() {
+        show(ResponsiveUIApp.class);
+        tryClickButtons();
+    }
+
+    @Test
+    public void verifyScroll() {
         measureTime("Test.verifyScroll", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
             lookup(Canvas.class).forEach(t -> {
                 moveTo(t);
@@ -122,18 +134,13 @@ public class FXEngineTest extends AbstractTestExecution {
                 scroll(2, VerticalDirection.UP);
             });
             lookup(CheckBox.class).forEach(this::clickOn);
-            lookup(ComboBox.class).forEach(e -> {
-                for (int i = 0; i < 5 && i < e.getItems().size(); i++) {
-                    int j = i;
-                    interact(() -> e.getSelectionModel().select(j));
-                }
-            });
+            lookup(ComboBox.class).forEach(e -> selectComboItems(e, 5));
         }, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class, PopulacionalPyramidExample.class));
 
     }
 
     @Test
-    public void verifySngpcViewer() throws Exception {
+    public void verifySngpcViewer() {
         show(SngpcViewer.class);
         sleep(500);
         targetPos(Pos.TOP_CENTER);
@@ -143,7 +150,23 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyWordSuggetion() throws Exception {
+    public void verifyThreadInformationApp() {
+        show(ThreadInformationApp.class);
+        tryClickButtons();
+        clickOn(randomItem(lookup(ListCell.class)));
+    }
+
+    @Test
+    public void verifyWordSearchApp () {
+        show(WordSearchApp.class);
+        for (ComboBox<?> e : lookup(ComboBox.class)) {
+            selectComboItems(e, 5);
+        }
+        tryClickButtons();
+    }
+
+    @Test
+    public void verifyWordSuggetion() {
         show(WordSuggetionApp.class);
         lookup(".text-field").queryAll().forEach(ConsumerEx.makeConsumer(t -> {
             clickOn(t);
@@ -152,7 +175,7 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyWorkingListsViews() throws Exception {
+    public void verifyWorkingListsViews() {
         show(WorkingListsViews.class);
         List<Node> lookup = lookup(ListView.class).stream().collect(Collectors.toList());
         List<Button> buttons = lookup(Button.class).stream().collect(Collectors.toList());
@@ -161,6 +184,12 @@ public class FXEngineTest extends AbstractTestExecution {
             ignore(() -> clickOn(queryAs));
             clickOn(buttons.get(i));
         }
+    }
+
+    @Test
+    public void verifyWorkingWithTableView() {
+        show(WorkingWithTableView.class);
+        clickOn(randomItem(lookup(ListCell.class)));
 
     }
 

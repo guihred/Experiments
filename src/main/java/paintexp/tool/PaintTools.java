@@ -22,7 +22,7 @@ public enum PaintTools {
 	CIRCLE(new EllipseTool()),
 	PICTURE(new PictureTool()),
 	BLUR(new BlurTool()),
-	BORDER(new BorderTool()),
+    BORDER(new BorderTool())
     ;
 
     private PaintTool tool = new DummyTool();

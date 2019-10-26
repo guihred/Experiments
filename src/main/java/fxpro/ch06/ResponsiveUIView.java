@@ -1,7 +1,6 @@
 package fxpro.ch06;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -45,7 +44,7 @@ final class ResponsiveUIView {
     }
 
     private void hookupEvents(ResponsiveUIModel model) {
-        changeFillButton.setOnAction((ActionEvent actionEvent) -> {
+        changeFillButton.setOnAction(actionEvent -> {
             final Paint fillPaint = model.getFillPaint().get();
             model.getFillPaint().set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
             new Thread(RunnableEx.make(() -> {

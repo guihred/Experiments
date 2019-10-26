@@ -24,6 +24,7 @@ import gaming.ex01.SnakeSquare;
 import gaming.ex16.MadEdge;
 import gaming.ex16.MadEdgeDistance;
 import graphs.EdgeElement;
+import graphs.Vertex;
 import graphs.entities.EdgeDistancePack;
 import graphs.entities.Linha;
 import graphs.entities.Ponto;
@@ -204,13 +205,14 @@ public class FXFileReadersTest extends ApplicationTest {
         measureTime("Test.equals", () -> {
             Set<Object> equalsTest = new LinkedHashSet<>(getList());
             Set<Object> equalsTest2 = new LinkedHashSet<>(getList());
-            equalsTest.forEach(e -> equalsTest2.contains(e));
+            equalsTest.forEach(e -> equalsTest2.stream().anyMatch(a -> Objects.equals(a, e)));
         });
     }
 
     @Test
     public void testPortServices() {
         measureTime("PortServices.loadServiceNames", () -> PortServices.loadServiceNames());
+        measureTime("PortServices.getServiceByPort", () -> PortServices.getServiceByPort(80));
     }
 
     @Test
@@ -221,9 +223,11 @@ public class FXFileReadersTest extends ApplicationTest {
     }
 
     private List<Object> getList() {
+        Vertex v = new Vertex(5);
         return Arrays.asList(new PointCh4(2, 4), new LabeledPoint("Oi", 3, 5),
             PrimaryColor.RED, new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5),
-            new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(), new Contest(), new LessonPK(),
+            new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(v, null, 2), new EdgeElement(v, v, 5),
+            new Contest(), new LessonPK(),
             new MadEdge(null, null), new MadEdgeDistance(null, 2F), new SnakeSquare(), new JapaneseLesson());
     }
 

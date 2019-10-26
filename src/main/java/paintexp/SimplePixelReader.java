@@ -23,9 +23,8 @@ public final class SimplePixelReader implements PixelReader {
 	}
 
 	@Override
-	public int getArgb(int x, int y) {
+    public int getArgb(int x, int y) {
 		return PixelHelper.toArgb(onlyColor);
-
 	}
 
 	@Override

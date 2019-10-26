@@ -6,7 +6,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -17,7 +19,10 @@ import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.testfx.framework.junit.ApplicationTest;
-import utils.*;
+import utils.ConsumerEx;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
@@ -26,7 +31,6 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     private final Logger logger = HasLogging.super.getLogger();
 
     protected Random random = new Random();
-    private Map<String, Object> initialStage;
 
     @Override
     public Logger getLogger() {
@@ -37,7 +41,6 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
         currentStage = stage;
-        initialStage = ClassReflectionUtils.getFieldMap(stage, Stage.class);
         currentStage.setX(0);
         currentStage.setY(0);
     }
@@ -75,6 +78,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         T[] values = cl.getEnumConstants();
         return values[random.nextInt(values.length)];
     }
+
     protected <T> T randomItem(Collection<T> bound) {
         return randomItem(bound.stream().collect(Collectors.toList()));
     }
@@ -85,6 +89,13 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected int randomNumber(int bound) {
         return random.nextInt(bound) - bound / 2;
+    }
+
+    protected void selectComboItems(ComboBox<?> e, int max) {
+        for (int i = 0; i < max && i < e.getItems().size(); i++) {
+            int j = i;
+            interact(() -> e.getSelectionModel().select(j));
+        }
     }
 
     protected <T extends Application> T show(Class<T> c) {
@@ -100,21 +111,37 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     protected <T extends Application> void show(T application) {
-        interactNoWait(RunnableEx.make(() -> {
+        try {
             resetStage();
             logger.info("SHOWING {}", application.getClass().getSimpleName());
-            application.start(currentStage);
-        }, e -> logger.error(String.format("ERRO IN %s", application), e)));
+            interactNoWait(RunnableEx.make(() -> application.start(currentStage)));
+        } catch (Exception e) {
+            throw new RuntimeIOException(String.format("ERRO IN %s", application), e);
+        }
     }
 
-	protected boolean tryClickButtons() {
+    protected boolean tryClickButtons() {
         Set<Node> queryAll = lookup(".button").queryAll();
-		queryAll.forEach(ConsumerEx.ignore(this::clickOn));
-		return !queryAll.isEmpty();
+        queryAll.forEach(ConsumerEx.ignore(this::clickOn));
+        return !queryAll.isEmpty();
     }
 
     private void resetStage() {
-        initialStage.forEach((f, v) -> ClassReflectionUtils.invoke(currentStage, f, v));
+        Platform.runLater(() -> {
+            currentStage.setResizable(true);
+            currentStage.setMaximized(false);
+            currentStage.setAlwaysOnTop(false);
+            currentStage.setMinWidth(0);
+            currentStage.setFullScreen(false);
+            currentStage.setMinHeight(0);
+            currentStage.setIconified(false);
+            currentStage.setX(Double.NaN);
+            currentStage.setWidth(Double.NaN);
+            currentStage.setY(Double.NaN);
+            currentStage.setOpacity(1);
+            currentStage.setHeight(Double.NaN);
+            currentStage.close();
+        });
     }
 
     @SuppressWarnings("deprecation")

@@ -96,6 +96,16 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 
 
     @Test
+    public void verifyPlatformMain() throws Exception {
+        show(PlatformMain.class);
+        type(KeyCode.RIGHT);
+        type(KeyCode.LEFT, 10);
+        type(KeyCode.UP);
+        type(KeyCode.DOWN);
+
+    }
+
+    @Test
     public void verifyPong() throws Exception {
         show(PongLauncher.class);
         tryClickButtons();
@@ -105,6 +115,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             moveBy(0, -DotsSquare.SQUARE_SIZE);
             drop();
         }
+        type(KeyCode.A, KeyCode.COMMA, KeyCode.Z, KeyCode.L);
     }
 
     @Test

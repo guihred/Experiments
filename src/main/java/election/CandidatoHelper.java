@@ -29,17 +29,7 @@ public final class CandidatoHelper {
     private static final int RELEVANT_FIELD_THRESHOLD = 410;
     private static CandidatoDAO candidatoDAO = new CandidatoDAO();
 
-    CandidatoHelper() {
-    }
-
-    static void configTable(TableColumn<Candidato, String> fotoUrl, TableColumn<Candidato, Cidade> cidade,
-        TableColumn<Candidato, Boolean> eleito, TableColumn<Candidato, LocalDate> nascimento,
-        TableView<Candidato> tableView2) {
-        fotoUrl.setCellFactory(ImageTableCell::new);
-        cidade.setCellFactory(setFormat(Cidade::getCity));
-        eleito.setCellFactory(setFormat(StringSigaUtils::simNao));
-        nascimento.setCellFactory(setFormat(DateFormatUtils::formatDate));
-        equalColumns(tableView2);
+    private CandidatoHelper() {
     }
 
     public static void addIfChecked(String parent, Map<String, Set<String>> fieldMap, String value, Boolean val) {
@@ -90,5 +80,15 @@ public final class CandidatoHelper {
         observableArrayList.setAll(list);
         Map<String, Long> histogram = candidatoDAO.histogram(column, fieldMap);
         pieGraph.setHistogram(histogram);
+    }
+
+    static void configTable(TableColumn<Candidato, String> fotoUrl, TableColumn<Candidato, Cidade> cidade,
+        TableColumn<Candidato, Boolean> eleito, TableColumn<Candidato, LocalDate> nascimento,
+        TableView<Candidato> tableView2) {
+        fotoUrl.setCellFactory(ImageTableCell::new);
+        cidade.setCellFactory(setFormat(Cidade::getCity));
+        eleito.setCellFactory(setFormat(StringSigaUtils::simNao));
+        nascimento.setCellFactory(setFormat(DateFormatUtils::formatDate));
+        equalColumns(tableView2);
     }
 }

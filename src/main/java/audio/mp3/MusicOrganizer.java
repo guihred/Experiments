@@ -39,8 +39,7 @@ public class MusicOrganizer extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Organizador de Músicas");
         VBox root = new VBox();
-        final TableView<Music> musicasTable = tabelaMusicas();
-
+        TableView<Music> musicasTable = tabelaMusicas();
         musicasTable.prefWidthProperty().bind(root.widthProperty().subtract(10));
         TextField filterField = new TextField();
         Button buttonMusic = loadMusic(musicasTable, filterField);

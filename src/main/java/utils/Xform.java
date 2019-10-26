@@ -2,6 +2,7 @@ package utils;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
@@ -15,8 +16,9 @@ public class Xform extends Group {
     private Scale s = new Scale();
     private Translate t = new Translate();
 
-    public Xform() {
+    public Xform(Node... nodes) {
         getTransforms().addAll(t, rz, ry, rx, s);
+        getChildren().addAll(nodes);
     }
 
     public double getRotateX() {
@@ -28,6 +30,18 @@ public class Xform extends Group {
     }
 
     public double getRotateZ() {
+        return rz.getAngle();
+    }
+
+    public double getRx() {
+        return rx.getAngle();
+    }
+
+    public double getRy() {
+        return  ry.getAngle();
+    }
+
+    public double getRz() {
         return rz.getAngle();
     }
 

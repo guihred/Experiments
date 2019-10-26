@@ -153,7 +153,7 @@ public class JavaFileDependency {
                 path.add(d);
             }
         }
-        if (!path.isEmpty()) {
+        if (test.test(this)) {
             path.add(this);
         }
 

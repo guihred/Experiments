@@ -14,7 +14,6 @@ public final class MapCallback<T, E> implements Callback<Entry<T, E>, Observable
         this.mapValues = colors;
         this.run = run;
     }
-
     @Override
     public ObservableValue<Boolean> call(Entry<T, E> c) {
         SimpleBooleanProperty simpleBooleanProperty = new SimpleBooleanProperty(mapValues.containsKey(c.getKey()));

@@ -9,83 +9,136 @@ import furigana.FuriganaCrawlerApp;
 import fxpro.ch06.TaskProgressApp;
 import fxsamples.BackgroundProcesses;
 import japstudy.*;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import org.junit.AfterClass;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import utils.HibernateUtil;
-import utils.RunnableEx;
+import utils.ResourceFXUtils;
 
+@SuppressWarnings("static-method")
 public class FXHibernateTest extends AbstractTestExecution {
 
     private static final int WAIT_TIME = 1000;
 
-    @Override
-    public void init() throws Exception {
-        super.init();
+    @After
+    public void cleanUp() {
+        HibernateUtil.setShutdownEnabled(true);
+        HibernateUtil.shutdown();
+    }
+
+    @Before
+    public void start() {
+        ResourceFXUtils.initializeFX();
         HibernateUtil.getSessionFactory();
         HibernateUtil.setShutdownEnabled(false);
     }
 
     @Test
-    public void verifyApplications() throws Exception {
-        show(new BackgroundProcesses());
+    public void verifyBackgroundProcesses() {
+        show(BackgroundProcesses.class);
         clickAllButtons();
-        show(new FuriganaCrawlerApp());
-        clickAllButtons();
-        show(new TaskProgressApp());
-        clickAllButtons();
-        show(new ContestQuestionEditingDisplay());
-        clickAllButtons();
-        show(new JapaneseLessonEditingDisplay());
-        clickAllButtons();
-        show(new JapaneseLessonAudioSplitDisplay());
-        clickAllButtons();
-        show(new JapaneseLessonDisplay());
-        clickAllButtons();
-        show(new ContestApplication());
     }
 
     @Test
     public void verifyCandidatoApp() {
-        show(new CandidatoApp());
+        show(CandidatoApp.class);
+        targetPos(Pos.TOP_CENTER);
+        clickOn(lookupFirst(TreeView.class));
+        type(KeyCode.SPACE);
+        type(KeyCode.RIGHT);
+        type(KeyCode.DOWN, 3);
+        lookup(CheckBox.class).forEach(this::clickOn);
+        lookup(CheckBox.class).forEach(this::clickOn);
+        targetPos(Pos.CENTER);
     }
 
     @Test
-    public void verifyElectionApp() {
-        show(new ElectionCrawlerApp(new CrawlerCitiesTask()));
+    public void verifyContestApplication() {
+        show(ContestApplication.class);
+    }
+
+    @Test
+    public void verifyContestQuestionEditingDisplay() {
+        show(ContestQuestionEditingDisplay.class);
         clickAllButtons();
-        show(new ElectionCrawlerApp(new CrawlerCandidateTask()));
-        clickAllButtons();
+    }
+
+    @Test
+    public void verifyCrawlerCandidates2018Task() {
         show(new ElectionCrawlerApp(new CrawlerCandidates2018Task()));
         clickAllButtons();
+    }
+
+    @Test
+    public void verifyCrawlerCandidateTask() {
+        show(new ElectionCrawlerApp(new CrawlerCandidateTask()));
+        clickAllButtons();
+    }
+
+    @Test
+    public void verifyCrawlerCitiesTask() {
+        show(new ElectionCrawlerApp(new CrawlerCitiesTask()));
+        clickAllButtons();
+    }
+
+    @Test
+    public void verifyCrawlerCompleteCandidateTask() {
         show(new ElectionCrawlerApp(new CrawlerCompleteCandidateTask()));
         clickAllButtons();
     }
 
     @Test
-    public void verifyJapaneseLessonApplication() throws Exception {
-        show(new JapaneseLessonApplication());
+    public void verifyFuriganaCrawlerApp() {
+        show(FuriganaCrawlerApp.class);
         clickAllButtons();
     }
 
     @Test
-    @SuppressWarnings("static-method")
+    public void verifyJapaneseLessonApplication() {
+        show(JapaneseLessonApplication.class);
+        clickAllButtons();
+    }
+
+    @Test
+    public void verifyJapaneseLessonAudioSplitDisplay() {
+        show(JapaneseLessonAudioSplitDisplay.class);
+        clickAllButtons();
+    }
+
+    @Test
+    public void verifyJapaneseLessonDisplay() {
+        show(JapaneseLessonDisplay.class);
+        clickAllButtons();
+    }
+
+    @Test
+    public void verifyJapaneseLessonEditingDisplay() {
+        show(JapaneseLessonEditingDisplay.class);
+        clickAllButtons();
+    }
+
+    @Test
     public void verifyLessons() {
         measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
     }
 
-    private void clickAllButtons() {
-        for (Node e : lookup(Button.class)) {
-            RunnableEx.ignore(() -> clickOn(e));
-            sleep(WAIT_TIME);
-        }
+    @Test
+    public void verifyTaskProgressApp() {
+        show(TaskProgressApp.class);
+        clickAllButtons();
     }
 
-    @AfterClass
-    public static void cleanUp() {
-        HibernateUtil.setShutdownEnabled(true);
-        HibernateUtil.shutdown();
+    private void clickAllButtons() {
+        for (Node e : lookup(Button.class)) {
+            clickOn(e);
+            sleep(WAIT_TIME);
+        }
     }
 
 }

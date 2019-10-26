@@ -20,10 +20,7 @@ public class LayerSplitter {
         this.edges = new LinkedList<>(edges);
     }
 
-    // [String[][],Edge[]]
     public List<List<Cell>> orderVertices(List<List<Cell>> layers) {
-//        
-
         for (int i = 0; i < layers.size(); i++) {
             List<Cell> list = layers.get(i);
             if (list.size() > 1) {

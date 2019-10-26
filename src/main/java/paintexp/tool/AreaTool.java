@@ -247,8 +247,8 @@ public abstract class AreaTool extends PaintTool {
 
 	private WritableImage createSelectedImage(PaintModel model, WritableImage srcImage) {
 		if (imageSelected == null) {
-			int width = (int) getArea().getWidth();
-			int height = (int) getArea().getHeight();
+            int width = Math.max(1, (int) getArea().getWidth());
+            int height = Math.max(1, (int) getArea().getHeight());
 			imageSelected = new WritableImage(width, height);
 			int layoutX = (int) getArea().getLayoutX();
 			int layoutY = (int) getArea().getLayoutY();

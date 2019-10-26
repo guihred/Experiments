@@ -61,13 +61,6 @@ public class PixelHelper {
 		return Color.rgb(red, green, blue, transp);
 	}
 
-	public Color toColor(final int round) {
-        int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE) / round * round;
-        int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE) / round * round;
-        int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE) / round * round;
-        double transp = getWithinRange(i == 0 ? MAX_BYTE : a / (double) i, 0.0, MAX_BYTE) / MAX_BYTE;
-		return Color.rgb(red, green, blue, transp);
-	}
 
 	public static Color asColor(final int argb) {
         int a = getByte(argb, 3);
@@ -92,7 +85,6 @@ public class PixelHelper {
             }
         }
     }
-
 
     public static int toArgb(Color c) {
         int b = (int) (c.getBlue() * MAX_BYTE);

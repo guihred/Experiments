@@ -12,9 +12,6 @@ import javafx.scene.shape.StrokeType;
 
 // a translucent overlay display rectangle to show the bounds of a Shape.
 public class BoundsDisplay extends Rectangle {
-    /**
-     * 
-     */
     private ObjectProperty<BoundsType> boundsPlayground;
     // the shape to which the bounds display has been type.
     private Shape monitoredShape;
