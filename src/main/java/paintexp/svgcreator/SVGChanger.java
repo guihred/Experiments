@@ -100,6 +100,23 @@ public class SVGChanger {
 		scale.set(s);
 	}
 
+	private double getCoodenate(String s, final String letter) {
+		double coord = Double.parseDouble(s);
+		boolean vertical = "v".equalsIgnoreCase(letter);
+		boolean horizontal = !vertical;
+		if (isUpperCase(letter)) {
+			double rx = currentX.get();
+			double ry = currentY.get();
+			currentX.set(vertical ? currentX.get() : coord);
+			currentY.set(horizontal ? currentY.get() : coord);
+			coord -= vertical ? ry : rx;
+		} else {
+			currentX.set(currentX.get() + (vertical ? 0 : coord));
+			currentY.set(currentY.get() + (horizontal ? 0 : coord));
+		}
+		return coord;
+	}
+
 	private String replaceArcCommand(final String[] split, final String substring, final int args) {
 		StringBuilder cmd = new StringBuilder();
 		for (int i = args; i < split.length; i += args) {
@@ -183,19 +200,7 @@ public class SVGChanger {
 	private String replaceOneCommand(final String[] split, final String letter) {
 		StringBuilder cmd = new StringBuilder();
 		for (int i = 1; i < split.length; i += 2) {
-			double coord = Double.parseDouble(split[i]);
-			boolean vertical = "v".equalsIgnoreCase(letter);
-			boolean horizontal = !vertical;
-			if (isUpperCase(letter)) {
-				double rx = currentX.get();
-				double ry = currentY.get();
-				currentX.set(vertical ? currentX.get() : coord);
-				currentY.set(horizontal ? currentY.get() : coord);
-				coord -= vertical ? ry : rx;
-			} else {
-				currentX.set(currentX.get() + (vertical ? 0 : coord));
-				currentY.set(currentY.get() + (horizontal ? 0 : coord));
-			}
+			double coord = getCoodenate(split[i], letter);
 			String format = String.format(Locale.ENGLISH, "%.2f ", coord * scale.get());
 			cmd.append(format);
 		}

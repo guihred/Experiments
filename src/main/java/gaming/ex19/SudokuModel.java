@@ -97,7 +97,7 @@ public class SudokuModel {
         }
     }
 
-    public void initialize() {
+	public final void initialize() {
         numberBoard.setVisible(false);
         for (int i1 = 0; i1 < MAP_N_SQUARED; i1++) {
             for (int j1 = 0; j1 < MAP_N_SQUARED; j1++) {

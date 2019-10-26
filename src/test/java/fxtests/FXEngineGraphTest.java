@@ -15,7 +15,6 @@ import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseButton;
-import javafx.stage.Stage;
 import org.junit.Test;
 import utils.ConsoleUtils;
 import utils.ConsumerEx;
@@ -25,13 +24,9 @@ import utils.RunnableEx;
 
 public class FXEngineGraphTest extends AbstractTestExecution {
 
-	@Override
-	public void start(final Stage stage) throws Exception {
-		super.start(stage);
-        show(GraphMain.class);
-	}
 	@Test
     public void testPackageTopology() {
+		show(GraphMain.class);
         measureTime("JavaFileDependency.getJavaFileDependencies", () -> {
             List<JavaFileDependency> javaFiles = JavaFileDependency.getJavaFileDependencies(null);
             Map<String, List<JavaFileDependency>> filesByPackage = javaFiles.stream()
@@ -46,6 +41,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 
 	@Test
 	public void verify() throws Exception {
+		show(GraphMain.class);
         ImageFXUtils.setShowImage(false);
         lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
     }
@@ -53,6 +49,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 	@SuppressWarnings("rawtypes")
 	@Test
 	public void verifyAllTopologies() throws Exception {
+		show(GraphMain.class);
 		Set<ComboBox> queryButtons = lookup(".combo-box").queryAllAs(ComboBox.class).stream()
 				.filter(ComboBox::isVisible)
 				.collect(Collectors.toSet());
@@ -74,6 +71,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 
     @Test
 	public void verifyZoomable() throws Exception {
+		show(GraphMain.class);
 		lookup(Cell.class).stream().limit(10).forEach(e -> {
             RunnableEx.ignore(() -> clickOn(e));
             RunnableEx.ignore(() -> drag(e, MouseButton.PRIMARY));
