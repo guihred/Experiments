@@ -17,7 +17,6 @@ public final class PortServices {
     private static final Map<Integer, String> TCP_SERVICES = new LinkedHashMap<>();
     private static final Map<Integer, String> UDP_SERVICES = new LinkedHashMap<>();
     private static final Logger LOG = HasLogging.log();
-
     private final String description;
     private final String type;
     private final int[] ports;

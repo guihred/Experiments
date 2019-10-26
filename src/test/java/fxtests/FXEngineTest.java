@@ -8,8 +8,6 @@ import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
 import fxpro.ch06.ResponsiveUIApp;
 import fxpro.ch06.ThreadInformationApp;
-import fxpro.earth.CubeNode;
-import fxpro.earth.EarthCubeMain;
 import fxsamples.*;
 import fxsamples.bounds.BoundsPlayground;
 import fxsamples.person.PersonTableController;
@@ -58,7 +56,6 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyColorChooser() {
         show(ColorChooser.class);
-
         List<Node> queryAll = lookup(".slider").queryAll().stream().collect(Collectors.toList());
         for (int i = 0; i < queryAll.size(); i++) {
             if (i == 3) {
@@ -72,15 +69,6 @@ public class FXEngineTest extends AbstractTestExecution {
         tryClickButtons();
     }
 
-    @Test
-    public void verifyEarthCubeMain() {
-        show(EarthCubeMain.class);
-        sleep(2000);
-        CubeNode lookupFirst = lookupFirst(CubeNode.class);
-        drag(lookupFirst,MouseButton.PRIMARY);
-        moveRandom(50);
-        drop();
-    }
 
     @Test
     public void verifyEthicalHack() {
@@ -171,8 +159,6 @@ public class FXEngineTest extends AbstractTestExecution {
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
     }
 
-
-
     @Test
     public void verifyThreadInformationApp() {
         show(ThreadInformationApp.class);
@@ -183,12 +169,14 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyWordSearchApp () {
+    public void verifyWordSearchApp() {
         show(WordSearchApp.class);
-        for (ComboBox<?> e : lookup(ComboBox.class)) {
-            selectComboItems(e, 5);
+        for (int i = 0; i < 2; i++) {
+            for (ComboBox<?> e : lookup(ComboBox.class)) {
+                selectComboItems(e, 5);
+            }
+            tryClickButtons();
         }
-        tryClickButtons();
     }
 
     @Test

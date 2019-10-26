@@ -12,9 +12,8 @@ import org.junit.Test;
 import paintexp.svgcreator.SVGCreator;
 
 public class FXEngineSVGCreatorTest extends AbstractTestExecution {
-
     @Test
-	public void testaToolsVerify() throws Exception {
+    public void testSVGCreator() throws Exception {
         show(SVGCreator.class);
         Node stack = lookupFirst(StackPane.class);
         List<Node> queryAll = lookup(ToggleButton.class).stream().collect(Collectors.toList());

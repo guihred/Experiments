@@ -16,7 +16,6 @@ import utils.TreeElement;
 
 public class FXEngineTableVisualizationTest extends AbstractTestExecution {
 
-
     @Test
 	public void testaToolsVerify() throws Exception {
         show(TableVisualizationExample.class);

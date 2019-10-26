@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
+import utils.ClassReflectionUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -40,7 +41,6 @@ public class StageControlExample extends Application {
     private Text textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
     private CheckBox checkBoxFullScreen = new CheckBox("fullScreen");
     private double dragAnchorX;
-
     private double dragAnchorY;
 
     @Override
@@ -100,7 +100,9 @@ public class StageControlExample extends Application {
         title.bind(titleTextField.textProperty());
         stage.setScene(scene);
         stage.titleProperty().bind(title);
-        stage.initStyle(stageStyle);
+        if (ClassReflectionUtils.getFieldValue(stage, "hasBeenVisible") != Boolean.TRUE) {
+            stage.initStyle(stageStyle);
+        }
         stage.setOnCloseRequest(we -> LOG.info("Stage is closing"));
         stage.show();
         Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
