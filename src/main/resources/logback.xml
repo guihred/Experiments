@@ -26,6 +26,7 @@
 	<logger name="ch.qos.logback.classic" level="OFF" />
 	<logger name="contest" level="OFF" />
  	<logger name="schema.sngpc.FXMLCreator" level="OFF" /> 
+ 	<logger name="rosario.LeitorArquivos" level="OFF" /> 
  	<logger name="furigana.CrawlerFuriganaTask" level="OFF" /> 
 	<logger name="org.apache.pdfbox" level="OFF" />
 	<logger name="org.deeplearning4j.models" level="OFF" />

@@ -8,10 +8,13 @@ public class PdfImage implements HasImage {
     private float x;
     private float y;
     private int pageN;
-
     @Override
     public void appendImage(String image) {
-        // DOES NOTHING
+        // NOTHING
+    }
+
+    public File getFile() {
+        return file;
     }
 
     @Override
@@ -19,9 +22,25 @@ public class PdfImage implements HasImage {
         return getFile().getName();
     }
 
+    public int getPageN() {
+        return pageN;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
     @Override
     public boolean matches(String s0) {
         return false;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 
     @Override
@@ -29,40 +48,20 @@ public class PdfImage implements HasImage {
         setFile(new File(image));
     }
 
-    @Override
-    public String toString() {
-        return getFile() != null ? getFile().getName() : "";
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-    public float getX() {
-        return x;
+    public void setPageN(int pageN) {
+        this.pageN = pageN;
     }
 
     public void setX(float x) {
         this.x = x;
     }
 
-    public float getY() {
-        return y;
-    }
-
     public void setY(float y) {
         this.y = y;
     }
 
-    public int getPageN() {
-        return pageN;
-    }
-
-    public void setPageN(int pageN) {
-        this.pageN = pageN;
+    @Override
+    public String toString() {
+        return getFile() != null ? getFile().getName() : "";
     }
 }

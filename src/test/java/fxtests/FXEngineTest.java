@@ -8,7 +8,10 @@ import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
 import fxpro.ch06.ResponsiveUIApp;
 import fxpro.ch06.ThreadInformationApp;
+import fxpro.earth.CubeNode;
+import fxpro.earth.EarthCubeMain;
 import fxsamples.*;
+import fxsamples.bounds.BoundsPlayground;
 import fxsamples.person.PersonTableController;
 import fxsamples.person.WorkingWithTableView;
 import java.util.List;
@@ -24,6 +27,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.shape.SVGPath;
 import ml.*;
 import ml.graph.MapGraph;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import paintexp.ColorChooser;
 import pdfreader.PdfReader;
@@ -32,6 +36,13 @@ import utils.ConsoleUtils;
 import utils.ConsumerEx;
 
 public class FXEngineTest extends AbstractTestExecution {
+
+    @Test
+    public void verifyBoundsPlayground() {
+        show(BoundsPlayground.class);
+        lookup(CheckBox.class).forEach(this::clickOn);
+        lookup(RadioButton.class).forEach(this::clickOn);
+    }
 
     @Test
     public void verifyButtons() {
@@ -62,6 +73,16 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
+    public void verifyEarthCubeMain() {
+        show(EarthCubeMain.class);
+        sleep(2000);
+        CubeNode lookupFirst = lookupFirst(CubeNode.class);
+        drag(lookupFirst,MouseButton.PRIMARY);
+        moveRandom(50);
+        drop();
+    }
+
+    @Test
     public void verifyEthicalHack() {
         show(EthicalHackApp.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
@@ -86,6 +107,7 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyInlineModelViewer() {
         show(InlineModelViewer.class);
+        lookup(CheckBox.class).forEach(this::clickOn);
         lookup(CheckBox.class).forEach(this::clickOn);
     }
 
@@ -149,10 +171,14 @@ public class FXEngineTest extends AbstractTestExecution {
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
     }
 
+
+
     @Test
     public void verifyThreadInformationApp() {
         show(ThreadInformationApp.class);
+
         tryClickButtons();
+        sleep(500);
         clickOn(randomItem(lookup(ListCell.class)));
     }
 
@@ -189,7 +215,12 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyWorkingWithTableView() {
         show(WorkingWithTableView.class);
-        clickOn(randomItem(lookup(ListCell.class)));
+        @SuppressWarnings("rawtypes")
+        List<ListCell> collect = lookup(ListCell.class).stream().filter(c -> StringUtils.isNotBlank(c.getText()))
+            .collect(Collectors.toList());
+        if (!collect.isEmpty()) {
+            clickOn(randomItem(collect));
+        }
 
     }
 

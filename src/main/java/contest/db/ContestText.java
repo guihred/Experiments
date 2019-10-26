@@ -8,6 +8,8 @@ import utils.HasImage;
 @Entity
 @Table
 public class ContestText extends BaseEntity implements HasImage {
+    public static final String TEXTS_PATTERN = ".+ para \\w* *[aà l]*s quest[õion]+es [de ]*(\\d+) [ae] (\\d+)\\.*\\s*";
+
     @ManyToOne
     @JoinColumn
     private Contest contest;
@@ -18,15 +20,13 @@ public class ContestText extends BaseEntity implements HasImage {
 
     @Column
     private Integer max;
-
     @Column
     private Integer min;
     @Column(length = 10000)
     private String text;
+
     @Transient
     private String image;
-
-    public static final String TEXTS_PATTERN = ".+ para \\w* *[aà l]*s quest[õion]+es [de ]*(\\d+) [ae] (\\d+)\\.*\\s*";
 
     public ContestText() {
     }
@@ -48,6 +48,7 @@ public class ContestText extends BaseEntity implements HasImage {
     public boolean equals(Object obj) {
         return obj != null && super.equals(obj) && ((ContestText) obj).key == key;
     }
+
     public Contest getContest() {
         return contest;
     }

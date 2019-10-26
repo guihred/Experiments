@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.apache.commons.math3.complex.Complex;
 
 public class OthersTests {
@@ -18,10 +17,6 @@ public class OthersTests {
         return eventList.stream().sequential().reduce(estado, (e, s) -> e.getMap().getOrDefault(s, Estado.ERROR),
             (e, f) -> e);
 	}
-
-	public static Estado getStateMachine(Estado estado, Estado... eventList) {
-        return getStateMachine(estado, Stream.of(eventList).map(Object::toString).collect(Collectors.toList()));
-    }
 
 	public static int[] minMax(int[] arr) {
 		IntSummaryStatistics s = Arrays.stream(arr).summaryStatistics();
