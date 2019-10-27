@@ -2,7 +2,6 @@ package fxsamples;
 
 import java.security.SecureRandom;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -26,6 +25,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
 import utils.HasLogging;
@@ -237,7 +237,7 @@ public class PlayingAudio extends Application {
         closeButton.setTranslateY(10);
         closeButton.getChildren().addAll(closeBackground, closeXmark);
         // exit app
-        closeButton.setOnMouseClicked(mouseEvent -> Platform.exit());
+        closeButton.setOnMouseClicked(mouseEvent -> SimpleDialogBuilder.closeStage(closeButton));
         return closeButton;
     }
 

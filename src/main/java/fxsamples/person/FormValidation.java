@@ -1,7 +1,6 @@
 package fxsamples.person;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -21,6 +20,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
+import simplebuilder.SimpleDialogBuilder;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -76,7 +76,7 @@ public class FormValidation extends Application {
             if (MAX_ATTEMPTS == nv.intValue()) {
                 // failed attemps
                 LOG.info("User {} is denied access.%n", user.getUserName());
-                Platform.exit();
+                primaryStage.close();
             }
         });
         VBox formLayout = new VBox(4);
@@ -94,7 +94,7 @@ public class FormValidation extends Application {
         	if (GRANTED_ACCESS.get()) {
         		LOG.info("User {} is granted access.%n", user.getUserName());
         		LOG.info("User {} entered the password: {}%n", user.getUserName(), user.getPassword());
-        		Platform.exit();
+                SimpleDialogBuilder.closeStage(deniedIcon);
         	} else {
         		deniedIcon.setVisible(true);
         	}

@@ -86,7 +86,6 @@ public class WorkingWithTableView extends Application {
         docX.employeesProperty().add(new Person("Cyclops", "Scott", "Summers"));
         docX.employeesProperty().add(new Person("Storm", "Ororo", "Munroe"));
         Person magneto = new Person("Magneto", "Max", "Eisenhardt");
-        // ...code to add employees
         Person biker = new Person("Mountain Biker", "Jonathan", "Gennick");
         // ...code to add employees
         people.addAll(docX, magneto, biker);

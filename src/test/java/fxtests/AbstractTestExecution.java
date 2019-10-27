@@ -120,6 +120,17 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }
     }
 
+    protected <T extends Application> T showNewStage(Class<T> c) {
+        try {
+            logger.info("SHOWING {}", c.getSimpleName());
+            T newInstance = c.newInstance();
+            interactNoWait(RunnableEx.make(() -> newInstance.start(new Stage())));
+            return newInstance;
+        } catch (Exception e) {
+            throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
+        }
+    }
+
     protected boolean tryClickButtons() {
         Set<Node> queryAll = lookup(".button").queryAll();
         queryAll.forEach(ConsumerEx.ignore(this::clickOn));

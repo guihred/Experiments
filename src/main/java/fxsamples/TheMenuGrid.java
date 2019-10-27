@@ -1,6 +1,5 @@
 package fxsamples;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
@@ -19,7 +18,7 @@ public class TheMenuGrid extends Application {
                 .addMenuItem("New")
                 .addMenuItem("Save")
                 .addSeparator()
-                .addMenuItem("Exit", e -> Platform.exit())
+            .addMenuItem("Exit", e -> primaryStage.close())
                 .addMenu("Cameras")
                 .addCheckMenuItem("Show Camera 1")
                 .addCheckMenuItem("Show Camera 2")

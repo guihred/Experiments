@@ -30,7 +30,6 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
         type(KeyCode.SPACE);
         sleep(1000);
         type(KeyCode.ESCAPE);
-
     }
 
 }

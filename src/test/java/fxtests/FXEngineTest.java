@@ -10,11 +10,13 @@ import fxpro.ch06.ResponsiveUIApp;
 import fxpro.ch06.ThreadInformationApp;
 import fxsamples.*;
 import fxsamples.bounds.BoundsPlayground;
+import fxsamples.person.FormValidation;
 import fxsamples.person.PersonTableController;
 import fxsamples.person.WorkingWithTableView;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
@@ -69,13 +71,26 @@ public class FXEngineTest extends AbstractTestExecution {
         tryClickButtons();
     }
 
-
     @Test
     public void verifyEthicalHack() {
         show(EthicalHackApp.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
             .forEach(ConsumerEx.ignore(this::clickOn));
         ConsoleUtils.waitAllProcesses();
+    }
+
+    @Test
+    public void verifyFormValidation() {
+        showNewStage(FormValidation.class);
+        clickOn(lookupFirst(PasswordField.class));
+        type(typeText(getRandomString()));
+        type(KeyCode.ENTER);
+        eraseText(4);
+        type(typeText(getRandomString()));
+        type(KeyCode.ENTER);
+        eraseText(4);
+        type(typeText("senha"));
+        type(KeyCode.ENTER);
     }
 
     @Test
@@ -107,6 +122,20 @@ public class FXEngineTest extends AbstractTestExecution {
             moveRandom(50);
             drag(e, MouseButton.PRIMARY);
         });
+    }
+
+    @Test
+    public void verifyLookNFeelChooser() {
+        show(LookNFeelChooser.class);
+        List<MenuButton> node = lookup(MenuButton.class).stream().collect(Collectors.toList());
+        for (int i = node.size() - 1; i >= 0; i--) {
+            MenuButton menuButton = node.get(i);
+            ObservableList<MenuItem> items = menuButton.getItems();
+            for (int j = 0; j < items.size(); j++) {
+                MenuItem menuItem = items.get(j);
+                interact(menuItem::fire);
+            }
+        }
     }
 
     @Test
@@ -171,6 +200,12 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyWordSearchApp() {
         show(WordSearchApp.class);
+        for (int i = 0; i < 2; i++) {
+            for (ComboBox<?> e : lookup(ComboBox.class)) {
+                selectComboItems(e, 5);
+            }
+            tryClickButtons();
+        }
         for (int i = 0; i < 2; i++) {
             for (ComboBox<?> e : lookup(ComboBox.class)) {
                 selectComboItems(e, 5);
