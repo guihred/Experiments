@@ -43,7 +43,7 @@ public class JapaneseLessonDisplayer extends Stage {
         setWidth(defaultWidth);
         currentIndex.set(0);
         centerOnScreen();
-        Label label = new Label(JapaneseLessonApplication.LESSON);
+        Label label = new Label("Lesson");
         Label label2 = new Label();
         label2.textProperty().bind(score.multiply(100).asString("%.02f%%"));
         HBox hBox = new HBox(label, new Label(" Score:　"), label2);

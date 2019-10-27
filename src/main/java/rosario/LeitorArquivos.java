@@ -48,7 +48,7 @@ public final class LeitorArquivos {
         ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
         for (List<String> item : items2) {
             Medicamento medicamento = new Medicamento();
-            setCampos(columns, item, medicamento);
+            setFields(columns, item, medicamento);
             if (medicamento.getQuantidade() != null && StringUtils.isNotBlank(medicamento.getNome())) {
                 medicamentos.add(medicamento);
             }
@@ -308,7 +308,7 @@ public final class LeitorArquivos {
         return selectedFile.getName().endsWith(".pdf");
     }
 
-    private static void setCampos(List<String> colunas, List<String> item, Medicamento medicamento) {
+    private static void setFields(List<String> colunas, List<String> item, Medicamento medicamento) {
         for (int i = 0; i < colunas.size(); i++) {
             String selectedItem = colunas.get(i);
             if (!item.isEmpty()) {
@@ -392,33 +392,33 @@ public final class LeitorArquivos {
         return true;
     }
 
-    private static Medicamento tryReadRosarioLine(Map<String, IntUnaryOperator> mapaCampos, String[] linhas, int i) {
+    private static Medicamento tryReadRosarioLine(Map<String, IntUnaryOperator> mapaFields, String[] linhas, int i) {
         try {
             String s = linhas[i];
             String[] split = s.trim().split("\\s+");
             if (split.length > 2 && (s.toLowerCase().contains("descricao") || s.toLowerCase().contains(CODPRODUTO)
                 || s.toLowerCase().contains(QTESTOQUECOMERCIAL))) {
                 if (split[1].equalsIgnoreCase(CODPRODUTO)) {
-                    mapaCampos.put(CODPRODUTO, j -> j - 2);
+                    mapaFields.put(CODPRODUTO, j -> j - 2);
                 }
                 if (split[0].equalsIgnoreCase(CODPRODUTO)) {
-                    mapaCampos.put(CODPRODUTO, j -> 0);
+                    mapaFields.put(CODPRODUTO, j -> 0);
                 }
-                mapaCampos.put(QTESTOQUECOMERCIAL, j -> j - 1);
+                mapaFields.put(QTESTOQUECOMERCIAL, j -> j - 1);
             }
             if (!s.endsWith(",00")) {
                 return null;
             }
             if (split.length >= 2) {
                 Medicamento medicamento = new Medicamento();
-                String s2 = split[mapaCampos.getOrDefault(CODPRODUTO, j -> 0).applyAsInt(split.length)];
+                String s2 = split[mapaFields.getOrDefault(CODPRODUTO, j -> 0).applyAsInt(split.length)];
 
                 medicamento.setCodigo(Integer.valueOf(s2));
                 medicamento.setNome(IntStream.range(0, split.length).filter(
-                    e -> mapaCampos.values().stream().mapToInt(j -> j.applyAsInt(split.length)).noneMatch(j -> j == e))
+                    e -> mapaFields.values().stream().mapToInt(j -> j.applyAsInt(split.length)).noneMatch(j -> j == e))
                     .mapToObj(e -> split[e]).collect(Collectors.joining(" ")));
                 medicamento.setQuantidade(Integer
-                    .valueOf(split[mapaCampos.getOrDefault(QTESTOQUECOMERCIAL, j -> j - 1).applyAsInt(split.length)]
+                    .valueOf(split[mapaFields.getOrDefault(QTESTOQUECOMERCIAL, j -> j - 1).applyAsInt(split.length)]
                         .replace(",00", "").replace(".", "")));
                 return medicamento;
             }

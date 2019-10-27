@@ -104,15 +104,16 @@ public class JavaDependencyTest {
         List<String> failedTests = new ArrayList<>();
         measureTime("JavaFileDependency.testUncovered", () -> {
             List<String> uncovered = getUncovered();
-            List<String> collect = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream().distinct()
+            List<String> uncoveredTests = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream()
+                .distinct()
                 .sorted().collect(Collectors.toList());
-            for (int i = 0; i < collect.size(); i++) {
-                String className = collect.get(i);
+            for (int i = 0; i < uncoveredTests.size(); i++) {
+                String className = uncoveredTests.get(i);
                 if (className.equals("JavaDependencyTest")) {
                     continue;
                 }
-                LOG.info("RUN TESTS {}", collect.subList(i, collect.size()));
-                LOG.info("RUNNING TEST {} {}/{}", className, i + 1, collect.size());
+                LOG.info("RUN TESTS {}", uncoveredTests.subList(i, uncoveredTests.size()));
+                LOG.info("RUNNING TEST {} {}/{}", className, i + 1, uncoveredTests.size());
                 Class<?> forName = Class.forName("fxtests." + className);
                 if (Modifier.isAbstract(forName.getModifiers())) {
                     continue;
@@ -131,7 +132,7 @@ public class JavaDependencyTest {
                 }
                 Object ob = forName.newInstance();
                 runTest(forName, ob, failedTests);
-                LOG.info(" TESTS RUN {} {}/{}", "fxtests." + className, i + 1, collect.size());
+                LOG.info(" TESTS RUN {} {}/{}", "fxtests." + className, i + 1, uncoveredTests.size());
 
             }
         });

@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -18,7 +19,7 @@ public class EarthCubeMain extends Application {
         root.setLayoutX(layout);
         root.setLayoutY(layout);
         final int size = 800;
-        Scene scene = new Scene(root, size, size);
+        Scene scene = new Scene(root, size, size, true, SceneAntialiasing.BALANCED);
 		scene.setFill(Color.TRANSPARENT);
 		PerspectiveCamera perspectiveCamera = new PerspectiveCamera();
 		perspectiveCamera.setFieldOfView(30);
@@ -26,7 +27,6 @@ public class EarthCubeMain extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.show();
-
 		cube.playShowMap();
 	}
 

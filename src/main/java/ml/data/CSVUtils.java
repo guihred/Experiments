@@ -83,11 +83,11 @@ public class CSVUtils {
 
     public static void appendLine(File file, Map<String, Object> rowMap) {
         boolean exists = file.exists();
-        String collect = rowMap.keySet().stream().collect(Collectors.joining(",", "", ""));
+        String csvHeader = rowMap.keySet().stream().collect(Collectors.joining(",", "", ""));
         if (exists) {
             try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
                 String nextLine = scanner.nextLine();
-                if (!collect.equals(nextLine)) {
+                if (!csvHeader.equals(nextLine)) {
                     exists = false;
                 }
             } catch (Exception e) {
@@ -100,7 +100,7 @@ public class CSVUtils {
 
         try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true)) {
             if (!exists) {
-                fw.append(collect + "\n");
+                fw.append(csvHeader + "\n");
             }
             List<String> cols = rowMap.keySet().stream().collect(Collectors.toList());
 

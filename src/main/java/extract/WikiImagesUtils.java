@@ -58,9 +58,10 @@ public final class WikiImagesUtils {
 
     public static void displayCountByExtension() {
         try (Stream<Path> find = Files.find(new File("").toPath(), 20, (a, b) -> !a.toFile().isDirectory())) {
-            Map<String, Long> collect = find.collect(Collectors
+            Map<String, Long> fileExtensionCount = find.collect(Collectors
                 .groupingBy(e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
-            collect.entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+            fileExtensionCount.entrySet().stream()
+                .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
                 .forEach(ex -> LOG.info("{}={}", ex.getKey(), ex.getValue()));
         } catch (Exception e) {
             LOG.error("", e);

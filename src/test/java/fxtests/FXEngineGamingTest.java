@@ -148,11 +148,12 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     public void verifySudokuLauncher() throws Exception {
         show(SudokuLauncher.class);
         Set<Node> queryAll = lookup(SudokuSquare.class).stream().filter(e -> !e.isPermanent())
+            .limit(20)
             .collect(Collectors.toSet());
         for (Node next : queryAll) {
             drag(next, MouseButton.PRIMARY);
-            List<NumberButton> collect = lookup(NumberButton.class).stream().collect(Collectors.toList());
-            NumberButton randomItem = randomItem(collect);
+            List<NumberButton> buttons = lookup(NumberButton.class).stream().collect(Collectors.toList());
+            NumberButton randomItem = randomItem(buttons);
             moveTo(randomItem);
             drop();
         }

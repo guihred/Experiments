@@ -204,10 +204,10 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifyWorkingWithTableView() {
         show(WorkingWithTableView.class);
         @SuppressWarnings("rawtypes")
-        List<ListCell> collect = lookup(ListCell.class).stream().filter(c -> StringUtils.isNotBlank(c.getText()))
+        List<ListCell> listCells = lookup(ListCell.class).stream().filter(c -> StringUtils.isNotBlank(c.getText()))
             .collect(Collectors.toList());
-        if (!collect.isEmpty()) {
-            clickOn(randomItem(collect));
+        if (!listCells.isEmpty()) {
+            clickOn(randomItem(listCells));
         }
 
     }

@@ -16,6 +16,9 @@ public class Xform extends Group {
     private Scale s = new Scale();
     private Translate t = new Translate();
 
+    public Xform() {
+        getTransforms().addAll(t, rz, ry, rx, s);
+    }
     public Xform(Node... nodes) {
         getTransforms().addAll(t, rz, ry, rx, s);
         getChildren().addAll(nodes);

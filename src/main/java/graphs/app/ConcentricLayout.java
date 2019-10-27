@@ -46,8 +46,9 @@ public class ConcentricLayout extends Layout {
             List<Cell> list = cellsGroups.get(i);
             final double d = 180 * (1 - 1. / cells.size());
             int mul = getMul(cellsGroups, invert, i);
-            List<Cell> collect = cellsGroups.stream().skip(i).flatMap(List<Cell>::stream).collect(Collectors.toList());
-            list.sort(Comparator.comparing(e -> GraphModelAlgorithms.edgesNumber(e, allEdges, collect)));
+            List<Cell> nextLayerCells = cellsGroups.stream().skip(i).flatMap(List<Cell>::stream)
+                .collect(Collectors.toList());
+            list.sort(Comparator.comparing(e -> GraphModelAlgorithms.edgesNumber(e, allEdges, nextLayerCells)));
             CircleLayout.generateCircle(list, center, center, d / list.size() * i, maxHeight * mul);
         }
     }

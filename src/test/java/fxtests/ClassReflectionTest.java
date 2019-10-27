@@ -17,9 +17,9 @@ public class ClassReflectionTest extends AbstractTestExecution {
     @Test
     public void testBaseEntityMethods() {
         List<Class<? extends BaseEntity>> classes = FXTesting.getClasses(BaseEntity.class);
-        List<? extends BaseEntity> collect = classes.stream().map(ClassReflectionUtils::getInstance)
+        List<? extends BaseEntity> entities = classes.stream().map(ClassReflectionUtils::getInstance)
             .collect(Collectors.toList());
-        for (BaseEntity e : collect) {
+        for (BaseEntity e : entities) {
             getLogger().info("{} SQL = {}", e.getClass(), e.toSQL());
         }
     }

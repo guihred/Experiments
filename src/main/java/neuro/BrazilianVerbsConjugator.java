@@ -284,33 +284,33 @@ public class BrazilianVerbsConjugator {
         String[] incompletePast = firstConjugation.get(Mode.IMPERFECT);
         String[] pluPerfect = firstConjugation.get(Mode.PLUPERFECT);
         String[] future = firstConjugation.get(Mode.FUTURE);
-        String[] futureImpefect = firstConjugation.get(Mode.CONDITIONAL);
+        String[] futureImperfect = firstConjugation.get(Mode.CONDITIONAL);
         if (root.endsWith("e")) {
-            addLetter("e", present, past, incompletePast, pluPerfect, future, futureImpefect);
+            addLetter("e", present, past, incompletePast, pluPerfect, future, futureImperfect);
             present[0] = "eio";
             present[1] = "eias";
             present[2] = "eia";
             present[5] = "eiam";
             root = root.substring(0, root.length() - 1);
         } else if (root.endsWith("i")) {
-            addLetter("i", present, past, incompletePast, pluPerfect, future, futureImpefect);
+            addLetter("i", present, past, incompletePast, pluPerfect, future, futureImperfect);
             root = root.substring(0, root.length() - 1);
         } else if (root.endsWith("c")) {
-            addLetter("c", present, past, incompletePast, pluPerfect, future, futureImpefect);
+            addLetter("c", present, past, incompletePast, pluPerfect, future, futureImperfect);
             past[0] = "quei";
             root = root.substring(0, root.length() - 1);
         } else if (root.endsWith("ç")) {
-            addLetter("ç", present, past, incompletePast, pluPerfect, future, futureImpefect);
+            addLetter("ç", present, past, incompletePast, pluPerfect, future, futureImperfect);
             past[0] = "cei";
             root = root.substring(0, root.length() - 1);
 
         } else if (root.endsWith("g")) {
-            addLetter("g", present, past, incompletePast, pluPerfect, future, futureImpefect);
+            addLetter("g", present, past, incompletePast, pluPerfect, future, futureImperfect);
             past[0] = "guei";
             root = root.substring(0, root.length() - 1);
         }
         Map<Mode, String[]> hashMap = new EnumMap<>(Mode.class);
-        hashMap.put(Mode.CONDITIONAL, futureImpefect);
+        hashMap.put(Mode.CONDITIONAL, futureImperfect);
         hashMap.put(Mode.FUTURE, future);
         hashMap.put(Mode.IMPERFECT, incompletePast);
         hashMap.put(Mode.PLUPERFECT, pluPerfect);

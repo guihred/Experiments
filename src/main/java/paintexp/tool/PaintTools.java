@@ -2,6 +2,7 @@ package paintexp.tool;
 
 import java.util.stream.Stream;
 import javafx.scene.Group;
+import utils.StringSigaUtils;
 
 public enum PaintTools {
     SELECT_FREE(new SelectFreeTool()),
@@ -22,8 +23,7 @@ public enum PaintTools {
 	CIRCLE(new EllipseTool()),
 	PICTURE(new PictureTool()),
 	BLUR(new BlurTool()),
-    BORDER(new BorderTool())
-    ;
+    BORDER(new BorderTool());
 
     private PaintTool tool = new DummyTool();
 
@@ -37,8 +37,7 @@ public enum PaintTools {
     }
 
     public String getTooltip() {
-        return tool.getClass().getSimpleName().replaceAll("Tool", "")
-                .replaceAll("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+", " ");
+        return StringSigaUtils.splitMargeCamelCase(tool.getClass().getSimpleName().replaceAll("Tool", ""));
     }
 
 	public static AreaTool getSelectRectTool(PaintTool tool2, Group imageStack2) {

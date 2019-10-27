@@ -233,7 +233,7 @@ public class IndependentTest {
 
     @Test
     public void testStringSiga() {
-        List<String> asList = Arrays.asList("32154", null);
+        List<String> asList = Arrays.asList("32154", null, "私は寿司が好きです。", "");
         for (String nome : asList) {
             measureTime("StringSigaUtils.codificar", () -> codificar(nome));
             measureTime("StringSigaUtils.corrigirProblemaEncoding", () -> corrigirProblemaEncoding(nome));

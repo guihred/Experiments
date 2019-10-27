@@ -94,9 +94,9 @@ public class DotsLauncher extends Application {
             gridPane.getChildren().add(line1);
             over.addAdj(selected);
             Set<Set<DotsSquare>> check = over.check();
-            Set<Set<DotsSquare>> collect = points.values().stream().flatMap(ObservableSet<Set<DotsSquare>>::stream)
+            Set<Set<DotsSquare>> allSquares = points.values().stream().flatMap(ObservableSet<Set<DotsSquare>>::stream)
                 .collect(Collectors.toSet());
-            List<Set<DotsSquare>> squaresFilled = check.stream().filter(s -> !collect.contains(s))
+            List<Set<DotsSquare>> squaresFilled = check.stream().filter(s -> !allSquares.contains(s))
                 .collect(Collectors.toList());
             processNextTurn(squaresFilled);
         }

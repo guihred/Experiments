@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
@@ -22,6 +23,8 @@ import org.junit.Test;
 import paintexp.PaintFileUtils;
 import paintexp.PaintMain;
 import paintexp.tool.AreaTool;
+import paintexp.tool.PaintTool;
+import paintexp.tool.PaintTools;
 import utils.ConsumerEx;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
@@ -30,7 +33,6 @@ import utils.ZoomableScrollPane;
 public class FXEnginePaintTest extends AbstractTestExecution {
 
     private static final String TEST_FILE = "test.png";
-
 
     @Test
     public void testaToolsVerify() throws Exception {
@@ -68,7 +70,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             moveRandom(bound);
             drop();
 
-			if (userData instanceof AreaTool) {
+            if (userData instanceof AreaTool) {
                 if (random.nextBoolean()) {
                     press(KeyCode.CONTROL);
                 }
@@ -109,9 +111,6 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         }
     }
 
-
-
-
     private void testMenus(final Node stack) {
         File defaultFile = ResourceFXUtils.toFile("out");
         PaintFileUtils.setDefaultFile(defaultFile);
@@ -119,12 +118,15 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         if (file.exists()) {
             file.delete();
         }
-        lookup("#SelectRectTool").queryAll().forEach(this::clickOn);
+        List<PaintTool> areaTools = Stream.of(PaintTools.values()).filter(e -> e.getTool() instanceof AreaTool)
+            .map(e -> e.getTool()).collect(Collectors.toList());
+
         List<MenuButton> node = lookup(MenuButton.class).stream().collect(Collectors.toList());
         for (int i = 0; i < node.size(); i++) {
             MenuButton menuButton = node.get(i);
             ObservableList<MenuItem> items = menuButton.getItems();
             for (int j = items.size() - 1; j >= 0; j--) {
+                clickOn(randomItem(areaTools));
                 MenuItem menu = items.get(j);
                 moveTo(stack);
                 double bound2 = stack.getBoundsInParent().getWidth();
@@ -150,7 +152,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 });
                 lookup("Adjust").queryAll().forEach(t -> {
                     clickOn(t);
-                    lookup("#SelectRectTool").queryAll().forEach(this::clickOn);
+                    clickOn(randomItem(areaTools));
                 });
                 type(KeyCode.ESCAPE);
             }
@@ -159,7 +161,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 
     private void typeInParallel() {
         sleep(500);
-		type(typeText(TEST_FILE));
+        type(typeText(TEST_FILE));
         type(KeyCode.ENTER);
     }
 

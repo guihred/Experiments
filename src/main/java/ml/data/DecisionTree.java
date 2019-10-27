@@ -12,7 +12,7 @@ import utils.ResourceFXUtils;
 
 public class DecisionTree {
 
-	private static final double MIN_GAIN = 0.000;
+    private static final double MIN_GAIN = 0.000;
     private static final Logger LOG = HasLogging.log();
 
     public static DecisionNode buildTree(DataframeML frame, String label) {
@@ -38,17 +38,17 @@ public class DecisionTree {
     }
 
     public static double entropy(DataframeML dataframe, String header) {
-    	List<Object> list = dataframe.list(header);
-    	Map<Object, Long> collect = list.stream().collect(Collectors.groupingBy(e->e,Collectors.counting()));
-    	Set<Entry<Object, Long>> entrySet = collect.entrySet();
-    	double s=list.size();
-    	double sum = 0;
-    	for (Entry<Object, Long> entry : entrySet) {
-			double p = entry.getValue()/s;
-			sum-=p*Math.log(p);
-			
-		}
-    	return sum;
+        List<Object> list = dataframe.list(header);
+        Map<Object, Long> valuesCount = list.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+        Set<Entry<Object, Long>> entrySet = valuesCount.entrySet();
+        double s = list.size();
+        double sum = 0;
+        for (Entry<Object, Long> entry : entrySet) {
+            double p = entry.getValue() / s;
+            sum -= p * Math.log(p);
+
+        }
+        return sum;
     }
 
     public static void executeSimpleTest() {
@@ -62,7 +62,7 @@ public class DecisionTree {
         dataframeML.addAll("Red", 1, "Grape");
         dataframeML.addAll("Red", 1, "Grape");
         dataframeML.addAll("Yellow", 3, "Lemon");
-		LOG.info("{}", entropy(dataframeML, labelHeader));
+        LOG.info("{}", entropy(dataframeML, labelHeader));
 
         DecisionNode buildTree = buildTree(dataframeML, labelHeader);
 
@@ -72,12 +72,12 @@ public class DecisionTree {
         LOG.trace("{}", predict);
     }
 
-	public static Question findBestSplit(DataframeML dataframe, String label) {
+    public static Question findBestSplit(DataframeML dataframe, String label) {
         Set<String> cols = new HashSet<>(dataframe.cols());
         cols.remove(label);
         double bestGain = 0.00;
         Question bestQuestion = null;
-		final double currentUncertainty = entropy(dataframe, label);
+        final double currentUncertainty = entropy(dataframe, label);
         for (String col : cols) {
             Set<Object> values = dataframe.freeCategory(col);
             List<QuestionType> values2 = dataframe.getFormat(col) == String.class ? Arrays.asList(QuestionType.EQ)
@@ -91,7 +91,7 @@ public class DecisionTree {
                     if (trueFrame.getSize() == 0 || falseFrame.getSize() == 0) {
                         continue;
                     }
-					double infoGain = currentUncertainty - infoGain(trueFrame, falseFrame, label);
+                    double infoGain = currentUncertainty - infoGain(trueFrame, falseFrame, label);
                     if (infoGain >= bestGain) {
                         bestGain = infoGain;
                         bestQuestion = question;
@@ -102,6 +102,7 @@ public class DecisionTree {
         }
         return bestQuestion;
     }
+
     public static double gini(DataframeML dataframe, String header) {
         double size = dataframe.getSize();
         if (size <= 0) {
@@ -118,7 +119,7 @@ public class DecisionTree {
             return impurity;
         }
         Set<Object> categorize = dataframe.freeCategory(header);
-		Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, header, categorize.size());
+        Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, header, categorize.size());
         double impurity = 1.;
         for (Object cat : categorize) {
             double prob = histogram.get(cat) / size;
@@ -134,29 +135,31 @@ public class DecisionTree {
         return uncertainty - p * gini(left, labelHeader) - (1 - p) * gini(right, labelHeader);
     }
 
-	public static double infoGain(DataframeML left, DataframeML right, String labelHeader) {
+    public static double infoGain(DataframeML left, DataframeML right, String labelHeader) {
 
-		double sum = entropy(left, labelHeader);
-		sum += entropy(right, labelHeader);
-		return sum;
-	}
+        double sum = entropy(left, labelHeader);
+        sum += entropy(right, labelHeader);
+        return sum;
+    }
 
     public static void main(String[] args) {
-		testCatanDecisionTree();
+        testCatanDecisionTree();
     }
 
     public static void testCatanDecisionTree() {
         File csvFile = ResourceFXUtils.getOutFile("catan_log.txt");
-		DataframeML build = DataframeBuilder.build(csvFile);
+        DataframeML build = DataframeBuilder.build(csvFile);
         List<Object> list = build.list("ACTION");
-        list.add(list.remove(0));
-        build.removeCol("WINNER", "PLAYER");
-        DecisionNode buildTree = buildTree(build, "ACTION");
-        LOG.trace("\n{}", buildTree);
-        LOG.trace("{}", buildTree.size());
-        LOG.trace("\n{}", buildTree.shuffle());
-        LOG.trace("\n{}", buildTree.shuffle());
-        LOG.trace("\n{}", buildTree.shuffle());
+        if (list != null) {
+            list.add(list.remove(0));
+            build.removeCol("WINNER", "PLAYER");
+            DecisionNode buildTree = buildTree(build, "ACTION");
+            LOG.trace("\n{}", buildTree);
+            LOG.trace("{}", buildTree.size());
+            LOG.trace("\n{}", buildTree.shuffle());
+            LOG.trace("\n{}", buildTree.shuffle());
+            LOG.trace("\n{}", buildTree.shuffle());
+        }
     }
 
     private static boolean isRedundantNode(DecisionNode trueTree, DecisionNode falseTree) {

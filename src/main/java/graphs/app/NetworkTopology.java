@@ -77,10 +77,10 @@ public class NetworkTopology extends BaseTopology {
 
     private void addDescription(final String ip, final List<String> valueAdded) {
         if (!valueAdded.isEmpty()) {
-            String collect = valueAdded.stream().limit(3).collect(Collectors.joining("\n"));
+            String firstDescriptions = valueAdded.stream().limit(3).collect(Collectors.joining("\n"));
             Cell cell = graph.getModel().getCell(ip);
-            if (cell != null && !cell.getText().contains(collect)) {
-                cell.addText(collect);
+            if (cell != null && !cell.getText().contains(firstDescriptions)) {
+                cell.addText(firstDescriptions);
             }
         }
     }

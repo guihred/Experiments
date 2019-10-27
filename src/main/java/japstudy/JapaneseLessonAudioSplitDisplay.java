@@ -1,90 +1,22 @@
 package japstudy;
 
-import static simplebuilder.SimpleVBoxBuilder.newVBox;
-
 import extract.SongUtils;
 import java.io.File;
-import javafx.beans.binding.Bindings;
-import javafx.scene.Scene;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.SimpleButtonBuilder;
-import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 
 public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDisplay {
 
-    private int currentState;
     private Duration startTime;
-
+    private int currentState;
+    @FXML
+    private Button split;
     @Override
-    public void setCurrent(JapaneseLesson selectedItem) {
-        current.set(lessons.indexOf(selectedItem));
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Japanese Lesson Audio Split Display");
-
-        TextField english = new TextField();
-        TextField japanese = new TextField();
-        TextField romaji = new TextField();
-        TextField start = new TextField();
-        TextField end = new TextField();
-        Text lesson = new Text("Lesson");
-        current.addListener((observable, oldValue, newValue) -> updateCurrentLesson(english, japanese, romaji, start,
-            end, lesson, newValue));
-
-        setListeners(english, japanese, romaji, start, end);
-        Button previous = SimpleButtonBuilder.newButton("P_revious", e -> previousLesson());
-        previous.disableProperty().bind(current.isEqualTo(0));
-
-        Button next = SimpleButtonBuilder.newButton("_Next", e -> nextLesson());
-        next.disableProperty().bind(current.isEqualTo(lessons.size() - 1));
-        Button split = SimpleButtonBuilder.newButton("Spli_t", e -> splitAudio());
-        Button stop = SimpleButtonBuilder.newButton("St_op", e -> {
-            if (mediaPlayer.get().getStatus() == MediaPlayer.Status.PLAYING) {
-                mediaPlayer.get().pause();
-            }
-        });
-        Button splay = SimpleButtonBuilder.newButton("_Play", e -> playLesson());
-        final int stageWidth = 600;
-        primaryStage.setWidth(stageWidth);
-        current.set(0);
-        primaryStage.centerOnScreen();
-        Text currentText = new Text();
-        mediaPlayer.addListener((obj, oldM, newO) -> {
-            newO.setStartTime(Duration.ZERO);
-            currentText.textProperty().bind(Bindings.createStringBinding(
-                () -> SongUtils.formatFullDuration(newO.getCurrentTime()), newO.currentTimeProperty()));
-        });
-        Button save = SimpleButtonBuilder.newButton("_Save and Close", e -> saveAndClose(primaryStage));
-        Scene value = new Scene(new VBox(new HBox(lesson), english, new Text("Romaji"), romaji, new Text("Japanese"),
-            japanese,
-            new HBox(newVBox("Start", start), currentText, newVBox("End", end)),
-            new HBox(previous, splay, stop, split, next, save)));
-        primaryStage.setScene(value);
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
-        value.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ENTER) {
-                nextLesson();
-            }
-        });
-
-        mediaPlayer.set(new MediaPlayer(sound));
-        primaryStage.show();
-    }
-
-    private void splitAudio() {
+    public void splitAudio() {
         Duration currentTime = mediaPlayer.get().getCurrentTime();
-
         if (startTime == null) {
             startTime = currentTime;
             return;
@@ -93,15 +25,20 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
         JapaneseAudio audio = JapaneseAudio.getAudio(japaneseLesson.getLesson());
 
         String type = currentState == 0 ? "ing" : "jap";
-        Duration startTime2 = startTime;
         String format = String.format("%s%dx%d.mp3", type, japaneseLesson.getLesson(), japaneseLesson.getExercise());
         File newFile = ResourceFXUtils.getOutFile(format);
-        new Thread(() -> SongUtils.splitAudio(audio.getFile(), newFile, startTime2, currentTime)).start();
-        currentState = (currentState + 1) % 2;
+        new Thread(() -> SongUtils.splitAudio(audio.getFile(), newFile, startTime, currentTime)).start();
         startTime = currentTime;
+        currentState = (currentState + 1) % 2;
         if (currentState == 0) {
             nextLesson();
         }
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        super.start(primaryStage);
+        split.setVisible(true);
     }
 
     public static void main(String[] args) {

@@ -181,10 +181,10 @@ public class CatanModel extends CatanVariables {
         List<CatanCard> cardsTransfered = new ArrayList<>();
         PlayerColor[] values = PlayerColor.values();
         for (PlayerColor color : values) {
-            List<CatanCard> collect2 = cards.get(color).stream().filter(e -> e.getResource() == selectedType)
+            List<CatanCard> resourceCards = cards.get(color).stream().filter(e -> e.getResource() == selectedType)
                 .collect(Collectors.toList());
-            cards.get(color).removeAll(collect2);
-            cardsTransfered.addAll(collect2);
+            cards.get(color).removeAll(resourceCards);
+            cardsTransfered.addAll(resourceCards);
         }
         cards.get(getCurrentPlayer()).addAll(cardsTransfered);
         resourcesToSelect = SelectResourceType.DEFAULT;

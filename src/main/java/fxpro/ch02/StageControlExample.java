@@ -34,17 +34,18 @@ public class StageControlExample extends Application {
 
     private static final Logger LOG = HasLogging.log();
     private StringProperty title = new SimpleStringProperty();
-    private Text textStageX = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-    private Text textStageY = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-    private Text textStageW = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-    private Text textStageH = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
-    private Text textStageF = new SimpleTextBuilder().textOrigin(VPos.TOP).build();
+    private Text textStageX = new SimpleTextBuilder().id("textStageX").textOrigin(VPos.TOP).build();
+    private Text textStageY = new SimpleTextBuilder().id("textStageY").textOrigin(VPos.TOP).build();
+    private Text textStageW = new SimpleTextBuilder().id("textStageW").textOrigin(VPos.TOP).build();
+    private Text textStageH = new SimpleTextBuilder().id("textStageH").textOrigin(VPos.TOP).build();
+    private Text textStageF = new SimpleTextBuilder().id("textStageF").textOrigin(VPos.TOP).build();
     private CheckBox checkBoxFullScreen = new CheckBox("fullScreen");
     private double dragAnchorX;
     private double dragAnchorY;
 
     @Override
     public void start(Stage stage) {
+        checkBoxFullScreen.setId("checkBoxFullScreen");
         StageStyle stageStyle = StageStyle.TRANSPARENT;
         Parameters parameters = getParameters();
         if (parameters != null) {

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.collections.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.geometry.*?><?import japstudy.*?><?import javafx.scene.control.cell.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+	styleClass="root">
+	<center>
+		<VBox>
+			<children>
+				<Label GridPane.halignment="CENTER" fx:id="label0"
+					text="Lessons" textFill="0x333333ff" />
+				<TableView fx:id="tableView1"
+					onMouseClicked="#onMouseClickedTableView1" prefWidth="591.0"
+					scaleShape="false">
+					<columns>
+						<TableColumn fx:id="lesson" id="lesson"
+							prefWidth="118.0" text="Lesson">
+							<cellValueFactory>
+								<PropertyValueFactory property="lesson" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="exercise" id="exercise"
+							prefWidth="118.0" text="Number">
+							<cellValueFactory>
+								<PropertyValueFactory property="exercise" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="english" id="english"
+							prefWidth="118.0" text="English">
+							<cellValueFactory>
+								<PropertyValueFactory property="english" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="japanese" id="japanese"
+							prefWidth="118.0" text="Japanese">
+							<cellValueFactory>
+								<PropertyValueFactory property="japanese" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn fx:id="romaji" id="romaji"
+							prefWidth="118.0" text="Romaji">
+							<cellValueFactory>
+								<PropertyValueFactory property="romaji" />
+							</cellValueFactory>
+						</TableColumn>
+					</columns>
+					<padding>
+						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+					</padding>
+				</TableView>
+				<Button alignment="CENTER" 
+					onAction="#onActionButton2" text="Start" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+			</children>
+			<padding>
+				<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+			</padding>
+		</VBox>
+	</center>
+</BorderPane>

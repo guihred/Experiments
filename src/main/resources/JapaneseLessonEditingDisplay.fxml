@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.scene.text.*?><?import javafx.geometry.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="root">
+	<fx:define>
+		<Insets bottom="4.0" fx:id="insets2" left="7.0" right="7.0"
+			top="4.0" />
+	</fx:define>
+	<children>
+		<HBox>
+			<children>
+				<Text fx:id="lesson" text="133" />
+			</children>
+		</HBox>
+		<TextField fx:id="english" text="As for me, I like sushi.">
+			<padding>
+				<fx:reference source="insets2" />
+			</padding>
+		</TextField>
+		<Text fx:id="text1" text="Romaji" />
+		<TextField fx:id="romaji" padding="$insets2"
+			text="Watashi wa, sushi ga suki desu." />
+		<Text fx:id="text4" text="Japanese" />
+		<TextField fx:id="japanese" padding="$insets2"
+			text="私は寿司が好きです。" />
+		<HBox>
+			<children>
+				<VBox>
+					<children>
+						<Text fx:id="text12" text="Start" />
+						<TextField fx:id="start" padding="$insets2"
+							text="00:00:00.00" />
+					</children>
+				</VBox>
+				<Text fx:id="currentText" text="00:00:00.00" />
+				<VBox>
+					<children>
+						<Text fx:id="text14" text="End" />
+						<TextField fx:id="end" padding="$insets2"
+							text="00:00:00.00" />
+					</children>
+				</VBox>
+			</children>
+		</HBox>
+		<HBox>
+			<children>
+				<Button alignment="CENTER" fx:id="previous"
+					onAction="#onActionPrevious" text="P_revious">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="play"
+					onAction="#onActionPlay" text="_Play">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="next"
+					onAction="#onActionNext" text="_Next">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="split"
+					onAction="#splitAudio" text="Spli_t" visible="false" managed="${split.visible}">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="saveandClose"
+					id="_Save and Close" onAction="#onActionSaveandClose"
+					text="_Save and Close">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+			</children>
+		</HBox>
+	</children>
+</VBox>

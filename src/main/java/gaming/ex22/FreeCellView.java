@@ -138,10 +138,9 @@ public class FreeCellView extends Group {
         int solitaireNumber = Stream.of(ascendingStacks)
             .map(e -> e.getLastCards() != null ? e.getLastCards().getNumber().getNumber() : 0)
             .min(Comparator.comparing(e -> e)).orElse(1);
-        List<FreeCellStack> collect = Stream.concat(Stream.of(simpleStacks), Stream.of(supportingStacks))
+        List<FreeCellStack> commonStacks = Stream.concat(Stream.of(simpleStacks), Stream.of(supportingStacks))
             .collect(Collectors.toList());
-        for (FreeCellStack stack : collect) {
-
+        for (FreeCellStack stack : commonStacks) {
             for (FreeCellStack cardStack : ascendingStacks) {
                 FreeCellCard solitaireCard = stack.getLastCards();
                 if (solitaireCard != null && !isNotAscendingStackCompatible(cardStack, solitaireCard)

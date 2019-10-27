@@ -14,16 +14,18 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.text.MaskFormatter;
 import org.apache.commons.lang3.StringUtils;
 
 public class StringSigaUtils extends StringUtils {
 
-    private static final int TAMANHO_CPF = 11;
     private static final int TAMANHO_CEP = 8;
+    private static final int TAMANHO_CPF = 11;
     private static final int TAMANHO_CNPJ = 14;
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
         Double.class);
+    public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
 
     public static String changeCase(String simpleName) {
         if (Character.isLowerCase(simpleName.charAt(0))) {
@@ -161,10 +163,10 @@ public class StringSigaUtils extends StringUtils {
         return links;
     }
 
-
     public static String intFormating(int length) {
         return "\t%" + length + "d";
     }
+
 
     public static Integer intValue(String v) {
         try {
@@ -219,6 +221,14 @@ public class StringSigaUtils extends StringUtils {
 
     public static String simNao(Boolean a) {
         return a ? "Sim" : "Não";
+    }
+
+    public static String[] splitCamelCase(String readLine) {
+        return readLine.split(REGEX_CAMEL_CASE);
+    }
+
+    public static String splitMargeCamelCase(String readLine) {
+        return Stream.of(readLine.split(StringSigaUtils.REGEX_CAMEL_CASE)).collect(Collectors.joining(" "));
     }
 
     public static String substituirNaoNumeros(String numero) {

@@ -13,10 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 
 public final class TermFrequency {
     private static final Logger LOGGER = HasLogging.log();
-    private static final String REGEX = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
 
     private static final Map<File, Map<String, Long>> MAPA_DOCUMENTOS = new HashMap<>();
 
@@ -52,7 +52,7 @@ public final class TermFrequency {
             do {
                 readLine = buff.readLine();
                 if (readLine != null) {
-                    Stream.of(readLine.split(REGEX)).parallel()
+                    Stream.of(StringSigaUtils.splitCamelCase(readLine)).parallel()
                         .map(String::toLowerCase)
                         .filter(e -> !StringUtils.isNumeric(e))
                         .filter(t -> !ResourceFXUtils.getJavaKeywords().contains(t))

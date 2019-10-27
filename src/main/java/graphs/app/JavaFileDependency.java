@@ -197,10 +197,10 @@ public class JavaFileDependency {
                 List<JavaFileDependency> path = new ArrayList<>();
                 dependecy.search(name1, visited, path);
                 if (!path.isEmpty()) {
-                    List<String> collect = path.stream().map(JavaFileDependency::getFullName)
+                    List<String> filesFullPath = path.stream().map(JavaFileDependency::getFullName)
                         .collect(Collectors.toList());
-                    allPaths.addAll(collect);
-                    HasLogging.log().info("{} {}", dependecy.getFullName(), collect);
+                    allPaths.addAll(filesFullPath);
+                    HasLogging.log().info("{} {}", dependecy.getFullName(), filesFullPath);
                 }
                 testClasses.addAll(path.stream().filter(e -> e.getFullName().contains(name1))
                     .map(JavaFileDependency::getName).collect(Collectors.toList()));

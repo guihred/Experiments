@@ -9,9 +9,12 @@ import furigana.FuriganaCrawlerApp;
 import fxpro.ch06.TaskProgressApp;
 import fxsamples.BackgroundProcesses;
 import japstudy.*;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Cell;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
@@ -102,18 +105,29 @@ public class FXHibernateTest extends AbstractTestExecution {
     @Test
     public void verifyJapaneseLessonApplication() {
         show(JapaneseLessonApplication.class);
+        Set<Button> lookup = lookup(Button.class);
+        doubleClickOn(randomItem(lookup(Cell.class)));
+        lookup(Button.class).stream().filter(t -> !lookup.contains(t)).forEach(this::clickOn);
+        clickOn(randomItem(lookup(Cell.class)));
+        type(KeyCode.SHIFT);
         clickAllButtons();
     }
 
     @Test
     public void verifyJapaneseLessonAudioSplitDisplay() {
         show(JapaneseLessonAudioSplitDisplay.class);
+        for (Node e : lookup(Button.class).stream().limit(4).collect(Collectors.toList())) {
+            clickOn(e);
+            sleep(WAIT_TIME);
+        }
         clickAllButtons();
     }
 
     @Test
     public void verifyJapaneseLessonDisplay() {
         show(JapaneseLessonDisplay.class);
+        clickAllButtons();
+        lookup(CheckBox.class).forEach(this::clickOn);
         clickAllButtons();
     }
 

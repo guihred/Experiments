@@ -38,7 +38,7 @@ public final class WordService {
 
         try (InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
             XWPFDocument document1 = new XWPFDocument(resourceAsStream);
-				FileOutputStream stream = new FileOutputStream(outStream)) {
+            FileOutputStream stream = new FileOutputStream(outStream)) {
             for (XWPFHeader p : document1.getHeaderList()) {
                 List<XWPFParagraph> paragraphs = p.getParagraphs();
                 for (XWPFParagraph paragraph : paragraphs) {
@@ -88,8 +88,8 @@ public final class WordService {
         for (int l = 1; l < size; l++) {
             cell.removeParagraph(1);
         }
-        XWPFParagraph xwpfParagraph = size > 0 ? cell.getParagraphs().get(0) : cell.addParagraph();
-        substituirParagrafo(xwpfParagraph, string);
+        XWPFParagraph paragraph = size > 0 ? cell.getParagraphs().get(0) : cell.addParagraph();
+        substituirParagrafo(paragraph, string);
     }
 
     private static void substituirParagrafo(Map<String, Object> mapaSubstituicao, XWPFParagraph paragraph) {
@@ -111,14 +111,10 @@ public final class WordService {
                     ctText.setStringValue(object.toString().split(":")[1]);
                     CTR ctr = CTR.Factory.newInstance();
                     ctr.setTArray(new CTText[] { ctText });
-
                     // Insert the linked text into the link
                     cLink.setRArray(new CTR[] { ctr });
-
                 }
-
             }
-
         }
     }
 

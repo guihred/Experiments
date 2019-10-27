@@ -120,8 +120,9 @@ public class SphereSystemApp extends Application {
 
 	private KeyValue[] valuesAt42(List<CubeXForm> cube1X, List<Xsphere> spheres) {
 		Stream<KeyValue> array = spheres.stream().map(c -> new KeyValue(c.getRx().angleProperty(), 20 * 360));
-		Stream<KeyValue> collect = cube1X.stream().map(e -> new KeyValue(e.getRy().angleProperty(), rndAngle()));
-		return Stream.concat(array, collect).toArray(KeyValue[]::new);
+        Stream<KeyValue> spinningSpheres = cube1X.stream()
+            .map(e -> new KeyValue(e.getRy().angleProperty(), rndAngle()));
+        return Stream.concat(array, spinningSpheres).toArray(KeyValue[]::new);
 	}
 
 	/**

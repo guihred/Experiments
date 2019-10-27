@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import javafx.scene.text.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.geometry.*?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+	styleClass="root">
+	<children>
+		<HBox>
+			<children>
+				<Text fx:id="lesson" text="Lesson: 12" />
+				<Text fx:id="scoreText" text=" Score: 100.00%" />
+				<CheckBox fx:id="showRomaji" textFill="0x333333ff" />
+			</children>
+		</HBox>
+		<Text fx:id="english" text="Cure it, please."
+			textAlignment="CENTER" wrappingWidth="500.0" />
+		<Text fx:id="romajiText" text="Romaji" visible="false" />
+		<Text fx:id="romaji" text="Naoshite kudasai."
+			textAlignment="CENTER" visible="false" wrappingWidth="500.0" />
+		<Text fx:id="japaneseText" text="Japanese" visible="false" />
+		<Text fx:id="japanese" text="治してださい。" textAlignment="CENTER"
+			visible="false" />
+		<TextField fx:id="answer">
+			<padding>
+				<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
+			</padding>
+		</TextField>
+		<Button alignment="CENTER" fx:id="next" id="Next"
+			onAction="#onActionNext" text="Next" textFill="0x333333ff">
+			<padding>
+				<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+			</padding>
+		</Button>
+	</children>
+</VBox>

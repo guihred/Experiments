@@ -12,7 +12,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -21,6 +20,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleRotateBuilder;
 
@@ -64,7 +64,6 @@ public class CubeNode extends Parent {
     private CubeFace topFace;
 
     public CubeNode() {
-
         angleX.addListener(ov -> arrangeFacesZOrder());
 
         angleY.addListener((ov, oldValue, newValue) -> arrangeFacesZOrder());
@@ -122,7 +121,8 @@ public class CubeNode extends Parent {
                     hideMapTimeline.playFromStart();
                 }
             } else if (ke.getCode() == KeyCode.ESCAPE) {
-                Platform.exit();
+                Stage window = (Stage) getScene().getWindow();
+                window.close();
             }
         });
     }

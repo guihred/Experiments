@@ -1,86 +1,66 @@
 package japstudy;
 
 import javafx.application.Application;
-import javafx.collections.ObservableList;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import simplebuilder.SimpleTableViewBuilder;
+import simplebuilder.SimpleDialogBuilder;
+import utils.CommonsFX;
 import utils.HibernateUtil;
 
 public class JapaneseLessonApplication extends Application {
+    @FXML
+    private TableView<JapaneseLesson> tableView1;
 
-    public static final String LESSON = "Lesson";
+    public void initialize() {
+        tableView1.setItems(JapaneseLessonReader.getLessonsWait());
+    }
+
+    public void onActionButton2() {
+        JapaneseLessonDisplayer displayer = new JapaneseLessonDisplayer(tableView1.getItems());
+        SimpleDialogBuilder.bindWindow(displayer, tableView1);
+        displayer.show();
+    }
+
+    public void onMouseClickedTableView1(MouseEvent e) {
+        if (e.getClickCount() > 1) {
+            editItem(tableView1);
+        }
+    }
 
     @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Japanese Lesson Table Displayer");
-        BorderPane root = new BorderPane();
+    public void start(Stage primaryStage) throws Exception {
         final int width = 600;
         final int height = 250;
-        Scene scene = new Scene(root, width, height, Color.WHITE);
-        // create a grid pane
-		VBox gridpane = new VBox();
-        gridpane.setPadding(new Insets(5));
-        root.setCenter(gridpane);
-        TableView<JapaneseLesson> tabelaJapaneseLessons = tabelaJapaneseLessons();
-        Label estoqueRosario = new Label("Lessons");
-        Button button = new Button("Start");
-        button.setOnAction(e -> new JapaneseLessonDisplayer(tabelaJapaneseLessons.getItems()).show());
-		gridpane.getChildren().addAll(estoqueRosario, tabelaJapaneseLessons, button);
-        GridPane.setHalignment(estoqueRosario, HPos.CENTER);
-        tabelaJapaneseLessons.setItems(getLessons());
-        scene.setOnKeyPressed(e -> {
+        CommonsFX.loadFXML("Japanese Lesson Table Displayer", "JapaneseLessonApplication.fxml", this, primaryStage,
+            width, height);
+        primaryStage.getScene().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SHIFT) {
-                editItem(tabelaJapaneseLessons);
+                editItem(tableView1);
             }
         });
-        // selection listening
-        final int padding = 25;
-        tabelaJapaneseLessons.prefWidthProperty().bind(primaryStage.widthProperty().add(-padding));
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+    }
+
+    private void editItem(final TableView<JapaneseLesson> lessonsTable) {
+        TableViewSelectionModel<JapaneseLesson> selectionModel = lessonsTable.getSelectionModel();
+        if (!selectionModel.isEmpty()) {
+            showEditingDiplay(selectionModel.getSelectedItem());
+        }
+    }
+
+    private void showEditingDiplay(JapaneseLesson selectedItem) {
+        JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
+        Stage primaryStage = new Stage();
+        SimpleDialogBuilder.bindWindow(primaryStage, tableView1);
+        japaneseLessonEditingDisplay.start(primaryStage);
+        japaneseLessonEditingDisplay.setCurrent(selectedItem);
     }
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    private static void editItem(final TableView<JapaneseLesson> lessonsTable) {
-        TableViewSelectionModel<JapaneseLesson> selectionModel = lessonsTable.getSelectionModel();
-        if (!selectionModel.isEmpty()) {
-            JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
-            Stage primaryStage = new Stage();
-            japaneseLessonEditingDisplay.start(primaryStage);
-            JapaneseLesson selectedItem = selectionModel.getSelectedItem();
-            japaneseLessonEditingDisplay.setCurrent(selectedItem);
-        }
-    }
-
-    private static ObservableList<JapaneseLesson> getLessons() {
-        return JapaneseLessonReader.getLessonsWait();
-    }
-
-    private static TableView<JapaneseLesson> tabelaJapaneseLessons() {
-
-        return new SimpleTableViewBuilder<JapaneseLesson>().scaleShape(false).addColumn(LESSON, "lesson")
-            .addColumn("Number", "exercise").addColumn("English", "english").addColumn("Japanese", "japanese")
-            .addColumn("Romaji", "romaji").equalColumns().onDoubleClick((JapaneseLesson selectedItem) -> {
-                JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
-                japaneseLessonEditingDisplay.start(new Stage());
-                japaneseLessonEditingDisplay.setCurrent(selectedItem);
-            }).build();
     }
 }

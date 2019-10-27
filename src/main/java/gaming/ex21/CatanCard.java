@@ -87,9 +87,9 @@ public class CatanCard extends Rectangle {
             .collect(Collectors.groupingBy(CatanCard::getResource)).values().stream().collect(Collectors.toList());
         double layoutX = 0;
         double layoutY = 0;
-        List<CatanCard> collect = currentCards.stream().filter(e -> e.getResource() == null)
+        List<CatanCard> developmentCards = currentCards.stream().filter(e -> e.getResource() == null)
             .collect(Collectors.toList());
-        values.add(collect);
+        values.add(developmentCards);
         for (List<CatanCard> list : values) {
             for (CatanCard catanCard : list) {
                 catanCard.relocate(layoutY, layoutX);

@@ -13,6 +13,7 @@ import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 
 public final class TermFrequencyIndex {
     private static final Logger LOGGER = HasLogging.log();
@@ -74,8 +75,6 @@ public final class TermFrequencyIndex {
      * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
      */
 
-    public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|\\W+";
-
     private TermFrequencyIndex() {
     }
 
@@ -135,7 +134,7 @@ public final class TermFrequencyIndex {
                 readLine = bufferedReader.readLine();
                 if (readLine != null) {
 
-                    String[] split = readLine.split(REGEX_CAMEL_CASE);
+                    String[] split = StringSigaUtils.splitCamelCase(readLine);
                     List<String> asList = Arrays.asList(split);
                     asList.parallelStream().filter(a -> !a.isEmpty()).reduce(frequencyMap, (mapa, a) -> {
                         Long long1 = mapa.computeIfAbsent(a.toLowerCase(), m -> 0L);
@@ -166,10 +165,7 @@ public final class TermFrequencyIndex {
 
             entrySet.sort(TermFrequencyIndex::compare);
             // MAP
-            File file2 = ResourceFXUtils.toFile("out");
-
-            File file = new File(file2, "resultado.txt");
-
+            File file = ResourceFXUtils.getOutFile("resultado.txt");
             printWordFound(entrySet, file);
         } catch (Exception e2) {
             LOGGER.error("", e2);

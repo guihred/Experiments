@@ -43,10 +43,6 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return this;
     }
 
-
-
-
-
     @SuppressWarnings("unchecked")
     public static <C, V extends ListCell<C>> Callback<ListView<C>, ListCell<C>> newCellFactory(
         final BiConsumer<C, V> value) {
