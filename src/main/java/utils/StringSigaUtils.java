@@ -1,6 +1,6 @@
 package utils;
 
-import static utils.SupplierEx.get;
+import static utils.SupplierEx.getIgnore;
 
 import java.lang.Character.UnicodeBlock;
 import java.net.URLDecoder;
@@ -35,7 +35,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String codificar(String nome) {
-        return get(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
+        return getIgnore(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
 
     public static String corrigirProblemaEncoding(String nomeEncoding) {
@@ -47,7 +47,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String decodificar(String nome) {
-        return get(() -> URLDecoder.decode(Objects.toString(nome, ""), "UTF-8"), nome);
+        return getIgnore(() -> URLDecoder.decode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
 
     public static String fixEncoding(String latin1) {
@@ -97,10 +97,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static Integer getApenasNumerosInt(String texto) {
-        if (isNotBlank(texto)) {
-            return Integer.parseInt(getApenasNumeros(texto));
-        }
-        return null;
+        return SupplierEx.getIgnore(() -> Integer.parseInt(getApenasNumeros(texto)), null);
     }
 
     public static String getCEPFormatado(Long cep) {
@@ -131,11 +128,10 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static Long getCpfDesformatado(String cpf) {
-        if (StringUtils.isNotBlank(cpf)) {
+        return SupplierEx.getIgnore(() -> {
             String valor = retirarMascara(cpf);
             return Long.valueOf(valor);
-        }
-        return null;
+        }, null);
     }
 
     public static String getCpfFormatado(Long cpf) {
@@ -166,7 +162,6 @@ public class StringSigaUtils extends StringUtils {
     public static String intFormating(int length) {
         return "\t%" + length + "d";
     }
-
 
     public static Integer intValue(String v) {
         try {
@@ -242,11 +237,11 @@ public class StringSigaUtils extends StringUtils {
         if (numero instanceof Number) {
             return ((Number) numero).intValue();
         }
-        return get(() -> toInteger(Objects.toString(numero, "")), 0);
+        return getIgnore(() -> toInteger(Objects.toString(numero, "")), 0);
     }
 
     public static Integer toInteger(String numero) {
-        return SupplierEx.getIgnore(() -> Integer.valueOf(Objects.toString(numero, "").replaceAll("\\D", "")), 0);
+        return getIgnore(() -> Integer.valueOf(Objects.toString(numero, "").replaceAll("\\D", "")), 0);
     }
 
     public static <T extends Comparable<?>> Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,
@@ -283,7 +278,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     private static String formatar(String pattern, String valor) {
-        return get(() -> {
+        return getIgnore(() -> {
             MaskFormatter mask = new MaskFormatter(pattern);
             mask.setValueContainsLiteralCharacters(false);
             return mask.valueToString(valor);
@@ -291,14 +286,14 @@ public class StringSigaUtils extends StringUtils {
     }
 
     private static boolean hasBom(byte[] input) {
-		return input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB && (input[2] & 0xFF) == 0xBF;
-	}
+        return input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB && (input[2] & 0xFF) == 0xBF;
+    }
 
     private static boolean paragraphEnd(String str) {
         return str.endsWith(".") || str.endsWith(".”") || str.matches("Texto \\d+");
     }
 
-	private static boolean validUTF8(byte[] input) {
+    private static boolean validUTF8(byte[] input) {
         int i = 0;
         // Check for BOM
         if (hasBom(input)) {

@@ -25,16 +25,21 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.StageHelper;
 
 public final class EditSongHelper {
+    private static final Logger LOG = HasLogging.log();
+
     private EditSongHelper() {
     }
 
@@ -65,6 +70,11 @@ public final class EditSongHelper {
 
     public static void splitAndSave(Music selectedItem, Slider initialSlider, Slider finalSlider, File outFile,
         ProgressIndicator progressIndicator, ObjectProperty<MediaPlayer> mediaPlayer) {
+        MediaPlayer mediaPlayer2 = mediaPlayer.get();
+        if (mediaPlayer2 == null || mediaPlayer2.getStatus() == Status.UNKNOWN) {
+            LOG.error("Cannot Split And Save Audio {}", selectedItem);
+            return;
+        }
         DoubleProperty progress = SongUtils.splitAudio(selectedItem.getArquivo(), outFile,
             mediaPlayer.get().getTotalDuration().multiply(initialSlider.getValue()),
             mediaPlayer.get().getTotalDuration().multiply(finalSlider.getValue()));
@@ -89,7 +99,13 @@ public final class EditSongHelper {
 
     public static void splitAudio(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
         ObjectProperty<Duration> startTime) {
-        Duration currentTime = mediaPlayer.get().getTotalDuration().multiply(currentSlider.getValue());
+        MediaPlayer mediaPlayer2 = mediaPlayer.get();
+        if (mediaPlayer2 == null || mediaPlayer2.getStatus() == Status.UNKNOWN) {
+            LOG.error("CAN'T Split Audio {}", file);
+            return;
+        }
+        LOG.info("Splitting {} status {}", mediaPlayer2, mediaPlayer2.getStatus());
+        Duration currentTime = mediaPlayer2.getTotalDuration().multiply(currentSlider.getValue());
         Music music = new Music(file);
         VBox root = new VBox();
         root.getChildren().addAll(createField("Título", music.tituloProperty()));
@@ -146,8 +162,10 @@ public final class EditSongHelper {
     }
 
     public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, boolean valueChanging) {
-        if (!valueChanging) {
+        if (!valueChanging && mediaPlayer2 != null && mediaPlayer2.getStatus() != Status.UNKNOWN) {
             double pos = currentSlider.getValue();
+            LOG.info("UPDATING {} status {}", mediaPlayer2, mediaPlayer2.getStatus());
+
             final Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
             SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer2);
         }

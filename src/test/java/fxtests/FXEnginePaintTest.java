@@ -129,11 +129,14 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 clickOn(randomItem(areaTools));
                 MenuItem menu = items.get(j);
                 moveTo(stack);
-                double bound2 = stack.getBoundsInParent().getWidth();
-                moveBy(-bound2 / 4, -bound2 / 4);
-                drag(MouseButton.PRIMARY);
-                moveBy(bound2 / 2, bound2 / 2);
-                drop();
+                if (random.nextBoolean()) {
+                    double bound2 = stack.getBoundsInParent().getWidth();
+                    moveBy(-bound2 / 4, -bound2 / 4);
+                    drag(MouseButton.PRIMARY);
+                    moveBy(bound2 / 2, bound2 / 2);
+                    drop();
+                }
+
                 getLogger().info("FIRING {}", menu.getId());
                 if (i == 0 && items.size() == j + 1 || i == 0 && j > 0 && items.size() != j + 1) {
                     new Thread(this::typeInParallel).start();

@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -39,11 +38,11 @@ public final class ResourceFXUtils {
 
     private static final Logger LOGGER = HasLogging.log();
     private static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
-    "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
-    "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
-    "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
-    "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
-    "super", "while");
+        "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
+        "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
+        "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
+        "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
+        "super", "while");
 
     private ResourceFXUtils() {
     }
@@ -84,6 +83,10 @@ public final class ResourceFXUtils {
         return getPathByExtension(dir, other).stream().findFirst().orElse(null);
     }
 
+    public static List<String> getJavaKeywords() {
+        return JAVA_KEYWORDS;
+    }
+
     public static File getOutFile() {
         File parentFile = toFile("alice.txt").getParentFile();
         File file = new File(parentFile, "out");
@@ -103,13 +106,13 @@ public final class ResourceFXUtils {
     }
 
     public static List<Path> getPathByExtension(final File dir, final String... other) {
-        try (Stream<Path> walk = Files.walk(dir.toPath(), 20, FileVisitOption.FOLLOW_LINKS)) {
-            return walk.filter(e -> Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex)))
-                .collect(Collectors.toList());
-        } catch (IOException e) {
-            LOGGER.error("", e);
-        }
-        return Collections.emptyList();
+        return SupplierEx.get(() -> {
+            try (Stream<Path> walk = Files.walk(dir.toPath(), 20)) {
+                return walk
+                    .filter(PredicateEx.makeTest(e -> Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex))))
+                    .collect(Collectors.toList());
+            }
+        }, Collections.emptyList());
     }
 
     public static File getUserFolder(final String dir) {
@@ -203,9 +206,5 @@ public final class ResourceFXUtils {
     private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
         return (value - min) * (newMax - newMin) / (max - min) + newMin;
     }
-
-	public static List<String> getJavaKeywords() {
-		return JAVA_KEYWORDS;
-	}
 
 }

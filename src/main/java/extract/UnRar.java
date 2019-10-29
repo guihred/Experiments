@@ -20,15 +20,14 @@ public final class UnRar {
     private static final Logger LOGGER = HasLogging.log();
 
     private List<String> successfulFiles = new ArrayList<>();
-    private List<String> errorFiles = new ArrayList<>();
     private List<String> unsupportedFiles = new ArrayList<>();
+    private List<String> errorFiles = new ArrayList<>();
 
     private UnRar() {
     }
 
     private void extractRar(File file) {
         File output = new File(file.getParentFile(), file.getName().replaceAll("\\.rar", ""));
-
         if (file.exists()) {
             if (!output.exists()) {
                 output.mkdir();
@@ -44,17 +43,11 @@ public final class UnRar {
 
     private void printSummary() {
         LOGGER.info("\nSuccessfully tested archives:\n");
-        for (String sf : successfulFiles) {
-            LOGGER.info(sf);
-        }
+        successfulFiles.forEach(LOGGER::info);
         LOGGER.info("Unsupported archives:\n");
-        for (String uf : unsupportedFiles) {
-            LOGGER.info(uf);
-        }
+        unsupportedFiles.forEach(LOGGER::info);
         LOGGER.info("Failed archives:");
-        for (String ff : errorFiles) {
-            LOGGER.info(ff);
-        }
+        errorFiles.forEach(LOGGER::info);
         LOGGER.info("\nSummary\n");
         LOGGER.info("tested:\t\t{}", successfulFiles.size() + unsupportedFiles.size() + errorFiles.size());
         LOGGER.info("successful:\t{}", successfulFiles.size());

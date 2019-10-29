@@ -1,6 +1,5 @@
 package ethical.hacker.ssh;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,7 +7,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
-import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.ProtectionDomain;
 import java.util.*;
@@ -20,6 +18,7 @@ import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.ValidateUtils;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.assertj.core.api.exception.RuntimeIOException;
+import utils.SupplierEx;
 
 final class CommonTestSupportUtils {
     /**
@@ -61,7 +60,6 @@ final class CommonTestSupportUtils {
     private static final AtomicReference<KeyPairProvider> KEYPAIR_PROVIDER_HOLDER = new AtomicReference<>();
 
     private CommonTestSupportUtils() {
-        throw new UnsupportedOperationException("No instance allowed");
     }
 
     public static KeyPairProvider createTestHostKeyProvider(Class<?> anchor) {
@@ -166,12 +164,9 @@ final class CommonTestSupportUtils {
      * @see #toPathSource(URI)
      */
     private static Path getClassContainerLocationPath(Class<?> clazz) {
-        try {
-            URI uri = getClassContainerLocationURI(clazz);
-            return toPathSource(uri);
-        } catch (URISyntaxException e) {
+        return SupplierEx.makeSupplier(() -> toPathSource(getClassContainerLocationURI(clazz)), e -> {
             throw new IllegalArgumentException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
-        }
+        }).get();
     }
 
     /**
@@ -208,12 +203,7 @@ final class CommonTestSupportUtils {
                 return null;
             }
 
-            try {
-                url = new URL(srcForm);
-            } catch (MalformedURLException e) {
-                throw new IllegalArgumentException("getClassContainerLocationURL(" + clazz.getName() + ")"
-                    + " Failed to create URL=" + srcForm + " from " + url.toExternalForm() + ": " + e.getMessage());
-            }
+            url = SupplierEx.get(() -> new URL(srcForm));
         }
 
         return url;
@@ -292,26 +282,16 @@ final class CommonTestSupportUtils {
         if (!src.startsWith(FILE_URL_PREFIX)) {
             throw new RuntimeIOException("toFileSource(" + src + ") not a '" + FILE_URL_SCHEME + "' scheme");
         }
+        return SupplierEx.remap(() -> Paths.get(new URI(src)),
+            "toFileSource(" + src + ")" + " cannot convert to URI ");
 
-        try {
-            return Paths.get(new URI(src));
-        } catch (URISyntaxException e) {
-            throw new RuntimeIOException("toFileSource(" + src + ")" + " cannot (" + e.getClass().getSimpleName()
-                + ")" + " convert to URI: " + e.getMessage(), e);
-        }
     }
 
     private static <P extends KeyIdentityProvider> P validateKeyPairProvider(P provider) {
         Objects.requireNonNull(provider, "No provider");
-
         // get the I/O out of the way
-        Iterable<KeyPair> keys;
-        try {
-            keys = Objects.requireNonNull(provider.loadKeys(null), "No keys loaded");
-        } catch (IOException | GeneralSecurityException e) {
-            throw new RuntimeIOException(
-                "Unexpected " + e.getClass().getSimpleName() + ")" + " keys loading exception: " + e.getMessage(), e);
-        }
+        Iterable<KeyPair> keys = SupplierEx
+            .get(() -> Objects.requireNonNull(provider.loadKeys(null), "No keys loaded"));
 
         if (keys instanceof Collection<?>) {
             ValidateUtils.checkNotNullAndNotEmpty((Collection<?>) keys, "Empty keys loaded");

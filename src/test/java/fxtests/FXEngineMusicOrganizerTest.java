@@ -1,50 +1,59 @@
 package fxtests;
 
+import static java.nio.file.Files.copy;
+
 import audio.mp3.EditSongController;
 import audio.mp3.FilesComparator;
 import audio.mp3.MusicOrganizer;
+import extract.Music;
+import extract.MusicReader;
 import fxpro.ch08.BasicAudioPlayerWithControlLauncher;
 import fxsamples.PlayingAudio;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Cell;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.testfx.util.WaitForAsyncUtils;
 import utils.ConsoleUtils;
 import utils.ConsumerEx;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
-	@Test
-	public void splitAudio() {
+    // @Test
+    public void splitAudio() {
         show(MusicOrganizer.class);
         clickOn("Carregar _Vídeos");
-        typeIfLinux();
+        type(KeyCode.ENTER);
         sleep(1000);
         doubleClickOn(lookupFirst(TableRow.class));
-		WaitForAsyncUtils.waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
         lookup("_Convert to Mp3").queryAll().forEach(this::clickOn);
-		WaitForAsyncUtils.waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents();
         ConsoleUtils.waitAllProcesses();
-
         clickOn("Carregar _Musicas");
-		typeIfLinux();
+        type(KeyCode.ENTER);
         doubleClickOn(lookupFirst(TableRow.class));
         lookup("_Play/Pause").queryAll().forEach(this::clickOn);
-		lookup("_Split").queryAll().forEach(this::clickOn);
+        lookup("_Split").queryAll().forEach(this::clickOn);
         clickOn("_Consertar Musicas");
-	}
+    }
 
-	@Test
+    // @Test
     public void verifyBasicAudioPlayerWithControlLauncher() throws Exception {
-         show(BasicAudioPlayerWithControlLauncher.class);
+        show(BasicAudioPlayerWithControlLauncher.class);
         Set<Node> queryAll = lookup(".button").queryAll();
         queryAll.forEach(ConsumerEx.ignore(t -> {
             clickOn(t);
@@ -52,51 +61,68 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         }));
     }
 
-    @Test
-    public void verifyEditSong() throws Exception {
-        EditSongController show = show(EditSongController.class);
-        show.setClose(false);
-        List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
-        for (int i = 0; i < queryAll.size(); i++) {
-            Node node = queryAll.get(i);
-            RunnableEx.ignore(() -> clickOn(node));
-            RunnableEx.ignore(() -> sleep(1000));
-        }
-    }
-    @Test
+    // @Test
     public void verifyEditSong2() throws Exception {
-        EditSongController show = show(EditSongController.class);
-        show.setClose(false);
-        List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
-        for (int i = 0; i < queryAll.size(); i++) {
-            Node node = queryAll.get(i);
-            RunnableEx.ignore(() -> clickOn(node));
-            moveSliders(10);
-            RunnableEx.ignore(() -> sleep(1000));
-        }
+        FXTesting.measureTime("new EditSongController(song)", () -> {
+            Path firstSong = getRandomSong();
+            File file = firstSong.toFile();
+            File outFile2 = ResourceFXUtils.getOutFile(file.getName());
+            copy(firstSong, outFile2.toPath());
+
+            Music readTags = MusicReader.readTags(outFile2);
+            show(new EditSongController(readTags));
+            List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
+            for (int i = 0; i < queryAll.size(); i++) {
+                Node node = queryAll.get(i);
+                RunnableEx.ignore(() -> clickOn(node));
+                moveSliders(10);
+                RunnableEx.ignore(() -> sleep(1000));
+            }
+        });
+        FXTesting.measureTime("new EditSongController", () -> {
+            show(EditSongController.class);
+            List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
+            for (int i = queryAll.size() - 1; i >= 0; i--) {
+                Node node = queryAll.get(i);
+                RunnableEx.ignore(() -> clickOn(node));
+                moveSliders(10);
+                RunnableEx.ignore(() -> sleep(1000));
+            }
+        });
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void verifyFileComparator() throws Exception {
         FilesComparator application = show(FilesComparator.class);
-        TableView<File> query = lookupFirst(TableView.class);
         File[] listFiles = ResourceFXUtils.getUserFolder("Music").listFiles(File::isDirectory);
-        application.addSongsToTable(query, listFiles[0]);
+        int i = 0;
+        Set<TableView> lookup = lookup(TableView.class);
+        for (TableView<File> query : lookup) {
+            application.addSongsToTable(query, listFiles[i++ % listFiles.length]);
+            while (application.getProgress() < 1) {
+                // DOES NOTHING
+            }
+        }
+        for (TableView<?> tableView : lookup) {
+            clickOn(from(tableView).lookup(Cell.class::isInstance).queryLabeled());
+        }
+        lookup(Button.class).stream()
+            .filter(e -> !e.getText().startsWith("File") && !e.getText().equals("X"))
+            .forEach(ConsumerEx.ignore(this::clickOn));
+
     }
 
-    @Test
-	    public void verifyPlayingAudio() throws Exception {
-	        PlayingAudio show = show(PlayingAudio.class);
-	        interactNoWait(() -> show.playMedia(ResourceFXUtils.toExternalForm("TeenTitans.mp3")));
-	        tryClickButtons();
-	    }
+    // @Test
+    public void verifyPlayingAudio() throws Exception {
+        PlayingAudio show = show(PlayingAudio.class);
+        interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
+        tryClickButtons();
+    }
 
-    private void typeIfLinux() {
-		// type(KeyCode.M);
-		// type(KeyCode.U);
-		// type(KeyCode.DOWN);
-		// type(KeyCode.TAB);
-        type(KeyCode.ENTER);
-	}
+    private Path getRandomSong() {
+        File outFile = ResourceFXUtils.getUserFolder("Music");
+        Path firstSong = randomItem(ResourceFXUtils.getPathByExtension(outFile, "mp3"));
+        return firstSong;
+    }
 }

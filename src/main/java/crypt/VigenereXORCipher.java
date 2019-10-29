@@ -40,9 +40,9 @@ public class VigenereXORCipher {
                 continue;
             }
             String keysString = Arrays.toString(keys);
-            LOGGER.info(keysString);
+            LOGGER.trace(keysString);
             String encrypt = encrypt(keys, numbers);
-            LOGGER.info(encrypt);
+            LOGGER.trace(encrypt);
         }
     }
 
@@ -93,11 +93,10 @@ public class VigenereXORCipher {
                     for (int k = 0; k < 256; k++) {
                         sum += MAPA_FREQUENCIA.getOrDefault(k, 1.0) * charHistogram.getOrDefault(k, 0L).doubleValue()
                             / Double.valueOf(size);
-
                     }
                     if (maxSum < sum) {
                         maxSum = sum;
-                        LOGGER.info("{},{},{}", i, maxSum, n);
+                        LOGGER.trace("{},{},{}", i, maxSum, n);
                         keys[i] = n;
                         keysList[i].add(n);
                     }

@@ -45,15 +45,19 @@ public class FilesComparator extends Application {
     private final ObjectProperty<File> directory2 = new SimpleObjectProperty<>();
     private Map<String, ObjectProperty<File>> directoryMap = new HashMap<>();
 
+    private ProgressIndicator progress;
     private final Map<File, Music> fileMap = new ConcurrentHashMap<>();
 
-    private ProgressIndicator progress;
 
     public void addSongsToTable(TableView<File> table1, File selectedFile) {
         ObservableList<File> items = table1.getItems();
         ObjectProperty<File> dir1 = directoryMap.get(table1.getId());
         getSongs(selectedFile, items, table1);
         dir1.setValue(selectedFile);
+    }
+
+    public double getProgress() {
+        return progress.getProgress();
     }
 
     public ObservableList<File> getSongs(File file, ObservableList<File> musicas, TableView<File> table1) {
@@ -110,8 +114,7 @@ public class FilesComparator extends Application {
         directoryMap.put(nome, dir);
         Button files1 = StageHelper.selectDirectory(nome, "Carregar Pasta de Músicas",
             selectedFile -> addSongsToTable(table1, selectedFile));
-        final String nome1 = title;
-        Button copyButton = SimpleButtonBuilder.newButton(nome1, e -> copy(dir, table1, items2));
+        Button copyButton = SimpleButtonBuilder.newButton(title, e -> copy(dir, table1, items2));
         Button deleteButton = SimpleButtonBuilder.newButton("X", e -> delete(table1));
         Text text = new Text("");
         text.textProperty().bind(dir.asString());
@@ -183,5 +186,6 @@ public class FilesComparator extends Application {
         }
         updateCells(table1);
     }
+
 
 }

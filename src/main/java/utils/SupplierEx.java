@@ -1,5 +1,6 @@
 package utils;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.assertj.core.api.exception.RuntimeIOException;
 
@@ -43,11 +44,16 @@ public interface SupplierEx<T> {
     }
 
     static <A> Supplier<A> makeSupplier(SupplierEx<A> run) {
+        return makeSupplier(run::get, e -> HasLogging.log(1).error("", e));
+    }
+
+    static <A> Supplier<A> makeSupplier(SupplierEx<A> run, Consumer<Exception> onError) {
         return () -> {
             try {
                 return run.get();
             } catch (Exception e) {
-                HasLogging.log(1).error("", e);
+                HasLogging.log(1).trace("", e);
+                onError.accept(e);
                 return null;
             }
         };

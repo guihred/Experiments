@@ -23,12 +23,11 @@ public final class FilesComparatorHelper {
         Map<File, Music> fileMap) {
         String fileString = toFileString(s);
 		classes.removeAll(STYLE_CLASSES);
-        Optional<File> findFirst = items2.stream().filter(m -> toFileString(m).equals(fileString)).findFirst();
-        if (!findFirst.isPresent()) {
+        File find = find(items2, fileString);
+        if (find == null) {
             return "vermelho";
         }
-
-        if (isEqualSong(s, findFirst.get(), fileMap)) {
+        if (isEqualSong(s, find, fileMap)) {
             return "";
         }
         return "amarelo";
@@ -72,5 +71,15 @@ public final class FilesComparatorHelper {
                 tables.scrollTo(selectedIndex);
             }
         });
+    }
+
+    private static File find(ObservableList<File> items2, String fileString) {
+        for (int i = 0; i < items2.size(); i++) {
+            File file = items2.get(i);
+            if (toFileString(file).equals(fileString)) {
+                return file;
+            }
+        }
+        return null;
     }
 }

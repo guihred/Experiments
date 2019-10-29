@@ -2,6 +2,7 @@ package audio.mp3;
 
 import extract.Music;
 import extract.SongUtils;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import javafx.beans.NamedArg;
@@ -39,7 +40,8 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
                 .button("_Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()),
                     () -> {
                         Path path = selectedItem.getArquivo().toPath();
-                        Files.copy(path, ResourceFXUtils.getOutFile(path.toFile().getName()).toPath());
+                        File outFile = ResourceFXUtils.getOutFile(path.toFile().getName());
+                        Files.copy(path, outFile.toPath());
                         Files.deleteIfExists(path);
                     })
                 .displayDialog();

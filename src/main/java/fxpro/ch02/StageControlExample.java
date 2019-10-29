@@ -1,9 +1,9 @@
 package fxpro.ch02;
 
-import static utils.CommonsFX.newCheckBox;
 import static utils.CommonsFX.newTextField;
 
 import java.util.List;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -27,6 +27,7 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 import utils.ClassReflectionUtils;
+import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -52,13 +53,8 @@ public class StageControlExample extends Application {
             List<String> unnamedParams = parameters.getUnnamed();
             if (!unnamedParams.isEmpty()) {
                 String stageStyleParam = unnamedParams.get(0);
-                if (StageStyle.TRANSPARENT.name().equalsIgnoreCase(stageStyleParam)) {
-                    stageStyle = StageStyle.TRANSPARENT;
-                } else if (StageStyle.UNDECORATED.name().equalsIgnoreCase(stageStyleParam)) {
-                    stageStyle = StageStyle.UNDECORATED;
-                } else if (StageStyle.UTILITY.name().equalsIgnoreCase(stageStyleParam)) {
-                    stageStyle = StageStyle.UTILITY;
-                }
+                stageStyle = Stream.of(StageStyle.values()).filter(e -> e.name().equalsIgnoreCase(stageStyleParam))
+                    .findFirst().orElse(stageStyle);
             }
         }
         final Stage stageRef = stage;
@@ -67,13 +63,12 @@ public class StageControlExample extends Application {
         final Button closeButton = SimpleButtonBuilder.newButton("close()", e -> stageRef.close());
         final Button toBackButton = SimpleButtonBuilder.newButton("toBack()", e -> stageRef.toBack());
         final VBox hbox = new VBox(new Label("title:"), titleTextField);
-        CheckBox checkBoxResizable = newCheckBox("resizable",
+        CheckBox checkBoxResizable = CommonsFX.newCheckBox("resizable",
             stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED);
         StackPane rootGroup = new StackPane(
             new SimpleVBoxBuilder().spacing(10).children(textStageX, textStageY, textStageW, textStageH, textStageF,
                 checkBoxResizable, checkBoxFullScreen, hbox, toBackButton, toFrontButton, closeButton).build());
         Scene scene = new Scene(rootGroup, Color.TRANSPARENT);
-
         scene.getStylesheets().add(ResourceFXUtils.toExternalForm("stageControl.css"));
         scene.setFill(Color.TRANSPARENT);
         // When mouse button is pressed, save the initial position of screen
@@ -101,7 +96,8 @@ public class StageControlExample extends Application {
         title.bind(titleTextField.textProperty());
         stage.setScene(scene);
         stage.titleProperty().bind(title);
-        if (ClassReflectionUtils.getFieldValue(stage, "hasBeenVisible") != Boolean.TRUE) {
+        Boolean fieldValue = (Boolean) ClassReflectionUtils.getFieldValue(stage, "hasBeenVisible");
+        if (!fieldValue) {
             stage.initStyle(stageStyle);
         }
         stage.setOnCloseRequest(we -> LOG.info("Stage is closing"));

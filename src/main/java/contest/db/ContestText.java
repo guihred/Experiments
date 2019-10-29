@@ -44,11 +44,6 @@ public class ContestText extends BaseEntity implements HasImage {
         text = Objects.toString(text, "") + english;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj != null && super.equals(obj) && ((ContestText) obj).key == key;
-    }
-
     public Contest getContest() {
         return contest;
     }
@@ -73,11 +68,6 @@ public class ContestText extends BaseEntity implements HasImage {
 
     public String getText() {
         return text;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key);
     }
 
     @Override

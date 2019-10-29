@@ -8,7 +8,7 @@ public final class RandomHelloWorld {
 
 	private static final Logger LOG = HasLogging.log();
 
-	private RandomHelloWorld() {
+    RandomHelloWorld() {
 	}
 
     public static void displayHelloWorld() {
@@ -20,8 +20,8 @@ public final class RandomHelloWorld {
 	}
 
 	public static String randomString(int i) {
-		Random ran = new Random(i);
-		StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+        Random ran = new Random(i);
 		while (true) {
             final int k = ran.nextInt(27);
 			if (k == 0) {

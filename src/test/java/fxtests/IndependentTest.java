@@ -28,6 +28,7 @@ import japstudy.HiraganaMaker;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -49,10 +50,7 @@ import others.RandomHelloWorld;
 import others.TermFrequency;
 import others.TermFrequencyIndex;
 import pdfreader.Speaker;
-import utils.DateFormatUtils;
-import utils.HasLogging;
-import utils.MatrixSolver;
-import utils.ResourceFXUtils;
+import utils.*;
 
 @SuppressWarnings("static-method")
 public class IndependentTest {
@@ -218,6 +216,10 @@ public class IndependentTest {
     @Test
     public void testRarAndZIP() {
         measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
+        File userFolder = new File(UnRar.SRC_DIRECTORY).getParentFile();
+        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(userFolder, "rar");
+        measureTime("UnRar.extractRarFiles",
+            () -> pathByExtension.forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile()))));
         measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
     }
 

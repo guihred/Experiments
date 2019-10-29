@@ -87,7 +87,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                     StringBuilder currentLine = placeFurigana(line);
                     lines.set(k + i, currentLine.toString());
                 }
-
             });
             ths.add(thread);
             thread.start();
@@ -160,11 +159,11 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
         return kunReadings.stream().filter(e -> e.contains(".")).peek(e -> {
             String[] split = e.split("\\.");
-            mapReading.put(currentWord + split[1].charAt(0), split[0]);
+            mapReading.putIfAbsent(currentWord + split[1].charAt(0), split[0]);
         }).filter(JapaneseVerbConjugate::isVerb).flatMap(e -> JapaneseVerbConjugate.conjugateVerb(e).stream())
             .peek(e -> {
                 String[] split = e.split("\\.");
-                mapReading.put(currentWord + split[1].charAt(0), split[0]);
+                mapReading.putIfAbsent(currentWord + split[1].charAt(0), split[0]);
             }).filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
     }
 

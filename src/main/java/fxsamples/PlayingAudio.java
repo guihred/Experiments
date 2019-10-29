@@ -1,6 +1,7 @@
 package fxsamples;
 
 import java.security.SecureRandom;
+import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Point2D;
@@ -50,8 +51,7 @@ public class PlayingAudio extends Application {
     private Stage mainStage;
     private Group playButton;
     private Group pauseButton;
-
-    private SecureRandom rand = new SecureRandom();
+    private Random rand = new SecureRandom();
 
     /**
      * After a file is dragged onto the application a new MediaPlayer instance is

@@ -31,6 +31,7 @@ public final class ShiftCipherTest {
         FXTesting.measureTime("VigenereCCipher.inicio", () -> VigenereCCipher.inicio());
 
     }
+
     @Test
     public void testVigenereCipher() {
         VigenereCipher vigenereCypher = new VigenereCipher();
@@ -57,23 +58,28 @@ public final class ShiftCipherTest {
 
     @Test
     public void testVigenereXORFindKey() {
-        try {
-            Thread thread = new Thread(RunnableEx.make(() -> {
-                long decrypt = measureTime("VigenereXORCipher.findKeySize",
-                    () -> new VigenereXORCipher().findKeySize());
-                LOG.error(" key size found {}", decrypt);
-            }));
-            thread.start();
-            long start = System.currentTimeMillis();
-            final long maxTime = 30_000;
-            while (System.currentTimeMillis() - start < maxTime) {
-				// DOES NOTHING
-            }
-            thread.interrupt();
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
+        RunnableEx runnable = () -> new VigenereXORCipher().findKey(7);
+        runInTime("VigenereXORCipher.findKey(7)", runnable, 5_000);
     }
 
+    @Test
+    public void testVigenereXORFindKeySize() {
+        runInTime("VigenereXORCipher.findKeySize",
+            () -> LOG.error(" key size found {}", new VigenereXORCipher().findKeySize()), 5_000);
+    }
+
+    private void runInTime(String name, RunnableEx runnable, final long maxTime) {
+        RunnableEx.run(() -> {
+            Thread thread = new Thread(RunnableEx.make(() -> measureTime(name, runnable)));
+            thread.start();
+            long start = System.currentTimeMillis();
+            while (System.currentTimeMillis() - start < maxTime) {
+                if (!thread.isAlive()) {
+                    break;
+                }
+            }
+            thread.interrupt();
+        });
+    }
 
 }

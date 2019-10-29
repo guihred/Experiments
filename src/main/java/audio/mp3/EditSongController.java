@@ -54,7 +54,6 @@ public class EditSongController extends Application {
     private final Music selectedItem;
     private final ObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
     private final ObjectProperty<Duration> startTime = new SimpleObjectProperty<>(Duration.ZERO);
-    private boolean close = true;
 
     public EditSongController() {
         selectedItem = MusicReader.readTags(ResourceFXUtils.toFile("TeenTitans.mp3"));
@@ -110,17 +109,11 @@ public class EditSongController extends Application {
         mediaPlayer.get().stop();
         mediaPlayer.get().dispose();
         MusicReader.saveMetadata(selectedItem);
-        if (close) {
-            StageHelper.closeStage(e.getTarget());
-        }
+        StageHelper.closeStage(e.getTarget());
     }
 
     public void onActionSplitMultiple() {
         EditSongHelper.splitAudio(mediaPlayer, selectedItem.getArquivo(), currentSlider, startTime);
-    }
-
-    public void setClose(boolean close) {
-        this.close = close;
     }
 
     public void show() {

@@ -38,10 +38,10 @@ public final class PaintFileUtils {
 
     public static void openFile(final Window ownerWindow, PaintModel paintModel) {
         FileChooser fileChooser2 = new FileChooser();
-        fileChooser2.setTitle("Open File");
         if (defaultFile != null) {
             fileChooser2.setInitialDirectory(defaultFile);
         }
+        fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
         paintModel.setCurrentFile(fileChooser2.showOpenDialog(ownerWindow));
         if (paintModel.getCurrentFile() == null) {
