@@ -13,8 +13,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -101,29 +99,11 @@ public class PhotoViewer extends Application {
     }
 
     private void setupDragNDrop(Scene scene, List<String> imageFiles2, AtomicInteger currentIndex2) {
-        scene.setOnDragOver(event -> {
-            Dragboard db = event.getDragboard();
-            if (db.hasFiles() || db.hasUrl() && isValidImageFile(db.getUrl())) {
-                event.acceptTransferModes(TransferMode.LINK);
-                return;
-            }
-            event.consume();
-        });
-        // Dropping over surface
-        scene.setOnDragDropped(event -> {
-            Dragboard db = event.getDragboard();
-            // image from the local file system.
-            if (db.hasFiles()) {
-                db.getFiles().stream().forEach(t -> tryAddImage(t, imageFiles2, currentIndex2));
-            } else {
-                // image from some host
-                addImage(db.getUrl(), imageFiles2, currentIndex2);
-            }
+        CommonsFX.initSceneDragAndDrop(scene, url -> {
+            addImage(url, imageFiles2, currentIndex2);
             if (currentIndex2.get() > -1) {
                 loadImage(imageFiles2.get(currentIndex2.get()), loading, progressIndicator, news, currentImageView);
             }
-            event.setDropCompleted(true);
-            event.consume();
         });
     }
 

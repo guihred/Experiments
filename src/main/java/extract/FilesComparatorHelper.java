@@ -3,7 +3,10 @@ package extract;
 import static java.util.Comparator.comparing;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -55,15 +58,12 @@ public final class FilesComparatorHelper {
 				cell.getStyleClass().removeAll(STYLE_CLASSES);
             }
             File selectedItem = table1.getSelectionModel().getSelectedItem();
-
             String fileString = selectedItem == null ? "" : toFileString(selectedItem);
-
             for (Node cell : root.lookupAll(".table-view")) {
                 TableView<File> tables = (TableView<File>) cell;
-                Optional<File> findFirst = tables.getItems().stream().filter(e -> toFileString(e).equals(fileString))
-                    .findFirst();
-                if (findFirst.isPresent()) {
-                    tables.getSelectionModel().select(findFirst.get());
+                File find = find(tables.getItems(), fileString);
+                if (find != null) {
+                    tables.getSelectionModel().select(find);
                 }
                 int selectedIndex = tables.getSelectionModel().getSelectedIndex();
                 tables.getItems().sort(comparing(FilesComparatorHelper::toFileString));

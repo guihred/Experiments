@@ -7,11 +7,9 @@ package fxpro.ch08;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import utils.CommonsFX;
 import utils.CrawlerTask;
 
 /**
@@ -31,7 +29,10 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
         root.setCenter(metaDataView.getViewNode());
         root.setBottom(playerControlsView.getViewNode());
         final Scene scene = new Scene(root, 800, 400);
-        initSceneDragAndDrop(scene);
+        CommonsFX.initSceneDragAndDrop(scene, url -> {
+            songModel.setURL(url);
+            songModel.getMediaPlayer().play();
+        });
 
 		scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
         primaryStage.setScene(scene);
@@ -39,32 +40,6 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
         primaryStage.setTitle("Basic Audio Player With Control");
         primaryStage.show();
         songModel.getPlayer().play();
-    }
-
-    private void initSceneDragAndDrop(Scene scene) {
-        scene.setOnDragOver((DragEvent event) -> {
-            Dragboard db = event.getDragboard();
-            if (db.hasFiles() || db.hasUrl()) {
-                event.acceptTransferModes(TransferMode.ANY);
-            }
-            event.consume();
-        });
-        scene.setOnDragDropped((DragEvent event) -> {
-            Dragboard db = event.getDragboard();
-            String url = null;
-            if (db.hasFiles()) {
-                url = db.getFiles().get(0).toURI().toString();
-            } else if (db.hasUrl()) {
-                url = db.getUrl();
-            }
-            if (url != null) {
-                songModel.setURL(url);
-                songModel.getMediaPlayer().play();
-
-            }
-            event.setDropCompleted(url != null);
-            event.consume();
-        });
     }
 
     public static void main(String[] args) {

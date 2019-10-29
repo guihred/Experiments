@@ -11,8 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
@@ -29,6 +27,7 @@ import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
+import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -270,31 +269,8 @@ public class PlayingAudio extends Application {
      */
     private void initFileDragNDrop() {
         Scene scene = mainStage.getScene();
-        scene.setOnDragOver(dragEvent -> {
-            Dragboard db = dragEvent.getDragboard();
-            if (db.hasFiles() || db.hasUrl()) {
-                dragEvent.acceptTransferModes(TransferMode.LINK);
-            } else {
-                dragEvent.consume();
-            }
-        });
-        // Dropping over surface
-        scene.setOnDragDropped(dragEvent -> {
-            Dragboard db = dragEvent.getDragboard();
-            boolean success = false;
-            if (db.hasFiles()) {
-                success = true;
-                if (!db.getFiles().isEmpty()) {
-                    tryPlayMedia(db);
-                }
-            } else {
-                // audio file from some host or jar
-                playMedia(db.getUrl());
-                success = true;
-            }
-            dragEvent.setDropCompleted(success);
-            dragEvent.consume();
-        });
+
+        CommonsFX.initSceneDragAndDrop(scene, this::playMedia);
     }
 
     /**
@@ -323,15 +299,6 @@ public class PlayingAudio extends Application {
     private int rnd() {
         final int bound = 256;
         return rand.nextInt(bound);
-    }
-
-    private void tryPlayMedia(Dragboard db) {
-        try {
-            String filePath = ResourceFXUtils.convertToURL(db.getFiles().get(0)).toString();
-            playMedia(filePath);
-        } catch (Exception ex) {
-            LOGGER.error("", ex);
-        }
     }
 
     private void updatePlayAndPauseButtons(boolean playVisible) {

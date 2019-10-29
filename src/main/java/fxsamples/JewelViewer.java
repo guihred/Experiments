@@ -4,10 +4,8 @@ import java.io.File;
 import java.net.URL;
 import javafx.application.Application;
 import javafx.scene.*;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -15,10 +13,7 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
-import utils.Xform;
+import utils.*;
 
 public class JewelViewer extends Application {
     private static final Logger LOGGER = HasLogging.log();
@@ -63,7 +58,7 @@ public class JewelViewer extends Application {
         camera.setRotationAxis(Rotate.Y_AXIS);
         scene.setOnKeyPressed(this::handleKeyPressed);
         // End Step 2b-d
-        initFileDragNDrop(scene);
+        CommonsFX.initSceneDragAndDrop(scene, this::tryLoadMeshViews);
         primaryStage.setTitle("Jewel Viewer");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -111,34 +106,6 @@ public class JewelViewer extends Application {
         }
     }
 
-    private void initFileDragNDrop(Scene scene) {
-        scene.setOnDragOver(dragEvent -> {
-            Dragboard db = dragEvent.getDragboard();
-            if (db.hasFiles() || db.hasUrl()) {
-                dragEvent.acceptTransferModes(TransferMode.LINK);
-                return;
-            }
-            dragEvent.consume();
-        });
-        // Dropping over surface
-        scene.setOnDragDropped(dragEvent -> {
-            Dragboard db = dragEvent.getDragboard();
-            boolean success = false;
-            if (db.hasFiles()) {
-                success = true;
-                if (!db.getFiles().isEmpty()) {
-                    tryLoadMeshViews(db);
-                }
-            } else {
-                // audio file from some host or jar
-                tryLoadMeshViews(db.getUrl());
-                success = true;
-            }
-            dragEvent.setDropCompleted(success);
-            dragEvent.consume();
-        });
-    }
-
     private void loadMeshViews(File file) {
         Mesh mesh = ResourceFXUtils.importStlMesh(file);
         MeshView meshViews1 = new MeshView(mesh);
@@ -169,11 +136,6 @@ public class JewelViewer extends Application {
         root.getChildren().add(pointLight);
         root.getChildren().add(new AmbientLight(AMBIENT_COLOR));
 
-    }
-
-    private void tryLoadMeshViews(Dragboard db) {
-        File filePath = db.getFiles().get(0);
-        loadMeshViews(filePath);
     }
 
     private void tryLoadMeshViews(String url) {

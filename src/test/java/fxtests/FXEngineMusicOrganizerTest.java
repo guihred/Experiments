@@ -32,26 +32,27 @@ import utils.RunnableEx;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
-    // @Test
+    @Test
     public void splitAudio() {
         show(MusicOrganizer.class);
         clickOn("Carregar _Vídeos");
         type(KeyCode.ENTER);
         sleep(1000);
-        doubleClickOn(lookupFirst(TableRow.class));
         WaitForAsyncUtils.waitForFxEvents();
+        doubleClickOn(lookupFirst(TableRow.class));
         lookup("_Convert to Mp3").queryAll().forEach(this::clickOn);
         WaitForAsyncUtils.waitForFxEvents();
         ConsoleUtils.waitAllProcesses();
         clickOn("Carregar _Musicas");
         type(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
         doubleClickOn(lookupFirst(TableRow.class));
         lookup("_Play/Pause").queryAll().forEach(this::clickOn);
         lookup("_Split").queryAll().forEach(this::clickOn);
         clickOn("_Consertar Musicas");
     }
 
-    // @Test
+    @Test
     public void verifyBasicAudioPlayerWithControlLauncher() throws Exception {
         show(BasicAudioPlayerWithControlLauncher.class);
         Set<Node> queryAll = lookup(".button").queryAll();
@@ -61,7 +62,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         }));
     }
 
-    // @Test
+    @Test
     public void verifyEditSong2() throws Exception {
         FXTesting.measureTime("new EditSongController(song)", () -> {
             Path firstSong = getRandomSong();
@@ -113,7 +114,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
     }
 
-    // @Test
+    @Test
     public void verifyPlayingAudio() throws Exception {
         PlayingAudio show = show(PlayingAudio.class);
         interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
@@ -122,7 +123,6 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
     private Path getRandomSong() {
         File outFile = ResourceFXUtils.getUserFolder("Music");
-        Path firstSong = randomItem(ResourceFXUtils.getPathByExtension(outFile, "mp3"));
-        return firstSong;
+        return randomItem(ResourceFXUtils.getPathByExtension(outFile, "mp3"));
     }
 }

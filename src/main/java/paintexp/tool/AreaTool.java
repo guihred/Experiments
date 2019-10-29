@@ -287,11 +287,11 @@ public abstract class AreaTool extends PaintTool {
 
 	private void handleControlDown(PaintModel model, KeyCode code) {
 		switch (code) {
+            case C:
+                copyToClipboard(model.getImage());
+                break;
 			case V:
 				copyFromClipboard(model);
-				break;
-			case C:
-				copyToClipboard(model.getImage());
 				break;
 			case X:
 				cutImage(model, getArea().getBoundsInParent());

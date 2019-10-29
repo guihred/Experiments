@@ -3,12 +3,11 @@ package fxtests;
 import static javafx.scene.input.KeyCode.*;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
@@ -16,6 +15,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
@@ -140,6 +141,20 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 getLogger().info("FIRING {}", menu.getId());
                 if (i == 0 && items.size() == j + 1 || i == 0 && j > 0 && items.size() != j + 1) {
                     new Thread(this::typeInParallel).start();
+                }
+                if (i == 1 && j == 2) {
+                    interact(() -> {
+
+                        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(),
+                            ".png");
+                        if (!pathByExtension.isEmpty()) {
+                            Map<DataFormat, Object> content = FXCollections.observableHashMap();
+                            Path path = randomItem(pathByExtension);
+                            content.put(DataFormat.FILES, Arrays.asList(path.toFile()));
+                            Clipboard.getSystemClipboard().setContent(content);
+                        }
+                    });
+                    interact(menu::fire);
                 }
                 interact(menu::fire);
                 lookup(".text-field").queryAll().forEach(e -> {

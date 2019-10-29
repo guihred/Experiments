@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -123,7 +122,7 @@ public final class PdfUtils {
     }
 
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
-        return SupplierEx.get(() -> printImageLocations.processPage(page, i), Collections.emptyList());
+        return SupplierEx.get(() -> printImageLocations.processPage(page, i), new ArrayList<>());
     }
 
     private static void read(PdfInfo pdfInfo, File file1, PrintStream out)
