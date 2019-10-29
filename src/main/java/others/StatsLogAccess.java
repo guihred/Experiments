@@ -1,5 +1,7 @@
 package others;
 
+import static utils.StringSigaUtils.nonNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -144,7 +146,7 @@ public class StatsLogAccess {
 
         		String[] a = linha.split(" ");
         		return a[a.length - 1];
-            })).map(FunctionEx.makeFunction(Long::parseLong)).mapToLong(a -> a != null ? a : 0).summaryStatistics();
+            })).map(FunctionEx.makeFunction(Long::parseLong)).mapToLong(a -> nonNull(a, 0L)).summaryStatistics();
             LOGGER.info("{} = {},\t{},\t{},\t{}", path, summary.getAverage(), summary.getMax(), summary.getMin(),
                     summary.getCount());
 

@@ -1,5 +1,7 @@
 package ml;
 
+import static utils.StringSigaUtils.nonNull;
+
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,7 +41,7 @@ public class AutoCompleteTextField extends TextField {
     }
 
     public AutoCompleteTextField(SortedSet<String> entrySet, Word2Vec word2Vec) {
-        entries = entrySet == null ? new TreeSet<>() : entrySet;
+        entries = nonNull(entrySet, new TreeSet<>());
         filteredEntries.addAll(entries);
         textProperty().addListener((obs, ds, sb2) -> onTextChange(word2Vec));
         focusedProperty().addListener((obs, a, a2) -> entriesPopup.hide());

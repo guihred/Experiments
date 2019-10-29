@@ -20,10 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import utils.ClassReflectionUtils;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 public final class FXMLCreator {
     private static final String FX_REFERENCE = "fx:reference";
@@ -138,7 +135,7 @@ public final class FXMLCreator {
                     .flatMap(ob2 -> getDifferences(c, ob1, ob2).stream()).distinct().collect(toList()));
             mappedDifferences.addAll(getNamedArgs(cl));
             Map<String, Object> fieldMap = mappedDifferences.stream().distinct().filter(m -> invoke(ob1, m) != null)
-                .collect(toMap(m -> m, m -> invoke(ob1, m), (a, b) -> a != null ? a : b, LinkedHashMap::new));
+                .collect(toMap(m -> m, m -> invoke(ob1, m), StringSigaUtils::nonNull, LinkedHashMap::new));
             diffFields.putAll(fieldMap);
         }
         return diffFields;

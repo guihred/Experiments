@@ -186,6 +186,17 @@ public class StringSigaUtils extends StringUtils {
         return rightPad(sb, maxLetters, "");
     }
 
+    @SafeVarargs
+    public static <T> T nonNull(T... length) {
+        for (T t : length) {
+            if (t != null) {
+                return t;
+            }
+        }
+
+        return null;
+    }
+
     public static String removeMathematicalOperators(String s) {
         if (s.codePoints().mapToObj(UnicodeBlock::of).distinct().collect(Collectors.toList())
             .contains(UnicodeBlock.MATHEMATICAL_OPERATORS)) {

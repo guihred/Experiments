@@ -1,5 +1,6 @@
 package fxsamples.bounds;
 
+import java.util.Objects;
 import javafx.scene.shape.Shape;
 
 // records a pair of (possibly) intersecting shapes.
@@ -23,9 +24,7 @@ class ShapePair {
 
     @Override
     public int hashCode() {
-        int result = a != null ? a.hashCode() : 0;
-        result = 31 * result + (b != null ? b.hashCode() : 0);
-        return result;
+        return Objects.hash(a, b);
     }
 
     public boolean intersects(BoundsType boundsType) {

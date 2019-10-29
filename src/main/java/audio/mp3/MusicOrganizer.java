@@ -1,6 +1,7 @@
 package audio.mp3;
 
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
+import static utils.StringSigaUtils.nonNull;
 
 import extract.Music;
 import extract.MusicReader;
@@ -55,7 +56,7 @@ public class MusicOrganizer extends Application {
     }
 
     private void convertToImage(Music music, TableCell<Music, Object> cell) {
-        cell.setGraphic(view(music.getImage() != null ? music.getImage() : DEFAULT_VIEW));
+        cell.setGraphic(view(nonNull(music.getImage(), DEFAULT_VIEW)));
     }
 
     private TableView<Music> tabelaMusicas() {

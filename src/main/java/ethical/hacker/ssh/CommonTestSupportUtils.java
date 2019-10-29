@@ -1,5 +1,7 @@
 package ethical.hacker.ssh;
 
+import static utils.StringSigaUtils.nonNull;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -74,10 +76,7 @@ final class CommonTestSupportUtils {
         provider = createTestHostKeyProvider(file);
 
         KeyPairProvider prev = KEYPAIR_PROVIDER_HOLDER.getAndSet(provider);
-        if (prev != null) { // check if somebody else beat us to it
-            return prev;
-        }
-		return provider;
+        return nonNull(prev, provider);
     }
 
     /**
@@ -282,8 +281,7 @@ final class CommonTestSupportUtils {
         if (!src.startsWith(FILE_URL_PREFIX)) {
             throw new RuntimeIOException("toFileSource(" + src + ") not a '" + FILE_URL_SCHEME + "' scheme");
         }
-        return SupplierEx.remap(() -> Paths.get(new URI(src)),
-            "toFileSource(" + src + ")" + " cannot convert to URI ");
+        return SupplierEx.remap(() -> Paths.get(new URI(src)), "toFileSource(" + src + ")" + " cannot convert to URI ");
 
     }
 

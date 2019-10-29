@@ -1,6 +1,8 @@
 package ml;
 
 
+import static utils.StringSigaUtils.nonNull;
+
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -56,7 +58,7 @@ public class PopulacionalPyramidExample extends Application {
         ComboBox<String> countryBox = new SimpleComboBoxBuilder<String>().items(sortedCountries).select(0)
             .onSelect(country -> canvas.countryProperty().set(country)).build();
         ComboBox<Integer> year = new SimpleComboBoxBuilder<Integer>().items(canvas.yearsOptionsProperty())
-            .onSelect(yearV -> canvas.yearProperty().set(yearV != null ? yearV : DEFAULT_YEAR)).select(0).build();
+            .onSelect(yearV -> canvas.yearProperty().set(nonNull(yearV, DEFAULT_YEAR))).select(0).build();
 
         canvas.setHistogram(x);
 
