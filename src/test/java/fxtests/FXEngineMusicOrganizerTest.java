@@ -39,7 +39,10 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         type(KeyCode.ENTER);
         sleep(1000);
         WaitForAsyncUtils.waitForFxEvents();
-        doubleClickOn(lookupFirst(TableRow.class));
+        TableRow<?> lookupFirst = lookupFirst(TableRow.class);
+        if (lookupFirst != null) {
+            doubleClickOn(lookupFirst);
+        }
         lookup("_Convert to Mp3").queryAll().forEach(this::clickOn);
         WaitForAsyncUtils.waitForFxEvents();
         ConsoleUtils.waitAllProcesses();

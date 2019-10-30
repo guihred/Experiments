@@ -1,6 +1,6 @@
 package fxtests;
 
-import gaming.ex19.SudokuLauncher;
+import fxsamples.PlayingAudio;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +25,7 @@ public final class FXMLCreatorTest {
 
     @Test
 	public  void testClassesNotClose() {
-        List<Class<? extends Application>> classes = Arrays.asList(SudokuLauncher.class);
+        List<Class<? extends Application>> classes = Arrays.asList(PlayingAudio.class);
         FXMLCreatorHelper.testApplications(classes, false);
     }
 

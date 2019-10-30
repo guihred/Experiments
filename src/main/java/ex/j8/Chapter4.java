@@ -57,7 +57,7 @@ public final class Chapter4 {
     }
 
     public static void main(String[] args) {
-        Application.launch(Ex9.class, args);
+        Application.launch(Ex10.class, args);
     }
 
     public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t,

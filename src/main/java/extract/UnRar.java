@@ -42,17 +42,17 @@ public final class UnRar {
     }
 
     private void printSummary() {
-        LOGGER.info("\nSuccessfully tested archives:\n");
+        LOGGER.info("Successfully tested archives:");
         successfulFiles.forEach(LOGGER::info);
-        LOGGER.info("Unsupported archives:\n");
+        LOGGER.info("Unsupported archives:");
         unsupportedFiles.forEach(LOGGER::info);
         LOGGER.info("Failed archives:");
         errorFiles.forEach(LOGGER::info);
-        LOGGER.info("\nSummary\n");
-        LOGGER.info("tested:\t\t{}", successfulFiles.size() + unsupportedFiles.size() + errorFiles.size());
+        LOGGER.info("Summary");
+        LOGGER.info("tested:\t{}", successfulFiles.size() + unsupportedFiles.size() + errorFiles.size());
         LOGGER.info("successful:\t{}", successfulFiles.size());
         LOGGER.info("unsupported:\t{}", unsupportedFiles.size());
-        LOGGER.info("failed:\t\t{}", errorFiles.size());
+        LOGGER.info("failed:\t{}", errorFiles.size());
     }
 
     private void recurseDirectory(File file, File output) {

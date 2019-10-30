@@ -14,9 +14,7 @@ final class BogusPasswordAuthenticator extends AbstractLoggingBean implements Pa
     @Override
     public boolean authenticate(String username, String password, ServerSession session) {
         boolean result = username != null && username.equals(password);
-        if (log.isInfoEnabled()) {
-            log.info("authenticate({}) {} / {} - success = {}", session, username, password, result);
-        }
+        log.info("authenticate({}) {} / {} - success = {}", session, username, password, result);
 
         return result;
     }

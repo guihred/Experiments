@@ -64,7 +64,7 @@ public class EdgeElement implements Comparable<EdgeElement> {
 
 	@Override
 	public String toString() {
-		return u.getName() + "-" + v.getName() + "(" + weight + ")";
+        return u + "-" + v + "(" + weight + ")";
 	}
 
 }

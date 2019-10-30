@@ -50,14 +50,17 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             .flatMap(e -> e.getChildren().stream()).collect(Collectors.toList());
         int bound = (int) (stack.getBoundsInParent().getWidth() / 3);
         List<KeyCode> testCodes = Arrays.asList(DELETE, V, C, X, A, RIGHT, LEFT, DOWN, UP);
-
+        if (!colors.isEmpty()) {
+            RunnableEx.ignore(() -> doubleClickOn(colors.remove(random.nextInt(colors.size())), MouseButton.PRIMARY));
+            clickOn("#use");
+        }
         for (Node next : queryAll) {
             Object userData = next.getUserData();
             if (userData != null) {
                 getLogger().info("Testing {} ", userData.getClass().getSimpleName());
             }
             if (!colors.isEmpty()) {
-                RunnableEx.run(() -> clickOn(colors.remove(random.nextInt(colors.size())),
+                RunnableEx.ignore(() -> clickOn(colors.remove(random.nextInt(colors.size())),
                     random.nextInt(5) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY));
             }
             RunnableEx.run(() -> clickOn(next));

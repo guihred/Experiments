@@ -48,7 +48,7 @@ public final class WikiImagesUtils {
             imageView.getStyleClass().add("wiki");
             return imageView;
         }
-        
+
         String host = url.startsWith("//") ? "https:" : "https://en.wikipedia.org";
         ImageView imageView = new ImageView(host + url);
         imageView.getStyleClass().add("wiki");
@@ -67,8 +67,6 @@ public final class WikiImagesUtils {
             LOG.error("", e);
         }
     }
-
-
 
     public static List<String> getImagens(String artista) {
         CrawlerTask.insertProxyConfig();
@@ -95,13 +93,13 @@ public final class WikiImagesUtils {
     }
 
     private static BufferedImage decodeToImage(String imageString) {
-		return SupplierEx.get(() -> {
-			String replaceAll = imageString.replaceAll("data:image/gif;base64,", "");
-			byte[] imageByte = Base64.getDecoder().decode(replaceAll);
-			ImageReader next = ImageIO.getImageReadersByFormatName("gif").next();
-			next.setInput(new ByteArrayImageInputStream(imageByte));
-			return next.read(0);
-		});
+        return SupplierEx.get(() -> {
+            String replaceAll = imageString.replaceAll("data:image/gif;base64,", "");
+            byte[] imageByte = Base64.getDecoder().decode(replaceAll);
+            ImageReader next = ImageIO.getImageReadersByFormatName("gif").next();
+            next.setInput(new ByteArrayImageInputStream(imageByte));
+            return next.read(0);
+        });
     }
 
     private static Document getDocument(final String url) throws IOException {
@@ -118,8 +116,7 @@ public final class WikiImagesUtils {
             Document parse = getDocument(urlString);
             LOG.info("READING PAGE {}", urlString);
             Elements kun = parse.select("img");
-            return kun.stream().map(e -> e.attr("src"))
-                .filter(StringUtils::isNotBlank).collect(Collectors.toList());
+            return kun.stream().map(e -> e.attr("src")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         }, "ERROR Reading Page");
     }
 

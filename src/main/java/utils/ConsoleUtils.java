@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -35,10 +36,10 @@ public final class ConsoleUtils {
             while (PROCESSES.values().stream().anyMatch(e -> !e)) {
                 long count = PROCESSES.values().stream().filter(e -> !e).count();
                 double newValue = (n - count) / n;
-                simpleDoubleProperty.set(newValue);
+                Platform.runLater(() -> simpleDoubleProperty.set(newValue));
                 RunnableEx.ignore(() -> Thread.sleep(500));
             }
-            simpleDoubleProperty.set(1);
+            Platform.runLater(() -> simpleDoubleProperty.set(1));
         }).start();
         return simpleDoubleProperty;
     }

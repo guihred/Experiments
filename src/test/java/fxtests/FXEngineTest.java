@@ -5,6 +5,7 @@ import static utils.RunnableEx.ignore;
 
 import ethical.hacker.EthicalHackApp;
 import ethical.hacker.ImageCrackerApp;
+import ethical.hacker.ssh.SSHSessionApp;
 import ex.j8.Chapter4;
 import fractal.LeafFractalApp;
 import fxpro.ch06.ResponsiveUIApp;
@@ -38,14 +39,14 @@ import utils.ConsumerEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
-	@Test
+    @Test
 	public void verifyBoundsPlayground() {
 		show(BoundsPlayground.class);
 		lookup(CheckBox.class).forEach(this::clickOn);
 		lookup(RadioButton.class).forEach(this::clickOn);
 	}
 
-	@Test
+    @Test
 	public void verifyButtons() {
 		measureTime("Test.testButtons",
 				() -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
@@ -56,7 +57,7 @@ public class FXEngineTest extends AbstractTestExecution {
 
 	}
 
-	@Test
+    @Test
 	public void verifyColorChooser() {
 		show(ColorChooser.class);
 		List<Node> queryAll = lookup(".slider").queryAll().stream().collect(Collectors.toList());
@@ -72,7 +73,7 @@ public class FXEngineTest extends AbstractTestExecution {
 		tryClickButtons();
 	}
 
-	@Test
+    @Test
 	public void verifyEthicalHack() {
 		show(EthicalHackApp.class);
 		lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
@@ -80,7 +81,7 @@ public class FXEngineTest extends AbstractTestExecution {
 		ConsoleUtils.waitAllProcesses();
 	}
 
-	@Test
+    @Test
 	public void verifyFormValidation() {
 		showNewStage(FormValidation.class);
 		clickOn(lookupFirst(PasswordField.class));
@@ -94,13 +95,13 @@ public class FXEngineTest extends AbstractTestExecution {
 		type(KeyCode.ENTER);
 	}
 
-	@Test
+    @Test
 	public void verifyHistogramExample() {
 		show(HistogramExample.class);
 		lookup(CheckBox.class).forEach(ConsumerEx.ignore(this::clickOn));
 	}
 
-	@Test
+    @Test
 	public void verifyImageCracker() {
 		ImageCrackerApp show = show(ImageCrackerApp.class);
 		show.setClickable(false);
@@ -108,14 +109,14 @@ public class FXEngineTest extends AbstractTestExecution {
 		ImageCrackerApp.waitABit();
 	}
 
-	@Test
+    @Test
 	public void verifyInlineModelViewer() {
 		show(InlineModelViewer.class);
 		lookup(CheckBox.class).forEach(this::clickOn);
 		lookup(CheckBox.class).forEach(this::clickOn);
 	}
 
-	@Test
+    @Test
 	public void verifyLeafFractalApp() {
 		show(LeafFractalApp.class);
 		lookup(Slider.class).forEach(s -> {
@@ -125,7 +126,7 @@ public class FXEngineTest extends AbstractTestExecution {
 		});
 	}
 
-	@Test
+    @Test
 	public void verifyLineManipulator() {
 		show(LineManipulator.class);
 		lookup(AnchorCircle.class).forEach(e -> {
@@ -135,7 +136,7 @@ public class FXEngineTest extends AbstractTestExecution {
 		});
 	}
 
-	@Test
+    @Test
 	public void verifyLookNFeelChooser() {
 		show(LookNFeelChooser.class);
 		List<MenuButton> node = lookup(MenuButton.class).stream().collect(Collectors.toList());
@@ -149,33 +150,33 @@ public class FXEngineTest extends AbstractTestExecution {
 		}
 	}
 
-	@Test
+    @Test
 	public void verifyMapGraph() {
 		show(MapGraph.class);
 		SVGPath randomItem = randomItem(lookup(SVGPath.class));
 		ignore(() -> moveTo(randomItem));
 	}
 
-	@Test
+    @Test
 	public void verifyPersonTableController() {
 		show(PersonTableController.class);
 		clickOn(lookupFirst(TextField.class));
 		type(typeText(getRandomString()));
 	}
 
-	@Test
+    @Test
 	public void verifyPhotoViewer() {
 		show(PhotoViewer.class);
 		tryClickButtons();
 	}
 
-	@Test
+    @Test
 	public void verifyResponsiveUIApp() {
 		show(ResponsiveUIApp.class);
 		tryClickButtons();
 	}
 
-	@Test
+    @Test
 	public void verifyScroll() {
 		measureTime("Test.verifyScroll", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
 			lookup(Canvas.class).forEach(t -> {
@@ -189,7 +190,7 @@ public class FXEngineTest extends AbstractTestExecution {
 
 	}
 
-	@Test
+    @Test
 	public void verifySngpcViewer() {
 		show(SngpcViewer.class);
 		sleep(500);
@@ -199,7 +200,16 @@ public class FXEngineTest extends AbstractTestExecution {
 		type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
 	}
 
-	@Test
+    @Test
+    public void verifySSHSessionApp() {
+        show(SSHSessionApp.class);
+        clickOn(lookupFirst(Button.class));
+        List<TextField> fields = lookup(TextField.class).stream().collect(Collectors.toList());
+        clickOn(fields.get(fields.size() - 1));
+        type(typeText("ipconfig"));
+    }
+
+    @Test
 	public void verifyThreadInformationApp() {
 		show(ThreadInformationApp.class);
 
@@ -208,7 +218,7 @@ public class FXEngineTest extends AbstractTestExecution {
 		clickOn(randomItem(lookup(ListCell.class)));
 	}
 
-	@Test
+    @Test
 	public void verifyWordSearchApp() {
 		show(WordSearchApp.class);
 		for (int i = 0; i < 2; i++) {
@@ -225,7 +235,7 @@ public class FXEngineTest extends AbstractTestExecution {
 		}
 	}
 
-	@Test
+    @Test
 	public void verifyWordSuggetion() {
 		show(WordSuggetionApp.class);
 		lookup(".text-field").queryAll().forEach(ConsumerEx.makeConsumer(t -> {
@@ -242,11 +252,12 @@ public class FXEngineTest extends AbstractTestExecution {
 		for (int i = 0; i < lookup.size(); i++) {
 			Node queryAs = from(lookup.get(i)).lookup(ListCell.class::isInstance).query();
 			ignore(() -> clickOn(queryAs));
-			clickOn(buttons.get(i));
+            Button button = buttons.get(i);
+            ignore(() -> clickOn(button));
 		}
 	}
 
-	@Test
+    @Test
 	public void verifyWorkingWithTableView() {
 		show(WorkingWithTableView.class);
 		@SuppressWarnings("rawtypes")
