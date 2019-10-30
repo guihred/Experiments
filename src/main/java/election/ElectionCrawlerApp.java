@@ -19,7 +19,7 @@ public class ElectionCrawlerApp extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         TaskProgressView view = new TaskProgressView(worker);
         stage.setTitle("Election Crawler");
         stage.setScene(view.getScene());

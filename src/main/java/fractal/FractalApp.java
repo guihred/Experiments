@@ -10,7 +10,7 @@ import simplebuilder.SimpleSliderBuilder;
 public class FractalApp extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         OrganicTreeFractal treeFractal = new OrganicTreeFractal();
         TreeFractal tree = new TreeFractal();
 

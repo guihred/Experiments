@@ -101,7 +101,7 @@ public class GlobeSphereApp extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         primaryStage.setResizable(false);
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         Scene scene = new Scene(createContent());

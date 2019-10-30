@@ -11,7 +11,7 @@ public class SolitaireLauncher extends Application {
 
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         final StackPane group = new StackPane();
 		final BorderPane borderPane = new BorderPane(group);
         final int width = 600;

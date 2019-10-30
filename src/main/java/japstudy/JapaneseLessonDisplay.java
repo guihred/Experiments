@@ -76,7 +76,7 @@ public class JapaneseLessonDisplay extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Japanese Lesson Display", "JapaneseLessonDisplay.fxml", this, primaryStage);
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
         primaryStage.getScene().setOnKeyPressed(e -> {

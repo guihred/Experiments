@@ -11,7 +11,7 @@ public class FuriganaCrawlerApp extends Application {
 
 	private TaskProgressView view = new TaskProgressView(worker);
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         stage.setTitle("Furigana Converter");
         stage.setScene(view.getScene());
         stage.setOnCloseRequest(e -> worker.cancel());

@@ -13,7 +13,7 @@ public class RoundMazeLauncher extends Application {
     private static final int HEIGHT = 620;
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         Canvas canvas = new Canvas(HEIGHT, HEIGHT);
         canvas.setTranslateX(10);
         final Scene scene = new Scene(new Group(canvas));

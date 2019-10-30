@@ -86,7 +86,7 @@ public class PhotoViewer extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Photo Viewer", "PhotoViewer.fxml", this, primaryStage, 500, 500);
     }
 

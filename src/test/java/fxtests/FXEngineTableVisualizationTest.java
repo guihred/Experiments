@@ -17,7 +17,7 @@ import utils.TreeElement;
 public class FXEngineTableVisualizationTest extends AbstractTestExecution {
 
     @Test
-	public void testaToolsVerify() throws Exception {
+	public void testaToolsVerify() {
         show(TableVisualizationExample.class);
         Set<Node> queryAll2 = lookup(".tab").queryAll();
         for (Node node : queryAll2) {

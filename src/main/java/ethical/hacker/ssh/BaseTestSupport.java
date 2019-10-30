@@ -1,14 +1,14 @@
 package ethical.hacker.ssh;
 
+import static utils.HasLogging.getCurrentClass;
+
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.common.util.net.SshdSocketAddress;
 import org.apache.sshd.server.SshServer;
-import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.SupplierEx;
 
 public class BaseTestSupport {
-
-    private static final Logger LOG = HasLogging.log();
 
     // can be used to override the 'localhost' with an address other than 127.0.0.1
     // in case it is required
@@ -16,7 +16,6 @@ public class BaseTestSupport {
         SshdSocketAddress.LOCALHOST_IPV4);
 
     protected BaseTestSupport() {
-        super();
     }
 
     public static final String getCurrentTestName() {
@@ -28,11 +27,6 @@ public class BaseTestSupport {
     }
 
     public static SshServer setupTestServer() {
-        try {
-            return CoreTestSupportUtils.setupTestServer(Class.forName(HasLogging.getCurrentClass(0)));
-        } catch (Exception e) {
-            LOG.error("", e);
-            return null;
-        }
+		return SupplierEx.get(() -> CoreTestSupportUtils.setupTestServer(Class.forName(getCurrentClass(0))));
     }
 }

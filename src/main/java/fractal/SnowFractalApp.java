@@ -10,7 +10,7 @@ import simplebuilder.SimpleSliderBuilder;
 public class SnowFractalApp extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         ShellFractal shellFractal = new ShellFractal();
         SnowflakeFractal snowFractal = new SnowflakeFractal();
         PolygonFractal polygonFractal = new PolygonFractal();

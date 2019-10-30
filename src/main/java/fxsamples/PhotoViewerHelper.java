@@ -109,7 +109,7 @@ public class PhotoViewerHelper {
         AtomicBoolean loading2, Text news2) {
         return new Task<Boolean>() {
             @Override
-            public Boolean call() throws Exception {
+			public Boolean call() {
                 Image image = new Image(url, false);
                 Platform.runLater(() -> {
                     // New code:

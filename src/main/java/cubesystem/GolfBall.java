@@ -23,7 +23,7 @@ public class GolfBall extends Application {
     private static final float RADIUS = 300;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 
         final int divisionNumber = 18;
         List<Point3D> createSpheres = createSpheres(divisionNumber, RADIUS * RADIUS_PROPORTION);

@@ -89,7 +89,7 @@ public class SphereSystemApp extends Application {
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 		final int width = 640;
 		final int height = 480;
 		primaryStage.setScene(new Scene(createContent(), width, height, true, SceneAntialiasing.BALANCED));

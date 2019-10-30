@@ -10,7 +10,7 @@ import utils.ResourceFXUtils;
 public class PdfReader extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) throws Exception {
         final int width = 500;
         Parent root = FXMLLoader.load(ResourceFXUtils.toURL("PdfReader.fxml"));
         Scene scene = new Scene(root, width, width);

@@ -49,7 +49,7 @@ public class Labyrinth3DKillerGhostsAndBalls extends Application implements Comm
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         createLabyrinth(root, labyrinthWalls, balls, getMapa());
         SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);

@@ -32,7 +32,7 @@ public class JapaneseLessonApplication extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         final int width = 600;
         final int height = 250;
         CommonsFX.loadFXML("Japanese Lesson Table Displayer", "JapaneseLessonApplication.fxml", this, primaryStage,

@@ -24,7 +24,7 @@ public class Labyrinth3DAntiAliasing extends Application implements CommomLabyri
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 
 		Group root = new Group();
 

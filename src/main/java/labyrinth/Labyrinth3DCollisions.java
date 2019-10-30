@@ -34,7 +34,7 @@ public class Labyrinth3DCollisions extends Application implements CommomLabyrint
 
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 		initializeLabyrinth(root);
         SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);

@@ -21,7 +21,7 @@ public class PlatformMain extends Application {
 	private Player jungle = new Player(ImageResource.JUNGLE);
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         primaryStage.setTitle("The Cat in Motion");
         Leopard cat = new Leopard();
         Bird bird = new Bird();

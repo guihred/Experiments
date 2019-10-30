@@ -36,7 +36,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     private static final String TEST_FILE = "test.png";
 
     @Test
-    public void testaToolsVerify() throws Exception {
+	public void testAllToolsVerify() {
         show(PaintMain.class);
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
         testTools(stack);

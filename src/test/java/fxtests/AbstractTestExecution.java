@@ -38,7 +38,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
         currentStage = stage;
         currentStage.setX(0);
@@ -46,7 +46,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     @Override
-    public void stop() throws Exception {
+	public void stop() {
         currentStage.close();
     }
 

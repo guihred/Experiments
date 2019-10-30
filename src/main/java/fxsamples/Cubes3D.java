@@ -18,7 +18,7 @@ import javafx.util.Duration;
 public class Cubes3D extends Application {
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		stage.setTitle("Cube 3D");
 
 		Cube c = new Cube(50, Color.RED, 1);

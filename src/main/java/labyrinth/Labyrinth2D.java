@@ -16,8 +16,9 @@ public class Labyrinth2D extends Application {
 	private Color color = Color.RED;
 	private int i;
 	private int j;
+
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 
 		Group root = new Group();
 		Button e = new Button();
@@ -28,7 +29,7 @@ public class Labyrinth2D extends Application {
 		Scene scene = new Scene(root);
 
 		scene.setOnMouseClicked(event -> handleMouseClick(root));
-        primaryStage.setTitle("Labyrinth 2D");
+		primaryStage.setTitle("Labyrinth 2D");
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
@@ -36,13 +37,11 @@ public class Labyrinth2D extends Application {
 	private void handleMouseClick(Group root) {
 		String string = getMapa()[i][j];
 		if ("_".equals(string)) {
-			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE,
-					SIZE / 2, SIZE);
+			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE, SIZE / 2, SIZE);
 			rectangle.setFill(color);
 			root.getChildren().add(rectangle);
 		} else {
-			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE, SIZE,
-					SIZE / 2);
+			Rectangle rectangle = new Rectangle(i * SIZE, j * SIZE, SIZE, SIZE / 2);
 			rectangle.setFill(color);
 			root.getChildren().add(rectangle);
 		}
@@ -58,7 +57,7 @@ public class Labyrinth2D extends Application {
 		}
 	}
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 		launch(args);
 	}
 
@@ -67,12 +66,10 @@ public class Labyrinth2D extends Application {
 			for (int l = 0; l < getMapa()[k].length; l++) {
 				String string = getMapa()[k][l];
 				if ("_".equals(string)) {
-					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE,
-							SIZE / 2, SIZE);
+					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE, SIZE / 2, SIZE);
 					root.getChildren().add(rectangle);
 				} else {
-					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE,
-							SIZE, SIZE / 2);
+					Rectangle rectangle = new Rectangle(k * SIZE, l * SIZE, SIZE, SIZE / 2);
 					root.getChildren().add(rectangle);
 				}
 			}

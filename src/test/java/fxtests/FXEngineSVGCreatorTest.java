@@ -13,7 +13,7 @@ import paintexp.svgcreator.SVGCreator;
 
 public class FXEngineSVGCreatorTest extends AbstractTestExecution {
     @Test
-    public void testSVGCreator() throws Exception {
+	public void testSVGCreator() {
         show(SVGCreator.class);
         Node stack = lookupFirst(StackPane.class);
         List<Node> queryAll = lookup(ToggleButton.class).stream().collect(Collectors.toList());

@@ -11,11 +11,10 @@ import javafx.stage.Stage;
 
 public class Simple3DBoxApp extends Application {
 
+	private static final int SIZE = 300;
 
-    private static final int SIZE = 300;
-
-    @Override
-	public void start(Stage primaryStage) throws Exception {
+	@Override
+	public void start(Stage primaryStage) {
 		primaryStage.setResizable(false);
 		Scene scene = new Scene(createContent());
 		primaryStage.setScene(scene);
@@ -25,15 +24,15 @@ public class Simple3DBoxApp extends Application {
 	public static Parent createContent() {
 
 		// Box
-        Box testBox = new Box(5, 5, 5);
+		Box testBox = new Box(5, 5, 5);
 
-        PhongMaterial material = new PhongMaterial(Color.RED);
+		PhongMaterial material = new PhongMaterial(Color.RED);
 		testBox.setMaterial(material);
 
 		// Create and position camera
 		PerspectiveCamera camera = new PerspectiveCamera(true);
-		camera.getTransforms().addAll(new Rotate(-20, Rotate.Y_AXIS),
-                new Rotate(-20, Rotate.X_AXIS), new Translate(0, 0, -20));
+		camera.getTransforms().addAll(new Rotate(-20, Rotate.Y_AXIS), new Rotate(-20, Rotate.X_AXIS),
+				new Translate(0, 0, -20));
 
 		// Build the Scene Graph
 		Group root = new Group();
@@ -41,8 +40,7 @@ public class Simple3DBoxApp extends Application {
 		root.getChildren().add(testBox);
 
 		// Use a SubScene
-        SubScene subScene = new SubScene(root, SIZE, SIZE, true,
-				SceneAntialiasing.BALANCED);
+		SubScene subScene = new SubScene(root, SIZE, SIZE, true, SceneAntialiasing.BALANCED);
 		subScene.setFill(Color.TRANSPARENT);
 		subScene.setCamera(camera);
 

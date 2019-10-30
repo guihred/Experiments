@@ -60,7 +60,7 @@ public class SudokuLauncher extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         final int width = 400;
         CommonsFX.loadFXML("Sudoku", "SudokuLauncher.fxml", this, primaryStage, width, width);
         primaryStage.setResizable(false);

@@ -98,7 +98,7 @@ public final class IadesHelper {
     @SafeVarargs
     public static ContestReader getContestQuestions(File file, Consumer<ContestReader>... r) {
         ContestReader instance = new ContestReader();
-        HasLogging.log().info("READING {}", file);
+		LOG.info("READING {}", file);
         instance.readFile(file);
         Stream.of(r).forEach(e -> e.accept(instance));
         return instance;

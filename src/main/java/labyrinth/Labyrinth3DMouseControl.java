@@ -52,7 +52,7 @@ public class Labyrinth3DMouseControl extends Application implements CommomLabyri
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         Labyrinth3DKillerGhostsAndBalls.createLabyrinth(root, labyrinthWalls, balls, getMapa());
         SubScene subScene = new SubScene(root, 500, 500, true,
 				SceneAntialiasing.BALANCED);

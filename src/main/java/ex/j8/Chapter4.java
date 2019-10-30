@@ -132,7 +132,7 @@ public final class Chapter4 {
     public static class Ex1 extends Application {
 
         @Override
-        public void start(Stage stage) throws Exception {
+		public void start(Stage stage) {
             Label message = new Label("Hello, JavaFX!");
             message.setFont(new Font(100));
             TextField textField = new TextField("Hello, JavaFX!");
@@ -153,7 +153,7 @@ public final class Chapter4 {
     public static class Ex10 extends Application {
 
         @Override
-        public void start(Stage stage) throws Exception {
+		public void start(Stage stage) {
             TextField textField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
             WebView browser = new WebView();
             WebEngine engine = browser.getEngine();
@@ -179,7 +179,7 @@ public final class Chapter4 {
     public static class Ex4 extends Application {
 
         @Override
-        public void start(Stage stage) throws Exception {
+		public void start(Stage stage) {
             Circle circle = new Circle(100, 100, 100);
             circle.setFill(Color.RED);
             Pane pane = new Pane();
@@ -213,7 +213,7 @@ public final class Chapter4 {
     public static class Ex5 extends Application {
 
         @Override
-        public void start(Stage stage) throws Exception {
+		public void start(Stage stage) {
             Pane pane = new VBox();
             Scene scene = new Scene(pane);
             Slider slider = new Slider();
@@ -234,7 +234,7 @@ public final class Chapter4 {
     public static class Ex6 extends Application {
 
         @Override
-        public void start(Stage stage) throws Exception {
+		public void start(Stage stage) {
             BorderPane pane = new BorderPane(new Button("Center"), new Button("Top"), new Button("Right"),
                 new Button("Bottom"), new Button("Left"));
             BorderPane.setAlignment(pane.getTop(), Pos.CENTER);
@@ -251,7 +251,7 @@ public final class Chapter4 {
     public static class Ex7 extends Application {
 
         @Override
-        public void start(Stage stage) throws Exception {
+		public void start(Stage stage) {
             BorderPane pane = new BorderPane();
             pane.setCenter(new Button("Center"));
             Button top = new Button("Top");
@@ -276,7 +276,7 @@ public final class Chapter4 {
 
     public static class Ex9 extends Application {
         @Override
-        public void start(Stage stage) throws Exception {
+		public void start(Stage stage) {
             BorderPane pane = new BorderPane();
             Scene scene = new Scene(pane);
             Circle planet = buildPlanet(scene);

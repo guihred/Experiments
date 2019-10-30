@@ -14,7 +14,7 @@ import utils.CrawlerTask;
 public class PaintMain extends Application {
 
 	@Override
-	public void start(final Stage stage) throws Exception {
+	public void start(final Stage stage) {
 		PaintController controller = new PaintController();
 		PaintModel paintModel = controller.getPaintModel();
 		BorderPane root = new BorderPane();

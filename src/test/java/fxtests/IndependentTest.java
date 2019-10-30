@@ -224,7 +224,7 @@ public class IndependentTest {
     }
 
     @Test
-    public void testSpeaker() throws Exception {
+	public void testSpeaker() {
         measureTime("Speaker.speak", () -> {
             Speaker.SPEAKER.speak("Hi");
             Speaker.SPEAKER.speak("How Are You");

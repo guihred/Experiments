@@ -12,7 +12,7 @@ public class RubiksCubeLauncher extends Application {
 
 
     @Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		Group root = new Group();
 		model.extracted(root);
         SubScene subScene = new SubScene(root, 500, 500, true, SceneAntialiasing.BALANCED);

@@ -126,7 +126,7 @@ public class TableVisualizationExample extends TableVisualizationVar {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         final int width = 800;
         CommonsFX.loadFXML("Table Visualization Example", "TableVisualizationExampleApp.fxml", this, primaryStage,
             width, width);

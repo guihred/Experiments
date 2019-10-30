@@ -14,7 +14,7 @@ import utils.ResourceFXUtils;
 public class Square2048Launcher extends Application {
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         final GridPane gridPane = new GridPane();
         final Square2048Model memoryModel = new Square2048Model(gridPane);
 

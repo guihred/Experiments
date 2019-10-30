@@ -145,7 +145,7 @@ public class SVGCreator extends Application {
     }
 
     @Override
-    public void start(final Stage stage) throws Exception {
+	public void start(final Stage stage) {
         CommonsFX.loadFXML("SVG Creator", "SVGCreator.fxml", this, stage);
     }
 

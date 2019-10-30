@@ -39,16 +39,9 @@ public class FXEngineGraphTest extends AbstractTestExecution {
         });
     }
 
-	@Test
-	public void verify() throws Exception {
-		show(GraphMain.class);
-        ImageFXUtils.setShowImage(false);
-        lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
-    }
-
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void verifyAllTopologies() throws Exception {
+	public void verifyAllTopologies() {
 		show(GraphMain.class);
 		Set<ComboBox> queryButtons = lookup(".combo-box").queryAllAs(ComboBox.class).stream()
 				.filter(ComboBox::isVisible)
@@ -69,8 +62,15 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 		}
 	}
 
+	@Test
+	public void verifyGraphMain()  {
+		show(GraphMain.class);
+        ImageFXUtils.setShowImage(false);
+        lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
+    }
+
     @Test
-	public void verifyZoomable() throws Exception {
+	public void verifyZoomable() {
 		show(GraphMain.class);
 		lookup(Cell.class).stream().limit(10).forEach(e -> {
             RunnableEx.ignore(() -> clickOn(e));

@@ -9,7 +9,7 @@ public class ArkanoidLauncher extends Application {
 
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         final Group group = new Group();
         final Scene scene = new Scene(group, 400, 600);
 		ArkanoidModel.create(group, scene);

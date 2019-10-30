@@ -14,7 +14,7 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
 	private File value = ResourceFXUtils.toFile("sngpc2808.pdf");
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage)  {
 		ResourceFXUtils.initializeFX();
 		getLogger().info("STARTING FXEngineRosarioTest");
 		stage.setMaximized(true);
@@ -29,7 +29,7 @@ public class FXEngineRosarioTest extends AbstractTestExecution {
 	}
 
 	@Test
-	public void verify() throws Exception {
+	public void verify() {
 		getLogger().info("VERIFYING FXEngineRosarioTest ");
 		clickOn("#SNGPC");
 		type(typeText(value.getName()));

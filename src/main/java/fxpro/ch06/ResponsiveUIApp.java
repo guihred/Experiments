@@ -13,14 +13,11 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class ResponsiveUIApp extends Application {
-
 	private final ResponsiveUIModel model = new ResponsiveUIModel();
 
-	private ResponsiveUIView view = new ResponsiveUIView(model);
-
-
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
+		ResponsiveUIView view = new ResponsiveUIView(model);
         stage.setTitle("Unresponsive UI Example");
         stage.setScene(view.getScene());
         stage.show();

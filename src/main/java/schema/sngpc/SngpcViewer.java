@@ -26,7 +26,7 @@ public class SngpcViewer extends Application {
 
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         primaryStage.setTitle("SNGPC Viewer");
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();

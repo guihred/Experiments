@@ -13,7 +13,7 @@ import org.junit.Test;
 public class GraphAlgorithmsTest {
 
     @Test
-    public void testGraphAlgorithms() throws Exception {
+	public void testGraphAlgorithms() {
         List<Vertex> vertices = measureTime("GraphAlgorithms.createGraph8",
                 GraphAlgorithms::createGraph8);
         Map<Vertex, Integer> num = new HashMap<>();

@@ -25,7 +25,7 @@ public class EthicalHackApp extends Application {
     private static final Logger LOG = HasLogging.log();
 
     @Override
-    public void start(final Stage primaryStage) throws Exception {
+	public void start(final Stage primaryStage) {
 		CommonsFX.loadFXML("Ethical Hack App", toFile("EthicalHackApp.fxml"), primaryStage, 500, 500);
     }
 

@@ -81,7 +81,7 @@ public class Labyrinth3DWallTexture extends Application implements CommomLabyrin
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 
         createLabyrinth(root);
         SubScene subScene = new SubScene(root, 500, 500, true, SceneAntialiasing.BALANCED);

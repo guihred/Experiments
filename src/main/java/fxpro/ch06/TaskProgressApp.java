@@ -19,7 +19,7 @@ public class TaskProgressApp extends Application {
 	private TaskProgressView view = new TaskProgressView(worker, shouldThrow);
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         stage.setTitle("Simple Task Progress Example");
 		stage.setScene(view.getScene());
 		stage.show();

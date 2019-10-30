@@ -36,7 +36,7 @@ public class ReversiMain extends Application {
     private ReversiModel model = ReversiModel.getInstance();
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 
         Node game = new BorderPane(new StackPane(createBackground(), tiles()), createTitle(), null, createScoreBoxes(),
             null);

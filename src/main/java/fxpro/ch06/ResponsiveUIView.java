@@ -12,7 +12,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import utils.RunnableEx;
 
-final class ResponsiveUIView {
+public final class ResponsiveUIView {
 
     private static final int WAIT_TIME_MILLIS = 3000;
     private static final int SIZE = 200;

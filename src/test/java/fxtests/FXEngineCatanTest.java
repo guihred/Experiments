@@ -19,7 +19,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 	private static final int MAX_TRIES = 100;
 
     @Test
-    public void testDecisions() throws Exception {
+	public void testDecisions() {
 		CatanAppMain newInstance = show(CatanAppMain.class);
         DataframeML build = DataframeBuilder.builder("out/catan_log.txt").build();
         build.removeCol("WINNER", "PLAYER");
@@ -78,7 +78,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     }
 
 	@Test
-    public void testToolsVerify() throws Exception {
+	public void testToolsVerify() {
 		show(CatanAppMain.class);
         List<EdgeCatan> allEdge = lookup(EdgeCatan.class).stream()
             .collect(Collectors.toList());

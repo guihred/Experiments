@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 
 public class PageImage extends Application {
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         FlowPane root = new FlowPane();
         root.setPrefWidth(200);
         root.setAlignment(Pos.TOP_LEFT);

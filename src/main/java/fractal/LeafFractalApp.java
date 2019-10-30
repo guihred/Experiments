@@ -20,7 +20,7 @@ public class LeafFractalApp extends Application {
     private boolean skip;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         FernFractal treeFractal = new FernFractal();
         SimpleToggleGroupBuilder coefs = toggleBuilder(treeFractal);
         VBox limitSlider = SimpleSliderBuilder.newSlider("Limit", 100, 100_000, treeFractal.limitProperty());

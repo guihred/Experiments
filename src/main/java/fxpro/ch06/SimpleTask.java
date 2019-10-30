@@ -16,7 +16,7 @@ public class SimpleTask extends Task<String> {
 	}
 
 	@Override
-	public String call() throws Exception {
+	public String call() {
 		updateTitle("Example Task");
 		updateMessage("Starting...");
 		final int total = 250;

@@ -22,7 +22,7 @@ public class TetrisLauncher extends Application {
     private Timeline timeline;
 
 	@Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         final Scene scene = new Scene(gridPane);
         timeline = new SimpleTimelineBuilder()

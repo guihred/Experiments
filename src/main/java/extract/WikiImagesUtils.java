@@ -95,22 +95,17 @@ public final class WikiImagesUtils {
     }
 
     private static BufferedImage decodeToImage(String imageString) {
-        try {
-            String replaceAll = imageString.replaceAll("data:image/gif;base64,", "");
-            byte[] imageByte = Base64.getDecoder().decode(replaceAll);
-            ImageReader next = ImageIO.getImageReadersByFormatName("gif").next();
-            next.setInput(new ByteArrayImageInputStream(imageByte));
-            return next.read(0);
-        } catch (Exception e) {
-            LOG.info("ERROR LOADING {}", imageString);
-            LOG.info("ERROR", e);
-            return null;
-        }
+		return SupplierEx.get(() -> {
+			String replaceAll = imageString.replaceAll("data:image/gif;base64,", "");
+			byte[] imageByte = Base64.getDecoder().decode(replaceAll);
+			ImageReader next = ImageIO.getImageReadersByFormatName("gif").next();
+			next.setInput(new ByteArrayImageInputStream(imageByte));
+			return next.read(0);
+		});
     }
 
     private static Document getDocument(final String url) throws IOException {
         Connection connect = Jsoup.connect(url);
-
         if (!CrawlerTask.isNotProxied()) {
             connect.header("Proxy-Authorization", "Basic " + CrawlerTask.getEncodedAuthorization());
         }

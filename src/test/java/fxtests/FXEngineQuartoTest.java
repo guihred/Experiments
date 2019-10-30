@@ -16,25 +16,7 @@ public class FXEngineQuartoTest extends AbstractTestExecution {
 	}
 
 	@Test
-	public void verify() throws Exception {
-		interactNoWait(RunnableEx.make(() -> {
-			new QuartoLauncher().start(currentStage);
-			currentStage.setMaximized(true);
-		}));
-
-		KeyCode[] keycodes = new KeyCode[] { KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.Z };
-		Modifier[] modifiers = new Modifier[] { KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN,
-				KeyCombination.CONTROL_DOWN };
-		for (int i = 0; i < modifiers.length; i++) {
-			for (int j = 0; j < keycodes.length; j++) {
-				push(new KeyCodeCombination(keycodes[j], modifiers[i]));
-			}
-		}
-		closeCurrentWindow();
-	}
-
-	@Test
-	public void verify2() throws Exception {
+	public void verify2() {
 		interactNoWait(RunnableEx.make(() -> {
 			new QuartoLauncher().start(currentStage);
 			currentStage.setMaximized(true);
@@ -60,6 +42,24 @@ public class FXEngineQuartoTest extends AbstractTestExecution {
 				break;
 			}
 		}
+	}
+
+	@Test
+	public void verifyCombinations() {
+		interactNoWait(RunnableEx.make(() -> {
+			new QuartoLauncher().start(currentStage);
+			currentStage.setMaximized(true);
+		}));
+
+		KeyCode[] keycodes = new KeyCode[] { KeyCode.UP, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.Z };
+		Modifier[] modifiers = new Modifier[] { KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN,
+				KeyCombination.CONTROL_DOWN };
+		for (int i = 0; i < modifiers.length; i++) {
+			for (int j = 0; j < keycodes.length; j++) {
+				push(new KeyCodeCombination(keycodes[j], modifiers[i]));
+			}
+		}
+		closeCurrentWindow();
 	}
 
 	private void randButton(double width, double height) {

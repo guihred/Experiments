@@ -20,7 +20,7 @@ public class DeathStar extends Application {
     private Point3D sphere = new Point3D(-RADIUS, 0, -RADIUS * 3 / 2);
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         final TriangleMesh triangleMesh = createMesh(DIVISION, RADIUS, sphere);
         MeshView mesh = new MeshView(triangleMesh);
 

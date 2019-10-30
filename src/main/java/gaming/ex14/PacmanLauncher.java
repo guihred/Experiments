@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 public class PacmanLauncher extends Application {
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		final Group group = new Group();
 
 		final BorderPane borderPane = new BorderPane(group);

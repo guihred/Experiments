@@ -35,7 +35,7 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 		initializeLabyrinth();
 		Scene scene = new Scene(root);
         final double nearClip = 0.1;

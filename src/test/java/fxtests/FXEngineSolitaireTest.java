@@ -21,7 +21,7 @@ import org.junit.Test;
 
 public final class FXEngineSolitaireTest extends AbstractTestExecution {
     @Test
-    public void verifyDots() throws Exception {
+	public void verifyDots() {
         show(DotsLauncher.class);
         Set<Node> queryAll = lookup(DotsSquare.class).stream().limit(20).collect(Collectors.toSet());
         for (Node next : queryAll) {
@@ -37,7 +37,7 @@ public final class FXEngineSolitaireTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyFreeCell() throws Exception {
+	public void verifyFreeCell() {
         show(FreeCellActivity.class);
         for (FreeCellStack cardStack : lookup(FreeCellStack.class)) {
             if (cardStack.getCards().isEmpty()) {
@@ -54,7 +54,7 @@ public final class FXEngineSolitaireTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifySolitaire() throws Exception {
+	public void verifySolitaire() {
         show(SolitaireLauncher.class);
         List<CardStack> cardStacks = lookup(".cardstack").queryAllAs(CardStack.class).stream()
             .collect(Collectors.toList());

@@ -53,7 +53,7 @@ public class ColorChooser extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage1) throws Exception {
+	public void start(Stage primaryStage1) {
         primaryStage = primaryStage1;
         File file = ResourceFXUtils.toFile("ColorChooser.fxml");
         RunnableEx.remap(() -> {

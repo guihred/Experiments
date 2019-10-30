@@ -56,7 +56,7 @@ import utils.ResourceFXUtils;
 @SuppressWarnings("static-method")
 public class FXFileReadersTest extends ApplicationTest {
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         ResourceFXUtils.initializeFX();
         stage.show();
     }
@@ -69,7 +69,7 @@ public class FXFileReadersTest extends ApplicationTest {
     }
 
     @Test
-    public void testExcelAndWordFile() throws Exception {
+	public void testExcelAndWordFile() {
         ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
             () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
         Map<String, FunctionEx<Medicamento, Object>> fields = new LinkedHashMap<>();
@@ -209,6 +209,7 @@ public class FXFileReadersTest extends ApplicationTest {
             Set<Object> equalsTest = new LinkedHashSet<>(getList());
             Set<Object> equalsTest2 = new LinkedHashSet<>(getList());
             equalsTest.forEach(e -> equalsTest2.stream().anyMatch(a -> Objects.equals(a, e)));
+			equalsTest.toString();
         });
     }
 

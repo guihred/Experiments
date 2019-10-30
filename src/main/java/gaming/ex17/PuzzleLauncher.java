@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 public class PuzzleLauncher extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         primaryStage.setTitle("Puzzle");
         Group root = new Group();
         PuzzleModel puzzlePiece = new PuzzleModel();

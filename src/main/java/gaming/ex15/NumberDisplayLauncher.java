@@ -12,7 +12,7 @@ import javafx.util.Duration;
 
 public class NumberDisplayLauncher extends Application {
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		SimpleIntegerProperty number = new SimpleIntegerProperty(0);
 		Numbers3D number3d = new Numbers3D(0);
 		number3d.numProperty().bind(number);

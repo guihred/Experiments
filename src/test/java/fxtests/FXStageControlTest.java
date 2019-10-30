@@ -9,7 +9,7 @@ import utils.ConsumerEx;
 
 public class FXStageControlTest extends AbstractTestExecution {
     @Test
-    public void testLaunch() throws Exception {
+	public void testLaunch() throws Exception {
         launch(StageControlExample.class,
             new String[] { randomItem(Arrays.asList("TRANSPARENT", "UNDECORATED", "UTILITY")) });
     }

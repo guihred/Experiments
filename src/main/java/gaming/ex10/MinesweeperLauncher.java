@@ -16,7 +16,7 @@ public class MinesweeperLauncher extends Application {
 
     private static final int WIDTH = 400;
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         final GridPane gridPane = new GridPane();
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 

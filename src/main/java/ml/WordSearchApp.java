@@ -34,7 +34,7 @@ public class WordSearchApp extends Application {
     private Map<String, String> filtersMap = new HashMap<>();
 
     @Override
-    public void start(Stage theStage) throws Exception {
+	public void start(Stage theStage) throws Exception {
         theStage.setTitle("Word Search Example");
         BorderPane root = new BorderPane();
         Scene theScene = new Scene(root);

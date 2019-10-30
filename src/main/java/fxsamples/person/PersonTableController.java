@@ -44,7 +44,7 @@ public class PersonTableController extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         primaryStage.setTitle("Person Table");
         BorderPane root = new BorderPane();
         Scene scene = new Scene(root, WIDTH / 2, WIDTH, Color.WHITE);

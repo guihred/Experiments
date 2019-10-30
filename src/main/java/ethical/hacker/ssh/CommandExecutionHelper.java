@@ -62,8 +62,6 @@ abstract class CommandExecutionHelper extends AbstractCommandSupport {
 	 * @param command1
 	 *            The command line
 	 * @return {@code true} if continue accepting command
-	 * @throws Exception
-	 *             If failed to handle the command line
 	 */
 	protected abstract boolean handleCommandLine(String command1) throws Exception;
 }

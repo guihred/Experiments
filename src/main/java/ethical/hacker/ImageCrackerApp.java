@@ -57,7 +57,7 @@ public class ImageCrackerApp extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         WebView browser = new WebView();
 
         ImageView imageView = new ImageView();

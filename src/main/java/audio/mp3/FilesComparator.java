@@ -82,7 +82,7 @@ public class FilesComparator extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         HBox root = new HBox();
 
         ObservableList<File> items1 = synchronizedObservableList(observableArrayList());

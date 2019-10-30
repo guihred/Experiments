@@ -14,7 +14,7 @@ public class ThreadInformationApp extends Application {
 	private ThreadInformationView view = new ThreadInformationView(model);
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         stage.setTitle("JavaFX Threads Information");
 		stage.setScene(view.getScene());
         stage.show();

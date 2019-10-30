@@ -24,7 +24,7 @@ public class SnakeLauncher extends Application {
     private Stage primaryStage;
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         primaryStage = stage;
         final GridPane gridPane = new GridPane();
         for (int i = 0; i < SnakeSquare.MAP_SIZE; i++) {

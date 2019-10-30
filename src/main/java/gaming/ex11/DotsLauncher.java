@@ -109,7 +109,7 @@ public class DotsLauncher extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Dots", "DotsLauncher.fxml", this, primaryStage,
             DotsHelper.MAZE_SIZE * DotsSquare.SQUARE_SIZE + 20.,
             (DotsHelper.MAZE_SIZE + 1) * DotsSquare.SQUARE_SIZE + 20.);

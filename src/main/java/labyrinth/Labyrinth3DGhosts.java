@@ -34,7 +34,7 @@ public class Labyrinth3DGhosts extends Application implements CommomLabyrinth {
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 		Group root = new Group();
 
 		initializeLabyrinth(root);

@@ -19,7 +19,7 @@ public class Maze3DLauncher extends Application {
 
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         PerspectiveCamera camera = new PerspectiveCamera(true);
         GridPane root = new GridPane();
         camera.setNearClip(1. / 100);

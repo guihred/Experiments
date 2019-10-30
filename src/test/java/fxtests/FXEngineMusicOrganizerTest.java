@@ -53,7 +53,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyBasicAudioPlayerWithControlLauncher() throws Exception {
+	public void verifyBasicAudioPlayerWithControlLauncher() {
         show(BasicAudioPlayerWithControlLauncher.class);
         Set<Node> queryAll = lookup(".button").queryAll();
         queryAll.forEach(ConsumerEx.ignore(t -> {
@@ -63,7 +63,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyEditSong2() throws Exception {
+	public void verifyEditSong2() {
         FXTesting.measureTime("new EditSongController(song)", () -> {
             Path firstSong = getRandomSong();
             File file = firstSong.toFile();
@@ -94,7 +94,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void verifyFileComparator() throws Exception {
+	public void verifyFileComparator() {
         FilesComparator application = show(FilesComparator.class);
         File[] listFiles = ResourceFXUtils.getUserFolder("Music").listFiles(File::isDirectory);
         int i = 0;
@@ -115,7 +115,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyPlayingAudio() throws Exception {
+	public void verifyPlayingAudio() {
         PlayingAudio show = show(PlayingAudio.class);
         interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
         tryClickButtons();

@@ -18,7 +18,7 @@ public class TronLauncher extends Application {
     private Timeline timeline;
 
     @Override
-    public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
         final GridPane gridPane = new GridPane();
         for (int i = 0; i < TronSquare.MAP_SIZE; i++) {
             for (int j = 0; j < TronSquare.MAP_SIZE; j++) {

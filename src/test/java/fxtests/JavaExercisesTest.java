@@ -76,7 +76,7 @@ public final class JavaExercisesTest {
     }
 
     @Test
-    public void testChapter6() throws Exception {
+	public void testChapter6() {
         measureTime("Chapter6.ex1", Chapter6::ex1);
         measureTime("Chapter6.ex3", Chapter6::ex3);
         measureTime("Chapter6.ex5", Chapter6::ex5);
@@ -88,7 +88,7 @@ public final class JavaExercisesTest {
     }
 
     @Test
-    public void testChapter8() throws Exception {
+	public void testChapter8() {
         measureTime("Chapter8.ex1", Chapter8::ex1);
         measureTimeExpectException("Chapter8.ex2", Chapter8::ex2);
         measureTime("Chapter8.ex3", Chapter8::ex3);
@@ -111,7 +111,7 @@ public final class JavaExercisesTest {
 
 
     @Test
-    public void testJapaneseConjugate() throws Exception {
+	public void testJapaneseConjugate() {
         List<String> measureTime2 = measureTime("JapaneseVerbConjugate.conjugateVerb",
             () -> JapaneseVerbConjugate.conjugateVerb("よい"));
         Assert.assertTrue("Conjugation must contain all these",
@@ -121,7 +121,7 @@ public final class JavaExercisesTest {
     }
 
     @Test
-    public void testJavaExercise() throws Exception {
+	public void testJavaExercise() {
         measureTime("new BigNo", () -> new BigNo(12_345_678));
         measureTime("BigNo.multiply", () -> new BigNo(55).multiply(new BigNo(55)));
         BigNo b = measureTime("BigNo.power", () -> BigNo.power(2, 2241));
@@ -163,7 +163,7 @@ public final class JavaExercisesTest {
     }
 
     @Test
-    public void testJavaFXBenController() throws Exception {
+	public void testJavaFXBenController() {
         JavaFXBeanController.main(null);
         MultipleBindingExample.main(null);
         SimplePropertyBindExample.main(null);
