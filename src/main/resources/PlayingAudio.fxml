@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.text.*?>
+<Group xmlns:fx="http://javafx.com/fxml">
+	<children>
+		<Rectangle height="500.0" fx:id="applicationArea"
+			width="500.0" />
+		<Group fx:id="vizContainer" />
+		<Group translateX="434.0" translateY="459.0" fx:id="buttonGroup">
+			<children>
+				<Rectangle height="35.0" fx:id="buttonArea" width="60.0" />
+				<Button fx:id="stopButton" 
+					onMousePressed="#onMousePressedStopbutton" />
+				<ToggleButton fx:id="toggleButton3"
+					onAction="#onActionToggleButton3">
+					<graphic>
+						<Group fx:id="pauseButton" layoutX="-0.04999720677733421" layoutY="0.9998641014099121">
+							<children>
+								<SVGPath
+									content="M 4,3 v11h4v-11z M 10,3 v11h4v-11z M9 17 a 9 9 0 1 1 0.1 0"
+									fill="0xffffffff" styleClass="pause-circle" />
+							</children>
+						</Group>
+					</graphic>
+				</ToggleButton>
+			</children>
+		</Group>
+		<Slider blockIncrement="1.0" fx:id="seekpositionslider"
+			translateX="10.0" translateY="450.0" value="1.0" />
+		<Group fx:id="closeButton"
+			onMouseClicked="#onMouseClickedClosebutton" translateX="485.0"
+			translateY="10.0">
+			<children>
+				<Circle centerX="5.0" fill="0xff0000ff" id="close-circle"
+					radius="7.0" />
+				<Text fx:id="text4" text="X" x="2.0" y="4.0" />
+			</children>
+		</Group>
+	</children>
+	<fx:define>
+		<Group translateX="434.0" translateY="459.0" fx:id="playButton">
+			<children>
+				<SVGPath content="M 6,4 v8l8-4z M9 17 a 9 9 0 1 1 0.1 0"
+					fill="0xffffffff" styleClass="pause-circle" />
+			</children>
+		</Group>
+	</fx:define>
+</Group>
