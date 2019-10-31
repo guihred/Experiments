@@ -27,9 +27,8 @@ import utils.RunnableEx;
 import utils.StringSigaUtils;
 
 public class SSHSessionApp extends Application {
-    private SshServer server;
     private Button serverButton;
-
+    private SshServer server;
     @Override
     public void start(Stage primaryStage) {
 

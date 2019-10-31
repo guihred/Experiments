@@ -15,9 +15,8 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class UnRar {
-    public static final String SRC_DIRECTORY = new File("").getAbsolutePath();
-
     private static final Logger LOGGER = HasLogging.log();
+    public static final String SRC_DIRECTORY = new File("").getAbsolutePath();
 
     private List<String> successfulFiles = new ArrayList<>();
     private List<String> unsupportedFiles = new ArrayList<>();

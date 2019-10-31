@@ -38,7 +38,6 @@ public class MusicOrganizer extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Organizador de Músicas");
         VBox root = new VBox();
         TableView<Music> musicasTable = tabelaMusicas();
         musicasTable.prefWidthProperty().bind(root.widthProperty().subtract(10));
@@ -51,6 +50,7 @@ public class MusicOrganizer extends Application {
         root.getChildren().add(new VBox(new Label("Lista Músicas"),
             new HBox(buttonMusic, buttonVideos, fixMusic, filterField), musicasTable));
         Scene scene = new Scene(root, WIDTH, HEIGHT);
+        primaryStage.setTitle("Organizador de Músicas");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

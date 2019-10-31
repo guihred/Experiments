@@ -28,8 +28,6 @@ import utils.ResourceFXUtils;
 public class PlayingAudio extends Application {
     private static final Logger LOG = HasLogging.log();
     @FXML
-    private ToggleButton toggleButton3;
-    @FXML
     private Slider seekpositionslider;
     @FXML
     private Rectangle applicationArea;
@@ -40,12 +38,14 @@ public class PlayingAudio extends Application {
     @FXML
     private Group pauseButton;
     @FXML
+    private ToggleButton toggleButton3;
+    @FXML
     private Rectangle buttonArea;
     @FXML
     private Group buttonGroup;
     @FXML
-    private Group vizContainer;
-    private Stage mainStage;
+    protected Group vizContainer;
+    protected Stage mainStage;
     private Random rand = new SecureRandom();
     private MediaPlayer mediaPlayer;
     private Point2D anchorPt;
@@ -114,20 +114,7 @@ public class PlayingAudio extends Application {
         });
         mainStage.setOnCloseRequest(e -> mediaPlayer.stop());
         mediaPlayer
-            .setAudioSpectrumListener((double timestamp, double duration, float[] magnitudes, float[] phases) -> {
-                vizContainer.getChildren().clear();
-                int i = 0;
-                double y = mainStage.getScene().getHeight() / 2;
-                for (float phase : phases) {
-                    int red = rnd();
-                    int green = rnd();
-                    int blue = rnd();
-                    Circle circle = new SimpleCircleBuilder().radius(10).centerX((double) 10 + i)
-                        .centerY(y + (double) phase * 100).fill(Color.rgb(red, green, blue, 7. / 10)).build();
-                    vizContainer.getChildren().add(circle);
-                    i += 5;
-                }
-            });
+            .setAudioSpectrumListener(this::onAudioSpectrum);
     }
 
     @Override
@@ -135,6 +122,32 @@ public class PlayingAudio extends Application {
         mainStage = primaryStage;
         CommonsFX.loadFXML("Playing Audio", "PlayingAudio.fxml", this, primaryStage, 500, 500);
         plugEventsToScene(mainStage.getScene());
+    }
+
+    /**
+     * @param timestamp
+     * @param duration
+     * @param magnitudes
+     * @param phases
+     */
+    protected void onAudioSpectrum(double timestamp, double duration, float[] magnitudes, float[] phases) {
+        vizContainer.getChildren().clear();
+        int i = 0;
+        double y = mainStage.getScene().getHeight() / 2;
+        for (float phase : phases) {
+            int red = rnd();
+            int green = rnd();
+            int blue = rnd();
+            Circle circle = new SimpleCircleBuilder().radius(10).centerX((double) 10 + i)
+                .centerY(y + (double) phase * 100).fill(Color.rgb(red, green, blue, 7. / 10)).build();
+            vizContainer.getChildren().add(circle);
+            i += 5;
+        }
+    }
+
+    protected int rnd() {
+        final int bound = 256;
+        return rand.nextInt(bound);
     }
 
     private void plugEventsToScene(Scene scene) {
@@ -157,11 +170,6 @@ public class PlayingAudio extends Application {
         closeButton.translateXProperty().bind(scene.widthProperty().subtract(15));
         scene.setFill(Color.BLACK);
         scene.getStylesheets().add(ResourceFXUtils.toExternalForm("media.css"));
-    }
-
-    private int rnd() {
-        final int bound = 256;
-        return rand.nextInt(bound);
     }
 
     private void updatePlayAndPauseButtons(boolean playVisible) {

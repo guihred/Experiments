@@ -1,12 +1,10 @@
 package audio.mp3;
 
 import static extract.FilesComparatorHelper.*;
-import static java.util.Comparator.comparing;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 import static utils.ResourceFXUtils.toExternalForm;
 
-import extract.FilesComparatorHelper;
 import extract.Music;
 import extract.MusicReader;
 import java.io.File;
@@ -48,7 +46,6 @@ public class FilesComparator extends Application {
     private ProgressIndicator progress;
     private final Map<File, Music> fileMap = new ConcurrentHashMap<>();
 
-
     public void addSongsToTable(TableView<File> table1, File selectedFile) {
         ObservableList<File> items = table1.getItems();
         ObjectProperty<File> dir1 = directoryMap.get(table1.getId());
@@ -62,18 +59,18 @@ public class FilesComparator extends Application {
 
     public ObservableList<File> getSongs(File file, ObservableList<File> musicas, TableView<File> table1) {
         musicas.clear();
-
+        updateProgress(0);
         new Thread(() -> {
             LOG.info("Scanning {}", file);
             List<Path> find = ResourceFXUtils.getPathByExtension(file, ".mp3");
             find.stream().map(Path::toFile).forEach(musicas::add);
-            musicas.sort(comparing(FilesComparatorHelper::toFileString));
+
             double d = 1.0 / find.size();
-            updateProgress(0);
             musicas.forEach(t -> {
                 updateProgress(progress.getProgress() + d);
                 getFromMap(t, fileMap);
             });
+            table1.sort();
             updateProgress(1);
             updateCells(table1);
             LOG.info("{} Songs from {}", musicas.size(), file);
@@ -82,9 +79,8 @@ public class FilesComparator extends Application {
     }
 
     @Override
-	public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) {
         HBox root = new HBox();
-
         ObservableList<File> items1 = synchronizedObservableList(observableArrayList());
         ObservableList<File> items2 = synchronizedObservableList(observableArrayList());
 
@@ -103,13 +99,13 @@ public class FilesComparator extends Application {
 
     private ObservableValue<File> addTable(HBox root, String nome, String title, ObservableList<File> items1,
         ObservableList<File> items2, ObjectProperty<File> dir) {
-
         TableView<File> table1 = new SimpleTableViewBuilder<File>().items(items1).selectionMode(SelectionMode.MULTIPLE)
             .addColumn(nome, (s, c) -> {
                 c.setText(toFileString(s));
                 String itemClass = getItemClass(items2, s, c.getStyleClass(), fileMap);
                 c.getStyleClass().add(itemClass);
             }).onDoubleClick(e -> MusicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
+
         table1.setId(nome);
         directoryMap.put(nome, dir);
         Button files1 = StageHelper.selectDirectory(nome, "Carregar Pasta de Músicas",
@@ -186,6 +182,5 @@ public class FilesComparator extends Application {
         }
         updateCells(table1);
     }
-
 
 }

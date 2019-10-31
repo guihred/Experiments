@@ -113,6 +113,10 @@ public final class PaintToolHelper {
     }
 
     public static boolean isEqualImage(WritableImage image, WritableImage image2) {
+        if(image.getWidth()!=image2.getWidth()||image.getHeight()!=image2.getHeight()) {
+            return true;
+        }
+        
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 if (image.getPixelReader().getArgb(i, j) != image2.getPixelReader().getArgb(i, j)) {

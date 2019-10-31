@@ -52,7 +52,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         List<KeyCode> testCodes = Arrays.asList(DELETE, V, C, X, A, RIGHT, LEFT, DOWN, UP);
         if (!colors.isEmpty()) {
             RunnableEx.ignore(() -> doubleClickOn(colors.remove(random.nextInt(colors.size())), MouseButton.PRIMARY));
-            clickOn("#use");
+            tryClickButtons();
         }
         for (Node next : queryAll) {
             Object userData = next.getUserData();
@@ -181,7 +181,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     }
 
     private void typeInParallel() {
-        sleep(500);
+        sleep(1000);
         type(typeText(TEST_FILE));
         type(KeyCode.ENTER);
     }

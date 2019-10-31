@@ -103,10 +103,11 @@ public class JavaDependencyTest {
 
         List<String> failedTests = new ArrayList<>();
         measureTime("JavaFileDependency.testUncovered", () -> {
-            List<String> uncovered = getUncovered();
-            List<String> uncoveredTests = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream()
-                .distinct()
-                .sorted().collect(Collectors.toList());
+            List<String> uncoveredTests = getFxTest(getUncovered());
+            if (uncoveredTests.isEmpty()) {
+                uncoveredTests = getFxTest(getUncoveredBranches());
+            }
+
             for (int i = 0; i < uncoveredTests.size(); i++) {
                 String className = uncoveredTests.get(i);
                 if (className.equals("JavaDependencyTest")) {
@@ -137,7 +138,9 @@ public class JavaDependencyTest {
             }
         });
         if (!failedTests.isEmpty()) {
-            Assert.fail(failedTests.stream().collect(Collectors.joining("\n\t", "ERRORS IN {\n\t", "\n}")));
+            String collect = failedTests.stream().collect(Collectors.joining("\n\t", "ERRORS IN {\n\t", "\n}"));
+            LOG.error(collect);
+            Assert.fail(collect);
         }
     }
 
@@ -145,6 +148,11 @@ public class JavaDependencyTest {
 	public void testHTestUncoveredApps() {
 
         measureTime("JavaFileDependency.testUncoveredApps", () -> FXTesting.testApps(getUncoveredApplications()));
+    }
+
+    private List<String> getFxTest(List<String> uncovered) {
+        return JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream().distinct()
+            .sorted().collect(Collectors.toList());
     }
 
     private void runTest(Class<?> testClass, Object test, List<String> failedTests) {
@@ -191,6 +199,18 @@ public class JavaDependencyTest {
         uncovered.addAll(collect2);
         uncovered.addAll(path.stream().map(JavaFileDependency::getName).collect(Collectors.toList()));
         return classes.stream().filter(e -> uncovered.contains(e.getSimpleName())).collect(Collectors.toList());
+    }
+
+    public static List<String> getUncoveredBranches() {
+        File csvFile = new File("target/site/jacoco/jacoco.csv");
+        if (!csvFile.exists()) {
+            return Collections.emptyList();
+        }
+        DataframeML b = DataframeBuilder.build(csvFile);
+        DataframeUtils.crossFeature(b, "PERCENTAGE", arr -> arr[1] / (arr[0] + arr[1]) * 100, "BRANCH_MISSED",
+            "BRANCH_COVERED");
+        b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 50);
+        return b.list("CLASS");
     }
 
     private static boolean contains(List<Class<? extends Application>> classes, JavaFileDependency m) {

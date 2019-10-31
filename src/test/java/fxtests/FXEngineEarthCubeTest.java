@@ -10,8 +10,8 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
     @Test
     public void verifyEarthCubeMain() {
         show(EarthCubeMain.class);
-        CubeNode cube = lookupFirst(CubeNode.class);
         sleep(2000);
+        CubeNode cube = lookupFirst(CubeNode.class);
         drag(cube, MouseButton.PRIMARY);
         moveRandom(50);
         drop();

@@ -15,7 +15,7 @@ public class SSHTest extends AbstractTestExecution {
     @Before
     public void setUp() throws Exception {
         CrawlerTask.insertProxyConfig();
-		sshd = BaseTestSupport.setupTestServer();
+        sshd = BaseTestSupport.setupTestServer();
         sshd.start();
     }
 
@@ -26,9 +26,9 @@ public class SSHTest extends AbstractTestExecution {
 
     @Test
     public void testMessages() throws Exception {
-		String name = BaseTestSupport.getCurrentTestName();
-		SSHClientUtils.sendMessage("ipconfig", BaseTestSupport.TEST_LOCALHOST, sshd.getPort(),
-				name, name, new PrintStream(System.out));
+        String name = BaseTestSupport.getCurrentTestName();
+        SSHClientUtils.sendMessage("ipconfig", BaseTestSupport.TEST_LOCALHOST, sshd.getPort(), name, name,
+            new PrintStream(System.out));
     }
 
 }

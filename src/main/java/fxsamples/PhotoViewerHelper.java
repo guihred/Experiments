@@ -105,7 +105,7 @@ public class PhotoViewerHelper {
         }
     }
 
-    static Task<Boolean> newWorker(final String url, ProgressIndicator progressIndicator2, ImageView currentImageView2,
+    static Task<Boolean> newWorker(String url, ProgressIndicator progressIndicator2, ImageView currentImageView2,
         AtomicBoolean loading2, Text news2) {
         return new Task<Boolean>() {
             @Override

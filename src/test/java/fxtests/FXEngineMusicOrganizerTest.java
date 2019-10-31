@@ -9,17 +9,17 @@ import extract.Music;
 import extract.MusicReader;
 import fxpro.ch08.BasicAudioPlayerWithControlLauncher;
 import fxsamples.PlayingAudio;
+import fxsamples.PlayingAudio2;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Cell;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -108,20 +108,33 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
                 // DOES NOTHING
             }
         }
+        while (application.getProgress() < 1) {
+            // DOES NOTHING
+        }
         for (TableView<?> tableView : lookup) {
             clickOn(from(tableView).lookup(Cell.class::isInstance).queryLabeled());
         }
         lookup(Button.class).stream()
             .filter(e -> !e.getText().startsWith("File") && !e.getText().equals("X"))
             .forEach(ConsumerEx.ignore(this::clickOn));
-
+        WaitForAsyncUtils.waitForFxEvents();
     }
 
     @Test
 	public void verifyPlayingAudio() {
-        PlayingAudio show = show(PlayingAudio.class);
+        PlayingAudio show = show(PlayingAudio2.class);
         interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
         tryClickButtons();
+        Group f = lookupFirst(Group.class);
+        drag(f, MouseButton.PRIMARY);
+        moveRandom(100);
+        drop();
+        lookup(Slider.class).forEach(e -> {
+            drag(e, MouseButton.PRIMARY);
+            moveRandom(100);
+            drop();
+        });
+        interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
     }
 
     private Path getRandomSong() {
