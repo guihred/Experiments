@@ -66,10 +66,10 @@ public class FilesComparator extends Application {
             find.stream().map(Path::toFile).forEach(musicas::add);
 
             double d = 1.0 / find.size();
-            musicas.forEach(t -> {
+            for (File t : musicas) {
                 updateProgress(progress.getProgress() + d);
                 getFromMap(t, fileMap);
-            });
+            }
             table1.sort();
             updateProgress(1);
             updateCells(table1);

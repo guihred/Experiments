@@ -207,9 +207,11 @@ public class JavaDependencyTest {
             return Collections.emptyList();
         }
         DataframeML b = DataframeBuilder.build(csvFile);
-        DataframeUtils.crossFeature(b, "PERCENTAGE", arr -> arr[1] / (arr[0] + arr[1]) * 100, "BRANCH_MISSED",
+        DataframeUtils.crossFeature(b, "PERCENTAGE",
+            arr -> arr[0] + arr[1] == 0 ? 100 : arr[1] / (arr[0] + arr[1]) * 100, "BRANCH_MISSED",
             "BRANCH_COVERED");
-        b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 50);
+        b.filter("PERCENTAGE", v -> ((Number) v).intValue() < 50);
+        LOG.error(DataframeUtils.toString(b));
         return b.list("CLASS");
     }
 
