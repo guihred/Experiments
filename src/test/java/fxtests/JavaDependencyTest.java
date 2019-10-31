@@ -103,9 +103,9 @@ public class JavaDependencyTest {
 
         List<String> failedTests = new ArrayList<>();
         measureTime("JavaFileDependency.testUncovered", () -> {
-            List<String> uncoveredTests = getFxTest(getUncovered());
+            List<String> uncoveredTests = getUncoveredFxTest(getUncovered());
             if (uncoveredTests.isEmpty()) {
-                uncoveredTests = getFxTest(getUncoveredBranches());
+                uncoveredTests = getUncoveredFxTest(getUncoveredBranches());
             }
 
             for (int i = 0; i < uncoveredTests.size(); i++) {
@@ -150,7 +150,8 @@ public class JavaDependencyTest {
         measureTime("JavaFileDependency.testUncoveredApps", () -> FXTesting.testApps(getUncoveredApplications()));
     }
 
-    private List<String> getFxTest(List<String> uncovered) {
+    private List<String> getUncoveredFxTest(List<String> uncovered) {
+        LOG.error("Uncovered Classes {}", uncovered);
         return JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream().distinct()
             .sorted().collect(Collectors.toList());
     }
@@ -177,7 +178,7 @@ public class JavaDependencyTest {
             return Collections.emptyList();
         }
         DataframeML b = DataframeBuilder.build(csvFile);
-        DataframeUtils.crossFeature(b, "PERCENTAGE", arr -> arr[1] / (arr[0] + arr[1]) * 100, "LINE_MISSED",
+        DataframeUtils.crossFeature(b, "PERCENTAGE", JavaDependencyTest::getPercentage, "LINE_MISSED",
             "LINE_COVERED");
         b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= 30);
         return b.list("CLASS");
@@ -208,7 +209,7 @@ public class JavaDependencyTest {
         }
         DataframeML b = DataframeBuilder.build(csvFile);
         DataframeUtils.crossFeature(b, "PERCENTAGE",
-            arr -> arr[0] + arr[1] == 0 ? 100 : arr[1] / (arr[0] + arr[1]) * 100, "BRANCH_MISSED",
+            JavaDependencyTest::getPercentage, "BRANCH_MISSED",
             "BRANCH_COVERED");
         b.filter("PERCENTAGE", v -> ((Number) v).intValue() < 50);
         LOG.error(DataframeUtils.toString(b));
@@ -217,5 +218,9 @@ public class JavaDependencyTest {
 
     private static boolean contains(List<Class<? extends Application>> classes, JavaFileDependency m) {
         return classes.stream().anyMatch(cl -> cl.getSimpleName().equals(m.getName()));
+    }
+
+    private static double getPercentage(double[] arr) {
+        return arr[0] + arr[1] == 0 ? 100 : arr[1] / (arr[0] + arr[1]) * 100;
     }
 }
