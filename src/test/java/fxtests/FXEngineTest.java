@@ -240,18 +240,6 @@ public class FXEngineTest extends AbstractTestExecution {
         }));
     }
 
-    @Test
-    public void verifyWorkingListsViews() {
-        show(WorkingListsViews.class);
-        List<Node> lookup = lookup(ListView.class).stream().collect(Collectors.toList());
-        List<Button> buttons = lookup(Button.class).stream().collect(Collectors.toList());
-        for (int i = 0; i < lookup.size(); i++) {
-            Node queryAs = from(lookup.get(i)).lookup(ListCell.class::isInstance).query();
-            ignore(() -> clickOn(queryAs));
-            Button button = buttons.get(i);
-            ignore(() -> clickOn(button));
-        }
-    }
 
     @Test
     public void verifyWorkingWithTableView() {
