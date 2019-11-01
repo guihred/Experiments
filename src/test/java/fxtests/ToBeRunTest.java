@@ -160,7 +160,6 @@ public class ToBeRunTest {
             ToBeRunTest::getPercentage, "BRANCH_MISSED",
             "BRANCH_COVERED");
         b.filter("PERCENTAGE", v -> ((Number) v).intValue() < 50);
-        JavaDependencyTest.LOG.error(DataframeUtils.toString(b));
         return b.list("CLASS");
     }
 
