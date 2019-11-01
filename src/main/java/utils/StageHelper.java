@@ -40,7 +40,12 @@ public final class StageHelper {
     }
 
     public static void closeStage(EventTarget button) {
-        ((Stage) ((Node) button).getScene().getWindow()).close();
+        if (button != null) {
+            Scene scene = ((Node) button).getScene();
+            if (scene != null) {
+                ((Stage) scene.getWindow()).close();
+            }
+        }
     }
 
     public static void displayCSSStyler(Scene scene, String pathname) {

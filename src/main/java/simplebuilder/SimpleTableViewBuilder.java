@@ -117,9 +117,9 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     @SuppressWarnings("unchecked")
-    public static <C, V extends TableCell<C, Object>> Callback<TableColumn<C, Object>, TableCell<C, Object>> 
+    public static <C, M, V extends TableCell<C, M>> Callback<TableColumn<C, M>, TableCell<C, M>>
         newCellFactory(final BiConsumer<C, V> value) {
-        return p -> new CustomableTableCell<C, Object>() {
+        return p -> new CustomableTableCell<C, M>() {
             @Override
             protected void setStyleable(final C auxMed) {
                 value.accept(auxMed, (V) this);

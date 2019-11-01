@@ -108,6 +108,11 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     public static Stage bindWindow(Stage stage, Node node1) {
         Window window = node1.getScene().getWindow();
         if (window == null) {
+            stage.showingProperty().addListener((ob, old, n) -> {
+                if (n) {
+                    Platform.runLater(stage::close);
+                }
+            });
             return stage;
         }
 

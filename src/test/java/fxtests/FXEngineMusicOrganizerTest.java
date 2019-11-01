@@ -94,6 +94,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
                 RunnableEx.ignore(() -> sleep(1000));
             }
         });
+        WaitForAsyncUtils.waitForFxEvents();
     }
 
     @Test

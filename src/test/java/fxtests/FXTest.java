@@ -2,7 +2,6 @@ package fxtests;
 
 import static utils.RunnableEx.ignore;
 
-import ethical.hacker.ssh.SSHSessionApp;
 import ex.j8.Chapter4;
 import fxsamples.WorkingListsViews;
 import java.io.File;
@@ -13,7 +12,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import org.junit.Test;
 import org.testfx.util.WaitForAsyncUtils;
 import utils.StageHelper;
@@ -38,17 +36,6 @@ public final class FXTest extends AbstractTestExecution {
         tryClickButtons();
     }
 
-    @Test
-    public void verifySSHSessionApp() {
-        showNewStage(SSHSessionApp.class);
-        List<Button> collect = lookup(Button.class).stream().collect(Collectors.toList());
-        clickOn(collect.get(collect.size() - 1));
-        WaitForAsyncUtils.waitForFxEvents();
-        List<TextField> fields = lookup(TextField.class).stream().collect(Collectors.toList());
-        clickOn(fields.get(fields.size() - 1));
-        type(typeText("ipconfig"));
-        clickOn(collect.get(0));
-    }
 
     @Test
     public void verifyWorkingListsViews() {
