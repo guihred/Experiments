@@ -181,7 +181,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     }
 
     private void typeInParallel() {
-        sleep(1000);
+        sleep(1500);
         type(typeText(TEST_FILE));
         type(KeyCode.ENTER);
     }

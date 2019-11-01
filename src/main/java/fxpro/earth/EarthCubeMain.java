@@ -13,8 +13,8 @@ public class EarthCubeMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		CubeNode cube = new CubeNode();
+        Group root = new Group(cube);
 		cube.setFocusTraversable(true);
-		Group root = new Group(cube);
         final int layout = 150;
         root.setLayoutX(layout);
         root.setLayoutY(layout);

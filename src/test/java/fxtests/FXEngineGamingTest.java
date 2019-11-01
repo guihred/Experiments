@@ -11,6 +11,8 @@ import fxsamples.MoleculeSampleApp;
 import fxsamples.RaspiCycle;
 import fxsamples.SimpleScene3D;
 import gaming.ex01.SnakeLauncher;
+import gaming.ex01.SnakeSquare;
+import gaming.ex01.SnakeState;
 import gaming.ex02.MemoryLauncher;
 import gaming.ex02.MemorySquare;
 import gaming.ex03.SlidingPuzzleLauncher;
@@ -47,7 +49,7 @@ import utils.RunnableEx;
 
 public class FXEngineGamingTest extends AbstractTestExecution {
 
-	@Test
+    @Test
 	public void verifyMemoryLauncher() {
 		show(MemoryLauncher.class);
 		Set<MemorySquare> lookup = lookup(MemorySquare.class);
@@ -57,7 +59,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 		}
 	}
 
-	@Test
+    @Test
 	public void verifyMinesweeper() {
 		show(MinesweeperLauncher.class);
 		List<MinesweeperSquare> queryAll = lookup(MinesweeperSquare.class).parallelStream()
@@ -72,7 +74,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 		}
 	}
 
-	@Test
+    @Test
 	public void verifyMouseMovements() {
 		FXTesting.verifyAndRun(this, currentStage, () -> {
 			moveTo(200, 200);
@@ -95,7 +97,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 		interactNoWait(currentStage::close);
 	}
 
-	@Test
+    @Test
 	public void verifyPlatformMain() {
 		show(PlatformMain.class);
 		type(KeyCode.RIGHT);
@@ -105,7 +107,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 
 	}
 
-	@Test
+    @Test
 	public void verifyPong() {
 		show(PongLauncher.class);
 		tryClickButtons();
@@ -118,7 +120,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 		type(KeyCode.A, KeyCode.COMMA, KeyCode.Z, KeyCode.L);
 	}
 
-	@Test
+    @Test
 	public void verifyPuzzle() {
 		show(PuzzleLauncher.class);
 		List<Node> queryAll = lookup(PuzzlePiece.class).stream().filter(e -> e.isVisible())
@@ -132,7 +134,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 		}
 	}
 
-	@Test
+    @Test
 	public void verifySlidingPuzzleLauncher() {
 		show(SlidingPuzzleLauncher.class);
 		lookup(SlidingPuzzleSquare.class).forEach(this::clickOn);
@@ -140,17 +142,33 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 
 	@Test
 	public void verifySnake() {
-		show(SnakeLauncher.class);
-		type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
+        SnakeLauncher show = show(SnakeLauncher.class);
+        List<SnakeSquare> lookup = lookup(SnakeSquare.class).stream().collect(Collectors.toList());
+        while (true) {
+            SnakeSquare food = lookup.stream().filter(e -> e.getState() == SnakeState.FOOD).findFirst()
+                .orElse(lookup.get(0));
+            SnakeSquare snake = show.getSnake().get(0);
+            if (snake.getI() != food.getI()) {
+                type(snake.getI() > food.getI() ? KeyCode.LEFT : KeyCode.RIGHT);
+            }
+            sleep(50);
+            if (snake.getJ() != food.getJ()) {
+                type(snake.getJ() > food.getJ() ? KeyCode.UP : KeyCode.DOWN);
+            }
+            sleep(50);
+            if (tryClickButtons() || show.getSnake().size() == 10) {
+                break;
+            }
+        }
 	}
 
-	@Test
+    @Test
 	public void verifySquare() {
 		show(Square2048Launcher.class);
 		type(KeyCode.UP, KeyCode.LEFT, KeyCode.DOWN, KeyCode.RIGHT);
 	}
 
-	@Test
+    @Test
 	public void verifySudokuLauncher() {
 		show(SudokuLauncher.class);
 		Set<Node> queryAll = lookup(SudokuSquare.class).stream().filter(e -> !e.isPermanent()).limit(20)

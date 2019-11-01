@@ -4,6 +4,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -23,8 +24,13 @@ public class SnakeLauncher extends Application {
 
     private Stage primaryStage;
 
+    public ObservableList<SnakeSquare> getSnake() {
+        return newGameModel.getSnake();
+
+    }
+
     @Override
-	public void start(Stage stage) {
+    public void start(Stage stage) {
         primaryStage = stage;
         final GridPane gridPane = new GridPane();
         for (int i = 0; i < SnakeSquare.MAP_SIZE; i++) {
@@ -67,14 +73,14 @@ public class SnakeLauncher extends Application {
     }
 
     private void handleKeyPressed(KeyEvent e) {
-		SnakeDirection byKeyCode = SnakeDirection.getByKeyCode(e.getCode());
-		if (SnakeDirection.isNotOpposite(byKeyCode, newGameModel.getDirection())) {
-			newGameModel.setDirection(byKeyCode);
+        SnakeDirection byKeyCode = SnakeDirection.getByKeyCode(e.getCode());
+        if (SnakeDirection.isNotOpposite(byKeyCode, newGameModel.getDirection())) {
+            newGameModel.setDirection(byKeyCode);
         }
         newGameModel.updateMap();
     }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         launch(SnakeLauncher.class, args);
     }
 }

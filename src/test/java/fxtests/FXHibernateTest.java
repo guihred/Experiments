@@ -111,6 +111,7 @@ public class FXHibernateTest extends AbstractTestExecution {
         clickOn(randomItem(lookup(Cell.class)));
         type(KeyCode.SHIFT);
         clickAllButtons();
+        type(KeyCode.ENTER);
     }
 
     @Test
