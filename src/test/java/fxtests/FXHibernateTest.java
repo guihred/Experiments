@@ -2,19 +2,18 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
-import contest.ContestApplication;
-import contest.ContestQuestionEditingDisplay;
 import election.*;
 import furigana.FuriganaCrawlerApp;
 import fxpro.ch06.TaskProgressApp;
 import fxsamples.BackgroundProcesses;
-import japstudy.*;
-import java.util.Set;
+import japstudy.JapaneseLessonAudioSplitDisplay;
+import japstudy.JapaneseLessonDisplay;
+import japstudy.JapaneseLessonEditingDisplay;
+import japstudy.JapaneseLessonReader;
 import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Cell;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
@@ -26,8 +25,6 @@ import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
 public class FXHibernateTest extends AbstractTestExecution {
-
-    private static final int WAIT_TIME = 1000;
 
     @After
     public void cleanUp() {
@@ -45,7 +42,7 @@ public class FXHibernateTest extends AbstractTestExecution {
     @Test
     public void verifyBackgroundProcesses() {
         show(BackgroundProcesses.class);
-        clickAllButtons();
+        clickButtonsWait();
     }
 
     @Test
@@ -61,57 +58,38 @@ public class FXHibernateTest extends AbstractTestExecution {
         targetPos(Pos.CENTER);
     }
 
-    @Test
-    public void verifyContestApplication() {
-        show(ContestApplication.class);
-    }
 
-    @Test
-    public void verifyContestQuestionEditingDisplay() {
-        show(ContestQuestionEditingDisplay.class);
-        clickAllButtons();
-    }
+
+
 
     @Test
     public void verifyCrawlerCandidates2018Task() {
         show(new ElectionCrawlerApp(new CrawlerCandidates2018Task()));
-        clickAllButtons();
+        clickButtonsWait();
     }
 
     @Test
     public void verifyCrawlerCandidateTask() {
         show(new ElectionCrawlerApp(new CrawlerCandidateTask()));
-        clickAllButtons();
+        clickButtonsWait();
     }
 
     @Test
     public void verifyCrawlerCitiesTask() {
         show(new ElectionCrawlerApp(new CrawlerCitiesTask()));
-        clickAllButtons();
+        clickButtonsWait();
     }
 
     @Test
     public void verifyCrawlerCompleteCandidateTask() {
         show(new ElectionCrawlerApp(new CrawlerCompleteCandidateTask()));
-        clickAllButtons();
+        clickButtonsWait();
     }
 
     @Test
     public void verifyFuriganaCrawlerApp() {
         show(FuriganaCrawlerApp.class);
-        clickAllButtons();
-    }
-
-    @Test
-    public void verifyJapaneseLessonApplication() {
-        show(JapaneseLessonApplication.class);
-        Set<Button> lookup = lookup(Button.class);
-        doubleClickOn(randomItem(lookup(Cell.class)));
-        lookup(Button.class).stream().filter(t -> !lookup.contains(t)).forEach(this::clickOn);
-        clickOn(randomItem(lookup(Cell.class)));
-        type(KeyCode.SHIFT);
-        clickAllButtons();
-        type(KeyCode.ENTER);
+        clickButtonsWait();
     }
 
     @Test
@@ -121,21 +99,21 @@ public class FXHibernateTest extends AbstractTestExecution {
             clickOn(e);
             sleep(WAIT_TIME);
         }
-        clickAllButtons();
+        clickButtonsWait();
     }
 
     @Test
     public void verifyJapaneseLessonDisplay() {
         show(JapaneseLessonDisplay.class);
-        clickAllButtons();
+        clickButtonsWait();
         lookup(CheckBox.class).forEach(this::clickOn);
-        clickAllButtons();
+        clickButtonsWait();
     }
 
     @Test
     public void verifyJapaneseLessonEditingDisplay() {
         show(JapaneseLessonEditingDisplay.class);
-        clickAllButtons();
+        clickButtonsWait();
     }
 
     @Test
@@ -146,14 +124,7 @@ public class FXHibernateTest extends AbstractTestExecution {
     @Test
     public void verifyTaskProgressApp() {
         show(TaskProgressApp.class);
-        clickAllButtons();
-    }
-
-    private void clickAllButtons() {
-        for (Node e : lookup(Button.class)) {
-            clickOn(e);
-            sleep(WAIT_TIME);
-        }
+        clickButtonsWait();
     }
 
 }

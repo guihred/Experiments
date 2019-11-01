@@ -9,8 +9,8 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import utils.CommonsFX;
 import utils.CrawlerTask;
+import utils.RotateUtils;
 
 /**
  *
@@ -29,7 +29,7 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
         root.setCenter(metaDataView.getViewNode());
         root.setBottom(playerControlsView.getViewNode());
         final Scene scene = new Scene(root, 800, 400);
-        CommonsFX.initSceneDragAndDrop(scene, url -> {
+        RotateUtils.initSceneDragAndDrop(scene, url -> {
             songModel.setURL(url);
             songModel.getMediaPlayer().play();
         });

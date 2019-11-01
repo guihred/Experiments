@@ -3,7 +3,6 @@ package fxtests;
 import fxpro.earth.CubeNode;
 import fxpro.earth.EarthCubeMain;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import org.junit.Test;
 
 public class FXEngineEarthCubeTest extends AbstractTestExecution {
@@ -12,18 +11,12 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
         show(EarthCubeMain.class);
         sleep(2000);
         CubeNode cube = lookupFirst(CubeNode.class);
-        drag(cube, MouseButton.PRIMARY);
-        moveRandom(50);
-        drop();
+        randomDrag(cube, 100);
         press(KeyCode.CONTROL);
-        drag(cube, MouseButton.PRIMARY);
-        moveRandom(100);
-        drop();
+        randomDrag(cube, 100);
         release(KeyCode.CONTROL);
         press(KeyCode.ALT);
-        drag(cube, MouseButton.PRIMARY);
-        moveRandom(100);
-        drop();
+        randomDrag(cube, 100);
         release(KeyCode.ALT);
         type(KeyCode.SPACE);
         sleep(1500);
@@ -31,5 +24,7 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
         sleep(1000);
         type(KeyCode.ESCAPE);
     }
+
+
 
 }

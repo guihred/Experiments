@@ -22,9 +22,9 @@ public class FXEngineSVGCreatorTest extends AbstractTestExecution {
 		for (Node next : queryAll) {
             clickOn(next);
             moveTo(stack);
-			drag(MouseButton.PRIMARY);
+            drag(MouseButton.PRIMARY);
             moveRandom(bound);
-			drop();
+            drop();
 
             moveRandom(bound);
             drag(MouseButton.PRIMARY);

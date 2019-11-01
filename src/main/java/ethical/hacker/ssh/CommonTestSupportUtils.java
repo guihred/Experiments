@@ -22,7 +22,7 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.assertj.core.api.exception.RuntimeIOException;
 import utils.SupplierEx;
 
-final class CommonTestSupportUtils {
+public final class CommonTestSupportUtils {
     /**
      * URL/URI scheme that refers to a file
      */
@@ -77,6 +77,33 @@ final class CommonTestSupportUtils {
 
         KeyPairProvider prev = KEYPAIR_PROVIDER_HOLDER.getAndSet(provider);
         return nonNull(prev, provider);
+    }
+
+    /**
+     * @param clazz A {@link Class} object
+     * @return A {@link URL} to the location of the class bytes container - e.g.,
+     *         the root folder, the containing JAR, etc.. Returns {@code null} if
+     *         location could not be resolved
+     */
+    public static URL getClassContainerLocationURL(Class<?> clazz) {
+        ProtectionDomain pd = clazz.getProtectionDomain();
+        CodeSource cs = pd == null ? null : pd.getCodeSource();
+        URL url = cs == null ? null : cs.getLocation();
+        if (url == null) {
+            url = getClassBytesURL(clazz);
+            if (url == null) {
+                return null;
+            }
+
+            String srcForm = getURLSource(url);
+            if (GenericUtils.isEmpty(srcForm)) {
+                return null;
+            }
+
+            return SupplierEx.get(() -> new URL(srcForm));
+        }
+
+        return url;
     }
 
     /**
@@ -179,33 +206,6 @@ final class CommonTestSupportUtils {
     private static URI getClassContainerLocationURI(Class<?> clazz) throws URISyntaxException {
         URL url = getClassContainerLocationURL(clazz);
         return url == null ? null : url.toURI();
-    }
-
-    /**
-     * @param clazz A {@link Class} object
-     * @return A {@link URL} to the location of the class bytes container - e.g.,
-     *         the root folder, the containing JAR, etc.. Returns {@code null} if
-     *         location could not be resolved
-     */
-    private static URL getClassContainerLocationURL(Class<?> clazz) {
-        ProtectionDomain pd = clazz.getProtectionDomain();
-        CodeSource cs = pd == null ? null : pd.getCodeSource();
-        URL url = cs == null ? null : cs.getLocation();
-        if (url == null) {
-            url = getClassBytesURL(clazz);
-            if (url == null) {
-                return null;
-            }
-
-            String srcForm = getURLSource(url);
-            if (GenericUtils.isEmpty(srcForm)) {
-                return null;
-            }
-
-            url = SupplierEx.get(() -> new URL(srcForm));
-        }
-
-        return url;
     }
 
     /**

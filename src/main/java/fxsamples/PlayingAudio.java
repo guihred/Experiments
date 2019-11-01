@@ -24,6 +24,7 @@ import simplebuilder.SimpleCircleBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RotateUtils;
 
 public class PlayingAudio extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -121,6 +122,11 @@ public class PlayingAudio extends Application {
     public void start(Stage primaryStage) throws Exception {
         mainStage = primaryStage;
         CommonsFX.loadFXML("Playing Audio", "PlayingAudio.fxml", this, primaryStage, 500, 500);
+        primaryStage.setOnCloseRequest(e -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.dispose();
+            }
+        });
         plugEventsToScene(mainStage.getScene());
     }
 
@@ -166,7 +172,7 @@ public class PlayingAudio extends Application {
         buttonGroup.translateXProperty().bind(scene.widthProperty().subtract(buttonArea.getWidth() + 6));
         buttonGroup.translateYProperty().bind(scene.heightProperty().subtract(buttonArea.getHeight() + 6));
         seekpositionslider.translateYProperty().bind(scene.heightProperty().subtract(50));
-        CommonsFX.initSceneDragAndDrop(scene, this::playMedia);
+        RotateUtils.initSceneDragAndDrop(scene, this::playMedia);
         closeButton.translateXProperty().bind(scene.widthProperty().subtract(15));
         scene.setFill(Color.BLACK);
         scene.getStylesheets().add(ResourceFXUtils.toExternalForm("media.css"));

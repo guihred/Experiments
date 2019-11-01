@@ -58,7 +58,7 @@ public class JewelViewer extends Application {
         camera.setRotationAxis(Rotate.Y_AXIS);
         scene.setOnKeyPressed(this::handleKeyPressed);
         // End Step 2b-d
-        CommonsFX.initSceneDragAndDrop(scene, this::tryLoadMeshViews);
+        RotateUtils.initSceneDragAndDrop(scene, this::tryLoadMeshViews);
         primaryStage.setTitle("Jewel Viewer");
         primaryStage.setScene(scene);
         primaryStage.show();

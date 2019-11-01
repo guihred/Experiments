@@ -4,10 +4,8 @@ import static utils.ResourceFXUtils.convertToURL;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.transformation.FilteredList;
@@ -18,9 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
@@ -60,25 +56,6 @@ public final class CommonsFX {
         }
         Collections.shuffle(availableColors);
         return availableColors;
-    }
-
-    public static void initSceneDragAndDrop(Scene scene, ConsumerEx<String> onUrl) {
-        scene.setOnDragOver(event -> {
-            Dragboard db = event.getDragboard();
-            if (db.hasFiles() || db.hasUrl()) {
-                event.acceptTransferModes(TransferMode.ANY);
-            }
-            event.consume();
-        });
-        scene.setOnDragDropped(event -> {
-            Dragboard db = event.getDragboard();
-            List<String> url = getUrl(db);
-            for (String string : url) {
-                RunnableEx.ignore(() -> onUrl.accept(string));
-            }
-            event.setDropCompleted(!url.isEmpty());
-            event.consume();
-        });
     }
 
     public static void loadFXML(String title, File file, Object controller, Stage primaryStage, double... size) {
@@ -158,16 +135,6 @@ public final class CommonsFX {
         TextField textField = new TextField(text);
         textField.setPrefColumnCount(prefColumnCount);
         return textField;
-    }
-
-    private static List<String> getUrl(Dragboard db) {
-        if (db.hasFiles()) {
-            return db.getFiles().stream().map(e -> e.toURI().toString()).collect(Collectors.toList());
-        }
-        if (db.hasUrl()) {
-            return Arrays.asList(db.getUrl());
-        }
-        return Collections.emptyList();
     }
 
 }

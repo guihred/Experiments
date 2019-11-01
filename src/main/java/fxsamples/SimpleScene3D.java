@@ -1,7 +1,6 @@
 package fxsamples;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
@@ -24,22 +23,9 @@ public class SimpleScene3D extends Application {
     private static final double ROTATE_MODIFIER = 25;
     private double mouseXold;
     private double mouseYold;
-    private EventHandler<? super MouseEvent> mouseHandler = event -> {
-        Node picked = event.getPickResult().getIntersectedNode();
-        if (null != picked) {
-            double scalar = 2;
-            if (picked.getScaleX() > 1) {
-                scalar = 1;
-            }
-            picked.setScaleX(scalar);
-            picked.setScaleY(scalar);
-            picked.setScaleZ(scalar);
-        }
-    };
 
     @Override
     public void start(Stage primaryStage) {
-
         final Cylinder cylinder = new Cylinder(50, 100);
         final PhongMaterial blueMaterial = new PhongMaterial();
         blueMaterial.setDiffuseColor(Color.DARKBLUE);
@@ -95,32 +81,47 @@ public class SimpleScene3D extends Application {
         scene.setCamera(camera);
         sceneRoot.getChildren().addAll(cylinder, cube, sphere);
         sceneRoot.getChildren().addAll(primitiveGroup);
-        scene.setOnMouseClicked(mouseHandler);
+        scene.setOnMouseClicked(this::onMouseClicked);
         RotateUtils.setMovable(camera, scene);
         Rotate xRotate = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
         Rotate yRotate = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
         camera.getTransforms().addAll(xRotate, yRotate);
-        scene.addEventHandler(MouseEvent.ANY, event -> {
-            if (event.getEventType() == MouseEvent.MOUSE_PRESSED || event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                double mouseXnew = event.getSceneX();
-                double mouseYnew = event.getSceneY();
-                if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-                    double pitchRotate = xRotate.getAngle() + (mouseYnew - mouseYold) / ROTATE_MODIFIER;
-                    pitchRotate = pitchRotate > CAMERA_Y_LIMIT ? CAMERA_Y_LIMIT : pitchRotate;
-                    pitchRotate = pitchRotate < -CAMERA_Y_LIMIT ? -CAMERA_Y_LIMIT : pitchRotate;
-                    xRotate.setAngle(pitchRotate);
-                    double yawRotate = yRotate.getAngle() - (mouseXnew - mouseXold) / ROTATE_MODIFIER;
-                    yRotate.setAngle(yawRotate);
-                }
-                mouseXold = mouseXnew;
-                mouseYold = mouseYnew;
-            }
-        });
+        scene.addEventHandler(MouseEvent.ANY, event -> onMouseEvent(xRotate, yRotate, event));
         // End Step 3
 
         primaryStage.setTitle("Simple Scene 3D");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void onMouseClicked(MouseEvent event) {
+        Node picked = event.getPickResult().getIntersectedNode();
+        if (null != picked) {
+            double scalar = 2;
+            if (picked.getScaleX() > 1) {
+                scalar = 1;
+            }
+            picked.setScaleX(scalar);
+            picked.setScaleY(scalar);
+            picked.setScaleZ(scalar);
+        }
+    }
+
+    private void onMouseEvent(Rotate xRotate, Rotate yRotate, MouseEvent event) {
+        if (event.getEventType() == MouseEvent.MOUSE_PRESSED || event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+            double mouseXnew = event.getSceneX();
+            double mouseYnew = event.getSceneY();
+            if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+                double pitchRotate = xRotate.getAngle() + (mouseYnew - mouseYold) / ROTATE_MODIFIER;
+                pitchRotate = pitchRotate > CAMERA_Y_LIMIT ? CAMERA_Y_LIMIT : pitchRotate;
+                pitchRotate = pitchRotate < -CAMERA_Y_LIMIT ? -CAMERA_Y_LIMIT : pitchRotate;
+                xRotate.setAngle(pitchRotate);
+                double yawRotate = yRotate.getAngle() - (mouseXnew - mouseXold) / ROTATE_MODIFIER;
+                yRotate.setAngle(yawRotate);
+            }
+            mouseXold = mouseXnew;
+            mouseYold = mouseYnew;
+        }
     }
 
     public static void main(String[] args) {

@@ -20,7 +20,6 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -128,15 +127,10 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             PlayingAudio show = show(c2);
             interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
             tryClickButtons();
+            lookup(ToggleButton.class).forEach(this::clickOn);
             Group f = lookupFirst(Group.class);
-            drag(f, MouseButton.PRIMARY);
-            moveRandom(100);
-            drop();
-            lookup(Slider.class).forEach(e -> {
-                drag(e, MouseButton.PRIMARY);
-                moveRandom(100);
-                drop();
-            });
+            randomDrag(f, 100);
+            lookup(Slider.class).forEach(e -> randomDrag(e, 100));
             interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
         }
     }

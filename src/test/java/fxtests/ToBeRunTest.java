@@ -100,6 +100,14 @@ public class ToBeRunTest {
         });
     }
 
+    @Test
+    public void testUncoveredTests() {
+
+        measureTime("JavaFileDependency.getUncoveredTests", () -> {
+            LOG.info("TestsToBeRun ={}", getUncoveredTests());
+        });
+    }
+
     public static double getPercentage(double[] arr) {
         return arr[0] + arr[1] == 0 ? 100 : arr[1] / (arr[0] + arr[1]) * 100;
     }
@@ -117,7 +125,15 @@ public class ToBeRunTest {
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
-        List<String> uncovered = getUncovered();
+        List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(getUncovered());
+        if (uncoveredApplications.isEmpty()) {
+            return getUncoveredApplications(getUncoveredBranches());
+        }
+
+        return uncoveredApplications;
+    }
+
+    public static List<Class<? extends Application>> getUncoveredApplications(List<String> uncovered) {
         List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);

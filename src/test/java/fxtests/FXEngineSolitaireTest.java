@@ -44,9 +44,7 @@ public final class FXEngineSolitaireTest extends AbstractTestExecution {
                 continue;
             }
             if (!random.nextBoolean()) {
-                drag(cardStack, MouseButton.PRIMARY);
-                moveRandom(20);
-                drop();
+                randomDrag(cardStack, 100);
             } else {
                 clickOn(cardStack);
             }

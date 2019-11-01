@@ -15,17 +15,15 @@ import fxsamples.person.FormValidation;
 import fxsamples.person.PersonTableController;
 import fxsamples.person.WorkingWithTableView;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.SVGPath;
 import ml.*;
 import ml.graph.MapGraph;
@@ -66,11 +64,25 @@ public class FXEngineTest extends AbstractTestExecution {
                 lookup(".tab").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
             }
             Node m = queryAll.get(i);
-            ignore(() -> drag(m, MouseButton.PRIMARY));
-            moveRandom(10);
-            drop();
+            randomDrag(m, 10);
+
         }
         tryClickButtons();
+    }
+
+    @Test
+    public void verifyDrag() {
+        measureTime("Test.verifyDrag", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
+            lookup(Circle.class).forEach(t -> {
+                moveTo(t);
+                scroll(2, VerticalDirection.DOWN);
+                scroll(2, VerticalDirection.UP);
+                randomDrag(t, 50);
+            });
+            scroll(2, VerticalDirection.DOWN);
+            scroll(2, VerticalDirection.UP);
+        }, DraggingRectangle.class));
+
     }
 
     @Test
@@ -119,21 +131,13 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyLeafFractalApp() {
         show(LeafFractalApp.class);
-        lookup(Slider.class).forEach(s -> {
-            drag(s, MouseButton.PRIMARY);
-            moveRandom(50);
-            drop();
-        });
+        moveSliders(50);
     }
 
     @Test
     public void verifyLineManipulator() {
         show(LineManipulator.class);
-        lookup(AnchorCircle.class).forEach(e -> {
-            drag(e, MouseButton.PRIMARY);
-            moveRandom(50);
-            drop();
-        });
+        lookup(AnchorCircle.class).forEach(e -> randomDrag(e, 50));
     }
 
     @Test
@@ -165,17 +169,6 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyPhotoViewer() {
-        show(PhotoViewer.class);
-        Set<Node> queryAll = lookup(".button").queryAll();
-        queryAll.forEach(ConsumerEx.ignore(t -> {
-            for (int i = 0; i < 10; i++) {
-                clickOn(t);
-            }
-        }));
-    }
-
-    @Test
     public void verifyResponsiveUIApp() {
         show(ResponsiveUIApp.class);
         tryClickButtons();
@@ -184,11 +177,14 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyScroll() {
         measureTime("Test.verifyScroll", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
-            lookup(Canvas.class).forEach(t -> {
+            lookup(".root").queryAll().forEach(t -> {
                 moveTo(t);
                 scroll(2, VerticalDirection.DOWN);
                 scroll(2, VerticalDirection.UP);
+                randomDrag(t, 50);
             });
+            scroll(2, VerticalDirection.DOWN);
+            scroll(2, VerticalDirection.UP);
             lookup(CheckBox.class).forEach(this::clickOn);
             lookup(ComboBox.class).forEach(e -> selectComboItems(e, 5));
         }, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class, PopulacionalPyramidExample.class));
@@ -239,7 +235,6 @@ public class FXEngineTest extends AbstractTestExecution {
             write("new york ");
         }));
     }
-
 
     @Test
     public void verifyWorkingWithTableView() {

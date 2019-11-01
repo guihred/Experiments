@@ -3,6 +3,7 @@ package fxtests;
 import static javafx.scene.input.KeyCode.*;
 
 import java.io.File;
+import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,14 +16,19 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.WritableImage;
+import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import org.junit.Test;
 import paintexp.PaintFileUtils;
 import paintexp.PaintMain;
+import paintexp.SimplePixelReader;
 import paintexp.tool.AreaTool;
 import paintexp.tool.PaintTool;
 import paintexp.tool.PaintTools;
@@ -35,12 +41,27 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 
     private static final String TEST_FILE = "test.png";
 
-    @Test
-	public void testAllToolsVerify() {
+//    @Test
+    public void testAllToolsVerify() {
         show(PaintMain.class);
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
         testTools(stack);
         testMenus(stack);
+    }
+
+    @Test
+    @SuppressWarnings("static-method")
+    public void testSimplePixelReader() throws Exception {
+        FXTesting.measureTime("SimplePixelReader.test", () -> {
+            SimplePixelReader.paintColor(new WritableImage(10, 10), Color.BLACK);
+            SimplePixelReader reader = new SimplePixelReader(Color.BLACK);
+            reader.getArgb(0, 0);
+            reader.getColor(0, 0);
+            reader.setColor(Color.WHITE);
+            WritablePixelFormat<IntBuffer> pixelFormat = reader.getPixelFormat();
+            reader.getPixels(0, 0, 1, 1, pixelFormat, new int[] { 0, 0 }, 0, 0);
+            reader.getPixels(0, 0, 1, 1, PixelFormat.getByteBgraInstance(), new byte[] { 0, 0, 0, 0 }, 0, 0);
+        });
     }
 
     protected void testTools(final Node stack) {

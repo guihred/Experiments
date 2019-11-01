@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RotateUtils;
 
 public class PhotoViewer extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -99,7 +100,7 @@ public class PhotoViewer extends Application {
     }
 
     private void setupDragNDrop(Scene scene, List<String> imageFiles2, AtomicInteger currentIndex2) {
-        CommonsFX.initSceneDragAndDrop(scene, url -> {
+        RotateUtils.initSceneDragAndDrop(scene, url -> {
             addImage(url, imageFiles2, currentIndex2);
             if (currentIndex2.get() > -1) {
                 loadImage(imageFiles2.get(currentIndex2.get()), loading, progressIndicator, news, currentImageView);

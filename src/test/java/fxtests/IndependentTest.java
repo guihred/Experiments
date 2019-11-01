@@ -109,6 +109,7 @@ public class IndependentTest {
             () -> Ch4.cyclicToString(new LineCh4(new PointCh4(2, 3), new LabeledPoint("a", 3, 3))));
     }
 
+
     @Test
     public void testDateUtils() {
         measureTime("DateFormatUtils.convertTimeToMillis", () -> DateFormatUtils.convertTimeToMillis("00:00:00.000"));
@@ -135,6 +136,7 @@ public class IndependentTest {
                 new Double[][] { { 1.0, 2.0 }, { 3.0, 4.0 } })));
     }
 
+
     @Test
     public void testFastFourierTransform() {
         double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
@@ -143,7 +145,6 @@ public class IndependentTest {
             LOGGER.trace("{}", c);
         }
     }
-
 
     @Test
     public void testGoogleImages() {
@@ -186,6 +187,7 @@ public class IndependentTest {
         measureTime("OthersTests.unique", () -> OthersTests.unique(arr));
         measureTime("OthersTests.reverse", () -> OthersTests.reverse("HIHI"));
         measureTime("OthersTests.validate", () -> OthersTests.validate("789100031550"));
+        measureTime("OthersTests.validate", () -> OthersTests.validate("789100031557"));
         measureTime("OthersTests.p",
             () -> OthersTests.p(new Complex(1.0 / 2.0), new Complex(-3, -3), new Complex(-1, 1), new Complex(-9, -5)));
         measureTime("OthersTests.getStateMachine", () -> OthersTests.getStateMachine(OthersTests.Estado.CLOSED,

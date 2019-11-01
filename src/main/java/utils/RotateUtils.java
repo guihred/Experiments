@@ -1,14 +1,14 @@
 package utils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -28,7 +28,8 @@ public final class RotateUtils {
     public static List<Circle> createDraggableRectangle(final Rectangle rect) {
         final double handleRadius = 5;
         // top left resize handle:
-        Circle resizeHandleNW = new Circle(handleRadius, Color.TRANSPARENT);
+        Color transparent = Color.YELLOW;
+        Circle resizeHandleNW = new Circle(handleRadius, transparent);
         resizeHandleNW.setManaged(false);
         resizeHandleNW.setCursor(Cursor.NW_RESIZE);
         // bind to top left corner of Rectangle:
@@ -36,7 +37,7 @@ public final class RotateUtils {
         resizeHandleNW.layoutYProperty().bind(rect.layoutYProperty());
 
         // bottom right resize handle:
-        Circle resizeHandleSE = new Circle(handleRadius, Color.TRANSPARENT);
+        Circle resizeHandleSE = new Circle(handleRadius, transparent);
         resizeHandleSE.setCursor(Cursor.SE_RESIZE);
         // bind to bottom right corner of Rectangle:
         resizeHandleSE.layoutXProperty().bind(rect.layoutXProperty().add(rect.widthProperty()));
@@ -44,7 +45,7 @@ public final class RotateUtils {
         resizeHandleSE.setManaged(false);
 
         // move handle:
-        Circle moveHandle = new Circle(handleRadius, Color.TRANSPARENT);
+        Circle moveHandle = new Circle(handleRadius, transparent);
         moveHandle.setCursor(Cursor.MOVE);
         // bind to bottom center of Rectangle:
         moveHandle.layoutXProperty().bind(rect.layoutXProperty().add(rect.widthProperty().divide(2)));
@@ -75,6 +76,33 @@ public final class RotateUtils {
 
         moveHandle.setOnMouseDragged(event -> onMoveHandleDrag(rect, handleRadius, mouseLocation, event));
         return nodes;
+    }
+    public static List<String> getUrl(Dragboard db) {
+        if (db.hasFiles()) {
+            return db.getFiles().stream().map(e -> e.toURI().toString()).collect(Collectors.toList());
+        }
+        if (db.hasUrl()) {
+            return Arrays.asList(db.getUrl());
+        }
+        return Collections.emptyList();
+    }
+    public static void initSceneDragAndDrop(Scene scene, ConsumerEx<String> onUrl) {
+        scene.setOnDragOver(event -> {
+            Dragboard db = event.getDragboard();
+            if (db.hasFiles() || db.hasUrl()) {
+                event.acceptTransferModes(TransferMode.ANY);
+            }
+            event.consume();
+        });
+        scene.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            List<String> url = RotateUtils.getUrl(db);
+            for (String string : url) {
+                RunnableEx.ignore(() -> onUrl.accept(string));
+            }
+            event.setDropCompleted(!url.isEmpty());
+            event.consume();
+        });
     }
 
     public static void makeZoomable(Node control) {

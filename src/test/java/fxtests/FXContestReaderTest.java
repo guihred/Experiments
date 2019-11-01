@@ -1,8 +1,6 @@
 package fxtests;
 
-import contest.ContestReader;
-import contest.IadesCrawler;
-import contest.IadesHelper;
+import contest.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +39,6 @@ public class FXContestReaderTest extends AbstractTestExecution {
         }
         displayResults(listFiles, invalidFiles2);
     }
-
     @Test
     public void testIades() {
         show(IadesCrawler.class);
@@ -60,6 +57,17 @@ public class FXContestReaderTest extends AbstractTestExecution {
         type(KeyCode.SPACE);
         type(KeyCode.DOWN, 1);
 
+    }
+
+    @Test
+    public void verifyContestApplication() {
+        show(ContestApplication.class);
+    }
+
+    @Test
+    public void verifyContestQuestionEditingDisplay() {
+        show(ContestQuestionEditingDisplay.class);
+        clickButtonsWait();
     }
 
     private void addToInvalidFiles(List<String> invalidFiles1, File firstPdf, ContestReader i) {

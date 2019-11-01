@@ -1,13 +1,12 @@
 package fxtests;
 
-import static utils.RunnableEx.ignore;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
@@ -26,12 +25,13 @@ import utils.RunnableEx;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
+    protected static final int WAIT_TIME = 1000;
     protected Stage currentStage;
     protected boolean isLinux = SystemUtils.IS_OS_LINUX;
+
     private final Logger logger = HasLogging.super.getLogger();
 
     protected Random random = new Random();
-
     @Override
     public Logger getLogger() {
         return logger;
@@ -44,10 +44,16 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         currentStage.setX(0);
         currentStage.setY(0);
     }
-
     @Override
 	public void stop() {
         currentStage.close();
+    }
+
+    protected void clickButtonsWait() {
+        for (Node e : lookup(Button.class)) {
+            clickOn(e);
+            sleep(WAIT_TIME);
+        }
     }
 
     protected String getRandomString() {
@@ -68,10 +74,14 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected void moveSliders(int bound) {
         for (Node m : lookup(Slider.class)) {
-            ignore(() -> drag(m, MouseButton.PRIMARY));
-            moveRandom(bound);
-            drop();
+            randomDrag(m, bound);
         }
+    }
+
+    protected void randomDrag(Node cube, int bound) {
+        RunnableEx.ignore(() -> drag(cube, MouseButton.PRIMARY));
+        moveRandom(bound);
+        drop();
     }
 
     protected <T extends Enum<?>> T randomEnum(Class<T> cl) {
