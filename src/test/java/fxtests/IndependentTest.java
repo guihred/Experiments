@@ -18,7 +18,6 @@ import ex.j9.ch4.Ch4;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.LineCh4;
 import ex.j9.ch4.PointCh4;
-import extract.PdfUtils;
 import extract.UnRar;
 import extract.UnZip;
 import extract.WikiImagesUtils;
@@ -27,7 +26,6 @@ import image.ImageLoading;
 import japstudy.HiraganaMaker;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -194,12 +192,7 @@ public class IndependentTest {
             Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
     }
 
-    @Test
-    public void testPdfUtils() {
-        final String FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\FXperiments\\Material\\SSH - The Secure Shell.pdf";
-        measureTime("PdfUtils.readFile",
-            () -> PdfUtils.readFile(new File(FILE), new PrintStream(ResourceFXUtils.getOutFile("ssh.txt"))));
-    }
+
 
     @Test
     public void testQuickSort() {

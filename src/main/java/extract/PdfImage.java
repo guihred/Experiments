@@ -4,9 +4,9 @@ import java.io.File;
 import utils.HasImage;
 
 public class PdfImage implements HasImage {
-    private File file;
     private float x;
     private float y;
+    private File file;
     private int pageN;
     @Override
     public void appendImage(String image) {

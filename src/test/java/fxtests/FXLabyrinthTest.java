@@ -4,6 +4,7 @@ import static fxtests.FXTesting.measureTime;
 import static javafx.scene.input.KeyCode.*;
 
 import fxpro.ch07.Chart3dDemo;
+import fxsamples.DraggingRectangle;
 import fxsamples.PhotoViewer;
 import japstudy.JapaneseLessonApplication;
 import java.util.Arrays;
@@ -13,12 +14,28 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Cell;
 import javafx.scene.input.KeyCode;
+import javafx.scene.shape.Circle;
 import labyrinth.*;
 import ml.graph.Chart3dGraph;
 import org.junit.Test;
 import utils.ConsumerEx;
 
 public class FXLabyrinthTest extends AbstractTestExecution {
+    @Test
+    public void verifyDrag() {
+        measureTime("Test.verifyDrag", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
+            lookup(Circle.class).forEach(t -> {
+                moveTo(t);
+                scroll(2, VerticalDirection.DOWN);
+                scroll(2, VerticalDirection.UP);
+                randomDrag(t, 50);
+            });
+            scroll(2, VerticalDirection.DOWN);
+            scroll(2, VerticalDirection.UP);
+        }, DraggingRectangle.class));
+
+    }
+
     @Test
     public void verifyJapaneseLessonApplication() {
         show(JapaneseLessonApplication.class);
@@ -31,7 +48,6 @@ public class FXLabyrinthTest extends AbstractTestExecution {
         type(KeyCode.ENTER);
         type(KeyCode.SHIFT);
     }
-
     @Test
     public void verifyMouseMovements() {
         FXTesting.verifyAndRun(this, currentStage, () -> {

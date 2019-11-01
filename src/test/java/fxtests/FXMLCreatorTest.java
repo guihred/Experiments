@@ -15,7 +15,7 @@ import utils.HasLogging;
 @SuppressWarnings("static-method")
 public final class FXMLCreatorTest {
 
-	static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
     @Test
     public void testAllClasses() {

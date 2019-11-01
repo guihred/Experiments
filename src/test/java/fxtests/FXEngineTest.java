@@ -9,7 +9,10 @@ import ex.j8.Chapter4;
 import fractal.LeafFractalApp;
 import fxpro.ch06.ResponsiveUIApp;
 import fxpro.ch06.ThreadInformationApp;
-import fxsamples.*;
+import fxsamples.AnchorCircle;
+import fxsamples.InlineModelViewer;
+import fxsamples.LineManipulator;
+import fxsamples.LookNFeelChooser;
 import fxsamples.bounds.BoundsPlayground;
 import fxsamples.person.FormValidation;
 import fxsamples.person.PersonTableController;
@@ -23,7 +26,6 @@ import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.SVGPath;
 import ml.*;
 import ml.graph.MapGraph;
@@ -70,20 +72,7 @@ public class FXEngineTest extends AbstractTestExecution {
         tryClickButtons();
     }
 
-    @Test
-    public void verifyDrag() {
-        measureTime("Test.verifyDrag", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
-            lookup(Circle.class).forEach(t -> {
-                moveTo(t);
-                scroll(2, VerticalDirection.DOWN);
-                scroll(2, VerticalDirection.UP);
-                randomDrag(t, 50);
-            });
-            scroll(2, VerticalDirection.DOWN);
-            scroll(2, VerticalDirection.UP);
-        }, DraggingRectangle.class));
 
-    }
 
     @Test
     public void verifyEthicalHack() {

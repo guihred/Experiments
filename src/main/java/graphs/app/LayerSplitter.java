@@ -8,14 +8,14 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
-public class LayerSplitter {
+public final class LayerSplitter {
 	private static final Logger LOG = HasLogging.log();
 	private final List<Cell> cells;
     private final List<Edge> edges;
     private Set<Cell> stack = new LinkedHashSet<>();
     private Set<Cell> marked = new LinkedHashSet<>();
 
-    LayerSplitter(List<Cell> cells, List<Edge> edges) {
+    private LayerSplitter(List<Cell> cells, List<Edge> edges) {
         this.cells = new ArrayList<>(cells);
         this.edges = new LinkedList<>(edges);
     }

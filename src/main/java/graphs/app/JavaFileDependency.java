@@ -149,18 +149,22 @@ public class JavaFileDependency {
     public boolean search(Predicate<JavaFileDependency> test, List<JavaFileDependency> visited,
         List<JavaFileDependency> path) {
         for (JavaFileDependency d : getDependents()) {
-            if (test.test(d)) {
+            if (test.test(d) && !path.contains(d)) {
                 path.add(d);
             }
         }
-        if (test.test(this)) {
+        if (test.test(this) && !path.contains(this)) {
             path.add(this);
         }
 
         visited.add(this);
-        boolean anyMatch = getDependents().stream().filter(t -> !visited.contains(t))
-            .anyMatch(d -> d.search(test, visited, path));
-        if (anyMatch) {
+        boolean anyMatch = false;
+        for (JavaFileDependency t : getDependents()) {
+            if (!visited.contains(t) && t.search(test, visited, path)) {
+                anyMatch = true;
+            }
+        }
+        if (anyMatch && !path.contains(this)) {
             path.add(this);
         }
         return test.test(this) || anyMatch;

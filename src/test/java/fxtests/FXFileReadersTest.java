@@ -22,6 +22,8 @@ import ex.j9.ch4.PointCh4;
 import ex.j9.ch4.PrimaryColor;
 import ex.j9.ch4.RectangleCh4;
 import extract.ExcelService;
+import extract.PdfImage;
+import extract.PdfUtils;
 import extract.WordService;
 import gaming.ex01.SnakeSquare;
 import gaming.ex16.MadEdge;
@@ -33,11 +35,9 @@ import graphs.entities.Linha;
 import graphs.entities.Ponto;
 import japstudy.JapaneseLesson;
 import japstudy.LessonPK;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.util.*;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -56,7 +56,7 @@ import utils.ResourceFXUtils;
 @SuppressWarnings("static-method")
 public class FXFileReadersTest extends ApplicationTest {
     @Override
-	public void start(Stage stage) {
+    public void start(Stage stage) {
         ResourceFXUtils.initializeFX();
         stage.show();
     }
@@ -69,7 +69,7 @@ public class FXFileReadersTest extends ApplicationTest {
     }
 
     @Test
-	public void testExcelAndWordFile() {
+    public void testExcelAndWordFile() {
         ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
             () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
         Map<String, FunctionEx<Medicamento, Object>> fields = new LinkedHashMap<>();
@@ -204,12 +204,40 @@ public class FXFileReadersTest extends ApplicationTest {
     }
 
     @Test
+    public void testPdfImage() {
+        measureTime("PdfImage.equals", () -> {
+            Path firstPathByExtension = ResourceFXUtils.getFirstPathByExtension(getOutFile(), "png");
+            PdfImage pdfImage = new PdfImage();
+            File file = firstPathByExtension.toFile();
+            pdfImage.appendImage("");
+            pdfImage.getFile();
+            pdfImage.setFile(file);
+            pdfImage.getImage();
+            pdfImage.getPageN();
+            pdfImage.getX();
+            pdfImage.getY();
+            pdfImage.matches("");
+            pdfImage.setImage(file.getAbsolutePath());
+            pdfImage.setPageN(0);
+            pdfImage.setX(0);
+            pdfImage.setY(0);
+            pdfImage.toString();
+        });
+    }
+    @Test
+    public void testPdfUtils() {
+        final String FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\FXperiments\\Material\\SSH - The Secure Shell.pdf";
+        measureTime("PdfUtils.readFile",
+            () -> PdfUtils.readFile(new File(FILE), new PrintStream(ResourceFXUtils.getOutFile("ssh.txt"))));
+    }
+
+    @Test
     public void testPoints() {
         measureTime("Test.equals", () -> {
             Set<Object> equalsTest = new LinkedHashSet<>(getList());
             Set<Object> equalsTest2 = new LinkedHashSet<>(getList());
             equalsTest.forEach(e -> equalsTest2.stream().anyMatch(a -> Objects.equals(a, e)));
-			equalsTest.toString();
+            equalsTest.toString();
         });
     }
 
