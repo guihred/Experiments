@@ -148,12 +148,11 @@ public final class FXTesting implements HasLogging {
 		new FXTesting().testApplications(applicationClasses);
 	}
 
-    @SafeVarargs
     public static void verifyAndRun(ApplicationTest app, Stage currentStage, Runnable consumer,
-        Class<? extends Application>... applicationClasses) {
+        List<Class<? extends Application>> applicationClasses) {
         Logger log = HasLogging.log(1);
-        for (int i = 0; i < applicationClasses.length; i++) {
-            Class<? extends Application> class1 = applicationClasses[i];
+        for (int i = 0; i < applicationClasses.size(); i++) {
+            Class<? extends Application> class1 = applicationClasses.get(i);
             log.info(" RUN {}", class1.getSimpleName());
             app.interactNoWait(RunnableEx.make(() -> class1.newInstance().start(currentStage)));
             consumer.run();

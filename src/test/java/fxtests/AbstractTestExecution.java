@@ -147,6 +147,12 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         return !queryAll.isEmpty();
     }
 
+
+    protected void verifyAndRun(Runnable consumer, List<Class<? extends Application>> applicationClasses) {
+        FXTesting.verifyAndRun(this, currentStage, consumer, applicationClasses);
+        interactNoWait(currentStage::close);
+    }
+
     private void resetStage() {
         Platform.runLater(() -> {
             currentStage.setResizable(true);

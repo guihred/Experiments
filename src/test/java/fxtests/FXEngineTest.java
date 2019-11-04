@@ -19,6 +19,7 @@ import fxsamples.bounds.BoundsPlayground;
 import fxsamples.person.FormValidation;
 import fxsamples.person.PersonTableController;
 import fxsamples.person.WorkingWithTableView;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -51,12 +52,11 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyButtons() {
-        measureTime("Test.testButtons",
-            () -> FXTesting.verifyAndRun(this, currentStage, () -> lookup(".button").queryAll().forEach(t -> {
-                sleep(1000);
-                ignore(() -> clickOn(t));
-                type(KeyCode.ESCAPE);
-            }), Chapter4.Ex9.class, Chapter4.Ex10.class, PdfReader.class));
+        measureTime("Test.testButtons", () -> verifyAndRun(() -> lookup(".button").queryAll().forEach(t -> {
+            sleep(1000);
+            ignore(() -> clickOn(t));
+            type(KeyCode.ESCAPE);
+        }), Arrays.asList(Chapter4.Ex9.class, Chapter4.Ex10.class, PdfReader.class)));
 
     }
 
@@ -70,7 +70,6 @@ public class FXEngineTest extends AbstractTestExecution {
             }
             Node m = queryAll.get(i);
             randomDrag(m, 10);
-
         }
         tryClickButtons();
     }
@@ -176,7 +175,7 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyScrollChart() {
-        measureTime("Test.verifyScroll", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
+        measureTime("Test.verifyScroll", () -> verifyAndRun(() -> {
             lookup(".root").queryAll().forEach(t -> {
                 moveTo(t);
                 scroll(2, VerticalDirection.DOWN);
@@ -185,12 +184,12 @@ public class FXEngineTest extends AbstractTestExecution {
             });
             scroll(2, VerticalDirection.DOWN);
             scroll(2, VerticalDirection.UP);
-        }, Chart3dDemo.class, Chart3dGraph.class));
+        }, Arrays.asList(Chart3dDemo.class, Chart3dGraph.class)));
     }
 
     @Test
     public void verifyScrollWorldMaps() {
-        measureTime("Test.verifyScroll", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
+        measureTime("Test.verifyScroll", () -> verifyAndRun(() -> {
             lookup(".root").queryAll().forEach(t -> {
                 moveTo(t);
                 scroll(2, VerticalDirection.DOWN);
@@ -201,7 +200,8 @@ public class FXEngineTest extends AbstractTestExecution {
             scroll(2, VerticalDirection.UP);
             lookup(CheckBox.class).forEach(this::clickOn);
             lookup(ComboBox.class).forEach(e -> selectComboItems(e, 5));
-        }, WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class, PopulacionalPyramidExample.class));
+        }, Arrays.asList(WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class,
+            PopulacionalPyramidExample.class)));
 
     }
 

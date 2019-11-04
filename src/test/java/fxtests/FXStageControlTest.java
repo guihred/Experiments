@@ -21,7 +21,7 @@ public class FXStageControlTest extends AbstractTestExecution {
 
     @Test
     public void verifyDrag() {
-        measureTime("Test.verifyDrag", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
+        measureTime("Test.verifyDrag", () -> verifyAndRun(() -> {
             lookup(Circle.class).forEach(t -> {
                 moveTo(t);
                 scroll(2, VerticalDirection.DOWN);
@@ -30,8 +30,7 @@ public class FXStageControlTest extends AbstractTestExecution {
             });
             scroll(2, VerticalDirection.DOWN);
             scroll(2, VerticalDirection.UP);
-        }, DraggingRectangle.class));
-
+        }, Arrays.asList(DraggingRectangle.class)));
     }
 
     @Test
