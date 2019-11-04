@@ -1,5 +1,8 @@
 package japstudy;
 
+
+import static utils.RunnableEx.runIf;
+
 import java.security.SecureRandom;
 import javafx.application.Application;
 import javafx.beans.property.*;
@@ -42,14 +45,12 @@ public class JapaneseLessonDisplay extends Application {
     private BooleanProperty tested = new SimpleBooleanProperty(false);
 
     public void initialize() {
-        current.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                lesson.setText("Lesson: " + lessons.get(newValue.intValue()).getLesson());
-                english.setText(lessons.get(newValue.intValue()).getEnglish());
-                romaji.setText(lessons.get(newValue.intValue()).getRomaji());
-                japanese.setText(lessons.get(newValue.intValue()).getJapanese());
-            }
-        });
+        current.addListener((o, old, val) -> runIf(val, v -> {
+            lesson.setText("Lesson: " + lessons.get(v.intValue()).getLesson());
+            english.setText(lessons.get(v.intValue()).getEnglish());
+            romaji.setText(lessons.get(v.intValue()).getRomaji());
+            japanese.setText(lessons.get(v.intValue()).getJapanese());
+        }));
         japanese.visibleProperty().bind(tested);
         if (!lessons.isEmpty()) {
             current.set(random.nextInt(lessons.size()));

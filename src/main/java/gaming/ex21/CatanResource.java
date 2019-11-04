@@ -1,5 +1,7 @@
 package gaming.ex21;
 
+import static utils.FunctionEx.mapIf;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
@@ -29,7 +31,7 @@ public abstract class CatanResource extends Group {
         getChildren().add(view);
         setManaged(false);
         player.addListener(
-            (obj, old, newV) -> view.setImage(convertImage(image, newV != null ? newV.getColor() : Color.BLACK)));
+            (obj, old, newV) -> view.setImage(convertImage(image, mapIf(newV, PlayerColor::getColor, Color.BLACK))));
     }
 
     public Bounds getImage() {
@@ -44,7 +46,7 @@ public abstract class CatanResource extends Group {
         return player;
     }
 
-	public final void setPlayer(final PlayerColor color) {
+    public final void setPlayer(final PlayerColor color) {
         player.set(color);
     }
 
@@ -59,22 +61,6 @@ public abstract class CatanResource extends Group {
         return writableImage;
     }
 
-    public static ImageView newImage(Image url, double width) {
-        ImageView newImage = new ImageView(url);
-        newImage.setPreserveRatio(true);
-        newImage.setFitWidth(width);
-        return newImage;
-    }
-
-    public static ImageView newImage(String url) {
-        ImageView view = new ImageView(ResourceFXUtils.toExternalForm(CATAN + url));
-        view.setPreserveRatio(true);
-        return view;
-    }
-
-    public static WritableImage newImage(String url, Color color) {
-        return CatanResource.convertImage(new Image(ResourceFXUtils.toExternalForm(CATAN + url)), color);
-    }
     public static ImageView newImage(String url, double width) {
         ImageView newImage = new ImageView(ResourceFXUtils.toExternalForm(CATAN + url));
         newImage.setPreserveRatio(true);

@@ -3,6 +3,7 @@ package rosario;
 import static extract.ExcelService.isExcel;
 import static rosario.LeitorArquivos.*;
 import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
+import static utils.RunnableEx.runIf;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -19,15 +20,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
-import utils.HasLogging;
+import utils.RunnableEx;
 import utils.SupplierEx;
 
 public final class RosarioCommons {
-    private static final Logger LOG = HasLogging.log();
     private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";
     private static boolean openAtExport = true;
     private static final Map<String, FileChooser> FILE_CHOOSE = new HashMap<>();
@@ -35,62 +37,56 @@ public final class RosarioCommons {
     private RosarioCommons() {
     }
 
-    public static void carregarEstoqueAnvisa(TextField filterField,
-        final TableView<Medicamento> medicamentosEstoqueSNGPCTable, FileChooser fileChooser2,
-        final TableView<Medicamento> medicamentosAnvisaTable) {
-        Window primaryStage = filterField.getScene().getWindow();
-        File selectedFile = fileChooser2.showOpenDialog(primaryStage);
-        if (selectedFile != null) {
+    public static void carregarEstoqueAnvisa(TextField filterField, TableView<Medicamento> sNGPCTable,
+        FileChooser fileChooser2, TableView<Medicamento> anvisaTable) {
+        File chosenFile = fileChooser2.showOpenDialog(filterField.getScene().getWindow());
+        runIf(chosenFile, selectedFile -> {
             if (isExcel(selectedFile)) {
                 showImportDialog(selectedFile, FXCollections.observableArrayList(REGISTRO, NOME, LOTE, QUANTIDADE, ""),
                     meds -> {
-                        configurarFiltroRapido(filterField, medicamentosAnvisaTable, meds);
-                        atualizar(medicamentosEstoqueSNGPCTable.getItems(), medicamentosAnvisaTable);
-                        atualizar(medicamentosAnvisaTable.getItems(), medicamentosEstoqueSNGPCTable);
+                        configurarFiltroRapido(filterField, anvisaTable, meds);
+                        atualizar(sNGPCTable.getItems(), anvisaTable);
+                        atualizar(anvisaTable.getItems(), sNGPCTable);
                     });
                 return;
             }
             ObservableList<Medicamento> medicamentosAnvisa = getMedicamentosAnvisa(selectedFile);
-            configurarFiltroRapido(filterField, medicamentosAnvisaTable, medicamentosAnvisa);
-            atualizar(medicamentosEstoqueSNGPCTable.getItems(), medicamentosAnvisaTable);
-            atualizar(medicamentosAnvisaTable.getItems(), medicamentosEstoqueSNGPCTable);
-        }
+            configurarFiltroRapido(filterField, anvisaTable, medicamentosAnvisa);
+            atualizar(sNGPCTable.getItems(), anvisaTable);
+            atualizar(anvisaTable.getItems(), sNGPCTable);
+        });
     }
 
-    public static void carregarEstoqueLoja(TextField filterField, final TableView<Medicamento> medicamentosEstoqueTable,
+    public static void carregarEstoqueLoja(TextField filterField, TableView<Medicamento> estoqueTable,
         FileChooser fileChooserRosario) {
-        Window primaryStage = filterField.getScene().getWindow();
-
-        File selectedFile = fileChooserRosario.showOpenDialog(primaryStage);
-        if (selectedFile != null) {
+        File chosenFile = fileChooserRosario.showOpenDialog(filterField.getScene().getWindow());
+        runIf(chosenFile, selectedFile -> {
             if (isExcel(selectedFile)) {
                 showImportDialog(selectedFile, FXCollections.observableArrayList(CODIGO, NOME, QUANTIDADE, ""),
-                    meds -> configurarFiltroRapido(filterField, medicamentosEstoqueTable, meds));
+                    meds -> configurarFiltroRapido(filterField, estoqueTable, meds));
                 return;
             }
             ObservableList<Medicamento> medicamentosRosario = getMedicamentosRosario(selectedFile);
-            configurarFiltroRapido(filterField, medicamentosEstoqueTable, medicamentosRosario);
-        }
+            configurarFiltroRapido(filterField, estoqueTable, medicamentosRosario);
+        });
     }
 
-    public static void carregarSNGPC(TextField filterField, final TableView<Medicamento> medicamentosEstoqueTable,
-        FileChooser fileChooserSNGPC, final TableView<Medicamento> medicamentosEstoqueSNGPCTable) {
-        Window primaryStage = filterField.getScene().getWindow();
-
-        File selectedFile = fileChooserSNGPC.showOpenDialog(primaryStage);
-        if (selectedFile != null) {
+    public static void carregarSNGPC(TextField filter, TableView<Medicamento> estoqueTable, FileChooser chooser,
+        TableView<Medicamento> sNGPCTable) {
+        File chosenFile = chooser.showOpenDialog(filter.getScene().getWindow());
+        runIf(chosenFile, selectedFile -> {
             if (isExcel(selectedFile)) {
                 showImportDialog(selectedFile,
                     FXCollections.observableArrayList(REGISTRO, NOME, LOTE, QUANTIDADE, CODIGO, ""), meds -> {
-                        configurarFiltroRapido(filterField, medicamentosEstoqueSNGPCTable, meds);
-                        atualizarPorCodigo(meds, medicamentosEstoqueTable);
+                        configurarFiltroRapido(filter, sNGPCTable, meds);
+                        atualizarPorCodigo(meds, estoqueTable);
                     });
                 return;
             }
             ObservableList<Medicamento> medicamentosSNGPC = getMedicamentosSNGPC(selectedFile);
-            configurarFiltroRapido(filterField, medicamentosEstoqueSNGPCTable, medicamentosSNGPC);
-            atualizarPorCodigo(medicamentosSNGPC, medicamentosEstoqueTable);
-        }
+            configurarFiltroRapido(filter, sNGPCTable, medicamentosSNGPC);
+            atualizarPorCodigo(medicamentosSNGPC, estoqueTable);
+        });
     }
 
     public static FileChooser choseFile(String value) {
@@ -103,10 +99,9 @@ public final class RosarioCommons {
         });
     }
 
-    public static void exportarMedicamentos(final TableView<Medicamento> medicamentosEstoqueTable,
-        final TableView<Medicamento> medicamentosEstoqueSNGPCTable,
-        final TableView<Medicamento> medicamentosAnvisaTable) {
-        try {
+    public static void exportarMedicamentos(TableView<Medicamento> medicamentosEstoqueTable,
+        TableView<Medicamento> medicamentosEstoqueSNGPCTable, TableView<Medicamento> medicamentosAnvisaTable) {
+        RunnableEx.run(() -> {
             ObservableList<Medicamento> items0 = medicamentosEstoqueTable.getItems();
             ObservableList<Medicamento> items1 = medicamentosEstoqueSNGPCTable.getItems();
             ObservableList<Medicamento> items2 = medicamentosAnvisaTable.getItems();
@@ -121,9 +116,7 @@ public final class RosarioCommons {
             if (openAtExport) {
                 Desktop.getDesktop().open(exportarArquivo);
             }
-        } catch (Exception e1) {
-            LOG.error("", e1);
-        }
+        });
     }
 
     public static void setOpenAtExport(boolean openAtExport) {
@@ -132,7 +125,7 @@ public final class RosarioCommons {
 
     @SuppressWarnings("unchecked")
     private static void atualizar(ObservableList<Medicamento> medicamentos,
-        final TableView<Medicamento> medicamentosAnvisaTable) {
+        TableView<Medicamento> medicamentosAnvisaTable) {
         ObservableList<TableColumn<Medicamento, ?>> columns = medicamentosAnvisaTable.getColumns();
         TableColumn<Medicamento, String> tableColumn = (TableColumn<Medicamento, String>) columns.get(0);
         tableColumn.setCellFactory(newCellFactory((auxMed, cell) -> {
@@ -160,7 +153,7 @@ public final class RosarioCommons {
 
     @SuppressWarnings("unchecked")
     private static void atualizarPorCodigo(ObservableList<Medicamento> medicamentos,
-        final TableView<Medicamento> medicamentosAnvisaTable) {
+        TableView<Medicamento> medicamentosAnvisaTable) {
         ObservableList<TableColumn<Medicamento, ?>> columns = medicamentosAnvisaTable.getColumns();
 
         TableColumn<Medicamento, Integer> colunaQntd = (TableColumn<Medicamento, Integer>) columns
@@ -180,8 +173,8 @@ public final class RosarioCommons {
 
     }
 
-    private static void configurarFiltroRapido(TextField filterField,
-        final TableView<Medicamento> medicamentosEstoqueTable, ObservableList<Medicamento> medicamentosRosario) {
+    private static void configurarFiltroRapido(TextField filterField, TableView<Medicamento> medicamentosEstoqueTable,
+        ObservableList<Medicamento> medicamentosRosario) {
         FilteredList<Medicamento> filteredData = new FilteredList<>(medicamentosRosario, p -> true);
         medicamentosEstoqueTable.setItems(filteredData);
         StringProperty text = filterField.textProperty();
@@ -209,13 +202,12 @@ public final class RosarioCommons {
         stage.centerOnScreen();
         stage.toFront();
         stage.setTitle("Importar Excel");
-
         ObservableList<String> sheetsExcel = LeitorArquivos.getSheetsExcel(excel);
         ChoiceBox<String> selectSheet = new ChoiceBox<>(sheetsExcel);
         ObservableList<List<String>> listExcel = LeitorArquivos.getListExcel(excel, null);
         selectSheet.getSelectionModel().selectFirst();
         int orElse = listExcel.stream().mapToInt(List<String>::size).max().orElse(items.size());
-        final TableView<List<String>> medicamentosTable = new TableView<>(listExcel);
+        TableView<List<String>> medicamentosTable = new TableView<>(listExcel);
         selectSheet.getSelectionModel().selectedItemProperty().addListener((val, old, newValue) -> {
             if (!Objects.equals(old, newValue)) {
                 medicamentosTable.setItems(LeitorArquivos.getListExcel(excel, newValue));

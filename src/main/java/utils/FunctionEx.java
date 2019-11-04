@@ -6,6 +6,18 @@ import java.util.function.Function;
 public interface FunctionEx<T, R> {
 	R apply(T t) throws Exception;
 
+    static <T, F> F mapIf(T length, Function<T, F> func) {
+        return FunctionEx.mapIf(length, func, null);
+    }
+
+    static <T, F> F mapIf(T length, Function<T, F> func, F f) {
+        T t = length;
+        if (t != null) {
+            return func.apply(t);
+        }
+        return f;
+    }
+
     static <A, B> Function<A, B> makeFunction(FunctionEx<A, B> run) {
         return (A a) -> {
             try {

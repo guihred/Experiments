@@ -1,5 +1,7 @@
 package fxsamples;
 
+import static utils.RunnableEx.runIf;
+
 import java.security.SecureRandom;
 import java.util.Random;
 import javafx.application.Application;
@@ -122,11 +124,7 @@ public class PlayingAudio extends Application {
     public void start(Stage primaryStage) throws Exception {
         mainStage = primaryStage;
         CommonsFX.loadFXML("Playing Audio", "PlayingAudio.fxml", this, primaryStage, 500, 500);
-        primaryStage.setOnCloseRequest(e -> {
-            if (mediaPlayer != null) {
-                mediaPlayer.dispose();
-            }
-        });
+        primaryStage.setOnCloseRequest(e -> runIf(mediaPlayer, MediaPlayer::dispose));
         plugEventsToScene(mainStage.getScene());
     }
 

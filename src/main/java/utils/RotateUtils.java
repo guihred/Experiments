@@ -1,5 +1,8 @@
 package utils;
 
+
+import static utils.RunnableEx.runIf;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -280,17 +283,13 @@ public final class RotateUtils {
 
         circle.setOnDragDetected(event -> {
             Parent parent = circle.getParent();
-            if (parent != null) {
-                parent.setCursor(Cursor.CLOSED_HAND);
-            }
+            runIf(parent, p -> p.setCursor(Cursor.CLOSED_HAND));
             mouseLocation.value = new Point2D(event.getSceneX(), event.getSceneY());
         });
 
         circle.setOnMouseReleased(event -> {
             Parent parent = circle.getParent();
-            if (parent != null) {
-                parent.setCursor(Cursor.DEFAULT);
-            }
+            runIf(parent, p -> p.setCursor(Cursor.DEFAULT));
             mouseLocation.value = null;
         });
     }

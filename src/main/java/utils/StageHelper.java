@@ -1,5 +1,8 @@
 package utils;
 
+
+import static utils.RunnableEx.runIf;
+
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.PrintStream;
@@ -13,11 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.*;
-import org.slf4j.Logger;
 
 public final class StageHelper {
-
-    private static final Logger LOG = HasLogging.log();
 
     private StageHelper() {
     }
@@ -27,10 +27,8 @@ public final class StageHelper {
         chooser.setTitle(title);
         return newButton(nome, e -> {
             Node target = (Node) e.getTarget();
-            File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
-            if (showOpenDialog != null) {
-                ConsumerEx.makeConsumer(onSelect).accept(showOpenDialog);
-            }
+            File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
+            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(f));
         });
     }
 
@@ -57,26 +55,24 @@ public final class StageHelper {
         if (file.exists()) {
             RunnableEx.ignore(() -> scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString()));
         }
-        stage2.setScene(new Scene(new VBox(textArea, newButton("_Save", e -> {
+        Button saveButton = newButton("_Save", e -> RunnableEx.run(() -> {
             try (PrintStream fileOutputStream = new PrintStream(file, StandardCharsets.UTF_8.name())) {
                 fileOutputStream.print(textArea.getText());
                 fileOutputStream.flush();
                 scene.getStylesheets().clear();
                 scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString());
                 textArea.requestFocus();
-            } catch (Exception e1) {
-                LOG.error("", e1);
             }
-        }))));
+        }));
+        stage2.setScene(new Scene(new VBox(textArea, saveButton)));
         textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));
         stage2.setHeight(500);
         stage2.show();
 
-        if (scene.getWindow() != null) {
-            Window window = scene.getWindow();
+        runIf(scene.getWindow(), window -> {
             EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
             window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
-        }
+        });
         scene.windowProperty().addListener((ob, o, n) -> {
             EventHandler<WindowEvent> closeRequest = n.getOnCloseRequest();
             n.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
@@ -90,10 +86,8 @@ public final class StageHelper {
         chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
         return e -> {
             Node target = (Node) e.getTarget();
-            File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
-            if (showOpenDialog != null) {
-                ConsumerEx.makeConsumer(onSelect).accept(showOpenDialog);
-            }
+            File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
+            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(f));
         };
     }
 
@@ -105,10 +99,8 @@ public final class StageHelper {
         chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
         return e -> {
             Node target = (Node) e.getTarget();
-            File showOpenDialog = chooser.showOpenDialog(target.getScene().getWindow());
-            if (showOpenDialog != null) {
-                ConsumerEx.makeConsumer(onSelect).accept(showOpenDialog);
-            }
+            File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
+            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(f));
         };
     }
 
@@ -120,17 +112,13 @@ public final class StageHelper {
         return newButton(nome, e -> {
             Node target = (Node) e.getTarget();
             Window window = target.getScene().getWindow();
-            File selectedFile = chooser.showDialog(window);
-            if (selectedFile != null) {
-                ConsumerEx.makeConsumer(onSelect).accept(selectedFile);
-            }
+            File fileChosen = chooser.showDialog(window);
+            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(f));
         });
     }
 
     private static void closeBoth(Stage stage2, EventHandler<WindowEvent> onCloseRequest, WindowEvent e) {
-        if (onCloseRequest != null) {
-            onCloseRequest.handle(e);
-        }
+        runIf(onCloseRequest, o -> o.handle(e));
         stage2.close();
     }
 

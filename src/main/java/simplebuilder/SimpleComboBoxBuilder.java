@@ -15,6 +15,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import utils.FunctionEx;
 
 public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, SimpleComboBoxBuilder<T>> {
 
@@ -55,11 +56,7 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
 
             @Override
             public String toString(T object) {
-                if (object == null) {
-                    return option;
-                }
-
-                return converter.toString(object);
+                return FunctionEx.mapIf(object, converter::toString, option);
             }
 
         };

@@ -193,7 +193,6 @@ public class StringSigaUtils extends StringUtils {
                 return t;
             }
         }
-
         return null;
     }
 

@@ -27,9 +27,6 @@ public class Anagram {
 		return histogram.equals(createHistogram(s)) && !s.equalsIgnoreCase(original);
 	}
 
-	public static boolean isAnagram(String original, String test) {
-		return createHistogram(original).equals(createHistogram(test)) && !test.equalsIgnoreCase(original);
-	}
 
 	private static Map<String, Long> createHistogram(String st) {
         return Stream.of(st.toLowerCase().split(""))

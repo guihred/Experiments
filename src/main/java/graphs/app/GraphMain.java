@@ -1,5 +1,8 @@
 package graphs.app;
 
+
+import static utils.RunnableEx.runIf;
+
 import graphs.entities.CellType;
 import graphs.entities.Edge;
 import graphs.entities.Graph;
@@ -102,16 +105,12 @@ public class GraphMain extends Application {
 
     public void onActionGo() {
         Layout selectedItem = selectLayout.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            selectedItem.execute();
-        }
+        runIf(selectedItem, Layout::execute);
     }
 
     public void onActionGo27() {
         BaseTopology selectedItem = topologySelect.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            selectedItem.execute();
-        }
+        runIf(selectedItem, BaseTopology::execute);
     }
 
     public void onActionKruskal() {

@@ -51,13 +51,8 @@ public class TaskProgressView {
         progress.textProperty().bind(Bindings.format("%5.2f%%", worker.progressProperty().multiply(100)));
         value.textProperty().bind(worker.valueProperty());
 
-        exception.textProperty().bind(Bindings.createStringBinding(() -> {
-            final Throwable workerException = worker.getException();
-            if (workerException == null) {
-                return "";
-            }
-            return workerException.getMessage();
-        }, worker.exceptionProperty()));
+        exception.textProperty().bind(Bindings.createStringBinding(
+            () -> FunctionEx.mapIf(worker.getException(), Throwable::getMessage, ""), worker.exceptionProperty()));
         startButton.disableProperty().bind(stateProperty.isNotEqualTo(Worker.State.READY));
         cancelButton.disableProperty().bind(stateProperty.isNotEqualTo(Worker.State.RUNNING));
         exceptionButton.disableProperty().bind(stateProperty.isNotEqualTo(Worker.State.RUNNING));

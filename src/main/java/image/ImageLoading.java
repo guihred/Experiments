@@ -13,7 +13,6 @@ import com.aspose.imaging.imageoptions.TiffOptions;
 import com.aspose.imaging.sources.FileCreateSource;
 import org.slf4j.Logger;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public class ImageLoading {
@@ -153,22 +152,6 @@ public class ImageLoading {
         rasterCachedImage.grayscale();
         // Save the resultant image
         rasterCachedImage.save(dataDir + "Grayscaling_out.jpg");
-
-    }
-
-    public static void main(String[] args) {
-        String dataDir = ResourceFXUtils.getUserFolder("Pictures").getAbsolutePath() + "\\";
-        String nameFile = dataDir + "eu3.jpg";
-        String svgFile = dataDir + "Video_game.svg";
-        String pngFile = dataDir + "teste1.png";
-        convertSVG(dataDir, svgFile);
-        binarize(dataDir, nameFile);
-        bradleyThreshold(dataDir, pngFile);
-        convertSVG(dataDir, nameFile);
-        cropImage(dataDir, nameFile);
-        exporting(dataDir, nameFile);
-        grayScale(dataDir, nameFile);
-        grayScaling(dataDir, nameFile);
 
     }
 

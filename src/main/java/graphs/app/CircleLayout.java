@@ -46,9 +46,6 @@ public class CircleLayout extends Layout {
         generateCircle(cells, centerX, centerY, 0, bound);
     }
 
-    public static int radius(int size2) {
-        return radius(size2, 1, 20);
-    }
 
     public static int radius(int size2, int mul, double cellBound) {
         int i = size2 / 30 + 1;
