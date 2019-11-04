@@ -24,7 +24,8 @@ import utils.StageHelper;
 import utils.SupplierEx;
 
 public class FileAttrApp extends Application {
-    private String[] sizes = { "B", "KB", "MB", "GB", "TB" };
+    private static final int BYTES_IN_A_KILOBYTE = 1024;
+    private static final String[] SIZES = { "B", "KB", "MB", "GB", "TB" };
     private Map<File, BasicFileAttributes> attrMap = new LinkedHashMap<>();
     private Map<File, Long> sizeMap = new LinkedHashMap<>();
     private ObservableList<Data> pieData = FXCollections.observableArrayList();
@@ -35,10 +36,6 @@ public class FileAttrApp extends Application {
         primaryStage.setTitle("File Attributes Application");
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();
-    }
-
-    private BasicFileAttributes computeAttributes(File v) {
-        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
     }
 
     private long computeSize(File file) {
@@ -77,13 +74,7 @@ public class FileAttrApp extends Application {
     }
 
     private BasicFileAttributes getAttributes(File value) {
-        return attrMap.computeIfAbsent(value, this::computeAttributes);
-    }
-
-    private String getFileSize(long sizeInBytes) {
-        int a0 = (int) Math.floor(Math.log10(sizeInBytes) / Math.log10(1024));
-        return a0 < 0 ? "" + sizeInBytes
-            : String.format(Locale.ENGLISH, "%.2f %s", sizeInBytes / Math.pow(1024, a0), sizes[a0]);
+        return attrMap.computeIfAbsent(value, FileAttrApp::computeAttributes);
     }
 
     private long getSize(File file) {
@@ -119,6 +110,18 @@ public class FileAttrApp extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static BasicFileAttributes computeAttributes(File v) {
+        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
+    }
+
+    private static String getFileSize(long sizeInBytes) {
+        if (sizeInBytes == 0) {
+            return "0";
+        }
+        int a0 = (int) Math.floor(Math.log10(sizeInBytes) / Math.log10(BYTES_IN_A_KILOBYTE));
+        return String.format(Locale.ENGLISH, "%.2f %s", sizeInBytes / Math.pow(BYTES_IN_A_KILOBYTE, a0), SIZES[a0]);
     }
 
 }

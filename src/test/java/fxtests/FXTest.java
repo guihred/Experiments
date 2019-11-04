@@ -39,7 +39,7 @@ public final class FXTest extends AbstractTestExecution {
 
     @Test
     public void verifyWorkingListsViews() {
-        show(WorkingListsViews.class);
+        showNewStage(WorkingListsViews.class);
         WaitForAsyncUtils.waitForFxEvents();
         List<Node> lookup = lookup(ListView.class).stream().collect(Collectors.toList());
         List<Button> buttons = lookup(Button.class).stream().collect(Collectors.toList());

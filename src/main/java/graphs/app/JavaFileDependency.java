@@ -149,11 +149,11 @@ public class JavaFileDependency {
     public boolean search(Predicate<JavaFileDependency> test, List<JavaFileDependency> visited,
         List<JavaFileDependency> path) {
         for (JavaFileDependency d : getDependents()) {
-            if (test.test(d) && !path.contains(d)) {
+            if (matchesAndNotIn(test, path, d)) {
                 path.add(d);
             }
         }
-        if (test.test(this) && !path.contains(this)) {
+        if (matchesAndNotIn(test, path, this)) {
             path.add(this);
         }
 
@@ -171,7 +171,7 @@ public class JavaFileDependency {
     }
 
     public boolean search(String name1, List<JavaFileDependency> visited, List<JavaFileDependency> path) {
-        return search(d->d.getFullName().contains(name1), visited, path);
+        return search(d -> d.getFullName().contains(name1), visited, path);
     }
 
     public void setDependents(Collection<JavaFileDependency> dependents) {
@@ -260,6 +260,11 @@ public class JavaFileDependency {
             linkedList.add(matcher.group(1));
         }
         return linkedList;
+    }
+
+    private static boolean matchesAndNotIn(Predicate<JavaFileDependency> test, List<JavaFileDependency> path,
+        JavaFileDependency o) {
+        return test.test(o) && !path.contains(o);
     }
 
     private static String removeStrings(String s) {

@@ -1,53 +1,37 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
 import static javafx.scene.input.KeyCode.*;
 
-import fxpro.ch07.Chart3dDemo;
-import fxsamples.DraggingRectangle;
 import fxsamples.PhotoViewer;
-import japstudy.JapaneseLessonApplication;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
-import javafx.geometry.VerticalDirection;
+import javafx.application.Application;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Cell;
 import javafx.scene.input.KeyCode;
-import javafx.scene.shape.Circle;
 import labyrinth.*;
-import ml.graph.Chart3dGraph;
 import org.junit.Test;
 import utils.ConsumerEx;
 
 public class FXLabyrinthTest extends AbstractTestExecution {
-    @Test
-    public void verifyDrag() {
-        measureTime("Test.verifyDrag", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
-            lookup(Circle.class).forEach(t -> {
-                moveTo(t);
-                scroll(2, VerticalDirection.DOWN);
-                scroll(2, VerticalDirection.UP);
-                randomDrag(t, 50);
-            });
-            scroll(2, VerticalDirection.DOWN);
-            scroll(2, VerticalDirection.UP);
-        }, DraggingRectangle.class));
 
-    }
+
 
     @Test
-    public void verifyJapaneseLessonApplication() {
-        show(JapaneseLessonApplication.class);
-        Set<Button> lookup = lookup(Button.class);
-        doubleClickOn(randomItem(lookup(Cell.class)));
-        lookup(Button.class).stream().filter(t -> !lookup.contains(t)).forEach(this::clickOn);
-        clickOn(randomItem(lookup(Cell.class)));
-        type(KeyCode.SHIFT);
-        clickButtonsWait();
-        type(KeyCode.ENTER);
-        type(KeyCode.SHIFT);
+    public void verifyLabyrinth3DKillerGhostsAndBalls() {
+        List<Class<? extends Application>> asList = Arrays.asList(Labyrinth3DWallTexture.class,
+            Labyrinth3DKillerGhostsAndBalls.class);
+        for (Class<? extends Application> cl : asList) {
+            show(cl);
+            type(W, 15);
+            type(A, 4);
+            type(W, 2);
+            type(D, 4);
+            type(W, 20);
+        }
+        
     }
+
     @Test
     public void verifyMouseMovements() {
         FXTesting.verifyAndRun(this, currentStage, () -> {
@@ -80,17 +64,5 @@ public class FXLabyrinthTest extends AbstractTestExecution {
         }));
     }
 
-    @Test
-    public void verifyScroll() {
-        measureTime("Test.verifyScroll", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
-            lookup(".root").queryAll().forEach(t -> {
-                moveTo(t);
-                scroll(2, VerticalDirection.DOWN);
-                scroll(2, VerticalDirection.UP);
-                randomDrag(t, 50);
-            });
-            scroll(2, VerticalDirection.DOWN);
-            scroll(2, VerticalDirection.UP);
-        }, Chart3dDemo.class, Chart3dGraph.class));
-    }
+
 }

@@ -59,11 +59,13 @@ public class NetworkTopology extends BaseTopology {
                 currentCell = hop;
             }
         }
-        scanPossibleOSes.forEach(this::addDescription);
+        synchronized (scanPossibleOSes) {
+            scanPossibleOSes.forEach(this::addDescription);
+        }
         graph.endUpdate();
-		LayerLayout.layoutInLayers(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
-				graph.getScrollPane().getViewportBounds().getWidth() / 2,
-				graph.getScrollPane().getViewportBounds().getHeight());
+        LayerLayout.layoutInLayers(graph.getModel().getAllCells(), graph.getModel().getAllEdges(),
+            graph.getScrollPane().getViewportBounds().getWidth() / 2,
+            graph.getScrollPane().getViewportBounds().getHeight());
 
     }
 
@@ -99,7 +101,9 @@ public class NetworkTopology extends BaseTopology {
 
     private InvalidationListener onChange(final ObservableMap<String, List<String>> scanOSes) {
         return observable -> {
-            scanPossibleOSes.putAll(scanOSes);
+            synchronized (scanPossibleOSes) {
+                scanPossibleOSes.putAll(scanOSes);
+            }
             Platform.runLater(this::execute);
         };
     }

@@ -6,9 +6,11 @@ import static utils.RunnableEx.ignore;
 import ethical.hacker.EthicalHackApp;
 import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
+import extract.FileAttrApp;
 import fractal.LeafFractalApp;
 import fxpro.ch06.ResponsiveUIApp;
 import fxpro.ch06.ThreadInformationApp;
+import fxpro.ch07.Chart3dDemo;
 import fxsamples.AnchorCircle;
 import fxsamples.InlineModelViewer;
 import fxsamples.LineManipulator;
@@ -28,6 +30,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.SVGPath;
 import ml.*;
+import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -72,14 +75,22 @@ public class FXEngineTest extends AbstractTestExecution {
         tryClickButtons();
     }
 
-
-
     @Test
     public void verifyEthicalHack() {
         show(EthicalHackApp.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
             .forEach(ConsumerEx.ignore(this::clickOn));
         ConsoleUtils.waitAllProcesses();
+    }
+
+    @Test
+    public void verifyFileAttrApp() {
+        show(FileAttrApp.class);
+        sleep(500);
+        targetPos(Pos.TOP_CENTER);
+        clickOn(lookupFirst(TreeView.class));
+        targetPos(Pos.CENTER);
+        type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
     }
 
     @Test
@@ -164,7 +175,21 @@ public class FXEngineTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyScroll() {
+    public void verifyScrollChart() {
+        measureTime("Test.verifyScroll", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
+            lookup(".root").queryAll().forEach(t -> {
+                moveTo(t);
+                scroll(2, VerticalDirection.DOWN);
+                scroll(2, VerticalDirection.UP);
+                randomDrag(t, 50);
+            });
+            scroll(2, VerticalDirection.DOWN);
+            scroll(2, VerticalDirection.UP);
+        }, Chart3dDemo.class, Chart3dGraph.class));
+    }
+
+    @Test
+    public void verifyScrollWorldMaps() {
         measureTime("Test.verifyScroll", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
             lookup(".root").queryAll().forEach(t -> {
                 moveTo(t);

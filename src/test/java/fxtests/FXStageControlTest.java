@@ -1,8 +1,13 @@
 package fxtests;
 
+import static fxtests.FXTesting.measureTime;
+
 import fxpro.ch02.StageControlExample;
+import fxsamples.DraggingRectangle;
 import java.util.Arrays;
+import javafx.geometry.VerticalDirection;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import org.junit.Test;
 import utils.ConsumerEx;
 
@@ -13,6 +18,21 @@ public class FXStageControlTest extends AbstractTestExecution {
             new String[] { randomItem(Arrays.asList("TRANSPARENT", "UNDECORATED", "UTILITY")) });
     }
 
+
+    @Test
+    public void verifyDrag() {
+        measureTime("Test.verifyDrag", () -> FXTesting.verifyAndRun(this, currentStage, () -> {
+            lookup(Circle.class).forEach(t -> {
+                moveTo(t);
+                scroll(2, VerticalDirection.DOWN);
+                scroll(2, VerticalDirection.UP);
+                randomDrag(t, 50);
+            });
+            scroll(2, VerticalDirection.DOWN);
+            scroll(2, VerticalDirection.UP);
+        }, DraggingRectangle.class));
+
+    }
 
     @Test
     public void verifyStageControlExample() {

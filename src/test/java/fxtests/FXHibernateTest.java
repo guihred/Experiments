@@ -6,14 +6,13 @@ import election.*;
 import furigana.FuriganaCrawlerApp;
 import fxpro.ch06.TaskProgressApp;
 import fxsamples.BackgroundProcesses;
-import japstudy.JapaneseLessonAudioSplitDisplay;
-import japstudy.JapaneseLessonDisplay;
-import japstudy.JapaneseLessonEditingDisplay;
-import japstudy.JapaneseLessonReader;
+import japstudy.*;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Cell;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
@@ -38,7 +37,6 @@ public class FXHibernateTest extends AbstractTestExecution {
         HibernateUtil.getSessionFactory();
         HibernateUtil.setShutdownEnabled(false);
     }
-
     @Test
     public void verifyBackgroundProcesses() {
         show(BackgroundProcesses.class);
@@ -58,15 +56,15 @@ public class FXHibernateTest extends AbstractTestExecution {
         targetPos(Pos.CENTER);
     }
 
-
-
-
-
     @Test
     public void verifyCrawlerCandidates2018Task() {
         show(new ElectionCrawlerApp(new CrawlerCandidates2018Task()));
         clickButtonsWait();
     }
+
+
+
+
 
     @Test
     public void verifyCrawlerCandidateTask() {
@@ -90,6 +88,19 @@ public class FXHibernateTest extends AbstractTestExecution {
     public void verifyFuriganaCrawlerApp() {
         show(FuriganaCrawlerApp.class);
         clickButtonsWait();
+    }
+
+    @Test
+    public void verifyJapaneseLessonApplication() {
+        show(JapaneseLessonApplication.class);
+        Set<Button> lookup = lookup(Button.class);
+        doubleClickOn(randomItem(lookup(Cell.class)));
+        lookup(Button.class).stream().filter(t -> !lookup.contains(t)).forEach(this::clickOn);
+        clickOn(randomItem(lookup(Cell.class)));
+        type(KeyCode.SHIFT);
+        clickButtonsWait();
+        type(KeyCode.ENTER);
+        type(KeyCode.SHIFT);
     }
 
     @Test

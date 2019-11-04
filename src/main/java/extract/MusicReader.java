@@ -172,7 +172,7 @@ public final class MusicReader {
             Files.copy(file2.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Files.deleteIfExists(file2.toPath());
         } catch (IOException e1) {
-            LOG.error("ERROR COPYING", e1);
+            LOG.error("ERROR COPYING " + file.getName() + "-> " + file2.getName(), e1);
         }
     }
 

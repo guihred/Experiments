@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class LayerSplitter {
-	private static final Logger LOG = HasLogging.log();
-	private final List<Cell> cells;
+    private static final Logger LOG = HasLogging.log();
+    private final List<Cell> cells;
     private final List<Edge> edges;
     private Set<Cell> stack = new LinkedHashSet<>();
     private Set<Cell> marked = new LinkedHashSet<>();
@@ -52,12 +52,6 @@ public final class LayerSplitter {
         return sorted;
     }
 
-    @SuppressWarnings("unused")
-    private long crossings(List<List<Cell>> layers) {
-        return edges.stream().filter(e -> getLayerNumber(e.getSource(), layers) > getLayerNumber(e.getTarget(), layers))
-            .count();
-    }
-
     private void dfsRemove(Cell vertex) {
         if (marked.contains(vertex)) {
             return;
@@ -81,48 +75,6 @@ public final class LayerSplitter {
             dfsRemove(vertex);
         }
         return edges;
-    }
-
-    public static Object[] createVirtualVerticesAndEdges(List<List<Cell>> layers, List<Edge> ed) {
-        int virtualIndex = 0;
-        List<Edge> edges = new ArrayList<>(ed);
-        for (int i = 0; i < layers.size() - 1; i++) {
-            List<Cell> currentLayer = layers.get(i);
-            List<Cell> nextLayer = layers.get(i + 1);
-            for (Cell vertex : currentLayer) {
-                List<Edge> outgoingMulti = edges.stream().filter(e -> e.getSource() == vertex)
-                    .filter(e -> Math.abs(getLayerNumber(e.getTarget(), layers) - getLayerNumber(vertex, layers)) > 1)
-                    .collect(Collectors.toList());
-                List<Edge> incomingMulti = edges.stream().filter(e -> e.getTarget() == vertex)
-                    .filter(e -> Math.abs(getLayerNumber(e.getSource(), layers) - getLayerNumber(vertex, layers)) > 1)
-                    .collect(Collectors.toList());
-                for (Edge edge : outgoingMulti) {
-                    Cell virtualVertex = new Cell("" + virtualIndex++);
-                    nextLayer.add(virtualVertex);
-                    edges.remove(edge);
-                    edges.add(new Edge(edge.getSource(), virtualVertex, edge.getValor()));
-                    edges.add(new Edge(virtualVertex, edge.getTarget(), edge.getValor()));
-                }
-                for (Edge edge : incomingMulti) {
-                    Cell virtualVertex = new Cell("" + virtualIndex++);
-                    nextLayer.add(virtualVertex);
-                    edges.remove(edge);
-                    edges.add(new Edge(virtualVertex, edge.getTarget(), edge.getValor()));
-                    edges.add(new Edge(edge.getSource(), virtualVertex, edge.getValor()));
-                }
-            }
-        }
-        return new Object[] { layers, edges };
-    }
-
-    public static int getLayerNumber(Cell vertex, List<List<Cell>> layers2) {
-        for (int i = 0; i < layers2.size(); i++) {
-            List<Cell> list = layers2.get(i);
-            if (list.contains(vertex)) {
-                return i;
-            }
-        }
-        return 0;
     }
 
     public static List<List<Cell>> getLayers(List<Cell> cells, List<Edge> edges) {
