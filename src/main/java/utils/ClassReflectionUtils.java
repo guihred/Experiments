@@ -36,7 +36,7 @@ public final class ClassReflectionUtils {
     public static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
         Class<?> a = targetClass;
         List<Method> getters = new ArrayList<>();
-        for (int i = 0; i < 10; i++, a = a.getSuperclass()) {
+        for (int i = 0; i < 10 && a != null; i++, a = a.getSuperclass()) {
             List<Method> getters2 = Arrays.asList(a.getDeclaredMethods());
             getters.addAll(getters2);
             Class<?>[] interfaces = a.getInterfaces();
