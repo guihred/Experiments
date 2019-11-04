@@ -3,7 +3,6 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 import static utils.RunnableEx.ignore;
 
-import ethical.hacker.EthicalHackApp;
 import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
 import extract.FileAttrApp;
@@ -38,7 +37,6 @@ import org.junit.Test;
 import paintexp.ColorChooser;
 import pdfreader.PdfReader;
 import schema.sngpc.SngpcViewer;
-import utils.ConsoleUtils;
 import utils.ConsumerEx;
 
 public class FXEngineTest extends AbstractTestExecution {
@@ -74,13 +72,6 @@ public class FXEngineTest extends AbstractTestExecution {
         tryClickButtons();
     }
 
-    @Test
-    public void verifyEthicalHack() {
-        show(EthicalHackApp.class);
-        lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
-            .forEach(ConsumerEx.ignore(this::clickOn));
-        ConsoleUtils.waitAllProcesses();
-    }
 
     @Test
     public void verifyFileAttrApp() {
@@ -241,14 +232,6 @@ public class FXEngineTest extends AbstractTestExecution {
         }
     }
 
-    @Test
-    public void verifyWordSuggetion() {
-        show(WordSuggetionApp.class);
-        lookup(".text-field").queryAll().forEach(ConsumerEx.makeConsumer(t -> {
-            clickOn(t);
-            write("new york ");
-        }));
-    }
 
     @Test
     public void verifyWorkingWithTableView() {

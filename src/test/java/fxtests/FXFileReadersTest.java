@@ -6,17 +6,12 @@ import static fxtests.FXTesting.measureTime;
 import static japstudy.JapanRefactoring.TXT_FILE;
 import static japstudy.JapanRefactoring.refactorJapaneseFile;
 import static japstudy.JapanRefactoring.renameFile;
-import static java.nio.file.Files.deleteIfExists;
 import static utils.ResourceFXUtils.getOutFile;
 import static utils.ResourceFXUtils.toExternalForm;
 import static utils.ResourceFXUtils.toFile;
 
 import com.google.common.collect.ImmutableMap;
 import contest.db.Contest;
-import ethical.hacker.PortScanner;
-import ethical.hacker.PortServices;
-import ethical.hacker.ProcessScan;
-import ethical.hacker.TracerouteScanner;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.PointCh4;
 import ex.j9.ch4.PrimaryColor;
@@ -35,14 +30,16 @@ import graphs.entities.Linha;
 import graphs.entities.Ponto;
 import japstudy.JapaneseLesson;
 import japstudy.LessonPK;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.*;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import ml.Word2VecExample;
 import ml.data.CSVUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -240,29 +237,6 @@ public class FXFileReadersTest extends ApplicationTest {
             equalsTest.toString();
         });
     }
-
-    @Test
-    public void testPortServices() {
-        measureTime("PortServices.loadServiceNames", () -> PortServices.loadServiceNames());
-        measureTime("PortServices.getServiceByPort", () -> PortServices.getServiceByPort(80));
-        measureTime("PortScanner.isPortOpen", () -> PortScanner.isPortOpen(TracerouteScanner.IP_TO_SCAN, 80, 5000));
-        measureTime("PortScanner.scanNetworkOpenPorts",
-            () -> PortScanner.scanNetworkOpenPorts(TracerouteScanner.NETWORK_ADDRESS));
-        measureTime("PortScanner.scanPortsHost",
-            () -> PortScanner.scanNetworkOpenPorts(TracerouteScanner.NETWORK_ADDRESS, Arrays.asList(80, 9000, 8080)));
-        measureTime("PortScanner.scanPortsHost", () -> PortScanner.scanPortsHost(TracerouteScanner.IP_TO_SCAN));
-        measureTime("PortScanner.scanPossibleOSes",
-            () -> PortScanner.scanPossibleOSes(TracerouteScanner.NETWORK_ADDRESS));
-        measureTime("ProcessScan.scanProcesses", () -> ProcessScan.scanProcesses());
-    }
-
-    @Test
-    public void testWord2Vec() throws IOException {
-        File file = Word2VecExample.getPathToSave();
-        deleteIfExists(file.toPath());
-        measureTime("Word2VecExample.createWord2Vec", Word2VecExample::createWord2Vec);
-    }
-
     private List<Object> getList() {
         Vertex v = new Vertex(5);
         List<Object> asList = Arrays.asList(new PointCh4(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,

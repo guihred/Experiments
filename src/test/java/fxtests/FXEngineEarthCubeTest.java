@@ -8,7 +8,7 @@ import org.junit.Test;
 public class FXEngineEarthCubeTest extends AbstractTestExecution {
     @Test
     public void verifyEarthCubeMain() {
-        show(EarthCubeMain.class);
+		showNewStage(EarthCubeMain.class);
         sleep(2000);
         CubeNode cube = lookupFirst(CubeNode.class);
         randomDrag(cube, 100);
@@ -24,7 +24,4 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
         sleep(1000);
         type(KeyCode.ESCAPE);
     }
-
-
-
 }
