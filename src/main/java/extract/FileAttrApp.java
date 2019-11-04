@@ -24,6 +24,10 @@ import simplebuilder.SimpleTreeViewBuilder;
 import utils.*;
 
 public class FileAttrApp extends Application {
+    private SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+    private String[] sizes = { "B", "KB", "MB", "GB", "TB" };
+    private Map<File, BasicFileAttributes> attrMap = new LinkedHashMap<>();
+    private Map<File, Long> sizeMap = new LinkedHashMap<>();
 
     @Override
     public void start(Stage primaryStage) {
@@ -33,15 +37,28 @@ public class FileAttrApp extends Application {
         primaryStage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private BasicFileAttributes computeAttributes(File v) {
+        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
     }
 
-    private static Parent createSplitTreeListDemoNode() {
+    private long computeSize(File file) {
+        long size = 0;
+        if (file.isDirectory()) {
+            File[] listFiles = file.listFiles();
+            if (listFiles != null) {
+                for (File file2 : listFiles) {
+                    size += getSize(file2);
+                }
+            }
+        }
+        return getAttributes(file).size() + size;
+    }
+
+    private Parent createSplitTreeListDemoNode() {
         File rootFile = new File("").getAbsoluteFile();
         ObservableList<BasicFileAttributes> files = FXCollections.observableArrayList(getAttributes(rootFile));
-        SimpleTreeViewBuilder<File> root = new SimpleTreeViewBuilder<File>().root(rootFile)
-            .cellFactory(FileAttrApp::setText).onSelect(ConsumerEx.makeConsumer(t -> onSelectFile(files, t)));
+        SimpleTreeViewBuilder<File> root = new SimpleTreeViewBuilder<File>().root(rootFile).cellFactory(this::setText)
+            .onSelect(ConsumerEx.makeConsumer(t -> onSelectFile(files, t)));
         SimpleTableViewBuilder<BasicFileAttributes> builder = new SimpleTableViewBuilder<BasicFileAttributes>()
             .items(files);
         List<Method> allMethodsRecursive = ClassReflectionUtils.getAllMethodsRecursive(BasicFileAttributes.class);
@@ -57,41 +74,54 @@ public class FileAttrApp extends Application {
                 .setText(Objects.toString(SupplierEx.get(() -> functionEx.apply(method.invoke(ob))))));
         }
         TableView<BasicFileAttributes> tableView = builder.equalColumns().minWidth(200).build();
-        return new VBox(new SplitPane(root.build(), tableView));
+        SplitPane splitPane = new SplitPane(root.build(), tableView);
+        splitPane.setDividerPositions(1. / 5);
+        return new VBox(StageHelper.selectDirectory("Select Directory", "Select Directory", f -> {
+            root.build().getRoot().getChildren().clear();
+            root.root(f);
+            files.set(0, getAttributes(f));
+        }), splitPane);
     }
 
-    private static BasicFileAttributes getAttributes(File value) {
-        return SupplierEx.get(() -> Files.readAttributes(value.toPath(), BasicFileAttributes.class));
+    private BasicFileAttributes getAttributes(File value) {
+        return attrMap.computeIfAbsent(value, this::computeAttributes);
     }
 
-    private static String getDate(FileTime date) {
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+    private String getDate(FileTime date) {
         return df.format(date.toMillis());
     }
 
-    private static String getFileSize(long sizeInBytes) {
+    private String getFileSize(long sizeInBytes) {
         int a0 = (int) Math.floor(Math.log10(sizeInBytes) / Math.log10(1024));
-        String[] sizes = { "B", "KB", "MB", "GB", "TB" };
-        return a0 < 0 ? "" + sizeInBytes : String.format("%.1f %s", sizeInBytes / Math.pow(1024, a0), sizes[a0]);
+        return a0 < 0 ? "" + sizeInBytes
+            : String.format(Locale.ENGLISH, "%.2f %s", sizeInBytes / Math.pow(1024, a0), sizes[a0]);
     }
 
-    private static void onSelectFile(ObservableList<BasicFileAttributes> files, TreeItem<File> t) {
+    private long getSize(File file) {
+        return sizeMap.computeIfAbsent(file, this::computeSize) ;
+    }
+
+    private void onSelectFile(ObservableList<BasicFileAttributes> files, TreeItem<File> t) {
         if (t != null) {
             File value = t.getValue();
-            BasicFileAttributes attr = getAttributes(value);
-            files.set(0, attr);
+            files.set(0, getAttributes(value));
             if (value.isDirectory() && t.getChildren().isEmpty()) {
                 File[] listFiles = value.listFiles();
-                for (File file2 : listFiles) {
-                    t.getChildren().add(new TreeItem<>(file2));
+                if (listFiles != null) {
+                    for (File file2 : listFiles) {
+                        t.getChildren().add(new TreeItem<>(file2));
+                    }
                 }
-
             }
         }
     }
 
-    private static void setText(File file, TreeCell<File> cell) {
-        cell.setText(file == null ? "" : file.getName());
+    private void setText(File file, TreeCell<File> cell) {
+        cell.setText(file == null ? "" : file.getName() + " " + getFileSize(getSize(file)));
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }
