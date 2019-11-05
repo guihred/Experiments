@@ -39,7 +39,6 @@ public class ToBeRunTest {
                 dependency.setDependents(displayTestsToBeRun);
                 Map<String, List<String>> tests = dependency.getPublicMethodsFullName();
                 tests.forEach((k, v) -> LOG.trace("{} ={}", k, v.stream().collect(Collectors.joining("\n", "\n", ""))));
-
             }
         });
     }
@@ -166,10 +165,10 @@ public class ToBeRunTest {
 
     public static List<String> getUncoveredTests() {
         List<String> uncoveredTests = getUncoveredFxTest(ToBeRunTest.getUncovered());
-        if (uncoveredTests.isEmpty()) {
-            uncoveredTests = getUncoveredFxTest(ToBeRunTest.getUncoveredBranches());
-        }
-        return uncoveredTests;
+		if (!uncoveredTests.isEmpty()) {
+			return uncoveredTests;
+		}
+		return getUncoveredFxTest(ToBeRunTest.getUncoveredBranches());
     }
 
     private static boolean contains(List<Class<? extends Application>> classes, JavaFileDependency m) {

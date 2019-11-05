@@ -80,6 +80,12 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }
     }
 
+    protected int nextInt(int bound) {
+    	return random.nextInt(bound) 
+
+    			;
+    }
+
     protected void randomDrag(Node cube, int bound) {
         RunnableEx.ignore(() -> drag(cube, MouseButton.PRIMARY));
         moveRandom(bound);
@@ -99,7 +105,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         return bound.get(random.nextInt(bound.size()));
     }
 
-    protected int randomNumber(int bound) {
+	protected int randomNumber(int bound) {
         return random.nextInt(bound) - bound / 2;
     }
 

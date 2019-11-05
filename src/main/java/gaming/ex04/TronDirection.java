@@ -13,7 +13,7 @@ import javafx.scene.input.KeyCode;
 public enum TronDirection {
 
 	UP(KeyCode.UP, KeyCode.W),
-	LEFT(KeyCode.A, KeyCode.LEFT),
+	LEFT(KeyCode.LEFT, KeyCode.A),
 	DOWN(KeyCode.DOWN, KeyCode.S),
 	RIGHT(KeyCode.RIGHT, KeyCode.D);
 	private final List<KeyCode> codes;

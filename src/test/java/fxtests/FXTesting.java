@@ -116,6 +116,7 @@ public final class FXTesting implements HasLogging {
         } catch (Exception e) {
             log.error("Exception in " + name, e);
         }
+		log.info("{}=>{}", name, t);
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
         String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
