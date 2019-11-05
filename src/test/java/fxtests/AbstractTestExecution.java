@@ -149,7 +149,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
 
     protected void verifyAndRun(Runnable consumer, List<Class<? extends Application>> applicationClasses) {
-        FXTesting.verifyAndRun(this, currentStage, consumer, applicationClasses);
+        FXTesting.verifyAndRun(this, currentStage, () -> {
+            consumer.run();
+            resetStage();
+        }, applicationClasses);
         interactNoWait(currentStage::close);
     }
 

@@ -10,7 +10,8 @@ import utils.ConsoleUtils;
 import utils.ConsumerEx;
 
 public class FXHackTest extends AbstractTestExecution {
-	@Test
+    @Test
+    @SuppressWarnings("static-method")
 	public void testPortServices() {
 		measureTime("PortServices.loadServiceNames", () -> PortServices.loadServiceNames());
 		measureTime("PortServices.getServiceByPort", () -> PortServices.getServiceByPort(80));

@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.testfx.util.WaitForAsyncUtils;
 import utils.CrawlerTask;
 
-public class SSHTest extends AbstractTestExecution {
+public class FXSSHTest extends AbstractTestExecution {
     private SshServer sshd;
 
     @Before

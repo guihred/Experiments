@@ -24,7 +24,6 @@ public final class FXTesting implements HasLogging {
 
     private static final String TIME_FORMAT = "HHH:mm:ss.SSS";
 
-
     private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
 
     private synchronized void setClass(Class<? extends Application> class1, Throwable e) {
@@ -58,7 +57,7 @@ public final class FXTesting implements HasLogging {
                 getLogger().info("{}/{} done", testedApps.size() + exceptionMap.size(), applicationClasses.size());
                 size = testedApps.size();
             }
-			if (System.currentTimeMillis() - currentTimeMillis > 5 * 60 * 1000) {// 2 minutes
+            if (System.currentTimeMillis() - currentTimeMillis > 5 * 60 * 1000) {// 2 minutes
                 List<Class<? extends Application>> notExecutedApps = applicationClasses.stream()
                     .collect(Collectors.toList());
                 notExecutedApps.removeAll(testedApps);
@@ -78,21 +77,20 @@ public final class FXTesting implements HasLogging {
     }
 
     @SuppressWarnings("unchecked")
-	public static <T> List<Class<? extends T>> getClasses(Class<T> cl) {
-	    List<Class<? extends T>> appClass = new ArrayList<>();
-	    List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
-	    try {
-			ClassPath.from(FXTesting.class.getClassLoader()).getTopLevelClasses().stream()
-	            .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
-	            .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
+    public static <T> List<Class<? extends T>> getClasses(Class<T> cl) {
+        List<Class<? extends T>> appClass = new ArrayList<>();
+        List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
+        try {
+            ClassPath.from(FXTesting.class.getClassLoader()).getTopLevelClasses().stream()
+                .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
+                .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
                 .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
                 .forEach(appClass::add);
-	    } catch (Exception e) {
-			HasLogging.log().error("", e);
-	    }
-	    return appClass;
-	}
-
+        } catch (Exception e) {
+            HasLogging.log().error("", e);
+        }
+        return appClass;
+    }
 
     public static void measureTime(String name, RunnableEx runnable) {
         long currentTimeMillis = System.currentTimeMillis();
@@ -101,7 +99,7 @@ public final class FXTesting implements HasLogging {
             runnable.run();
         } catch (Exception e) {
             log.error("Exception in " + name, e);
-			Assert.fail("Exception in " + name);
+            Assert.fail("Exception in " + name);
         }
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
@@ -139,20 +137,19 @@ public final class FXTesting implements HasLogging {
         }
     }
 
-	@SafeVarargs
+    @SafeVarargs
     public static void testApps(Class<? extends Application>... applicationClasses) {
         new FXTesting().testApplications(Arrays.asList(applicationClasses));
     }
 
     public static void testApps(List<Class<? extends Application>> applicationClasses) {
-		new FXTesting().testApplications(applicationClasses);
-	}
+        new FXTesting().testApplications(applicationClasses);
+    }
 
     public static void verifyAndRun(ApplicationTest app, Stage currentStage, Runnable consumer,
         List<Class<? extends Application>> applicationClasses) {
         Logger log = HasLogging.log(1);
-        for (int i = 0; i < applicationClasses.size(); i++) {
-            Class<? extends Application> class1 = applicationClasses.get(i);
+        for (Class<? extends Application> class1 : applicationClasses) {
             log.info(" RUN {}", class1.getSimpleName());
             app.interactNoWait(RunnableEx.make(() -> class1.newInstance().start(currentStage)));
             consumer.run();
