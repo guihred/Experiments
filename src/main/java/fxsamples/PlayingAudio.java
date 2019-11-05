@@ -115,7 +115,10 @@ public class PlayingAudio extends Application {
             updatePlayAndPauseButtons(true);
             mediaPlayer.stop();
         });
-        mainStage.setOnCloseRequest(e -> mediaPlayer.stop());
+        mainStage.setOnCloseRequest(e -> {
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+        });
         mediaPlayer
             .setAudioSpectrumListener(this::onAudioSpectrum);
     }
@@ -124,7 +127,10 @@ public class PlayingAudio extends Application {
     public void start(Stage primaryStage) throws Exception {
         mainStage = primaryStage;
         CommonsFX.loadFXML("Playing Audio", "PlayingAudio.fxml", this, primaryStage, 500, 500);
-        primaryStage.setOnCloseRequest(e -> runIf(mediaPlayer, MediaPlayer::dispose));
+        primaryStage.setOnCloseRequest(e -> runIf(mediaPlayer, t -> {
+            t.stop();
+            t.dispose();
+        }));
         plugEventsToScene(mainStage.getScene());
     }
 

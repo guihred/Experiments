@@ -17,11 +17,9 @@ import org.assertj.core.api.exception.RuntimeIOException;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
+import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
-import utils.ConsumerEx;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
@@ -33,17 +31,22 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected Random random = new Random();
     @Override
-    public Logger getLogger() {
-        return logger;
+    public FxRobotInterface clickOn(Node node, MouseButton... buttons) {
+        return SupplierEx.get(() -> super.clickOn(node, buttons));
     }
 
     @Override
+    public Logger getLogger() {
+        return logger;
+    }
+    @Override
 	public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
-        currentStage = stage;
+        currentStage = stage != null ? stage : new Stage();
         currentStage.setX(0);
         currentStage.setY(0);
     }
+
     @Override
 	public void stop() {
         currentStage.close();
@@ -67,7 +70,6 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     protected <M extends Node> M lookupFirst(Class<M> cl) {
         return lookup(e -> cl.isInstance(e)).queryAs(cl);
     }
-
     protected void moveRandom(int bound) {
         moveBy(randomNumber(bound), randomNumber(bound));
     }

@@ -1,5 +1,7 @@
 package fxsamples;
 
+import static utils.RunnableEx.runIf;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -55,9 +57,7 @@ public class BackgroundProcesses extends Application {
         cancelButton.setOnAction((ActionEvent event) -> {
             startButton.setDisable(false);
             cancelButton.setDisable(true);
-			if (copyWorker != null) {
-				copyWorker.cancel(true);
-			}
+            runIf(copyWorker, c -> c.cancel(true));
             // reset
             progressBar.progressProperty().unbind();
             progressBar.setProgress(0);

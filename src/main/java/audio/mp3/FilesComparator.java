@@ -138,7 +138,7 @@ public class FilesComparator extends Application {
             File file = dir.get();
             ObjectProperty<File> dir2 = dir == directory1 ? directory2 : directory1;
             String newFile = selectedItem.getAbsolutePath().replace(file.getAbsolutePath(), "");
-            try {
+            RunnableEx.run(() -> {
                 File file2 = new File(dir2.get(), newFile);
                 if (!file2.getParentFile().exists()) {
                     file2.getParentFile().mkdir();
@@ -155,9 +155,7 @@ public class FilesComparator extends Application {
                 double d = 1.0 / selectedItems.size();
                 progress.setProgress(progress.getProgress() + d);
                 updateCells(table1);
-            } catch (Exception e1) {
-                LOG.error("", e1);
-            }
+            });
         }
     }
 

@@ -38,7 +38,7 @@ public final class PingTraceRoute {
         LOG.info("RECEIVED = {}", arg);
         LOG.info("LOST = {}", executeInConsole.get(lost));
         LOG.info("TTL = {}", executeInConsole.get(ttl));
-        if (arg != null && !"0".equals(arg)) {
+        if (!"0".equals(arg)) {
             List<String> traceRoute = traceRoute(address);
             LOG.info("ROUTE = {}", traceRoute);
             LOG.info("HOPS = {}", traceRoute.size());
@@ -48,7 +48,7 @@ public final class PingTraceRoute {
         info.put("RECEIVED", arg);
         info.put("LOST", executeInConsole.get(lost));
         info.put("TTL", executeInConsole.get(ttl));
-        if (arg != null && !"0".equals(arg)) {
+        if (!"0".equals(arg)) {
             List<String> traceRoute = traceRoute(address);
             info.put("ROUTE", traceRoute.stream().collect(Collectors.joining("\n")));
             info.put("HOPS", Integer.toString(traceRoute.size()));

@@ -12,6 +12,7 @@ import static utils.ResourceFXUtils.toFile;
 
 import com.google.common.collect.ImmutableMap;
 import contest.db.Contest;
+import contest.db.ContestQuestion;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.PointCh4;
 import ex.j9.ch4.PrimaryColor;
@@ -21,6 +22,7 @@ import extract.PdfImage;
 import extract.PdfUtils;
 import extract.WordService;
 import gaming.ex01.SnakeSquare;
+import gaming.ex03.SlidingPuzzleSquare;
 import gaming.ex16.MadEdge;
 import gaming.ex16.MadEdgeDistance;
 import graphs.EdgeElement;
@@ -208,6 +210,7 @@ public class FXFileReadersTest extends ApplicationTest {
             File file = firstPathByExtension.toFile();
             pdfImage.appendImage("");
             pdfImage.getFile();
+            pdfImage.toString();
             pdfImage.setFile(file);
             pdfImage.getImage();
             pdfImage.getPageN();
@@ -240,6 +243,7 @@ public class FXFileReadersTest extends ApplicationTest {
     private List<Object> getList() {
         Vertex v = new Vertex(5);
         List<Object> asList = Arrays.asList(new PointCh4(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,
+            new ContestQuestion(), new SlidingPuzzleSquare(2),
             new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5),
             new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(v, null, 2), new EdgeElement(v, v, 5),
             new Contest(), new LessonPK(), new MadEdge(null, null), new MadEdgeDistance(null, 2F), new SnakeSquare(),

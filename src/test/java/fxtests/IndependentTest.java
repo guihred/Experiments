@@ -9,7 +9,6 @@ import static utils.StringSigaUtils.*;
 
 import audio.mp3.PageImage;
 import cubesystem.ElementWiseOp;
-import ethical.hacker.AlarmClock;
 import ethical.hacker.NetworkInformationScanner;
 import ex.j9.Ch1;
 import ex.j9.Ch3;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -64,13 +62,6 @@ public class IndependentTest {
         measureTime("MatrixSolver.determinant", () -> MatrixSolver.determinant(matr));
     }
 
-    @Test
-    public void testAlarmClock() {
-        measureTime("AlarmClock.activateAlarmThenStop", () -> AlarmClock
-            .scheduleToRun(LocalTime.now().plusMinutes(1), () -> LOGGER.info("RUN AT {}", LocalTime.now())));
-        measureTime("AlarmClock.activateAlarmThenStop", () -> AlarmClock.scheduleToRun(LocalTime.now().minusMinutes(1),
-            () -> LOGGER.info("RUN AT {}", LocalTime.now())));
-    }
 
     @Test
     public void testCh1() {
@@ -172,6 +163,7 @@ public class IndependentTest {
         measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, nameFile));
         measureTime("ImageLoading.cropImage", () -> ImageLoading.cropImage(dataDir, nameFile));
         measureTime("ImageLoading.exporting", () -> ImageLoading.exporting(dataDir, nameFile));
+        measureTime("ImageLoading.createThumnails", () -> ImageLoading.createThumnails(dataDir, nameFile));
         measureTime("ImageLoading.grayScale", () -> ImageLoading.grayScale(dataDir, nameFile));
         measureTime("ImageLoading.grayScaling", () -> ImageLoading.grayScaling(dataDir, nameFile));
     }

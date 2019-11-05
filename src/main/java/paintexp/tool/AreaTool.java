@@ -46,8 +46,8 @@ public abstract class AreaTool extends PaintTool {
 
 	public final void copyToClipboard(WritableImage image) {
 		if (imageSelected == null) {
-			double width = getArea().getWidth();
-			double height = getArea().getHeight();
+            double width = Math.max(1, getArea().getWidth());
+            double height = Math.max(1, getArea().getHeight());
 			imageSelected = new WritableImage((int) width, (int) height);
 			RectBuilder.copyImagePart(image, imageSelected, getArea());
 		}

@@ -49,6 +49,7 @@ public class FXJapaneseTest extends AbstractTestExecution {
         clickButtonsWait();
         lookup(CheckBox.class).forEach(this::clickOn);
         clickButtonsWait();
+        type(KeyCode.ENTER);
     }
 
     @Test

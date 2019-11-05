@@ -8,9 +8,11 @@ import audio.mp3.MusicOrganizer;
 import extract.Music;
 import extract.MusicReader;
 import fxpro.ch08.BasicAudioPlayerWithControlLauncher;
+import fxpro.ch08.SimpleAudioPlayerLauncher;
 import fxsamples.PlayingAudio;
 import fxsamples.PlayingAudio2;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -24,10 +26,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.util.WaitForAsyncUtils;
-import utils.ConsoleUtils;
-import utils.ConsumerEx;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
@@ -53,6 +52,12 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         lookup("_Play/Pause").queryAll().forEach(this::clickOn);
         lookup("_Split").queryAll().forEach(this::clickOn);
         clickOn("_Consertar Musicas");
+        tryClickButtons();
+        Set<TextField> lookup = lookup(TextField.class);
+        for (TextField textField : lookup) {
+            RunnableEx.ignore(() -> clickOn(textField));
+            type(typeText(getRandomString()));
+        }
     }
 
     @Test
@@ -78,9 +83,9 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
             for (int i = 0; i < queryAll.size(); i++) {
                 Node node = queryAll.get(i);
-                RunnableEx.ignore(() -> clickOn(node));
+                clickOn(node);
                 moveSliders(10);
-                RunnableEx.ignore(() -> sleep(1000));
+                sleep(1000);
             }
         });
         FXTesting.measureTime("new EditSongController", () -> {
@@ -88,9 +93,9 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
             for (int i = queryAll.size() - 1; i >= 0; i--) {
                 Node node = queryAll.get(i);
-                RunnableEx.ignore(() -> clickOn(node));
+                clickOn(node);
                 moveSliders(10);
-                RunnableEx.ignore(() -> sleep(1000));
+                sleep(1000);
             }
         });
         WaitForAsyncUtils.waitForFxEvents();
@@ -128,15 +133,30 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
             tryClickButtons();
             lookup(ToggleButton.class).forEach(this::clickOn);
+            lookup(ToggleButton.class).forEach(this::clickOn);
             Group f = lookupFirst(Group.class);
             randomDrag(f, 100);
             lookup(Slider.class).forEach(e -> randomDrag(e, 100));
             interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
+            RunnableEx.ignore(() -> {
+                Node query = lookup("#closeButton").query();
+                clickOn(query);
+            });
+            interactNoWait(currentStage::close);
         }
+    }
+
+    @Test
+    public void verifySimpleAudioPlayerLauncher() throws MalformedURLException {
+        SimpleAudioPlayerLauncher application = new SimpleAudioPlayerLauncher();
+        application.createMedia(getRandomSong().toUri().toURL().toExternalForm());
+        show(application);
     }
 
     private Path getRandomSong() {
         File outFile = ResourceFXUtils.getUserFolder("Music");
-        return randomItem(ResourceFXUtils.getPathByExtension(outFile, "mp3"));
+        Path randomSong = randomItem(ResourceFXUtils.getPathByExtension(outFile, "mp3"));
+        getLogger().info("{} from ", randomSong, HasLogging.getCurrentLine(1));
+        return randomSong;
     }
 }

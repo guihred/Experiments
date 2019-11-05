@@ -12,6 +12,7 @@ import ml.graph.WorldMapGraph;
 import ml.graph.WorldMapGraph2;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CommonsFX;
 import utils.ImageFXUtils;
 
 public class WorldMapExample2 extends Application {
@@ -30,6 +31,7 @@ public class WorldMapExample2 extends Application {
 		root.getChildren().add(SimpleSliderBuilder.newSlider("Radius", -2, 2, canvas.radiusProperty()));
 		root.getChildren().add(SimpleSliderBuilder.newSlider("X", -360, 360, canvas.yScaleProperty()));
 		root.getChildren().add(SimpleSliderBuilder.newSlider("Y", -360, 360, canvas.xScaleProperty()));
+        root.getChildren().add(CommonsFX.newCheck("Neighbors", canvas.showNeighborsProperty()));
         DataframeML points = DataframeBuilder.builder("cities.csv").build();
 		String latDegree = "Lat Degree";
 		DataframeUtils.crossFeatureObject(points, latDegree, WorldMapExample2::convertToDegrees, latDegree,

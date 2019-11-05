@@ -1,12 +1,12 @@
 package utils;
 
-
 import static utils.RunnableEx.runIf;
 
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
@@ -15,7 +15,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import javafx.stage.*;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public final class StageHelper {
 
@@ -38,12 +41,9 @@ public final class StageHelper {
     }
 
     public static void closeStage(EventTarget button) {
-        if (button != null) {
-            Scene scene = ((Node) button).getScene();
-            if (scene != null) {
-                ((Stage) scene.getWindow()).close();
-            }
-        }
+        Optional.ofNullable((Node) button).map(Node::getScene).map(sc -> (Stage) sc.getWindow())
+            .ifPresent(Stage::close);
+
     }
 
     public static void displayCSSStyler(Scene scene, String pathname) {
@@ -111,9 +111,8 @@ public final class StageHelper {
         chooser.setInitialDirectory(musicsDirectory);
         return newButton(nome, e -> {
             Node target = (Node) e.getTarget();
-            Window window = target.getScene().getWindow();
-            File fileChosen = chooser.showDialog(window);
-            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(f));
+            runIf(target.getScene().getWindow(),
+                window -> runIf(chooser.showDialog(window), file -> ConsumerEx.makeConsumer(onSelect).accept(file)));
         });
     }
 

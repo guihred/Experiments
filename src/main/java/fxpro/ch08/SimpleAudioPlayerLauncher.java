@@ -5,8 +5,10 @@
  */
 package fxpro.ch08;
 
+import static utils.RunnableEx.runIf;
+
 import javafx.application.Application;
-import javafx.collections.MapChangeListener;
+import javafx.collections.MapChangeListener.Change;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
@@ -24,6 +26,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ImageFXUtils;
+import utils.RunnableEx;
 
 public class SimpleAudioPlayerLauncher extends Application {
     private static final Logger LOGGER = HasLogging.log();
@@ -32,16 +35,21 @@ public class SimpleAudioPlayerLauncher extends Application {
     private Label artist;
     private Label title;
     private Label year;
+    private MediaPlayer mediaPlayer;
 
     public void createMedia() {
-        Media media = new Media(Chapter8Resource.TEEN_TITANS.getURL().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setOnError(() -> {
-            final String errorMessage = media.getError().getMessage();
-            LOGGER.error("error:{}", errorMessage);
-        });
+        if (mediaPlayer == null) {
+            createMedia(Chapter8Resource.TEEN_TITANS.getURL().toString());
+        }
+    }
+
+    public void createMedia(String url) {
+        Media media = new Media(url);
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer
+            .setOnError(() -> RunnableEx.runIf(media.getError(), err -> LOGGER.error("error:{}", err.getMessage())));
         mediaPlayer.setVolume(0);
-        media.getMetadata().addListener((MapChangeListener<String, Object>) ch -> {
+        media.getMetadata().addListener((Change<? extends String, ? extends Object> ch) -> {
             if (ch.wasAdded()) {
                 handleMetadata(ch.getKey(), ch.getValueAdded());
             }
@@ -57,6 +65,10 @@ public class SimpleAudioPlayerLauncher extends Application {
         scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simple Audio Player");
+        primaryStage.setOnCloseRequest(e -> runIf(mediaPlayer, t -> {
+            t.stop();
+            t.dispose();
+        }));
         primaryStage.show();
     }
 

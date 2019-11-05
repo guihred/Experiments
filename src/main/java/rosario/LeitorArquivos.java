@@ -104,7 +104,7 @@ public final class LeitorArquivos {
                 Iterator<Row> iterator = sheetAt.iterator();
                 ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
                 while (iterator.hasNext()) {
-                    if (!tryReadAnvisaLine(iterator, medicamentos)) {
+                    if (!SupplierEx.get(() -> tryReadAnvisaLine(iterator, medicamentos), true)) {
                         break;
                     }
                 }
@@ -121,10 +121,11 @@ public final class LeitorArquivos {
 
         return SupplierEx.remap(() -> {
             String[] linhas = PdfUtils.getAllLines(file);
-            Map<String, IntUnaryOperator> hashMap = new HashMap<>();
+            Map<String, IntUnaryOperator> intMapper = new HashMap<>();
             ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
             for (int i = 0; i < linhas.length; i++) {
-                Medicamento medicamento = tryReadRosarioLine(hashMap, linhas, i);
+                int j = i;
+                Medicamento medicamento = SupplierEx.get(() -> tryReadRosarioLine(intMapper, linhas, j));
                 if (medicamento != null) {
                     medicamentos.add(medicamento);
                     if (StringUtil.isBlank(medicamento.getNome())) {
@@ -262,7 +263,7 @@ public final class LeitorArquivos {
                 Iterator<Row> iterator = sheetAt.iterator();
                 ObservableList<Medicamento> medicamentos = FXCollections.observableArrayList();
                 while (iterator.hasNext()) {
-                    if (!tryReadRosarioLine(iterator, medicamentos)) {
+                    if (!SupplierEx.get(() -> tryReadRosarioLine(iterator, medicamentos), true)) {
                         break;
                     }
                 }
@@ -327,78 +328,71 @@ public final class LeitorArquivos {
     }
 
     private static boolean tryReadAnvisaLine(Iterator<Row> iterator, ObservableList<Medicamento> medicamentos) {
-        return SupplierEx.get(() -> {
-            Row next = iterator.next();
-            Cell cell0 = next.getCell(0);
-            if (cell0 == null) {
-                return false;
-            }
-            Medicamento medicamento = new Medicamento();
-            medicamento.setRegistro(getRegistro(cell0));
-            medicamento.setNome(next.getCell(1).getStringCellValue());
-            medicamento.setLote(getLote(next));
-            medicamento.setQuantidade((int) next.getCell(next.getLastCellNum() - 1).getNumericCellValue());
-            medicamentos.add(medicamento);
-            return true;
-        }, true);
+        Row next = iterator.next();
+        Cell cell0 = next.getCell(0);
+        if (cell0 == null) {
+            return false;
+        }
+        Medicamento medicamento = new Medicamento();
+        medicamento.setRegistro(getRegistro(cell0));
+        medicamento.setNome(next.getCell(1).getStringCellValue());
+        medicamento.setLote(getLote(next));
+        medicamento.setQuantidade((int) next.getCell(next.getLastCellNum() - 1).getNumericCellValue());
+        medicamentos.add(medicamento);
+        return true;
     }
 
     private static boolean tryReadRosarioLine(Iterator<Row> iterator, ObservableList<Medicamento> medicamentos) {
-        return SupplierEx.get(() -> {
-            Row next = iterator.next();
-            Cell cell0 = next.getCell(0);
-            if (cell0 == null) {
-                return false;
-            }
-            String registro = getRegistro(cell0);
-            if (registro.isEmpty()) {
-                return true;
-            }
-            Medicamento medicamento = new Medicamento();
-            medicamento.setCodigo(Integer.valueOf(registro));
-            String stringCellValue = next.getCell(1).getStringCellValue();
-            if ("Totais".equalsIgnoreCase(stringCellValue)) {
-                return true;
-            }
-            medicamento.setNome(stringCellValue);
-            medicamento.setQuantidade((int) next.getCell(2).getNumericCellValue());
-            medicamentos.add(medicamento);
+        Row next = iterator.next();
+        Cell cell0 = next.getCell(0);
+        if (cell0 == null) {
+            return false;
+        }
+        String registro = getRegistro(cell0);
+        if (registro.isEmpty()) {
             return true;
-        }, true);
+        }
+        Medicamento medicamento = new Medicamento();
+        medicamento.setCodigo(Integer.valueOf(registro));
+        String nome = next.getCell(1).getStringCellValue();
+        if ("Totais".equalsIgnoreCase(nome)) {
+            return true;
+        }
+        medicamento.setNome(nome);
+        medicamento.setQuantidade((int) next.getCell(2).getNumericCellValue());
+        medicamentos.add(medicamento);
+        return true;
     }
 
     private static Medicamento tryReadRosarioLine(Map<String, IntUnaryOperator> mapaFields, String[] linhas, int i) {
-        try {
-            String s = linhas[i];
-            String[] split = s.trim().split("\\s+");
-            if (split.length > 2 && (s.toLowerCase().contains("descricao") || s.toLowerCase().contains(CODPRODUTO)
-                || s.toLowerCase().contains(QTESTOQUECOMERCIAL))) {
-                if (split[1].equalsIgnoreCase(CODPRODUTO)) {
-                    mapaFields.put(CODPRODUTO, j -> j - 2);
-                }
-                if (split[0].equalsIgnoreCase(CODPRODUTO)) {
-                    mapaFields.put(CODPRODUTO, j -> 0);
-                }
-                mapaFields.put(QTESTOQUECOMERCIAL, j -> j - 1);
+        String s = linhas[i];
+        String[] split = s.trim().split("\\s+");
+        if (split.length > 2 && (s.toLowerCase().contains("descricao") || s.toLowerCase().contains(CODPRODUTO)
+            || s.toLowerCase().contains(QTESTOQUECOMERCIAL))) {
+            if (split[1].equalsIgnoreCase(CODPRODUTO)) {
+                mapaFields.put(CODPRODUTO, j -> j - 2);
             }
-            if (!s.endsWith(",00")) {
-                return null;
+            if (split[0].equalsIgnoreCase(CODPRODUTO)) {
+                mapaFields.put(CODPRODUTO, j -> 0);
             }
-            if (split.length >= 2) {
-                Medicamento medicamento = new Medicamento();
-                String s2 = split[mapaFields.getOrDefault(CODPRODUTO, j -> 0).applyAsInt(split.length)];
+            mapaFields.put(QTESTOQUECOMERCIAL, j -> j - 1);
+        }
+        if (!s.endsWith(",00")) {
+            return null;
+        }
+        if (split.length >= 2) {
+            Medicamento medicamento = new Medicamento();
+            String s2 = split[mapaFields.getOrDefault(CODPRODUTO, j -> 0).applyAsInt(split.length)];
 
-                medicamento.setCodigo(Integer.valueOf(s2));
-                medicamento.setNome(IntStream.range(0, split.length).filter(
+            medicamento.setCodigo(Integer.valueOf(s2));
+            medicamento.setNome(IntStream.range(0, split.length)
+                .filter(
                     e -> mapaFields.values().stream().mapToInt(j -> j.applyAsInt(split.length)).noneMatch(j -> j == e))
-                    .mapToObj(e -> split[e]).collect(Collectors.joining(" ")));
-                medicamento.setQuantidade(Integer
-                    .valueOf(split[mapaFields.getOrDefault(QTESTOQUECOMERCIAL, j -> j - 1).applyAsInt(split.length)]
-                        .replace(",00", "").replace(".", "")));
-                return medicamento;
-            }
-        } catch (Exception e) {
-            LOGGER.error("", e);
+                .mapToObj(e -> split[e]).collect(Collectors.joining(" ")));
+            medicamento.setQuantidade(
+                Integer.valueOf(split[mapaFields.getOrDefault(QTESTOQUECOMERCIAL, j -> j - 1).applyAsInt(split.length)]
+                    .replace(",00", "").replace(".", "")));
+            return medicamento;
         }
         return null;
     }

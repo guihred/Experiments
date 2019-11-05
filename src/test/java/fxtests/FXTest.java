@@ -1,7 +1,5 @@
 package fxtests;
 
-import static utils.RunnableEx.ignore;
-
 import ex.j8.Chapter4;
 import fxsamples.WorkingListsViews;
 import java.io.File;
@@ -45,9 +43,8 @@ public final class FXTest extends AbstractTestExecution {
         List<Button> buttons = lookup(Button.class).stream().collect(Collectors.toList());
         for (int i = 0; i < lookup.size(); i++) {
             Node queryAs = from(lookup.get(i)).lookup(ListCell.class::isInstance).query();
-            ignore(() -> clickOn(queryAs));
-            Button button = buttons.get(i);
-            ignore(() -> clickOn(button));
+            clickOn(queryAs);
+            clickOn(buttons.get(i));
         }
 
     }

@@ -123,7 +123,10 @@ public class EditSongController extends Application {
     @Override
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Edit Song", "EditSong.fxml", this, primaryStage);
-        primaryStage.setOnCloseRequest(e -> mediaPlayer.get().dispose());
+        primaryStage.setOnCloseRequest(e -> {
+            mediaPlayer.get().stop();
+            mediaPlayer.get().dispose();
+        });
     }
 
     @SuppressWarnings("unused")

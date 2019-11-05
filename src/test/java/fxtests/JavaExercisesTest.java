@@ -147,6 +147,7 @@ public final class JavaExercisesTest {
         Assert.assertEquals("Sum should match", Integer.valueOf(124), nodeSum);
 
         measureTime("JavaExercise19.testingJavaConcepts", JavaExercise19::testingJavaConcepts);
+        measureTime("JavaExercise19.testingJavaConcepts2", JavaExercise19::testingJavaConcepts2);
         measureTime("JavaExercise1to11.fibonacciSeriesProblem", JavaExercise1to11::fibonacciSeriesProblem);
         measureTime("JavaExercise1to11.greenflyProblem", JavaExercise1to11::greenflyProblem);
         measureTime("JavaExercise1to11.allPrimeLessThan600Problem", JavaExercise1to11::allPrimeLessThan600Problem);

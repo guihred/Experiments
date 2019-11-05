@@ -56,8 +56,10 @@ public class PopulacionalPyramidExample extends Application {
         ObservableList<String> sortedCountries = FXCollections
             .observableArrayList(categorize.stream().sorted().collect(Collectors.toList()));
         ComboBox<String> countryBox = new SimpleComboBoxBuilder<String>().items(sortedCountries).select(0)
+            .tooltip("Country")
             .onSelect(country -> canvas.countryProperty().set(country)).build();
         ComboBox<Integer> year = new SimpleComboBoxBuilder<Integer>().items(canvas.yearsOptionsProperty())
+            .tooltip("Year")
             .onSelect(yearV -> canvas.yearProperty().set(nonNull(yearV, DEFAULT_YEAR))).select(0).build();
 
         canvas.setHistogram(x);

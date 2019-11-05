@@ -109,13 +109,13 @@ public final class PaintViewUtils {
     private static void finishResize(final WritableImage image, final SimpleToggleGroupBuilder groupBuilder,
 			final TextField widthField, final TextField heightField, PaintController paintController) {
         ToggleButton selectedItem = (ToggleButton) groupBuilder.selectedItem();
-        double newWidth = PERCENTAGE_FIELD.equals(selectedItem.getText())
+        double newWidth = Math.max(1, PERCENTAGE_FIELD.equals(selectedItem.getText())
             ? tryParse(widthField) * image.getWidth() / 100
-            : tryParse(widthField);
+            : tryParse(widthField));
 
-        double newHeight = PERCENTAGE_FIELD.equals(selectedItem.getText())
+        double newHeight = Math.max(1, PERCENTAGE_FIELD.equals(selectedItem.getText())
             ? tryParse(heightField) * image.getHeight() / 100
-            : tryParse(heightField);
+            : tryParse(heightField));
         WritableImage newImage = new WritableImage((int) newWidth, (int) newHeight);
         double width = image.getWidth();
         double height = image.getHeight();

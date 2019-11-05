@@ -17,7 +17,7 @@ import utils.HasLogging;
 @SuppressWarnings("static-method")
 public class ToBeRunTest {
     private static final int LINES_MIN_COVERAGE = 30;
-    private static final int BRANCH_MIN_COVERAGE = 51;
+    private static final int BRANCH_MIN_COVERAGE = 50;
     private static final Logger LOG = HasLogging.log();
 
     @Test
@@ -159,8 +159,7 @@ public class ToBeRunTest {
         }
         DataframeML b = DataframeBuilder.build(csvFile);
         DataframeUtils.crossFeature(b, "PERCENTAGE",
-            ToBeRunTest::getPercentage, "BRANCH_MISSED",
-            "BRANCH_COVERED");
+            ToBeRunTest::getPercentage, "INSTRUCTION_MISSED", "INSTRUCTION_COVERED");
         b.filter("PERCENTAGE", v -> ((Number) v).intValue() < BRANCH_MIN_COVERAGE);
         return b.list("CLASS");
     }

@@ -38,6 +38,7 @@ import paintexp.ColorChooser;
 import pdfreader.PdfReader;
 import schema.sngpc.SngpcViewer;
 import utils.ConsumerEx;
+import utils.ImageFXUtils;
 
 public class FXEngineTest extends AbstractTestExecution {
 
@@ -54,7 +55,7 @@ public class FXEngineTest extends AbstractTestExecution {
             sleep(1000);
             ignore(() -> clickOn(t));
             type(KeyCode.ESCAPE);
-        }), Arrays.asList(Chapter4.Ex9.class, Chapter4.Ex10.class, PdfReader.class)));
+        }), Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class, Chapter4.Ex10.class, PdfReader.class)));
 
     }
 
@@ -122,6 +123,9 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifyLeafFractalApp() {
         show(LeafFractalApp.class);
         moveSliders(50);
+        clickOn(randomItem(lookup(ToggleButton.class)));
+        moveSliders(50);
+
     }
 
     @Test
@@ -168,7 +172,7 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifyScrollChart() {
         measureTime("Test.verifyScroll", () -> verifyAndRun(() -> {
             lookup(".root").queryAll().forEach(t -> {
-                moveTo(t);
+                ignore(() -> moveTo(t));
                 scroll(2, VerticalDirection.DOWN);
                 scroll(2, VerticalDirection.UP);
                 randomDrag(t, 50);
@@ -180,6 +184,7 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyScrollWorldMaps() {
+        ImageFXUtils.setShowImage(false);
         measureTime("Test.verifyScroll", () -> verifyAndRun(() -> {
             lookup(".root").queryAll().forEach(t -> {
                 moveTo(t);
@@ -191,6 +196,7 @@ public class FXEngineTest extends AbstractTestExecution {
             scroll(2, VerticalDirection.UP);
             lookup(CheckBox.class).forEach(this::clickOn);
             lookup(ComboBox.class).forEach(e -> selectComboItems(e, 5));
+            tryClickButtons();
         }, Arrays.asList(WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class,
             PopulacionalPyramidExample.class)));
 

@@ -123,6 +123,7 @@ public final class EditSongHelper {
 
     public static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
         Duration currentTime, Music music, ProgressIndicator progressIndicator, ObjectProperty<Duration> startTime) {
+        mediaPlayer.get().stop();
         mediaPlayer.get().dispose();
         String format = music.getArtista().isEmpty()
             ? String.format("%s.mp3", music.getTitulo().replaceAll("\\..+", ""))
@@ -164,8 +165,6 @@ public final class EditSongHelper {
     public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, boolean valueChanging) {
         if (!valueChanging && mediaPlayer2 != null && mediaPlayer2.getStatus() != Status.UNKNOWN) {
             double pos = currentSlider.getValue();
-            LOG.info("UPDATING {} status {}", mediaPlayer2, mediaPlayer2.getStatus());
-
             final Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
             SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer2);
         }

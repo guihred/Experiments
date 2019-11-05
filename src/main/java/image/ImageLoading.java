@@ -15,8 +15,11 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.RunnableEx;
 
-public class ImageLoading {
+public final class ImageLoading {
     private static final Logger LOG = HasLogging.log();
+
+    private ImageLoading() {
+    }
 
     public static void binarize(String dataDir, String nameFile) {
         // For complete examples and data files, please go to

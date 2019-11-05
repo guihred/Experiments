@@ -31,6 +31,11 @@ public final class AlarmClock {
     private static final List<LocalTime> SCHEDULED_TASKS = new LinkedList<>();
 
     public static void main(String... args) {
+        runImageCracker();
+    }
+
+
+    public static void runImageCracker() {
         log("Main started.");
         RunnableEx run = () -> {
             ResourceFXUtils.initializeFX();

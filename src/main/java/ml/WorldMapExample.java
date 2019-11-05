@@ -10,7 +10,6 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -25,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
-import utils.ImageFXUtils;
 
 public class WorldMapExample extends Application {
 
@@ -77,8 +75,7 @@ public class WorldMapExample extends Application {
         left.getChildren().add(statisticsCombo);
         left.getChildren().add(yearCombo);
         left.getChildren().add(patternCombo);
-        final Canvas canvas1 = canvas;
-        left.getChildren().add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1)));
+        left.getChildren().add(SimpleButtonBuilder.newButton("Export", e -> canvas.takeSnapshot()));
 
         root.setCenter(canvas);
         theStage.show();

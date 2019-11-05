@@ -139,7 +139,9 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             moveBy(0, -DotsSquare.SQUARE_SIZE);
             drop();
         }
-        type(KeyCode.A, KeyCode.COMMA, KeyCode.Z, KeyCode.L);
+        type(KeyCode.A, KeyCode.COMMA, KeyCode.Z, KeyCode.L, KeyCode.F);
+        sleep(1000);
+        type(KeyCode.A, KeyCode.COMMA, KeyCode.Z, KeyCode.L, KeyCode.F);
     }
     @Test
     public void verifyPuzzle() {
@@ -179,6 +181,9 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             sleep(50);
             if (snake.getJ() != food.getJ()) {
                 type(snake.getJ() > food.getJ() ? KeyCode.UP : KeyCode.DOWN);
+            }
+            if (randomNumber(5) == 0) {
+                type(KeyCode.F);
             }
             sleep(50);
             if (tryClickButtons() || show.getSnake().size() == 10) {

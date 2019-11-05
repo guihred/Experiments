@@ -20,6 +20,14 @@ public final class JavaExercise19 {
 		fred(ink, 1000);
 		LOG.info("Value is {}", K.el);
 	}
+
+    public static void testingJavaConcepts2() {
+
+        Jack ink = new Jack();
+        final int n = 1001;
+        fred(ink, n);
+        LOG.info("Value is {}", K.el);
+    }
 	private static void fred(JJ uk, int n) {
 		int a = 10 * n;
 		uk.upk();
