@@ -12,7 +12,6 @@ import javafx.scene.control.ToggleButton;
 import org.junit.Test;
 import utils.ConsumerEx;
 import utils.RunnableEx;
-import utils.TreeElement;
 
 public class FXEngineTableVisualizationTest extends AbstractTestExecution {
 
@@ -24,9 +23,6 @@ public class FXEngineTableVisualizationTest extends AbstractTestExecution {
             RunnableEx.ignore(() -> clickOn(node));
             Set<Node> queryAs = lookup(".tab-content-area").queryAll().stream().filter(e -> e.isVisible())
                 .collect(Collectors.toSet());
-            for (Node node2 : queryAs) {
-                getLogger().info("{}", TreeElement.displayStyleClass(node2));
-            }
             from(queryAs).lookup(Control.class::isInstance).queryAll().stream()
                 .filter(e -> e.isVisible()).limit(20)
                 .forEach(ConsumerEx.ignore((n) -> clickOn(n)));

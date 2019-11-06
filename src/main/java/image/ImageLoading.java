@@ -1,6 +1,7 @@
 package image;
 
 import com.aspose.imaging.*;
+import com.aspose.imaging.exif.JpegExifData;
 import com.aspose.imaging.fileformats.bmp.BmpImage;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionColorMode;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionMode;
@@ -80,7 +81,11 @@ public final class ImageLoading {
 
         // Get the image thumbnail information and save it in an instance of
         // JpegImage
-        JpegImage thumbnail = (JpegImage) image.getExifData().getThumbnail();
+        JpegExifData exifData = image.getExifData();
+        if (exifData == null) {
+            return;
+        }
+        JpegImage thumbnail = (JpegImage) exifData.getThumbnail();
 
         // Retrieve the thumbnail bitmap information/Pixels in an array of type
         // Color

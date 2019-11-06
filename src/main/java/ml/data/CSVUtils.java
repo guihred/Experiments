@@ -1,7 +1,9 @@
 package ml.data;
 
 import static utils.FunctionEx.makeFunction;
+import static utils.ResourceFXUtils.getOutFile;
 
+import extract.UnZip;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -99,6 +101,21 @@ public class CSVUtils {
         }
     }
 
+    public static String[] getDataframeCSVs() {
+        File file = getOutFile();
+        String[] list = file.list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
+        if (list.length == 0) {
+            File outFile = getOutFile("WDIData.csv");
+            if (!outFile.exists()) {
+                UnZip.extractZippedFiles(new File(UnZip.ZIPPED_FILE_FOLDER));
+            }
+            CSVUtils.splitFile(outFile.getAbsolutePath(), 3);
+            CSVUtils.splitFile(getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3);
+            return file.list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
+        }
+        return list;
+    }
+
     public static void main(String[] args) {
         splitFile(ResourceFXUtils.getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3);
     }
@@ -123,7 +140,6 @@ public class CSVUtils {
         result.add(curVal.toString());
         return result;
     }
-
     public static void splitFile(String csvFile, int columnIndex) {
         Map<String, Writer> writersBytype = new HashMap<>();
         File source = Paths.get(csvFile).toFile();

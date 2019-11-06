@@ -52,6 +52,14 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         currentStage.close();
     }
 
+    public void verifyAndRun(Stage stage1, RunnableEx consumer, List<Class<? extends Application>> applicationClasses) {
+        for (Class<? extends Application> class1 : applicationClasses) {
+            getLogger().info(" RUN {}", class1.getSimpleName());
+            interactNoWait(RunnableEx.make(() -> class1.newInstance().start(stage1)));
+            RunnableEx.make(consumer, e -> getLogger().error(" ERROR RUN " + class1.getSimpleName(), e)).run();
+        }
+    }
+
     protected void clickButtonsWait() {
         for (Node e : lookup(Button.class)) {
             clickOn(e);
@@ -66,10 +74,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     protected <M extends Node> Set<M> lookup(Class<M> cl) {
         return lookup(e -> cl.isInstance(e)).queryAllAs(cl);
     }
-
     protected <M extends Node> M lookupFirst(Class<M> cl) {
         return lookup(e -> cl.isInstance(e)).queryAs(cl);
     }
+
     protected void moveRandom(int bound) {
         moveBy(randomNumber(bound), randomNumber(bound));
     }
@@ -101,11 +109,11 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         return randomItem(bound.stream().collect(Collectors.toList()));
     }
 
-    protected <T> T randomItem(List<T> bound) {
+	protected <T> T randomItem(List<T> bound) {
         return bound.get(random.nextInt(bound.size()));
     }
 
-	protected int randomNumber(int bound) {
+    protected int randomNumber(int bound) {
         return random.nextInt(bound) - bound / 2;
     }
 
@@ -132,7 +140,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         try {
             resetStage();
             logger.info("SHOWING {}", application.getClass().getSimpleName());
-            interactNoWait(RunnableEx.make(() -> application.start(currentStage)));
+            interactNoWait(RunnableEx.make(() -> {
+                application.start(currentStage);
+                currentStage.toFront();
+            }));
         } catch (Exception e) {
             throw new RuntimeIOException(String.format("ERRO IN %s", application), e);
         }
@@ -149,15 +160,15 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }
     }
 
+
     protected boolean tryClickButtons() {
         Set<Node> queryAll = lookup(".button").queryAll();
         queryAll.forEach(ConsumerEx.ignore(this::clickOn));
         return !queryAll.isEmpty();
     }
 
-
     protected void verifyAndRun(Runnable consumer, List<Class<? extends Application>> applicationClasses) {
-        FXTesting.verifyAndRun(this, currentStage, () -> {
+        verifyAndRun(currentStage, () -> {
             consumer.run();
             resetStage();
         }, applicationClasses);

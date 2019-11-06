@@ -1,9 +1,5 @@
 package ml;
 
-import static utils.ResourceFXUtils.getOutFile;
-
-import extract.UnZip;
-import java.io.File;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -45,7 +41,7 @@ public class WorldMapExample extends Application {
             .select(0)
             .build();
 
-        String[] list = getDataframeCSVs();
+        String[] list = CSVUtils.getDataframeCSVs();
         ComboBox<String> yearCombo = new SimpleComboBoxBuilder<String>().items("2016")
             .select(0)
             .onSelect(canvas.valueHeaderProperty()::set)
@@ -85,18 +81,5 @@ public class WorldMapExample extends Application {
         launch(args);
     }
 
-    private static String[] getDataframeCSVs() {
-        File file = getOutFile();
-        String[] list = file.list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
-        if (list.length == 0) {
-            File outFile = getOutFile("WDIData.csv");
-            if (!outFile.exists()) {
-                UnZip.extractZippedFiles(new File(UnZip.ZIPPED_FILE_FOLDER));
-            }
-            CSVUtils.splitFile(outFile.getAbsolutePath(), 3);
-            CSVUtils.splitFile(getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3);
-            return file.list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
-        }
-        return list;
-    }
+
 }

@@ -158,8 +158,8 @@ public class ToBeRunTest {
         }
         DataframeML b = DataframeBuilder.build(csvFile);
         DataframeUtils.crossFeature(b, "PERCENTAGE",
-            ToBeRunTest::getPercentage, "INSTRUCTION_MISSED", "INSTRUCTION_COVERED");
-        b.filter("PERCENTAGE", v -> ((Number) v).intValue() < BRANCH_MIN_COVERAGE);
+            ToBeRunTest::getPercentage, "BRANCH_MISSED", "BRANCH_COVERED");
+        b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= BRANCH_MIN_COVERAGE);
         return b.list("CLASS");
     }
 
