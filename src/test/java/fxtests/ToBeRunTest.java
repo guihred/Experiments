@@ -127,11 +127,10 @@ public class ToBeRunTest {
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
         List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(getUncovered());
-        if (uncoveredApplications.isEmpty()) {
-            return getUncoveredApplications(getUncoveredBranches());
+        if (!uncoveredApplications.isEmpty()) {
+            return uncoveredApplications;
         }
-
-        return uncoveredApplications;
+        return getUncoveredApplications(getUncoveredBranches());
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications(List<String> uncovered) {

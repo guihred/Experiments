@@ -29,7 +29,7 @@ public class JavaDependencyTest {
         });
     }
 
-	@Test
+    @Test
     public void testGTestUncovered() {
 
         List<String> failedTests = new ArrayList<>();
@@ -55,9 +55,8 @@ public class JavaDependencyTest {
                         .orElseGet(() -> Collections.emptyList());
                     for (Object object : orElseThrow) {
                         RunnableEx.run(() -> {
-                            Object ob = forName.getConstructors()[0]
-                                .newInstance(object.getClass().isArray() ? (Object[]) object : object);
-                        runTest(forName, ob, failedTests);
+                            Object ob = forName.getConstructors()[0].newInstance(object);
+                            runTest(forName, ob, failedTests);
                         });
                     }
                     continue;
@@ -76,10 +75,12 @@ public class JavaDependencyTest {
     }
 
     @Test
-	public void testHTestUncoveredApps() {
+    public void testHTestUncoveredApps() {
 
-        measureTime("JavaFileDependency.testUncoveredApps", () -> FXTesting.testApps(ToBeRunTest.getUncoveredApplications()));
+        measureTime("JavaFileDependency.testUncoveredApps",
+            () -> FXTesting.testApps(ToBeRunTest.getUncoveredApplications()));
     }
+
     private void runTest(Class<?> testClass, Object test, List<String> failedTests) {
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
@@ -95,6 +96,5 @@ public class JavaDependencyTest {
         });
 
     }
-
 
 }

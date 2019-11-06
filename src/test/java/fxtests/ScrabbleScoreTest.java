@@ -19,6 +19,11 @@ public class ScrabbleScoreTest {
     private Integer expectedOutput;
 	private String input;
 
+    public ScrabbleScoreTest(Object[] expectedOutput) {
+        input = (String) expectedOutput[0];
+        this.expectedOutput = (Integer) expectedOutput[1];
+
+    }
     public ScrabbleScoreTest(String input, Integer expectedOutput) {
 		this.input = input;
 		this.expectedOutput = expectedOutput;
