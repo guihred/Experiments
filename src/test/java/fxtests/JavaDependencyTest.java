@@ -11,10 +11,7 @@ import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
-import utils.ClassReflectionUtils;
-import utils.ConsumerEx;
-import utils.FunctionEx;
-import utils.HasLogging;
+import utils.*;
 
 @SuppressWarnings("static-method")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -57,8 +54,11 @@ public class JavaDependencyTest {
                         .map(FunctionEx.makeFunction(e -> e.invoke(null))).findFirst().map(e -> (Collection<?>) e)
                         .orElseGet(() -> Collections.emptyList());
                     for (Object object : orElseThrow) {
-                        Object ob = forName.getConstructors()[0].newInstance(object);
+                        RunnableEx.run(() -> {
+                            Object ob = forName.getConstructors()[0]
+                                .newInstance(object.getClass().isArray() ? (Object[]) object : object);
                         runTest(forName, ob, failedTests);
+                        });
                     }
                     continue;
                 }
