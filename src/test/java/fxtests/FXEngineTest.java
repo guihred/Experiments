@@ -25,7 +25,6 @@ import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
 import paintexp.ColorChooser;
-import pdfreader.PdfReader;
 import schema.sngpc.SngpcViewer;
 import utils.ConsumerEx;
 import utils.ImageFXUtils;
@@ -38,7 +37,7 @@ public class FXEngineTest extends AbstractTestExecution {
             sleep(1000);
             ignore(() -> clickOn(t));
             type(KeyCode.ESCAPE);
-        }), Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class, Chapter4.Ex10.class, PdfReader.class)));
+        }), Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class, Chapter4.Ex10.class)));
     }
 
     @Test

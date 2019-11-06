@@ -38,7 +38,7 @@
 		<TableView prefWidth="250.0" scaleShape="false"
 			fx:id="imageTable">
 			<columns>
-				<TableColumn prefWidth="250.0" text="Image">
+				<TableColumn prefWidth="250.0" text="Image" fx:id="tableColumn">
 					<cellValueFactory>
 						<PropertyValueFactory property="image" />
 					</cellValueFactory>

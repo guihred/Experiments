@@ -19,7 +19,6 @@ import ex.j9.ch4.PrimaryColor;
 import ex.j9.ch4.RectangleCh4;
 import extract.ExcelService;
 import extract.PdfImage;
-import extract.PdfUtils;
 import extract.WordService;
 import gaming.ex01.SnakeSquare;
 import gaming.ex03.SlidingPuzzleSquare;
@@ -35,7 +34,6 @@ import japstudy.LessonPK;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.*;
@@ -224,12 +222,7 @@ public class FXFileReadersTest extends ApplicationTest {
             pdfImage.toString();
         });
     }
-    @Test
-    public void testPdfUtils() {
-        final String FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\FXperiments\\Material\\SSH - The Secure Shell.pdf";
-        measureTime("PdfUtils.readFile",
-            () -> PdfUtils.readFile(new File(FILE), new PrintStream(ResourceFXUtils.getOutFile("ssh.txt"))));
-    }
+
 
     @Test
     public void testPoints() {
