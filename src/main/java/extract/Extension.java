@@ -11,8 +11,8 @@ public enum Extension {
     FOLDER("folder.png"),
     NET("netfol.png", ".html"),
     PICTURES("pictures.png", ".png", ".jpg", ".ico"),
-    RINGTONES("ringtones.png", "mp3", "wma", "mp4"),
-    SETTINGS("settings.png", "xml");
+    RINGTONES("ringtones.png", ".mp3", ".wma", ".mp4"),
+    SETTINGS("settings.png", "xml", ".bat");
 
     private final List<String> extensions;
     private final Image image;
@@ -34,7 +34,7 @@ public enum Extension {
             return FOLDER;
         }
         for (Extension ex : values()) {
-            if (ex.extensions.stream().anyMatch(s -> f.getName().endsWith(s))) {
+            if (ex.extensions.stream().anyMatch(s -> f.getName().toLowerCase().endsWith(s))) {
                 return ex;
             }
         }
