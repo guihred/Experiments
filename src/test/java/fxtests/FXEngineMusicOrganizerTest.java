@@ -3,7 +3,6 @@ package fxtests;
 import static java.nio.file.Files.copy;
 
 import audio.mp3.EditSongController;
-import audio.mp3.FilesComparator;
 import audio.mp3.MusicOrganizer;
 import extract.Music;
 import extract.MusicReader;
@@ -20,7 +19,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -101,29 +103,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         WaitForAsyncUtils.waitForFxEvents();
     }
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void verifyFileComparator() {
-        FilesComparator application = show(FilesComparator.class);
-        File[] listFiles = ResourceFXUtils.getUserFolder("Music").listFiles(File::isDirectory);
-        int i = 0;
-        Set<TableView> lookup = lookup(TableView.class);
-        for (TableView<File> query : lookup) {
-            application.addSongsToTable(query, listFiles[i++ % listFiles.length]);
-            while (application.getProgress() < 1) {
-                // DOES NOTHING
-            }
-        }
-        while (application.getProgress() < 1) {
-            // DOES NOTHING
-        }
-        for (TableView<?> tableView : lookup) {
-            clickOn(from(tableView).lookup(Cell.class::isInstance).queryLabeled());
-        }
-        lookup(Button.class).stream().filter(e -> !e.getText().startsWith("File") && !e.getText().equals("X"))
-            .forEach(this::tryClickOn);
-        WaitForAsyncUtils.waitForFxEvents();
-    }
+
 
     @Test
     public void verifyPlayingAudio() {
