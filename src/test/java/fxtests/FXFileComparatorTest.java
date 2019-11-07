@@ -46,6 +46,9 @@ public class FXFileComparatorTest extends AbstractTestExecution {
             }
 
         }
+        while (application.getProgress() < 1) {
+            // DOES NOTHING
+        }
         filter.forEach(this::tryClickOn);
         WaitForAsyncUtils.waitForFxEvents();
     }
