@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
 import utils.ConsumerEx;
-import utils.RunnableEx;
 
 public class FXHackTest extends AbstractTestExecution {
     @Test
@@ -46,7 +45,7 @@ public class FXHackTest extends AbstractTestExecution {
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
             .forEach(ConsumerEx.ignore(this::clickOn));
         ConsoleUtils.waitAllProcesses();
-        RunnableEx.ignore(() -> clickOn(lookupFirst(CheckBox.class)));
+        tryClickOn(lookupFirst(CheckBox.class));
     }
 
 }

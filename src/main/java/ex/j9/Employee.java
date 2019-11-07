@@ -13,14 +13,10 @@ public class Employee implements Measurable {
     private double salary;
 
     public Employee(double salary) {
-        this.salary = salary;
-        name = NAMES.get(i++ % NAMES.size());
+        setSalary(salary);
+        setName(NAMES.get(i++ % NAMES.size()));
     }
 
-    public Employee(String name, double salary) {
-        this.name = name;
-        this.salary = salary;
-    }
 
     @Override
     public double getMeasure() {

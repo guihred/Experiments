@@ -8,7 +8,6 @@ import com.sun.prism.Texture;
 import com.sun.prism.impl.BaseResourceFactory;
 import javafx.scene.image.ImageView;
 
-@SuppressWarnings("restriction")
 public class PixelatedImageView extends ImageView {
 
     public PixelatedImageView() {

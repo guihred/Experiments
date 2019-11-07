@@ -11,8 +11,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
 import org.junit.Test;
 import utils.ConsumerEx;
-import utils.RunnableEx;
-import utils.TreeElement;
 
 public class FXEngineTableVisualizationTest extends AbstractTestExecution {
 
@@ -21,19 +19,16 @@ public class FXEngineTableVisualizationTest extends AbstractTestExecution {
         show(TableVisualizationExample.class);
         Set<Node> queryAll2 = lookup(".tab").queryAll();
         for (Node node : queryAll2) {
-            RunnableEx.ignore(() -> clickOn(node));
+            tryClickOn(node);
             Set<Node> queryAs = lookup(".tab-content-area").queryAll().stream().filter(e -> e.isVisible())
                 .collect(Collectors.toSet());
-            for (Node node2 : queryAs) {
-                getLogger().info("{}", TreeElement.displayStyleClass(node2));
-            }
             from(queryAs).lookup(Control.class::isInstance).queryAll().stream()
                 .filter(e -> e.isVisible()).limit(20)
                 .forEach(ConsumerEx.ignore((n) -> clickOn(n)));
 
         }
         for (Node node : lookup(ToggleButton.class)) {
-            RunnableEx.ignore(() -> clickOn(node));
+            tryClickOn(node);
         }
         for (MenuButton menuButton : lookup(MenuButton.class)) {
             ObservableList<MenuItem> items = menuButton.getItems();

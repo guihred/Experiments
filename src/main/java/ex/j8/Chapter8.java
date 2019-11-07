@@ -27,9 +27,10 @@ import utils.ResourceFXUtils;
 
 public final class Chapter8 {
     private static final Logger LOG = HasLogging.log();
-    private static final String ALICE_TXT = "alice.txt";
-    private static final Logger LOGGER = HasLogging.log();
 
+    private static final String ALICE_TXT = "alice.txt";
+
+    private static final Logger LOGGER = HasLogging.log();
     /*
      * Using only methods of the Comparator class, define a comparator for Point2D
      * which is a total ordering (that is, the comparator only returns zero for
@@ -37,7 +38,6 @@ public final class Chapter8 {
      * y-coordinates. Do the same for Rectangle2D.
      */
     private static final Random RANDOM = new SecureRandom();
-
     private Chapter8() {
     }
 
@@ -356,40 +356,14 @@ public final class Chapter8 {
 
     private static Stream<Double> streamOfDouble(Scanner scanner) {
 
-        Iterator<Double> iter = new Iterator<Double>() {
-            @Override
-            public boolean hasNext() {
-                return scanner.hasNextDouble();
-            }
-
-            @Override
-            public Double next() {
-                if (hasNext()) {
-                    return scanner.nextDouble();
-                }
-                throw new NoSuchElementException();
-            }
-        };
+        Iterator<Double> iter = new ScannerIterator(scanner);
         return StreamSupport
             .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
     }
 
     private static Stream<Integer> streamOfInteger(Scanner scanner) {
 
-        Iterator<Integer> iter = new Iterator<Integer>() {
-            @Override
-            public boolean hasNext() {
-                return scanner.hasNextInt();
-            }
-
-            @Override
-            public Integer next() {
-                if (hasNext()) {
-                    return scanner.nextInt();
-                }
-                throw new NoSuchElementException();
-            }
-        };
+        Iterator<Integer> iter = new IntScannerIterator(scanner);
         return StreamSupport
             .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
     }
@@ -417,22 +391,72 @@ public final class Chapter8 {
 
     private static Stream<String> streamOfWords(Scanner scanner) {
 
-        Iterator<String> iter = new Iterator<String>() {
-            @Override
-            public boolean hasNext() {
-                return scanner.hasNextLine();
-            }
-
-            @Override
-            public String next() {
-                if (hasNext()) {
-                    return scanner.nextLine();
-                }
-                throw new NoSuchElementException();
-            }
-        };
+        Iterator<String> iter = new LineIterator(scanner);
         return StreamSupport
             .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false)
             .flatMap(s -> Stream.of(s.split("[\\P{L}]+")));
+    }
+
+    private static final class IntScannerIterator implements Iterator<Integer> {
+        private final Scanner scanner;
+
+        private IntScannerIterator(Scanner scanner) {
+            this.scanner = scanner;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return scanner.hasNextInt();
+        }
+
+        @Override
+        public Integer next() {
+            if (hasNext()) {
+                return scanner.nextInt();
+            }
+            throw new NoSuchElementException();
+        }
+    }
+
+    private static final class LineIterator implements Iterator<String> {
+        private final Scanner scanner;
+
+        private LineIterator(Scanner scanner) {
+            this.scanner = scanner;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return scanner.hasNextLine();
+        }
+
+        @Override
+        public String next() {
+            if (hasNext()) {
+                return scanner.nextLine();
+            }
+            throw new NoSuchElementException();
+        }
+    }
+
+    private static final class ScannerIterator implements Iterator<Double> {
+        private final Scanner scanner;
+
+        private ScannerIterator(Scanner scanner) {
+            this.scanner = scanner;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return scanner.hasNextDouble();
+        }
+
+        @Override
+        public Double next() {
+            if (hasNext()) {
+                return scanner.nextDouble();
+            }
+            throw new NoSuchElementException();
+        }
     }
 }

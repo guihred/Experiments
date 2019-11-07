@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
-import org.testfx.framework.junit.ApplicationTest;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
@@ -145,15 +144,5 @@ public final class FXTesting implements HasLogging {
 
     public static void testApps(List<Class<? extends Application>> applicationClasses) {
         new FXTesting().testApplications(applicationClasses);
-    }
-
-    public static void verifyAndRun(ApplicationTest app, Stage currentStage, Runnable consumer,
-        List<Class<? extends Application>> applicationClasses) {
-        Logger log = HasLogging.log(1);
-        for (Class<? extends Application> class1 : applicationClasses) {
-            log.info(" RUN {}", class1.getSimpleName());
-            app.interactNoWait(RunnableEx.make(() -> class1.newInstance().start(currentStage)));
-            consumer.run();
-        }
     }
 }

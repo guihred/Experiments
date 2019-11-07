@@ -80,31 +80,31 @@ public final class UnRar {
         if (!"rar".equalsIgnoreCase(s)) {
             return;
         }
-        LOGGER.info("{}", file);
+        LOGGER.trace("{}", file);
         try (FileInputStream fileInputStream = new FileInputStream(file); Archive arc = new Archive(fileInputStream)) {
             if (arc.isEncrypted()) {
-                LOGGER.info("archive is encrypted cannot extreact");
+                LOGGER.trace("archive is encrypted cannot extreact");
                 unsupportedFiles.add(file.toString());
                 return;
             }
             List<FileHeader> files = arc.getFileHeaders();
             for (FileHeader fh : files) {
                 if (fh.isEncrypted()) {
-                    LOGGER.info("file is encrypted cannot extract: {}", fh.getFileNameString());
+                    LOGGER.trace("file is encrypted cannot extract: {}", fh.getFileNameString());
                     unsupportedFiles.add(file.toString());
                     return;
                 }
-                LOGGER.info("extracting file: {}", fh.getFileNameString());
+                LOGGER.trace("extracting file: {}", fh.getFileNameString());
                 logIfUnicode(fh);
-                LOGGER.info("start: {}", LocalTime.now());
+                LOGGER.trace("start: {}", LocalTime.now());
                 File file2 = new File(output, fh.getFileNameString());
                 createIfDoesNotExists(file2);
                 if (!tryExtractFile(file2, fh, arc, file)) {
                     return;
                 }
-                LOGGER.info("end: {}", LocalTime.now());
+                LOGGER.trace("end: {}", LocalTime.now());
             }
-            LOGGER.info("successfully tested archive: {}", file);
+            LOGGER.trace("successfully tested archive: {}", file);
             successfulFiles.add(file.toString());
         } catch (Exception e) {
             LOGGER.trace("file: {} extraction error - does the file exist? {}", file, e);
@@ -117,11 +117,11 @@ public final class UnRar {
             arc.extractFile(fh, os);
         } catch (RarException e) {
             if (e.getType() == RarExceptionType.notImplementedYet) {
-                LOGGER.info("error extracting unsupported file: {}", fh.getFileNameString() + e);
+                LOGGER.trace("error extracting unsupported file: {}", fh.getFileNameString() + e);
                 unsupportedFiles.add(file.toString());
                 return false;
             }
-            LOGGER.info("error extracting file: {}", fh.getFileNameString() + e);
+            LOGGER.trace("error extracting file: {}", fh.getFileNameString() + e);
             errorFiles.add(file.toString());
             return false;
         }

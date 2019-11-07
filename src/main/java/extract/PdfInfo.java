@@ -22,7 +22,6 @@ public class PdfInfo {
     private final ObservableList<String> lines = FXCollections.observableArrayList();
     private final ObservableSet<String> skipLines = FXCollections.observableSet();
     private final ObservableList<String> words = FXCollections.observableArrayList();
-
     private final IntegerProperty pageIndex = new SimpleIntegerProperty(0);
 
     public PdfInfo() {
@@ -56,7 +55,6 @@ public class PdfInfo {
         return lineIndex++;
     }
 
-
     public ObservableList<String> getLines() {
         return lines;
     }
@@ -68,6 +66,7 @@ public class PdfInfo {
     public int getPageIndex() {
         return pageIndex.get();
     }
+
     public ObservableList<List<String>> getPages() {
         return pages;
     }
@@ -91,8 +90,6 @@ public class PdfInfo {
     public IntegerProperty pageIndexProperty() {
         return pageIndex;
     }
-
-
 
     public void setFile(File file) {
         this.file = file;
@@ -127,12 +124,19 @@ public class PdfInfo {
         this.pages = pages;
     }
 
-
-    public void setProgress(double value ) {
+    public void setProgress(double value) {
         progress.set(value);
     }
 
     public void setWords(ObservableList<String> words) {
         this.words.setAll(words);
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "PdfInfo {%n file=%s,%n numberOfPages=%s,%n progress=%s,%n index=%s,%n lineIndex=%s,%n pageIndex=%s%n}",
+            file == null ? null : file.getName(), numberOfPages.get(), progress.get(), index, lineIndex,
+            pageIndex.get());
     }
 }

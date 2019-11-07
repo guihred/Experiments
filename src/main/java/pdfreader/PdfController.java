@@ -11,6 +11,7 @@ import javafx.animation.Animation.Status;
 import javafx.animation.Timeline;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,6 +42,8 @@ public class PdfController {
     private Slider slider;
     @FXML
     private Text currentPage;
+    @FXML
+    private TableColumn<HasImage, String> tableColumn;
 
     private PdfInfo pdfInfo = new PdfInfo(PDF_FILE);
 
@@ -48,8 +51,8 @@ public class PdfController {
         .synchronizedObservableList(FXCollections.observableArrayList());
 
     private Timeline timeline = new SimpleTimelineBuilder()
-        .addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), time -> displayNextWord())
-        .cycleCount(Animation.INDEFINITE).build();
+        .addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), time -> displayNextWord()).cycleCount(Animation.INDEFINITE)
+        .build();
 
     public void displayNextLine() {
         if (pdfInfo.getLineIndex() < pdfInfo.getLines().size()) {
@@ -61,7 +64,7 @@ public class PdfController {
             if (pdfInfo.getLineIndex() >= pdfInfo.getLines().size()) {
                 timeline.stop();
             }
-        } 
+        }
     }
 
     public void displayNextPage() {
@@ -110,7 +113,7 @@ public class PdfController {
             currentWord.setText(pdfInfo.getWords().get(pdfInfo.getIndexAndAdd()));
         }
     }
-    @SuppressWarnings("unchecked")
+
     public void initialize() {
         Property<Number> rate = timeline.rateProperty();
         slider.valueProperty().bindBidirectional(rate);
@@ -118,14 +121,15 @@ public class PdfController {
         currentPage.textProperty()
             .bind(pdfInfo.pageIndexProperty().asString().concat("/").concat(pdfInfo.numberOfPagesProperty()));
         imageTable.setItems(currentImages);
-        TableColumn<HasImage, String> tableColumn = (TableColumn<HasImage, String>) imageTable.getColumns().get(0);
+        currentImages.addListener((Change<? extends HasImage> e) -> imageTable.setVisible(!currentImages.isEmpty()));
+
         tableColumn.setCellFactory(s -> new ImageTableCell<>());
-        PdfUtils.readFile(pdfInfo, pdfInfo.getFile());
+        PdfUtils.readFile(pdfInfo);
     }
 
     public void openNewPDF(ActionEvent event) {
-        StageHelper.fileAction("Selecione Arquivo PDF",
-            file -> PdfUtils.readFile(pdfInfo, file), "File", "*.pdf").handle(event);
+        StageHelper.fileAction("Selecione Arquivo PDF", file -> PdfUtils.readFile(pdfInfo, file), "File", "*.pdf")
+            .handle(event);
     }
 
     public void toggleTimelineStatus() {

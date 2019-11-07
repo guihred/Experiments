@@ -19,13 +19,45 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 	private static final int MAX_TRIES = 100;
 
     @Test
-	public void testDecisions() {
+	public void testAllOptions() {
+		show(CatanAppMain.class);
+        List<EdgeCatan> allEdge = lookup(EdgeCatan.class).stream()
+            .collect(Collectors.toList());
+        Collections.shuffle(allEdge);
+        List<Village> allVillages = new ArrayList<>();
+        List<City> cities = new ArrayList<>();
+        List<SettlePoint> settlePoints = lookup(SettlePoint.class).stream()
+            .collect(Collectors.toList());
+        List<Road> allRoads = new ArrayList<>();
+        Collections.shuffle(settlePoints);
+        List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
+            .collect(Collectors.toList());
+        allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
+        Set<ButtonBase> clickedButtons = new HashSet<>();
+        List<Terrain> allTerrains = lookup(Terrain.class).stream()
+            .collect(Collectors.toList());
+        Collections.shuffle(allTerrains);
+        for (int i = 0; i < MAX_TRIES && allButtons.stream().anyMatch(b -> !clickedButtons.contains(b)); i++) {
+            clickVillages(allVillages, settlePoints);
+            clickCities(cities);
+            clickRoads(allEdge, allRoads);
+            clickThiefs(allTerrains);
+            clickCards();
+            clickButton(allButtons, clickedButtons);
+            if (i % 10 == 0) {
+                getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
+            }
+        }
+    }
+
+	@Test
+	public void testDecisionTree() {
 		CatanAppMain newInstance = show(CatanAppMain.class);
         DataframeML build = DataframeBuilder.builder("out/catan_log.txt").build();
         build.removeCol("WINNER", "PLAYER");
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));
-        DecisionNode decisionTree = DecisionTree.buildTree(build, "ACTION", 0.01);
+        DecisionNode decisionTree = DecisionTree.buildTree(build, "ACTION", 0.001);
 
         List<EdgeCatan> allEdge = lookup(EdgeCatan.class).stream()
             .collect(Collectors.toList());
@@ -75,38 +107,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 		CatanLogger.winner(playerWinner);
 		getLogger().info("{}", decisionTree);
 
-    }
-
-	@Test
-	public void testToolsVerify() {
-		show(CatanAppMain.class);
-        List<EdgeCatan> allEdge = lookup(EdgeCatan.class).stream()
-            .collect(Collectors.toList());
-        Collections.shuffle(allEdge);
-        List<Village> allVillages = new ArrayList<>();
-        List<City> cities = new ArrayList<>();
-        List<SettlePoint> settlePoints = lookup(SettlePoint.class).stream()
-            .collect(Collectors.toList());
-        List<Road> allRoads = new ArrayList<>();
-        Collections.shuffle(settlePoints);
-        List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
-            .collect(Collectors.toList());
-        allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
-        Set<ButtonBase> clickedButtons = new HashSet<>();
-        List<Terrain> allTerrains = lookup(Terrain.class).stream()
-            .collect(Collectors.toList());
-        Collections.shuffle(allTerrains);
-        for (int i = 0; i < MAX_TRIES && allButtons.stream().anyMatch(b -> !clickedButtons.contains(b)); i++) {
-            clickVillages(allVillages, settlePoints);
-            clickCities(cities);
-            clickRoads(allEdge, allRoads);
-            clickThiefs(allTerrains);
-            clickCards();
-            clickButton(allButtons, clickedButtons);
-            if (i % 10 == 0) {
-                getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
-            }
-        }
     }
 
     private void clickButton(List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {

@@ -15,6 +15,7 @@ import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.SimpleTreeViewBuilder;
@@ -48,7 +49,8 @@ public class FileAttrApp extends Application {
                 }
             }
         }
-        return getAttributes(file).size() + size;
+        size += SupplierEx.get(() -> getAttributes(file).size(), 0L);
+        return size;
     }
 
     private Parent createSplitTreeListDemoNode() {
@@ -68,9 +70,7 @@ public class FileAttrApp extends Application {
         return new VBox(StageHelper.selectDirectory("Select Directory", "Select Directory", f -> {
             root.build().getRoot().getChildren().clear();
             root.root(f);
-        }), splitPane, pieChart
-
-        );
+        }), splitPane, pieChart);
     }
 
     private BasicFileAttributes getAttributes(File value) {
@@ -88,7 +88,8 @@ public class FileAttrApp extends Application {
                 File[] listFiles = value.listFiles();
                 if (listFiles != null) {
                     pieData.clear();
-                    Arrays.parallelSort(listFiles, Comparator.comparing(e -> !e.isDirectory()));
+                    Arrays.parallelSort(listFiles,
+                        Comparator.comparing((File e) -> !e.isDirectory()).thenComparing(t1 -> -getSize(t1)));
                     for (File file2 : listFiles) {
                         pieData.add(new PieChart.Data(file2.getName(), getSize(file2)));
                     }
@@ -106,6 +107,8 @@ public class FileAttrApp extends Application {
 
     private void setText(File file, TreeCell<File> cell) {
         cell.setText(file == null ? "" : file.getName() + " " + getFileSize(getSize(file)));
+        cell.setGraphic(file == null ? null : getGraphic(file));
+
     }
 
     public static void main(String[] args) {
@@ -122,6 +125,13 @@ public class FileAttrApp extends Application {
         }
         int a0 = (int) Math.floor(Math.log10(sizeInBytes) / Math.log10(BYTES_IN_A_KILOBYTE));
         return String.format(Locale.ENGLISH, "%.2f %s", sizeInBytes / Math.pow(BYTES_IN_A_KILOBYTE, a0), SIZES[a0]);
+    }
+
+    private static ImageView getGraphic(File file) {
+        ImageView value = new ImageView(Extension.getExtension(file).getFile());
+        value.setFitHeight(10);
+        value.setFitWidth(10);
+        return value;
     }
 
 }

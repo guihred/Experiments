@@ -18,7 +18,16 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
 
 
     public SimpleListViewBuilder<T> cellFactory(BiConsumer<T, ListCell<T>> value) {
-        table.setCellFactory(newCellFactory(value));
+        return cellFactory(newCellFactory(value));
+    }
+
+    public SimpleListViewBuilder<T> cellFactory(Callback<ListView<T>, ListCell<T>> value) {
+        table.setCellFactory(value);
+        return this;
+    }
+
+    public SimpleListViewBuilder<T> fixedCellSize(double value) {
+        table.setFixedCellSize(value);
         return this;
     }
 

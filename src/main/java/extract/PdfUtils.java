@@ -94,6 +94,9 @@ public final class PdfUtils {
         return readFile(new PdfInfo(), file1, out);
     }
 
+    public static PdfInfo readFile(PdfInfo pdfInfo) {
+        return readFile(pdfInfo, pdfInfo.getFile(), null);
+    }
     public static PdfInfo readFile(PdfInfo pdfInfo, File file1) {
         return readFile(pdfInfo, file1, null);
     }

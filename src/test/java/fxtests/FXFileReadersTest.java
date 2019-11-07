@@ -19,10 +19,10 @@ import ex.j9.ch4.PrimaryColor;
 import ex.j9.ch4.RectangleCh4;
 import extract.ExcelService;
 import extract.PdfImage;
-import extract.PdfUtils;
 import extract.WordService;
 import gaming.ex01.SnakeSquare;
 import gaming.ex03.SlidingPuzzleSquare;
+import gaming.ex04.TronSquare;
 import gaming.ex16.MadEdge;
 import gaming.ex16.MadEdgeDistance;
 import graphs.EdgeElement;
@@ -35,7 +35,6 @@ import japstudy.LessonPK;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.*;
@@ -224,12 +223,7 @@ public class FXFileReadersTest extends ApplicationTest {
             pdfImage.toString();
         });
     }
-    @Test
-    public void testPdfUtils() {
-        final String FILE = "C:\\Users\\guilherme.hmedeiros\\Documents\\Dev\\FXperiments\\Material\\SSH - The Secure Shell.pdf";
-        measureTime("PdfUtils.readFile",
-            () -> PdfUtils.readFile(new File(FILE), new PrintStream(ResourceFXUtils.getOutFile("ssh.txt"))));
-    }
+
 
     @Test
     public void testPoints() {
@@ -243,7 +237,7 @@ public class FXFileReadersTest extends ApplicationTest {
     private List<Object> getList() {
         Vertex v = new Vertex(5);
         List<Object> asList = Arrays.asList(new PointCh4(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,
-            new ContestQuestion(), new SlidingPuzzleSquare(2),
+            new ContestQuestion(), new SlidingPuzzleSquare(2), new TronSquare(),
             new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5),
             new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(v, null, 2), new EdgeElement(v, v, 5),
             new Contest(), new LessonPK(), new MadEdge(null, null), new MadEdgeDistance(null, 2F), new SnakeSquare(),

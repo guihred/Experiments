@@ -85,8 +85,8 @@ public final class EditSongHelper {
                 Platform.runLater(() -> {
                     mediaPlayer.get().stop();
                     mediaPlayer.get().dispose();
-                    MusicReader.saveMetadata(selectedItem, outFile);
                     run(() -> {
+                        MusicReader.saveMetadata(selectedItem, outFile);
                         try (FileOutputStream out = new FileOutputStream(selectedItem.getArquivo())) {
                             Files.copy(outFile.toPath(), out);
                         }

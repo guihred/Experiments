@@ -163,9 +163,10 @@ public class IndependentTest {
         measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, nameFile));
         measureTime("ImageLoading.cropImage", () -> ImageLoading.cropImage(dataDir, nameFile));
         measureTime("ImageLoading.exporting", () -> ImageLoading.exporting(dataDir, nameFile));
-        measureTime("ImageLoading.createThumnails", () -> ImageLoading.createThumnails(dataDir, nameFile));
         measureTime("ImageLoading.grayScale", () -> ImageLoading.grayScale(dataDir, nameFile));
         measureTime("ImageLoading.grayScaling", () -> ImageLoading.grayScaling(dataDir, nameFile));
+        String jpegFile = getFirstPathByExtension(userFolder, ".jpeg").toString();
+        measureTime("ImageLoading.createThumnails", () -> ImageLoading.createThumnails(dataDir, jpegFile));
     }
 
     @Test

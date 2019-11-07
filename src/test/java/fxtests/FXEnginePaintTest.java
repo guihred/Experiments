@@ -12,10 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
@@ -26,6 +23,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import org.junit.Test;
+import paintexp.ColorChooser;
 import paintexp.PaintFileUtils;
 import paintexp.PaintMain;
 import paintexp.SimplePixelReader;
@@ -64,6 +62,20 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         });
     }
 
+    @Test
+    public void verifyColorChooser() {
+        show(ColorChooser.class);
+        Set<Slider> queryAll = lookup(Slider.class);
+        int i = 0;
+        for (Node m : queryAll) {
+            if (i++ == 3) {
+                lookup(".tab").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
+            }
+            randomDrag(m, 10);
+        }
+        tryClickButtons();
+    }
+
     protected void testTools(final Node stack) {
         List<Node> queryAll = lookup(ToggleButton.class).stream().collect(Collectors.toList());
         Collections.shuffle(queryAll);
@@ -81,8 +93,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 getLogger().info("Testing {} ", userData.getClass().getSimpleName());
             }
             if (!colors.isEmpty()) {
-                RunnableEx.ignore(() -> clickOn(colors.remove(random.nextInt(colors.size())),
-                    random.nextInt(5) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY));
+                tryClickOn(colors.remove(random.nextInt(colors.size())),
+                    random.nextInt(5) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY);
             }
             RunnableEx.run(() -> clickOn(next));
             lookup("#tools .slider").queryAll().forEach(f -> {

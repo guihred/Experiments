@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import ml.data.CSVUtils;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.graph.TimelineGraph;
@@ -28,7 +29,6 @@ import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import utils.HasLogging;
 import utils.ImageFXUtils;
-import utils.ResourceFXUtils;
 
 public class TimelineExample extends Application {
 
@@ -46,8 +46,7 @@ public class TimelineExample extends Application {
         root.setLeft(left);
         TimelineGraph canvas = new TimelineGraph();
 
-        String[] list = ResourceFXUtils.toFile("out")
-            .list((dir, name) -> name.matches("WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv"));
+        String[] list = CSVUtils.getDataframeCSVs();
         DataframeML x = DataframeBuilder.builder("out/" + list[0])
                 .setMaxSize(MAX_ROWS)
                 .build();

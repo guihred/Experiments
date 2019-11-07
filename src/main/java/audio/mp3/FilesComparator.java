@@ -66,7 +66,8 @@ public class FilesComparator extends Application {
             find.stream().map(Path::toFile).forEach(musicas::add);
 
             double d = 1.0 / find.size();
-            for (File t : musicas) {
+            for (int i = 0; i < musicas.size(); i++) {
+                File t = musicas.get(i);
                 updateProgress(progress.getProgress() + d);
                 getFromMap(t, fileMap);
             }
@@ -174,7 +175,8 @@ public class FilesComparator extends Application {
             if (selectedItem != null) {
                 RunnableEx.run(() -> {
                     Files.delete(selectedItem.toPath());
-                    table1.getItems().remove(selectedItem);
+                    ObservableList<File> items = table1.getItems();
+                    items.remove(selectedItem);
                 });
             }
         }

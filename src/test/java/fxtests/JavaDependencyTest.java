@@ -11,10 +11,7 @@ import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
-import utils.ClassReflectionUtils;
-import utils.ConsumerEx;
-import utils.FunctionEx;
-import utils.HasLogging;
+import utils.*;
 
 @SuppressWarnings("static-method")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -32,7 +29,7 @@ public class JavaDependencyTest {
         });
     }
 
-	@Test
+    @Test
     public void testGTestUncovered() {
 
         List<String> failedTests = new ArrayList<>();
@@ -57,8 +54,10 @@ public class JavaDependencyTest {
                         .map(FunctionEx.makeFunction(e -> e.invoke(null))).findFirst().map(e -> (Collection<?>) e)
                         .orElseGet(() -> Collections.emptyList());
                     for (Object object : orElseThrow) {
-                        Object ob = forName.getConstructors()[0].newInstance(object);
-                        runTest(forName, ob, failedTests);
+                        RunnableEx.run(() -> {
+                            Object ob = forName.getConstructors()[0].newInstance(object);
+                            runTest(forName, ob, failedTests);
+                        });
                     }
                     continue;
                 }
@@ -76,25 +75,35 @@ public class JavaDependencyTest {
     }
 
     @Test
-	public void testHTestUncoveredApps() {
+    public void testHTestUncoveredApps() {
 
-        measureTime("JavaFileDependency.testUncoveredApps", () -> FXTesting.testApps(ToBeRunTest.getUncoveredApplications()));
+        measureTime("JavaFileDependency.testUncoveredApps",
+            () -> FXTesting.testApps(ToBeRunTest.getUncoveredApplications()));
     }
+
+    private boolean isSame(Throwable e, Class<? extends Throwable> expected) {
+        LOG.error("expected={} , Thrown = {}" , expected,e);
+        return expected != e.getClass();
+    }
+
     private void runTest(Class<?> testClass, Object test, List<String> failedTests) {
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
-                .sorted(Comparator.comparing(Method::getName)).forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
-                    failedTests.add(o + "");
-                    LOG.error("ERROR invoking " + o, e);
+                .sorted(Comparator.comparing(Method::getName))
+                .forEach(ConsumerEx.make(e -> e.invoke(test), (Method o, Throwable e) -> {
+                    Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
+                    if (expected == null || isSame(e, expected)) {
+                        failedTests.add(o + "");
+                        LOG.error("ERROR invoking " + o, e);
+                    }
                 }));
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));
         });
 
     }
-
 
 }

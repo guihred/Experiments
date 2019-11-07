@@ -14,12 +14,10 @@ import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
-import javafx.scene.input.MouseButton;
 import org.junit.Test;
 import utils.ConsoleUtils;
 import utils.ConsumerEx;
 import utils.ImageFXUtils;
-import utils.RunnableEx;
 
 
 public class FXEngineGraphTest extends AbstractTestExecution {
@@ -73,10 +71,8 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 	public void verifyZoomable() {
 		show(GraphMain.class);
 		lookup(Cell.class).stream().limit(10).forEach(e -> {
-            RunnableEx.ignore(() -> clickOn(e));
-            RunnableEx.ignore(() -> drag(e, MouseButton.PRIMARY));
-			moveBy(100, 100);
-			drop();
+            tryClickOn(e);
+            randomDrag(e, 100);
 		});
 		scroll(2, VerticalDirection.UP);
 		scroll(2, VerticalDirection.DOWN);

@@ -17,7 +17,7 @@ import utils.HasLogging;
 @SuppressWarnings("static-method")
 public class ToBeRunTest {
     private static final int LINES_MIN_COVERAGE = 30;
-    private static final int BRANCH_MIN_COVERAGE = 50;
+    private static final int BRANCH_MIN_COVERAGE = 20;
     private static final Logger LOG = HasLogging.log();
 
     @Test
@@ -54,6 +54,7 @@ public class ToBeRunTest {
             }
         });
     }
+
     @Test
     public void testDMethodMap() {
         measureTime("JavaFileDependency.getPublicMethodsMap", () -> {
@@ -114,24 +115,38 @@ public class ToBeRunTest {
     }
 
     public static List<String> getUncovered() {
+        return getUncovered(LINES_MIN_COVERAGE);
+    }
+
+    public static List<String> getUncovered(int min) {
         File csvFile = new File("target/site/jacoco/jacoco.csv");
         if (!csvFile.exists()) {
             return Collections.emptyList();
         }
         DataframeML b = DataframeBuilder.build(csvFile);
-        DataframeUtils.crossFeature(b, "PERCENTAGE", ToBeRunTest::getPercentage, "LINE_MISSED",
-            "LINE_COVERED");
-        b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= LINES_MIN_COVERAGE);
+        DataframeUtils.crossFeature(b, "PERCENTAGE", ToBeRunTest::getPercentage, "LINE_MISSED", "LINE_COVERED");
+        b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= min);
         return b.list("CLASS");
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
-        List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(getUncovered());
-        if (uncoveredApplications.isEmpty()) {
-            return getUncoveredApplications(getUncoveredBranches());
+        for (int i = LINES_MIN_COVERAGE; i < 50; i++) {
+            List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(getUncovered(i));
+            if (!uncoveredApplications.isEmpty()) {
+                LOG.info("Min COVERAGE APPLICATIONS= {}", i);
+                return uncoveredApplications;
+            }
         }
 
-        return uncoveredApplications;
+        for (int i = BRANCH_MIN_COVERAGE; i < 50; i++) {
+            List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(
+                getUncoveredBranches(i));
+            if (!uncoveredApplications.isEmpty()) {
+                LOG.error("Min COVERAGE APPLICATIONS= {}", i);
+                return uncoveredApplications;
+            }
+        }
+        return getUncoveredApplications(getUncoveredBranches());
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications(List<String> uncovered) {
@@ -142,33 +157,45 @@ public class ToBeRunTest {
         List<JavaFileDependency> visited = new ArrayList<>();
         List<JavaFileDependency> path = new ArrayList<>();
         List<Class<? extends Application>> classes = FXTesting.getClasses(Application.class);
-        List<String> collect2 = allFileDependencies
-            .stream().filter(e -> uncovered.contains(e.getName()))
-            .filter(d -> d.search(m -> ToBeRunTest.contains(classes, m), visited, path))
-            .distinct().map(JavaFileDependency::getName).collect(Collectors.toList());
+        List<String> collect2 = allFileDependencies.stream().filter(e -> uncovered.contains(e.getName()))
+            .filter(d -> d.search(m -> ToBeRunTest.contains(classes, m), visited, path)).distinct()
+            .map(JavaFileDependency::getName).collect(Collectors.toList());
         uncovered.addAll(collect2);
         uncovered.addAll(path.stream().map(JavaFileDependency::getName).collect(Collectors.toList()));
         return classes.stream().filter(e -> uncovered.contains(e.getSimpleName())).collect(Collectors.toList());
     }
 
     public static List<String> getUncoveredBranches() {
+        return getUncoveredBranches(BRANCH_MIN_COVERAGE);
+    }
+
+    public static List<String> getUncoveredBranches(int min) {
         File csvFile = new File("target/site/jacoco/jacoco.csv");
         if (!csvFile.exists()) {
             return Collections.emptyList();
         }
         DataframeML b = DataframeBuilder.build(csvFile);
-        DataframeUtils.crossFeature(b, "PERCENTAGE",
-            ToBeRunTest::getPercentage, "INSTRUCTION_MISSED", "INSTRUCTION_COVERED");
-        b.filter("PERCENTAGE", v -> ((Number) v).intValue() < BRANCH_MIN_COVERAGE);
+        DataframeUtils.crossFeature(b, "PERCENTAGE", ToBeRunTest::getPercentage, "BRANCH_MISSED", "BRANCH_COVERED");
+        b.filter("PERCENTAGE", v -> ((Number) v).intValue() < min);
         return b.list("CLASS");
     }
 
     public static List<String> getUncoveredTests() {
-        List<String> uncoveredTests = getUncoveredFxTest(ToBeRunTest.getUncovered());
-		if (!uncoveredTests.isEmpty()) {
-			return uncoveredTests;
-		}
-		return getUncoveredFxTest(ToBeRunTest.getUncoveredBranches());
+        for (int i = LINES_MIN_COVERAGE; i < 50; i++) {
+            List<String> uncoveredApplications = getUncoveredFxTest(getUncovered(i));
+            if (!uncoveredApplications.isEmpty()) {
+                LOG.error("Min COVERAGE TESTS= {}", i);
+                return uncoveredApplications;
+            }
+        }
+        for (int i = BRANCH_MIN_COVERAGE; i < 50; i++) {
+            List<String> uncoveredApplications = getUncoveredFxTest(getUncoveredBranches(i));
+            if (!uncoveredApplications.isEmpty()) {
+                LOG.error("Min COVERAGE TESTS= {}", i);
+                return uncoveredApplications;
+            }
+        }
+        return Collections.emptyList();
     }
 
     private static boolean contains(List<Class<? extends Application>> classes, JavaFileDependency m) {
@@ -177,8 +204,8 @@ public class ToBeRunTest {
 
     private static List<String> getUncoveredFxTest(List<String> uncovered) {
         LOG.error("Uncovered Classes {}", uncovered);
-        return JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream().distinct()
-            .sorted().collect(Collectors.toList());
+        return JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream().distinct().sorted()
+            .collect(Collectors.toList());
     }
 
 }

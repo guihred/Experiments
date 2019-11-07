@@ -20,11 +20,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
+import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
 import utils.CrawlerTask;
@@ -40,11 +43,11 @@ public class IadesCrawler extends Application {
     private ObservableList<Concurso> concursos = FXCollections.observableArrayList();
 
     @Override
-	public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) {
         CrawlerTask.insertProxyConfig();
         primaryStage.setTitle("IADES Crawler");
-		Parent node = createSplitTreeListDemoNode();
-		primaryStage.setScene(new Scene(node));
+        Parent node = createSplitTreeListDemoNode();
+        primaryStage.setScene(new Scene(node));
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
         primaryStage.show();
     }
@@ -52,22 +55,20 @@ public class IadesCrawler extends Application {
     private Parent createSplitTreeListDemoNode() {
         SimpleTreeViewBuilder<Map.Entry<String, String>> root = new SimpleTreeViewBuilder<Map.Entry<String, String>>()
             .root(new AbstractMap.SimpleEntry<>("", DOMAIN + "/inscricao"));
-        TreeView<Map.Entry<String, String>> build = root.build();
-        Set<String> arrayList = new HashSet<>();
+        TreeView<Map.Entry<String, String>> treeBuilder = root.build();
+        Set<String> links = new HashSet<>();
         Property<Concurso> concurso = new SimpleObjectProperty<>();
-        root.onSelect(t -> getNewLinks(t, arrayList, build));
-        ListView<String> vagasView = new ListView<>();
-        vagasView.setItems(FXCollections.observableArrayList());
-        vagasView.getSelectionModel().selectedItemProperty()
-				.addListener(
-						(ob, old, value) -> new Thread(() -> saveContestValues(concurso, value, vagasView)).start());
-        TableView<Concurso> tableView = new SimpleTableViewBuilder<Concurso>().items(concursos).addColumns("nome")
-            .onSelect((old, value) -> {
+        root.onSelect(t -> getNewLinks(t, links, treeBuilder));
+        SimpleListViewBuilder<String> listBuilder = new SimpleListViewBuilder<>();
+        listBuilder.items(FXCollections.observableArrayList()).onSelect(
+            (old, value) -> new Thread(() -> saveContestValues(concurso, value, listBuilder.build())).start());
+        SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
+            .addColumns("nome").onSelect((old, value) -> {
                 concurso.setValue(value);
-                vagasView.setItems(value.getVagas());
-            }).prefWidthColumns(1).minWidth(200).build();
+                listBuilder.items(value.getVagas());
+            }).prefWidthColumns(1).minWidth(200);
 
-        return new VBox(new SplitPane(build, tableView, vagasView));
+        return new VBox(new SplitPane(treeBuilder, tableBuilder.build(), listBuilder.build()));
     }
 
     private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
@@ -93,9 +94,9 @@ public class IadesCrawler extends Application {
 
     private void getNewLinks(TreeItem<Map.Entry<String, String>> newValue, Set<String> links,
         TreeView<Map.Entry<String, String>> build) {
-		if (newValue == null) {
-			return;
-		}
+        if (newValue == null) {
+            return;
+        }
 
         Entry<String, String> entry = newValue.getValue();
         String url = entry.getValue();
@@ -126,6 +127,5 @@ public class IadesCrawler extends Application {
 
         launch(args);
     }
-
 
 }

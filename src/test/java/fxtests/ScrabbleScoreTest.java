@@ -16,10 +16,15 @@ import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
 public class ScrabbleScoreTest {
 
-	private int expectedOutput;
+    private Integer expectedOutput;
 	private String input;
 
-	public ScrabbleScoreTest(String input, int expectedOutput) {
+    public ScrabbleScoreTest(Object[] expectedOutput) {
+        input = (String) expectedOutput[0];
+        this.expectedOutput = (Integer) expectedOutput[1];
+
+    }
+    public ScrabbleScoreTest(String input, Integer expectedOutput) {
 		this.input = input;
 		this.expectedOutput = expectedOutput;
 	}
@@ -27,7 +32,7 @@ public class ScrabbleScoreTest {
 	@Test
 	public void test() {
 		Scrabble scrabble = new Scrabble(input);
-        assertEquals("The pontuation should match", expectedOutput, scrabble.getScore());
+        assertEquals("The pontuation should match", expectedOutput.intValue(), scrabble.getScore());
 	}
 
 	@Parameterized.Parameters

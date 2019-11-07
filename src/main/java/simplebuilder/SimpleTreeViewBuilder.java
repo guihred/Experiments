@@ -52,27 +52,14 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         treeView.getRoot().getChildren().add(e);
     }
 
-    public static <C, V extends TreeCell<C>> Callback<TreeView<C>, TreeCell<C>> newCellFactory(
-        final BiConsumer<C, V> value) {
-        return p -> new CustomableTreeCell<C>() {
+    public static <C> Callback<TreeView<C>, TreeCell<C>> newCellFactory(BiConsumer<C, TreeCell<C>> value) {
+        return p -> new TreeCell<C>() {
             @Override
-            @SuppressWarnings("unchecked")
-            protected void setVisual(C auxMed) {
-                value.accept(auxMed, (V) this);
+            protected void updateItem(final C item, final boolean empty) {
+                super.updateItem(item, empty);
+                value.accept(getItem(), this);
             }
-
         };
-    }
-
-    public abstract static class CustomableTreeCell<M> extends TreeCell<M> {
-
-        protected abstract void setVisual(M auxMed);
-
-        @Override
-        protected void updateItem(final M item, final boolean empty) {
-            super.updateItem(item, empty);
-            setVisual(getItem());
-        }
     }
 
 }
