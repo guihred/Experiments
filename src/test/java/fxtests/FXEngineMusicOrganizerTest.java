@@ -55,7 +55,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         tryClickButtons();
         Set<TextField> lookup = lookup(TextField.class);
         for (TextField textField : lookup) {
-            RunnableEx.ignore(() -> clickOn(textField));
+            tryClickOn(textField);
             type(typeText(getRandomString()));
         }
     }
@@ -121,7 +121,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             clickOn(from(tableView).lookup(Cell.class::isInstance).queryLabeled());
         }
         lookup(Button.class).stream().filter(e -> !e.getText().startsWith("File") && !e.getText().equals("X"))
-            .forEach(ConsumerEx.ignore(this::clickOn));
+            .forEach(this::tryClickOn);
         WaitForAsyncUtils.waitForFxEvents();
     }
 

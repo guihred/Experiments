@@ -1,7 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static utils.RunnableEx.ignore;
 
 import ethical.hacker.ssh.BaseTestSupport;
 import ethical.hacker.ssh.CommonTestSupportUtils;
@@ -60,7 +59,7 @@ public class FXSSHTest extends AbstractTestExecution {
         List<TextField> fields = lookup(TextField.class).stream().collect(Collectors.toList());
         clickOn(fields.get(fields.size() - 1));
         type(typeText("git push"));
-        ignore(() -> clickOn(collect.get(0)));
+        tryClickOn(collect.get(0));
     }
 
     @Test
@@ -73,7 +72,7 @@ public class FXSSHTest extends AbstractTestExecution {
         List<TextField> fields = lookup(TextField.class).stream().collect(Collectors.toList());
         clickOn(fields.get(fields.size() - 1));
         type(typeText("ipconfig"));
-        ignore(() -> clickOn(collect.get(0)));
+        tryClickOn(collect.get(0));
         WaitForAsyncUtils.waitForFxEvents();
     }
 

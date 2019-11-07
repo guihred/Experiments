@@ -1,5 +1,7 @@
 package fxtests;
 
+import static utils.RunnableEx.ignore;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -100,7 +102,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     protected void randomDrag(Node cube, int bound) {
-        RunnableEx.ignore(() -> drag(cube, MouseButton.PRIMARY));
+        ignore(() -> drag(cube, MouseButton.PRIMARY));
         moveRandom(bound);
         drop();
     }

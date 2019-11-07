@@ -1,7 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static utils.RunnableEx.ignore;
 
 import extract.PdfUtils;
 import java.io.File;
@@ -25,7 +24,7 @@ public class FXPDFReaderTest extends AbstractTestExecution {
         show(PdfReader.class);
         lookup(".button").queryAll().forEach(t -> {
             sleep(1000);
-            ignore(() -> clickOn(t));
+            tryClickOn(t);
             type(KeyCode.ESCAPE);
         });
     }

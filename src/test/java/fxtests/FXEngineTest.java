@@ -31,7 +31,7 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifyButtons() {
         measureTime("Test.testButtons", () -> verifyAndRun(() -> lookup(".button").queryAll().forEach(t -> {
             sleep(1000);
-            ignore(() -> clickOn(t));
+            tryClickOn(t);
             type(KeyCode.ESCAPE);
         }), Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class, Chapter4.Ex10.class)));
     }
