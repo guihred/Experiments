@@ -81,15 +81,24 @@ public class JavaDependencyTest {
             () -> FXTesting.testApps(ToBeRunTest.getUncoveredApplications()));
     }
 
+    private boolean isSame(Throwable e, Class<? extends Throwable> expected) {
+        LOG.error("expected={} , Thrown = {}" , expected,e);
+        return expected != e.getClass();
+    }
+
     private void runTest(Class<?> testClass, Object test, List<String> failedTests) {
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
-                .sorted(Comparator.comparing(Method::getName)).forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
-                    failedTests.add(o + "");
-                    LOG.error("ERROR invoking " + o, e);
+                .sorted(Comparator.comparing(Method::getName))
+                .forEach(ConsumerEx.make(e -> e.invoke(test), (Method o, Throwable e) -> {
+                    Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
+                    if (expected == null || isSame(e, expected)) {
+                        failedTests.add(o + "");
+                        LOG.error("ERROR invoking " + o, e);
+                    }
                 }));
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));

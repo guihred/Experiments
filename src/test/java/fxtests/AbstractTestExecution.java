@@ -19,6 +19,7 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
 import utils.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -39,6 +40,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     public Logger getLogger() {
         return logger;
     }
+
     @Override
 	public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
@@ -46,10 +48,13 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         currentStage.setX(0);
         currentStage.setY(0);
     }
-
     @Override
 	public void stop() {
         currentStage.close();
+    }
+
+    public FxRobotInterface tryClickOn(Node node, MouseButton... buttons) {
+        return SupplierEx.getIgnore(() -> super.clickOn(node, buttons),null);
     }
 
     public void verifyAndRun(Stage stage1, RunnableEx consumer, List<Class<? extends Application>> applicationClasses) {
@@ -149,11 +154,14 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }
     }
 
-    protected <T extends Application> T showNewStage(Class<T> c) {
+    protected <T extends Application> T showNewStage(Class<T> c, RunnableEx run) {
         try {
             logger.info("SHOWING {}", c.getSimpleName());
             T newInstance = c.newInstance();
-            interactNoWait(RunnableEx.make(() -> newInstance.start(new Stage())));
+            Stage primaryStage = WaitForAsyncUtils.asyncFx(() -> new Stage()).get();
+            interactNoWait(RunnableEx.make(() -> newInstance.start(primaryStage)));
+            run.run();
+            interactNoWait(primaryStage::close);
             return newInstance;
         } catch (Exception e) {
             throw new RuntimeIOException(String.format("ERRO IN %s", c), e);

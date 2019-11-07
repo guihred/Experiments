@@ -81,8 +81,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 getLogger().info("Testing {} ", userData.getClass().getSimpleName());
             }
             if (!colors.isEmpty()) {
-                RunnableEx.ignore(() -> clickOn(colors.remove(random.nextInt(colors.size())),
-                    random.nextInt(5) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY));
+                tryClickOn(colors.remove(random.nextInt(colors.size())),
+                    random.nextInt(5) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY);
             }
             RunnableEx.run(() -> clickOn(next));
             lookup("#tools .slider").queryAll().forEach(f -> {

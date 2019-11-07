@@ -1,7 +1,6 @@
 package fxtests;
 
 import static javafx.scene.input.KeyCode.*;
-import static utils.RunnableEx.ignore;
 
 import cubesystem.DeathStar;
 import gaming.ex01.SnakeLauncher;
@@ -39,7 +38,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import labyrinth.*;
 import org.junit.Test;
-import utils.RunnableEx;
 
 public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
@@ -81,7 +79,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         Set<MemorySquare> lookup = lookup(MemorySquare.class);
         for (int i = 0; i < 5; i++) {
             MemorySquare randomItem = randomItem(lookup);
-            ignore(() -> clickOn(randomItem));
+            tryClickOn(randomItem);
         }
     }
 
@@ -93,7 +91,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         Collections.shuffle(queryAll);
         for (int i = 0; i < 30; i++) {
             Node next = queryAll.get(i);
-            ignore(() -> clickOn(next));
+            tryClickOn(next);
             if (tryClickButtons()) {
                 return;
             }
@@ -136,9 +134,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         double squareSize = DotsSquare.SQUARE_SIZE;
         for (int i = 0; i < queryAll.size() / 5; i++) {
             Node next = queryAll.get(i);
-            RunnableEx.ignore(() -> drag(next, MouseButton.PRIMARY));
-            moveBy(Math.random() * squareSize - squareSize / 2, Math.random() * squareSize - squareSize / 2);
-            drop();
+            randomDrag(next, (int) squareSize);
         }
     }
 

@@ -92,10 +92,8 @@ public final class FXMLCreatorHelper {
         Platform.runLater(RunnableEx.make(() -> {
             Stage primaryStage = new Stage();
             stages.add(primaryStage);
-            LOG.info("New instance {}", appClass.getSimpleName());
             Application a = ClassReflectionUtils.getInstance(appClass);
             primaryStage.setTitle(appClass.getSimpleName());
-            LOG.info("Starting {}", appClass.getSimpleName());
             remap(() -> a.start(primaryStage), "ERROR IN " + appClass);
             primaryStage.toBack();
             reference.getAndSet(primaryStage);

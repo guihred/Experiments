@@ -58,7 +58,7 @@ public class FXSSHTest extends AbstractTestExecution {
         List<Button> collect = lookup(Button.class).stream().collect(Collectors.toList());
         clickOn(collect.get(collect.size() - 1));
         WaitForAsyncUtils.waitForFxEvents();
-        sleep(1000);
+        sleep(2000);
         List<TextField> fields = lookup(TextField.class).stream().collect(Collectors.toList());
         clickOn(fields.get(fields.size() - 1));
         type(typeText("ipconfig"));

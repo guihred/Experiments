@@ -2,7 +2,6 @@ package fxtests;
 
 import ex.j8.Chapter4;
 import fxsamples.WorkingListsViews;
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -12,7 +11,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import org.junit.Test;
 import org.testfx.util.WaitForAsyncUtils;
-import utils.StageHelper;
 
 @SuppressWarnings("static-method")
 public final class FXTest extends AbstractTestExecution {
@@ -27,17 +25,8 @@ public final class FXTest extends AbstractTestExecution {
     }
 
     @Test
-    public void testDisplayCSSStyler() throws Throwable {
-        showNewStage(randomItem(FXTesting.getClasses(Application.class)));
-        String[] list = new File("src/main/resources/").list((d, f) -> f.endsWith(".css"));
-        interactNoWait(() -> StageHelper.displayCSSStyler(lookup(".root").query().getScene(), list[0]));
-        tryClickButtons();
-    }
-
-
-    @Test
     public void verifyWorkingListsViews() {
-        showNewStage(WorkingListsViews.class);
+        show(WorkingListsViews.class);
         WaitForAsyncUtils.waitForFxEvents();
         List<Node> lookup = lookup(ListView.class).stream().collect(Collectors.toList());
         List<Button> buttons = lookup(Button.class).stream().collect(Collectors.toList());

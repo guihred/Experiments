@@ -4,12 +4,13 @@ import static javafx.scene.input.KeyCode.*;
 import static utils.RunnableEx.ignore;
 
 import fxpro.ch02.PongLauncher;
+import fxpro.ch04.ReversiMain;
+import fxpro.ch04.ReversiSquare;
 import fxpro.ch06.ResponsiveUIApp;
 import fxpro.ch06.ThreadInformationApp;
 import fxpro.ch07.Chart3dSampleApp;
 import fxsamples.*;
 import fxsamples.bounds.BoundsPlayground;
-import fxsamples.person.FormValidation;
 import fxsamples.person.PersonTableController;
 import fxsamples.person.WorkingWithTableView;
 import java.util.Arrays;
@@ -31,20 +32,6 @@ public class FXEngineSampleTest extends AbstractTestExecution {
         show(BoundsPlayground.class);
         lookup(CheckBox.class).forEach(this::clickOn);
         lookup(RadioButton.class).forEach(this::clickOn);
-    }
-
-    @Test
-    public void verifyFormValidation() {
-        showNewStage(FormValidation.class);
-        clickOn(lookupFirst(PasswordField.class));
-        type(typeText(getRandomString()));
-        type(KeyCode.ENTER);
-        eraseText(4);
-        type(typeText(getRandomString()));
-        type(KeyCode.ENTER);
-        eraseText(4);
-        type(typeText("senha"));
-        type(KeyCode.ENTER);
     }
 
     @Test
@@ -126,6 +113,13 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     public void verifyResponsiveUIApp() {
         show(ResponsiveUIApp.class);
         tryClickButtons();
+    }
+
+    @Test
+    public void verifyReversiMain() {
+        show(ReversiMain.class);
+        ReversiSquare lookupFirst = lookupFirst(ReversiSquare.class);
+        clickOn(lookupFirst);
     }
 
     @Test

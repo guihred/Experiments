@@ -57,7 +57,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         build.removeCol("WINNER", "PLAYER");
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));
-        DecisionNode decisionTree = DecisionTree.buildTree(build, "ACTION", 0.01);
+        DecisionNode decisionTree = DecisionTree.buildTree(build, "ACTION", 0.001);
 
         List<EdgeCatan> allEdge = lookup(EdgeCatan.class).stream()
             .collect(Collectors.toList());

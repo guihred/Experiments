@@ -113,7 +113,12 @@ public class ToBeRunTest {
         return arr[0] + arr[1] == 0 ? 100 : arr[1] / (arr[0] + arr[1]) * 100;
     }
 
+
     public static List<String> getUncovered() {
+        return getUncovered(LINES_MIN_COVERAGE);
+    }
+
+    public static List<String> getUncovered(int min) {
         File csvFile = new File("target/site/jacoco/jacoco.csv");
         if (!csvFile.exists()) {
             return Collections.emptyList();
@@ -121,14 +126,17 @@ public class ToBeRunTest {
         DataframeML b = DataframeBuilder.build(csvFile);
         DataframeUtils.crossFeature(b, "PERCENTAGE", ToBeRunTest::getPercentage, "LINE_MISSED",
             "LINE_COVERED");
-        b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= LINES_MIN_COVERAGE);
+        b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= min);
         return b.list("CLASS");
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
-        List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(getUncovered());
-        if (!uncoveredApplications.isEmpty()) {
-            return uncoveredApplications;
+        for (int i = LINES_MIN_COVERAGE; i < 100; i++) {
+            List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(getUncovered(i));
+            if (!uncoveredApplications.isEmpty()) {
+                LOG.info("Min COVERAGE APPLICATIONS= {}", i);
+                return uncoveredApplications;
+            }
         }
         return getUncoveredApplications(getUncoveredBranches());
     }
@@ -163,10 +171,13 @@ public class ToBeRunTest {
     }
 
     public static List<String> getUncoveredTests() {
-        List<String> uncoveredTests = getUncoveredFxTest(ToBeRunTest.getUncovered());
-		if (!uncoveredTests.isEmpty()) {
-			return uncoveredTests;
-		}
+        for (int i = LINES_MIN_COVERAGE; i < 100; i++) {
+            List<String> uncoveredApplications = getUncoveredFxTest(getUncovered(i));
+            if (!uncoveredApplications.isEmpty()) {
+                LOG.error("Min COVERAGE TESTS= {}", i);
+                return uncoveredApplications;
+            }
+        }
 		return getUncoveredFxTest(ToBeRunTest.getUncoveredBranches());
     }
 

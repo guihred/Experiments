@@ -20,7 +20,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleConverter;
+import simplebuilder.SimpleListViewBuilder;
 import utils.HasLogging;
 import utils.HibernateUtil;
 import utils.ResourceFXUtils;
@@ -94,7 +95,7 @@ public class ContestQuestionEditingDisplay extends Application {
             }
         });
         image.textProperty().addListener((o, v, n) -> {
-            if (n != null && StringUtils.isNotBlank(n)) {
+            if (StringUtils.isNotBlank(n)) {
                 setImage(newImage, n);
             }
         });
@@ -133,23 +134,20 @@ public class ContestQuestionEditingDisplay extends Application {
     }
 
     private ListView<ContestQuestionAnswer> newOptionListView() {
-        ListView<ContestQuestionAnswer> listView = new ListView<>();
-        listView.setItems(options);
-        listView.setFixedCellSize(Region.USE_COMPUTED_SIZE);
-        listView.setCellFactory(
-            ChoiceBoxListCell.forListView(new SimpleConverter<ContestQuestionAnswer>("answer"), options));
-
-        listView.selectionModelProperty().get().selectedItemProperty().addListener((o, v, n) -> {
-            if (n != null) {
-                options.forEach(e -> e.setCorrect(false));
-                n.setCorrect(true);
-            }
-        });
-        options.addListener((ListChangeListener<ContestQuestionAnswer>) c -> {
+        ListView<ContestQuestionAnswer> listView = new SimpleListViewBuilder<ContestQuestionAnswer>().items(options)
+            .fixedCellSize(Region.USE_COMPUTED_SIZE)
+            .cellFactory(ChoiceBoxListCell.forListView(new SimpleConverter<ContestQuestionAnswer>("answer"), options))
+            .onSelect((v, n) -> {
+                if (n != null) {
+                    options.forEach(e -> e.setCorrect(false));
+                    n.setCorrect(true);
+                }
+            }).build();
+        options.addListener((Change<? extends ContestQuestionAnswer> c) -> {
             c.next();
             ContestQuestionAnswer orElse = c.getAddedSubList().stream().filter(ContestQuestionAnswer::getCorrect)
                 .findAny().orElse(null);
-            listView.selectionModelProperty().get().select(orElse);
+            listView.getSelectionModel().select(orElse);
         });
         return listView;
     }
