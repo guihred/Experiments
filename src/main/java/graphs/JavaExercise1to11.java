@@ -218,7 +218,7 @@ public final class JavaExercise1to11 {
 
     public static void recurringFractionProblem() {
         for (int i = 0; i < 10; i++) {
-            LOG.info("{}", f(i));
+            LOG.trace("{}", f(i));
         }
     }
 
