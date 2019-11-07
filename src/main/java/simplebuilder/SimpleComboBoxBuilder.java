@@ -44,22 +44,7 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
     public SimpleComboBoxBuilder<T> nullOption(String option) {
         StringConverter<T> converter = comboBox.getConverter();
 
-        StringConverter<T> stringConverter = new StringConverter<T>() {
-
-            @Override
-            public T fromString(String string) {
-                if (string.equals(option)) {
-                    return null;
-                }
-                return converter.fromString(string);
-            }
-
-            @Override
-            public String toString(T object) {
-                return FunctionEx.mapIf(object, converter::toString, option);
-            }
-
-        };
+        StringConverter<T> stringConverter = new NullOptionConverter(converter, option);
         comboBox.setConverter(stringConverter);
         return this;
     }
@@ -95,6 +80,29 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
             cell.setText(comboBox.getConverter().toString(item));
             cell.setStyle(func.apply(item));
         });
+    }
+
+    private final class NullOptionConverter extends StringConverter<T> {
+        private final StringConverter<T> converter;
+        private final String option;
+
+        private NullOptionConverter(StringConverter<T> converter, String option) {
+            this.converter = converter;
+            this.option = option;
+        }
+
+        @Override
+        public T fromString(String string) {
+            if (string.equals(option)) {
+                return null;
+            }
+            return converter.fromString(string);
+        }
+
+        @Override
+        public String toString(T object) {
+            return FunctionEx.mapIf(object, converter::toString, option);
+        }
     }
 
 }

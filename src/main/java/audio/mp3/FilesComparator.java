@@ -67,11 +67,9 @@ public class FilesComparator extends Application {
 
             double d = 1.0 / find.size();
             for (int i = 0; i < musicas.size(); i++) {
-                synchronized (musicas) {
-                    File t = musicas.get(i);
-                    updateProgress(progress.getProgress() + d);
-                    getFromMap(t, fileMap);
-                }
+                File t = musicas.get(i);
+                updateProgress(progress.getProgress() + d);
+                getFromMap(t, fileMap);
             }
             table1.sort();
             updateProgress(1);
@@ -178,9 +176,7 @@ public class FilesComparator extends Application {
                 RunnableEx.run(() -> {
                     Files.delete(selectedItem.toPath());
                     ObservableList<File> items = table1.getItems();
-                    synchronized (items) {
-                        items.remove(selectedItem);
-                    }
+                    items.remove(selectedItem);
                 });
             }
         }
