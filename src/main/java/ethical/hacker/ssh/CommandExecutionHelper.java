@@ -45,7 +45,6 @@ abstract class CommandExecutionHelper extends AbstractCommandSupport {
                 log.trace("IGNORED Exception", e);
                 return;
             }
-            log.trace("Exception", e);
             String message = "Failed (" + e.getClass().getSimpleName() + ") to handle '" + typedCommand + "': "
                 + e.getMessage();
             RunnableEx.make(() -> getErrorStream().write(message.getBytes(StandardCharsets.US_ASCII)),

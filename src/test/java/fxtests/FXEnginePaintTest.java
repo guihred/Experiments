@@ -12,10 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
@@ -26,6 +23,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import org.junit.Test;
+import paintexp.ColorChooser;
 import paintexp.PaintFileUtils;
 import paintexp.PaintMain;
 import paintexp.SimplePixelReader;
@@ -62,6 +60,20 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             reader.getPixels(0, 0, 1, 1, pixelFormat, new int[] { 0, 0 }, 0, 0);
             reader.getPixels(0, 0, 1, 1, PixelFormat.getByteBgraInstance(), new byte[] { 0, 0, 0, 0 }, 0, 0);
         });
+    }
+
+    @Test
+    public void verifyColorChooser() {
+        show(ColorChooser.class);
+        Set<Slider> queryAll = lookup(Slider.class);
+        int i = 0;
+        for (Node m : queryAll) {
+            if (i++ == 3) {
+                lookup(".tab").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
+            }
+            randomDrag(m, 10);
+        }
+        tryClickButtons();
     }
 
     protected void testTools(final Node stack) {

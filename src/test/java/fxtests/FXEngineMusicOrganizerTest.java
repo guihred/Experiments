@@ -138,10 +138,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             randomDrag(f, 100);
             lookup(Slider.class).forEach(e -> randomDrag(e, 100));
             interactNoWait(RunnableEx.make(() -> show.playMedia(getRandomSong().toUri().toURL().toExternalForm())));
-            RunnableEx.ignore(() -> {
-                Node query = lookup("#closeButton").query();
-                clickOn(query);
-            });
+            tryClickOn(lookup("#closeButton").queryParent());
             interactNoWait(currentStage::close);
         }
     }
@@ -156,7 +153,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
     private Path getRandomSong() {
         File outFile = ResourceFXUtils.getUserFolder("Music");
         Path randomSong = randomItem(ResourceFXUtils.getPathByExtension(outFile, "mp3"));
-        getLogger().info("{} from ", randomSong, HasLogging.getCurrentLine(1));
+        getLogger().info("{} from {}", randomSong, HasLogging.getCurrentLine(1));
         return randomSong;
     }
 }

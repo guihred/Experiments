@@ -8,12 +8,9 @@ import ex.j8.Chapter4;
 import extract.FileAttrApp;
 import fractal.LeafFractalApp;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
-import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
@@ -24,7 +21,6 @@ import ml.*;
 import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
-import paintexp.ColorChooser;
 import schema.sngpc.SngpcViewer;
 import utils.ConsumerEx;
 import utils.ImageFXUtils;
@@ -40,19 +36,6 @@ public class FXEngineTest extends AbstractTestExecution {
         }), Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class, Chapter4.Ex10.class)));
     }
 
-    @Test
-    public void verifyColorChooser() {
-        show(ColorChooser.class);
-        List<Node> queryAll = lookup(".slider").queryAll().stream().collect(Collectors.toList());
-        for (int i = 0; i < queryAll.size(); i++) {
-            if (i == 3) {
-                lookup(".tab").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
-            }
-            Node m = queryAll.get(i);
-            randomDrag(m, 10);
-        }
-        tryClickButtons();
-    }
 
     @Test
     public void verifyFileAttrApp() {

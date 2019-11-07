@@ -81,6 +81,10 @@ public class PlayingAudio extends Application {
 
     public void onMouseClickedClosebutton() {
         mainStage.close();
+        runIf(mediaPlayer, t -> {
+            t.stop();
+            t.dispose();
+        });
     }
 
     public void onMousePressedStopbutton() {
