@@ -24,13 +24,9 @@ public class FXFileComparatorTest extends AbstractTestExecution {
         Set<TableView> lookup = lookup(TableView.class);
         for (TableView<File> query : lookup) {
             application.addSongsToTable(query, listFiles[i++ % listFiles.length]);
-            while (application.getProgress() < 1) {
-                // DOES NOTHING
-            }
+            waitProgress(application);
         }
-        while (application.getProgress() < 1) {
-            // DOES NOTHING
-        }
+        waitProgress(application);
         List<Button> filter = lookup(Button.class).stream()
             .filter(e -> !e.getText().startsWith("File") && !e.getText().equals("X")).collect(Collectors.toList());
         filter.forEach(this::tryClickOn);
@@ -46,10 +42,14 @@ public class FXFileComparatorTest extends AbstractTestExecution {
             }
 
         }
+        waitProgress(application);
+        filter.forEach(this::tryClickOn);
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    private static void waitProgress(FilesComparator application) {
         while (application.getProgress() < 1) {
             // DOES NOTHING
         }
-        filter.forEach(this::tryClickOn);
-        WaitForAsyncUtils.waitForFxEvents();
     }
 }
