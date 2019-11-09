@@ -69,13 +69,12 @@ public class MusicOrganizer extends Application {
     }
 
     private Button loadMusic(TableView<Music> musicasTable, TextField filterField) {
-        return StageHelper.selectDirectory("Carregar _Musicas", "Carregar Pasta de Músicas", selectedFile -> {
-            new Thread(() -> {
+        return StageHelper.selectDirectory("Carregar _Musicas", "Carregar Pasta de Músicas",
+            selectedFile -> new Thread(() -> {
                 ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
                 musicasTable.setItems(musicas);
                 configurarFiltroRapido(filterField, musicasTable, musicas);
-            }, "Carregando Musicas").start();
-        });
+            }, "Carregando Musicas").start());
     }
 
     private TableView<Music> tabelaMusicas() {

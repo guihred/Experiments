@@ -25,6 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.FunctionEx;
 import utils.HasLogging;
 import utils.ImageTableCell;
 import utils.StringSigaUtils;
@@ -58,7 +59,7 @@ public class ContestApplicationController {
     public void initialize() {
         current.set(-1);
         ObservableList<ContestReader> allContests2 = ContestReader.getAllContests();
-        allContests.setCellFactory(newCellFactory(this::setText));
+        allContests.setCellFactory(newCellFactory(ContestApplicationController::setText));
         allContests.setItems(allContests2);
         if (!allContests2.isEmpty()) {
             contestQuestions = allContests2.get(0);
@@ -145,18 +146,13 @@ public class ContestApplicationController {
         updateCellFactory();
     }
 
-    private void setText(ContestReader item, ListCell<ContestReader> cell) {
-        cell.setText(
-            mapIf(item, it -> Objects.toString(it.getContest().getJob(), "") + "\n" + it.getContest().getName()));
-    }
-
     private void updateCellFactory() {
         options.setCellFactory(newCellFactory((el, cell) -> {
             Text text1 = new Text(el != null ? el.getAnswer() : "");
             text1.wrappingWidthProperty().bind(options.widthProperty().add(-10));
             cell.setGraphic(text1);
             cell.getStyleClass().removeAll("certo", "errado", CERTO0, ERRADO0);
-            cell.getStyleClass().add(el != null ? el.getCorrect() ? CERTO0 : ERRADO0 : "");
+            cell.getStyleClass().add(FunctionEx.mapIf(el, e -> e.getCorrect() ? CERTO0 : ERRADO0, ""));
         }));
         options.getSelectionModel().clearSelection();
     }
@@ -189,6 +185,11 @@ public class ContestApplicationController {
     private static Stream<ContestText> getContextTexts(ContestReader contestQuestions2, int cur) {
         return contestQuestions2.getContestTexts().stream()
             .filter(t -> ContestApplicationController.isBetween(t, cur));
+    }
+
+    private static void setText(ContestReader item, ListCell<ContestReader> cell) {
+        cell.setText(
+            mapIf(item, it -> Objects.toString(it.getContest().getJob(), "") + "\n" + it.getContest().getName()));
     }
 
 }

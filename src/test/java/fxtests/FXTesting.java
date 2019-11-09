@@ -119,7 +119,7 @@ public final class FXTesting implements HasLogging {
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
         String formatDuration = DurationFormatUtils.formatDuration(arg2, TIME_FORMAT);
-        log.info(TIME_TOOK_FORMAT, name, formatDuration);
+        log.info(TIME_TOOK_FORMAT, String.format("%s=>%s", name, t), formatDuration);
         return t;
     }
 

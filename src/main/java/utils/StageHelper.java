@@ -15,10 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 import simplebuilder.SimpleDialogBuilder;
 
 public final class StageHelper {
@@ -70,16 +67,9 @@ public final class StageHelper {
         textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));
 
 
-        runIf(scene.getWindow(), window -> {
-            EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
-            window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
-            window.showingProperty().addListener(e -> closeBoth(stage2, closeRequest, null));
-        });
-        scene.windowProperty().addListener((ob, o, window) -> {
-            EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
-            window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
-            window.showingProperty().addListener(e -> closeBoth(stage2, closeRequest, null));
-        });
+        Window windowc = scene.getWindow();
+        closeIfPossible(stage2, windowc);
+        scene.windowProperty().addListener((ob, o, window) -> closeIfPossible(stage2, window));
         return stage2;
     }
 
@@ -123,6 +113,14 @@ public final class StageHelper {
     private static void closeBoth(Stage stage2, EventHandler<WindowEvent> onCloseRequest, WindowEvent e) {
         runIf(onCloseRequest, o -> o.handle(e));
         stage2.close();
+    }
+
+    private static void closeIfPossible(Stage stage2, Window windowc) {
+        runIf(windowc, window -> {
+            EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
+            window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
+            window.showingProperty().addListener(e -> closeBoth(stage2, closeRequest, null));
+        });
     }
 
     private static String getText(File file) {

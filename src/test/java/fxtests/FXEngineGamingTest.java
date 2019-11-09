@@ -121,7 +121,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             PacmanLauncher.class, PlatformMain.class, MazeLauncher.class, TronLauncher.class, TetrisLauncher.class)) {
             show(class1);
             for (KeyCode keyCode : Arrays.asList(W, S, A, D, DOWN, UP, LEFT, RIGHT, SPACE)) {
-                type(keyCode, nextInt(5));
+                type(keyCode, nextInt(20));
             }
         }
     }
