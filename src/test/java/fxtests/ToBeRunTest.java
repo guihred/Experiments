@@ -1,6 +1,7 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
+import static utils.StringSigaUtils.nonNull;
 
 import graphs.app.JavaFileDependency;
 import java.io.File;
@@ -126,7 +127,8 @@ public class ToBeRunTest {
         DataframeML b = DataframeBuilder.build(csvFile);
         DataframeUtils.crossFeature(b, "PERCENTAGE", ToBeRunTest::getPercentage, "LINE_MISSED", "LINE_COVERED");
         b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= min);
-        return b.list("CLASS");
+        List<String> list = b.list("CLASS");
+        return nonNull(list, Collections.emptyList());
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
@@ -177,7 +179,7 @@ public class ToBeRunTest {
         DataframeML b = DataframeBuilder.build(csvFile);
         DataframeUtils.crossFeature(b, "PERCENTAGE", ToBeRunTest::getPercentage, "BRANCH_MISSED", "BRANCH_COVERED");
         b.filter("PERCENTAGE", v -> ((Number) v).intValue() < min);
-        return b.list("CLASS");
+        return nonNull(b.list("CLASS"), Collections.emptyList());
     }
 
     public static List<String> getUncoveredTests() {

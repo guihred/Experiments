@@ -40,8 +40,10 @@ public class PrintImageLocations extends PDFStreamEngine {
     private int num;
 
     private int pageNumber;
+    private File pdfFile;
 
-    public PrintImageLocations() {
+    public PrintImageLocations(File file) {
+        pdfFile = file;
         addOperator(new Concatenate());
         addOperator(new DrawObject());
         addOperator(new SetGraphicsStateParameters());
@@ -58,6 +60,26 @@ public class PrintImageLocations extends PDFStreamEngine {
             return images.subList(size, images.size());
         }
         return Collections.emptyList();
+    }
+
+    public File save(Object number, BufferedImage image, String ext) {
+        File outFile = ResourceFXUtils.getOutFile(OUT_FOLDER);
+        if (!outFile.exists()) {
+            outFile.mkdir();
+        }
+        String extension = "jpx".equals(ext) ? "jpg" : Objects.toString(ext, "png");
+        File file = new File(outFile,
+            pdfFile.getName().replace(".pdf", "") + pageNumber + "-" + number + "." + extension);
+        return SupplierEx.get(() -> {
+            ImageIO.write(image, extension, file); // ignore returned boolean
+            Optional<File> findFirst = Stream.of(outFile.listFiles()).filter(e -> e.getName().endsWith(extension))
+                .filter(e -> !e.equals(file)).filter(makeTest(f -> contentEquals(file, f))).findFirst();
+            if (findFirst.isPresent()) {
+                RunnableEx.ignore(() -> Files.deleteIfExists(file.toPath()));
+                return findFirst.get();
+            }
+            return null;
+        }, file);
     }
 
     @Override
@@ -83,7 +105,7 @@ public class PrintImageLocations extends PDFStreamEngine {
         if (xobject instanceof PDImageXObject) {
             PDImageXObject image = (PDImageXObject) xobject;
             BufferedImage image2 = image.getImage();
-            File save = save(pageNumber, num++, image2, image.getSuffix());
+            File save = save( num++, image2, image.getSuffix());
 
             Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
 
@@ -101,25 +123,6 @@ public class PrintImageLocations extends PDFStreamEngine {
             LOG.trace("{} at ({},{}) page {}", pdfImage.getFile(), pdfImage.getX(), pdfImage.getY(), pageNumber);
 
         }
-    }
-
-    public static File save(int pageNumber, Object number, BufferedImage image, String ext) {
-        File outFile = ResourceFXUtils.getOutFile(OUT_FOLDER);
-        if (!outFile.exists()) {
-            outFile.mkdir();
-        }
-        String extension = "jpx".equals(ext) ? "jpg" : Objects.toString(ext, "png");
-        File file = new File(outFile, pageNumber + "-" + number + "." + extension);
-        return SupplierEx.get(() -> {
-            ImageIO.write(image, extension, file); // ignore returned boolean
-            Optional<File> findFirst = Stream.of(outFile.listFiles()).filter(e -> e.getName().endsWith(extension))
-                .filter(e -> !e.equals(file)).filter(makeTest(f -> contentEquals(file, f))).findFirst();
-            if (findFirst.isPresent()) {
-                RunnableEx.ignore(() -> Files.deleteIfExists(file.toPath()));
-                return findFirst.get();
-            }
-            return null;
-        }, file);
     }
 
 }

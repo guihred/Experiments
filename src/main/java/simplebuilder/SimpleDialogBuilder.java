@@ -100,6 +100,11 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
         return stage;
     }
 
+    public SimpleDialogBuilder height(double value) {
+        stage.setHeight(value);
+        return this;
+    }
+
     public SimpleDialogBuilder text(String text) {
         group.getChildren().add(new Text(text));
         return this;

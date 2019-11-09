@@ -1,16 +1,8 @@
 package fxtests;
 
 import ex.j8.Chapter4;
-import fxsamples.WorkingListsViews;
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import org.junit.Test;
-import org.testfx.util.WaitForAsyncUtils;
 
 @SuppressWarnings("static-method")
 public final class FXTest extends AbstractTestExecution {
@@ -24,18 +16,6 @@ public final class FXTest extends AbstractTestExecution {
             Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class);
     }
 
-    @Test
-    public void verifyWorkingListsViews() {
-        show(WorkingListsViews.class);
-        WaitForAsyncUtils.waitForFxEvents();
-        List<Node> lookup = lookup(ListView.class).stream().collect(Collectors.toList());
-        List<Button> buttons = lookup(Button.class).stream().collect(Collectors.toList());
-        for (int i = 0; i < lookup.size(); i++) {
-            Node queryAs = from(lookup.get(i)).lookup(ListCell.class::isInstance).query();
-            clickOn(queryAs);
-            clickOn(buttons.get(i));
-        }
 
-    }
 
 }

@@ -4,6 +4,7 @@ import static utils.FunctionEx.makeFunction;
 
 import java.io.File;
 import java.util.stream.Stream;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.image.ImageView;
@@ -34,9 +35,13 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
     }
 
     private ImageView getImageView(String image) {
+        return newImage(image, super.widthProperty());
+    }
+
+    public static ImageView newImage(String image, ReadOnlyDoubleProperty widthProperty) {
         String imageUrl = getImageLink(image);
         ImageView imageView = new ImageView(imageUrl);
-        imageView.fitWidthProperty().bind(super.widthProperty());
+        imageView.fitWidthProperty().bind(widthProperty);
         imageView.setPreserveRatio(true);
         return imageView;
     }

@@ -35,7 +35,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
     @Test
     public void splitAudio() {
-        show(MusicOrganizer.class);
+        MusicOrganizer organizer = show(MusicOrganizer.class);
         clickOn("Carregar _Vídeos");
         type(KeyCode.ENTER);
         sleep(1000);
@@ -49,12 +49,17 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         ConsoleUtils.waitAllProcesses();
         clickOn("Carregar _Musicas");
         type(KeyCode.ENTER);
-        WaitForAsyncUtils.waitForFxEvents();
+        type(KeyCode.ENTER);
+        while (organizer.getProgress() < 1) {
+            // DOES NOTHING
+            sleep(10);
+        }
+        sleep(100);
         doubleClickOn(lookupFirst(TableRow.class));
         lookup("_Play/Pause").queryAll().forEach(this::clickOn);
         lookup("_Split").queryAll().forEach(this::clickOn);
         clickOn("_Consertar Musicas");
-        tryClickButtons();
+        clickOn("_Fix");
         Set<TextField> lookup = lookup(TextField.class);
         for (TextField textField : lookup) {
             tryClickOn(textField);

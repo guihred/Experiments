@@ -135,7 +135,8 @@ public final class DataframeUtils extends DataframeML {
 
             readRows(dataframeML, scanner, header);
         } catch (Exception e) {
-            LOG.error("FILE NOT FOUND " + csvFile, e);
+            LOG.error("ERROR IN FILE {} - {}", csvFile, e.getMessage());
+            LOG.trace("FILE NOT FOUND " + csvFile, e);
         }
     }
 

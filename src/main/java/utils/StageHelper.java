@@ -19,6 +19,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import simplebuilder.SimpleDialogBuilder;
 
 public final class StageHelper {
 
@@ -46,10 +47,9 @@ public final class StageHelper {
 
     }
 
-    public static void displayCSSStyler(Scene scene, String pathname) {
+    public static Stage displayCSSStyler(Scene scene, String pathname) {
         String str = TreeElement.displayStyleClass(scene.getRoot());
         HasLogging.log(1).info("{}", str);
-        Stage stage2 = new Stage();
         File file = new File("src/main/resources/" + pathname);
         TextArea textArea = new TextArea(getText(file));
         if (file.exists()) {
@@ -64,19 +64,23 @@ public final class StageHelper {
                 textArea.requestFocus();
             }
         }));
-        stage2.setScene(new Scene(new VBox(textArea, saveButton)));
+        Stage stage2 = new SimpleDialogBuilder().button(new VBox(textArea, saveButton)).bindWindow(scene.getRoot())
+            .height(500)
+            .displayDialog();
         textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));
-        stage2.setHeight(500);
-        stage2.show();
+
 
         runIf(scene.getWindow(), window -> {
             EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
             window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
+            window.showingProperty().addListener(e -> closeBoth(stage2, closeRequest, null));
         });
-        scene.windowProperty().addListener((ob, o, n) -> {
-            EventHandler<WindowEvent> closeRequest = n.getOnCloseRequest();
-            n.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
+        scene.windowProperty().addListener((ob, o, window) -> {
+            EventHandler<WindowEvent> closeRequest = window.getOnCloseRequest();
+            window.setOnCloseRequest(e -> closeBoth(stage2, closeRequest, e));
+            window.showingProperty().addListener(e -> closeBoth(stage2, closeRequest, null));
         });
+        return stage2;
     }
 
     public static EventHandler<ActionEvent> fileAction(String title, ConsumerEx<File> onSelect, String filter,

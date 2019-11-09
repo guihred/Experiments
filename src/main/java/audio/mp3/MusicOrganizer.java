@@ -1,6 +1,7 @@
 package audio.mp3;
 
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
+import static utils.ResourceFXUtils.toExternalForm;
 import static utils.StringSigaUtils.nonNull;
 
 import extract.Music;
@@ -36,8 +37,15 @@ public class MusicOrganizer extends Application {
     private static final int WIDTH = 600;
     private static final Image DEFAULT_VIEW = defaultView();
 
+    private ProgressIndicator progress = new ProgressIndicator(0);
+
+    public double getProgress() {
+        return progress.getProgress();
+    }
+
     @Override
     public void start(Stage primaryStage) {
+
         VBox root = new VBox();
         TableView<Music> musicasTable = tabelaMusicas();
         musicasTable.prefWidthProperty().bind(root.widthProperty().subtract(10));
@@ -48,8 +56,9 @@ public class MusicOrganizer extends Application {
         configurarFiltroRapido(filterField, musicasTable, musics);
         Button buttonVideos = loadVideos(musicasTable, filterField);
         root.getChildren().add(new VBox(new Label("Lista Músicas"),
-            new HBox(buttonMusic, buttonVideos, fixMusic, filterField), musicasTable));
+            new HBox(buttonMusic, buttonVideos, fixMusic, filterField, progress), musicasTable));
         Scene scene = new Scene(root, WIDTH, HEIGHT);
+        scene.getStylesheets().add(toExternalForm("filesComparator.css"));
         primaryStage.setTitle("Organizador de Músicas");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -57,6 +66,16 @@ public class MusicOrganizer extends Application {
 
     private void convertToImage(Music music, TableCell<Music, Object> cell) {
         cell.setGraphic(view(nonNull(music.getImage(), DEFAULT_VIEW)));
+    }
+
+    private Button loadMusic(TableView<Music> musicasTable, TextField filterField) {
+        return StageHelper.selectDirectory("Carregar _Musicas", "Carregar Pasta de Músicas", selectedFile -> {
+            new Thread(() -> {
+                ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
+                musicasTable.setItems(musicas);
+                configurarFiltroRapido(filterField, musicasTable, musicas);
+            }, "Carregando Musicas").start();
+        });
     }
 
     private TableView<Music> tabelaMusicas() {
@@ -128,14 +147,6 @@ public class MusicOrganizer extends Application {
         }));
         new SimpleDialogBuilder().text("Fix Fields").button(vBox).bindWindow(musicasTable).displayDialog();
 
-    }
-
-    private static Button loadMusic(TableView<Music> musicasTable, TextField filterField) {
-        return StageHelper.selectDirectory("Carregar _Musicas", "Carregar Pasta de Músicas", selectedFile -> {
-            ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile);
-            musicasTable.setItems(musicas);
-            configurarFiltroRapido(filterField, musicasTable, musicas);
-        });
     }
 
     private static Button loadVideos(final TableView<Music> musicasTable, TextField filterField) {

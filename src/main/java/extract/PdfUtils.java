@@ -52,7 +52,7 @@ public final class PdfUtils {
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
                 int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
                 for (int i = start; i < nPag; i++) {
-                    PrintImageLocations printImageLocations = new PrintImageLocations();
+                    PrintImageLocations printImageLocations = new PrintImageLocations(file);
                     List<PdfImage> pageImages = getPageImages(printImageLocations, i, pdDoc.getPage(i));
                     images.put(i, pageImages);
                     double current = i;
@@ -175,7 +175,7 @@ public final class PdfUtils {
                 }
             };
             int numberOfPages = pdDoc.getNumberOfPages();
-            PrintImageLocations printImageLocations = new PrintImageLocations();
+            PrintImageLocations printImageLocations = new PrintImageLocations(file);
             for (int i = 2; i <= numberOfPages; i++) {
                 PDPage page = pdDoc.getPage(i - 1);
                 onPage.accept(i);

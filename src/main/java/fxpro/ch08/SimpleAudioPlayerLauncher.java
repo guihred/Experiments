@@ -7,6 +7,7 @@ package fxpro.ch08;
 
 import static utils.RunnableEx.runIf;
 
+import java.util.Objects;
 import javafx.application.Application;
 import javafx.collections.MapChangeListener.Change;
 import javafx.geometry.Insets;
@@ -113,16 +114,17 @@ public class SimpleAudioPlayerLauncher extends Application {
 
     private void handleMetadata(String key, Object value) {
         LOGGER.trace("Key={},Value={}", key, value);
+        String valueString = Objects.toString(value);
         if ("album".equals(key)) {
-            album.setText(value.toString());
+            album.setText(valueString);
         } else if ("artist".equals(key)) {
-            artist.setText(value.toString());
+            artist.setText(valueString);
         }
         if ("title".equals(key)) {
-            title.setText(value.toString());
+            title.setText(valueString);
         }
         if ("year".equals(key)) {
-            year.setText(value.toString());
+            year.setText(valueString);
         }
         if ("image".equals(key) && value instanceof Image) {
             albumCover.setImage(ImageFXUtils.imageCopy((Image) value));

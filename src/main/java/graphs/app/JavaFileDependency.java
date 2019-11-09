@@ -189,14 +189,15 @@ public class JavaFileDependency {
         return displayTestsToBeRun(asList, name1, new ArrayList<>());
     }
 
-    public static Set<String> displayTestsToBeRun(Collection<String> asList, String name1, List<String> allPaths) {
+    public static Set<String> displayTestsToBeRun(Collection<String> dependecyList, String name1,
+        List<String> allPaths) {
         List<JavaFileDependency> allFileDependencies = getAllFileDependencies();
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
         }
         Set<String> testClasses = new LinkedHashSet<>();
         for (JavaFileDependency dependecy : allFileDependencies) {
-            if (asList.contains(dependecy.getName())) {
+            if (dependecyList == null || dependecyList.contains(dependecy.getName())) {
                 List<JavaFileDependency> visited = new ArrayList<>();
                 List<JavaFileDependency> path = new ArrayList<>();
                 dependecy.search(name1, visited, path);

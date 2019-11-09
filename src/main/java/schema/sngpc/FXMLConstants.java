@@ -55,7 +55,7 @@ public final class FXMLConstants {
     private static final List<String> IGNORE = Arrays.asList("needsLayout", "layoutBounds", "baselineOffset",
         "localToParentTransform", "eventDispatcher", "skin", "background", "controlCssMetaData", "pseudoClassStates",
         "localToSceneTransform", "parentPopup", "cssMetaData", "classCssMetaData", "boundsInParent", "boundsInLocal",
-        "scene", "childrenUnmodifiable", "styleableParent", "parent", "labelPadding");
+        "scene", "childrenUnmodifiable", "styleableParent", "parent", "labelPadding", "zoom");
     private FXMLConstants() {
     }
 

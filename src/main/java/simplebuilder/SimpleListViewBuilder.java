@@ -58,7 +58,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return p -> new CustomableListCell<C>() {
             @Override
             protected void setVisual(C auxMed) {
-                value.accept(auxMed, (V) this);
+                value.accept(getItem(), (V) this);
             }
 
         };
@@ -71,12 +71,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         @Override
         protected void updateItem(final M item, final boolean empty) {
             super.updateItem(item, empty);
-            int index = getIndex();
-            int size = getListView().getItems().size();
-            if (index >= 0 && index < size) {
-                M auxMed = getListView().getItems().get(index);
-                setVisual(auxMed);
-            }
+            setVisual(getItem());
         }
     }
 

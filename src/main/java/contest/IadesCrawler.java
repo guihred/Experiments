@@ -61,7 +61,8 @@ public class IadesCrawler extends Application {
         root.onSelect(t -> getNewLinks(t, links, treeBuilder));
         SimpleListViewBuilder<String> listBuilder = new SimpleListViewBuilder<>();
         listBuilder.items(FXCollections.observableArrayList()).onSelect(
-            (old, value) -> new Thread(() -> saveContestValues(concurso, value, listBuilder.build())).start());
+            (old, value) -> new Thread(() -> saveContestValues(concurso, value, listBuilder.build()), "Save Contest")
+                .start());
         SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
             .addColumns("nome").onSelect((old, value) -> {
                 concurso.setValue(value);

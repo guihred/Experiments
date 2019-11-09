@@ -81,9 +81,12 @@ public class JavaDependencyTest {
             () -> FXTesting.testApps(ToBeRunTest.getUncoveredApplications()));
     }
 
-    private boolean isSame(Throwable e, Class<? extends Throwable> expected) {
-        LOG.error("expected={} , Thrown = {}" , expected,e);
-        return expected != e.getClass();
+    private boolean isNotSame(Throwable e, Class<? extends Throwable> expected) {
+        boolean notSame = expected != e.getCause().getClass();
+        if (notSame) {
+            LOG.error("expected={} , Thrown = {}", expected, e.getCause().getClass());
+        }
+        return notSame;
     }
 
     private void runTest(Class<?> testClass, Object test, List<String> failedTests) {
@@ -95,7 +98,7 @@ public class JavaDependencyTest {
                 .sorted(Comparator.comparing(Method::getName))
                 .forEach(ConsumerEx.make(e -> e.invoke(test), (Method o, Throwable e) -> {
                     Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
-                    if (expected == null || isSame(e, expected)) {
+                    if (expected == null || isNotSame(e, expected)) {
                         failedTests.add(o + "");
                         LOG.error("ERROR invoking " + o, e);
                     }

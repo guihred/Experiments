@@ -12,8 +12,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -63,6 +66,26 @@ public final class MusicReader {
         Path start = file.toPath();
         try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
             find.forEach(path -> musicas.add(readTags(path.toFile())));
+        } catch (Exception e) {
+            LOG.trace("", e);
+        }
+        return musicas;
+    }
+
+    public static ObservableList<Music> getMusicas(File file, DoubleProperty progress) {
+        ObservableList<Music> musicas = FXCollections.observableArrayList();
+        Path start = file.toPath();
+        try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
+            List<Path> allSongs = find.collect(Collectors.toList());
+            double size = allSongs.size();
+            Platform.runLater(() -> progress.set(0));
+            for (int i = 0; i < allSongs.size(); i++) {
+                Path path = allSongs.get(i);
+                int j = i;
+                Platform.runLater(() -> progress.set(j / size));
+                musicas.add(readTags(path.toFile()));
+            }
+            Platform.runLater(() -> progress.set(1));
         } catch (Exception e) {
             LOG.trace("", e);
         }

@@ -22,7 +22,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import paintexp.ColorChooser;
 import paintexp.PaintFileUtils;
 import paintexp.PaintMain;
@@ -35,21 +37,35 @@ import utils.ResourceFXUtils;
 import utils.RunnableEx;
 import utils.ZoomableScrollPane;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXEnginePaintTest extends AbstractTestExecution {
 
     private static final String TEST_FILE = "test.png";
 
     @Test
-    public void testAllToolsVerify() {
+    public void testColorChooser() {
+        show(ColorChooser.class);
+        Set<Slider> queryAll = lookup(Slider.class);
+        int i = 0;
+        for (Node m : queryAll) {
+            if (i++ == 3) {
+                lookup(".tab").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
+            }
+            randomDrag(m, 10);
+        }
+        tryClickButtons();
+    }
+
+    @Test
+    public void testMenus() {
         show(PaintMain.class);
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
-        testTools(stack);
         testMenus(stack);
     }
 
     @Test
     @SuppressWarnings("static-method")
-	public void testSimplePixelReader() {
+    public void testSimplePixelReader() {
         FXTesting.measureTime("SimplePixelReader.test", () -> {
             SimplePixelReader.paintColor(new WritableImage(10, 10), Color.BLACK);
             SimplePixelReader reader = new SimplePixelReader(Color.BLACK);
@@ -63,17 +79,10 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyColorChooser() {
-        show(ColorChooser.class);
-        Set<Slider> queryAll = lookup(Slider.class);
-        int i = 0;
-        for (Node m : queryAll) {
-            if (i++ == 3) {
-                lookup(".tab").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
-            }
-            randomDrag(m, 10);
-        }
-        tryClickButtons();
+    public void testTools() {
+        show(PaintMain.class);
+        Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
+        testTools(stack);
     }
 
     protected void testTools(final Node stack) {
@@ -106,18 +115,9 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             drag(MouseButton.PRIMARY);
             moveRandom(bound);
             drop();
-
             if (userData instanceof AreaTool) {
-                if (random.nextBoolean()) {
-                    press(KeyCode.CONTROL);
-                }
-                type(testCodes.get(random.nextInt(testCodes.size())));
-                type(testCodes.get(random.nextInt(testCodes.size())));
-                type(testCodes.get(random.nextInt(testCodes.size())));
-                type(testCodes.get(random.nextInt(testCodes.size())));
-                release(KeyCode.CONTROL);
+                testAreaTools(testCodes);
             }
-
             lookup(".text-area").queryAll().forEach(e -> write(getRandomString()));
             moveRandom(bound);
             drag(MouseButton.PRIMARY);
@@ -145,6 +145,20 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 });
                 type(KeyCode.ESCAPE);
             });
+        }
+    }
+
+    private void testAreaTools(List<KeyCode> testCodes) {
+        boolean nextBoolean = random.nextBoolean();
+        if (nextBoolean) {
+            press(KeyCode.CONTROL);
+        }
+        typingTest(nextBoolean, testCodes);
+        typingTest(nextBoolean, testCodes);
+        typingTest(nextBoolean, testCodes);
+        typingTest(nextBoolean, testCodes);
+        if (nextBoolean) {
+            release(KeyCode.CONTROL);
         }
     }
 
@@ -217,6 +231,12 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         sleep(1500);
         type(typeText(TEST_FILE));
         type(KeyCode.ENTER);
+    }
+
+    private void typingTest(boolean ctrlDown, List<KeyCode> testCodes) {
+        KeyCode randomItem = randomItem(testCodes);
+        getLogger().info("TYPING {} ", ctrlDown ? "CTRL+" + randomItem : randomItem);
+        type(randomItem);
     }
 
 }

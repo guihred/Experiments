@@ -22,7 +22,10 @@ import org.slf4j.Logger;
 import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
-import utils.*;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
+import utils.RunnableEx;
+import utils.SupplierEx;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
@@ -173,7 +176,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected boolean tryClickButtons() {
         Set<Node> queryAll = lookup(".button").queryAll();
-        queryAll.forEach(ConsumerEx.ignore(this::clickOn));
+        queryAll.forEach(this::tryClickOn);
         return !queryAll.isEmpty();
     }
 
