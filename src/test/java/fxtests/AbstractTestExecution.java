@@ -206,6 +206,15 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         });
     }
 
+    public static void testApps(List<Class<? extends Application>> applicationClasses) {
+        new FXTesting().testApplications(applicationClasses);
+    }
+
+    @SafeVarargs
+    public static void testApps(Class<? extends Application>... applicationClasses) {
+        new FXTesting().testApplications(Arrays.asList(applicationClasses));
+    }
+
     @SuppressWarnings("deprecation")
     protected static KeyCode[] typeText(String txt) {
         KeyCode[] values = KeyCode.values();

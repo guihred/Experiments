@@ -62,7 +62,7 @@ public class ToBeRunTest {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
                 Map<String, List<String>> tests = dependency.getPublicMethodsMap();
-                tests.forEach((k, v) -> LOG.trace("{} ={}", dependency.getFullName(),
+                tests.forEach((k, v) -> LOG.info("{} ={}", dependency.getFullName(),
                     v.stream().collect(Collectors.joining("\n", "\n", ""))));
 
             }
@@ -128,7 +128,8 @@ public class ToBeRunTest {
         DataframeUtils.crossFeature(b, "PERCENTAGE", ToBeRunTest::getPercentage, "LINE_MISSED", "LINE_COVERED");
         b.filter("PERCENTAGE", v -> ((Number) v).intValue() <= min);
         List<String> list = b.list("CLASS");
-        return nonNull(list, Collections.emptyList());
+        List<String> nonNull = nonNull(list, Collections.emptyList());
+        return nonNull.stream().map(s -> s.replaceAll("^(\\w+)\\..+", "$1")).collect(Collectors.toList());
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
@@ -183,15 +184,19 @@ public class ToBeRunTest {
     }
 
     public static List<String> getUncoveredTests() {
+        return getUncoveredTests(new ArrayList<>());
+    }
+
+    public static List<String> getUncoveredTests(List<String> allPaths) {
         for (int i = LINES_MIN_COVERAGE; i < 50; i++) {
-            List<String> uncoveredApplications = getUncoveredFxTest(getUncovered(i));
+            List<String> uncoveredApplications = getUncoveredFxTest(getUncovered(i), allPaths);
             if (!uncoveredApplications.isEmpty()) {
                 LOG.error("Min COVERAGE TESTS= {}", i);
                 return uncoveredApplications;
             }
         }
         for (int i = BRANCH_MIN_COVERAGE; i < 50; i++) {
-            List<String> uncoveredApplications = getUncoveredFxTest(getUncoveredBranches(i));
+            List<String> uncoveredApplications = getUncoveredFxTest(getUncoveredBranches(i), allPaths);
             if (!uncoveredApplications.isEmpty()) {
                 LOG.error("Min COVERAGE TESTS= {}", i);
                 return uncoveredApplications;
@@ -204,9 +209,9 @@ public class ToBeRunTest {
         return classes.stream().anyMatch(cl -> cl.getSimpleName().equals(m.getName()));
     }
 
-    private static List<String> getUncoveredFxTest(List<String> uncovered) {
+    private static List<String> getUncoveredFxTest(List<String> uncovered, List<String> allPaths) {
         LOG.error("Uncovered Classes {}", uncovered);
-        return JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests").stream().distinct().sorted()
+        return JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests", allPaths).stream().distinct().sorted()
             .collect(Collectors.toList());
     }
 

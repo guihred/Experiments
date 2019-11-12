@@ -29,7 +29,7 @@ public final class FXTesting implements HasLogging {
         exceptionMap.put(class1, e);
     }
 
-    private void testApplications(List<Class<? extends Application>> applicationClasses) {
+    void testApplications(List<Class<? extends Application>> applicationClasses) {
 
         ResourceFXUtils.initializeFX();
         List<Object> testedApps = Collections.synchronizedList(new ArrayList<>());
@@ -73,6 +73,20 @@ public final class FXTesting implements HasLogging {
                 .collect(Collectors.joining("\n", "\n", "\n"));
             Assert.fail(classesExceptions);
         }
+    }
+
+    public static void runInTime(String name, RunnableEx runnable, final long maxTime) {
+        RunnableEx.run(() -> {
+            Thread thread = new Thread(RunnableEx.make(() -> measureTime(name, runnable)));
+            thread.start();
+            long start = System.currentTimeMillis();
+            while (System.currentTimeMillis() - start < maxTime) {
+                if (!thread.isAlive()) {
+                    break;
+                }
+            }
+            thread.interrupt();
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -135,14 +149,5 @@ public final class FXTesting implements HasLogging {
             log.info(TIME_TOOK_FORMAT, name, formatDuration);
             log.trace("Exception in " + name, e);
         }
-    }
-
-    @SafeVarargs
-    public static void testApps(Class<? extends Application>... applicationClasses) {
-        new FXTesting().testApplications(Arrays.asList(applicationClasses));
-    }
-
-    public static void testApps(List<Class<? extends Application>> applicationClasses) {
-        new FXTesting().testApplications(applicationClasses);
     }
 }

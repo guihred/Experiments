@@ -1,15 +1,14 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
+import static fxtests.FXTesting.runInTime;
 import static java.util.stream.Collectors.toList;
 import static utils.ResourceFXUtils.getFirstPathByExtension;
 import static utils.ResourceFXUtils.getOutFile;
 import static utils.ResourceFXUtils.toURI;
 import static utils.StringSigaUtils.*;
 
-import audio.mp3.PageImage;
 import cubesystem.ElementWiseOp;
-import ethical.hacker.NetworkInformationScanner;
 import ex.j9.Ch1;
 import ex.j9.Ch3;
 import ex.j9.Employee;
@@ -89,6 +88,13 @@ public class IndependentTest {
         measureTime("Ch3.sortFiles", () -> Ch3.sortFiles(new File(".").listFiles()));
         measureTime("Ch3.listByExtension", () -> Ch3.listByExtension(getOutFile(), "png"));
         measureTime("Ch3.tasks", () -> Ch3.tasks());
+        measureTime("Ch3.IntSequence.constant", () -> Ch3.IntSequence.constant(3));
+        runInTime("Ch3.IntSequence.constant", () -> Ch3.IntSequence.constant(3).foreach(e -> LOGGER.trace("{}", e)),
+            500);
+        runInTime("Ch3.Sequence.of",
+            () -> Ch3.Sequence.of("Oioi", "Lala", "Whassup").foreach(e -> LOGGER.trace("{}", e)), 500);
+        runInTime("Ch3.Sequence.constant", () -> Ch3.Sequence.constant("Oioi").foreach(e -> LOGGER.trace("{}", e)),
+            500);
 
     }
 
@@ -138,9 +144,6 @@ public class IndependentTest {
     @Test
     public void testGoogleImages() {
         measureTime("WikiImagesUtils.displayCountByExtension", () -> WikiImagesUtils.displayCountByExtension());
-        measureTime("PageImage.testApps", () -> FXTesting.testApps(PageImage.class));
-        measureTime("NetworkInformationScanner.displayNetworkInformation",
-            () -> NetworkInformationScanner.displayNetworkInformation());
     }
 
     @Test

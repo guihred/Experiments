@@ -130,8 +130,10 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     public void verifyPlatformMain() {
         show(PlatformMain.class);
         for (KeyCode keyCode : Arrays.asList(W, S, A, D, DOWN, UP, LEFT, RIGHT, SPACE)) {
-            type(keyCode, 20);
+            type(keyCode, 5);
         }
+        press(RIGHT);
+        sleep(5000);
     }
 
     @Test

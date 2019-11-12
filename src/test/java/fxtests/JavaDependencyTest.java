@@ -6,6 +6,7 @@ import graphs.app.JavaFileDependency;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
@@ -34,8 +35,12 @@ public class JavaDependencyTest {
 
         List<String> failedTests = new ArrayList<>();
         measureTime("JavaFileDependency.testUncovered", () -> {
-            List<String> uncoveredTests = ToBeRunTest.getUncoveredTests();
-
+            List<String> paths = new ArrayList<>();
+            List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getJavaFileDependencies("fxtests");
+            List<String> uncoveredTests = ToBeRunTest.getUncoveredTests(paths);
+            List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
+                .collect(Collectors.toList());
+            LOG.info(" All Paths {}", allPaths);
             for (int i = 0; i < uncoveredTests.size(); i++) {
                 String className = uncoveredTests.get(i);
                 if (className.equals("JavaDependencyTest")) {
@@ -62,15 +67,22 @@ public class JavaDependencyTest {
                     continue;
                 }
                 Object ob = forName.newInstance();
-                runTest(forName, ob, failedTests);
+                List<String> methods = javaFileDependencies.parallelStream().filter(j -> j.getName().equals(className))
+                    .map(JavaFileDependency::getPublicMethodsMap).flatMap(m -> m.entrySet().stream())
+                    .filter(e -> containsPath(allPaths, e))
+                    .map(Entry<String, List<String>>::getKey)
+                    .collect(Collectors.toList());
+
+                LOG.info(" To Be Run Methods {}", methods);
+                runTest(forName, ob, failedTests, methods);
                 LOG.info(" TESTS RUN {} {}/{}", "fxtests." + className, i + 1, uncoveredTests.size());
 
             }
         });
         if (!failedTests.isEmpty()) {
-            String collect = failedTests.stream().collect(Collectors.joining("\n\t", "ERRORS IN {\n\t", "\n}"));
-            LOG.error(collect);
-            Assert.fail(collect);
+            String errorsFound = failedTests.stream().collect(Collectors.joining("\n\t", "ERRORS IN {\n\t", "\n}"));
+            LOG.error(errorsFound);
+            Assert.fail(errorsFound);
         }
     }
 
@@ -78,7 +90,11 @@ public class JavaDependencyTest {
     public void testHTestUncoveredApps() {
 
         measureTime("JavaFileDependency.testUncoveredApps",
-            () -> FXTesting.testApps(ToBeRunTest.getUncoveredApplications()));
+            () -> AbstractTestExecution.testApps(ToBeRunTest.getUncoveredApplications()));
+    }
+
+    private boolean containsPath(List<String> allPaths, Entry<String, List<String>> e) {
+        return e.getValue().stream().anyMatch(l -> allPaths.stream().anyMatch(l::contains));
     }
 
     private boolean isNotSame(Throwable e, Class<? extends Throwable> expected) {
@@ -93,9 +109,30 @@ public class JavaDependencyTest {
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
+            .forEach(e -> ClassReflectionUtils.invoke(test, e));
+            declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
+            .sorted(Comparator.comparing(Method::getName))
+            .forEach(ConsumerEx.make(e -> e.invoke(test), (Method o, Throwable e) -> {
+                Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
+                if (expected == null || isNotSame(e, expected)) {
+                    failedTests.add(o + "");
+                    LOG.error("ERROR invoking " + o, e);
+                }
+            }));
+            declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
+            .forEach(e -> ClassReflectionUtils.invoke(test, e));
+        });
+        
+    }
+
+    private void runTest(Class<?> testClass, Object test, List<String> failedTests, List<String> methods) {
+        FXTesting.measureTime(testClass.getSimpleName(), () -> {
+            List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
+            declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
                 .sorted(Comparator.comparing(Method::getName))
+                .filter(e -> methods.isEmpty() || methods.contains(e.getName()))
                 .forEach(ConsumerEx.make(e -> e.invoke(test), (Method o, Throwable e) -> {
                     Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
                     if (expected == null || isNotSame(e, expected)) {
