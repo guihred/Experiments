@@ -26,6 +26,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.*;
+import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 import utils.StageHelper;
@@ -46,7 +47,7 @@ public final class Chapter4 {
             .cycleCount(Animation.INDEFINITE).path(buildArc(scene, rotationSlider, radiusSlider)).build().play();
     }
 
-    public  static void createPulseAnimation(Circle planet) {
+    public static void createPulseAnimation(Circle planet) {
         final double maxScale = 1.5;
         new SimpleScaleTransitionBuilder().byX(maxScale).byY(maxScale).cycleCount(Animation.INDEFINITE)
             .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet).build()
@@ -81,7 +82,7 @@ public final class Chapter4 {
         };
     }
 
-	public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
+    public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
         return new SimpleObjectProperty<R>() {
             @Override
             public void addListener(ChangeListener<? super R> listener) {
@@ -100,7 +101,7 @@ public final class Chapter4 {
         };
     }
 
-	private static Arc buildArc(Scene scene, Slider rotationSlider, Slider radiusSlider) {
+    private static Arc buildArc(Scene scene, Slider rotationSlider, Slider radiusSlider) {
         final double scaleFactor = 3.6;
         final int startAngle = 45;
         final int radiusY = 150;
@@ -111,7 +112,7 @@ public final class Chapter4 {
             .rotate(multiply(rotationSlider.valueProperty(), scaleFactor)).fill(Color.TRANSPARENT).build();
     }
 
-	private static Circle buildPlanet(Scene scene) {
+    private static Circle buildPlanet(Scene scene) {
         final int defaultRadius = 25;
         Circle planet = new SimpleCircleBuilder().centerX(scene.getWidth() / 4 + 100).centerY(scene.getWidth() / 4)
             .fill(Color.BLUE).radius(defaultRadius).build();
@@ -129,7 +130,7 @@ public final class Chapter4 {
     public static class Ex1 extends Application {
 
         @Override
-		public void start(Stage stage) {
+        public void start(Stage stage) {
             Label message = new Label("Hello, JavaFX!");
             message.setFont(new Font(100));
             TextField textField = new TextField("Hello, JavaFX!");
@@ -150,7 +151,7 @@ public final class Chapter4 {
     public static class Ex10 extends Application {
 
         @Override
-		public void start(Stage stage) {
+        public void start(Stage stage) {
             TextField textField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
             WebView browser = new WebView();
             WebEngine engine = browser.getEngine();
@@ -176,7 +177,7 @@ public final class Chapter4 {
     public static class Ex4 extends Application {
 
         @Override
-		public void start(Stage stage) {
+        public void start(Stage stage) {
             Circle circle = new Circle(100, 100, 100);
             circle.setFill(Color.RED);
             Pane pane = new Pane();
@@ -210,7 +211,7 @@ public final class Chapter4 {
     public static class Ex5 extends Application {
 
         @Override
-		public void start(Stage stage) {
+        public void start(Stage stage) {
             Pane pane = new VBox(20);
             Scene scene = new Scene(pane);
             Slider slider = new Slider();
@@ -219,8 +220,10 @@ public final class Chapter4 {
             Label message = new Label("Teste Disabled");
 
             button.disableProperty().bind(observe(t -> t.doubleValue() > 50, slider.valueProperty()));
-            message.textProperty().bind(
-                observe((t, b) -> (t.doubleValue() > 50) + " " + b, slider.valueProperty(), check.selectedProperty()));
+            ObservableValue<String> observe = observe((t, b) -> (t.doubleValue() > 50) + " " + b,
+                slider.valueProperty(), check.selectedProperty());
+            observe.addListener((o, old, newV) -> HasLogging.log().info("{} {}", old, newV));
+            message.textProperty().bind(observe);
             pane.getChildren().addAll(slider, check, button, message);
             stage.setScene(scene);
             stage.setTitle("EX5");
@@ -233,7 +236,7 @@ public final class Chapter4 {
     public static class Ex6 extends Application {
 
         @Override
-		public void start(Stage stage) {
+        public void start(Stage stage) {
             BorderPane pane = new BorderPane(new Button("Center"), new Button("Top"), new Button("Right"),
                 new Button("Bottom"), new Button("Left"));
             BorderPane.setAlignment(pane.getTop(), Pos.CENTER);
@@ -250,7 +253,7 @@ public final class Chapter4 {
     public static class Ex7 extends Application {
 
         @Override
-		public void start(Stage stage) {
+        public void start(Stage stage) {
             BorderPane pane = new BorderPane();
             pane.setCenter(new Button("Center"));
             Button top = new Button("Top");
@@ -275,7 +278,7 @@ public final class Chapter4 {
 
     public static class Ex9 extends Application {
         @Override
-		public void start(Stage stage) {
+        public void start(Stage stage) {
             BorderPane pane = new BorderPane();
             Scene scene = new Scene(pane);
             Circle planet = buildPlanet(scene);
