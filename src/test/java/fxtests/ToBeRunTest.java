@@ -10,7 +10,6 @@ import graphs.app.JavaFileDependency;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -71,43 +70,32 @@ public class ToBeRunTest {
     @Test
     public void testJavaDependency() {
 
-        measureTime("JavaFileDependency.displayTestsToBeRun", () -> {
-            List<String> asList = Arrays.asList();
-            Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(asList, "fxtests");
-            String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
-            LOG.info("TestsToBeRun ={}", tests);
-        });
+        measureTime("JavaFileDependency.displayTestsToBeRun",
+            () -> JavaFileDependency.displayTestsToBeRun(Arrays.asList(), "fxtests").stream().sorted()
+                .collect(Collectors.joining(",*", "*", "")));
     }
 
     @Test
     public void testUncovered() {
-        measureTime("JavaFileDependency.getUncovered", () -> {
-            LOG.info("TestsToBeRun ={}", getUncovered());
-        });
+        measureTime("JavaFileDependency.getUncovered", () -> getUncovered());
     }
 
     @Test
     public void testUncoveredApplications() {
 
-        measureTime("JavaFileDependency.getUncoveredApplications", () -> {
-            LOG.info("TestsToBeRun ={}", getUncoveredApplications());
-        });
+        measureTime("JavaFileDependency.getUncoveredApplications", () -> getUncoveredApplications());
     }
 
     @Test
     public void testUncoveredBranches() {
 
-        measureTime("JavaFileDependency.getUncoveredBranches", () -> {
-            LOG.info("TestsToBeRun ={}", getUncoveredBranches());
-        });
+        measureTime("JavaFileDependency.getUncoveredBranches", () -> getUncoveredBranches());
     }
 
     @Test
     public void testUncoveredTests() {
 
-        measureTime("JavaFileDependency.getUncoveredTests", () -> {
-            LOG.info("TestsToBeRun ={}", getUncoveredTests());
-        });
+        measureTime("JavaFileDependency.getUncoveredTests", () -> getUncoveredTests());
     }
 
 

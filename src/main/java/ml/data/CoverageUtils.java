@@ -8,10 +8,7 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import graphs.app.JavaFileDependency;
 import java.io.File;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -35,13 +32,14 @@ public final class CoverageUtils {
         List<Class<? extends T>> appClass = new ArrayList<>();
         List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
         try {
+
             ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClasses().stream()
                 .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
                 .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
                 .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
-                .forEach(appClass::add);
+                .collect(Collectors.toCollection(() -> appClass));
         } catch (Exception e) {
-            HasLogging.log().error("", e);
+            LOG.error("", e);
         }
         return appClass;
     }
@@ -118,13 +116,13 @@ public final class CoverageUtils {
         return nonNull(b.list("CLASS"), Collections.emptyList());
     }
 
-    public static List<String> getUncoveredMethods(List<JavaFileDependency> javaFileDependencies, List<String> allPaths,
+    public static List<String> getUncoveredMethods(Collection<JavaFileDependency> javaFileDependencies,
+        List<String> allPaths,
         String className) {
-        List<String> methods = javaFileDependencies.parallelStream().filter(j -> j.getName().equals(className))
+        return javaFileDependencies.parallelStream().filter(j -> j.getName().equals(className))
             .map(JavaFileDependency::getPublicMethodsMap).flatMap(m -> m.entrySet().stream())
             .filter(e -> containsPath(allPaths, e)).map(Entry<String, List<String>>::getKey)
             .collect(Collectors.toList());
-        return methods;
     }
 
     public static List<String> getUncoveredTests() {
