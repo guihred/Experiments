@@ -27,6 +27,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import utils.*;
@@ -132,7 +133,9 @@ public class SimpleAudioPlayerLauncher extends Application {
 
     private void stopAndDispose() {
         runIf(mediaPlayer, t -> {
-            t.stop();
+            if (t.getStatus() == Status.PLAYING) {
+                t.stop();
+            }
             t.dispose();
         });
     }
