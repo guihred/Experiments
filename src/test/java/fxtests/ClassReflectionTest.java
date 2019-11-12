@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
+import ml.data.CoverageUtils;
 import org.junit.Test;
 import utils.BaseEntity;
 import utils.ClassReflectionUtils;
@@ -16,7 +17,7 @@ import utils.ClassReflectionUtils;
 public class ClassReflectionTest extends AbstractTestExecution {
     @Test
     public void testBaseEntityMethods() {
-        List<Class<? extends BaseEntity>> classes = FXTesting.getClasses(BaseEntity.class);
+        List<Class<? extends BaseEntity>> classes = CoverageUtils.getClasses(BaseEntity.class);
         List<? extends BaseEntity> entities = classes.stream().map(ClassReflectionUtils::getInstance)
             .collect(Collectors.toList());
         for (BaseEntity e : entities) {
@@ -26,7 +27,7 @@ public class ClassReflectionTest extends AbstractTestExecution {
 
     @Test
     public void testClassReflectionMethods() {
-        List<Class<? extends Node>> classes = FXTesting.getClasses(Node.class);
+        List<Class<? extends Node>> classes = CoverageUtils.getClasses(Node.class);
         Class<?> cl = randomItem(classes);
         measureTime("getAllMethodsRecursive", () -> getAllMethodsRecursive(cl));
         measureTime("hasPublicConstructor", () -> hasPublicConstructor(cl));

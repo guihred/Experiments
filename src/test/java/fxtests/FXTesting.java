@@ -1,10 +1,5 @@
 package fxtests;
 
-import static utils.PredicateEx.makeTest;
-
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -24,10 +19,6 @@ public final class FXTesting implements HasLogging {
     private static final String TIME_FORMAT = "HHH:mm:ss.SSS";
 
     private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
-
-    private synchronized void setClass(Class<? extends Application> class1, Throwable e) {
-        exceptionMap.put(class1, e);
-    }
 
     void testApplications(List<Class<? extends Application>> applicationClasses) {
 
@@ -75,34 +66,8 @@ public final class FXTesting implements HasLogging {
         }
     }
 
-    public static void runInTime(String name, RunnableEx runnable, final long maxTime) {
-        RunnableEx.run(() -> {
-            Thread thread = new Thread(RunnableEx.make(() -> measureTime(name, runnable)));
-            thread.start();
-            long start = System.currentTimeMillis();
-            while (System.currentTimeMillis() - start < maxTime) {
-                if (!thread.isAlive()) {
-                    break;
-                }
-            }
-            thread.interrupt();
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> List<Class<? extends T>> getClasses(Class<T> cl) {
-        List<Class<? extends T>> appClass = new ArrayList<>();
-        List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
-        try {
-            ClassPath.from(FXTesting.class.getClassLoader()).getTopLevelClasses().stream()
-                .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
-                .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
-                .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
-                .forEach(appClass::add);
-        } catch (Exception e) {
-            HasLogging.log().error("", e);
-        }
-        return appClass;
+    private synchronized void setClass(Class<? extends Application> class1, Throwable e) {
+        exceptionMap.put(class1, e);
     }
 
     public static void measureTime(String name, RunnableEx runnable) {
@@ -149,5 +114,19 @@ public final class FXTesting implements HasLogging {
             log.info(TIME_TOOK_FORMAT, name, formatDuration);
             log.trace("Exception in " + name, e);
         }
+    }
+
+    public static void runInTime(String name, RunnableEx runnable, final long maxTime) {
+        RunnableEx.run(() -> {
+            Thread thread = new Thread(RunnableEx.make(() -> measureTime(name, runnable)));
+            thread.start();
+            long start = System.currentTimeMillis();
+            while (System.currentTimeMillis() - start < maxTime) {
+                if (!thread.isAlive()) {
+                    break;
+                }
+            }
+            thread.interrupt();
+        });
     }
 }

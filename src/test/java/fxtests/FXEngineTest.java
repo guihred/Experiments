@@ -33,6 +33,7 @@ public class FXEngineTest extends AbstractTestExecution {
             sleep(1000);
             tryClickOn(t);
             type(KeyCode.ESCAPE);
+            moveSliders(100);
         }), Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class, Chapter4.Ex10.class)));
     }
 

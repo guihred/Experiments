@@ -5,12 +5,13 @@ import static fxtests.FXTesting.measureTime;
 import audio.mp3.PageImage;
 import ex.j8.Chapter4;
 import javafx.application.Application;
+import ml.data.CoverageUtils;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")
 public final class FXTest extends AbstractTestExecution {
     public void test() throws Throwable {
-        AbstractTestExecution.testApps(FXTesting.getClasses(Application.class));
+        AbstractTestExecution.testApps(CoverageUtils.getClasses(Application.class));
     }
 
     @Test

@@ -1,12 +1,15 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
+import static ml.data.CoverageUtils.getUncovered;
+import static ml.data.CoverageUtils.getUncoveredApplications;
+import static ml.data.CoverageUtils.getUncoveredMethods;
+import static ml.data.CoverageUtils.getUncoveredTests;
 
 import graphs.app.JavaFileDependency;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
@@ -22,7 +25,7 @@ public class JavaDependencyTest {
     @Test
     public void testFJavaCoverage() {
         measureTime("JavaFileDependency.javaCoverage", () -> {
-            List<String> uncovered = ToBeRunTest.getUncovered();
+            List<String> uncovered = getUncovered();
             LOG.info("Uncovered classes ={}", uncovered);
             Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests");
             String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
@@ -37,7 +40,7 @@ public class JavaDependencyTest {
         measureTime("JavaFileDependency.testUncovered", () -> {
             List<String> paths = new ArrayList<>();
             List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getJavaFileDependencies("fxtests");
-            List<String> uncoveredTests = ToBeRunTest.getUncoveredTests(paths);
+            List<String> uncoveredTests = getUncoveredTests(paths);
             List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
                 .collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
@@ -67,11 +70,7 @@ public class JavaDependencyTest {
                     continue;
                 }
                 Object ob = forName.newInstance();
-                List<String> methods = javaFileDependencies.parallelStream().filter(j -> j.getName().equals(className))
-                    .map(JavaFileDependency::getPublicMethodsMap).flatMap(m -> m.entrySet().stream())
-                    .filter(e -> containsPath(allPaths, e))
-                    .map(Entry<String, List<String>>::getKey)
-                    .collect(Collectors.toList());
+                List<String> methods = getUncoveredMethods(javaFileDependencies, allPaths, className);
 
                 LOG.info(" To Be Run Methods {}", methods);
                 runTest(forName, ob, failedTests, methods);
@@ -90,11 +89,7 @@ public class JavaDependencyTest {
     public void testHTestUncoveredApps() {
 
         measureTime("JavaFileDependency.testUncoveredApps",
-            () -> AbstractTestExecution.testApps(ToBeRunTest.getUncoveredApplications()));
-    }
-
-    private boolean containsPath(List<String> allPaths, Entry<String, List<String>> e) {
-        return e.getValue().stream().anyMatch(l -> allPaths.stream().anyMatch(l::contains));
+            () -> AbstractTestExecution.testApps(getUncoveredApplications()));
     }
 
     private boolean isNotSame(Throwable e, Class<? extends Throwable> expected) {
@@ -145,5 +140,6 @@ public class JavaDependencyTest {
         });
 
     }
+
 
 }

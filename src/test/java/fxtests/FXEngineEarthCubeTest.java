@@ -14,13 +14,14 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.input.KeyCode;
+import ml.data.CoverageUtils;
 import org.junit.Test;
 import utils.StageHelper;
 
 public class FXEngineEarthCubeTest extends AbstractTestExecution {
     @Test
     public void testDisplayCSSStyler() throws Throwable {
-        showNewStage(randomItem(FXTesting.getClasses(Application.class)), () -> {
+        showNewStage(randomItem(CoverageUtils.getClasses(Application.class)), () -> {
             String[] list = new File("src/main/resources/").list((d, f) -> f.endsWith(".css"));
             interactNoWait(() -> StageHelper.displayCSSStyler(lookup(".root").query().getScene(), list[0]));
             tryClickButtons();

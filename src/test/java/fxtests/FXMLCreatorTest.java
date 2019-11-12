@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import ml.data.CoverageUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.testfx.util.WaitForAsyncUtils;
@@ -19,7 +20,7 @@ public final class FXMLCreatorTest {
 
     @Test
     public void testAllClasses() {
-        List<Class<? extends Application>> classes = ToBeRunTest.getUncoveredApplications();
+        List<Class<? extends Application>> classes = CoverageUtils.getUncoveredApplications();
         testApplications(classes);
     }
 

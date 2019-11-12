@@ -71,9 +71,13 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     protected void clickButtonsWait() {
+        clickButtonsWait(WAIT_TIME);
+    }
+
+    protected void clickButtonsWait(int waitTime) {
         for (Node e : lookup(Button.class)) {
             clickOn(e);
-            sleep(WAIT_TIME);
+            sleep(waitTime);
         }
     }
 
@@ -206,13 +210,13 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         });
     }
 
-    public static void testApps(List<Class<? extends Application>> applicationClasses) {
-        new FXTesting().testApplications(applicationClasses);
-    }
-
     @SafeVarargs
     public static void testApps(Class<? extends Application>... applicationClasses) {
         new FXTesting().testApplications(Arrays.asList(applicationClasses));
+    }
+
+    public static void testApps(List<Class<? extends Application>> applicationClasses) {
+        new FXTesting().testApplications(applicationClasses);
     }
 
     @SuppressWarnings("deprecation")

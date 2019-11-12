@@ -16,10 +16,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
@@ -214,15 +211,17 @@ public final class Chapter4 {
 
         @Override
 		public void start(Stage stage) {
-            Pane pane = new VBox();
+            Pane pane = new VBox(20);
             Scene scene = new Scene(pane);
             Slider slider = new Slider();
             Button button = new Button("Teste Disabled");
+            CheckBox check = new CheckBox("Teste Check");
             Label message = new Label("Teste Disabled");
 
             button.disableProperty().bind(observe(t -> t.doubleValue() > 50, slider.valueProperty()));
-            message.textProperty().bind(observe(t -> (t.doubleValue() > 50) + "", slider.valueProperty()));
-            pane.getChildren().addAll(slider, button, message);
+            message.textProperty().bind(
+                observe((t, b) -> (t.doubleValue() > 50) + " " + b, slider.valueProperty(), check.selectedProperty()));
+            pane.getChildren().addAll(slider, check, button, message);
             stage.setScene(scene);
             stage.setTitle("EX5");
             stage.show();

@@ -2,10 +2,6 @@ package fxsamples;
 
 import static utils.RunnableEx.runIf;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.SecureRandom;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -15,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.apache.poi.util.IOUtils;
 
 public class BackgroundProcesses extends Application {
     private Task<Boolean> copyWorker;
@@ -72,34 +67,12 @@ public class BackgroundProcesses extends Application {
         primaryStage.show();
     }
 
+
     public static void main(String[] args) {
         launch(args);
     }
 
-    private static void copyFile(String src, String dest) throws InterruptedException, IOException {
-        // simulate a long time
-        IOUtils.copy(new FileInputStream(src), new FileOutputStream(dest));
-
-        SecureRandom rnd = new SecureRandom();
-        long millis = rnd.nextInt(1000);
-        Thread.sleep(millis);
-    }
-
     private static Task<Boolean> createWorker(final int numFiles) {
-        return new Task<Boolean>() {
-            @Override
-			public Boolean call() throws Exception {
-                for (long i = 0; i < numFiles; i++) {
-                    long elapsedTime = System.currentTimeMillis();
-                    copyFile("out/resultado.txt", "out/resultado2.txt");
-                    elapsedTime = System.currentTimeMillis() - elapsedTime;
-                    String status = elapsedTime + " milliseconds";
-                    // queue up status
-                    updateMessage(status);
-                    updateProgress(i + 1, numFiles);
-                }
-                return true;
-            }
-        };
+        return new SimpleCopyTask(numFiles);
     }
 }
