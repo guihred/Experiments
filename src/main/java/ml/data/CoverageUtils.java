@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class CoverageUtils {
+    private static final int MAX_LINE_COVERAGE = 51;
+
     private static final int MAX_BRANCH_COVERAGE = 80;
 
     private static final String PERCENTAGE = "PERCENTAGE";
@@ -68,7 +70,7 @@ public final class CoverageUtils {
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
-        for (int i = LINES_MIN_COVERAGE; i < 50; i++) {
+        for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i++) {
             List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(getUncovered(i));
             if (!uncoveredApplications.isEmpty()) {
                 LOG.info("Min COVERAGE APPLICATIONS= {}", i);
@@ -132,7 +134,7 @@ public final class CoverageUtils {
     }
 
     public static List<String> getUncoveredTests(List<String> allPaths) {
-        for (int i = LINES_MIN_COVERAGE; i < 50; i++) {
+        for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i++) {
             List<String> uncoveredApplications = getUncoveredFxTest(getUncovered(i), allPaths);
             if (!uncoveredApplications.isEmpty()) {
                 LOG.error("Min COVERAGE TESTS= {}", i);

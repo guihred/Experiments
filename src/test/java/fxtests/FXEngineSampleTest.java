@@ -68,8 +68,9 @@ public class FXEngineSampleTest extends AbstractTestExecution {
             moveBy(-1000, 0);
             moveBy(1000, 0);
             type(W, 20);
-            clickOn(".root");
-            for (KeyCode keyCode : Arrays.asList(W, S, A, DOWN, D, UP, R, L, U, D, B, F, Z, X, LEFT, RIGHT)) {
+            Node query = lookup(".root").query();
+            randomDrag(query, 200);
+            for (KeyCode keyCode : Arrays.asList(W, S, A, DOWN, D, UP, R, L, U, D, B, F, Z, X, LEFT, RIGHT, SPACE)) {
                 press(keyCode).release(keyCode);
                 press(CONTROL, keyCode).release(keyCode);
                 press(ALT, keyCode).release(keyCode);

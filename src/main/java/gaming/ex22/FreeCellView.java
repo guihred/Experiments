@@ -74,29 +74,6 @@ public class FreeCellView extends Group {
         return true;
     }
 
-    public void rescale() {
-        LOG.info("SOLITAIRE {}", "RESCALED");
-        youWin = false;
-
-        double yOffset = FreeCellCard.getCardWidth() / (getWidth() > getHeight() ? 10 : 2);
-        double xOffset = FreeCellCard.getCardWidth() / 10;
-
-        for (int i = 0; i < 4; i++) {
-            supportingStacks[i].setLayoutX(i * getWidth() / 9 + xOffset);
-            supportingStacks[i].setLayoutY(yOffset);
-        }
-        for (int i = 0; i < 4; i++) {
-            ascendingStacks[i].setLayoutX(getWidth() / 9 * (i + 5) + xOffset);
-            ascendingStacks[i].setLayoutY(yOffset);
-        }
-        for (int i = 0; i < 8; i++) {
-            simpleStacks[i].setLayoutX(getWidth() / 8 * i + xOffset);
-            simpleStacks[i].setLayoutY(FreeCellCard.getCardWidth() + xOffset + yOffset);
-            simpleStacks[i].setMaxHeight(getHeight());
-            simpleStacks[i].adjust();
-        }
-    }
-
     public void reset() {
         getChildren().clear();
         youWin = false;
@@ -379,8 +356,6 @@ public class FreeCellView extends Group {
         FreeCellCard.setCardWidth(getWidth() / 8);
         if (cardStackList.isEmpty()) {
             reset();
-        } else {
-            rescale();
         }
     }
 
