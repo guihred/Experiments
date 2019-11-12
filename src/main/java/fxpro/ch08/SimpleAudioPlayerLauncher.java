@@ -7,6 +7,10 @@ package fxpro.ch08;
 
 import static utils.RunnableEx.runIf;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import javafx.application.Application;
 import javafx.collections.MapChangeListener.Change;
@@ -25,9 +29,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.ImageFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 public class SimpleAudioPlayerLauncher extends Application {
     private static final Logger LOGGER = HasLogging.log();
@@ -40,7 +42,7 @@ public class SimpleAudioPlayerLauncher extends Application {
 
     public void createMedia() {
         if (mediaPlayer == null) {
-            createMedia(Chapter8Resource.TEEN_TITANS.getURL().toString());
+            createMedia(SupplierEx.get(() -> getRandomSong().toUri().toURL().toExternalForm()));
         }
     }
 
@@ -49,7 +51,6 @@ public class SimpleAudioPlayerLauncher extends Application {
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer
             .setOnError(() -> RunnableEx.runIf(media.getError(), err -> LOGGER.error("error:{}", err.getMessage())));
-        mediaPlayer.setVolume(0);
         media.getMetadata().addListener((Change<? extends String, ? extends Object> ch) -> {
             if (ch.wasAdded()) {
                 handleMetadata(ch.getKey(), ch.getValueAdded());
@@ -66,11 +67,9 @@ public class SimpleAudioPlayerLauncher extends Application {
         scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simple Audio Player");
-        primaryStage.setOnCloseRequest(e -> runIf(mediaPlayer, t -> {
-            t.stop();
-            t.dispose();
-        }));
         primaryStage.show();
+        primaryStage.setOnCloseRequest(e -> stopAndDispose());
+        primaryStage.showingProperty().addListener(e -> stopAndDispose());
     }
 
     private void createControls() {
@@ -113,7 +112,7 @@ public class SimpleAudioPlayerLauncher extends Application {
     }
 
     private void handleMetadata(String key, Object value) {
-        LOGGER.trace("Key={},Value={}", key, value);
+        LOGGER.info("Key={},Value={}", key, value);
         String valueString = Objects.toString(value);
         if ("album".equals(key)) {
             album.setText(valueString);
@@ -131,7 +130,21 @@ public class SimpleAudioPlayerLauncher extends Application {
         }
     }
 
+    private void stopAndDispose() {
+        runIf(mediaPlayer, t -> {
+            t.stop();
+            t.dispose();
+        });
+    }
+
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static Path getRandomSong() {
+        File outFile = ResourceFXUtils.getUserFolder("Music");
+        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(outFile, "mp3");
+        Collections.shuffle(pathByExtension);
+        return pathByExtension.remove(0);
     }
 }

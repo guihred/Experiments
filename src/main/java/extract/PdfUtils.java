@@ -28,6 +28,8 @@ import utils.SupplierEx;
 
 public final class PdfUtils {
 
+    private static final String ERROR_IN_FILE = "ERROR IN FILE ";
+
     public static final String SPLIT_WORDS_REGEX = "[\\s]+";
 
     private static final Logger LOG = HasLogging.log();
@@ -46,7 +48,7 @@ public final class PdfUtils {
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
         DoubleProperty progress) {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
-        new Thread(() -> RunnableEx.ignore(() -> {
+        new Thread(RunnableEx.make(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -60,8 +62,12 @@ public final class PdfUtils {
                         Platform.runLater(() -> progress.set(current / (nPag - start)));
                     }
                 }
+                if (progress != null) {
+                    Platform.runLater(() -> progress.set(1));
+                }
             }
-        })).start();
+        }, e -> LOG.error(ERROR_IN_FILE
+            + "{}", file))).start();
         return images;
     }
 
@@ -75,7 +81,7 @@ public final class PdfUtils {
                 String parsedText = pdfStripper.getText(pdDoc);
                 return parsedText.split("\r\n");
             }
-        }, "ERROR IN FILE " + file);
+        }, ERROR_IN_FILE + file);
     }
 
     public static COSDocument parseAndGet(RandomAccessFile source) {
@@ -83,7 +89,7 @@ public final class PdfUtils {
             PDFParser parser = new PDFParser(source);
             parser.parse();
             return parser.getDocument();
-        }, "ERROR IN " + source);
+        }, ERROR_IN_FILE + source);
     }
 
     public static PdfInfo readFile(File file1) {
@@ -97,6 +103,7 @@ public final class PdfUtils {
     public static PdfInfo readFile(PdfInfo pdfInfo) {
         return readFile(pdfInfo, pdfInfo.getFile(), null);
     }
+
     public static PdfInfo readFile(PdfInfo pdfInfo, File file1) {
         return readFile(pdfInfo, file1, null);
     }
@@ -128,8 +135,7 @@ public final class PdfUtils {
         return SupplierEx.get(() -> printImageLocations.processPage(page, i), new ArrayList<>());
     }
 
-    private static void read(PdfInfo pdfInfo, File file1, PrintStream out)
-        throws IOException{
+    private static void read(PdfInfo pdfInfo, File file1, PrintStream out) throws IOException {
         try (RandomAccessFile source = new RandomAccessFile(file1, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {

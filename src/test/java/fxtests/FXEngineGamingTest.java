@@ -41,6 +41,17 @@ import org.junit.Test;
 
 public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
+    public void verifyDirections() {
+        for (Class<? extends Application> class1 : Arrays.asList(RoundMazeLauncher.class, DeathStar.class,
+            PacmanLauncher.class,  MazeLauncher.class, TronLauncher.class, TetrisLauncher.class)) {
+            show(class1);
+            for (KeyCode keyCode : Arrays.asList(W, S, A, D, DOWN, UP, LEFT, RIGHT, SPACE)) {
+                type(keyCode, nextInt(20));
+            }
+        }
+    }
+
+    @Test
     public void verifyLabyrinth3DKillerGhostsAndBalls() {
         List<Class<? extends Application>> asList = Arrays.asList(Labyrinth3DWallTexture.class,
             Labyrinth3DKillerGhostsAndBalls.class);
@@ -117,12 +128,9 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 
     @Test
     public void verifyPlatformMain() {
-        for (Class<? extends Application> class1 : Arrays.asList(RoundMazeLauncher.class, DeathStar.class,
-            PacmanLauncher.class, PlatformMain.class, MazeLauncher.class, TronLauncher.class, TetrisLauncher.class)) {
-            show(class1);
-            for (KeyCode keyCode : Arrays.asList(W, S, A, D, DOWN, UP, LEFT, RIGHT, SPACE)) {
-                type(keyCode, nextInt(20));
-            }
+        show(PlatformMain.class);
+        for (KeyCode keyCode : Arrays.asList(W, S, A, D, DOWN, UP, LEFT, RIGHT, SPACE)) {
+            type(keyCode, 20);
         }
     }
 
