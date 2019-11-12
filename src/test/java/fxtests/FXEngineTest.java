@@ -8,6 +8,8 @@ import ex.j8.Chapter4;
 import extract.FileAttrApp;
 import fractal.LeafFractalApp;
 import java.util.Arrays;
+import java.util.List;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
@@ -29,12 +31,13 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyButtons() {
-        measureTime("Test.testButtons", () -> verifyAndRun(() -> lookup(".button").queryAll().forEach(t -> {
-            sleep(1000);
-            tryClickOn(t);
-            type(KeyCode.ESCAPE);
+        List<Class<? extends Application>> applications = Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class,
+            Chapter4.Ex10.class);
+        for (Class<? extends Application> class1 : applications) {
+            show(class1);
+            clickButtonsWait(WAIT_TIME);
             moveSliders(100);
-        }), Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class, Chapter4.Ex10.class)));
+        }
     }
 
 

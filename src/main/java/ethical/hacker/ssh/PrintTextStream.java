@@ -6,10 +6,10 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import javafx.scene.text.Text;
 
-final class PrintTextStream extends PrintStream {
+public final class PrintTextStream extends PrintStream {
     private final Text text2;
 
-    PrintTextStream(OutputStream out, boolean autoFlush, String encoding, Text text2)
+    public PrintTextStream(OutputStream out, boolean autoFlush, String encoding, Text text2)
         throws UnsupportedEncodingException {
         super(out, autoFlush, encoding);
         this.text2 = text2;

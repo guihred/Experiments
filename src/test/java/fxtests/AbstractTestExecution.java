@@ -103,9 +103,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     protected int nextInt(int bound) {
-    	return random.nextInt(bound) 
-
-    			;
+        return random.nextInt(bound);
     }
 
     protected void randomDrag(Node cube, int bound) {
@@ -186,6 +184,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected void verifyAndRun(Runnable consumer, List<Class<? extends Application>> applicationClasses) {
         verifyAndRun(currentStage, () -> {
+            interactNoWait(currentStage::toFront);
             consumer.run();
             resetStage();
         }, applicationClasses);

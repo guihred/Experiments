@@ -100,6 +100,9 @@ public class IndependentTest {
 
     @Test
     public void testCh4() {
+        measureTime("ShapeCh4.moveBy",
+            () -> Arrays.asList(new LineCh4(new PointCh4(2, 3), new LabeledPoint("a", 3, 3)))
+                .forEach(e -> e.moveBy(10, 10)));
         measureTime("Ch4.cyclicToString",
             () -> Ch4.cyclicToString(new LineCh4(new PointCh4(2, 3), new LabeledPoint("a", 3, 3))));
     }
