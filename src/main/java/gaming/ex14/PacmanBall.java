@@ -30,11 +30,6 @@ public class PacmanBall extends Circle {
         });
     }
 
-    public PacmanBall(@NamedArg("centerX") double x, @NamedArg("centerY") double y,
-        @NamedArg("special") boolean special) {
-        this(x, y);
-        setSpecial(special);
-    }
 
     public final boolean isSpecial() {
         return special.get();
