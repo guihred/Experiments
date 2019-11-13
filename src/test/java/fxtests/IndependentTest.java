@@ -27,10 +27,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.DoubleStream;
 import ml.data.DecisionTree;
 import ml.data.FastFourierTransform;
@@ -40,10 +37,7 @@ import org.apache.commons.math3.complex.Complex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
-import others.OthersTests;
-import others.RandomHelloWorld;
-import others.TermFrequency;
-import others.TermFrequencyIndex;
+import others.*;
 import pdfreader.Speaker;
 import utils.*;
 
@@ -124,6 +118,13 @@ public class IndependentTest {
     }
 
     @Test
+    public void testEanFactorReducer() {
+        measureTime("EanFactorReducer.validate", () -> EanFactorReducer.validate("789100031550"));
+        measureTime("EanFactorReducer.validate", () -> EanFactorReducer.validate("789100031557"));
+    }
+
+
+    @Test
     public void testElementWiseOperations() {
         measureTime("ElementWiseOp.scalarOp",
             () -> ElementWiseOp.printMatrix(ElementWiseOp.scalarOp(ElementWiseOp.Operation.MUL,
@@ -133,7 +134,6 @@ public class IndependentTest {
                 new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } },
                 new Double[][] { { 1.0, 2.0 }, { 3.0, 4.0 } })));
     }
-
 
     @Test
     public void testFastFourierTransform() {
@@ -176,6 +176,17 @@ public class IndependentTest {
     }
 
     @Test
+    public void testMachineState() {
+        measureTime("MachineState.getStateMachine", () -> MachineState.getStateMachine(MachineState.CLOSED,
+            Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
+        measureTime("MachineState.getStateMachine", () -> {
+            List<String> asList = Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND");
+            Collections.shuffle(asList);
+            return MachineState.getStateMachine(MachineState.CLOSED, asList);
+        });
+    }
+
+    @Test
     public void testOthersTest() {
         int[] arr = { 3, 5, 6, 8, 7, 2 };
         measureTime("OthersTests.minMax", () -> OthersTests.minMax(arr));
@@ -183,14 +194,10 @@ public class IndependentTest {
         measureTime("OthersTests.squareDigits", () -> OthersTests.squareDigits(5));
         measureTime("OthersTests.unique", () -> OthersTests.unique(arr));
         measureTime("OthersTests.reverse", () -> OthersTests.reverse("HIHI"));
-        measureTime("OthersTests.validate", () -> OthersTests.validate("789100031550"));
         measureTime("OthersTests.shorterReverseLonger", () -> OthersTests.shorterReverseLonger("a", "bb"));
         measureTime("OthersTests.shorterReverseLonger", () -> OthersTests.shorterReverseLonger("aaa", "bb"));
-        measureTime("OthersTests.validate", () -> OthersTests.validate("789100031557"));
         measureTime("OthersTests.p",
             () -> OthersTests.p(new Complex(1.0 / 2.0), new Complex(-3, -3), new Complex(-1, 1), new Complex(-9, -5)));
-        measureTime("OthersTests.getStateMachine", () -> OthersTests.getStateMachine(OthersTests.Estado.CLOSED,
-            Arrays.asList("APP_PASSIVE_OPEN", "RCV_SYN", "RCV_ACK", "APP_CLOSE", "APP_SEND")));
     }
 
 

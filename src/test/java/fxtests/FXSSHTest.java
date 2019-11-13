@@ -52,7 +52,7 @@ public class FXSSHTest extends AbstractTestExecution {
     @Test
     public void testMessages2() throws Exception {
         String name = BaseTestSupport.getCurrentTestName();
-        SSHClientUtils.sendMessage("ipconfig", BaseTestSupport.TEST_LOCALHOST, sshd.getPort(), name, name,
+        SSHClientUtils.sendMessage("exit", BaseTestSupport.TEST_LOCALHOST, sshd.getPort(), name, name,
             new PrintStream(System.out));
     }
 

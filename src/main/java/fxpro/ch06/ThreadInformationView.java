@@ -29,12 +29,8 @@ class ThreadInformationView {
 
     private void hookupEvents(ThreadInformationModel model) {
         updateButton.setOnAction(e -> model.update());
-        threadNames.getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> {
-            int index = (Integer) newValue;
-            if (index >= 0) {
-                stackTrace.setText(model.getStackTraces().get(index));
-            }
-        });
+        threadNames.getSelectionModel().selectedIndexProperty().addListener(
+            (o, oldValue, newValue) -> stackTrace.setText(model.getStackTraces().get(newValue.intValue())));
     }
 
 }

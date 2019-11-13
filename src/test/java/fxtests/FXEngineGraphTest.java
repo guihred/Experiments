@@ -16,7 +16,6 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import org.junit.Test;
 import utils.ConsoleUtils;
-import utils.ConsumerEx;
 import utils.ImageFXUtils;
 
 
@@ -63,7 +62,8 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 	public void verifyGraphMain()  {
 		show(GraphMain.class);
         ImageFXUtils.setShowImage(false);
-        lookup(".button").queryAll().forEach(ConsumerEx.ignore(this::clickOn));
+        tryClickButtons();
+        tryClickButtons();
     }
 
     @Test

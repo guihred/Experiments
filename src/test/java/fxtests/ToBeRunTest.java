@@ -11,11 +11,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
 @SuppressWarnings("static-method")
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ToBeRunTest {
     private static final Logger LOG = HasLogging.log();
 
@@ -81,14 +84,7 @@ public class ToBeRunTest {
     }
 
     @Test
-    public void testUncoveredApplications() {
-
-        measureTime("JavaFileDependency.getUncoveredApplications", () -> getUncoveredApplications());
-    }
-
-    @Test
     public void testUncoveredBranches() {
-
         measureTime("JavaFileDependency.getUncoveredBranches", () -> getUncoveredBranches());
     }
 
@@ -96,6 +92,11 @@ public class ToBeRunTest {
     public void testUncoveredTests() {
 
         measureTime("JavaFileDependency.getUncoveredTests", () -> getUncoveredTests());
+    }
+
+    @Test
+    public void testUncoveredZApplications() {
+        measureTime("JavaFileDependency.getUncoveredApplications", () -> getUncoveredApplications());
     }
 
 }

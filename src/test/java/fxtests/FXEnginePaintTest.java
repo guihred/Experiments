@@ -169,7 +169,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         if (file.exists()) {
             file.delete();
         }
-        List<PaintTool> areaTools = Stream.of(PaintTools.values()).filter(e -> e.getTool() instanceof AreaTool)
+        List<PaintTool> areaTools = Stream.of(PaintTools.values())
             .map(e -> e.getTool()).collect(Collectors.toList());
 
         List<MenuButton> node = lookup(MenuButton.class).stream().collect(Collectors.toList());
@@ -228,7 +228,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     }
 
     private void typeInParallel() {
-        sleep(1500);
+        sleep(2500);
         type(typeText(TEST_FILE));
         type(KeyCode.ENTER);
     }

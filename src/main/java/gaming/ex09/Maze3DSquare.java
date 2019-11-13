@@ -17,10 +17,8 @@ public class Maze3DSquare extends BorderPane {
 	private BooleanProperty south = new SimpleBooleanProperty(false);
 
     public Maze3DSquare() {
-        visited.addListener((ob, old, n) -> setStyle(n ? "-fx-background-color:green;" : "-fx-background-color:gray;"));
         setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
         final PhongMaterial phongMaterial = new PhongMaterial(Color.ROYALBLUE);
-
         Box line = new Box(1, SQUARE_SIZE, SQUARE_SIZE);
         line.setMaterial(phongMaterial);
         line.visibleProperty().bind(east.not());

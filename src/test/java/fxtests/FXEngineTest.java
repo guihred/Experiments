@@ -98,8 +98,8 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyScrollWorldMaps() {
-        ImageFXUtils.setShowImage(random.nextBoolean());
         measureTime("Test.verifyScroll", () -> verifyAndRun(() -> {
+            ImageFXUtils.setShowImage(random.nextBoolean());
             lookup(".root").queryAll().forEach(t -> {
                 moveTo(t);
                 scroll(2, VerticalDirection.DOWN);
@@ -111,6 +111,7 @@ public class FXEngineTest extends AbstractTestExecution {
             lookup(CheckBox.class).forEach(this::clickOn);
             lookup(ComboBox.class).forEach(e -> selectComboItems(e, 5));
             tryClickButtons();
+            ImageFXUtils.setShowImage(false);
         }, Arrays.asList(WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class,
             PopulacionalPyramidExample.class)));
     }

@@ -142,10 +142,10 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         show(PuzzleLauncher.class);
         List<Node> queryAll = lookup(PuzzlePiece.class).stream().filter(PuzzlePiece::isVisible)
             .collect(Collectors.toList());
-        double squareSize = DotsSquare.SQUARE_SIZE;
+        int squareSize = (int) DotsSquare.SQUARE_SIZE;
         for (int i = 0; i < queryAll.size() / 5; i++) {
             Node next = queryAll.get(i);
-            randomDrag(next, (int) squareSize);
+            randomDrag(next, squareSize * 3);
         }
     }
 

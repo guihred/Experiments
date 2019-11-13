@@ -14,6 +14,7 @@ import ml.data.CoverageUtils;
 import org.junit.Test;
 import utils.BaseEntity;
 import utils.ClassReflectionUtils;
+import utils.SupplierEx;
 
 public class ClassReflectionTest extends AbstractTestExecution {
     @Test
@@ -37,18 +38,22 @@ public class ClassReflectionTest extends AbstractTestExecution {
         measureTime("getNamedArgs(" + clName + ")", () -> getNamedArgs(cl));
         measureTime("getters(" + clName + ")", () -> getters(cl));
         measureTime("isClassPublic(" + clName + ")", () -> isClassPublic(cl));
-
-        Object ob = measureTime("getInstance(" + clName + ")", () -> getInstance(cl));
+        List<Class<? extends Object>> testClasses = Arrays.asList(Double.class, String.class, Long.class, Integer.class,
+            Boolean.class, Enum.class);
+        measureTime("hasClass(" + clName + ")", () -> hasClass(testClasses, cl));
+        Class<?> newClass2 = getClassInstance(cl, classes);
+        clName = newClass2.getSimpleName();
+        Object ob = measureTime("getInstance(" + clName + ")", () -> getInstance(newClass2));
         measureTime("getDescription(" + clName + "," + ob + ")", () -> getDescription(ob));
         measureTime("getDescriptionMap(" + ob + ")", () -> getDescriptionMap(ob, new HashMap<>()));
-        measureTime("getFieldMap(" + ob + "," + clName + ")", () -> getFieldMap(ob, cl));
-        measureTime("properties(" + ob + "," + clName + ")", () -> properties(ob, cl));
+        measureTime("getFieldMap(" + ob + "," + clName + ")", () -> getFieldMap(ob, newClass2));
+        measureTime("properties(" + ob + "," + clName + ")", () -> properties(ob, newClass2));
 
-        List<Method> methods = measureTime("getGetterMethodsRecursive", () -> getGetterMethodsRecursive(cl));
+        List<Method> methods = measureTime("getGetterMethodsRecursive", () -> getGetterMethodsRecursive(newClass2));
         measureTime("getFieldNameCase", () -> getFieldNameCase(randomItem(methods)));
         measureTime("invoke", () -> invoke(ob, randomItem(methods)));
 
-        Class<?> newClass = getClassWithFields(cl, classes);
+        Class<?> newClass = getClassWithFields(newClass2, classes);
         clName = newClass.getSimpleName();
         List<String> fields = measureTime("getFields(" + clName + ")", () -> getFields(newClass));
         String randomField = randomItem(fields);
@@ -59,9 +64,17 @@ public class ClassReflectionTest extends AbstractTestExecution {
         measureTime("hasSetterMethods", () -> hasSetterMethods(newClass, randomField));
         measureTime("invoke", () -> invoke(newClass, randomField));
 
-        List<Class<? extends Object>> testClasses = Arrays.asList(Double.class, String.class, Long.class, Integer.class,
-            Boolean.class, Enum.class);
-        measureTime("hasClass(" + clName + ")", () -> hasClass(testClasses, cl));
+    }
+
+    private static Class<?> getClassInstance(Class<?> cl, List<Class<? extends Node>> classes) {
+        Object fields = measureTime("getInstance(" + cl.getSimpleName() + ")", () -> getInstance(cl));
+        Class<?> newClass = cl;
+        while (fields == null) {
+            Class<? extends Node> remove = classes.remove(0);
+            newClass = remove;
+            fields = SupplierEx.get(() -> getInstance(remove));
+        }
+        return newClass;
     }
 
     private static Class<?> getClassWithFields(Class<?> cl, List<Class<? extends Node>> classes) {

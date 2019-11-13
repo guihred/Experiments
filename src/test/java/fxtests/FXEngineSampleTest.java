@@ -31,8 +31,7 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     @Test
     public void verifyBackgroundProcesses() {
         show(BackgroundProcesses.class);
-        sleep(WAIT_TIME * randomNumber(10));
-        clickButtonsWait();
+        clickButtonsWait(WAIT_TIME * nextInt(10));
     }
 
     @Test
