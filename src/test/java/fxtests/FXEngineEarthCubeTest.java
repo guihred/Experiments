@@ -70,6 +70,7 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
             List<Button> buttons = lookup(Button.class).stream().collect(Collectors.toList());
             for (int i = 0; i < lookup.size(); i++) {
                 Node queryAs = from(lookup.get(i)).lookup(ListCell.class::isInstance).query();
+                clickOn(buttons.get(i));
                 clickOn(queryAs);
                 clickOn(buttons.get(i));
             }

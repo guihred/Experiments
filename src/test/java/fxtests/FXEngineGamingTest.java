@@ -117,6 +117,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         moveBy(1000, 0);
         type(W, 20);
         clickOn(".root");
+        clickOn(".root");
         for (KeyCode keyCode : Arrays.asList(W, S, A, DOWN, D, UP, R, L, U, D, B, F, Z, X, LEFT, RIGHT)) {
             press(keyCode).release(keyCode);
             press(CONTROL, keyCode).release(keyCode);

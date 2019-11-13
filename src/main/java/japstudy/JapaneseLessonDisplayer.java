@@ -27,7 +27,7 @@ public class JapaneseLessonDisplayer extends Stage {
         romaji.setTextAlignment(TextAlignment.CENTER);
         lessons = observableList;
         currentIndex.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && !lessons.isEmpty()) {
+            if (!lessons.isEmpty()) {
                 english.setText(lessons.get(newValue.intValue()).getEnglish());
                 romaji.setText(lessons.get(newValue.intValue()).getRomaji());
                 japanese.setText(lessons.get(newValue.intValue()).getJapanese());

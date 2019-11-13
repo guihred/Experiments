@@ -9,6 +9,8 @@ import extract.FileAttrApp;
 import fractal.LeafFractalApp;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -24,7 +26,6 @@ import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
 import schema.sngpc.SngpcViewer;
-import utils.ConsumerEx;
 import utils.ImageFXUtils;
 
 public class FXEngineTest extends AbstractTestExecution {
@@ -54,7 +55,9 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyHistogramExample() {
         show(HistogramExample.class);
-        lookup(CheckBox.class).forEach(ConsumerEx.ignore(this::clickOn));
+        Set<CheckBox> lookup = lookup(CheckBox.class).stream().limit(5).collect(Collectors.toSet());
+        lookup.forEach(this::tryClickOn);
+        lookup.forEach(this::tryClickOn);
     }
 
     @Test
@@ -95,7 +98,7 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyScrollWorldMaps() {
-        ImageFXUtils.setShowImage(false);
+        ImageFXUtils.setShowImage(random.nextBoolean());
         measureTime("Test.verifyScroll", () -> verifyAndRun(() -> {
             lookup(".root").queryAll().forEach(t -> {
                 moveTo(t);

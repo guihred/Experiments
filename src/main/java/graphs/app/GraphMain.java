@@ -1,6 +1,5 @@
 package graphs.app;
 
-
 import static utils.RunnableEx.runIf;
 
 import graphs.entities.CellType;
@@ -77,10 +76,8 @@ public class GraphMain extends Application {
         c1.setItems(cells);
         c2.setItems(cells);
         cells.addListener((Observable observable) -> {
-            if (!cells.isEmpty()) {
-                c1.getSelectionModel().selectFirst();
-                c2.getSelectionModel().selectLast();
-            }
+            c1.getSelectionModel().selectFirst();
+            c2.getSelectionModel().selectLast();
         });
         packageSelect.getSelectionModel().selectedItemProperty().addListener((ob, old, newV) -> {
             packageTopology.setChosenPackageName(newV);

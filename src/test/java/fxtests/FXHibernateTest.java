@@ -2,7 +2,6 @@ package fxtests;
 
 import election.*;
 import fxpro.ch06.TaskProgressApp;
-import fxsamples.BackgroundProcesses;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TreeView;
@@ -27,12 +26,6 @@ public class FXHibernateTest extends AbstractTestExecution {
         ResourceFXUtils.initializeFX();
         HibernateUtil.getSessionFactory();
         HibernateUtil.setShutdownEnabled(false);
-    }
-
-    @Test
-    public void verifyBackgroundProcesses() {
-        show(BackgroundProcesses.class);
-        clickButtonsWait();
     }
 
     @Test

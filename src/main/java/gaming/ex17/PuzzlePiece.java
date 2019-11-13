@@ -32,9 +32,6 @@ public class PuzzlePiece extends Group {
         this.height = height;
     }
 
-    public PuzzlePath getDown() {
-        return down;
-    }
 
     public double getHeight() {
         return height;
@@ -45,9 +42,6 @@ public class PuzzlePiece extends Group {
             imagePattern = new ImagePattern(image, -x * width, -y * height, image.getWidth(), image.getHeight(), false);
         }
         return imagePattern;
-    }
-    public PuzzlePath getLeft() {
-        return left;
     }
 
     public Path getPath() {
@@ -66,14 +60,6 @@ public class PuzzlePiece extends Group {
             path.setFill(imagePattern1);
         }
         return path;
-    }
-
-    public PuzzlePath getRight() {
-        return right;
-    }
-
-    public PuzzlePath getUp() {
-        return up;
     }
 
     public double getWidth() {

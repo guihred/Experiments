@@ -47,9 +47,6 @@ public class ReversiPiece extends Region {
             case BLACK:
                 style = "-fx-background-color: radial-gradient(radius 100%, white 0, black .6); ";
                 break;
-            case NONE:
-                style = "radius 0; ";
-                break;
             case WHITE:
                 style = "-fx-background-color: radial-gradient(radius 100%, white .4, gray .9, darkgray 1); ";
                 break;

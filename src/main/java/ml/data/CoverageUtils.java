@@ -71,18 +71,20 @@ public final class CoverageUtils {
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
         for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i++) {
-            List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(getUncovered(i));
+            List<String> uncovered = getUncovered(i);
+            List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(uncovered);
             if (!uncoveredApplications.isEmpty()) {
-                LOG.info("Min COVERAGE APPLICATIONS= {}", i);
+                LOG.info("LINE COVERAGE APPS= {} ={}", i, uncovered);
                 return uncoveredApplications;
             }
         }
 
         for (int i = BRANCH_MIN_COVERAGE; i < MAX_BRANCH_COVERAGE; i++) {
+            List<String> uncoveredBranches = getUncoveredBranches(i);
             List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(
-                getUncoveredBranches(i));
+                uncoveredBranches);
             if (!uncoveredApplications.isEmpty()) {
-                LOG.error("Min COVERAGE APPLICATIONS= {}", i);
+                LOG.error("BRANCH COVERAGE APPS= {} ={}", i, uncoveredBranches);
                 return uncoveredApplications;
             }
         }
@@ -137,14 +139,14 @@ public final class CoverageUtils {
         for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i++) {
             List<String> uncoveredApplications = getUncoveredFxTest(getUncovered(i), allPaths);
             if (!uncoveredApplications.isEmpty()) {
-                LOG.error("Min COVERAGE TESTS= {}", i);
+                LOG.error("Min LINES COVERAGE TESTS= {}", i);
                 return uncoveredApplications;
             }
         }
         for (int i = BRANCH_MIN_COVERAGE; i < MAX_BRANCH_COVERAGE; i++) {
             List<String> uncoveredApplications = getUncoveredFxTest(getUncoveredBranches(i), allPaths);
             if (!uncoveredApplications.isEmpty()) {
-                LOG.error("Min COVERAGE TESTS= {}", i);
+                LOG.error("Min BRANCH COVERAGE TESTS= {}", i);
                 return uncoveredApplications;
             }
         }
@@ -160,7 +162,6 @@ public final class CoverageUtils {
     }
 
     private static List<String> getUncoveredFxTest(List<String> uncovered, List<String> allPaths) {
-        LOG.error("Uncovered Classes {}", uncovered);
         return JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests", allPaths).stream().distinct().sorted()
             .collect(Collectors.toList());
     }

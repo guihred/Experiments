@@ -22,16 +22,25 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 public class FXEngineSampleTest extends AbstractTestExecution {
     @Test
+    public void verifyBackgroundProcesses() {
+        show(BackgroundProcesses.class);
+        sleep(WAIT_TIME * randomNumber(10));
+        clickButtonsWait();
+    }
+
+    @Test
     public void verifyBoundsPlayground() {
         show(BoundsPlayground.class);
         lookup(CheckBox.class).forEach(this::clickOn);
         lookup(RadioButton.class).forEach(this::clickOn);
+        lookup(Circle.class).forEach(s -> randomDrag(s, 100));
     }
 
     @Test
@@ -44,7 +53,7 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     @Test
     public void verifyLineManipulator() {
         show(LineManipulator.class);
-        lookup(AnchorCircle.class).forEach(e -> randomDrag(e, 50));
+        lookup(AnchorCircle.class).forEach(e -> randomDrag(e, 300));
     }
 
     @Test
@@ -84,7 +93,12 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     public void verifyPersonTableController() {
         show(PersonTableController.class);
         clickOn(lookupFirst(TextField.class));
-        type(typeText(getRandomString()));
+        String randomString = getRandomString();
+        type(typeText(randomString));
+        eraseText(randomString.length());
+        randomString = getRandomString();
+        type(typeText(randomString));
+        eraseText(randomString.length());
     }
 
     @Test
@@ -113,6 +127,7 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     @Test
     public void verifyResponsiveUIApp() {
         show(ResponsiveUIApp.class);
+        tryClickButtons();
         tryClickButtons();
     }
 
@@ -148,7 +163,9 @@ public class FXEngineSampleTest extends AbstractTestExecution {
         show(ThreadInformationApp.class);
         tryClickButtons();
         sleep(500);
-        clickOn(randomItem(lookup(ListCell.class)));
+        ListCell<?> randomItem = randomItem(lookup(ListCell.class));
+        clickOn(randomItem);
+        clickOn(randomItem);
     }
 
     @Test

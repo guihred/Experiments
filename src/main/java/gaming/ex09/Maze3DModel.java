@@ -95,6 +95,7 @@ public class Maze3DModel {
 		for (int i = 0; i < MAZE_SIZE; i++) {
             for (int j = 0; j < MAZE_SIZE; j++) {
                 maze[i][j] = new Maze3DSquare();
+                maze[i][j].setVisited(false);
                 gridPane.add(maze[i][j], j, i);
                 if (i == 0) {
 					maze[i][j].setNorth(false);

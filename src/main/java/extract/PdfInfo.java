@@ -1,5 +1,7 @@
 package extract;
 
+import static utils.FunctionEx.mapIf;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -107,10 +109,6 @@ public class PdfInfo {
         this.lineIndex = lineIndex;
     }
 
-    public void setLines(ObservableList<String> lines) {
-        this.lines.clear();
-        this.lines.setAll(lines);
-    }
 
     public void setNumberOfPages(int numberOfPages) {
         this.numberOfPages.set(numberOfPages);
@@ -120,23 +118,17 @@ public class PdfInfo {
         pageIndex.set(v);
     }
 
-    public void setPages(ObservableList<List<String>> pages) {
-        this.pages = pages;
-    }
 
     public void setProgress(double value) {
         progress.set(value);
     }
 
-    public void setWords(ObservableList<String> words) {
-        this.words.setAll(words);
-    }
 
     @Override
     public String toString() {
         return String.format(
             "PdfInfo {%n file=%s,%n numberOfPages=%s,%n progress=%s,%n index=%s,%n lineIndex=%s,%n pageIndex=%s%n}",
-            file == null ? null : file.getName(), numberOfPages.get(), progress.get(), index, lineIndex,
+            mapIf(file, File::getName), numberOfPages.get(), progress.get(), index, lineIndex,
             pageIndex.get());
     }
 }

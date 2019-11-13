@@ -1,5 +1,7 @@
 package gaming.ex13;
 
+import static utils.FunctionEx.mapIf;
+
 import javafx.beans.NamedArg;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -67,7 +69,7 @@ public class SolitaireCard extends Region {
 
     @Override
     public String toString() {
-        return getNumber().getRepresentation() + " " + suit;
+        return mapIf(number, SolitaireNumber::getRepresentation) + " " + suit;
     }
 
 }

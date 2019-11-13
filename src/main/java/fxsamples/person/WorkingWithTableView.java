@@ -1,5 +1,7 @@
 package fxsamples.person;
 
+import static utils.FunctionEx.mapIf;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -65,10 +67,8 @@ public class WorkingWithTableView extends Application {
         gridpane.add(employeeTableView, 2, 1);
         // selection listening
         leaderListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (observable != null && observable.getValue() != null) {
-                teamMembers.clear();
-                teamMembers.addAll(observable.getValue().employeesProperty());
-            }
+            teamMembers.clear();
+            teamMembers.addAll(mapIf(newValue, Person::employeesProperty));
         });
         Scene scene = new Scene(root, PREF_SIZE * 3, PREF_SIZE * 2, Color.WHITE);
         primaryStage.setScene(scene);

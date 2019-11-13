@@ -36,8 +36,14 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     private final Logger logger = HasLogging.super.getLogger();
 
     protected Random random = new Random();
+
     @Override
     public FxRobotInterface clickOn(Node node, MouseButton... buttons) {
+        return SupplierEx.get(() -> super.clickOn(node, buttons));
+    }
+
+    @Override
+    public FxRobotInterface clickOn(String node, MouseButton... buttons) {
         return SupplierEx.get(() -> super.clickOn(node, buttons));
     }
 
@@ -47,27 +53,20 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     @Override
-	public void start(Stage stage) throws Exception {
+    public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
         currentStage = stage != null ? stage : new Stage();
         currentStage.setX(0);
         currentStage.setY(0);
     }
+
     @Override
-	public void stop() {
+    public void stop() {
         currentStage.close();
     }
 
     public FxRobotInterface tryClickOn(Node node, MouseButton... buttons) {
-        return SupplierEx.getIgnore(() -> super.clickOn(node, buttons),null);
-    }
-
-    public void verifyAndRun(Stage stage1, RunnableEx consumer, List<Class<? extends Application>> applicationClasses) {
-        for (Class<? extends Application> class1 : applicationClasses) {
-            getLogger().info(" RUN {}", class1.getSimpleName());
-            interactNoWait(RunnableEx.make(() -> class1.newInstance().start(stage1)));
-            RunnableEx.make(consumer, e -> getLogger().error(" ERROR RUN " + class1.getSimpleName(), e)).run();
-        }
+        return SupplierEx.getIgnore(() -> super.clickOn(node, buttons), null);
     }
 
     protected void clickButtonsWait() {
@@ -88,6 +87,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     protected <M extends Node> Set<M> lookup(Class<M> cl) {
         return lookup(e -> cl.isInstance(e)).queryAllAs(cl);
     }
+
     protected <M extends Node> M lookupFirst(Class<M> cl) {
         return lookup(e -> cl.isInstance(e)).queryAs(cl);
     }
@@ -121,7 +121,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         return randomItem(bound.stream().collect(Collectors.toList()));
     }
 
-	protected <T> T randomItem(List<T> bound) {
+    protected <T> T randomItem(List<T> bound) {
         return bound.get(random.nextInt(bound.size()));
     }
 
@@ -175,7 +175,6 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }
     }
 
-
     protected boolean tryClickButtons() {
         Set<Node> queryAll = lookup(".button").queryAll();
         queryAll.forEach(this::tryClickOn);
@@ -183,11 +182,14 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     protected void verifyAndRun(Runnable consumer, List<Class<? extends Application>> applicationClasses) {
-        verifyAndRun(currentStage, () -> {
-            interactNoWait(currentStage::toFront);
-            consumer.run();
-            resetStage();
-        }, applicationClasses);
+        for (Class<? extends Application> class1 : applicationClasses) {
+            show(class1);
+            RunnableEx.make(() -> {
+                interactNoWait(currentStage::toFront);
+                consumer.run();
+                resetStage();
+            }, e -> getLogger().error(" ERROR RUN " + class1.getSimpleName(), e)).run();
+        }
         interactNoWait(currentStage::close);
     }
 

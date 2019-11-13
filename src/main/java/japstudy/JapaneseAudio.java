@@ -45,9 +45,6 @@ public enum JapaneseAudio {
 		return ResourceFXUtils.toFile("jap/" + file);
 	}
 
-	public int getLesson() {
-		return lesson;
-	}
 
 	public URL getURL() {
 		return ResourceFXUtils.toURL("jap/" + file);

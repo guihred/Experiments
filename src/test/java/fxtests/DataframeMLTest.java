@@ -10,6 +10,7 @@ import ml.data.DataframeStatisticAccumulator;
 import ml.data.DataframeUtils;
 import org.junit.Test;
 import org.nd4j.linalg.io.Assert;
+import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
 public class DataframeMLTest {
@@ -18,11 +19,16 @@ public class DataframeMLTest {
     @Test
 	public void testCoverageFile() {
     	File csvFile = new File("target/site/jacoco/jacoco.csv");
-		if (csvFile.exists()) {
-			DataframeML b = DataframeBuilder.build(csvFile);
-			b.filter("INSTRUCTION_COVERED", v -> ((Number) v).intValue() == 0);
-			DataframeUtils.describe(b);
-		}
+        DataframeML b = DataframeBuilder.build(csvFile);
+        b.filter("INSTRUCTION_COVERED", v -> ((Number) v).intValue() == 0);
+        DataframeUtils.describe(b);
+    }
+
+    @Test
+    public void testNotExists() {
+        File csvFile = ResourceFXUtils.getOutFile("notExists");
+        DataframeML b = DataframeBuilder.build(csvFile);
+        DataframeUtils.describe(b);
     }
 
 	@Test

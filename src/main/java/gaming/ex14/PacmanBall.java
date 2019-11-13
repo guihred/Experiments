@@ -12,12 +12,12 @@ import simplebuilder.SimpleTimelineBuilder;
 
 public class PacmanBall extends Circle {
 
+    public static final int MAZE_SIZE = 5;
+    public static final double SQUARE_SIZE = 60;
     private final BooleanProperty special = new SimpleBooleanProperty(false);
     private final Timeline timeline = new SimpleTimelineBuilder().addKeyFrame(Duration.ZERO, radiusProperty(), 10)
         .addKeyFrame(Duration.seconds(1. / 10), radiusProperty(), 15).autoReverse(true).cycleCount(Animation.INDEFINITE)
         .build();
-    public static final int MAZE_SIZE = 5;
-    public static final double SQUARE_SIZE = 60;
 
     public PacmanBall(@NamedArg("centerX") double x, @NamedArg("centerY") double y) {
         super(x, y, 5, Color.WHITE);
@@ -44,8 +44,5 @@ public class PacmanBall extends Circle {
         this.special.set(special);
     }
 
-    public final BooleanProperty specialProperty() {
-        return special;
-    }
 
 }

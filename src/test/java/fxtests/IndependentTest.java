@@ -184,6 +184,8 @@ public class IndependentTest {
         measureTime("OthersTests.unique", () -> OthersTests.unique(arr));
         measureTime("OthersTests.reverse", () -> OthersTests.reverse("HIHI"));
         measureTime("OthersTests.validate", () -> OthersTests.validate("789100031550"));
+        measureTime("OthersTests.shorterReverseLonger", () -> OthersTests.shorterReverseLonger("a", "bb"));
+        measureTime("OthersTests.shorterReverseLonger", () -> OthersTests.shorterReverseLonger("aaa", "bb"));
         measureTime("OthersTests.validate", () -> OthersTests.validate("789100031557"));
         measureTime("OthersTests.p",
             () -> OthersTests.p(new Complex(1.0 / 2.0), new Complex(-3, -3), new Complex(-1, 1), new Complex(-9, -5)));

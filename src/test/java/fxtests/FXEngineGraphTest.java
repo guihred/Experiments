@@ -24,7 +24,6 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 
 	@Test
     public void testPackageTopology() {
-		show(GraphMain.class);
         measureTime("JavaFileDependency.getJavaFileDependencies", () -> {
             List<JavaFileDependency> javaFiles = JavaFileDependency.getJavaFileDependencies(null);
             Map<String, List<JavaFileDependency>> filesByPackage = javaFiles.stream()

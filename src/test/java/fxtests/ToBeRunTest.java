@@ -20,7 +20,7 @@ public class ToBeRunTest {
     private static final Logger LOG = HasLogging.log();
 
     @Test
-    public void testAGetJavaMethods() {
+    public void testGetJavaMethods() {
         measureTime("JavaFileDependency.getPublicMethods", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
@@ -31,7 +31,7 @@ public class ToBeRunTest {
     }
 
     @Test
-    public void testBGraphMethodMap() {
+    public void testGraphMethodMap() {
         measureTime("JavaFileDependency.getPublicMethodsFullName", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
@@ -43,7 +43,7 @@ public class ToBeRunTest {
     }
 
     @Test
-    public void testCInvocations() {
+    public void testInvocations() {
         measureTime("JavaFileDependency.getInvocationsMethods", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
@@ -55,7 +55,15 @@ public class ToBeRunTest {
     }
 
     @Test
-    public void testDMethodMap() {
+    public void testJavaDependency() {
+
+        measureTime("JavaFileDependency.displayTestsToBeRun",
+            () -> JavaFileDependency.displayTestsToBeRun(Arrays.asList(), "fxtests").stream().sorted()
+                .collect(Collectors.joining(",*", "*", "")));
+    }
+
+    @Test
+    public void testMethodMap() {
         measureTime("JavaFileDependency.getPublicMethodsMap", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
@@ -65,14 +73,6 @@ public class ToBeRunTest {
 
             }
         });
-    }
-
-    @Test
-    public void testJavaDependency() {
-
-        measureTime("JavaFileDependency.displayTestsToBeRun",
-            () -> JavaFileDependency.displayTestsToBeRun(Arrays.asList(), "fxtests").stream().sorted()
-                .collect(Collectors.joining(",*", "*", "")));
     }
 
     @Test
@@ -97,6 +97,5 @@ public class ToBeRunTest {
 
         measureTime("JavaFileDependency.getUncoveredTests", () -> getUncoveredTests());
     }
-
 
 }

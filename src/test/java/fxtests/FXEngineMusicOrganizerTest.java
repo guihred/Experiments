@@ -23,6 +23,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -94,6 +95,10 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
                 moveSliders(10);
                 sleep(1000);
             }
+            lookup(ImageView.class).stream().anyMatch(PredicateEx.makeTest(e -> {
+                doubleClickOn(e);
+                return true;
+            }));
         });
         FXTesting.measureTime("new EditSongController", () -> {
             show(EditSongController.class);

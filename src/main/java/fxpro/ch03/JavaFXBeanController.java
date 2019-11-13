@@ -50,6 +50,8 @@ public class JavaFXBeanController {
         javaFXBeanController.incrementIPropertyOnModel();
         javaFXBeanController.changeStrPropertyOnModel();
         javaFXBeanController.switchColorPropertyOnModel();
+        javaFXBeanController.switchColorPropertyOnModel();
+        javaFXBeanController.changeStrPropertyOnModel();
 
         ObjectProperty<Lighting> root = new SimpleObjectProperty<>();
         final ObjectBinding<Color> selectBinding = Bindings.select(root, "light", "color");
