@@ -8,7 +8,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.math3.complex.Complex;
 
-public class OthersTests {
+public final class OthersTests {
+
+    private OthersTests() {
+    }
+
     public static int[] minMax(int[] arr) {
         IntSummaryStatistics s = Arrays.stream(arr).summaryStatistics();
         return new int[] { s.getMin(), s.getMax() };

@@ -26,10 +26,8 @@ public enum MachineState {
 	}
 
 	public Map<String, MachineState> getMap() {
-        if (map == null) {
-            if (this == CLOSED) {
-                map = of("APP_PASSIVE_OPEN", MachineState.LISTEN, "APP_ACTIVE_OPEN", MachineState.SYN_SENT);
-            }
+        if (map == null && this == CLOSED) {
+            map = of("APP_PASSIVE_OPEN", MachineState.LISTEN, "APP_ACTIVE_OPEN", MachineState.SYN_SENT);
         }
 		return map;
 	}
