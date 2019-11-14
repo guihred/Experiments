@@ -10,6 +10,7 @@ import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import org.slf4j.Logger;
@@ -65,25 +66,7 @@ public final class CoverageUtils {
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
-        for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i++) {
-            List<String> uncovered = getUncovered(i);
-            List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(uncovered);
-            if (!uncoveredApplications.isEmpty()) {
-                LOG.info("LINE COVERAGE APPS= {} ={}", i, uncovered);
-                return uncoveredApplications;
-            }
-        }
-
-        for (int i = BRANCH_MIN_COVERAGE; i < MAX_BRANCH_COVERAGE; i++) {
-            List<String> uncoveredBranches = getUncoveredBranches(i);
-            List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(
-                uncoveredBranches);
-            if (!uncoveredApplications.isEmpty()) {
-                LOG.error("BRANCH COVERAGE = {}% APPS = {}", i, uncoveredBranches);
-                return uncoveredApplications;
-            }
-        }
-        return getUncoveredApplications(getUncoveredBranches());
+        return getByCoverage(s -> getUncoveredApplications(s));
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications(List<String> uncovered) {
@@ -99,8 +82,7 @@ public final class CoverageUtils {
             LOG.error("APPS FOUND= {}", displayTestsToBeRun);
         }
         return displayTestsToBeRun.stream().distinct()
-            .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e)))
-            .collect(Collectors.toList());
+            .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e))).collect(Collectors.toList());
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications2(Collection<String> uncovered) {
@@ -135,8 +117,7 @@ public final class CoverageUtils {
     }
 
     public static List<String> getUncoveredMethods(Collection<JavaFileDependency> javaFileDependencies,
-        List<String> allPaths,
-        String className) {
+        List<String> allPaths, String className) {
         return javaFileDependencies.parallelStream().filter(j -> j.getName().equals(className))
             .map(JavaFileDependency::getPublicMethodsMap).flatMap(m -> m.entrySet().stream())
             .filter(e -> containsPath(allPaths, e)).map(Entry<String, List<String>>::getKey)
@@ -148,21 +129,7 @@ public final class CoverageUtils {
     }
 
     public static List<String> getUncoveredTests(List<String> allPaths) {
-        for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i++) {
-            List<String> uncoveredApplications = getUncoveredFxTest(getUncovered(i), allPaths);
-            if (!uncoveredApplications.isEmpty()) {
-                LOG.error("Min LINES COVERAGE TESTS= {}", i);
-                return uncoveredApplications;
-            }
-        }
-        for (int i = BRANCH_MIN_COVERAGE; i < MAX_BRANCH_COVERAGE; i++) {
-            List<String> uncoveredApplications = getUncoveredFxTest(getUncoveredBranches(i), allPaths);
-            if (!uncoveredApplications.isEmpty()) {
-                LOG.error("Min BRANCH COVERAGE TESTS= {}", i);
-                return uncoveredApplications;
-            }
-        }
-        return Collections.emptyList();
+        return getByCoverage(s -> getUncoveredFxTest(s, allPaths));
     }
 
     private static boolean contains(List<Class<? extends Application>> classes, JavaFileDependency m) {
@@ -171,6 +138,27 @@ public final class CoverageUtils {
 
     private static boolean containsPath(List<String> allPaths, Entry<String, List<String>> e) {
         return e.getValue().stream().anyMatch(l -> allPaths.stream().anyMatch(l::contains));
+    }
+
+    private static <T> List<T> getByCoverage(Function<List<String>, List<T>> func) {
+        for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i++) {
+            List<String> uncovered = getUncovered(i);
+            List<T> uncoveredApplications = func.apply(uncovered);
+            if (!uncoveredApplications.isEmpty()) {
+                LOG.info("LINE COVERAGE APPS= {} ={}", i, uncovered);
+                return uncoveredApplications;
+            }
+        }
+
+        for (int i = BRANCH_MIN_COVERAGE; i < MAX_BRANCH_COVERAGE; i++) {
+            List<String> uncoveredBranches = getUncoveredBranches(i);
+            List<T> uncoveredApplications = func.apply(uncoveredBranches);
+            if (!uncoveredApplications.isEmpty()) {
+                LOG.error("BRANCH COVERAGE = {}% APPS = {}", i, uncoveredBranches);
+                return uncoveredApplications;
+            }
+        }
+        return Collections.emptyList();
     }
 
     private static List<String> getUncoveredFxTest(List<String> uncovered, List<String> allPaths) {
