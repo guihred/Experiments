@@ -1,6 +1,5 @@
 package ml;
 
-import java.util.List;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.StringProperty;
@@ -71,11 +70,7 @@ public class HeatGraphExample extends Application {
         ySelected.selectionModelProperty().get().setSelectionMode(SelectionMode.SINGLE);
         ySelected.selectionModelProperty().get().getSelectedItems().addListener((ListChangeListener<String>) c -> {
             c.next();
-            List<? extends String> addedSubList = c.getAddedSubList();
-            if (!addedSubList.isEmpty()) {
-                String string = addedSubList.get(0);
-                xHeader.set(string);
-            }
+            c.getAddedSubList().stream().findFirst().ifPresent(xHeader::set);
         });
         ySelected.selectionModelProperty().get().select(0);
         return ySelected;

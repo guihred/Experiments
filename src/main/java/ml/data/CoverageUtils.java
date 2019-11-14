@@ -36,14 +36,11 @@ public final class CoverageUtils {
     public static <T> List<Class<? extends T>> getClasses(Class<T> cl) {
         List<Class<? extends T>> appClass = new ArrayList<>();
         List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
-        return SupplierEx.get(() -> {
-
-            return ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClasses().stream()
-                .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
-                .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
-                .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
-                .collect(Collectors.toCollection(() -> appClass));
-        }, appClass);
+        return SupplierEx.get(() -> ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClasses()
+            .stream().filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
+            .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
+            .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
+            .collect(Collectors.toCollection(() -> appClass)), appClass);
     }
 
     public static double getPercentage(double[] arr) {

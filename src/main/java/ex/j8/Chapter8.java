@@ -187,6 +187,9 @@ public final class Chapter8 {
             LOGGER.trace("gcd1 {}", gcd1(-20, -b));
             LOGGER.trace("gcd2 {}", gcd2(-20, -b));
             LOGGER.trace("gcd3 {}", gcd3(-20, -b));
+            LOGGER.trace("gcd1 {}", gcd1(20, 0));
+            LOGGER.trace("gcd2 {}", gcd2(20, 0));
+            LOGGER.trace("gcd3 {}", gcd3(20, 0));
         }
     }
 
@@ -333,8 +336,8 @@ public final class Chapter8 {
     private static void printLines(URLConnection connection) {
         RunnableEx.run(() -> {
             try (InputStream inputStream = connection.getInputStream();
-            BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-            a.lines().forEach(LOGGER::trace);
+                BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                a.lines().forEach(LOGGER::trace);
             }
         });
 

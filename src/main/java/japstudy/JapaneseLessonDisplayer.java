@@ -26,13 +26,11 @@ public class JapaneseLessonDisplayer extends Stage {
         Label romaji = new Label();
         romaji.setTextAlignment(TextAlignment.CENTER);
         lessons = observableList;
-        currentIndex.addListener((observable, oldValue, newValue) -> {
-            if (!lessons.isEmpty()) {
-                english.setText(lessons.get(newValue.intValue()).getEnglish());
-                romaji.setText(lessons.get(newValue.intValue()).getRomaji());
-                japanese.setText(lessons.get(newValue.intValue()).getJapanese());
-            }
-        });
+        currentIndex.addListener((observable, oldValue, newValue) -> lessons.stream().findAny().ifPresent(s -> {
+            english.setText(lessons.get(newValue.intValue()).getEnglish());
+            romaji.setText(lessons.get(newValue.intValue()).getRomaji());
+            japanese.setText(lessons.get(newValue.intValue()).getJapanese());
+        }));
         japanese.visibleProperty().bind(tested);
 
         TextField answer = new TextField();

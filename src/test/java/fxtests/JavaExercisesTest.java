@@ -102,11 +102,7 @@ public final class JavaExercisesTest {
         measureTime("Chapter8.ex15", Chapter8::ex15);
         measureTime("Chapter8.ex16", Chapter8::ex16);
         measureTime("Chapter8.ex9", Chapter8::ex9);
-        try {
-            Chapter8.ex14();
-        } catch (Exception e) {
-            Assert.assertNotNull("Expected NullPointer Exception", e);
-        }
+        measureTimeExpectException("Chapter8.ex14", Chapter8::ex14);
     }
 
 
