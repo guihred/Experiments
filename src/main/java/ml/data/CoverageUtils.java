@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javafx.application.Application;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.SupplierEx;
 
 public final class CoverageUtils {
     private static final int MAX_LINE_COVERAGE = 60;
@@ -35,17 +36,14 @@ public final class CoverageUtils {
     public static <T> List<Class<? extends T>> getClasses(Class<T> cl) {
         List<Class<? extends T>> appClass = new ArrayList<>();
         List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
-        try {
+        return SupplierEx.get(() -> {
 
-            ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClasses().stream()
+            return ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClasses().stream()
                 .filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
                 .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
                 .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
                 .collect(Collectors.toCollection(() -> appClass));
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
-        return appClass;
+        }, appClass);
     }
 
     public static double getPercentage(double[] arr) {

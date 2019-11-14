@@ -21,12 +21,9 @@ import java.util.stream.StreamSupport;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import org.slf4j.Logger;
-import utils.CrawlerTask;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
+import utils.*;
 
 public final class Chapter8 {
-    private static final Logger LOG = HasLogging.log();
 
     private static final String ALICE_TXT = "alice.txt";
 
@@ -38,6 +35,7 @@ public final class Chapter8 {
      * y-coordinates. Do the same for Rectangle2D.
      */
     private static final Random RANDOM = new SecureRandom();
+
     private Chapter8() {
     }
 
@@ -81,22 +79,17 @@ public final class Chapter8 {
      */
     public static void ex10() {
         File original = new File("src");
-        try (Stream<Path> walk = Files.walk(original.toPath(), 20)) {
-            walk.map(Path::toFile).filter(file -> {
-                try {
+        RunnableEx.run(() -> {
+            try (Stream<Path> walk = Files.walk(original.toPath(), 20)) {
+                walk.map(Path::toFile).filter(PredicateEx.makeTest(file -> {
                     if (file.canRead() && file.isFile()) {
                         List<String> wordsAsList = getWordsAsList(file.toPath());
                         return wordsAsList.contains("transient") && wordsAsList.contains("volatile");
                     }
-
-                } catch (Exception e) {
-                    LOGGER.error("", e);
-                }
-                return true;
-            }).filter(File::isFile).map(Objects::toString).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
+                    return true;
+                })).filter(File::isFile).map(Objects::toString).forEach(LOGGER::info);
+            }
+        });
 
     }
 
@@ -108,7 +101,7 @@ public final class Chapter8 {
      * and connection.getInputStream().
      */
     public static void ex11() {
-        try {
+        RunnableEx.run(() -> {
             CrawlerTask.insertProxyConfig();
             URL url = new URL("https://www.google.com/");
             URLConnection connection = url.openConnection();
@@ -118,9 +111,7 @@ public final class Chapter8 {
             connection.setRequestProperty("Authorization", "Basic " + encode);
             connection.connect();
             printLines(connection);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
+        });
 
     }
 
@@ -130,7 +121,6 @@ public final class Chapter8 {
      */
     public static void ex14() {
         Objects.requireNonNull(null, () -> "What are you doing man??");
-
     }
 
     /*
@@ -140,12 +130,11 @@ public final class Chapter8 {
      */
     public static void ex15() {
         // Lines that contain some number
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT))) {
-            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-
-        }
+        RunnableEx.run(() -> {
+            try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT))) {
+                lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
+            }
+        });
 
     }
 
@@ -155,11 +144,11 @@ public final class Chapter8 {
      */
     public static void ex16() {
         // Lines that contain some number
-        try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT))) {
-            lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
+        RunnableEx.run(() -> {
+            try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath(ALICE_TXT))) {
+                lines.filter(Pattern.compile(".*\\d+.*$").asPredicate()).forEach(LOGGER::trace);
+            }
+        });
 
     }
 
@@ -171,7 +160,6 @@ public final class Chapter8 {
      * signed, 2147483648 unsigned) because it doesn't have a negative counterpart
      */
     public static void ex2() {
-
         Math.negateExact(Integer.MIN_VALUE);
     }
 
@@ -190,9 +178,9 @@ public final class Chapter8 {
             LOGGER.trace("gcd1 {} ", gcd1(20, b));
             LOGGER.trace("gcd2 {} ", gcd2(20, b));
             LOGGER.trace("gcd3 {} ", gcd3(20, b));
-            LOGGER.trace(" gcd1 {}", gcd1(-20, b));
-            LOGGER.trace(" gcd2 {}", gcd2(-20, b));
-            LOGGER.trace(" gcd3 {}", gcd3(-20, b));
+            LOGGER.trace("gcd1 {}", gcd1(-20, b));
+            LOGGER.trace("gcd2 {}", gcd2(-20, b));
+            LOGGER.trace("gcd3 {}", gcd3(-20, b));
             LOGGER.trace("gcd1 {}", gcd1(20, -b));
             LOGGER.trace("gcd2 {}", gcd2(20, -b));
             LOGGER.trace("gcd3 {}", gcd3(20, -b));
@@ -234,8 +222,7 @@ public final class Chapter8 {
      * long list?
      */
     public static void ex5() {
-        try {
-
+        RunnableEx.run(() -> {
             List<String> wordsAsList = getWordsAsList(ResourceFXUtils.toPath(ALICE_TXT));
             final int longWordThreshold = 12;
 
@@ -251,10 +238,8 @@ public final class Chapter8 {
             end = Instant.now();
 
             LOGGER.trace("size={} time {} ms", size, Duration.between(now, end).toMillis());
+        });
 
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
     }
 
     public static void ex6() {
@@ -292,26 +277,26 @@ public final class Chapter8 {
      * double values. Hint: Look at the source code for BufferedReader.lines.
      */
     public static void ex9() {
-        try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name())) {
-            streamOfLines(scanner).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-        try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name())) {
-            streamOfWords(scanner).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-        try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name())) {
-            streamOfInteger(scanner).map(Objects::toString).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
-        try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name())) {
-            streamOfDouble(scanner).map(Objects::toString).forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
+        RunnableEx.run(() -> {
+            try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name())) {
+                streamOfLines(scanner).forEach(LOGGER::trace);
+            }
+        });
+        RunnableEx.run(() -> {
+            try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name())) {
+                streamOfWords(scanner).forEach(LOGGER::trace);
+            }
+        });
+        RunnableEx.run(() -> {
+            try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name())) {
+                streamOfInteger(scanner).map(Objects::toString).forEach(LOGGER::trace);
+            }
+        });
+        RunnableEx.run(() -> {
+            try (Scanner scanner = new Scanner(ResourceFXUtils.toPath(ALICE_TXT), StandardCharsets.UTF_8.name())) {
+                streamOfDouble(scanner).map(Objects::toString).forEach(LOGGER::trace);
+            }
+        });
     }
 
     public static int gcd1(int a, int b) {
@@ -346,12 +331,13 @@ public final class Chapter8 {
     }
 
     private static void printLines(URLConnection connection) {
-        try (InputStream inputStream = connection.getInputStream();
+        RunnableEx.run(() -> {
+            try (InputStream inputStream = connection.getInputStream();
             BufferedReader a = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             a.lines().forEach(LOGGER::trace);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
+            }
+        });
+
     }
 
     private static Stream<Double> streamOfDouble(Scanner scanner) {
