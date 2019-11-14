@@ -3,9 +3,6 @@ package fxtests;
 import static ethical.hacker.ImageCracker.crackImage;
 import static ethical.hacker.ImageCracker.createSelectedImage;
 import static fxtests.FXTesting.measureTime;
-import static japstudy.JapanRefactoring.TXT_FILE;
-import static japstudy.JapanRefactoring.refactorJapaneseFile;
-import static japstudy.JapanRefactoring.renameFile;
 import static utils.ResourceFXUtils.getOutFile;
 import static utils.ResourceFXUtils.toExternalForm;
 import static utils.ResourceFXUtils.toFile;
@@ -13,7 +10,6 @@ import static utils.ResourceFXUtils.toFile;
 import com.google.common.collect.ImmutableMap;
 import extract.ExcelService;
 import extract.WordService;
-import japstudy.JapanRefactoring;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -145,15 +141,6 @@ public class FXFileReadersTest extends ApplicationTest {
         measureTime("ImageCracker.createSelectedImage",
             () -> crackImage(createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
     }
-
-    @Test
-        public void testJapaneseFile() {
-    
-        measureTime("JapanRefactoring.createDatabaseFile",
-            () -> JapanRefactoring.createDatabaseFile());
-        measureTime("JapanRefactoring.refactorJapaneseFile",
-            () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
-        }
 
     @Test
     public void testLeitorArquivos() {

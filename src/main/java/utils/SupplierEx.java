@@ -25,9 +25,13 @@ public interface SupplierEx<T> {
             }
             return a;
         } catch (Throwable e) {
-			HasLogging.log(1).info("", e);
+            HasLogging.log(1).info("", e);
             return orElse;
         }
+    }
+
+    static <A> A getIgnore(SupplierEx<A> run) {
+        return getIgnore(run, null);
     }
 
     static <A> A getIgnore(SupplierEx<A> run, A orElse) {
@@ -59,11 +63,19 @@ public interface SupplierEx<T> {
         };
     }
 
-    static <A> A remap(SupplierEx<A> run,  String message) {
+    static <A> A orElse(A a, SupplierEx<A> run) {
+
+        if (a != null) {
+            return a;
+        }
+        return SupplierEx.get(run);
+    }
+
+    static <A> A remap(SupplierEx<A> run, String message) {
         try {
             return run.get();
         } catch (Throwable e) {
-            throw new RuntimeIOException(message,e);
+            throw new RuntimeIOException(message, e);
         }
     }
 

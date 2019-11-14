@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import java.util.Collection;
 import javafx.scene.shape.*;
 
 public class SimplePathBuilder extends SimpleShapeBuilder<Path, SimplePathBuilder> {
@@ -10,6 +11,11 @@ public class SimplePathBuilder extends SimpleShapeBuilder<Path, SimplePathBuilde
         super(new Path());
         path = shape;
 	}
+
+    public SimplePathBuilder add(Collection<PathElement> e) {
+        path.getElements().addAll(e);
+        return this;
+    }
 
     public SimplePathBuilder add(PathElement e) {
         path.getElements().add(e);

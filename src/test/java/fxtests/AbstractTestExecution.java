@@ -66,7 +66,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     public FxRobotInterface tryClickOn(Node node, MouseButton... buttons) {
-        return SupplierEx.getIgnore(() -> super.clickOn(node, buttons), null);
+        return SupplierEx.getIgnore(() -> super.clickOn(node, buttons));
     }
 
     protected void clickButtonsWait() {

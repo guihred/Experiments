@@ -1,20 +1,18 @@
 package image;
 
-import com.aspose.imaging.*;
-import com.aspose.imaging.exif.JpegExifData;
-import com.aspose.imaging.fileformats.bmp.BmpImage;
+import com.aspose.imaging.Image;
+import com.aspose.imaging.RasterCachedImage;
+import com.aspose.imaging.RasterImage;
+import com.aspose.imaging.Rectangle;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionColorMode;
 import com.aspose.imaging.fileformats.jpeg.JpegCompressionMode;
-import com.aspose.imaging.fileformats.jpeg.JpegImage;
 import com.aspose.imaging.fileformats.tiff.enums.TiffExpectedFormat;
 import com.aspose.imaging.imageoptions.BmpOptions;
 import com.aspose.imaging.imageoptions.JpegOptions;
 import com.aspose.imaging.imageoptions.PngOptions;
 import com.aspose.imaging.imageoptions.TiffOptions;
-import com.aspose.imaging.sources.FileCreateSource;
 import org.slf4j.Logger;
 import utils.HasLogging;
-import utils.RunnableEx;
 
 public final class ImageLoading {
     private static final Logger LOG = HasLogging.log();
@@ -76,35 +74,7 @@ public final class ImageLoading {
         image.save(dataDir + "ConvertingSVGToRasterImages_out.png", pngOptions);
     }
 
-    public static void createThumnails(String dataDir, String nameFile) {
-        JpegImage image = (JpegImage) Image.load(nameFile);
 
-        // Get the image thumbnail information and save it in an instance of
-        // JpegImage
-        JpegExifData exifData = image.getExifData();
-        if (exifData == null) {
-            return;
-        }
-        JpegImage thumbnail = (JpegImage) exifData.getThumbnail();
-
-        // Retrieve the thumbnail bitmap information/Pixels in an array of type
-        // Color
-        Color[] pixels = thumbnail.loadPixels(new Rectangle(0, 0, thumbnail.getWidth(), thumbnail.getHeight()));
-
-        // To save the thumbnail as BMP image, create an instance of BmpOptions
-
-        // Create a BmpImage while using the instance of BmpOptions and
-        // providing resultant dimensions
-        RunnableEx.run(() -> {
-            try (BmpOptions bmpOptions = options(dataDir);
-                BmpImage bmpImage = (BmpImage) Image.create(bmpOptions, thumbnail.getWidth(), thumbnail.getHeight())) {
-                // Copy the thumbnail pixels onto the newly created canvas
-                bmpImage.savePixels(bmpImage.getBounds(), pixels);
-                // Save the results
-                bmpImage.save();
-            }
-        });
-    }
 
     public static void cropImage(String dataDir, String nameFile) {
 
@@ -163,11 +133,4 @@ public final class ImageLoading {
 
     }
 
-    private static BmpOptions options(String dataDir) {
-        BmpOptions bmpOptions = new BmpOptions();
-        // Set file source in which the results will be stores; last Boolean
-        // parameter denotes isTemporal
-        bmpOptions.setSource(new FileCreateSource(dataDir + "RetrieveThumbnailBitmapInformation_out.jpg", false));
-        return bmpOptions;
-    }
 }

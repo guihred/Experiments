@@ -1,10 +1,7 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static ml.data.CoverageUtils.getUncovered;
-import static ml.data.CoverageUtils.getUncoveredApplications;
-import static ml.data.CoverageUtils.getUncoveredBranches;
-import static ml.data.CoverageUtils.getUncoveredTests;
+import static ml.data.CoverageUtils.*;
 
 import graphs.app.JavaFileDependency;
 import java.util.Arrays;
@@ -97,6 +94,12 @@ public class ToBeRunTest {
     @Test
     public void testUncoveredZApplications() {
         measureTime("JavaFileDependency.getUncoveredApplications", () -> getUncoveredApplications());
+    }
+
+    @Test
+    public void testUncoveredZApplications2() {
+        measureTime("JavaFileDependency.getUncoveredApplications2",
+            () -> getUncoveredApplications2(getUncoveredBranches()));
     }
 
 }

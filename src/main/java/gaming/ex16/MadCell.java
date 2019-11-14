@@ -41,7 +41,7 @@ public class MadCell {
 
     @Override
     public String toString() {
-        return "[" + id + "," + x + "," + y + "]";
+        return String.format("MadCell [%d, %f, %f]", getId(), getX(), getY());
     }
 
 }

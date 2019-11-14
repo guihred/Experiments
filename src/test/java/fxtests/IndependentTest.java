@@ -99,6 +99,7 @@ public class IndependentTest {
                 .forEach(e -> e.moveBy(10, 10)));
         measureTime("Ch4.cyclicToString",
             () -> Ch4.cyclicToString(new LineCh4(new PointCh4(2, 3), new LabeledPoint("a", 3, 3))));
+        measureTime("Ch4.classRepresentations", () -> Ch4.classRepresentations());
     }
 
 
@@ -171,8 +172,6 @@ public class IndependentTest {
         measureTime("ImageLoading.exporting", () -> ImageLoading.exporting(dataDir, nameFile));
         measureTime("ImageLoading.grayScale", () -> ImageLoading.grayScale(dataDir, nameFile));
         measureTime("ImageLoading.grayScaling", () -> ImageLoading.grayScaling(dataDir, nameFile));
-        String jpegFile = getFirstPathByExtension(userFolder, ".jpeg").toString();
-        measureTime("ImageLoading.createThumnails", () -> ImageLoading.createThumnails(dataDir, jpegFile));
     }
 
     @Test

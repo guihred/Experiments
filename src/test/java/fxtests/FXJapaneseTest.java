@@ -1,6 +1,9 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
+import static japstudy.JapanRefactoring.TXT_FILE;
+import static japstudy.JapanRefactoring.refactorJapaneseFile;
+import static japstudy.JapanRefactoring.renameFile;
 
 import furigana.FuriganaCrawlerApp;
 import japstudy.*;
@@ -14,6 +17,16 @@ import javafx.scene.input.KeyCode;
 import org.junit.Test;
 
 public class FXJapaneseTest extends AbstractTestExecution {
+    @SuppressWarnings("static-method")
+    @Test
+        public void testJapaneseFile() {
+    
+        measureTime("JapanRefactoring.createDatabaseFile",
+            () -> JapanRefactoring.createDatabaseFile());
+        measureTime("JapanRefactoring.refactorJapaneseFile",
+            () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
+        }
+
     @Test
     public void verifyFuriganaCrawlerApp() {
         show(FuriganaCrawlerApp.class);

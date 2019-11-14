@@ -97,7 +97,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static Integer getApenasNumerosInt(String texto) {
-        return SupplierEx.getIgnore(() -> Integer.parseInt(getApenasNumeros(texto)), null);
+        return SupplierEx.getIgnore(() -> Integer.parseInt(getApenasNumeros(texto)));
     }
 
     public static String getCEPFormatado(Long cep) {
@@ -131,7 +131,7 @@ public class StringSigaUtils extends StringUtils {
         return SupplierEx.getIgnore(() -> {
             String valor = retirarMascara(cpf);
             return Long.valueOf(valor);
-        }, null);
+        });
     }
 
     public static String getCpfFormatado(Long cpf) {

@@ -2,16 +2,13 @@ package ex.j9.ch4;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.SupplierEx;
 
 public class Ch4 {
     /**
@@ -47,6 +44,15 @@ public class Ch4 {
         LOGGER.info("{}", cyclicToString);
     }
 
+    private static String cyclicToStr(Object s, List<Class<?>> classes, Field e) throws IllegalAccessException {
+        if (isClassUsed(classes, e)) {
+            return Objects.toString(e.get(s));
+        }
+        List<Class<?>> classes2 = new ArrayList<>(classes);
+        classes2.add(e.getType());
+        return cyclicToString(e.get(s), classes2);
+    }
+
     private static String cyclicToString(Object s, List<Class<?>> classes) {
         if (s == null) {
             return "null";
@@ -54,30 +60,15 @@ public class Ch4 {
         Class<? extends Object> class1 = s.getClass();
         classes.add(class1);
         List<Field> fields = Stream
-                .concat(Stream.of(class1.getDeclaredFields()), Stream.of(class1.getSuperclass().getDeclaredFields()))
-                .filter(e -> isAccessLegal(s, e))
-                .collect(Collectors.toList());
+            .concat(Stream.of(class1.getDeclaredFields()), Stream.of(class1.getSuperclass().getDeclaredFields()))
+            .filter(e -> isAccessLegal(s, e)).collect(Collectors.toList());
 
         String pad = fields.size() <= 1 ? "" : classes.stream().map(e -> "  ").collect(Collectors.joining(""));
-        return class1.getSimpleName() + "{" + extracted(fields) + fields.stream().map(e -> {
-            try {
-                String cyclicToString;
-                if (isClassUsed(classes, e)) {
-                    cyclicToString = Objects.toString(e.get(s));
-                } else {
-                    List<Class<?>> classes2 = new ArrayList<>(classes);
-                    classes2.add(e.getType());
-                    cyclicToString = cyclicToString(e.get(s), classes2);
-                }
-                return e.getName() + "=" + cyclicToString;
-            } catch (IllegalAccessException e1) {
-                LOGGER.error("", e1);
-                return "";
-            }
-        }).filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(",\n" + pad, pad,
-                        extracted(fields) + StringUtils.repeat("  ", classes.size() - 1)))
-                + "}";
+        return class1.getSimpleName() + "{" + extracted(fields) + fields.stream().map(e -> SupplierEx.get(() -> {
+            return e.getName() + "=" + cyclicToStr(s, classes, e);
+        }, "")).filter(StringUtils::isNotBlank).collect(
+            Collectors.joining(",\n" + pad, pad, extracted(fields) + StringUtils.repeat("  ", classes.size() - 1)))
+            + "}";
     }
 
     private static String extracted(List<Field> fields) {
@@ -85,14 +76,11 @@ public class Ch4 {
     }
 
     private static boolean isAccessLegal(Object s, Field e) {
-        try {
+        return SupplierEx.get(() -> {
             e.setAccessible(true);
             e.get(s);
-        } catch (Exception ex) {
-            LOGGER.trace("", ex);
-            return false;
-        }
-        return !Modifier.isStatic(e.getModifiers());
+            return !Modifier.isStatic(e.getModifiers());
+        }, true);
     }
 
     private static boolean isClassUsed(List<Class<?>> classes, Field e) {

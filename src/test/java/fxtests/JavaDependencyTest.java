@@ -92,6 +92,8 @@ public class JavaDependencyTest {
             () -> AbstractTestExecution.testApps(getUncoveredApplications()));
     }
 
+
+
     private boolean isNotSame(Throwable e, Class<? extends Throwable> expected) {
         boolean notSame = expected != e.getCause().getClass();
         if (notSame) {

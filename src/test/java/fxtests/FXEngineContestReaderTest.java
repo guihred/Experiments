@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class FXContestReaderTest extends AbstractTestExecution {
+public class FXEngineContestReaderTest extends AbstractTestExecution {
 
     private Logger log = HasLogging.log();
 

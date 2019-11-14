@@ -3,25 +3,15 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 
 import ethical.hacker.*;
-import java.time.LocalTime;
 import java.util.Arrays;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import org.junit.Test;
-import org.slf4j.Logger;
 import utils.ConsoleUtils;
 import utils.ConsumerEx;
 
 public class FXHackTest extends AbstractTestExecution {
-    @Test
-    public void testAlarmClock() {
-        Logger logger = getLogger();
-        measureTime("AlarmClock.activateAlarmThenStop", () -> AlarmClock.scheduleToRun(LocalTime.now().plusMinutes(1),
-            () -> logger.info("RUN AT {}", LocalTime.now())));
-        measureTime("AlarmClock.activateAlarmThenStop", () -> AlarmClock.scheduleToRun(LocalTime.now().minusMinutes(1),
-            () -> logger.info("RUN AT {}", LocalTime.now())));
-        measureTime("AlarmClock.runImageCracker", () -> AlarmClock.runImageCracker());
-    }
+
 
     @Test
     @SuppressWarnings("static-method")

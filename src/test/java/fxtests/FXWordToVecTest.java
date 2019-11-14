@@ -21,10 +21,11 @@ public class FXWordToVecTest extends AbstractTestExecution {
 
 	@Test
 	public void verifyWordSuggetion() {
-		show(WordSuggetionApp.class);
-		lookup(".text-field").queryAll().forEach(ConsumerEx.makeConsumer(t -> {
-			clickOn(t);
-			write("new york ");
-		}));
+        showNewStage(WordSuggetionApp.class, () -> {
+            lookup(".text-field").queryAll().forEach(ConsumerEx.makeConsumer(t -> {
+                clickOn(t);
+                write("new york ");
+            }));
+        });
 	}
 }

@@ -19,12 +19,12 @@ public class JapanRefactoring {
         + "\\(english,japanese,romaji,exercise,lesson\\) VALUES"
         + "\\('([^\n]+)','([^\n]+)','([^\n]+)',(\\d+),(\\d+)\\);";
 
-    public static final String TXT_FILE = ResourceFXUtils.toFullPath("create_database.sql");
+    private static final String OUTPUT_FILE = "create_database.sql";
+    public static final String TXT_FILE = ResourceFXUtils.toFullPath(OUTPUT_FILE);
 
     private static int chapter = 1;
     private static int lesson;
 
-    private static final String OUTPUT_FILE = "create_database.sql";
 
     public static void createDatabaseFile() {
         ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessonsWait();
@@ -42,7 +42,8 @@ public class JapanRefactoring {
             for (JapaneseLesson lesson1 : lessons) {
 
                 String format = String.format(
-                    "INSERT INTO JAPANESE_LESSON(english,japanese,romaji,exercise,lesson) VALUES('%s','%s','%s',%d,%d);",
+                    "INSERT INTO JAPANESE_LESSON(english,japanese,romaji,exercise,lesson) "
+                        + "VALUES('%s','%s','%s',%d,%d);",
                     treatStr(lesson1.getEnglish()), treatStr(lesson1.getJapanese()), treatStr(lesson1.getRomaji()),
                     lesson1.getExercise(), lesson1.getLesson());
                 out.println(format);

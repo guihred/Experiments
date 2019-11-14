@@ -23,24 +23,15 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
 	    return (Z) this;
     }
 
-    public Z prefHeight(final double value) {
-		region.setPrefHeight(value);
-		return (Z) this;
-	}
-	public Z prefHeight(final ObservableValue<? extends Number> value) {
-        region.prefHeightProperty().bind(value);
+    public Z prefHeight(final ObservableValue<? extends Number> value) {
+        node.prefHeightProperty().bind(value);
         return (Z) this;
     }
-
-    public Z prefWidth(final double value) {
-		region.setPrefWidth(value);
-		return (Z) this;
-	}
-
     public Z prefWidth(final ObservableValue<? extends Number> value) {
-        region.prefWidthProperty().bind(value);
+        node.prefWidthProperty().bind(value);
         return (Z) this;
     }
+
 
     public Z scaleShape(final boolean value) {
         region.setScaleShape(value);

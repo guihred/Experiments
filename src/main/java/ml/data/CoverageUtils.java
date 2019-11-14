@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 
 public final class CoverageUtils {
-    private static final int MAX_LINE_COVERAGE = 51;
+    private static final int MAX_LINE_COVERAGE = 60;
 
     private static final int MAX_BRANCH_COVERAGE = 80;
 
@@ -84,7 +84,7 @@ public final class CoverageUtils {
             List<Class<? extends Application>> uncoveredApplications = getUncoveredApplications(
                 uncoveredBranches);
             if (!uncoveredApplications.isEmpty()) {
-                LOG.error("BRANCH COVERAGE APPS= {} ={}", i, uncoveredBranches);
+                LOG.error("BRANCH COVERAGE = {}% APPS = {}", i, uncoveredBranches);
                 return uncoveredApplications;
             }
         }
@@ -92,6 +92,23 @@ public final class CoverageUtils {
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications(List<String> uncovered) {
+        List<String> path = new ArrayList<>();
+        List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
+        for (JavaFileDependency dependecy : allFileDependencies) {
+            dependecy.setDependents(allFileDependencies);
+        }
+        List<Class<? extends Application>> classes = CoverageUtils.getClasses(Application.class);
+        Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, m -> contains(classes, m),
+            path);
+        if (!displayTestsToBeRun.isEmpty()) {
+            LOG.error("APPS FOUND= {}", displayTestsToBeRun);
+        }
+        return displayTestsToBeRun.stream().distinct()
+            .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e)))
+            .collect(Collectors.toList());
+    }
+
+    public static List<Class<? extends Application>> getUncoveredApplications2(List<String> uncovered) {
         List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);

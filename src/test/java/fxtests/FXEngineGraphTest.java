@@ -6,10 +6,12 @@ import graphs.app.GraphMain;
 import graphs.app.JavaFileDependency;
 import graphs.app.PackageTopology;
 import graphs.entities.Cell;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
@@ -35,15 +37,15 @@ public class FXEngineGraphTest extends AbstractTestExecution {
         });
     }
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void verifyAllTopologies() {
 		show(GraphMain.class);
-		Set<ComboBox> queryButtons = lookup(".combo-box").queryAllAs(ComboBox.class).stream()
-				.filter(ComboBox::isVisible)
-				.collect(Collectors.toSet());
+        List<ComboBox<?>> queryButtons = Stream.of("#selectLayout", "#topologySelect")
+            .map(e -> lookup(e).queryComboBox())
+            .collect(Collectors.toList());
+        Collections.shuffle(queryButtons);
 		Set<Node> queryAll = lookup("Go").queryAll();
-		for (ComboBox e : queryButtons) {
+        for (ComboBox<?> e : queryButtons) {
 			ObservableList<?> items = e.getItems();
             if (items.size() <= 10) {
 				for (int i = 0; i < items.size() ; i++) {

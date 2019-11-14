@@ -67,12 +67,12 @@ public class ClassReflectionTest extends AbstractTestExecution {
     }
 
     private static Class<?> getClassInstance(Class<?> cl, List<Class<? extends Node>> classes) {
-        Object fields = measureTime("getInstance(" + cl.getSimpleName() + ")", () -> getInstance(cl));
+        Object fields = SupplierEx.getIgnore(() -> getInstance(cl));
         Class<?> newClass = cl;
         while (fields == null) {
             Class<? extends Node> remove = classes.remove(0);
             newClass = remove;
-            fields = SupplierEx.get(() -> getInstance(remove));
+            fields = SupplierEx.getIgnore(() -> getInstance(remove));
         }
         return newClass;
     }

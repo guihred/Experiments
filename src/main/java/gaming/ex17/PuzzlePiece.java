@@ -5,8 +5,9 @@ import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
+import simplebuilder.SimplePathBuilder;
+import utils.SupplierEx;
 
 public class PuzzlePiece extends Group {
     private PuzzlePath down = PuzzlePath.STRAIGHT;
@@ -32,38 +33,16 @@ public class PuzzlePiece extends Group {
         this.height = height;
     }
 
-
-    public double getHeight() {
-        return height;
-    }
-
     public ImagePattern getImagePattern() {
-        if (imagePattern == null) {
-            imagePattern = new ImagePattern(image, -x * width, -y * height, image.getWidth(), image.getHeight(), false);
-        }
-        return imagePattern;
+        return SupplierEx.orElse(imagePattern, () -> imagePattern = new ImagePattern(image, -x * width, -y * height,
+            image.getWidth(), image.getHeight(), false));
     }
 
     public Path getPath() {
-        if (path == null) {
-            path = new Path();
-
-            path.getElements().add(new MoveTo(0, 0));
-            path.getElements().addAll(up.getPath(width, 0));
-            path.getElements().addAll(right.getPath(0, height));
-            path.getElements().addAll(down.getPath(-width, 0));
-            path.getElements().addAll(left.getPath(0, -height));
-
-            ImagePattern imagePattern1 = getImagePattern();
-            path.prefWidth(width);
-            path.prefHeight(height);
-            path.setFill(imagePattern1);
-        }
-        return path;
-    }
-
-    public double getWidth() {
-        return width;
+        return SupplierEx.orElse(path,
+            () -> path = new SimplePathBuilder().moveTo(0, 0).add(up.getPath(width, 0)).add(right.getPath(0, height))
+                .add(down.getPath(-width, 0)).add(left.getPath(0, -height)).fill(getImagePattern()).prefWidth(width)
+                .prefHeight(height).build());
     }
 
     public int getX() {

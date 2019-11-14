@@ -57,6 +57,26 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     }
 
     @Test
+    public void testLinePencilTool() {
+        show(PaintMain.class);
+        Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
+        List<PaintTool> asList = Arrays.asList(PaintTools.LINE.getTool(), PaintTools.PENCIL.getTool());
+        for (Node next : asList) {
+            RunnableEx.run(() -> clickOn(next));
+            moveTo(stack);
+            drag(MouseButton.PRIMARY);
+            moveRandom(2);
+            drop();
+            drag(MouseButton.PRIMARY);
+            moveRandom(1000);
+            drop();
+            drag(MouseButton.PRIMARY);
+            moveTo(stack);
+            drop();
+        }
+    }
+
+    @Test
     public void testMenus() {
         show(PaintMain.class);
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
@@ -169,8 +189,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         if (file.exists()) {
             file.delete();
         }
-        List<PaintTool> areaTools = Stream.of(PaintTools.values())
-            .map(e -> e.getTool()).collect(Collectors.toList());
+        List<PaintTool> areaTools = Stream.of(PaintTools.values()).map(e -> e.getTool()).collect(Collectors.toList());
 
         List<MenuButton> node = lookup(MenuButton.class).stream().collect(Collectors.toList());
         for (int i = 0; i < node.size(); i++) {
