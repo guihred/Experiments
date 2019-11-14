@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.stream.Stream;
+import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 
 public class JapanRefactoring {
@@ -20,6 +23,35 @@ public class JapanRefactoring {
 
     private static int chapter = 1;
     private static int lesson;
+
+    private static final String OUTPUT_FILE = "create_database.sql";
+
+    public static void createDatabaseFile() {
+        ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessonsWait();
+        /*
+         * CREATE TABLE "android_metadata" ("locale" TEXT DEFAULT 'en_US') INSERT INTO
+         * "android_metadata" VALUES ('en_US')
+         * 
+         * CREATE TABLE "JAPANESE_LESSON" ( english TEXT, japanese TEXT, romaji TEXT,
+         * exercise INT, lesson INT, PRIMARY KEY (exercise,lesson))
+         */
+        File file2 = ResourceFXUtils.getOutFile(OUTPUT_FILE);
+
+        try (PrintStream out = new PrintStream(file2, StandardCharsets.UTF_8.displayName())) {
+
+            for (JapaneseLesson lesson1 : lessons) {
+
+                String format = String.format(
+                    "INSERT INTO JAPANESE_LESSON(english,japanese,romaji,exercise,lesson) VALUES('%s','%s','%s',%d,%d);",
+                    treatStr(lesson1.getEnglish()), treatStr(lesson1.getJapanese()), treatStr(lesson1.getRomaji()),
+                    lesson1.getExercise(), lesson1.getLesson());
+                out.println(format);
+            }
+        } catch (Exception e) {
+            LOG.error("", e);
+        }
+        HibernateUtil.shutdown();
+    }
 
     public static void main(String[] args) {
         refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE));
@@ -52,6 +84,10 @@ public class JapanRefactoring {
 
     public static String renameFile(String txtFile) {
         return txtFile.substring(0, txtFile.length() - 4) + "3.sql";
+    }
+
+    private static String treatStr(String string) {
+        return Objects.toString(string, "").replaceAll("'", "''").replaceAll(";", ",");
     }
 
 }

@@ -21,7 +21,7 @@ public final class FXMLCreatorTest {
     @Test
     public void testAllClasses() {
         List<Class<? extends Application>> classes = CoverageUtils.getUncoveredApplications();
-        testApplications(classes);
+        FXMLCreatorTest.testApplications(classes);
     }
 
     @Test

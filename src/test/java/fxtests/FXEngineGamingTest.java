@@ -18,6 +18,7 @@ import gaming.ex10.MinesweeperLauncher;
 import gaming.ex10.MinesweeperSquare;
 import gaming.ex11.DotsSquare;
 import gaming.ex12.PlatformMain;
+import gaming.ex14.PacmanBall;
 import gaming.ex14.PacmanLauncher;
 import gaming.ex15.RubiksCubeLauncher;
 import gaming.ex17.PuzzleLauncher;
@@ -43,7 +44,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
     public void verifyDirections() {
         for (Class<? extends Application> class1 : Arrays.asList(RoundMazeLauncher.class, DeathStar.class,
-            PacmanLauncher.class,  MazeLauncher.class, TronLauncher.class, TetrisLauncher.class)) {
+            MazeLauncher.class, TronLauncher.class, TetrisLauncher.class)) {
             show(class1);
             for (KeyCode keyCode : Arrays.asList(W, S, A, D, DOWN, UP, LEFT, RIGHT, SPACE)) {
                 type(keyCode, nextInt(20));
@@ -125,6 +126,23 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             press(SHIFT, keyCode).release(keyCode);
             release(CONTROL, ALT, SHIFT);
         }
+    }
+
+    @Test
+    public void verifyPacman() {
+        for (Class<? extends Application> class1 : Arrays.asList(PacmanLauncher.class)) {
+            show(class1);
+            for (KeyCode keyCode : Arrays.asList(DOWN, UP, LEFT, RIGHT, SPACE)) {
+                type(keyCode, nextInt(10));
+            }
+        }
+        interactNoWait(() -> {
+            PacmanBall pacmanBall = new PacmanBall(2, 2);
+            pacmanBall.setSpecial(false);
+            pacmanBall.setSpecial(true);
+            pacmanBall.setSpecial(false);
+        });
+
     }
 
     @Test

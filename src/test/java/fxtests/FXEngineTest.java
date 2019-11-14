@@ -109,7 +109,8 @@ public class FXEngineTest extends AbstractTestExecution {
             scroll(2, VerticalDirection.DOWN);
             scroll(2, VerticalDirection.UP);
             lookup(CheckBox.class).forEach(this::clickOn);
-            lookup(ComboBox.class).forEach(e -> selectComboItems(e, 5));
+            lookup(ComboBox.class).forEach(e -> selectComboItems(e, 10));
+            lookup(ComboBox.class).forEach(e -> selectComboItems(e, 10));
             tryClickButtons();
             ImageFXUtils.setShowImage(false);
         }, Arrays.asList(WorldMapExample.class, WorldMapExample2.class, WorldMapExample3.class,

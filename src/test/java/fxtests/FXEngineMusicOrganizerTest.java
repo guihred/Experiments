@@ -88,11 +88,11 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
             Music readTags = MusicReader.readTags(outFile2);
             show(new EditSongController(readTags));
+            moveSliders(10);
             List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
             for (int i = 0; i < queryAll.size(); i++) {
                 Node node = queryAll.get(i);
                 clickOn(node);
-                moveSliders(10);
                 sleep(1000);
             }
             lookup(ImageView.class).stream().anyMatch(PredicateEx.makeTest(e -> {

@@ -13,6 +13,7 @@ import static utils.ResourceFXUtils.toFile;
 import com.google.common.collect.ImmutableMap;
 import extract.ExcelService;
 import extract.WordService;
+import japstudy.JapanRefactoring;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -67,8 +68,6 @@ public class FXFileReadersTest extends ApplicationTest {
             WordService.getWord(mapaSubstituicao, "CONTROLE_DCDF_RDMs.docx", file);
 
         });
-        measureTime("JapanRefactoring.refactorJapaneseFile",
-            () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
     }
 
     @Test
@@ -146,6 +145,15 @@ public class FXFileReadersTest extends ApplicationTest {
         measureTime("ImageCracker.createSelectedImage",
             () -> crackImage(createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
     }
+
+    @Test
+        public void testJapaneseFile() {
+    
+        measureTime("JapanRefactoring.createDatabaseFile",
+            () -> JapanRefactoring.createDatabaseFile());
+        measureTime("JapanRefactoring.refactorJapaneseFile",
+            () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
+        }
 
     @Test
     public void testLeitorArquivos() {

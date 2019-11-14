@@ -1,15 +1,8 @@
 package japstudy;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.stream.Stream;
-import javafx.collections.ObservableList;
-import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 
 public enum JapaneseAudio {
@@ -30,8 +23,7 @@ public enum JapaneseAudio {
     AUDIO_15(15, "jaf15lesson122216.mp3"),
     AUDIO_16(16, "jaf16lesson122216.mp3"),
     AUDIO_17(17, "jaf17lesson122216.mp3");
-	private static final Logger LOG = HasLogging.log();
-	private static final String OUTPUT_FILE = "create_database.sql";
+
 	private final String file;
 	private final int lesson;
 
@@ -52,42 +44,6 @@ public enum JapaneseAudio {
 
 	public static JapaneseAudio getAudio(int lesson) {
 		return Stream.of(values()).filter(e -> e.lesson == lesson).findFirst().orElse(null);
-	}
-
-	public static void main(String[] args) {
-		ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessonsWait();
-		/*
-            CREATE TABLE "android_metadata" ("locale" TEXT DEFAULT 'en_US') 
-            INSERT INTO "android_metadata" VALUES ('en_US')
-
-            CREATE TABLE "JAPANESE_LESSON" (
-                    english TEXT,
-                    japanese TEXT,
-                    romaji TEXT,
-                    exercise INT,
-                    lesson INT,
-                    PRIMARY KEY (exercise,lesson)) 
-		 */
-        File file2 = ResourceFXUtils.getOutFile(OUTPUT_FILE);
-
-		try (PrintStream out = new PrintStream(file2, StandardCharsets.UTF_8.displayName())) {
-
-			for (JapaneseLesson lesson : lessons) {
-
-				String format = String.format(
-						"INSERT INTO JAPANESE_LESSON(english,japanese,romaji,exercise,lesson) VALUES('%s','%s','%s',%d,%d);",
-						treatStr(lesson.getEnglish()), treatStr(lesson.getJapanese()), treatStr(lesson.getRomaji()),
-						lesson.getExercise(), lesson.getLesson());
-				out.println(format);
-			}
-		} catch (Exception e) {
-			LOG.error("", e);
-		}
-		HibernateUtil.shutdown();
-	}
-
-	private static String treatStr(String string) {
-		return Objects.toString(string, "").replaceAll("'", "''").replaceAll(";", ",");
 	}
 
 }

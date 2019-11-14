@@ -201,14 +201,15 @@ public class JavaFileDependency {
                 List<JavaFileDependency> visited = new ArrayList<>();
                 List<JavaFileDependency> path = new ArrayList<>();
                 dependecy.search(name1, visited, path);
+                List<String> tests = path.stream().filter(e -> e.getFullName().contains(name1))
+                    .map(JavaFileDependency::getName).collect(Collectors.toList());
                 if (!path.isEmpty()) {
                     List<String> filesFullPath = path.stream().map(JavaFileDependency::getFullName)
                         .collect(Collectors.toList());
                     allPaths.addAll(filesFullPath);
-                    HasLogging.log().info("{} {}", dependecy.getFullName(), filesFullPath);
+                    HasLogging.log().info("{} {} {}", dependecy.getFullName(), tests.size(), filesFullPath);
                 }
-                testClasses.addAll(path.stream().filter(e -> e.getFullName().contains(name1))
-                    .map(JavaFileDependency::getName).collect(Collectors.toList()));
+                testClasses.addAll(tests);
             }
         }
         return testClasses;
