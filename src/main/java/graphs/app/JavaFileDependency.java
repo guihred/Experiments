@@ -185,8 +185,8 @@ public class JavaFileDependency {
         return getPackage() + "." + getName() + " " + getClasses();
     }
 
-    public static Set<String> displayTestsToBeRun(Collection<String> dependecyList, Predicate<JavaFileDependency> name1,
-        List<String> allPaths) {
+    public static Set<String> displayTestsToBeRun(Collection<String> dependecyList,
+        Predicate<JavaFileDependency> filter, List<String> allPaths) {
         List<JavaFileDependency> allFileDependencies = getAllFileDependencies();
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
@@ -196,9 +196,9 @@ public class JavaFileDependency {
             if (dependecyList == null || dependecyList.contains(dependecy.getName())) {
                 List<JavaFileDependency> visited = new ArrayList<>();
                 List<JavaFileDependency> path = new ArrayList<>();
-                dependecy.search(name1, visited, path);
-                List<String> tests = path.stream().filter(e -> name1.test(e))
-                    .map(JavaFileDependency::getName).collect(Collectors.toList());
+                dependecy.search(filter, visited, path);
+                List<String> tests = path.stream().filter(filter).map(JavaFileDependency::getName)
+                    .collect(Collectors.toList());
                 if (!path.isEmpty()) {
                     List<String> filesFullPath = path.stream().map(JavaFileDependency::getFullName)
                         .collect(Collectors.toList());
@@ -217,7 +217,7 @@ public class JavaFileDependency {
 
     public static Set<String> displayTestsToBeRun(Collection<String> dependecyList, String name1,
         List<String> allPaths) {
-        return displayTestsToBeRun(dependecyList, e->e.getFullName().contains(name1), allPaths);
+        return displayTestsToBeRun(dependecyList, e -> e.getFullName().contains(name1), allPaths);
     }
 
     public static List<JavaFileDependency> getAllFileDependencies() {

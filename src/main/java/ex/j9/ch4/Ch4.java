@@ -1,5 +1,7 @@
 package ex.j9.ch4;
 
+import static utils.FunctionEx.makeFunction;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -64,10 +66,10 @@ public class Ch4 {
             .filter(e -> isAccessLegal(s, e)).collect(Collectors.toList());
 
         String pad = fields.size() <= 1 ? "" : classes.stream().map(e -> "  ").collect(Collectors.joining(""));
-        return class1.getSimpleName() + "{" + extracted(fields) + fields.stream().map(e -> SupplierEx.get(() -> {
-            return e.getName() + "=" + cyclicToStr(s, classes, e);
-        }, "")).filter(StringUtils::isNotBlank).collect(
-            Collectors.joining(",\n" + pad, pad, extracted(fields) + StringUtils.repeat("  ", classes.size() - 1)))
+        return class1.getSimpleName() + "{" + extracted(fields)
+            + fields.stream().map(makeFunction(e -> e.getName() + "=" + cyclicToStr(s, classes, e)))
+                .filter(StringUtils::isNotBlank).collect(Collectors.joining(",\n" + pad, pad,
+                    extracted(fields) + StringUtils.repeat("  ", classes.size() - 1)))
             + "}";
     }
 

@@ -108,7 +108,7 @@ public final class CoverageUtils {
             .collect(Collectors.toList());
     }
 
-    public static List<Class<? extends Application>> getUncoveredApplications2(List<String> uncovered) {
+    public static List<Class<? extends Application>> getUncoveredApplications2(Collection<String> uncovered) {
         List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
