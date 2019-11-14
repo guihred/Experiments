@@ -22,10 +22,7 @@ import org.slf4j.Logger;
 import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
@@ -125,6 +122,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         return bound.get(random.nextInt(bound.size()));
     }
 
+    protected <T> T randomItem(@SuppressWarnings("unchecked") T... bound) {
+        return bound[random.nextInt(bound.length)];
+    }
+
     protected int randomNumber(int bound) {
         return random.nextInt(bound) - bound / 2;
     }
@@ -161,18 +162,22 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }
     }
 
-    protected <T extends Application> T showNewStage(Class<T> c, RunnableEx run) {
+    protected <T extends Application> T showNewStage(Class<T> c, ConsumerEx<T> run) {
         try {
             logger.info("SHOWING {}", c.getSimpleName());
             T newInstance = c.newInstance();
             Stage primaryStage = WaitForAsyncUtils.asyncFx(() -> new Stage()).get();
             interactNoWait(RunnableEx.make(() -> newInstance.start(primaryStage)));
-            run.run();
+            run.accept(newInstance);
             interactNoWait(primaryStage::close);
             return newInstance;
         } catch (Exception e) {
             throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
         }
+    }
+
+    protected <T extends Application> T showNewStage(Class<T> c, RunnableEx run) {
+        return showNewStage(c, s -> run.run());
     }
 
     protected boolean tryClickButtons() {

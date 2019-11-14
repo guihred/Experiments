@@ -100,6 +100,10 @@ public class GlobeSphereApp extends Application {
         return new Group(subScene);
     }
 
+    public void setSpecularColorNull(boolean value) {
+        specularColorNull.set(value);
+    }
+
     @Override
 	public void start(Stage primaryStage) {
         primaryStage.setResizable(false);

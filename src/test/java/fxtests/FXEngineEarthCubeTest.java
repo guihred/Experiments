@@ -2,6 +2,7 @@ package fxtests;
 
 import fxpro.earth.CubeNode;
 import fxpro.earth.EarthCubeMain;
+import fxsamples.GlobeSphereApp;
 import fxsamples.WorkingListsViews;
 import fxsamples.person.FormValidation;
 import java.io.File;
@@ -23,10 +24,11 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
     public void testDisplayCSSStyler() throws Throwable {
         showNewStage(randomItem(CoverageUtils.getClasses(Application.class)), () -> {
             String[] list = new File("src/main/resources/").list((d, f) -> f.endsWith(".css"));
-            interactNoWait(() -> StageHelper.displayCSSStyler(lookup(".root").query().getScene(), list[0]));
+            interactNoWait(() -> StageHelper.displayCSSStyler(lookup(".root").query().getScene(), randomItem(list)));
             tryClickButtons();
         });
     }
+
     @Test
     public void verifyEarthCubeMain() {
         showNewStage(EarthCubeMain.class, () -> {
@@ -60,6 +62,11 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
             type(typeText("senha"));
             type(KeyCode.ENTER);
         });
+    }
+
+    @Test
+    public void verifyGlobeSphereApp() {
+        showNewStage(GlobeSphereApp.class, t -> t.setSpecularColorNull(false));
     }
 
     @Test

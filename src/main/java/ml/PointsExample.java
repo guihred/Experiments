@@ -68,11 +68,9 @@ public class PointsExample extends Application {
         ListView<String> ySelected = new ListView<>(itens);
         ySelected.setCellFactory(ComboBoxListCell.forListView(itens));
         ySelected.selectionModelProperty().get().setSelectionMode(SelectionMode.SINGLE);
-        ySelected.selectionModelProperty().get().getSelectedItems().addListener((final Change<? extends String> c) -> {
+        ySelected.selectionModelProperty().get().getSelectedItems().addListener((Change<? extends String> c) -> {
             c.next();
-            if (!c.getAddedSubList().isEmpty()) {
-                xHeader.set(c.getAddedSubList().get(0));
-            }
+            c.getAddedSubList().stream().findFirst().ifPresent(xHeader::set);
         });
         ySelected.selectionModelProperty().get().select(0);
         return ySelected;
