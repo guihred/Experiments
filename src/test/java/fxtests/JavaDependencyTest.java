@@ -1,7 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static ml.data.CoverageUtils.getUncovered;
 import static ml.data.CoverageUtils.getUncoveredApplications;
 import static ml.data.CoverageUtils.getUncoveredMethods;
 import static ml.data.CoverageUtils.getUncoveredTests;
@@ -22,16 +21,6 @@ import utils.*;
 public class JavaDependencyTest {
     static final Logger LOG = HasLogging.log();
 
-    @Test
-    public void testFJavaCoverage() {
-        measureTime("JavaFileDependency.javaCoverage", () -> {
-            List<String> uncovered = getUncovered();
-            LOG.info("Uncovered classes ={}", uncovered);
-            Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests");
-            String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
-            LOG.info("TestsToBeRun ={}", tests);
-        });
-    }
 
     @Test
     public void testGTestUncovered() {
@@ -87,7 +76,6 @@ public class JavaDependencyTest {
 
     @Test
     public void testHTestUncoveredApps() {
-
         measureTime("JavaFileDependency.testUncoveredApps",
             () -> AbstractTestExecution.testApps(getUncoveredApplications()));
     }

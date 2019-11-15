@@ -7,6 +7,7 @@ import graphs.app.JavaFileDependency;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -18,6 +19,17 @@ import utils.HasLogging;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ToBeRunTest {
     private static final Logger LOG = HasLogging.log();
+
+    @Test
+    public void testFJavaCoverage() {
+        measureTime("JavaFileDependency.javaCoverage", () -> {
+            List<String> uncovered = getUncovered();
+            LOG.info("Uncovered classes ={}", uncovered);
+            Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests");
+            String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
+            LOG.info("TestsToBeRun ={}", tests);
+        });
+    }
 
     @Test
     public void testGetJavaMethods() {

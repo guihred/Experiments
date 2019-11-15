@@ -66,7 +66,7 @@ public final class CoverageUtils {
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
-        return getByCoverage(s -> getUncoveredApplications(s));
+        return getByCoverage(CoverageUtils::getUncoveredApplications);
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications(List<String> uncovered) {

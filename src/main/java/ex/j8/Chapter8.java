@@ -177,21 +177,13 @@ public final class Chapter8 {
     public static void ex3() {
         if (LOGGER.isInfoEnabled()) {
             final int b = 40;
-            LOGGER.trace("gcd1 {} ", gcd1(20, b));
-            LOGGER.trace("gcd2 {} ", gcd2(20, b));
-            LOGGER.trace("gcd3 {} ", gcd3(20, b));
-            LOGGER.trace("gcd1 {}", gcd1(-20, b));
-            LOGGER.trace("gcd2 {}", gcd2(-20, b));
-            LOGGER.trace("gcd3 {}", gcd3(-20, b));
-            LOGGER.trace("gcd1 {}", gcd1(20, -b));
-            LOGGER.trace("gcd2 {}", gcd2(20, -b));
-            LOGGER.trace("gcd3 {}", gcd3(20, -b));
-            LOGGER.trace("gcd1 {}", gcd1(-20, -b));
-            LOGGER.trace("gcd2 {}", gcd2(-20, -b));
-            LOGGER.trace("gcd3 {}", gcd3(-20, -b));
-            LOGGER.trace("gcd1 {}", gcd1(20, 0));
-            LOGGER.trace("gcd2 {}", gcd2(20, 0));
-            LOGGER.trace("gcd3 {}", gcd3(20, 0));
+            for (Integer i : Arrays.asList(20, b)) {
+                for (int j = -1; j <= 1; j++) {
+                    LOGGER.trace("gcd1 {}", gcd1(i, j * b));
+                    LOGGER.trace("gcd2 {}", gcd2(i, j * b));
+                    LOGGER.trace("gcd3 {}", gcd3(i, j * b));
+                }
+            }
         }
     }
 
@@ -364,7 +356,7 @@ public final class Chapter8 {
             .flatMap(s -> Stream.of(s.split("[\\P{L}]+")));
     }
 
-    private static abstract class CommonScannerIterator<T> implements Iterator<T> {
+    private abstract static class CommonScannerIterator<T> implements Iterator<T> {
         private final Scanner scanner;
         
         private Predicate<Scanner> hasNext;
