@@ -14,6 +14,8 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -323,6 +325,11 @@ public final class Chapter8 {
         return gcd1(b, Integer.remainderUnsigned(a, b));
     }
 
+    private static <T> Stream<T> convertToStream(Iterator<T> iter) {
+        return StreamSupport
+            .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
+    }
+
     private static List<String> getWordsAsList(Path path) throws IOException {
 
         String contents = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
@@ -340,85 +347,68 @@ public final class Chapter8 {
     }
 
     private static Stream<Double> streamOfDouble(Scanner scanner) {
-
-        Iterator<Double> iter = new ScannerIterator(scanner);
-        return StreamSupport
-            .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
+        return convertToStream(new ScannerIterator(scanner));
     }
 
     private static Stream<Integer> streamOfInteger(Scanner scanner) {
-
-        Iterator<Integer> iter = new IntScannerIterator(scanner);
-        return StreamSupport
-            .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
+        return convertToStream(new IntScannerIterator(scanner));
     }
 
     private static Stream<String> streamOfLines(Scanner scanner) {
-
-        Iterator<String> iter = new LineIterator(scanner);
-        return StreamSupport
-            .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
+        return convertToStream(new LineIterator(scanner));
     }
 
     private static Stream<String> streamOfWords(Scanner scanner) {
 
-        Iterator<String> iter = new LineIterator(scanner);
-        return StreamSupport
-            .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false)
+        return convertToStream(new LineIterator(scanner))
             .flatMap(s -> Stream.of(s.split("[\\P{L}]+")));
     }
 
-    private static final class IntScannerIterator implements Iterator<Integer> {
+    private static abstract class CommonScannerIterator<T> implements Iterator<T> {
         private final Scanner scanner;
+        
+        private Predicate<Scanner> hasNext;
+
+        private Function<Scanner,T> next;
+
+        public CommonScannerIterator(Scanner scanner,Predicate<Scanner> hasNext, Function<Scanner,T> next) {
+            this.scanner = scanner;
+            this.hasNext = hasNext;
+            this.next = next;
+        }
+        @Override
+        public boolean hasNext() {
+            return hasNext.test(scanner);
+        }
+        @Override
+        public T next() {
+            if (hasNext()) {
+                return next.apply(scanner);
+            }
+            throw new NoSuchElementException();
+        }
+        
+    }
+
+    private static final class IntScannerIterator extends CommonScannerIterator<Integer> {
 
         private IntScannerIterator(Scanner scanner) {
-            this.scanner = scanner;
+            super(scanner, Scanner::hasNextInt, Scanner::nextInt);
         }
 
-        @Override
-        public boolean hasNext() {
-            return scanner.hasNextInt();
-        }
-
-        @Override
-        public Integer next() {
-                return scanner.nextInt();
-        }
     }
 
-    private static final class LineIterator implements Iterator<String> {
-        private final Scanner scanner;
+    private static final class LineIterator extends CommonScannerIterator<String> {
 
         private LineIterator(Scanner scanner) {
-            this.scanner = scanner;
+            super(scanner, Scanner::hasNextLine, Scanner::nextLine);
         }
 
-        @Override
-        public boolean hasNext() {
-            return scanner.hasNextLine();
-        }
-
-        @Override
-        public String next() {
-                return scanner.nextLine();
-        }
     }
 
-    private static final class ScannerIterator implements Iterator<Double> {
-        private final Scanner scanner;
-
+    private static final class ScannerIterator extends CommonScannerIterator<Double> {
         private ScannerIterator(Scanner scanner) {
-            this.scanner = scanner;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return scanner.hasNextDouble();
-        }
-
-        @Override
-        public Double next() {
-                return scanner.nextDouble();
+            super(scanner, Scanner::hasNextDouble, Scanner::nextDouble);
         }
     }
 }

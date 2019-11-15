@@ -41,6 +41,9 @@ public class SimpleAudioPlayerLauncher extends Application {
     private Label year;
     private MediaPlayer mediaPlayer;
 
+    public SimpleAudioPlayerLauncher() {
+        createControls();
+    }
     public void createMedia() {
         if (mediaPlayer == null) {
             createMedia(SupplierEx.get(() -> getRandomSong().toUri().toURL().toExternalForm()));
