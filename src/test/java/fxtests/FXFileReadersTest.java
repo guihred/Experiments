@@ -1,13 +1,12 @@
 package fxtests;
 
-import static ethical.hacker.ImageCracker.crackImage;
-import static ethical.hacker.ImageCracker.createSelectedImage;
 import static fxtests.FXTesting.measureTime;
 import static utils.ResourceFXUtils.getOutFile;
 import static utils.ResourceFXUtils.toExternalForm;
 import static utils.ResourceFXUtils.toFile;
 
 import com.google.common.collect.ImmutableMap;
+import ethical.hacker.ImageCracker;
 import extract.ExcelService;
 import extract.WordService;
 import java.io.File;
@@ -136,10 +135,10 @@ public class FXFileReadersTest extends ApplicationTest {
 
     @Test
     public void testImageCracker() {
-        measureTime("ImageCracker.crackImage", () -> crackImage(toFile("CAPTCHA.jpg")));
-        measureTime("ImageCracker.crackImage", () -> crackImage(toFile("CAPTCHA2.jpg")));
+        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(toFile("CAPTCHA.jpg")));
+        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(toFile("CAPTCHA2.jpg")));
         measureTime("ImageCracker.createSelectedImage",
-            () -> crackImage(createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
+            () -> ImageCracker.crackImage(ImageCracker.createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
     }
 
     @Test
@@ -175,10 +174,5 @@ public class FXFileReadersTest extends ApplicationTest {
             Assert.assertEquals("Size must be equal", 679, medicamentos.size());
         });
     }
-
-
-
-
-
 
 }

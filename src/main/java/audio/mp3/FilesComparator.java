@@ -158,6 +158,7 @@ public class FilesComparator extends Application {
                 updateCells(table1);
             });
         }
+        updateProgress(1);
     }
 
     private void updateProgress(double a) {

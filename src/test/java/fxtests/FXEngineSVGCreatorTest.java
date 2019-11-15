@@ -2,7 +2,6 @@ package fxtests;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
@@ -16,7 +15,7 @@ public class FXEngineSVGCreatorTest extends AbstractTestExecution {
 	public void testSVGCreator() {
         show(SVGCreator.class);
         Node stack = lookupFirst(StackPane.class);
-        List<Node> queryAll = lookup(ToggleButton.class).stream().collect(Collectors.toList());
+        List<ToggleButton> queryAll = lookupList(ToggleButton.class);
 		Collections.shuffle(queryAll);
         int bound = (int) (stack.getBoundsInParent().getWidth() / 4);
 		for (Node next : queryAll) {

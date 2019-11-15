@@ -11,10 +11,7 @@ import javafx.scene.paint.Color;
 import javax.imageio.ImageIO;
 import net.sourceforge.tess4j.Tesseract;
 import org.slf4j.Logger;
-import utils.DrawOnPoint;
-import utils.HasLogging;
-import utils.PixelHelper;
-import utils.ResourceFXUtils;
+import utils.*;
 
 public final class ImageCracker {
     private static final Tesseract INSTANCE = getInstance();
@@ -25,13 +22,9 @@ public final class ImageCracker {
 
 
     public static String crackImage(File imageFile) {
-        try {
-            return INSTANCE.doOCR(imageFile);
-        } catch (Exception e) {
-            String format = String.format("ERROR IN %s", imageFile);
-            LOG.error(format, e);
-            return "Error while reading image";
-        }
+        return SupplierEx
+            .makeSupplier(() -> INSTANCE.doOCR(imageFile), e -> LOG.error(String.format("ERROR IN %s", imageFile), e))
+            .get();
     }
     public static String crackImage(Image img) {
         File outFile = ResourceFXUtils.getOutFile("captchaOut.png");

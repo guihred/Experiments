@@ -17,6 +17,7 @@ public class FXPhotoViewerTest extends AbstractTestExecution {
                 clickOn(t);
             }
         }));
+        sleep(5000);
     }
 
 }

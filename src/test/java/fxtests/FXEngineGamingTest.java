@@ -98,8 +98,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
     public void verifyMinesweeper() {
         show(MinesweeperLauncher.class);
-        List<MinesweeperSquare> queryAll = lookup(MinesweeperSquare.class).parallelStream()
-            .collect(Collectors.toList());
+        List<MinesweeperSquare> queryAll = lookupList(MinesweeperSquare.class);
         Collections.shuffle(queryAll);
         for (int i = 0; i < 30; i++) {
             Node next = queryAll.get(i);
@@ -191,7 +190,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
     public void verifySnake() {
         SnakeLauncher show = show(SnakeLauncher.class);
-        List<SnakeSquare> lookup = lookup(SnakeSquare.class).stream().collect(Collectors.toList());
+        List<SnakeSquare> lookup = lookupList(SnakeSquare.class);
         while (true) {
             SnakeSquare food = lookup.stream().filter(e -> e.getState() == SnakeState.FOOD).findFirst()
                 .orElse(lookup.get(0));
@@ -226,7 +225,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             .collect(Collectors.toSet());
         for (Node next : queryAll) {
             drag(next, MouseButton.PRIMARY);
-            List<NumberButton> buttons = lookup(NumberButton.class).stream().collect(Collectors.toList());
+            List<NumberButton> buttons = lookupList(NumberButton.class);
             NumberButton randomItem = randomItem(buttons);
             moveTo(randomItem);
             drop();

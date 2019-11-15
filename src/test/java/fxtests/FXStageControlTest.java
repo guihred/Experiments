@@ -36,7 +36,7 @@ public class FXStageControlTest extends AbstractTestExecution {
     @Test
     public void verifyStageControlExample() {
         show(StageControlExample.class);
-        lookup(StackPane.class).forEach(ConsumerEx.ignore(t -> randomDrag(t, 100)));
+        lookup(StackPane.class).forEach(t -> randomDrag(t, 100));
         lookup(".button").queryAll().forEach(ConsumerEx.ignore(t -> {
             clickOn(t);
             currentStage.toFront();

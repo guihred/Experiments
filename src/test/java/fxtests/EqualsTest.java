@@ -18,6 +18,8 @@ import gaming.ex13.SolitaireCard;
 import gaming.ex16.MadCell;
 import gaming.ex16.MadEdge;
 import gaming.ex16.MadEdgeDistance;
+import gaming.ex21.City;
+import gaming.ex21.PlayerColor;
 import graphs.EdgeElement;
 import graphs.Vertex;
 import graphs.entities.EdgeDistancePack;
@@ -74,7 +76,8 @@ public class EqualsTest extends AbstractTestExecution {
             new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5), new MadCell(2),
             new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(v, null, 2), new EdgeElement(v, v, 5),
             new Contest(), new LessonPK(), new MadEdge(null, null), new MadEdgeDistance(null, 2F), new SnakeSquare(),
-            new JapaneseLesson(), new ContestQuestionAnswer(), new SolitaireCard(null, null));
+            new JapaneseLesson(), new ContestQuestionAnswer(), new SolitaireCard(null, null),
+            new City(PlayerColor.BLUE));
         Collections.shuffle(asList);
         return asList;
     }

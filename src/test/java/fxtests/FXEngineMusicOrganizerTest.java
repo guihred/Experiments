@@ -103,12 +103,10 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         FXTesting.measureTime("new EditSongController", () -> {
             show(EditSongController.class);
             List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
-            for (int i = queryAll.size() - 1; i >= 0; i--) {
-                Node node = queryAll.get(i);
+            runReversed(queryAll, node -> {
                 clickOn(node);
                 moveSliders(10);
-                sleep(1000);
-            }
+            });
         });
         WaitForAsyncUtils.waitForFxEvents();
     }

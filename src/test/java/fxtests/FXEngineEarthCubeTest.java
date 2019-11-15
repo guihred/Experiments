@@ -7,7 +7,6 @@ import fxsamples.WorkingListsViews;
 import fxsamples.person.FormValidation;
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -70,11 +69,12 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
     }
 
     @Test
+    @SuppressWarnings("rawtypes")
     public void verifyWorkingListsViews() {
         showNewStage(WorkingListsViews.class, () -> {
 
-            List<Node> lookup = lookup(ListView.class).stream().collect(Collectors.toList());
-            List<Button> buttons = lookup(Button.class).stream().collect(Collectors.toList());
+            List<ListView> lookup = lookupList(ListView.class);
+            List<Button> buttons = lookupList(Button.class);
             for (int i = 0; i < lookup.size(); i++) {
                 Node queryAs = from(lookup.get(i)).lookup(ListCell.class::isInstance).query();
                 clickOn(buttons.get(i));

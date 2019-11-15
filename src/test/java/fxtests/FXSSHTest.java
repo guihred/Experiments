@@ -5,7 +5,6 @@ import static fxtests.FXTesting.measureTime;
 import ethical.hacker.ssh.*;
 import java.io.PrintStream;
 import java.util.List;
-import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -60,9 +59,9 @@ public class FXSSHTest extends AbstractTestExecution {
     @Test
     public void verifySSHSessionApp() {
         show(SSHSessionApp.class);
-        List<Button> collect = lookup(Button.class).stream().collect(Collectors.toList());
+        List<Button> collect = lookupList(Button.class);
         clickOn(last(collect));
-        List<TextField> fields = lookup(TextField.class).stream().collect(Collectors.toList());
+        List<TextField> fields = lookupList(TextField.class);
         clickOn(last(fields));
         type(typeText("git push"));
         tryClickOn(collect.get(0));
@@ -71,11 +70,11 @@ public class FXSSHTest extends AbstractTestExecution {
     @Test(expected = RuntimeIOException.class)
     public void verifySSHSessionApp2() {
         show(SSHSessionApp.class);
-        List<Button> collect = lookup(Button.class).stream().collect(Collectors.toList());
+        List<Button> collect = lookupList(Button.class);
         clickOn(last(collect));
         WaitForAsyncUtils.waitForFxEvents();
         sleep(5000);
-        List<TextField> fields = lookup(TextField.class).stream().collect(Collectors.toList());
+        List<TextField> fields = lookupList(TextField.class);
         clickOn(last(fields));
         type(typeText("ipconfig"));
         tryClickOn(collect.get(0));

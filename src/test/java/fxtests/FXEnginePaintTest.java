@@ -108,7 +108,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     }
 
     protected void testTools(final Node stack) {
-        List<Node> queryAll = lookup(ToggleButton.class).stream().collect(Collectors.toList());
+        List<ToggleButton> queryAll = lookupList(ToggleButton.class);
         Collections.shuffle(queryAll);
         List<Node> colors = lookup("#colorGrid").queryAllAs(GridPane.class).stream()
             .flatMap(e -> e.getChildren().stream()).collect(Collectors.toList());
@@ -193,7 +193,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         }
         List<PaintTool> areaTools = Stream.of(PaintTools.values()).map(e -> e.getTool()).collect(Collectors.toList());
 
-        List<MenuButton> node = lookup(MenuButton.class).stream().collect(Collectors.toList());
+        List<MenuButton> node = lookupList(MenuButton.class);
         for (int i = 0; i < node.size(); i++) {
             MenuButton menuButton = node.get(i);
             ObservableList<MenuItem> items = menuButton.getItems();
@@ -215,7 +215,6 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 }
                 if (i == 1 && j == 2) {
                     interact(() -> {
-
                         List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(),
                             ".png");
                         if (!pathByExtension.isEmpty()) {
@@ -227,7 +226,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                     });
                     interact(menu::fire);
                 }
-                interact(menu::fire);
+                interactNoWait(menu::fire);
+
                 lookup(".text-field").queryAll().forEach(e -> {
                     clickOn(e);
                     eraseText(3);

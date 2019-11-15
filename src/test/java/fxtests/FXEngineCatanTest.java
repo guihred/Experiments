@@ -21,21 +21,18 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     @Test
 	public void testAllOptions() {
 		show(CatanAppMain.class);
-        List<EdgeCatan> allEdge = lookup(EdgeCatan.class).stream()
-            .collect(Collectors.toList());
+        List<EdgeCatan> allEdge = lookupList(EdgeCatan.class);
         Collections.shuffle(allEdge);
         List<Village> allVillages = new ArrayList<>();
         List<City> cities = new ArrayList<>();
-        List<SettlePoint> settlePoints = lookup(SettlePoint.class).stream()
-            .collect(Collectors.toList());
+        List<SettlePoint> settlePoints = lookupList(SettlePoint.class);
         List<Road> allRoads = new ArrayList<>();
         Collections.shuffle(settlePoints);
         List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
             .collect(Collectors.toList());
         allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
         Set<ButtonBase> clickedButtons = new HashSet<>();
-        List<Terrain> allTerrains = lookup(Terrain.class).stream()
-            .collect(Collectors.toList());
+        List<Terrain> allTerrains = lookupList(Terrain.class);
         Collections.shuffle(allTerrains);
         for (int i = 0; i < MAX_TRIES && allButtons.stream().anyMatch(b -> !clickedButtons.contains(b)); i++) {
             clickVillages(allVillages, settlePoints);
@@ -59,21 +56,18 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         list.add(list.remove(0));
         DecisionNode decisionTree = DecisionTree.buildTree(build, "ACTION", 0.001);
 
-        List<EdgeCatan> allEdge = lookup(EdgeCatan.class).stream()
-            .collect(Collectors.toList());
+        List<EdgeCatan> allEdge = lookupList(EdgeCatan.class);
         Collections.shuffle(allEdge);
         List<Village> allVillages = new ArrayList<>();
         List<City> cities = new ArrayList<>();
-        List<SettlePoint> settlePoints = lookup(SettlePoint.class).stream()
-            .collect(Collectors.toList());
+        List<SettlePoint> settlePoints = lookupList(SettlePoint.class);
         List<Road> allRoads = new ArrayList<>();
         Collections.shuffle(settlePoints);
         List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
             .collect(Collectors.toList());
         allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
         Set<ButtonBase> clickedButtons = new HashSet<>();
-        List<Terrain> allTerrains = lookup(Terrain.class).stream()
-            .collect(Collectors.toList());
+        List<Terrain> allTerrains = lookupList(Terrain.class);
         Collections.shuffle(allTerrains);
         CatanModel model = newInstance.getModel();
         int j = MAX_TRIES;
@@ -164,8 +158,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         if (notClickedVillages.isEmpty()) {
             return false;
         }
-        List<SettlePoint> settlePoints = lookup(SettlePoint.class)
-            .parallelStream().collect(Collectors.toList());
+        List<SettlePoint> settlePoints = lookupList(SettlePoint.class);
         City next = notClickedVillages.remove(0);
         drag(next, MouseButton.PRIMARY);
         SettlePoint remove = settlePoints.parallelStream().filter(e -> e.isSuitableForCity(next)).findAny()

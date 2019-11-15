@@ -3,6 +3,7 @@ package fxtests;
 import static utils.RunnableEx.ignore;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
@@ -87,6 +88,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected <M extends Node> M lookupFirst(Class<M> cl) {
         return lookup(e -> cl.isInstance(e)).queryAs(cl);
+    }
+
+    protected <M extends Node> List<M> lookupList(Class<M> cl) {
+        return lookup(e -> cl.isInstance(e)).queryAllAs(cl).stream().collect(Collectors.toList());
     }
 
     protected void moveRandom(int bound) {
@@ -223,6 +228,13 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     public static void testApps(List<Class<? extends Application>> applicationClasses) {
         new FXTesting().testApplications(applicationClasses);
+    }
+
+    protected static <T>void runReversed(List<T> list,Consumer<T> consu) {
+        for (int i = list.size()-1; i >= 0; i--) {
+            T t = list.get(i);
+            consu.accept(t);
+        }
     }
 
     @SuppressWarnings("deprecation")

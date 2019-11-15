@@ -13,19 +13,19 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Cell;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import org.junit.Test;
 
 public class FXJapaneseTest extends AbstractTestExecution {
     @SuppressWarnings("static-method")
     @Test
-        public void testJapaneseFile() {
-    
-        measureTime("JapanRefactoring.createDatabaseFile",
-            () -> JapanRefactoring.createDatabaseFile());
+    public void testJapaneseFile() {
+
+        measureTime("JapanRefactoring.createDatabaseFile", () -> JapanRefactoring.createDatabaseFile());
         measureTime("JapanRefactoring.refactorJapaneseFile",
             () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
-        }
+    }
 
     @Test
     public void verifyFuriganaCrawlerApp() {
@@ -39,9 +39,10 @@ public class FXJapaneseTest extends AbstractTestExecution {
         Set<Button> lookup = lookup(Button.class);
         doubleClickOn(randomItem(lookup(Cell.class)));
         lookup(Button.class).stream().filter(t -> !lookup.contains(t)).forEach(this::clickOn);
-        clickOn(randomItem(lookup(Cell.class)));
         type(KeyCode.SHIFT);
-        clickButtonsWait();
+        tryClickButtons();
+        clickOn(lookupFirst(TextField.class));
+        tryClickButtons();
         type(KeyCode.ENTER);
         type(KeyCode.SHIFT);
     }

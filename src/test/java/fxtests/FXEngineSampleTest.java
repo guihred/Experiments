@@ -3,6 +3,8 @@ package fxtests;
 import static javafx.scene.input.KeyCode.*;
 import static utils.RunnableEx.ignore;
 
+import fxpro.ch02.PathTransitionExample;
+import fxpro.ch02.PendulumAnimationLauncher;
 import fxpro.ch02.PongLauncher;
 import fxpro.ch04.ReversiMain;
 import fxpro.ch04.ReversiSquare;
@@ -58,15 +60,14 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     @Test
     public void verifyLookNFeelChooser() {
         show(LookNFeelChooser.class);
-        List<MenuButton> node = lookup(MenuButton.class).stream().collect(Collectors.toList());
-        for (int i = node.size() - 1; i >= 0; i--) {
-            MenuButton menuButton = node.get(i);
+        List<MenuButton> node = lookupList(MenuButton.class);
+        runReversed(node, menuButton -> {
             ObservableList<MenuItem> items = menuButton.getItems();
             for (int j = 0; j < items.size(); j++) {
                 MenuItem menuItem = items.get(j);
                 interact(menuItem::fire);
             }
-        }
+        });
     }
 
     @Test
@@ -86,6 +87,13 @@ public class FXEngineSampleTest extends AbstractTestExecution {
                 release(CONTROL, ALT, SHIFT);
             }
         }, Arrays.asList(JewelViewer.class, MoleculeSampleApp.class, Chart3dSampleApp.class, SimpleScene3D.class));
+    }
+
+    @Test
+    public void verifyPendulums() {
+        verifyAndRun(()->{
+            tryClickButtons();
+        }, Arrays.asList(PendulumAnimationLauncher.class, PathTransitionExample.class));
     }
 
     @Test

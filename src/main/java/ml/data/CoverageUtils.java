@@ -111,7 +111,8 @@ public final class CoverageUtils {
             return Collections.emptyList();
         }
         DataframeML b = DataframeBuilder.build(csvFile);
-        DataframeUtils.crossFeature(b, PERCENTAGE, CoverageUtils::getPercentage, "BRANCH_MISSED", "BRANCH_COVERED");
+        DataframeUtils.crossFeature(b, PERCENTAGE, CoverageUtils::getPercentage, "COMPLEXITY_MISSED",
+            "COMPLEXITY_COVERED");
         b.filter(PERCENTAGE, v -> ((Number) v).intValue() < min);
         return nonNull(b.list("CLASS"), Collections.emptyList());
     }
