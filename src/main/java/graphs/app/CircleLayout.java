@@ -37,7 +37,7 @@ public class CircleLayout extends Layout {
     }
 
     public static void generateCircle(List<Cell> cells, List<Edge> allEdges, double centerX, double centerY, int mul) {
-        int bound = radius(cells.size(), mul == 1 && cells.size() == 1 ? 0 : mul,
+        int bound = radius(cells.size(), mul,
             cells.stream().mapToDouble(value -> value.getBoundsInLocal().getWidth()).max().orElse(20));
         cells.sort(Comparator.comparing(e -> GraphModelAlgorithms.edgesNumber(e, allEdges, cells)));
         generateCircle(cells, centerX, centerY, 0, bound);

@@ -323,10 +323,6 @@ public final class Chapter8 {
         return gcd1(b, Integer.remainderUnsigned(a, b));
     }
 
-    public static void main(String[] args) {
-        ex11();
-    }
-
     private static List<String> getWordsAsList(Path path) throws IOException {
 
         String contents = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
@@ -359,21 +355,7 @@ public final class Chapter8 {
 
     private static Stream<String> streamOfLines(Scanner scanner) {
 
-        Iterator<String> iter = new Iterator<String>() {
-
-            @Override
-            public boolean hasNext() {
-                return scanner.hasNextLine();
-            }
-
-            @Override
-            public String next() {
-                if (hasNext()) {
-                    return scanner.nextLine();
-                }
-                throw new NoSuchElementException();
-            }
-        };
+        Iterator<String> iter = new LineIterator(scanner);
         return StreamSupport
             .stream(Spliterators.spliteratorUnknownSize(iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
     }
@@ -400,10 +382,7 @@ public final class Chapter8 {
 
         @Override
         public Integer next() {
-            if (hasNext()) {
                 return scanner.nextInt();
-            }
-            throw new NoSuchElementException();
         }
     }
 
@@ -421,10 +400,7 @@ public final class Chapter8 {
 
         @Override
         public String next() {
-            if (hasNext()) {
                 return scanner.nextLine();
-            }
-            throw new NoSuchElementException();
         }
     }
 
@@ -442,10 +418,7 @@ public final class Chapter8 {
 
         @Override
         public Double next() {
-            if (hasNext()) {
                 return scanner.nextDouble();
-            }
-            throw new NoSuchElementException();
         }
     }
 }

@@ -145,7 +145,7 @@ public final class CoverageUtils {
             List<String> uncovered = getUncovered(i);
             List<T> uncoveredApplications = func.apply(uncovered);
             if (!uncoveredApplications.isEmpty()) {
-                LOG.info("LINE COVERAGE APPS= {} ={}", i, uncovered);
+                LOG.info("LINE COVERAGE = {}% APPS = {}", i, uncovered);
                 return uncoveredApplications;
             }
         }

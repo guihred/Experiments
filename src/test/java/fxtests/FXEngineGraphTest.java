@@ -5,11 +5,10 @@ import static fxtests.FXTesting.measureTime;
 import graphs.app.GraphMain;
 import graphs.app.JavaFileDependency;
 import graphs.app.PackageTopology;
+import graphs.app.ProjectTopology;
 import graphs.entities.Cell;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
@@ -21,30 +20,38 @@ import utils.ConsoleUtils;
 import utils.ImageFXUtils;
 
 
+@SuppressWarnings("static-method")
 public class FXEngineGraphTest extends AbstractTestExecution {
 
-	@Test
+    @Test
     public void testPackageTopology() {
         measureTime("JavaFileDependency.getJavaFileDependencies", () -> {
             List<JavaFileDependency> javaFiles = JavaFileDependency.getJavaFileDependencies(null);
             Map<String, List<JavaFileDependency>> filesByPackage = javaFiles.stream()
                 .collect(Collectors.groupingBy(JavaFileDependency::getPackage));
             filesByPackage.forEach((pack, files) -> {
-                getLogger().trace(pack);
                 Map<String, Map<String, Long>> packageDependencyMap = PackageTopology.createFileDependencyMap(files);
                 PackageTopology.printDependencyMap(packageDependencyMap);
             });
         });
     }
 
-	@Test
+    @Test
+    public void testProjectTopology() {
+
+        measureTime("JavaFileDependency.getJavaFileDependencies", () -> {
+            Map<String, Map<String, Long>> packageDependencyMap = ProjectTopology.createProjectDependencyMap();
+            PackageTopology.printDependencyMap(packageDependencyMap);
+        });
+    }
+
+    @Test
 	public void verifyAllTopologies() {
 		show(GraphMain.class);
         List<ComboBox<?>> queryButtons = Stream.of("#selectLayout", "#topologySelect")
             .map(e -> lookup(e).queryComboBox())
             .collect(Collectors.toList());
-        Collections.shuffle(queryButtons);
-		Set<Node> queryAll = lookup("Go").queryAll();
+        List<Node> queryAll = lookup("Go").queryAll().stream().collect(Collectors.toList());
         for (ComboBox<?> e : queryButtons) {
 			ObservableList<?> items = e.getItems();
             if (items.size() <= 10) {
@@ -58,9 +65,19 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 				}
 			}
 		}
+        ComboBox<?> layout = queryButtons.get(0);
+        interact(() -> layout.getSelectionModel().select(1));
+        ComboBox<?> topology = queryButtons.get(1);
+        interact(() -> topology.getSelectionModel().select(4));
+        for (int i = queryAll.size() - 1; i >= 0; --i) {
+            Node node = queryAll.get(i);
+            clickOn(node);
+            ConsoleUtils.waitAllProcesses();
+        }
+
 	}
 
-	@Test
+    @Test
 	public void verifyGraphMain()  {
 		show(GraphMain.class);
         ImageFXUtils.setShowImage(false);

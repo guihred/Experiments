@@ -60,19 +60,17 @@ public class PhotoViewer extends Application {
     }
 
     public void onMousePressedButton1() {
-        if (loading.get()) {
-            return;
-        }
-        currentIndex.set(goToImageIndex(ButtonMove.PREV, imageFiles, currentIndex));
-        loadImage(imageFiles.get(currentIndex.get()), loading, progressIndicator, news, currentImageView);
+        runIfNotLoading(() -> {
+            currentIndex.set(goToImageIndex(ButtonMove.PREV, imageFiles, currentIndex));
+            loadImage(imageFiles.get(currentIndex.get()), loading, progressIndicator, news, currentImageView);
+        });
     }
 
     public void onMousePressedButton2() {
-        if (loading.get()) {
-            return;
-        }
-        currentIndex.set(goToImageIndex(ButtonMove.NEXT, imageFiles, currentIndex));
-        loadImage(imageFiles.get(currentIndex.get()), loading, progressIndicator, news, currentImageView);
+        runIfNotLoading(() -> {
+            currentIndex.set(goToImageIndex(ButtonMove.NEXT, imageFiles, currentIndex));
+            loadImage(imageFiles.get(currentIndex.get()), loading, progressIndicator, news, currentImageView);
+        });
     }
 
     @Override
@@ -84,6 +82,13 @@ public class PhotoViewer extends Application {
         ResourceFXUtils.runOnFiles(ResourceFXUtils.getUserFolder("Pictures"),
             t -> tryAddImage(t, imageFiles, currentIndex));
         loadImage(imageFiles.get(currentIndex.get()), loading, progressIndicator, news, currentImageView);
+    }
+
+    private void runIfNotLoading(Runnable run) {
+        if (loading.get()) {
+            return;
+        }
+        run.run();
     }
 
     private void setupDragNDrop(Scene scene) {

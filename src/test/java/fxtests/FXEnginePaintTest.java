@@ -67,12 +67,14 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             drag(MouseButton.PRIMARY);
             moveRandom(2);
             drop();
+            press(KeyCode.SHIFT);
             drag(MouseButton.PRIMARY);
             moveRandom(1000);
             drop();
             drag(MouseButton.PRIMARY);
             moveTo(stack);
             drop();
+            release(KeyCode.SHIFT);
         }
     }
 

@@ -40,12 +40,7 @@ public class ProjectTopology extends BaseTopology {
 
     }
 
-    public static void main(String[] args) {
-        Map<String, Map<String, Long>> packageDependencyMap = createProjectDependencyMap();
-        PackageTopology.printDependencyMap(packageDependencyMap);
-    }
-
-    private static Map<String, Map<String, Long>> createProjectDependencyMap() {
+    public static Map<String, Map<String, Long>> createProjectDependencyMap() {
         List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getAllFileDependencies();
         Map<String, List<JavaFileDependency>> filesByPackage = javaFileDependencies.stream()
             .collect(Collectors.groupingBy(JavaFileDependency::getPackage));
@@ -55,6 +50,11 @@ public class ProjectTopology extends BaseTopology {
             .forEach((k, v) -> packageDependencyMap.put(k, v.stream().flatMap(e -> e.getDependencies().stream())
                 .filter(filesByPackage::containsKey).collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
         return packageDependencyMap;
+    }
+
+    public static void main(String[] args) {
+        Map<String, Map<String, Long>> packageDependencyMap = createProjectDependencyMap();
+        PackageTopology.printDependencyMap(packageDependencyMap);
     }
 
 }

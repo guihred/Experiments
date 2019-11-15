@@ -57,8 +57,7 @@ public class Edge extends Group implements Comparable<Edge> {
         DoubleBinding halfWayY = Bindings.createDoubleBinding(
             () -> line.getEndX() == line.getStartX() ? line.getStartY() + (line.getEndY() - line.getStartY()) * 5 / 11
                 : line.getEndY() + Math.sin(getAngulo()) * getModulo() * 5 / 11,
-            line.endYProperty(),
-            line.startYProperty(), line.endXProperty(), line.startXProperty());
+            line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
         if (directed) {
             Polygon view1 = new Polygon(-Math.sqrt(3) * ARROW_SIZE / 2, 0, Math.sqrt(3) * ARROW_SIZE / 2, ARROW_SIZE,
                 Math.sqrt(3) * ARROW_SIZE / 2, -ARROW_SIZE);
@@ -98,9 +97,7 @@ public class Edge extends Group implements Comparable<Edge> {
     }
 
     public final double getAngulo() {
-        double a = line.getEndX() - line.getStartX();
-        double b = line.getEndY() - line.getStartY();
-        return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
+        return getAngulo(line);
     }
 
     public double getModulo() {
@@ -147,6 +144,10 @@ public class Edge extends Group implements Comparable<Edge> {
         double a = ax - bx;
         double b = ay - by;
         return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
+    }
+
+    public static double getAngulo(Line line) {
+        return getAngulo(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
     }
 
 }

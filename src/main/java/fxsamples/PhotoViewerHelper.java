@@ -18,13 +18,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import org.slf4j.Logger;
 import simplebuilder.SimpleSequentialTransitionBuilder;
-import utils.HasLogging;
+import utils.RunnableEx;
 
 public class PhotoViewerHelper {
 	private static final int DURATION_MILLIS = 500;
-	private static final Logger LOGGER = HasLogging.log();
 
     static void addImage(String url, List<String> imageFiles, AtomicInteger currentIndex) {
         if (isValidImageFile(url)) {
@@ -132,12 +130,7 @@ public class PhotoViewerHelper {
     }
 
     static void tryAddImage(File file, List<String> imageFiles, AtomicInteger currentIndex) {
-        try {
-            addImage(convertToURL(file).toString(), imageFiles, currentIndex);
-            LOGGER.trace("{}", imageFiles);
-        } catch (Exception ex) {
-            LOGGER.error("", ex);
-        }
+        RunnableEx.run(() -> addImage(convertToURL(file).toString(), imageFiles, currentIndex));
     }
 
     public enum ButtonMove {
