@@ -2,6 +2,7 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
+import gaming.ex16.MadCell;
 import graphs.entities.Linha;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -70,7 +71,7 @@ public class ClassReflectionTest extends AbstractTestExecution {
     @Test
     @SuppressWarnings("static-method")
     public void testInvokeClass() {
-        List<Class<? >> classes = Arrays.asList(Linha.class);
+        List<Class<?>> classes = Arrays.asList(Linha.class, MadCell.class);
         List<? > entities = classes.stream().map(ClassReflectionUtils::getInstanceNull)
             .collect(Collectors.toList());
         for (Object e : entities) {
