@@ -7,10 +7,11 @@ public class SimplePathBuilder extends SimpleShapeBuilder<Path, SimplePathBuilde
 
     protected Path path;
 
-	public SimplePathBuilder() {
+    public SimplePathBuilder() {
         super(new Path());
         path = shape;
-	}
+    }
+
 
     public SimplePathBuilder add(Collection<PathElement> e) {
         path.getElements().addAll(e);
@@ -23,7 +24,7 @@ public class SimplePathBuilder extends SimpleShapeBuilder<Path, SimplePathBuilde
     }
 
     public SimplePathBuilder arcTo(double radiusX, double radiusY, double xAxisRotation, double x, double y,
-            boolean largeArcFlag, boolean sweepFlag) {
+        boolean largeArcFlag, boolean sweepFlag) {
         return add(new ArcTo(radiusX, radiusY, xAxisRotation, x, y, largeArcFlag, sweepFlag));
     }
 

@@ -5,6 +5,7 @@ import static javafx.scene.input.KeyCode.*;
 import fxpro.ch02.PathTransitionExample;
 import fxpro.ch02.PendulumAnimationLauncher;
 import fxpro.ch02.PongLauncher;
+import fxpro.ch02.RandomPathExample;
 import fxpro.ch04.ReversiMain;
 import fxpro.ch04.ReversiSquare;
 import fxpro.ch06.ResponsiveUIApp;
@@ -91,9 +92,8 @@ public class FXEngineSampleTest extends AbstractTestExecution {
 
     @Test
     public void verifyPendulums() {
-        verifyAndRun(()->{
-            tryClickButtons();
-        }, Arrays.asList(PendulumAnimationLauncher.class, PathTransitionExample.class));
+        verifyAndRun(this::tryClickButtons,
+            Arrays.asList(PendulumAnimationLauncher.class, PathTransitionExample.class, RandomPathExample.class));
     }
 
     @Test

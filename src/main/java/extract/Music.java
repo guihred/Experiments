@@ -29,9 +29,9 @@ public class Music {
     }
 
     public Music(File file) {
-        this.arquivo = file;
-        this.titulo.set(file.getName());
-        this.pasta.set(file.getParentFile().getName());
+        arquivo = file;
+        titulo.set(file.getName());
+        pasta.set(file.getParentFile().getName());
     }
 
     public StringProperty albumProperty() {
@@ -115,7 +115,7 @@ public class Music {
     }
 
     public boolean isNotMP3() {
-        return getTitulo().matches(".+\\.(mp4|wma)");
+        return !getTitulo().matches(".+\\.mp3");
     }
 
     public StringProperty pastaProperty() {

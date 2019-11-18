@@ -5,10 +5,12 @@ import utils.HasLogging;
 
 public final class JavaExercise19 {
 	private static final Logger LOG = HasLogging.log();
+	public static int el=0;
+
 	private JavaExercise19() {
 	}
 
-	/**
+    /**
 	 * 19. What does this do? . The following is again a problem of analysing a
 	 * complete java program and determining what it writes out without keying
 	 * the program in and trying it.
@@ -18,26 +20,26 @@ public final class JavaExercise19 {
 
 		Jack ink = new Jack();
 		fred(ink, 1000);
-		LOG.info("Value is {}", K.el);
+		LOG.info("Value is {}", JavaExercise19.el);
 	}
-
-    public static void testingJavaConcepts2() {
+	public static void testingJavaConcepts2() {
 
         Jack ink = new Jack();
         final int n = 1001;
         fred(ink, n);
-        LOG.info("Value is {}", K.el);
+        LOG.info("Value is {}", JavaExercise19.el);
     }
-	private static void fred(JJ uk, int n) {
+
+    private static void fred(JJ uk, int n) {
 		int a = 10 * n;
 		uk.upk();
 		if (n > 1000) {
-			K.el++;
+			JavaExercise19.el++;
 			Jill ink = new Jill();
 			fred(ink, n - 1000);
 			a += n;
 		}
-		K.el += a;
+		JavaExercise19.el += a;
 	}
 
 }
@@ -45,7 +47,7 @@ public final class JavaExercise19 {
 class Jack implements JJ {
 	@Override
 	public void upk() {
-		K.el += 10;
+        JavaExercise19.el += 10;
 	}
 }
 class Jill implements JJ {
@@ -53,15 +55,11 @@ class Jill implements JJ {
 	public void upk() {
 		Jack ink = new Jack();
 		ink.upk();
-		K.el += 100;
+        JavaExercise19.el += 100;
 	}
 }
 
 @FunctionalInterface
 interface JJ {
 	void upk();
-}
-
-class K {
-	public static int el;
 }

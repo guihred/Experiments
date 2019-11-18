@@ -8,9 +8,9 @@ public class RosarioComparadorArquivos extends Application {
 
     @Override
 	public void start(Stage primaryStage) {
-		CommonsFX.loadFXML("Comparação Estoque e ANVISA", "RosarioComparadorArquivos.fxml", primaryStage, 1000, 500);
+		int i = 500;
+        CommonsFX.loadFXML("Comparação Estoque e ANVISA", "RosarioComparadorArquivos.fxml", primaryStage, i * 2, i);
     }
-
 
     public static void main(String[] args) {
         launch(args);

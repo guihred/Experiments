@@ -108,6 +108,25 @@ public final class ClassReflectionUtils {
         return SupplierEx.remap(cl::newInstance, "ERROR IN INSTANTIATION");
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T getInstanceNull(Class<T> cl) {
+        return (T) SupplierEx.get(() -> {
+            if (cl.isPrimitive()) {
+                return 0D;
+            }
+            T t = SupplierEx.getIgnore(cl::newInstance);
+            if (t != null) {
+                return t;
+            }
+
+            return Stream.of(cl.getConstructors()).map(FunctionEx.makeFunction(constructor -> {
+                return constructor.newInstance(Stream.of(constructor.getParameterTypes()).map(e -> {
+                    return getInstanceNull(e);
+                }).toArray());
+            })).filter(e -> e != null).findFirst().orElse(null);
+        });
+    }
+
     public static List<String> getNamedArgs(Class<?> targetClass) {
         return getNamedArgsMap(targetClass).keySet().stream().collect(Collectors.toList());
     }
@@ -222,6 +241,12 @@ public final class ClassReflectionUtils {
             .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
             .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property) invoke(o, t),
                 (u, v) -> u, LinkedHashMap::new));
+    }
+
+    public static List<Method> setters(Class<?> c) {
+        return Stream.of(c.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
+            .filter(m -> m.getName().matches(METHOD_REGEX_SETTER)).filter(m -> m.getParameterCount() == 1)
+            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
     }
 
     private static <T> String getDescription(T obj, Class<?> class1,
@@ -370,12 +395,6 @@ public final class ClassReflectionUtils {
             return false;
         }
         return typesFit(fieldValue, type);
-    }
-
-    private static List<Method> setters(Class<?> c) {
-        return Stream.of(c.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
-            .filter(m -> m.getName().matches(METHOD_REGEX_SETTER)).filter(m -> m.getParameterCount() == 1)
-            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
     }
 
     private static boolean typesFit(Object fieldValue, Class<?> type) {

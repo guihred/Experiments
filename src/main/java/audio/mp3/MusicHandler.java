@@ -5,6 +5,7 @@ import extract.SongUtils;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import javafx.beans.NamedArg;
 import javafx.event.EventHandler;
 import javafx.scene.control.TableView;
@@ -41,7 +42,7 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
                     () -> {
                         Path path = selectedItem.getArquivo().toPath();
                         File outFile = ResourceFXUtils.getOutFile(path.toFile().getName());
-                        Files.copy(path, outFile.toPath());
+                        Files.copy(path, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                         Files.deleteIfExists(path);
                     })
                 .displayDialog();

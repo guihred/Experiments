@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import ml.data.CoverageUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.testfx.util.WaitForAsyncUtils;
@@ -42,7 +43,9 @@ public final class FXMLCreatorTest {
             LOG.info("All classes successfull");
         } else {
             LOG.error("classes {}/{} got errors", testApplications.size(), classes.size());
-            LOG.error("classes {} with errors", classNames(testApplications));
+            String classNames = classNames(testApplications);
+            LOG.error("classes {} with errors", classNames);
+            Assert.fail("Exception in " + classNames);
         }
         if (!differentTree.isEmpty()) {
             LOG.error("classes {}/{} with different trees", differentTree.size(), classes.size());

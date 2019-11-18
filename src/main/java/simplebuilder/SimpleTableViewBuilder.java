@@ -1,7 +1,5 @@
 package simplebuilder;
 
-import static utils.FunctionEx.makeFunction;
-
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.DoubleStream;
@@ -24,8 +22,8 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table = node;
     }
 
-    public <V extends TableCell<T, Object>> SimpleTableViewBuilder<T> addColumn(final String columnName,
-        final BiConsumer<T, V> value) {
+    public SimpleTableViewBuilder<T> addColumn(final String columnName,
+        final BiConsumer<T, TableCell<T, Object>> value) {
         final TableColumn<T, Object> column = new TableColumn<>(columnName);
         column.setCellFactory(newCellFactory(value));
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
@@ -116,13 +114,12 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         prefWidthColumns(table,columns.stream().mapToDouble(e -> 1).toArray());
     }
 
-    @SuppressWarnings("unchecked")
-    public static <C, M, V extends TableCell<C, M>> Callback<TableColumn<C, M>, TableCell<C, M>>
-        newCellFactory(final BiConsumer<C, V> value) {
+    public static <C, M> Callback<TableColumn<C, M>, TableCell<C, M>> newCellFactory(
+        final BiConsumer<C, TableCell<C, M>> value) {
         return p -> new CustomableTableCell<C, M>() {
             @Override
             protected void setStyleable(final C auxMed) {
-                value.accept(auxMed, (V) this);
+                value.accept(auxMed, this);
             }
 
         };
@@ -142,7 +139,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             @Override
             protected void updateItem(final S item, final boolean empty) {
                 super.updateItem(item, empty);
-                setText(makeFunction(func).apply(item));
+                setText(FunctionEx.apply(func, item));
             }
         };
     }

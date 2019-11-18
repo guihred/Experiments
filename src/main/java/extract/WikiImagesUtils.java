@@ -8,7 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Base64;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
@@ -29,6 +32,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.CrawlerTask;
 import utils.HasLogging;
+import utils.RunnableEx;
 import utils.SupplierEx;
 
 public final class WikiImagesUtils {
@@ -57,27 +61,17 @@ public final class WikiImagesUtils {
     }
 
     public static void displayCountByExtension() {
-        try (Stream<Path> find = Files.find(new File("").toPath(), 20, (a, b) -> !a.toFile().isDirectory())) {
-            Map<String, Long> fileExtensionCount = find.collect(Collectors
-                .groupingBy(e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
-            fileExtensionCount.entrySet().stream()
-                .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-                .forEach(ex -> LOG.info("{}={}", ex.getKey(), ex.getValue()));
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
+        RunnableEx.run(() -> {
+            try (Stream<Path> find = Files.find(new File("").toPath(), 20, (a, b) -> !a.toFile().isDirectory())) {
+                Map<String, Long> fileExtensionCount = find.collect(Collectors
+                    .groupingBy(e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
+                fileExtensionCount.entrySet().stream()
+                    .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                    .forEach(ex -> LOG.info("{}={}", ex.getKey(), ex.getValue()));
+            }
+        });
     }
 
-    public static List<String> getImagens(String artista) {
-        CrawlerTask.insertProxyConfig();
-        LOG.info("SEARCHING FOR {}", artista);
-        String encode = codificar(artista.replace(' ', '_'));
-        String url = "https://en.wikipedia.org/wiki/" + encode;
-        List<String> images = new ArrayList<>();
-        CompletableFuture.supplyAsync(() -> readPage(url)).thenAccept(images::addAll);
-        ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
-        return images;
-    }
 
     public static ObservableList<String> getImagensForked(String artista, ObservableList<String> images) {
         CrawlerTask.insertProxyConfig();

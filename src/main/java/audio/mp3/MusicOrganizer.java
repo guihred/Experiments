@@ -150,7 +150,8 @@ public class MusicOrganizer extends Application {
 
     private static Button loadVideos(final TableView<Music> musicasTable, TextField filterField) {
         return StageHelper.selectDirectory("Carregar _Vídeos", "Carregar Pasta de Músicas", selectedFile -> {
-            List<Music> videos = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4", ".wma").parallelStream()
+            List<Music> videos = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4", ".wma", ".webm")
+                .parallelStream()
                 .map(v -> new Music(v.toFile())).collect(Collectors.toList());
             configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(videos));
         });

@@ -21,11 +21,6 @@ public class ToBeRunTest {
     private static final Logger LOG = HasLogging.log();
 
     @Test
-    public void printSummary() {
-        CoverageUtils.showSummary();
-    }
-
-    @Test
     public void testFJavaCoverage() {
         measureTime("JavaFileDependency.javaCoverage", () -> {
             List<String> uncovered = CoverageUtils.getUncovered();
@@ -117,6 +112,11 @@ public class ToBeRunTest {
     public void testUncoveredZApplications2() {
         measureTime("JavaFileDependency.getUncoveredApplications2",
             () -> CoverageUtils.getUncoveredApplications2(CoverageUtils.getUncoveredBranches()));
+    }
+
+    @Test
+    public void verifySummary() {
+        CoverageUtils.showSummary();
     }
 
 }

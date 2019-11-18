@@ -2,6 +2,7 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
+import graphs.entities.Linha;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,6 +65,18 @@ public class ClassReflectionTest extends AbstractTestExecution {
         measureTime("hasSetterMethods", () -> ClassReflectionUtils.hasSetterMethods(newClass, randomField));
         measureTime("invoke", () -> ClassReflectionUtils.invoke(newClass, randomField));
 
+    }
+
+    @Test
+    @SuppressWarnings("static-method")
+    public void testInvokeClass() {
+        List<Class<? >> classes = Arrays.asList(Linha.class);
+        List<? > entities = classes.stream().map(ClassReflectionUtils::getInstanceNull)
+            .collect(Collectors.toList());
+        for (Object e : entities) {
+            List<Method> setters = ClassReflectionUtils.setters(e.getClass());
+            setters.forEach(s -> ClassReflectionUtils.invoke(e, s, new Object[] { null }));
+        }
     }
 
     private static Class<?> getClassInstance(Class<?> cl, List<Class<? extends Node>> classes) {
