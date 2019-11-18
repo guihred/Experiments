@@ -26,7 +26,7 @@ public class FXHackTest extends AbstractTestExecution {
         measureTime("PortScanner.scanPortsHost", () -> PortScanner.scanPortsHost(TracerouteScanner.IP_TO_SCAN));
         measureTime("PortScanner.scanPossibleOSes",
             () -> PortScanner.scanPossibleOSes(TracerouteScanner.NETWORK_ADDRESS));
-        measureTime("ProcessScan.scanProcesses", () -> ProcessScan.scanProcesses());
+        measureTime("ProcessScan.scanProcesses", () -> ProcessScan.scanNetstats());
 
         measureTime("NetworkInformationScanner.displayNetworkInformation",
             () -> NetworkInformationScanner.displayNetworkInformation());

@@ -74,6 +74,15 @@ public class EthicalHackController {
         }));
     }
 
+    public void onActionCurrentTasks() {
+        items.clear();
+        List<Map<String, String>> currentTasks = ProcessScan.scanCurrentTasks();
+        items.addAll(currentTasks);
+        Set<String> keySet = items.stream().flatMap(m -> m.keySet().stream())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+        addColumns(commonTable, keySet);
+    }
+
     public void onActionDNSLookup() {
         items.clear();
         Map<String, String> nsInformation = NameServerLookup.getNSInformation(dns.getText());
@@ -85,6 +94,15 @@ public class EthicalHackController {
     public void onActionIps(ActionEvent event) {
         StageHelper.fileAction("Select IP File", file -> networkAddress.setText(String.format("-iL \"%s\"", file)),
             "Any", "*.*").handle(event);
+    }
+
+    public void onActionNetstats() {
+        items.clear();
+        List<Map<String, String>> currentTasks = ProcessScan.scanNetstats();
+        items.addAll(currentTasks);
+        Set<String> keySet = items.stream().flatMap(m -> m.keySet().stream())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+        addColumns(commonTable, keySet);
     }
 
     public void onActionNetworkInformation() {
@@ -121,15 +139,6 @@ public class EthicalHackController {
             progressIndicator.progressProperty().bind(defineProgress);
             ConsoleUtils.waitAllProcesses();
         }).start();
-    }
-
-    public void onActionProcessScan() {
-        items.clear();
-        List<Map<String, String>> currentTasks = ProcessScan.scanCurrentTasks();
-        items.addAll(currentTasks);
-        Set<String> keySet = items.stream().flatMap(m -> m.keySet().stream())
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-        addColumns(commonTable, keySet);
     }
 
 }

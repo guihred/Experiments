@@ -1,8 +1,12 @@
 package ethical.hacker;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
 import utils.HasLogging;
@@ -12,7 +16,7 @@ public class ProcessScan {
     private static final Logger LOG = HasLogging.log();
 
     public static void main(String[] args) {
-        scanProcesses();
+        LOG.info("{}", scanNetstats());
     }
 
     public static List<Map<String, String>> scanCurrentTasks() {
@@ -24,29 +28,27 @@ public class ProcessScan {
             .map(key -> createMap(title, key)).filter(e -> !e.isEmpty()).collect(Collectors.toList());
     }
 
-    public static List<String> scanProcesses() {
+    public static List<Map<String, String>> scanNetstats() {
         List<String> executionInfo = ConsoleUtils.executeInConsoleInfo(" netstat -aon");
-        List<String[]> ports = new ArrayList<>();
-        for (String string : executionInfo) {
-            if (string.matches("  [^P].+")) {
-                String[] fields = string.trim().split("\\s+");
-                String field = Arrays.toString(fields);
-                LOG.info("{}", field);
-                ports.add(fields);
-            }
-        }
-        return executionInfo;
+        List<String> title = new ArrayList<>();
+        return executionInfo.stream().filter(StringUtils::isNotBlank)
+            .filter(e -> !"Conexões ativas".equals(e))
+            .map(e -> e.trim()).filter(e -> !e.startsWith("UDP")).map(e -> e.split("\\s+(?=[A-Z0-9\\[\\*])"))
+            .map(e -> Stream.of(e).collect(Collectors.toList())).map(key -> createMap(title, key))
+            .filter(e -> !e.isEmpty()).collect(Collectors.toList());
+
     }
 
     private static Map<String, String> createMap(List<String> title, List<String> key) {
         Map<String, String> hashMap = new LinkedHashMap<>();
         if (title.isEmpty() && key.size() > 1) {
             title.addAll(key);
-        } else if (key.size() > 1) {
+        } else if (title.size() == key.size()) {
             for (int i = 0; i < title.size(); i++) {
                 hashMap.put(title.get(i), key.get(i));
             }
         }
         return hashMap;
     }
+
 }

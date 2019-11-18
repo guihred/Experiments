@@ -118,12 +118,10 @@ public final class ClassReflectionUtils {
             if (t != null) {
                 return t;
             }
-
-            return Stream.of(cl.getConstructors()).map(FunctionEx.makeFunction(constructor -> {
-                return constructor.newInstance(Stream.of(constructor.getParameterTypes()).map(e -> {
-                    return getInstanceNull(e);
-                }).toArray());
-            })).filter(e -> e != null).findFirst().orElse(null);
+            return Stream.of(cl.getConstructors())
+                .map(FunctionEx.makeFunction(constructor -> constructor.newInstance(
+                    Stream.of(constructor.getParameterTypes()).map(ClassReflectionUtils::getInstanceNull).toArray())))
+                .filter(Objects::nonNull).findFirst().orElse(null);
         });
     }
 
@@ -212,8 +210,8 @@ public final class ClassReflectionUtils {
             return null;
         }
         return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
-            .filter(m -> m.getParameterCount() == args.length)
-            .map(FunctionEx.makeFunction(m -> m.invoke(ob, args))).filter(Objects::nonNull).findFirst().orElse(null);
+            .filter(m -> m.getParameterCount() == args.length).map(FunctionEx.makeFunction(m -> m.invoke(ob, args)))
+            .filter(Objects::nonNull).findFirst().orElse(null);
     }
 
     public static boolean isClassPublic(Class<? extends Object> class1) {

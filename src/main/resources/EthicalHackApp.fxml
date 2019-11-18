@@ -15,8 +15,10 @@
 				<TextField fx:id="resultsFilter" />
 				<Button id="_Network Information" onAction="#onActionNetworkInformation"
 					text="_Network Information" />
-				<Button id="Process _Scan" onAction="#onActionProcessScan"
-					text="Process _Scan" />
+				<Button id="NetStats" onAction="#onActionNetstats"
+					text="Net _Stats" />
+				<Button id="CurrentTasks" onAction="#onActionCurrentTasks"
+					text="_Current Tasks" />
 				<Text text="DNS" />
 				<TextField fx:id="dns" text="google.com" />
 				<Button id="DNS _Lookup" onAction="#onActionDNSLookup" text="DNS _Lookup" />
