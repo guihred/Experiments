@@ -18,6 +18,8 @@ import utils.HasLogging;
 import utils.SupplierEx;
 
 public final class CoverageUtils {
+    private static final String _COVERED = "_COVERED";
+
     private static final int MAX_LINE_COVERAGE = 60;
 
     private static final int MAX_BRANCH_COVERAGE = 80;
@@ -120,16 +122,16 @@ public final class CoverageUtils {
         File csvFile = new File("target/site/jacoco/jacoco.csv");
         DataframeML b = DataframeBuilder.build(csvFile);
         Set<String> cols = new HashSet<>(b.cols());
-        List<String> coveredAttr = cols.stream().filter(e -> e.endsWith("_COVERED"))
-            .map(e -> e.replaceFirst("_COVERED", "")).collect(Collectors.toList());
+        List<String> coveredAttr = cols.stream().filter(e -> e.endsWith(_COVERED))
+            .map(e -> e.replaceFirst(_COVERED, "")).collect(Collectors.toList());
         for (String colName : coveredAttr) {
             DataframeUtils.crossFeature(b, PERCENTAGE + "_" + colName, CoverageUtils::getPercentage,
-                colName + "_MISSED", colName + "_COVERED");
+                colName + "_MISSED", colName + _COVERED);
         }
         Map<String, DataframeStatisticAccumulator> makeStats = DataframeUtils.makeStats(b);
         for (String colName : coveredAttr) {
             makeStats.remove(colName + "_MISSED");
-            makeStats.remove(colName + "_COVERED");
+            makeStats.remove(colName + _COVERED);
         }
         makeStats.remove("CLASS");
         DataframeUtils.displayStats(makeStats);

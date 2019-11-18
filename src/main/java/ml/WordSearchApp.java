@@ -34,7 +34,7 @@ public class WordSearchApp extends Application {
     private Map<String, String> filtersMap = new HashMap<>();
 
     @Override
-	public void start(Stage theStage) throws Exception {
+    public void start(Stage theStage) throws Exception {
         theStage.setTitle("Word Search Example");
         BorderPane root = new BorderPane();
         Scene theScene = new Scene(root);
@@ -61,20 +61,18 @@ public class WordSearchApp extends Application {
 
     private void search(ObservableMap<String, Set<String>> observableMap, VBox filters, FilteredList<String> lines) {
         Set<String> splitLines = observableMap.values().stream().flatMap(Set<String>::stream)
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
         splitLines.add(null);
         ObservableList<String> values = FXCollections.observableArrayList(splitLines);
         FilteredList<String> filtered = values.sorted().filtered(e -> true);
-        ComboBox<String> category = new SimpleComboBoxBuilder<String>()
-                .items(observableMap.keySet())
-                .onChange((old, nVal) -> {
-                    filtersMap.remove(old);
-                    filtered.setPredicate(e -> {
-                        Set<String> set = observableMap.get(nVal);
-                        return e == null || set != null && set.contains(e);
-                    });
+        ComboBox<String> category = new SimpleComboBoxBuilder<String>().items(observableMap.keySet())
+            .onChange((old, nVal) -> {
+                filtersMap.remove(old);
+                filtered.setPredicate(e -> {
+                    Set<String> set = observableMap.get(nVal);
+                    return e == null || set != null && set.contains(e);
+                });
             }).build();
-
 
         ComboBox<String> val = new SimpleComboBoxBuilder<String>().items(filtered).onSelect(s -> {
             String selectedItem = category.selectionModelProperty().get().getSelectedItem();
@@ -101,7 +99,7 @@ public class WordSearchApp extends Application {
 
     public static Stream<String> getLines(URI txtFile) throws IOException {
         return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential().map(String::trim)
-                .filter(s -> !s.isEmpty()).distinct();
+            .filter(s -> !s.isEmpty()).distinct();
     }
 
     public static void main(String[] args) {
@@ -110,11 +108,10 @@ public class WordSearchApp extends Application {
 
     private static Map<String, Set<String>> createMap() throws IOException {
 
-        return getLines(ResourceFXUtils.toURI("pt_PT.dic"))
-                .filter(e -> e.contains("\t"))
-                .map(e -> e.replaceAll(".+\t\\[(\\$\\.+\\$)*(.+)\\]", "$2")).flatMap(e -> Stream.of(e.split(",")))
-                .collect(Collectors.groupingBy(e -> e.split("=")[0].replaceAll("\\$.+\\$", ""),
-                        Collectors.mapping(e -> e.split("=")[1].replaceAll("\\$[A-Z]+", ""), Collectors.toSet())));
+        return getLines(ResourceFXUtils.toURI("pt_PT.dic")).filter(e -> e.contains("\t"))
+            .map(e -> e.replaceAll(".+\t\\[(\\$\\.+\\$)*(.+)\\]", "$2")).flatMap(e -> Stream.of(e.split(",")))
+            .collect(Collectors.groupingBy(e -> e.split("=")[0].replaceAll("\\$.+\\$", ""),
+                Collectors.mapping(e -> e.split("=")[1].replaceAll("\\$[A-Z]+", ""), Collectors.toSet())));
 
     }
 

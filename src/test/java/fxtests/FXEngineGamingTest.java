@@ -54,16 +54,22 @@ public class FXEngineGamingTest extends AbstractTestExecution {
 
     @Test
     public void verifyLabyrinth3DKillerGhostsAndBalls() {
-        List<Class<? extends Application>> asList = Arrays.asList(Labyrinth3DWallTexture.class,
-            Labyrinth3DKillerGhostsAndBalls.class);
-        for (Class<? extends Application> cl : asList) {
-            show(cl);
-            type(W, 15);
-            type(A, 4);
-            type(W, 2);
-            type(D, 4);
-            type(W, 20);
-        }
+        show(Labyrinth3DKillerGhostsAndBalls.class);
+        type(W, 15);
+        type(A, 4);
+        type(W, 2);
+        type(D, 4);
+        type(W, 20);
+    }
+
+    @Test
+    public void verifyLabyrinth3DWallTexture() {
+        show(Labyrinth3DWallTexture.class);
+        type(W, 15);
+        type(A, 4);
+        type(W, 2);
+        type(D, 4);
+        type(W, 20);
     }
 
     @Test
@@ -82,7 +88,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
                 release(CONTROL, ALT, SHIFT);
             }
         }, Arrays.asList(Labyrinth3DMouseControl.class, Labyrinth3DCollisions.class, Labyrinth3D.class,
-            Labyrinth2D.class, Labyrinth3DWallTexture.class));
+            Labyrinth2D.class));
     }
 
     @Test
