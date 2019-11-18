@@ -33,7 +33,7 @@ public class ProcessScan {
         List<String> title = new ArrayList<>();
         return executionInfo.stream().filter(StringUtils::isNotBlank)
             .filter(e -> !"Conexões ativas".equals(e))
-            .map(e -> e.trim()).filter(e -> !e.startsWith("UDP")).map(e -> e.split("\\s+(?=[A-Z0-9\\[\\*])"))
+            .map(String::trim).filter(e -> !e.startsWith("UDP")).map(e -> e.split("\\s+(?=[A-Z0-9\\[\\*])"))
             .map(e -> Stream.of(e).collect(Collectors.toList())).map(key -> createMap(title, key))
             .filter(e -> !e.isEmpty()).collect(Collectors.toList());
 

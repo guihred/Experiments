@@ -26,7 +26,8 @@ public class EthicalHackApp extends Application {
 
     @Override
 	public void start(final Stage primaryStage) {
-		CommonsFX.loadFXML("Ethical Hack App", toFile("EthicalHackApp.fxml"), primaryStage, 500, 500);
+        final int width = 500;
+        CommonsFX.loadFXML("Ethical Hack App", toFile("EthicalHackApp.fxml"), primaryStage, width, width);
     }
 
     public static void main(final String[] args) {

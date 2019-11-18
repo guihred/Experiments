@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import org.junit.Test;
 import utils.ConsoleUtils;
-import utils.ConsumerEx;
 
 public class FXHackTest extends AbstractTestExecution {
 
@@ -36,7 +35,7 @@ public class FXHackTest extends AbstractTestExecution {
     public void verifyEthicalHack() {
         show(EthicalHackApp.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
-            .forEach(ConsumerEx.ignore(this::clickOn));
+            .forEach(this::tryClickOn);
         ConsoleUtils.waitAllProcesses();
         tryClickOn(lookupFirst(CheckBox.class));
     }
