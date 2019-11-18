@@ -125,7 +125,7 @@ public class FreeCellView extends Group {
                     && solitaireCard.getNumber().getNumber() <= solitaireNumber + 2) {
                     solitaireCard.setAutoMoved(true);
                     createMovingCardAnimation(stack, cardStack, solitaireCard);
-                    MotionHistory motionHistory = new MotionHistory(solitaireCard, stack, cardStack);
+                    MotionHistory motionHistory = new MotionHistory(Arrays.asList(solitaireCard), stack, cardStack);
                     history.add(motionHistory);
                     return;
                 }

@@ -1,6 +1,5 @@
 package fxtests;
 
-import static exercism.WordCount.phrase;
 import static org.junit.Assert.assertEquals;
 
 import exercism.WordCount;
@@ -31,7 +30,7 @@ public class WordCountTest {
 		expectedWordCount.put("of", 1);
 		expectedWordCount.put("each", 1);
 
-        Map<String, Integer> actualWordCount = phrase("one of each");
+        Map<String, Integer> actualWordCount = WordCount.phrase("one of each");
         assertEquals("", expectedWordCount, actualWordCount);
 	}
 
@@ -53,7 +52,7 @@ public class WordCountTest {
 		expectedWordCount.put("java", 1);
 		expectedWordCount.put("javascript", 1);
 
-        Map<String, Integer> actualWordCount = phrase("car : carpet as java : javascript!!&@$%^&");
+        Map<String, Integer> actualWordCount = WordCount.phrase("car : carpet as java : javascript!!&@$%^&");
         assertEquals("", expectedWordCount, actualWordCount);
 
 	}
@@ -65,7 +64,7 @@ public class WordCountTest {
 		expectedWordCount.put("1", 1);
 		expectedWordCount.put("2", 1);
 
-        Map<String, Integer> actualWordCount = phrase("testing, 1, 2 testing");
+        Map<String, Integer> actualWordCount = WordCount.phrase("testing, 1, 2 testing");
         assertEquals("", expectedWordCount, actualWordCount);
 	}
 
@@ -74,7 +73,7 @@ public class WordCountTest {
 		final Map<String, Integer> expectedWordCount = new HashMap<>();
 		expectedWordCount.put("go", 3);
 
-        Map<String, Integer> actualWordCount = phrase("go Go GO");
+        Map<String, Integer> actualWordCount = WordCount.phrase("go Go GO");
         assertEquals("", expectedWordCount, actualWordCount);
 	}
 

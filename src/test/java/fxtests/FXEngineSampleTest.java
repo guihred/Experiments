@@ -1,7 +1,6 @@
 package fxtests;
 
 import static javafx.scene.input.KeyCode.*;
-import static utils.RunnableEx.ignore;
 
 import fxpro.ch02.PathTransitionExample;
 import fxpro.ch02.PendulumAnimationLauncher;
@@ -28,6 +27,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import utils.RunnableEx;
 
 public class FXEngineSampleTest extends AbstractTestExecution {
     @Test
@@ -149,7 +149,7 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     public void verifyScrollChart() {
         show(Chart3dSampleApp.class);
         lookup(".root").queryAll().forEach(t -> {
-            ignore(() -> moveTo(t));
+            RunnableEx.ignore(() -> moveTo(t));
             scroll(2, VerticalDirection.DOWN);
             scroll(2, VerticalDirection.UP);
             randomDrag(t, 50);

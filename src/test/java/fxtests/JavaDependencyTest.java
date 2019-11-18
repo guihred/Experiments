@@ -1,15 +1,13 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static ml.data.CoverageUtils.getUncoveredApplications;
-import static ml.data.CoverageUtils.getUncoveredMethods;
-import static ml.data.CoverageUtils.getUncoveredTests;
 
 import graphs.app.JavaFileDependency;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
+import ml.data.CoverageUtils;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.junit.runners.Parameterized;
@@ -29,7 +27,7 @@ public class JavaDependencyTest {
         measureTime("JavaFileDependency.testUncovered", () -> {
             List<String> paths = new ArrayList<>();
             List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getJavaFileDependencies("fxtests");
-            List<String> uncoveredTests = getUncoveredTests(paths);
+            List<String> uncoveredTests = CoverageUtils.getUncoveredTests(paths);
             List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
                 .collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
@@ -59,7 +57,7 @@ public class JavaDependencyTest {
                     continue;
                 }
                 Object ob = forName.newInstance();
-                List<String> methods = getUncoveredMethods(javaFileDependencies, allPaths, className);
+                List<String> methods = CoverageUtils.getUncoveredMethods(javaFileDependencies, allPaths, className);
 
                 LOG.info(" To Be Run Methods {}", methods);
                 runTest(forName, ob, failedTests, methods);
@@ -77,7 +75,7 @@ public class JavaDependencyTest {
     @Test
     public void testHTestUncoveredApps() {
         measureTime("JavaFileDependency.testUncoveredApps",
-            () -> AbstractTestExecution.testApps(getUncoveredApplications()));
+            () -> AbstractTestExecution.testApps(CoverageUtils.getUncoveredApplications()));
     }
 
 

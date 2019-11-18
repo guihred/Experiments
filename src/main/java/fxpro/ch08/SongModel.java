@@ -18,6 +18,7 @@ import javafx.scene.media.MediaPlayer;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ImageFXUtils;
+import utils.RunnableEx;
 
 public final class SongModel {
 
@@ -119,22 +120,16 @@ public final class SongModel {
 
     private void initializeMedia(String url) {
         resetProperties();
-        try {
+        RunnableEx.run(() -> {
             final Media media = new Media(url);
-			media.getMetadata().addListener(
-					(MapChangeListener<String, Object>) ch -> handleMetadata(ch.getKey(), ch.getValueAdded()));
-			Platform.runLater(() -> tryGetAlbumCover(url));
-
+            media.getMetadata()
+                .addListener((MapChangeListener<String, Object>) ch -> handleMetadata(ch.getKey(), ch.getValueAdded()));
+            Platform.runLater(() -> tryGetAlbumCover(url));
             mediaPlayer.setValue(new MediaPlayer(media));
             mediaPlayer.getValue().volumeProperty().set(0);
-            mediaPlayer.get().setOnError(() -> {
-                String errorMessage = mediaPlayer.get().getError().getMessage();
-                LOG.trace("MediaPlayer Error: {}", errorMessage);
-            });
-        } catch (RuntimeException re) {
-            LOG.error("", re);
-            LOG.trace("Caught Exception: {}", re.getMessage());
-        }
+            mediaPlayer.get()
+                .setOnError(() -> LOG.trace("MediaPlayer Error: {}", mediaPlayer.get().getError().getMessage()));
+        });
     }
     private void resetProperties() {
         setArtist("");

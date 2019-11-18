@@ -1,9 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static utils.ResourceFXUtils.getOutFile;
-import static utils.ResourceFXUtils.toExternalForm;
-import static utils.ResourceFXUtils.toFile;
 
 import com.google.common.collect.ImmutableMap;
 import ethical.hacker.ImageCracker;
@@ -37,9 +34,11 @@ public class FXFileReadersTest extends ApplicationTest {
 
     @Test
     public void testCSVUtils() {
-        measureTime("CSVUtils.splitFile", () -> CSVUtils.splitFile(getOutFile("WDIData.csv").getAbsolutePath(), 3));
         measureTime("CSVUtils.splitFile",
-            () -> CSVUtils.splitFile(getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3));
+            () -> CSVUtils.splitFile(ResourceFXUtils.getOutFile("WDIData.csv").getAbsolutePath(), 3));
+        measureTime("CSVUtils.splitFile",
+            () -> CSVUtils.splitFile(ResourceFXUtils.getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(),
+                3));
     }
 
     @Test
@@ -109,7 +108,7 @@ public class FXFileReadersTest extends ApplicationTest {
         map.put(3.0, "3");
         map.put(4.0, new BigDecimal(3));
         measureTime("ExcelService.getExcel", () -> {
-            OutputStream outStream = new FileOutputStream(getOutFile("result.xlsx"));
+            OutputStream outStream = new FileOutputStream(ResourceFXUtils.getOutFile("result.xlsx"));
             ExcelService.getExcel(arquivo, map, outStream);
         });
 
@@ -127,7 +126,7 @@ public class FXFileReadersTest extends ApplicationTest {
         map.put(3.0, "3");
         map.put(4.0, new BigDecimal(3));
         measureTime("ExcelService.getExcel", () -> {
-            OutputStream outStream = new FileOutputStream(getOutFile("result.xlsx"));
+            OutputStream outStream = new FileOutputStream(ResourceFXUtils.getOutFile("result.xlsx"));
             ExcelService.getExcel(arquivo, map, abas, 0, outStream);
         });
 
@@ -135,10 +134,11 @@ public class FXFileReadersTest extends ApplicationTest {
 
     @Test
     public void testImageCracker() {
-        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(toFile("CAPTCHA.jpg")));
-        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(toFile("CAPTCHA2.jpg")));
+        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA.jpg")));
+        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA2.jpg")));
         measureTime("ImageCracker.createSelectedImage",
-            () -> ImageCracker.crackImage(ImageCracker.createSelectedImage(new Image(toExternalForm("CAPTCHA.jpg")))));
+            () -> ImageCracker.crackImage(
+                ImageCracker.createSelectedImage(new Image(ResourceFXUtils.toExternalForm("CAPTCHA.jpg")))));
     }
 
     @Test

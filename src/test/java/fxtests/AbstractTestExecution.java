@@ -1,6 +1,5 @@
 package fxtests;
 
-import static utils.RunnableEx.ignore;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -58,6 +57,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         currentStage.setY(0);
     }
 
+
     @Override
     public void stop() {
         currentStage.close();
@@ -76,6 +76,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
             clickOn(e);
             sleep(waitTime);
         }
+    }
+
+    protected MouseButton getRandMouseButton(int bound) {
+        return random.nextInt(bound) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY;
     }
 
     protected String getRandomString() {
@@ -109,7 +113,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     protected void randomDrag(Node cube, int bound) {
-        ignore(() -> drag(cube, MouseButton.PRIMARY));
+        RunnableEx.ignore(() -> drag(cube, MouseButton.PRIMARY));
         moveRandom(bound);
         drop();
     }

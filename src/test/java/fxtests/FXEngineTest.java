@@ -1,7 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static utils.RunnableEx.ignore;
 
 import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
@@ -27,6 +26,7 @@ import ml.graph.MapGraph;
 import org.junit.Test;
 import schema.sngpc.SngpcViewer;
 import utils.ImageFXUtils;
+import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
@@ -80,14 +80,14 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifyMapGraph() {
         show(MapGraph.class);
         SVGPath randomItem = randomItem(lookup(SVGPath.class));
-        ignore(() -> moveTo(randomItem));
+        RunnableEx.ignore(() -> moveTo(randomItem));
     }
 
     @Test
     public void verifyScrollChart() {
         show(Chart3dGraph.class);
         lookup(".root").queryAll().forEach(t -> {
-            ignore(() -> moveTo(t));
+            RunnableEx.ignore(() -> moveTo(t));
             scroll(2, VerticalDirection.DOWN);
             scroll(2, VerticalDirection.UP);
             randomDrag(t, 50);

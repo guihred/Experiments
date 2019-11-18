@@ -69,13 +69,14 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyBasicAudioPlayerWithControlLauncher() {
-        show(BasicAudioPlayerWithControlLauncher.class);
+    public void verifyBasicAudioPlayerWithControlLauncher() throws MalformedURLException {
+        BasicAudioPlayerWithControlLauncher show = show(BasicAudioPlayerWithControlLauncher.class);
         Set<Node> queryAll = lookup(".button").queryAll();
         queryAll.forEach(ConsumerEx.ignore(t -> {
             clickOn(t);
             type(KeyCode.ESCAPE);
         }));
+        show.playUrl(getRandomSong().toUri().toURL().toExternalForm());
     }
 
     @Test

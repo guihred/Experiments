@@ -21,6 +21,11 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
 
     private final SongModel songModel = new SongModel();
 
+    public void playUrl(String url) {
+        songModel.setURL(url);
+        songModel.getMediaPlayer().play();
+    }
+
     @Override
     public void start(Stage primaryStage) {
 		songModel.setURL(Chapter8Resource.TEEN_TITANS.getURL().toString());
@@ -30,10 +35,7 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
         root.setCenter(metaDataView.getViewNode());
         root.setBottom(playerControlsView.getViewNode());
         final Scene scene = new Scene(root, 800, 400);
-        RotateUtils.initSceneDragAndDrop(scene, url -> {
-            songModel.setURL(url);
-            songModel.getMediaPlayer().play();
-        });
+        RotateUtils.initSceneDragAndDrop(scene, this::playUrl);
 
 		scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
         primaryStage.setScene(scene);

@@ -20,10 +20,6 @@ public final class HibernateUtil {
 		return sessionFactory;
 	}
 
-	public static void main(String[] args) {
-		shutdown();
-	}
-
 	public static void setShutdownEnabled(boolean shutdownEnabled) {
 		HibernateUtil.shutdownEnabled = shutdownEnabled;
 	}
@@ -40,11 +36,10 @@ public final class HibernateUtil {
 			return new Configuration().configure().buildSessionFactory();
 		} catch (Exception ex) {
 			LOG.trace("ERROR CONNECTING TO DATABASE", ex);
-			LOG.info("ERROR CONNECTING TO DATABASE");
-
 			Process newUnmappedProcess = ConsoleUtils.startProcessAndWait(".\\runHibernate.bat",
 					"Web Console server running at .+");
 			try {
+                LOG.info("LAUNCHING HIBERNATE COMMAND");
 				return new Configuration().configure().buildSessionFactory();
 			} catch (Exception ex2) {
 				newUnmappedProcess.destroy();

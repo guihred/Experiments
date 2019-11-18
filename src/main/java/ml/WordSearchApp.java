@@ -73,7 +73,7 @@ public class WordSearchApp extends Application {
                         Set<String> set = observableMap.get(nVal);
                         return e == null || set != null && set.contains(e);
                     });
-                }).nullOption("Categoria").build();
+            }).build();
 
 
         ComboBox<String> val = new SimpleComboBoxBuilder<String>().items(filtered).onSelect(s -> {

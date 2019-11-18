@@ -15,9 +15,4 @@ class MotionHistory {
         this.cards.addAll(cards);
     }
 
-    MotionHistory(FreeCellCard cards, FreeCellStack originStack, FreeCellStack targetStack) {
-        this.originStack = originStack;
-        this.targetStack = targetStack;
-        this.cards.add(cards);
-    }
 }

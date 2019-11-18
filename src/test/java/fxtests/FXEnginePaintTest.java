@@ -62,7 +62,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
         List<PaintTool> asList = Arrays.asList(PaintTools.LINE.getTool(), PaintTools.PENCIL.getTool());
         for (Node next : asList) {
-            RunnableEx.run(() -> clickOn(next));
+            clickOn(next);
             moveTo(stack);
             drag(MouseButton.PRIMARY);
             moveRandom(2);
@@ -124,17 +124,16 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 getLogger().info("Testing {} ", userData.getClass().getSimpleName());
             }
             if (!colors.isEmpty()) {
-                tryClickOn(colors.remove(random.nextInt(colors.size())),
-                    random.nextInt(5) != 0 ? MouseButton.PRIMARY : MouseButton.SECONDARY);
+                tryClickOn(colors.remove(random.nextInt(colors.size())), getRandMouseButton(5));
             }
-            RunnableEx.run(() -> clickOn(next));
+            clickOn(next);
             lookup("#tools .slider").queryAll().forEach(f -> {
                 drag(f, MouseButton.PRIMARY);
                 moveBy(randomNumber(50), 0);
                 drop();
             });
             moveTo(stack);
-            drag(MouseButton.PRIMARY);
+            drag(getRandMouseButton(5));
             moveRandom(bound);
             drop();
             if (userData instanceof AreaTool) {
@@ -142,7 +141,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             }
             lookup(".text-area").queryAll().forEach(e -> write(getRandomString()));
             moveRandom(bound);
-            drag(MouseButton.PRIMARY);
+            drag(getRandMouseButton(5));
             moveRandom(bound);
             drop();
             for (ComboBox<?> node : lookup("#tools .combo-box").queryAllAs(ComboBox.class)) {
@@ -150,15 +149,15 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             }
             Set<Node> queryAll2 = lookup("#tools .toggle-button").queryAll();
             queryAll2.forEach(e -> {
-                ConsumerEx.ignore((Node f) -> clickOn(f)).accept(e);
+                tryClickOn(e);
                 scroll(1, VerticalDirection.DOWN);
                 moveTo(stack);
                 moveRandom(bound);
-                drag(MouseButton.PRIMARY);
+                drag(getRandMouseButton(5));
                 moveRandom(bound);
                 moveRandom(bound);
                 drop();
-                drag(MouseButton.PRIMARY);
+                drag(getRandMouseButton(5));
                 moveRandom(bound);
                 drop();
                 lookup(".text-area").queryAll().forEach(f -> {

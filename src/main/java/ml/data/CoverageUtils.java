@@ -53,16 +53,7 @@ public final class CoverageUtils {
     }
 
     public static List<String> getUncovered(int min) {
-        File csvFile = new File("target/site/jacoco/jacoco.csv");
-        if (!csvFile.exists()) {
-            return Collections.emptyList();
-        }
-        DataframeML b = DataframeBuilder.build(csvFile);
-        DataframeUtils.crossFeature(b, PERCENTAGE, CoverageUtils::getPercentage, "LINE_MISSED", "LINE_COVERED");
-        b.filter(PERCENTAGE, v -> ((Number) v).intValue() <= min);
-        List<String> list = b.list("CLASS");
-        List<String> nonNull = nonNull(list, Collections.emptyList());
-        return nonNull.stream().map(s -> s.replaceAll("^(\\w+)\\..+", "$1")).collect(Collectors.toList());
+        return getUncoveredAttribute(min, "LINE_MISSED", "LINE_COVERED", PERCENTAGE);
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
@@ -106,15 +97,7 @@ public final class CoverageUtils {
     }
 
     public static List<String> getUncoveredBranches(int min) {
-        File csvFile = new File("target/site/jacoco/jacoco.csv");
-        if (!csvFile.exists()) {
-            return Collections.emptyList();
-        }
-        DataframeML b = DataframeBuilder.build(csvFile);
-        DataframeUtils.crossFeature(b, PERCENTAGE, CoverageUtils::getPercentage, "COMPLEXITY_MISSED",
-            "COMPLEXITY_COVERED");
-        b.filter(PERCENTAGE, v -> ((Number) v).intValue() < min);
-        return nonNull(b.list("CLASS"), Collections.emptyList());
+        return getUncoveredAttribute(min, "BRANCH_MISSED", "BRANCH_COVERED", PERCENTAGE);
     }
 
     public static List<String> getUncoveredMethods(Collection<JavaFileDependency> javaFileDependencies,
@@ -131,6 +114,25 @@ public final class CoverageUtils {
 
     public static List<String> getUncoveredTests(List<String> allPaths) {
         return getByCoverage(s -> getUncoveredFxTest(s, allPaths));
+    }
+
+    public static void showSummary() {
+        File csvFile = new File("target/site/jacoco/jacoco.csv");
+        DataframeML b = DataframeBuilder.build(csvFile);
+        Set<String> cols = new HashSet<>(b.cols());
+        List<String> coveredAttr = cols.stream().filter(e -> e.endsWith("_COVERED"))
+            .map(e -> e.replaceFirst("_COVERED", "")).collect(Collectors.toList());
+        for (String colName : coveredAttr) {
+            DataframeUtils.crossFeature(b, PERCENTAGE + "_" + colName, CoverageUtils::getPercentage,
+                colName + "_MISSED", colName + "_COVERED");
+        }
+        Map<String, DataframeStatisticAccumulator> makeStats = DataframeUtils.makeStats(b);
+        for (String colName : coveredAttr) {
+            makeStats.remove(colName + "_MISSED");
+            makeStats.remove(colName + "_COVERED");
+        }
+        makeStats.remove("CLASS");
+        DataframeUtils.displayStats(makeStats);
     }
 
     private static boolean contains(List<Class<? extends Application>> classes, JavaFileDependency m) {
@@ -160,6 +162,19 @@ public final class CoverageUtils {
             }
         }
         return Collections.emptyList();
+    }
+
+    private static List<String> getUncoveredAttribute(int min, String string, String string2, String percentage2) {
+        File csvFile = new File("target/site/jacoco/jacoco.csv");
+        if (!csvFile.exists()) {
+            return Collections.emptyList();
+        }
+        DataframeML b = DataframeBuilder.build(csvFile);
+        DataframeUtils.crossFeature(b, percentage2, CoverageUtils::getPercentage, string, string2);
+        b.filter(percentage2, v -> ((Number) v).intValue() <= min);
+        List<String> list = b.list("CLASS");
+        List<String> nonNull = nonNull(list, Collections.emptyList());
+        return nonNull.stream().map(s -> s.replaceAll("^(\\w+)\\..+", "$1")).collect(Collectors.toList());
     }
 
     private static List<String> getUncoveredFxTest(List<String> uncovered, List<String> allPaths) {

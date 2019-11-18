@@ -1,7 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static utils.ResourceFXUtils.getOutFile;
 
 import contest.db.Contest;
 import contest.db.ContestQuestion;
@@ -38,7 +37,7 @@ public class EqualsTest extends AbstractTestExecution {
     @Test
     public void testPdfImage() {
         measureTime("PdfImage.equals", () -> {
-            Path firstPathByExtension = ResourceFXUtils.getFirstPathByExtension(getOutFile(), "png");
+            Path firstPathByExtension = ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getOutFile(), "png");
             PdfImage pdfImage = new PdfImage();
             File file = firstPathByExtension.toFile();
             pdfImage.appendImage("");

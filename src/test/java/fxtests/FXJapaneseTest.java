@@ -1,9 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static japstudy.JapanRefactoring.TXT_FILE;
-import static japstudy.JapanRefactoring.refactorJapaneseFile;
-import static japstudy.JapanRefactoring.renameFile;
 
 import furigana.FuriganaCrawlerApp;
 import japstudy.*;
@@ -24,7 +21,8 @@ public class FXJapaneseTest extends AbstractTestExecution {
 
         measureTime("JapanRefactoring.createDatabaseFile", () -> JapanRefactoring.createDatabaseFile());
         measureTime("JapanRefactoring.refactorJapaneseFile",
-            () -> refactorJapaneseFile(TXT_FILE, renameFile(TXT_FILE)));
+            () -> JapanRefactoring.refactorJapaneseFile(JapanRefactoring.TXT_FILE,
+                JapanRefactoring.renameFile(JapanRefactoring.TXT_FILE)));
     }
 
     @Test

@@ -1,7 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static ml.data.CoverageUtils.*;
 
 import graphs.app.JavaFileDependency;
 import java.util.Arrays;
@@ -9,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import ml.data.CoverageUtils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -21,9 +21,14 @@ public class ToBeRunTest {
     private static final Logger LOG = HasLogging.log();
 
     @Test
+    public void printSummary() {
+        CoverageUtils.showSummary();
+    }
+
+    @Test
     public void testFJavaCoverage() {
         measureTime("JavaFileDependency.javaCoverage", () -> {
-            List<String> uncovered = getUncovered();
+            List<String> uncovered = CoverageUtils.getUncovered();
             LOG.info("Uncovered classes ={}", uncovered);
             Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests");
             String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
@@ -89,29 +94,29 @@ public class ToBeRunTest {
 
     @Test
     public void testUncovered() {
-        measureTime("JavaFileDependency.getUncovered", () -> getUncovered());
+        measureTime("JavaFileDependency.getUncovered", () -> CoverageUtils.getUncovered());
     }
 
     @Test
     public void testUncoveredBranches() {
-        measureTime("JavaFileDependency.getUncoveredBranches", () -> getUncoveredBranches());
+        measureTime("JavaFileDependency.getUncoveredBranches", () -> CoverageUtils.getUncoveredBranches());
     }
 
     @Test
     public void testUncoveredTests() {
 
-        measureTime("JavaFileDependency.getUncoveredTests", () -> getUncoveredTests());
+        measureTime("JavaFileDependency.getUncoveredTests", () -> CoverageUtils.getUncoveredTests());
     }
 
     @Test
     public void testUncoveredZApplications() {
-        measureTime("JavaFileDependency.getUncoveredApplications", () -> getUncoveredApplications());
+        measureTime("JavaFileDependency.getUncoveredApplications", () -> CoverageUtils.getUncoveredApplications());
     }
 
     @Test
     public void testUncoveredZApplications2() {
         measureTime("JavaFileDependency.getUncoveredApplications2",
-            () -> getUncoveredApplications2(getUncoveredBranches()));
+            () -> CoverageUtils.getUncoveredApplications2(CoverageUtils.getUncoveredBranches()));
     }
 
 }

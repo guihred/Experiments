@@ -1,7 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static utils.ClassReflectionUtils.*;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -33,56 +32,58 @@ public class ClassReflectionTest extends AbstractTestExecution {
         Collections.shuffle(classes);
         Class<?> cl = classes.remove(0);
         String clName = cl.getSimpleName();
-        measureTime("getAllMethodsRecursive(" + clName + ")", () -> getAllMethodsRecursive(cl));
-        measureTime("hasPublicConstructor(" + clName + ")", () -> hasPublicConstructor(cl));
-        measureTime("getNamedArgs(" + clName + ")", () -> getNamedArgs(cl));
-        measureTime("getters(" + clName + ")", () -> getters(cl));
-        measureTime("isClassPublic(" + clName + ")", () -> isClassPublic(cl));
+        measureTime("getAllMethodsRecursive(" + clName + ")", () -> ClassReflectionUtils.getAllMethodsRecursive(cl));
+        measureTime("hasPublicConstructor(" + clName + ")", () -> ClassReflectionUtils.hasPublicConstructor(cl));
+        measureTime("getNamedArgs(" + clName + ")", () -> ClassReflectionUtils.getNamedArgs(cl));
+        measureTime("getters(" + clName + ")", () -> ClassReflectionUtils.getters(cl));
+        measureTime("isClassPublic(" + clName + ")", () -> ClassReflectionUtils.isClassPublic(cl));
         List<Class<? extends Object>> testClasses = Arrays.asList(Double.class, String.class, Long.class, Integer.class,
             Boolean.class, Enum.class);
-        measureTime("hasClass(" + clName + ")", () -> hasClass(testClasses, cl));
+        measureTime("hasClass(" + clName + ")", () -> ClassReflectionUtils.hasClass(testClasses, cl));
         Class<?> newClass2 = getClassInstance(cl, classes);
         clName = newClass2.getSimpleName();
-        Object ob = measureTime("getInstance(" + clName + ")", () -> getInstance(newClass2));
-        measureTime("getDescription(" + clName + "," + ob + ")", () -> getDescription(ob));
-        measureTime("getDescriptionMap(" + ob + ")", () -> getDescriptionMap(ob, new HashMap<>()));
-        measureTime("getFieldMap(" + ob + "," + clName + ")", () -> getFieldMap(ob, newClass2));
-        measureTime("properties(" + ob + "," + clName + ")", () -> properties(ob, newClass2));
+        Object ob = measureTime("getInstance(" + clName + ")", () -> ClassReflectionUtils.getInstance(newClass2));
+        measureTime("getDescription(" + clName + "," + ob + ")", () -> ClassReflectionUtils.getDescription(ob));
+        measureTime("getDescriptionMap(" + ob + ")", () -> ClassReflectionUtils.getDescriptionMap(ob, new HashMap<>()));
+        measureTime("getFieldMap(" + ob + "," + clName + ")", () -> ClassReflectionUtils.getFieldMap(ob, newClass2));
+        measureTime("properties(" + ob + "," + clName + ")", () -> ClassReflectionUtils.properties(ob, newClass2));
 
-        List<Method> methods = measureTime("getGetterMethodsRecursive", () -> getGetterMethodsRecursive(newClass2));
-        measureTime("getFieldNameCase", () -> getFieldNameCase(randomItem(methods)));
-        measureTime("invoke", () -> invoke(ob, randomItem(methods)));
+        List<Method> methods = measureTime("getGetterMethodsRecursive",
+            () -> ClassReflectionUtils.getGetterMethodsRecursive(newClass2));
+        measureTime("getFieldNameCase", () -> ClassReflectionUtils.getFieldNameCase(randomItem(methods)));
+        measureTime("invoke", () -> ClassReflectionUtils.invoke(ob, randomItem(methods)));
 
         Class<?> newClass = getClassWithFields(newClass2, classes);
         clName = newClass.getSimpleName();
-        List<String> fields = measureTime("getFields(" + clName + ")", () -> getFields(newClass));
+        List<String> fields = measureTime("getFields(" + clName + ")", () -> ClassReflectionUtils.getFields(newClass));
         String randomField = randomItem(fields);
-        measureTime("getFieldValue", () -> getFieldValue(ob, randomField));
-        measureTime("getSetter", () -> getSetter(newClass, randomField));
-        measureTime("getSetterType", () -> getSetterType(newClass, randomField));
-        measureTime("hasField", () -> hasField(newClass, randomField));
-        measureTime("hasSetterMethods", () -> hasSetterMethods(newClass, randomField));
-        measureTime("invoke", () -> invoke(newClass, randomField));
+        measureTime("getFieldValue", () -> ClassReflectionUtils.getFieldValue(ob, randomField));
+        measureTime("getSetter", () -> ClassReflectionUtils.getSetter(newClass, randomField));
+        measureTime("getSetterType", () -> ClassReflectionUtils.getSetterType(newClass, randomField));
+        measureTime("hasField", () -> ClassReflectionUtils.hasField(newClass, randomField));
+        measureTime("hasSetterMethods", () -> ClassReflectionUtils.hasSetterMethods(newClass, randomField));
+        measureTime("invoke", () -> ClassReflectionUtils.invoke(newClass, randomField));
 
     }
 
     private static Class<?> getClassInstance(Class<?> cl, List<Class<? extends Node>> classes) {
-        Object fields = SupplierEx.getIgnore(() -> getInstance(cl));
+        Object fields = SupplierEx.getIgnore(() -> ClassReflectionUtils.getInstance(cl));
         Class<?> newClass = cl;
         while (fields == null) {
             Class<? extends Node> remove = classes.remove(0);
             newClass = remove;
-            fields = SupplierEx.getIgnore(() -> getInstance(remove));
+            fields = SupplierEx.getIgnore(() -> ClassReflectionUtils.getInstance(remove));
         }
         return newClass;
     }
 
     private static Class<?> getClassWithFields(Class<?> cl, List<Class<? extends Node>> classes) {
-        List<String> fields = measureTime("getFields(" + cl.getSimpleName() + ")", () -> getFields(cl));
+        List<String> fields = measureTime("getFields(" + cl.getSimpleName() + ")",
+            () -> ClassReflectionUtils.getFields(cl));
         Class<?> newClass = cl;
         while (fields.isEmpty()) {
             newClass = classes.remove(0);
-            fields = getFields(newClass);
+            fields = ClassReflectionUtils.getFields(newClass);
         }
         return newClass;
     }

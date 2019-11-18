@@ -3,10 +3,6 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 import static fxtests.FXTesting.runInTime;
 import static java.util.stream.Collectors.toList;
-import static utils.ResourceFXUtils.getFirstPathByExtension;
-import static utils.ResourceFXUtils.getOutFile;
-import static utils.ResourceFXUtils.toURI;
-import static utils.StringSigaUtils.*;
 
 import cubesystem.ElementWiseOp;
 import ex.j9.Ch1;
@@ -55,7 +51,6 @@ public class IndependentTest {
         measureTime("MatrixSolver.determinant", () -> MatrixSolver.determinant(matr));
     }
 
-
     @Test
     public void testCh1() {
         measureTime("Ch1.extremeDoubles", Ch1::extremeDoubles);
@@ -80,7 +75,7 @@ public class IndependentTest {
             () -> Ch3.luckySort(Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e"), String::compareTo));
         measureTime("Ch3.subdirectories", () -> Ch3.subdirectories(new File(".")));
         measureTime("Ch3.sortFiles", () -> Ch3.sortFiles(new File(".").listFiles()));
-        measureTime("Ch3.listByExtension", () -> Ch3.listByExtension(getOutFile(), "png"));
+        measureTime("Ch3.listByExtension", () -> Ch3.listByExtension(ResourceFXUtils.getOutFile(), "png"));
         measureTime("Ch3.tasks", () -> Ch3.tasks());
         measureTime("Ch3.IntSequence.constant", () -> Ch3.IntSequence.constant(3));
         runInTime("Ch3.IntSequence.constant", () -> Ch3.IntSequence.constant(3).foreach(e -> LOGGER.trace("{}", e)),
@@ -94,21 +89,19 @@ public class IndependentTest {
 
     @Test
     public void testCh4() {
-        measureTime("ShapeCh4.moveBy",
-            () -> Arrays.asList(new LineCh4(new PointCh4(2, 3), new LabeledPoint("a", 3, 3)))
-                .forEach(e -> e.moveBy(10, 10)));
+        measureTime("ShapeCh4.moveBy", () -> Arrays.asList(new LineCh4(new PointCh4(2, 3), new LabeledPoint("a", 3, 3)))
+            .forEach(e -> e.moveBy(10, 10)));
         measureTime("Ch4.cyclicToString",
             () -> Ch4.cyclicToString(new LineCh4(new PointCh4(2, 3), new LabeledPoint("a", 3, 3))));
         measureTime("Ch4.classRepresentations", () -> Ch4.classRepresentations());
     }
 
-
     @Test
     public void testDateUtils() {
         measureTime("DateFormatUtils.convertTimeToMillis", () -> DateFormatUtils.convertTimeToMillis("00:00:00.000"));
         measureTime("DateFormatUtils.extractDate", () -> DateFormatUtils.extractDate("21/02/2010"));
-        measureTime("DateFormatUtils.format", () -> DateFormatUtils.format(LocalDateTime.now()) );
-        measureTime("DateFormatUtils.formatDate", () -> DateFormatUtils. formatDate(LocalDate.now())); 
+        measureTime("DateFormatUtils.format", () -> DateFormatUtils.format(LocalDateTime.now()));
+        measureTime("DateFormatUtils.formatDate", () -> DateFormatUtils.formatDate(LocalDate.now()));
         measureTime("DateFormatUtils.parse", () -> DateFormatUtils.parse("00:00:01.000"));
     }
 
@@ -123,7 +116,6 @@ public class IndependentTest {
         measureTime("EanFactorReducer.validate", () -> EanFactorReducer.validate("789100031550"));
         measureTime("EanFactorReducer.validate", () -> EanFactorReducer.validate("789100031557"));
     }
-
 
     @Test
     public void testElementWiseOperations() {
@@ -161,8 +153,8 @@ public class IndependentTest {
         String dataDir = userFolder + "\\";
         File createTempFile = File.createTempFile("created", ".jpg", ResourceFXUtils.getOutFile());
         String nameFile = createTempFile.toPath().toString();
-        String svgFile = getFirstPathByExtension(userFolder.getParentFile(), ".svg").toString();
-        String pngFile = getFirstPathByExtension(userFolder.getParentFile(), ".png").toString();
+        String svgFile = ResourceFXUtils.getFirstPathByExtension(userFolder.getParentFile(), ".svg").toString();
+        String pngFile = ResourceFXUtils.getFirstPathByExtension(userFolder.getParentFile(), ".png").toString();
         measureTime("ImageCreating.creating", () -> ImageCreating.creating(nameFile));
         measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, svgFile));
         measureTime("ImageLoading.binarize", () -> ImageLoading.binarize(dataDir, nameFile));
@@ -199,8 +191,6 @@ public class IndependentTest {
             () -> OthersTests.p(new Complex(1.0 / 2.0), new Complex(-3, -3), new Complex(-1, 1), new Complex(-9, -5)));
     }
 
-
-
     @Test
     public void testQuickSort() {
         List<Integer> input = Arrays.asList(24, 2, 45, 20, 56, 75, 2, 56, 99, 53, 12);
@@ -226,7 +216,7 @@ public class IndependentTest {
     }
 
     @Test
-	public void testSpeaker() {
+    public void testSpeaker() {
         measureTime("Speaker.speak", () -> {
             Speaker.SPEAKER.speak("Hi");
             Speaker.SPEAKER.speak("How Are You");
@@ -239,24 +229,25 @@ public class IndependentTest {
     public void testStringSiga() {
         List<String> asList = Arrays.asList("32154", null, "私は寿司が好きです。", "");
         for (String nome : asList) {
-            measureTime("StringSigaUtils.codificar", () -> codificar(nome));
-            measureTime("StringSigaUtils.corrigirProblemaEncoding", () -> corrigirProblemaEncoding(nome));
-            measureTime("StringSigaUtils.decodificar", () -> decodificar(nome));
-            measureTime("StringSigaUtils.fixEncoding", () -> fixEncoding(nome));
-            measureTime("StringSigaUtils.fixEncoding", () -> fixEncoding(nome));
-            measureTime("StringSigaUtils.getApenasNumeros", () -> getApenasNumeros(nome));
-            measureTime("StringSigaUtils.getApenasNumerosInt", () -> getApenasNumerosInt(nome));
-            measureTime("StringSigaUtils.getCEPFormatado", () -> getCEPFormatado(nome));
-            measureTime("StringSigaUtils.getCEPFormatado", () -> getCEPFormatado(nome));
-            measureTime("StringSigaUtils.getCnpjFormatado", () -> getCnpjFormatado(nome));
-            measureTime("StringSigaUtils.getCnpjFormatado", () -> getCnpjFormatado(nome));
-            measureTime("StringSigaUtils.getCpfDesformatado", () -> getCpfDesformatado(nome));
-            measureTime("StringSigaUtils.getCpfFormatado", () -> getCpfFormatado(nome));
-            measureTime("StringSigaUtils.getCpfFormatado", () -> getCpfFormatado(nome));
-            measureTime("StringSigaUtils.removerDiacritico", () -> removerDiacritico(nome));
-            measureTime("StringSigaUtils.retirarMascara", () -> retirarMascara(nome));
-            measureTime("StringSigaUtils.substituirNaoNumeros", () -> substituirNaoNumeros(nome));
-            measureTime("StringSigaUtils.toInteger", () -> toInteger(nome));
+            measureTime("StringSigaUtils.codificar", () -> StringSigaUtils.codificar(nome));
+            measureTime("StringSigaUtils.corrigirProblemaEncoding",
+                () -> StringSigaUtils.corrigirProblemaEncoding(nome));
+            measureTime("StringSigaUtils.decodificar", () -> StringSigaUtils.decodificar(nome));
+            measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
+            measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
+            measureTime("StringSigaUtils.getApenasNumeros", () -> StringSigaUtils.getApenasNumeros(nome));
+            measureTime("StringSigaUtils.getApenasNumerosInt", () -> StringSigaUtils.getApenasNumerosInt(nome));
+            measureTime("StringSigaUtils.getCEPFormatado", () -> StringSigaUtils.getCEPFormatado(nome));
+            measureTime("StringSigaUtils.getCEPFormatado", () -> StringSigaUtils.getCEPFormatado(nome));
+            measureTime("StringSigaUtils.getCnpjFormatado", () -> StringSigaUtils.getCnpjFormatado(nome));
+            measureTime("StringSigaUtils.getCnpjFormatado", () -> StringSigaUtils.getCnpjFormatado(nome));
+            measureTime("StringSigaUtils.getCpfDesformatado", () -> StringSigaUtils.getCpfDesformatado(nome));
+            measureTime("StringSigaUtils.getCpfFormatado", () -> StringSigaUtils.getCpfFormatado(nome));
+            measureTime("StringSigaUtils.getCpfFormatado", () -> StringSigaUtils.getCpfFormatado(nome));
+            measureTime("StringSigaUtils.removerDiacritico", () -> StringSigaUtils.removerDiacritico(nome));
+            measureTime("StringSigaUtils.retirarMascara", () -> StringSigaUtils.retirarMascara(nome));
+            measureTime("StringSigaUtils.substituirNaoNumeros", () -> StringSigaUtils.substituirNaoNumeros(nome));
+            measureTime("StringSigaUtils.toInteger", () -> StringSigaUtils.toInteger(nome));
         }
     }
 
@@ -270,6 +261,6 @@ public class IndependentTest {
     @Test
     public void testVerbs() {
         measureTime("BrazilianVerbsConjugator.conjugate", () -> BrazilianVerbsConjugator
-            .getWords(toURI("verbs.dic")).forEach(BrazilianVerbsConjugator::conjugate));
+            .getWords(ResourceFXUtils.toURI("verbs.dic")).forEach(BrazilianVerbsConjugator::conjugate));
     }
 }
