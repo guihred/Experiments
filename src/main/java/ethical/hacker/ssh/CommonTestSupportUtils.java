@@ -1,6 +1,5 @@
 package ethical.hacker.ssh;
 
-import static utils.StringSigaUtils.nonNull;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -76,7 +75,7 @@ public final class CommonTestSupportUtils {
         provider = createTestHostKeyProvider(file);
 
         KeyPairProvider prev = KEYPAIR_PROVIDER_HOLDER.getAndSet(provider);
-        return nonNull(prev, provider);
+        return SupplierEx.nonNull(prev, provider);
     }
 
     /**

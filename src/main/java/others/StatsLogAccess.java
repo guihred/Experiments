@@ -1,6 +1,5 @@
 package others;
 
-import static utils.StringSigaUtils.nonNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,6 +23,7 @@ import org.slf4j.Logger;
 import utils.FunctionEx;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.SupplierEx;
 
 public class StatsLogAccess {
     private static final String LOG_PREFIX = "localhost_access_log";
@@ -146,7 +146,7 @@ public class StatsLogAccess {
 
         		String[] a = linha.split(" ");
         		return a[a.length - 1];
-            })).map(FunctionEx.makeFunction(Long::parseLong)).mapToLong(a -> nonNull(a, 0L)).summaryStatistics();
+            })).map(FunctionEx.makeFunction(Long::parseLong)).mapToLong(a -> SupplierEx.nonNull(a, 0L)).summaryStatistics();
             LOGGER.info("{} = {},\t{},\t{},\t{}", path, summary.getAverage(), summary.getMax(), summary.getMin(),
                     summary.getCount());
 

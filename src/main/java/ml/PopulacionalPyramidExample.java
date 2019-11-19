@@ -1,7 +1,6 @@
 package ml;
 
 
-import static utils.StringSigaUtils.nonNull;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -24,6 +23,7 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
+import utils.SupplierEx;
 
 public class PopulacionalPyramidExample extends Application {
 
@@ -60,7 +60,7 @@ public class PopulacionalPyramidExample extends Application {
             .onSelect(country -> canvas.countryProperty().set(country)).build();
         ComboBox<Integer> year = new SimpleComboBoxBuilder<Integer>().items(canvas.yearsOptionsProperty())
             .tooltip("Year")
-            .onSelect(yearV -> canvas.yearProperty().set(nonNull(yearV, DEFAULT_YEAR))).select(0).build();
+            .onSelect(yearV -> canvas.yearProperty().set(SupplierEx.nonNull(yearV, DEFAULT_YEAR))).select(0).build();
 
         canvas.setHistogram(x);
 

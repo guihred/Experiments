@@ -1,7 +1,6 @@
 package schema.sngpc;
 
 import static java.util.Collections.singletonList;
-import static utils.StringSigaUtils.nonNull;
 
 import com.google.common.io.Files;
 import java.io.ByteArrayOutputStream;
@@ -18,6 +17,7 @@ import javax.tools.*;
 import org.slf4j.Logger;
 import sun.misc.Unsafe;
 import utils.HasLogging;
+import utils.SupplierEx;
 
 @SuppressWarnings("restriction")
 public final class ControllerCompiler {
@@ -98,7 +98,7 @@ public final class ControllerCompiler {
             diagnosticMsg.add("Classe já adicionada");
         } catch (Throwable e) {
             String localizedMessage = e.getLocalizedMessage();
-            diagnosticMsg.add(nonNull(localizedMessage, e.getMessage()));
+            diagnosticMsg.add(SupplierEx.nonNull(localizedMessage, e.getMessage()));
             LOG.info("ERROR IN {}", className);
             LOG.error("ERROR IN {}", e);
         }

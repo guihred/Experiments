@@ -2,6 +2,7 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
+import com.google.common.collect.ImmutableMap;
 import gaming.ex16.MadCell;
 import graphs.entities.Linha;
 import java.lang.reflect.Method;
@@ -74,9 +75,18 @@ public class ClassReflectionTest extends AbstractTestExecution {
         List<Class<?>> classes = Arrays.asList(Linha.class, MadCell.class);
         List<? > entities = classes.stream().map(ClassReflectionUtils::getInstanceNull)
             .collect(Collectors.toList());
+        ImmutableMap<Class<? extends Number>, Number> of = ImmutableMap.of(int.class, 0, float.class, 0f, double.class,
+            0.);
+
         for (Object e : entities) {
             List<Method> setters = ClassReflectionUtils.setters(e.getClass());
-            setters.forEach(s -> ClassReflectionUtils.invoke(e, s, new Object[] { null }));
+            setters.forEach(s -> {
+                if (s.getParameterTypes()[0].isPrimitive()) {
+                    ClassReflectionUtils.invoke(e, s, of.get(s.getParameterTypes()[0]));
+                } else {
+                    ClassReflectionUtils.invoke(e, s, new Object[] { null });
+                }
+            });
         }
     }
 

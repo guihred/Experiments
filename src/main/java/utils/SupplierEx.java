@@ -9,23 +9,23 @@ public interface SupplierEx<T> {
     T get() throws Exception;
 
     static <A> A get(SupplierEx<A> run) {
-        try {
-            return run.get();
-        } catch (Exception e) {
-            HasLogging.log(1).error("", e);
-            return null;
-        }
+        return makeSupplier(run::get, e -> HasLogging.log(1).error("", e)).get();
     }
 
     static <A> A get(SupplierEx<A> run, A orElse) {
+        return getHandle(run, orElse, e -> HasLogging.log(1).info("", e));
+    }
+
+    static <A> A getHandle(SupplierEx<A> run, A orElse, Consumer<Exception> onError) {
         try {
             A a = run.get();
             if (a == null) {
                 return orElse;
             }
             return a;
-        } catch (Throwable e) {
-            HasLogging.log(1).info("", e);
+        } catch (Exception e) {
+            HasLogging.log(1).trace("", e);
+            onError.accept(e);
             return orElse;
         }
     }
@@ -35,16 +35,7 @@ public interface SupplierEx<T> {
     }
 
     static <A> A getIgnore(SupplierEx<A> run, A orElse) {
-        try {
-            A a = run.get();
-            if (a == null) {
-                return orElse;
-            }
-            return a;
-        } catch (Exception e) {
-            HasLogging.log(1).trace("", e);
-            return orElse;
-        }
+        return getHandle(run, orElse, e -> HasLogging.log(1).trace("", e));
     }
 
     static <A> Supplier<A> makeSupplier(SupplierEx<A> run) {
@@ -52,31 +43,27 @@ public interface SupplierEx<T> {
     }
 
     static <A> Supplier<A> makeSupplier(SupplierEx<A> run, Consumer<Exception> onError) {
-        return () -> {
-            try {
-                return run.get();
-            } catch (Exception e) {
-                HasLogging.log(1).trace("", e);
-                onError.accept(e);
-                return null;
+        return () -> getHandle(run, null, onError);
+    }
+
+    @SafeVarargs
+    static <T> T nonNull(T... length) {
+        for (T t : length) {
+            if (t != null) {
+                return t;
             }
-        };
+        }
+        return null;
     }
 
     static <A> A orElse(A a, SupplierEx<A> run) {
-
-        if (a != null) {
-            return a;
-        }
-        return SupplierEx.get(run);
+        return a != null ? a : SupplierEx.getIgnore(run);
     }
 
     static <A> A remap(SupplierEx<A> run, String message) {
-        try {
-            return run.get();
-        } catch (Throwable e) {
+        return getHandle(run, null, e -> {
             throw new RuntimeIOException(message, e);
-        }
+        });
     }
 
 }

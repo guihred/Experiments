@@ -4,7 +4,7 @@ import static com.google.common.collect.ImmutableMap.of;
 
 import java.util.Collection;
 import java.util.Map;
-import utils.StringSigaUtils;
+import utils.SupplierEx;
 
 public enum MachineState {
     ERROR(of()),
@@ -34,7 +34,7 @@ public enum MachineState {
 
     public static MachineState getStateMachine(MachineState estado, Collection<String> eventList) {
         return eventList.stream().sequential().reduce(estado, (e, s) -> e.getMap().getOrDefault(s, ERROR),
-            StringSigaUtils::nonNull);
+            SupplierEx::nonNull);
     }
 
 }

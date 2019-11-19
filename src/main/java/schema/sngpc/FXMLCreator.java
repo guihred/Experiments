@@ -135,7 +135,7 @@ public final class FXMLCreator {
                     .flatMap(ob2 -> getDifferences(c, ob1, ob2).stream()).distinct().collect(toList()));
             mappedDifferences.addAll(getNamedArgs(cl));
             Map<String, Object> fieldMap = mappedDifferences.stream().distinct().filter(m -> invoke(ob1, m) != null)
-                .collect(toMap(m -> m, m -> invoke(ob1, m), StringSigaUtils::nonNull, LinkedHashMap::new));
+                .collect(toMap(m -> m, m -> invoke(ob1, m), SupplierEx::nonNull, LinkedHashMap::new));
             diffFields.putAll(fieldMap);
         }
         return diffFields;

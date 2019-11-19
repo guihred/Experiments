@@ -1,7 +1,6 @@
 package ml.data;
 
 import static utils.PredicateEx.makeTest;
-import static utils.StringSigaUtils.nonNull;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -175,7 +174,7 @@ public final class CoverageUtils {
         DataframeUtils.crossFeature(b, percentage2, CoverageUtils::getPercentage, string, string2);
         b.filter(percentage2, v -> ((Number) v).intValue() <= min);
         List<String> list = b.list("CLASS");
-        List<String> nonNull = nonNull(list, Collections.emptyList());
+        List<String> nonNull = SupplierEx.nonNull(list, Collections.emptyList());
         return nonNull.stream().map(s -> s.replaceAll("^(\\w+)\\..+", "$1")).collect(Collectors.toList());
     }
 

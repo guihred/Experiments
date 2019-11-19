@@ -1,6 +1,7 @@
 package ml;
 
-import static utils.StringSigaUtils.nonNull;
+
+import static utils.SupplierEx.nonNull;
 
 import java.util.*;
 import java.util.regex.Matcher;

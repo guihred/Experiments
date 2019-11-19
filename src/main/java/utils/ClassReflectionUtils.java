@@ -112,6 +112,9 @@ public final class ClassReflectionUtils {
     public static <T> T getInstanceNull(Class<T> cl) {
         return (T) SupplierEx.get(() -> {
             if (cl.isPrimitive()) {
+                if (cl == int.class) {
+                    return 0;
+                }
                 return 0D;
             }
             T t = SupplierEx.getIgnore(cl::newInstance);
