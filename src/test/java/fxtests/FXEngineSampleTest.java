@@ -8,6 +8,7 @@ import fxpro.ch02.PongLauncher;
 import fxpro.ch02.RandomPathExample;
 import fxpro.ch04.ReversiMain;
 import fxpro.ch04.ReversiSquare;
+import fxpro.ch04.ReversiSquareApp;
 import fxpro.ch06.ResponsiveUIApp;
 import fxpro.ch06.ThreadInformationApp;
 import fxpro.ch07.Chart3dSampleApp;
@@ -143,6 +144,14 @@ public class FXEngineSampleTest extends AbstractTestExecution {
         show(ReversiMain.class);
         ReversiSquare lookupFirst = lookupFirst(ReversiSquare.class);
         clickOn(lookupFirst);
+    }
+
+    @Test
+    public void verifyReversiSquareApp() {
+        show(ReversiSquareApp.class);
+        for (ReversiSquare reversiSquare : lookup(ReversiSquare .class)) {
+            tryClickOn(reversiSquare);
+        }
     }
 
     @Test

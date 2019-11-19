@@ -17,7 +17,7 @@ public final class ClassReflectionUtils {
     private static final String METHOD_REGEX = "is(\\w+)|get(\\w+)";
     private static final String METHOD_REGEX_SETTER = "set(\\w+)";
 
-    public static final Map<Class<?>, Object> PRIMITIVE_OBJ = ImmutableMap.of(int.class, 0, float.class, 0f,
+    public static final Map<Class<?>, Object> PRIMITIVE_OBJ = ImmutableMap.of(int.class, 0, float.class, 0F,
         double.class, 0., boolean.class, true);
 
     private ClassReflectionUtils() {
