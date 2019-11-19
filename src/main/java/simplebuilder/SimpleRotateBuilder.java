@@ -3,7 +3,7 @@ package simplebuilder;
 import javafx.geometry.Point3D;
 import javafx.scene.transform.Rotate;
 
-public class SimpleRotateBuilder extends SimpleTransformBuilder<Rotate, SimpleRotateBuilder> {
+public class SimpleRotateBuilder extends SimpleTransformBuilder<Rotate> {
 
 	protected Rotate rotate;
 
