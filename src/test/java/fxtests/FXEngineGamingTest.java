@@ -28,6 +28,8 @@ import gaming.ex19.NumberButton;
 import gaming.ex19.SudokuLauncher;
 import gaming.ex19.SudokuSquare;
 import gaming.ex20.RoundMazeLauncher;
+import gaming.ex23.TicTacToeLauncher;
+import gaming.ex23.TicTacToeSquare;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -235,6 +237,19 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             NumberButton randomItem = randomItem(buttons);
             moveTo(randomItem);
             drop();
+        }
+    }
+
+    @Test
+    public void verifyTicTacToe() {
+        show(TicTacToeLauncher.class);
+        List<TicTacToeSquare> queryAll = lookupList(TicTacToeSquare.class);
+        Collections.shuffle(queryAll);
+        for (TicTacToeSquare ticTacToeSquare : queryAll) {
+            tryClickOn(ticTacToeSquare);
+            if (tryClickButtons()) {
+                break;
+            }
         }
     }
 }
