@@ -71,7 +71,7 @@ public final class CoverageUtils {
         Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, m -> contains(classes, m),
             path);
         if (!displayTestsToBeRun.isEmpty()) {
-            LOG.error("APPS FOUND= {}", displayTestsToBeRun);
+            LOG.error("{} APPS FOUND= {}", displayTestsToBeRun.size(), displayTestsToBeRun);
         }
         return displayTestsToBeRun.stream().distinct()
             .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e))).collect(Collectors.toList());

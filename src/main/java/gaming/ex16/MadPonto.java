@@ -3,8 +3,8 @@ package gaming.ex16;
 import java.util.Objects;
 
 public class MadPonto {
-    private float x;
     private float y;
+    private float x;
     private MadCell cell;
 
     public MadPonto(float x, float y, MadCell c) {

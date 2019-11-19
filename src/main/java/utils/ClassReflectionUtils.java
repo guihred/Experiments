@@ -3,6 +3,7 @@ package utils;
 import static java.util.stream.Collectors.joining;
 import static utils.StringSigaUtils.changeCase;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.Serializable;
 import java.lang.reflect.*;
 import java.util.*;
@@ -15,6 +16,9 @@ import org.junit.Ignore;
 public final class ClassReflectionUtils {
     private static final String METHOD_REGEX = "is(\\w+)|get(\\w+)";
     private static final String METHOD_REGEX_SETTER = "set(\\w+)";
+
+    public static final Map<Class<?>, Object> PRIMITIVE_OBJ = ImmutableMap.of(int.class, 0, float.class, 0f,
+        double.class, 0., boolean.class, true);
 
     private ClassReflectionUtils() {
     }
@@ -110,12 +114,10 @@ public final class ClassReflectionUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> T getInstanceNull(Class<T> cl) {
+
         return (T) SupplierEx.get(() -> {
-            if (cl.isPrimitive()) {
-                if (cl == int.class) {
-                    return 0;
-                }
-                return 0D;
+            if (PRIMITIVE_OBJ.containsKey(cl)) {
+                return PRIMITIVE_OBJ.get(cl);
             }
             T t = SupplierEx.getIgnore(cl::newInstance);
             if (t != null) {
