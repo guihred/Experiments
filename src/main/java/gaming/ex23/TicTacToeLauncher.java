@@ -27,8 +27,9 @@ public class TicTacToeLauncher extends Application {
         gridPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                gridPane.add(map[i][j] = new TicTacToeSquare(), i, j);
+                map[i][j] = new TicTacToeSquare();
                 TicTacToeSquare square = map[i][j];
+                gridPane.add(square, i, j);
                 square.setOnMouseClicked(e -> {
                     if (square.getState() == TicTacToePlayer.NONE) {
                         square.setState(players.get(currentPlayer++ % players.size()));
@@ -54,10 +55,7 @@ public class TicTacToeLauncher extends Application {
         if (anyWinner(j -> map[i][j].getState())) {
             return true;
         }
-        if (anyWinner(j -> map[j][i].getState())) {
-            return true;
-        }
-        return false;
+        return anyWinner(j -> map[j][i].getState());
     }
 
     private TicTacToePlayer getWinner() {

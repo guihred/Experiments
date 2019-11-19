@@ -12,10 +12,10 @@ public enum TicTacToePlayer {
     O(() -> new SimpleCircleBuilder().radius(25).stroke(Color.BLACK).fill(Color.TRANSPARENT).build());
     private Supplier<Shape> supply;
 
-    private TicTacToePlayer() {
+    TicTacToePlayer() {
     }
 
-    private TicTacToePlayer(Supplier<Shape> supply) {
+    TicTacToePlayer(Supplier<Shape> supply) {
         this.supply = supply;
     }
 
