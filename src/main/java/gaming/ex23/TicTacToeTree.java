@@ -1,12 +1,10 @@
 package gaming.ex23;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import utils.HasLogging;
 import utils.SupplierEx;
 
 public class TicTacToeTree {
@@ -70,6 +68,7 @@ public class TicTacToeTree {
                 TicTacToeTree ticTacToeTree = result(player, j);
                 children.add(ticTacToeTree);
             }
+            Collections.shuffle(children);
             return children;
         });
     }
@@ -112,15 +111,15 @@ public class TicTacToeTree {
     private TicTacToeTree result(TicTacToePlayer player, int j) {
         List<TicTacToePlayer> squares2 = new ArrayList<>(squares);
         squares2.set(j, player);
-        TicTacToeTree ticTacToeTree = new TicTacToeTree(squares2, j);
-        return ticTacToeTree;
+        return new TicTacToeTree(squares2, j);
     }
 
     public static void main(String[] args) {
 
         TicTacToeTree ticTacToeTree = new TicTacToeTree(
             IntStream.range(0, 9).mapToObj(i -> TicTacToePlayer.NONE).collect(Collectors.toList()));
-        System.out.println(ticTacToeTree.makeDecision(TicTacToePlayer.X));
+        TicTacToeTree makeDecision = ticTacToeTree.makeDecision(TicTacToePlayer.X);
+        HasLogging.log().info("{}", makeDecision);
     }
 
 }

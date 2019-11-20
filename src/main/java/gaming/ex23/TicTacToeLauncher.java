@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;
@@ -14,8 +15,8 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.junit.Assert;
 import utils.CommonsFX;
+import utils.HasLogging;
 
 public class TicTacToeLauncher extends Application {
 
@@ -31,17 +32,17 @@ public class TicTacToeLauncher extends Application {
     }
 
     public void onMouseClickedTicTacToeSquare0(MouseEvent e) {
-        TicTacToeSquare square = (TicTacToeSquare) e.getTarget();
+        EventTarget target = e.getTarget();
+        if (!(target instanceof TicTacToeSquare)) {
+            return;
+        }
+        TicTacToeSquare square = (TicTacToeSquare) target;
         TicTacToePlayer player = players.get(currentPlayer % players.size());
-        if (
-//            player == TicTacToePlayer.O && 
-        square.getState() == TicTacToePlayer.NONE) {
+        if (square.getState() == TicTacToePlayer.NONE) {
             square.setState(player);
             currentPlayer++;
             boolean verifyWin = TicTacToeHelper.verifyWin(squares, gridPane);
-            if (!verifyWin
-//                && player == TicTacToePlayer.O
-            ) {
+            if (!verifyWin) {
                 new Thread(this::runAI).start();
             }
         }
@@ -54,17 +55,16 @@ public class TicTacToeLauncher extends Application {
 
     private void runAI() {
         TicTacToePlayer x = players.get(currentPlayer % players.size());
-        List<TicTacToePlayer> states = squares.stream().map(TicTacToeSquare::getState)
-            .collect(Collectors.toList());
+        List<TicTacToePlayer> states = squares.stream().map(TicTacToeSquare::getState).collect(Collectors.toList());
         TicTacToeTree ticTacToeTree = new TicTacToeTree(states);
         TicTacToeTree makeDecision = ticTacToeTree.makeDecision(x);
         currentPlayer++;
         int action = makeDecision.getAction();
-        Assert.assertTrue(action < squares.size());
-        Assert.assertTrue(squares.get(action).getState() == TicTacToePlayer.NONE);
-        Platform.runLater(() -> {
-            squares.get(action).setState(x);
-        });
+        if (action < squares.size() && squares.get(action).getState() == TicTacToePlayer.NONE) {
+            Platform.runLater(() -> squares.get(action).setState(x));
+        } else {
+            HasLogging.log().error("ERROR IN LOGIC");
+        }
     }
 
     public static void main(String[] args) {
