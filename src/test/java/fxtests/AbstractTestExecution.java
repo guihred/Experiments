@@ -216,11 +216,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
             currentStage.setFullScreen(false);
             currentStage.setMinHeight(0);
             currentStage.setIconified(false);
-            currentStage.setX(Double.NaN);
-            currentStage.setWidth(Double.NaN);
-            currentStage.setY(Double.NaN);
             currentStage.setOpacity(1);
-            currentStage.setHeight(Double.NaN);
             currentStage.close();
         });
     }

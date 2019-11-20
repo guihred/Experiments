@@ -244,11 +244,13 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     public void verifyTicTacToe() {
         show(TicTacToeLauncher.class);
         List<TicTacToeSquare> queryAll = lookupList(TicTacToeSquare.class);
-        Collections.shuffle(queryAll);
-        for (TicTacToeSquare ticTacToeSquare : queryAll) {
-            tryClickOn(ticTacToeSquare);
-            if (tryClickButtons()) {
-                break;
+        for (int i = 0; i < 6; i++) {
+            Collections.shuffle(queryAll);
+            for (TicTacToeSquare ticTacToeSquare : queryAll) {
+                tryClickOn(ticTacToeSquare);
+                if (tryClickButtons()) {
+                    break;
+                }
             }
         }
     }

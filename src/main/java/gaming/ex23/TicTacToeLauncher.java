@@ -25,7 +25,7 @@ public class TicTacToeLauncher extends Application {
     private int currentPlayer;
     private List<TicTacToePlayer> players = Arrays.asList(TicTacToePlayer.O, TicTacToePlayer.X);
     private List<TicTacToeSquare> squares;
-    private boolean locked = false;
+    private boolean locked;
 
     public void initialize() {
         squares = gridPane.getChildren().stream().map(TicTacToeSquare.class::cast).collect(Collectors.toList());

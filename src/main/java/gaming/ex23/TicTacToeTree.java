@@ -62,10 +62,6 @@ public class TicTacToeTree {
     private List<TicTacToeTree> getChildren() {
         return SupplierEx.orElse(children, () -> {
             children = new ArrayList<>();
-            if (TicTacToeHelper.gameEnded(squares)) {
-                getWinner();
-                return children;
-            }
             TicTacToePlayer player = player();
             int[] actions = actions();
             for (int j : actions) {
@@ -98,10 +94,10 @@ public class TicTacToeTree {
     private TicTacToePlayer player() {
         Map<TicTacToePlayer, Long> collect = squares.stream().filter(e -> e != TicTacToePlayer.NONE)
             .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-        if (collect.getOrDefault(TicTacToePlayer.X, 0L) == collect.getOrDefault(TicTacToePlayer.O, 0L)) {
-            if (action != -1) {
-                return squares.get(action).opposite();
-            }
+        Long x = collect.getOrDefault(TicTacToePlayer.X, 0L);
+        Long o = collect.getOrDefault(TicTacToePlayer.O, 0L);
+        if (Objects.equals(x, o) && action != -1) {
+            return squares.get(action).opposite();
         }
         return Stream.of(TicTacToePlayer.X, TicTacToePlayer.O)
             .min(Comparator.comparing(e -> collect.getOrDefault(e, 0L))).orElse(TicTacToePlayer.X);
