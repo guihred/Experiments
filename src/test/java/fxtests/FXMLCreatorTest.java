@@ -1,6 +1,6 @@
 package fxtests;
 
-import fxsamples.PlayingAudio;
+import gaming.ex23.TicTacToeLauncher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +27,7 @@ public final class FXMLCreatorTest {
 
     @Test
 	public  void testClassesNotClose() {
-        List<Class<? extends Application>> classes = Arrays.asList(PlayingAudio.class);
+        List<Class<? extends Application>> classes = Arrays.asList(TicTacToeLauncher.class);
         FXMLCreatorHelper.testApplications(classes, false);
     }
 

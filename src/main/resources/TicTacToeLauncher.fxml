@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import gaming.ex23.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.scene.effect.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+	styleClass="root">
+	<center>
+		<GridPane fx:id="gridPane">
+			<children>
+				<TicTacToeSquare GridPane.columnIndex="0"
+					GridPane.rowIndex="0"
+					onMouseClicked="#onMouseClickedTicTacToeSquare0" />
+				<TicTacToeSquare GridPane.columnIndex="0"
+					GridPane.rowIndex="1"
+					onMouseClicked="#onMouseClickedTicTacToeSquare0" />
+				<TicTacToeSquare GridPane.columnIndex="0"
+					GridPane.rowIndex="2"
+					onMouseClicked="#onMouseClickedTicTacToeSquare0" />
+				<TicTacToeSquare GridPane.columnIndex="1"
+					GridPane.rowIndex="0"
+					onMouseClicked="#onMouseClickedTicTacToeSquare0" />
+				<TicTacToeSquare GridPane.columnIndex="1"
+					GridPane.rowIndex="1"
+					onMouseClicked="#onMouseClickedTicTacToeSquare0" />
+				<TicTacToeSquare GridPane.columnIndex="1"
+					GridPane.rowIndex="2"
+					onMouseClicked="#onMouseClickedTicTacToeSquare0" />
+				<TicTacToeSquare GridPane.columnIndex="2"
+					GridPane.rowIndex="0"
+					onMouseClicked="#onMouseClickedTicTacToeSquare0" />
+				<TicTacToeSquare GridPane.columnIndex="2"
+					GridPane.rowIndex="1"
+					onMouseClicked="#onMouseClickedTicTacToeSquare0" />
+				<TicTacToeSquare GridPane.columnIndex="2"
+					GridPane.rowIndex="2"
+					onMouseClicked="#onMouseClickedTicTacToeSquare0" />
+			</children>
+		</GridPane>
+	</center>
+</BorderPane>
