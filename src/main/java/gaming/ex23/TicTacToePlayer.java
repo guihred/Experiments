@@ -7,7 +7,12 @@ import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
 
 public enum TicTacToePlayer {
-    NONE,
+    NONE() {
+        @Override
+        public String toString() {
+            return "N";
+        }
+    },
     X(() -> new SimpleSvgPathBuilder().stroke(Color.BLACK).content("M0,0L30,30M30,0L0,30").build()),
     O(() -> new SimpleCircleBuilder().radius(25).stroke(Color.BLACK).fill(Color.TRANSPARENT).build());
     private Supplier<Shape> supply;
