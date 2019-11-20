@@ -2,9 +2,14 @@ package gaming.ex24;
 
 import java.util.Arrays;
 import javafx.beans.NamedArg;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -16,6 +21,8 @@ public class CheckersSquare extends StackPane {
 
     private ObjectProperty<CheckersPlayer> state = new SimpleObjectProperty<>(CheckersPlayer.NONE);
     private boolean black;
+	private BooleanProperty highlight = new SimpleBooleanProperty(false);
+	private BooleanProperty selected = new SimpleBooleanProperty(false);
 
     public CheckersSquare(@NamedArg("black") boolean black) {
         this.black = black;
@@ -27,9 +34,20 @@ public class CheckersSquare extends StackPane {
             Shape shape = o.getShape();
             shape.visibleProperty().bind(state.isEqualTo(o));
             getChildren().add(shape);
+			Effect glow = new InnerShadow(20, Color.YELLOW);
+			shape.effectProperty().bind(Bindings.when(selected).then(glow).otherwise((Effect) null));
         }
-
+		Effect glow = new InnerShadow(20, Color.BLUE);
+		effectProperty().bind(Bindings.when(highlight).then(glow).otherwise((Effect) null));
     }
+
+    public boolean getHighlight() {
+		return highlight.get();
+	}
+
+	public boolean getSelected() {
+		return selected.get();
+	}
 
     public CheckersPlayer getState() {
         return state.get();
@@ -39,11 +57,19 @@ public class CheckersSquare extends StackPane {
         return black;
     }
 
-    public void setBlack(boolean black) {
+	public void setBlack(boolean black) {
         this.black = black;
     }
 
-    public void setState(CheckersPlayer state) {
+	public void setHighlight(boolean highlight) {
+		this.highlight.set(highlight);
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected.set(selected);
+	}
+
+	public void setState(CheckersPlayer state) {
         this.state.set(state);
     }
 }
