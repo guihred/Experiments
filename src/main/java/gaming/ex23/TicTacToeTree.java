@@ -29,26 +29,30 @@ public class TicTacToeTree {
     }
 
     public TicTacToeTree makeDecision(TicTacToePlayer player) {
-        return getChildren().stream().min(Comparator.comparing(e -> e.minValue(player))).orElse(this);
+        double max = Double.NEGATIVE_INFINITY;
+        TicTacToeTree decision = this;
+        for (TicTacToeTree e : getChildren()) {
+            double maxValue = e.maxValue(player);
+            if (maxValue > max) {
+                max = maxValue;
+                decision = e;
+            }
+        }
+        return decision;
     }
 
     @Override
     public String toString() {
-//        if (getWinner() != null) {
         return String.format("%s>%s %d", squares, getWinner(), action);
-//        }
-//        String collect = getChildren().stream().map(TicTacToeTree::toString)
-//            .collect(Collectors.joining("\n-", "-", ""));
-//        return String.format("%s%n%s", squares, collect.replaceAll("(-+)", "-$1"));
 
     }
 
-    public int utility(TicTacToePlayer player) {
+    public double utility(TicTacToePlayer player) {
         TicTacToePlayer cur = getWinner();
-        if (cur == null) {
+        if (cur == null || cur == TicTacToePlayer.NONE) {
             return 0;
         }
-        return player == cur ? 1 : -1;
+        return player != cur ? -1 : 1;
     }
 
     private int[] actions() {
@@ -78,34 +82,30 @@ public class TicTacToeTree {
             () -> winner = TicTacToeHelper.gameEnded(squares) ? TicTacToeHelper.getWinner(squares) : null);
     }
 
-    private int maxValue(TicTacToePlayer player) {
+    private double maxValue(TicTacToePlayer player) {
 
         if (TicTacToeHelper.gameEnded(squares)) {
             return utility(player);
         }
-        int v = -1000;
-        for (TicTacToeTree a : getChildren()) {
-            v = Math.max(v, a.minValue(player));
+        double v = 0;
+        List<TicTacToeTree> children2 = getChildren();
+        for (TicTacToeTree a : children2) {
+            v += a.maxValue(player);
         }
-        return v;
-    }
-
-    private int minValue(TicTacToePlayer player) {
-        if (TicTacToeHelper.gameEnded(squares)) {
-            return utility(player);
-        }
-        int v = 1000;
-        for (TicTacToeTree a : getChildren()) {
-            v = Math.min(v, a.maxValue(player));
-        }
-        return v;
+        return v / children2.size();
     }
 
     private TicTacToePlayer player() {
         Map<TicTacToePlayer, Long> collect = squares.stream().filter(e -> e != TicTacToePlayer.NONE)
             .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+        if (collect.getOrDefault(TicTacToePlayer.X, 0L) == collect.getOrDefault(TicTacToePlayer.O, 0L)) {
+            if (action != -1) {
+                return squares.get(action).opposite();
+            }
+        }
         return Stream.of(TicTacToePlayer.X, TicTacToePlayer.O)
             .min(Comparator.comparing(e -> collect.getOrDefault(e, 0L))).orElse(TicTacToePlayer.X);
+
     }
 
     private TicTacToeTree result(TicTacToePlayer player, int j) {

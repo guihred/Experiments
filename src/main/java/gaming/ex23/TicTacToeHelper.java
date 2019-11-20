@@ -39,13 +39,23 @@ public final class TicTacToeHelper {
         return TicTacToePlayer.NONE;
     }
 
+
     public static boolean verifyWin(List<TicTacToeSquare> squares, GridPane gridPane) {
+        return verifyWin(squares, gridPane, () -> {
+            // DOES NOTHING
+        });
+    }
+
+    public static boolean verifyWin(List<TicTacToeSquare> squares, GridPane gridPane, Runnable run) {
 
         List<TicTacToePlayer> states = squares.stream().map(TicTacToeSquare::getState).collect(Collectors.toList());
         if (gameEnded(states)) {
             TicTacToePlayer winner = getWinner(states);
             String txt = winner!= TicTacToePlayer.NONE ? winner + " Won!" : "It's a draw!";
-            new SimpleDialogBuilder().text(txt).button("Reset", () -> reset(squares)).bindWindow(gridPane)
+            new SimpleDialogBuilder().text(txt).button("Reset", () -> {
+                reset(squares);
+                run.run();
+            }).bindWindow(gridPane)
                 .displayDialog();
             return true;
         }

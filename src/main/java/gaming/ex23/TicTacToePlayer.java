@@ -27,4 +27,15 @@ public enum TicTacToePlayer {
     public Shape getShape() {
         return supply.get();
     }
+
+    public TicTacToePlayer opposite() {
+        if (this == TicTacToePlayer.X) {
+            return O;
+        }
+        if (this == TicTacToePlayer.O) {
+            return X;
+        }
+        return TicTacToePlayer.NONE;
+    }
+
 }

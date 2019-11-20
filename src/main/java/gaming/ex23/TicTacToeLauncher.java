@@ -25,6 +25,7 @@ public class TicTacToeLauncher extends Application {
     private int currentPlayer;
     private List<TicTacToePlayer> players = Arrays.asList(TicTacToePlayer.O, TicTacToePlayer.X);
     private List<TicTacToeSquare> squares;
+    private boolean locked = false;
 
     public void initialize() {
         squares = gridPane.getChildren().stream().map(TicTacToeSquare.class::cast).collect(Collectors.toList());
@@ -38,12 +39,12 @@ public class TicTacToeLauncher extends Application {
         }
         TicTacToeSquare square = (TicTacToeSquare) target;
         TicTacToePlayer player = players.get(currentPlayer % players.size());
-        if (square.getState() == TicTacToePlayer.NONE) {
+        if (!locked && square.getState() == TicTacToePlayer.NONE) {
             square.setState(player);
             currentPlayer++;
             boolean verifyWin = TicTacToeHelper.verifyWin(squares, gridPane);
             if (!verifyWin) {
-                new Thread(this::runAI).start();
+                Platform.runLater(this::runAI);
             }
         }
     }
@@ -54,6 +55,7 @@ public class TicTacToeLauncher extends Application {
     }
 
     private void runAI() {
+        locked = true;
         TicTacToePlayer x = players.get(currentPlayer % players.size());
         List<TicTacToePlayer> states = squares.stream().map(TicTacToeSquare::getState).collect(Collectors.toList());
         TicTacToeTree ticTacToeTree = new TicTacToeTree(states);
@@ -61,10 +63,12 @@ public class TicTacToeLauncher extends Application {
         currentPlayer++;
         int action = makeDecision.getAction();
         if (action < squares.size() && squares.get(action).getState() == TicTacToePlayer.NONE) {
-            Platform.runLater(() -> squares.get(action).setState(x));
+            squares.get(action).setState(x);
+            TicTacToeHelper.verifyWin(squares, gridPane, () -> Platform.runLater(this::runAI));
         } else {
             HasLogging.log().error("ERROR IN LOGIC");
         }
+        locked = false;
     }
 
     public static void main(String[] args) {
