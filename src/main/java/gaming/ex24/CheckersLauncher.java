@@ -25,14 +25,6 @@ public class CheckersLauncher extends Application {
             for (int j = 0; j < SIZE; j++) {
                 boolean black = (i + j) % 2 == 0;
                 CheckersSquare child = new CheckersSquare(black);
-                if (black) {
-                    if (i < 3) {
-                        child.setState(CheckersPlayer.BLACK);
-                    }
-                    if (i > SIZE - 4) {
-                        child.setState(CheckersPlayer.WHITE);
-                    }
-                }
                 squares.add(child);
                 child.setOnMouseClicked(e0 -> {
                     Object target = e0.getSource();
@@ -43,6 +35,7 @@ public class CheckersLauncher extends Application {
                 gridPane.add(child, j, i);
             }
         }
+        reset();
     }
 
     @Override
@@ -54,6 +47,41 @@ public class CheckersLauncher extends Application {
         stage.setTitle("Checkers");
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void clearEaten(CheckersSquare selected, CheckersSquare target, CheckersPlayer player, int i, int j) {
+        for (int dirI = player.getDir(); dirI == player.getDir()
+            || selected.getQueen() && dirI == -player.getDir(); dirI -= 2 * player.getDir()) {
+            for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
+                int iterations = !selected.getQueen() ? 1 : SIZE - 1;
+                for (int k = 1; k <= iterations; k++) {
+                    if (!withinBounds(j + dirJ * k) || !withinBounds(i + dirI * k)) {
+                        continue;
+                    }
+                    List<CheckersSquare> markPossibleKills = markPossibleKills(player, i + dirI * k, j + dirJ * k, dirI,
+                        dirJ);
+                    if (!markPossibleKills.isEmpty() && markPossibleKills.contains(target)) {
+                        for (CheckersSquare square2 : markPossibleKills) {
+                            square2.setState(CheckersPlayer.NONE);
+                            square2.setQueen(false);
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+        for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
+            List<CheckersSquare> markPossibleKills = markPossibleKills(player, i - player.getDir(), j + dirJ,
+                -player.getDir(), dirJ);
+            if (!markPossibleKills.isEmpty() && markPossibleKills.contains(target)) {
+                for (CheckersSquare square2 : markPossibleKills) {
+                    square2.setState(CheckersPlayer.NONE);
+                    square2.setQueen(false);
+                }
+                return;
+            }
+        }
+
     }
 
     private boolean gameOver() {
@@ -70,7 +98,7 @@ public class CheckersLauncher extends Application {
         final int i = indexOf / SIZE;
         final int j = indexOf % SIZE;
         for (int dirI = player.getDir(); dirI == player.getDir()
-            || target.getQueen() && dirI == -player.getDir(); dirI += 2) {
+            || target.getQueen() && dirI == -player.getDir(); dirI -= 2 * player.getDir()) {
             for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
                 int iterations = !target.getQueen() ? 1 : SIZE - 1;
                 for (int k = 1; k <= iterations; k++) {
@@ -81,7 +109,7 @@ public class CheckersLauncher extends Application {
                     if (checkersSquare.getState() == CheckersPlayer.NONE) {
                         checkersSquare.setHighlight(true);
                     }
-                    markPossibleKills(player, i + dirI * k, j + dirJ * k, dirI * k, dirJ * k);
+                    markPossibleKills(player, i + dirI * k, j + dirJ * k, dirI, dirJ);
                     if (checkersSquare.getState() == player) {
                         break;
                     }
@@ -93,9 +121,14 @@ public class CheckersLauncher extends Application {
         }
     }
 
-    private void markPossibleKills(CheckersPlayer player, int i, int j, int dirI, int dirJ) {
+    private List<CheckersSquare> markPossibleKills(CheckersPlayer player, int i, int j, int dirI, int dirJ) {
+        return markPossibleKills(player, i, j, dirI, dirJ, new ArrayList<>());
+    }
+
+    private List<CheckersSquare> markPossibleKills(CheckersPlayer player, int i, int j, int dirI, int dirJ,
+        List<CheckersSquare> marked) {
         if (!withinBounds(i) || !withinBounds(j)) {
-            return;
+            return marked;
         }
         CheckersSquare checkersSquare = squares.get(toIndex(i, j));
         if (checkersSquare.getState() == player.opposite()) {
@@ -105,17 +138,23 @@ public class CheckersLauncher extends Application {
                 if (square2.getState() == CheckersPlayer.NONE) {
                     checkersSquare.setMarked(true);
                     square2.setHighlight(true);
-
-                    for (int dirI2 = -1; dirI2 == -1
+                    if (marked.contains(checkersSquare)) {
+                        return marked;
+                    }
+                    marked.add(checkersSquare);
+                    marked.add(square2);
+                    for (int dirI2 = -1; dirI2 <= 1
 //                        || target.getQueen() && dirI == -player.getDir()
                     ; dirI2 += 2) {
                         for (int dirJ2 = -1; dirJ2 <= 1; dirJ2 += 2) {
-                            markPossibleKills(player, i + dirI + dirI2, j + dirJ + dirJ2, dirI2, dirJ2);
+                            markPossibleKills(player, i + dirI + dirI2, j + dirJ + dirJ2, dirI2, dirJ2, marked);
                         }
                     }
                 }
             }
         }
+
+        return marked;
     }
 
     private void onClick(CheckersSquare target) {
@@ -151,35 +190,29 @@ public class CheckersLauncher extends Application {
     }
 
     private void replaceStates(CheckersSquare target, CheckersSquare selected, CheckersPlayer player) {
-        int indexOf = squares.indexOf(target);
+        int indexOf = squares.indexOf(selected);
         int i = indexOf / SIZE;
         int j = indexOf % SIZE;
-        int indexOf2 = squares.indexOf(selected);
-        int i2 = indexOf2 / SIZE;
-        int j2 = indexOf2 % SIZE;
-        int diri = i - i2 > 0 ? 1 : -1;
-        int dirj = j - j2 > 0 ? 1 : -1;
-        boolean queen = selected.getQueen();
-        for (int k = i2, k2 = j2; k != i && k2 != j; k += diri, k2 += dirj) {
-            if (withinBounds(k) && withinBounds(k2)) {
-                CheckersSquare square2 = squares.get(toIndex(k, k2));
-                square2.setState(CheckersPlayer.NONE);
-            }
-        }
+
+        clearEaten(selected, target, player, i, j);
+
         target.setState(player);
-        target.setQueen(queen);
+        target.setQueen(selected.getQueen());
         selected.setState(CheckersPlayer.NONE);
         selected.setQueen(false);
-        if (i == 0 && player.getDir() == -1 || i == SIZE - 1 && player.getDir() == 1) {
+        int i2 = squares.indexOf(target) / SIZE;
+        if (i2 == 0 && player.getDir() == -1 || i2 == SIZE - 1 && player.getDir() == 1) {
             target.setQueen(true);
         }
 
     }
 
     private void reset() {
-        IntStream.range(0, squares.size()).filter(e -> squares.get(e).isBlack()).forEach(i -> {
-            CheckersSquare child = squares.get(i);
+        IntStream.range(0, squares.size()).filter(e -> squares.get(e).isBlack()).forEach(index -> {
+            CheckersSquare child = squares.get(index);
             child.setState(CheckersPlayer.NONE);
+            child.setQueen(false);
+            int i = index / SIZE;
             if (i < SIZE / 2 - 1) {
                 child.setState(CheckersPlayer.BLACK);
             }
