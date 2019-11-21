@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?><?import gaming.ex24.*?><?import javafx.event.*?><?import javafx.scene.input.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" styleClass="root"
+	fx:id="gridPane">
+	<children>
+		<CheckersSquare GridPane.columnIndex="0"
+			GridPane.rowIndex="0" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="1"
+			GridPane.rowIndex="0" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="2"
+			GridPane.rowIndex="0" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="3"
+			GridPane.rowIndex="0" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="4"
+			GridPane.rowIndex="0" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="5"
+			GridPane.rowIndex="0" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="6"
+			GridPane.rowIndex="0" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="7"
+			GridPane.rowIndex="0" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="0"
+			GridPane.rowIndex="1" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="1"
+			GridPane.rowIndex="1" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="2"
+			GridPane.rowIndex="1" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="3"
+			GridPane.rowIndex="1" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="4"
+			GridPane.rowIndex="1" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="5"
+			GridPane.rowIndex="1" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="6"
+			GridPane.rowIndex="1" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="7"
+			GridPane.rowIndex="1" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="0"
+			GridPane.rowIndex="2" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="1"
+			GridPane.rowIndex="2" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="2"
+			GridPane.rowIndex="2" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="3"
+			GridPane.rowIndex="2" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="4"
+			GridPane.rowIndex="2" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="5"
+			GridPane.rowIndex="2" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="6"
+			GridPane.rowIndex="2" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="BLACK" />
+		<CheckersSquare GridPane.columnIndex="7"
+			GridPane.rowIndex="2" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="0"
+			GridPane.rowIndex="3" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="1"
+			GridPane.rowIndex="3" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="2"
+			GridPane.rowIndex="3" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="3"
+			GridPane.rowIndex="3" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="4"
+			GridPane.rowIndex="3" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="5"
+			GridPane.rowIndex="3" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="6"
+			GridPane.rowIndex="3" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="7"
+			GridPane.rowIndex="3" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="0"
+			GridPane.rowIndex="4" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="1"
+			GridPane.rowIndex="4" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="2"
+			GridPane.rowIndex="4" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="3"
+			GridPane.rowIndex="4" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="4"
+			GridPane.rowIndex="4" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="5"
+			GridPane.rowIndex="4" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="6"
+			GridPane.rowIndex="4" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="7"
+			GridPane.rowIndex="4" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="0"
+			GridPane.rowIndex="5" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="1"
+			GridPane.rowIndex="5" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="2"
+			GridPane.rowIndex="5" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="3"
+			GridPane.rowIndex="5" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="4"
+			GridPane.rowIndex="5" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="5"
+			GridPane.rowIndex="5" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="6"
+			GridPane.rowIndex="5" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="7"
+			GridPane.rowIndex="5" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="0"
+			GridPane.rowIndex="6" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="1"
+			GridPane.rowIndex="6" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="2"
+			GridPane.rowIndex="6" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="3"
+			GridPane.rowIndex="6" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="4"
+			GridPane.rowIndex="6" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="5"
+			GridPane.rowIndex="6" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="6"
+			GridPane.rowIndex="6" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="7"
+			GridPane.rowIndex="6" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="0"
+			GridPane.rowIndex="7" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="1"
+			GridPane.rowIndex="7" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="2"
+			GridPane.rowIndex="7" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="3"
+			GridPane.rowIndex="7" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="4"
+			GridPane.rowIndex="7" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="5"
+			GridPane.rowIndex="7" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+		<CheckersSquare GridPane.columnIndex="6"
+			GridPane.rowIndex="7" black="false"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="NONE" />
+		<CheckersSquare GridPane.columnIndex="7"
+			GridPane.rowIndex="7" black="true"
+			onMouseClicked="#onMouseClickedCheckersSquare0" state="WHITE" />
+	</children>
+</GridPane>

@@ -1,236 +1,44 @@
 package gaming.ex24;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.scene.Scene;
+import javafx.fxml.FXML;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import simplebuilder.SimpleDialogBuilder;
+import utils.CommonsFX;
 
 public class CheckersLauncher extends Application {
-
-    private static final int SIZE = 8;
+	@FXML
     private GridPane gridPane;
     private int currentPlayer;
-
     private List<CheckersPlayer> players = Arrays.asList(CheckersPlayer.WHITE, CheckersPlayer.BLACK);
-    private List<CheckersSquare> squares = new ArrayList<>();
+    private List<CheckersSquare> squares;
 
-    public void initilize() {
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                boolean black = (i + j) % 2 == 0;
-                CheckersSquare child = new CheckersSquare(black);
-                squares.add(child);
-                child.setOnMouseClicked(e0 -> {
-                    Object target = e0.getSource();
-                    if (target instanceof CheckersSquare) {
-                        onClick((CheckersSquare) target);
-                    }
-                });
-                gridPane.add(child, j, i);
+    public void initialize() {
+        squares = gridPane.getChildren().stream().map(e -> (CheckersSquare) e).collect(Collectors.toList());
+    }
+
+    public void onMouseClickedCheckersSquare0(MouseEvent e0) {
+        Object target = e0.getSource();
+        if (target instanceof CheckersSquare) {
+            boolean onClick = CheckersHelper.onClick(players.get(currentPlayer % players.size()), squares,
+                (CheckersSquare) target);
+            if (onClick) {
+                currentPlayer++;
             }
         }
-        reset();
     }
 
     @Override
-    public void start(Stage stage) {
-        gridPane = new GridPane();
-        initilize();
+    public void start(Stage primaryStage) throws Exception {
+        CommonsFX.loadFXML("Checkes", "CheckersLauncher.fxml", this, primaryStage);
 
-        Scene scene = new Scene(gridPane);
-        stage.setTitle("Checkers");
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    private void clearEaten(CheckersSquare selected, CheckersSquare target, CheckersPlayer player, int i, int j) {
-        for (int dirI = player.getDir(); dirI == player.getDir()
-            || selected.getQueen() && dirI == -player.getDir(); dirI -= 2 * player.getDir()) {
-            for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
-                int iterations = !selected.getQueen() ? 1 : SIZE - 1;
-                for (int k = 1; k <= iterations; k++) {
-                    if (!withinBounds(j + dirJ * k) || !withinBounds(i + dirI * k)) {
-                        continue;
-                    }
-                    List<CheckersSquare> markPossibleKills = markPossibleKills(player, i + dirI * k, j + dirJ * k, dirI,
-                        dirJ);
-                    if (!markPossibleKills.isEmpty() && markPossibleKills.contains(target)) {
-                        for (CheckersSquare square2 : markPossibleKills) {
-                            square2.setState(CheckersPlayer.NONE);
-                            square2.setQueen(false);
-                        }
-                        return;
-                    }
-                }
-            }
-        }
-        for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
-            List<CheckersSquare> markPossibleKills = markPossibleKills(player, i - player.getDir(), j + dirJ,
-                -player.getDir(), dirJ);
-            if (!markPossibleKills.isEmpty() && markPossibleKills.contains(target)) {
-                for (CheckersSquare square2 : markPossibleKills) {
-                    square2.setState(CheckersPlayer.NONE);
-                    square2.setQueen(false);
-                }
-                return;
-            }
-        }
-
-    }
-
-    private boolean gameOver() {
-        return squares.stream().map(CheckersSquare::getState).distinct().count() < 3;
-    }
-
-    private CheckersPlayer getWinner() {
-        return squares.stream().map(e -> e.getState()).filter(e -> e != CheckersPlayer.NONE).findFirst()
-            .orElse(CheckersPlayer.NONE);
-    }
-
-    private void highlightPossibleMovements(CheckersPlayer player, CheckersSquare target) {
-        int indexOf = squares.indexOf(target);
-        final int i = indexOf / SIZE;
-        final int j = indexOf % SIZE;
-        for (int dirI = player.getDir(); dirI == player.getDir()
-            || target.getQueen() && dirI == -player.getDir(); dirI -= 2 * player.getDir()) {
-            for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
-                int iterations = !target.getQueen() ? 1 : SIZE - 1;
-                for (int k = 1; k <= iterations; k++) {
-                    if (!withinBounds(j + dirJ * k) || !withinBounds(i + dirI * k)) {
-                        continue;
-                    }
-                    CheckersSquare checkersSquare = squares.get(toIndex(i + dirI * k, j + dirJ * k));
-                    if (checkersSquare.getState() == CheckersPlayer.NONE) {
-                        checkersSquare.setHighlight(true);
-                    }
-                    markPossibleKills(player, i + dirI * k, j + dirJ * k, dirI, dirJ);
-                    if (checkersSquare.getState() == player) {
-                        break;
-                    }
-                }
-            }
-        }
-        for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
-            markPossibleKills(player, i - player.getDir(), j + dirJ, -player.getDir(), dirJ);
-        }
-    }
-
-    private List<CheckersSquare> markPossibleKills(CheckersPlayer player, int i, int j, int dirI, int dirJ) {
-        return markPossibleKills(player, i, j, dirI, dirJ, new ArrayList<>());
-    }
-
-    private List<CheckersSquare> markPossibleKills(CheckersPlayer player, int i, int j, int dirI, int dirJ,
-        List<CheckersSquare> marked) {
-        if (!withinBounds(i) || !withinBounds(j)) {
-            return marked;
-        }
-        CheckersSquare checkersSquare = squares.get(toIndex(i, j));
-        if (checkersSquare.getState() == player.opposite()) {
-            if (withinBounds(i + dirI) && withinBounds(j + dirJ)) {
-                int index = toIndex(i + dirI, j + dirJ);
-                CheckersSquare square2 = squares.get(index);
-                if (square2.getState() == CheckersPlayer.NONE) {
-                    checkersSquare.setMarked(true);
-                    square2.setHighlight(true);
-                    if (marked.contains(checkersSquare)) {
-                        return marked;
-                    }
-                    marked.add(checkersSquare);
-                    marked.add(square2);
-                    for (int dirI2 = -1; dirI2 <= 1
-//                        || target.getQueen() && dirI == -player.getDir()
-                    ; dirI2 += 2) {
-                        for (int dirJ2 = -1; dirJ2 <= 1; dirJ2 += 2) {
-                            markPossibleKills(player, i + dirI + dirI2, j + dirJ + dirJ2, dirI2, dirJ2, marked);
-                        }
-                    }
-                }
-            }
-        }
-
-        return marked;
-    }
-
-    private void onClick(CheckersSquare target) {
-        CheckersPlayer player = players.get(currentPlayer % players.size());
-        if (target.getState() == player) {
-            squares.forEach(e -> e.setSelected(false));
-            squares.forEach(e -> e.setHighlight(false));
-            squares.forEach(e -> e.setMarked(false));
-            target.setSelected(true);
-
-            highlightPossibleMovements(player, target);
-            return;
-        }
-        if (target.getState() == CheckersPlayer.NONE && target.getHighlight()) {
-            Optional<CheckersSquare> findFirst = squares.stream().filter(CheckersSquare::getSelected).findFirst();
-            if (!findFirst.isPresent()) {
-                return;
-            }
-            CheckersSquare selected = findFirst.get();
-            replaceStates(target, selected, player);
-
-            squares.forEach(e -> e.setSelected(false));
-            squares.forEach(e -> e.setHighlight(false));
-            squares.forEach(e -> e.setMarked(false));
-
-            if (gameOver()) {
-                CheckersPlayer winner = getWinner();
-                String txt = winner != CheckersPlayer.NONE ? winner + " Won!" : "It's a draw!";
-                new SimpleDialogBuilder().text(txt).button("Reset", this::reset).bindWindow(gridPane).displayDialog();
-            }
-            currentPlayer++;
-        }
-    }
-
-    private void replaceStates(CheckersSquare target, CheckersSquare selected, CheckersPlayer player) {
-        int indexOf = squares.indexOf(selected);
-        int i = indexOf / SIZE;
-        int j = indexOf % SIZE;
-
-        clearEaten(selected, target, player, i, j);
-
-        target.setState(player);
-        target.setQueen(selected.getQueen());
-        selected.setState(CheckersPlayer.NONE);
-        selected.setQueen(false);
-        int i2 = squares.indexOf(target) / SIZE;
-        if (i2 == 0 && player.getDir() == -1 || i2 == SIZE - 1 && player.getDir() == 1) {
-            target.setQueen(true);
-        }
-
-    }
-
-    private void reset() {
-        IntStream.range(0, squares.size()).filter(e -> squares.get(e).isBlack()).forEach(index -> {
-            CheckersSquare child = squares.get(index);
-            child.setState(CheckersPlayer.NONE);
-            child.setQueen(false);
-            int i = index / SIZE;
-            if (i < SIZE / 2 - 1) {
-                child.setState(CheckersPlayer.BLACK);
-            }
-            if (i > SIZE / 2) {
-                child.setState(CheckersPlayer.WHITE);
-            }
-        });
     }
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    private static int toIndex(int k, int k2) {
-        return k * SIZE + k2;
-    }
-
-    private static boolean withinBounds(int k) {
-        return k >= 0 && k < SIZE;
     }
 }

@@ -1,6 +1,6 @@
 package fxtests;
 
-import gaming.ex23.TicTacToeLauncher;
+import gaming.ex24.CheckersLauncher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +27,7 @@ public final class FXMLCreatorTest {
 
     @Test
 	public  void testClassesNotClose() {
-        List<Class<? extends Application>> classes = Arrays.asList(TicTacToeLauncher.class);
+        List<Class<? extends Application>> classes = Arrays.asList(CheckersLauncher.class);
         FXMLCreatorHelper.testApplications(classes, false);
     }
 
