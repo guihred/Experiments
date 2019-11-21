@@ -19,7 +19,6 @@ public final class CheckersHelper {
             squares.forEach(e -> e.setHighlight(false));
             squares.forEach(e -> e.setMarked(false));
             target.setSelected(true);
-
             highlightPossibleMovements(squares, player, target);
             return false;
         }
@@ -48,7 +47,10 @@ public final class CheckersHelper {
     }
 
     private static void clearEaten(List<CheckersSquare> squares, CheckersSquare selected, CheckersSquare target,
-        CheckersPlayer player, int i, int j) {
+        CheckersPlayer player) {
+        int indexOf = squares.indexOf(selected);
+        int i = indexOf / SIZE;
+        int j = indexOf % SIZE;
         for (int dirI = player.getDir(); dirI == player.getDir()
             || selected.getQueen() && dirI == -player.getDir(); dirI -= 2 * player.getDir()) {
             for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
@@ -161,11 +163,7 @@ public final class CheckersHelper {
 
     private static void replaceStates(List<CheckersSquare> squares, CheckersSquare target, CheckersSquare selected,
         CheckersPlayer player) {
-        int indexOf = squares.indexOf(selected);
-        int i = indexOf / SIZE;
-        int j = indexOf % SIZE;
-
-        clearEaten(squares, selected, target, player, i, j);
+        clearEaten(squares, selected, target, player);
 
         target.setState(player);
         target.setQueen(selected.getQueen());
