@@ -23,6 +23,7 @@ public class CheckersSquare extends StackPane {
     private boolean black;
 	private BooleanProperty highlight = new SimpleBooleanProperty(false);
 	private BooleanProperty selected = new SimpleBooleanProperty(false);
+    private BooleanProperty marked = new SimpleBooleanProperty(false);
 
     public CheckersSquare(@NamedArg("black") boolean black) {
         this.black = black;
@@ -34,8 +35,9 @@ public class CheckersSquare extends StackPane {
             Shape shape = o.getShape();
             shape.visibleProperty().bind(state.isEqualTo(o));
             getChildren().add(shape);
-			Effect glow = new InnerShadow(20, Color.YELLOW);
-			shape.effectProperty().bind(Bindings.when(selected).then(glow).otherwise((Effect) null));
+            InnerShadow glow = new InnerShadow(20, Color.YELLOW);
+            glow.colorProperty().bind(Bindings.when(marked).then(Color.RED).otherwise(Color.YELLOW));
+            shape.effectProperty().bind(Bindings.when(selected.or(marked)).then(glow).otherwise((InnerShadow) null));
         }
 		Effect glow = new InnerShadow(20, Color.BLUE);
 		effectProperty().bind(Bindings.when(highlight).then(glow).otherwise((Effect) null));
@@ -45,7 +47,11 @@ public class CheckersSquare extends StackPane {
 		return highlight.get();
 	}
 
-	public boolean getSelected() {
+	public boolean getMarked() {
+	    return marked.get();
+	}
+
+    public boolean getSelected() {
 		return selected.get();
 	}
 
@@ -65,7 +71,11 @@ public class CheckersSquare extends StackPane {
 		this.highlight.set(highlight);
 	}
 
-	public void setSelected(boolean selected) {
+	public void setMarked(boolean selected) {
+	    marked.set(selected);
+	}
+
+    public void setSelected(boolean selected) {
 		this.selected.set(selected);
 	}
 

@@ -9,15 +9,21 @@ import simplebuilder.SimpleCircleBuilder;
 
 public enum CheckersPlayer {
     NONE(),
-    BLACK(() -> newCircle(Color.RED)),
-    WHITE(() -> newCircle(Color.WHITE));
+    BLACK(1, () -> newCircle(Color.BLUE)),
+    WHITE(-1, () -> newCircle(Color.WHITE));
     private Supplier<Shape> supply;
+    private int dir;
 
     CheckersPlayer() {
     }
 
-    CheckersPlayer(Supplier<Shape> supply) {
+    CheckersPlayer(int dir, Supplier<Shape> supply) {
+        this.dir = dir;
         this.supply = supply;
+    }
+
+    public int getDir() {
+        return dir;
     }
 
     public Shape getShape() {
