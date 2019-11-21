@@ -36,7 +36,7 @@ public class FXJapaneseTest extends AbstractTestExecution {
         show(JapaneseLessonApplication.class);
         Set<Button> lookup = lookup(Button.class);
         doubleClickOn(randomItem(lookup(Cell.class)));
-        lookup(Button.class).stream().filter(t -> !lookup.contains(t)).forEach(this::clickOn);
+        lookupList(Button.class, t -> !lookup.contains(t)).forEach(this::clickOn);
         type(KeyCode.SHIFT);
         tryClickButtons();
         clickOn(lookupFirst(TextField.class));

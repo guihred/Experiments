@@ -3,6 +3,7 @@ package fxtests;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
@@ -96,6 +97,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected <M extends Node> List<M> lookupList(Class<M> cl) {
         return lookup(e -> cl.isInstance(e)).queryAllAs(cl).stream().collect(Collectors.toList());
+    }
+
+    protected <M extends Node> List<M> lookupList(Class<M> cl, Predicate<? super M> predicate) {
+        return lookup(e -> cl.isInstance(e)).queryAllAs(cl).stream().filter(predicate).collect(Collectors.toList());
     }
 
     protected void moveRandom(int bound) {

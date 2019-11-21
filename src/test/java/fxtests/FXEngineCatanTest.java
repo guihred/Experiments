@@ -153,8 +153,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     }
 
     private boolean clickCities(final List<City> cities) {
-        List<City> notClickedVillages = lookup(City.class).stream()
-            .filter(t -> !cities.contains(t)).collect(Collectors.toList());
+        List<City> notClickedVillages = lookupList(City.class, t -> !cities.contains(t));
         if (notClickedVillages.isEmpty()) {
             return false;
         }
@@ -170,8 +169,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     }
 
     private boolean clickRoads(final List<EdgeCatan> allEdge, final List<Road> allRoads) {
-        Road[] filter = lookup(Road.class).stream()
-            .filter(r -> !allRoads.contains(r)).toArray(Road[]::new);
+        List<Road> filter = lookupList(Road.class, r -> !allRoads.contains(r));
         for (Road e : filter) {
             moveTo(e);
             drag(e, MouseButton.PRIMARY);
@@ -181,25 +179,23 @@ public class FXEngineCatanTest extends AbstractTestExecution {
                 allRoads.add(e);
             }
         }
-        return filter.length > 0;
+        return !filter.isEmpty();
     }
 
     private boolean clickThiefs(final List<Terrain> queryAllAs) {
         Collections.shuffle(queryAllAs);
-        Thief[] filter = lookup(Thief.class).stream()
-            .filter(e -> e.getParent() instanceof StackPane).toArray(Thief[]::new);
+        List<Thief> filter = lookupList(Thief.class, e -> e.getParent() instanceof StackPane);
         for (Thief e : filter) {
             moveTo(e);
             drag(e, MouseButton.PRIMARY);
             queryAllAs.parallelStream().findAny().ifPresent(this::moveTo);
             drop();
         }
-        return filter.length > 0;
+        return !filter.isEmpty();
     }
 
     private boolean clickVillages(final List<Village> allVillages, final List<SettlePoint> settlePoints) {
-        List<Village> notClickedVillages = lookup(Village.class).stream()
-            .filter(v -> !allVillages.contains(v)).collect(Collectors.toList());
+        List<Village> notClickedVillages = lookupList(Village.class, v -> !allVillages.contains(v));
         Collections.shuffle(notClickedVillages);
         if (notClickedVillages.isEmpty()) {
             return false;

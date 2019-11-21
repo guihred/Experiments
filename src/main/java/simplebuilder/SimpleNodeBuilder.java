@@ -139,4 +139,9 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
         return (Z) this;
     }
 
+    public Z visible(ObservableValue<? extends Boolean> value) {
+        node.visibleProperty().bind(value);
+        return (Z) this;
+    }
+
 }

@@ -1,5 +1,6 @@
 package fxtests;
 
+import static java.util.stream.Collectors.toList;
 import static javafx.scene.input.KeyCode.*;
 
 import cubesystem.DeathStar;
@@ -30,6 +31,9 @@ import gaming.ex19.SudokuSquare;
 import gaming.ex20.RoundMazeLauncher;
 import gaming.ex23.TicTacToeLauncher;
 import gaming.ex23.TicTacToeSquare;
+import gaming.ex24.CheckersLauncher;
+import gaming.ex24.CheckersPlayer;
+import gaming.ex24.CheckersSquare;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +47,27 @@ import labyrinth.*;
 import org.junit.Test;
 
 public class FXEngineGamingTest extends AbstractTestExecution {
+    @Test
+    public void verifyCheckers() {
+        show(CheckersLauncher.class);
+        List<CheckersSquare> queryAll = lookupList(CheckersSquare.class, CheckersSquare::isBlack);
+        CheckersPlayer p = CheckersPlayer.BLACK;
+        for (int i = 0; i < 12; i++) {
+            Collections.shuffle(queryAll);
+            CheckersPlayer player = p.opposite();
+            p = player;
+            while (queryAll.stream().noneMatch(e -> e.getHighlight())) {
+                List<CheckersSquare> collect = queryAll.stream().filter(e -> e.getState() == player)
+                    .collect(toList());
+                CheckersSquare randomItem = randomItem(collect);
+                tryClickOn(randomItem);
+            }
+            List<CheckersSquare> collect = queryAll.stream().filter(e -> e.getHighlight()).collect(toList());
+            CheckersSquare randomItem = randomItem(collect);
+            tryClickOn(randomItem);
+        }
+    }
+
     @Test
     public void verifyDirections() {
         for (Class<? extends Application> class1 : Arrays.asList(RoundMazeLauncher.class, DeathStar.class,
@@ -165,8 +190,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
     public void verifyPuzzle() {
         show(PuzzleLauncher.class);
-        List<Node> queryAll = lookup(PuzzlePiece.class).stream().filter(PuzzlePiece::isVisible)
-            .collect(Collectors.toList());
+        List<PuzzlePiece> queryAll = lookupList(PuzzlePiece.class, PuzzlePiece::isVisible);
         int squareSize = (int) DotsSquare.SQUARE_SIZE;
         for (int i = 0; i < queryAll.size() / 5; i++) {
             Node next = queryAll.get(i);
@@ -229,7 +253,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
     public void verifySudokuLauncher() {
         show(SudokuLauncher.class);
-        Set<Node> queryAll = lookup(SudokuSquare.class).stream().filter(e -> !e.isPermanent()).limit(20)
+        Set<Node> queryAll = lookupList(SudokuSquare.class, e -> !e.isPermanent()).stream().limit(20)
             .collect(Collectors.toSet());
         for (Node next : queryAll) {
             drag(next, MouseButton.PRIMARY);

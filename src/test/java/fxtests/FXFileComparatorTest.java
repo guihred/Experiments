@@ -4,7 +4,6 @@ import audio.mp3.FilesComparator;
 import java.io.File;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -27,8 +26,8 @@ public class FXFileComparatorTest extends AbstractTestExecution {
             waitProgress(application);
         }
         waitProgress(application);
-        List<Button> filter = lookup(Button.class).stream()
-            .filter(e -> !e.getText().startsWith("File") && !e.getText().equals("X")).collect(Collectors.toList());
+        List<Button> filter = lookupList(Button.class,
+            e -> !e.getText().startsWith("File") && !e.getText().equals("X"));
         filter.forEach(this::tryClickOn);
         for (TableView<?> tableView : lookup) {
             clickOn(from(tableView).lookup(Cell.class::isInstance).queryLabeled());

@@ -18,7 +18,6 @@ import fxsamples.person.PersonTableController;
 import fxsamples.person.WorkingWithTableView;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
@@ -121,7 +120,7 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     public void verifyPong() {
         show(PongLauncher.class);
         tryClickButtons();
-        for (Node next : lookup(Rectangle.class).stream().filter(e -> e.isVisible()).collect(Collectors.toSet())) {
+        for (Node next : lookupList(Rectangle.class, e -> e.isVisible())) {
             drag(next, MouseButton.PRIMARY);
             moveBy(0, 40);
             moveBy(0, -40);
@@ -188,8 +187,7 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     public void verifyWorkingWithTableView() {
         show(WorkingWithTableView.class);
         @SuppressWarnings("rawtypes")
-        List<ListCell> listCells = lookup(ListCell.class).stream().filter(c -> StringUtils.isNotBlank(c.getText()))
-            .collect(Collectors.toList());
+        List<ListCell> listCells = lookupList(ListCell.class, c -> StringUtils.isNotBlank(c.getText()));
         if (!listCells.isEmpty()) {
             clickOn(randomItem(listCells));
         }
