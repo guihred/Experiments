@@ -29,7 +29,6 @@ public class CheckersSquare extends StackPane {
 
     public CheckersSquare(@NamedArg("black") boolean black) {
         this.black = black;
-
         setBackground(
             new Background(new BackgroundFill(black ? Color.BLACK : Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         setPrefSize(50, 50);
@@ -69,6 +68,9 @@ public class CheckersSquare extends StackPane {
                 + "c0 -1.12 5.03 -1.79 8.94 -1.79c3.88 0 8.94 0.68 8.94 1.79c-0 1.15 -5.06 1.82 -8.94 1.82")
             .fill(Color.GOLD).visible(queen).build());
 
+    }
+    public CheckersSquare(CheckersPlayer state) {
+        setState(state);
     }
 
     public boolean getHighlight() {

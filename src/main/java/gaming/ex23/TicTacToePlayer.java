@@ -7,12 +7,7 @@ import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
 
 public enum TicTacToePlayer {
-    NONE() {
-        @Override
-        public String toString() {
-            return "N";
-        }
-    },
+    NONE(),
     X(() -> new SimpleSvgPathBuilder().stroke(Color.BLACK).content("M0,0L30,30M30,0L0,30").build()),
     O(() -> new SimpleCircleBuilder().radius(25).stroke(Color.BLACK).fill(Color.TRANSPARENT).build());
     private Supplier<Shape> supply;
@@ -32,10 +27,7 @@ public enum TicTacToePlayer {
         if (this == TicTacToePlayer.X) {
             return O;
         }
-        if (this == TicTacToePlayer.O) {
-            return X;
-        }
-        return TicTacToePlayer.NONE;
+        return X;
     }
 
 }

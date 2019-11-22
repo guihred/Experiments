@@ -1,7 +1,7 @@
 package gaming.ex24;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -11,10 +11,10 @@ import javafx.stage.Stage;
 import utils.CommonsFX;
 
 public class CheckersLauncher extends Application {
-	@FXML
+
+    @FXML
     private GridPane gridPane;
-    private int currentPlayer;
-    private List<CheckersPlayer> players = Arrays.asList(CheckersPlayer.WHITE, CheckersPlayer.BLACK);
+    private AtomicInteger currentPlayer = new AtomicInteger(0);
     private List<CheckersSquare> squares;
 
     public void initialize() {
@@ -24,12 +24,12 @@ public class CheckersLauncher extends Application {
     public void onMouseClickedCheckersSquare0(MouseEvent e0) {
         Object target = e0.getSource();
         if (target instanceof CheckersSquare) {
-            boolean onClick = CheckersHelper.onClick(players.get(currentPlayer % players.size()), squares,
-                (CheckersSquare) target);
+            boolean onClick = CheckersHelper.onClick(currentPlayer, squares, (CheckersSquare) target);
             if (onClick) {
-                currentPlayer++;
+                currentPlayer.incrementAndGet();
             }
         }
+        CheckersHelper.runIfAI(squares, currentPlayer);
     }
 
     @Override
