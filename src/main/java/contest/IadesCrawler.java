@@ -37,15 +37,15 @@ import utils.SupplierEx;
 
 public class IadesCrawler extends Application {
 
-    private static final String DOMAIN = "http://www.iades.com.br";
     private static final Logger LOG = HasLogging.log();
+    private static final String DOMAIN = "http://www.iades.com.br";
 
     private ObservableList<Concurso> concursos = FXCollections.observableArrayList();
 
     @Override
     public void start(Stage primaryStage) {
-        CrawlerTask.insertProxyConfig();
         primaryStage.setTitle("IADES Crawler");
+        CrawlerTask.insertProxyConfig();
         Parent node = createSplitTreeListDemoNode();
         primaryStage.setScene(new Scene(node));
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());

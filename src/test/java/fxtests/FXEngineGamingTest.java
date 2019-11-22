@@ -51,20 +51,16 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     public void verifyCheckers() {
         show(CheckersLauncher.class);
         List<CheckersSquare> queryAll = lookupList(CheckersSquare.class, CheckersSquare::isBlack);
-        CheckersPlayer p = CheckersPlayer.BLACK;
         for (int i = 0; i < 12; i++) {
             Collections.shuffle(queryAll);
-            CheckersPlayer player = p.opposite();
-            p = player;
-            while (queryAll.stream().noneMatch(e -> e.getHighlight())) {
-                List<CheckersSquare> collect = queryAll.stream().filter(e -> e.getState() == player)
-                    .collect(toList());
-                CheckersSquare randomItem = randomItem(collect);
-                tryClickOn(randomItem);
+            List<CheckersSquare> whitePieces = queryAll.stream().filter(e -> e.getState() == CheckersPlayer.WHITE)
+                .collect(toList());
+            while (!whitePieces.isEmpty() && queryAll.stream().noneMatch(CheckersSquare::getHighlight)) {
+                whitePieces = queryAll.stream().filter(e -> e.getState() == CheckersPlayer.WHITE).collect(toList());
+                tryClickOn(randomRemoveItem(whitePieces));
             }
-            List<CheckersSquare> collect = queryAll.stream().filter(e -> e.getHighlight()).collect(toList());
-            CheckersSquare randomItem = randomItem(collect);
-            tryClickOn(randomItem);
+            List<CheckersSquare> collect = queryAll.stream().filter(CheckersSquare::getHighlight).collect(toList());
+            tryClickOn(randomItem(collect));
         }
     }
 

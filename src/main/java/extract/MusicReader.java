@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,6 +24,7 @@ import javafx.scene.image.WritableImage;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.CrawlerTask;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -158,7 +158,7 @@ public final class MusicReader {
 
         File file2 = ResourceFXUtils.getOutFile("copy_" + file.getName());
         try {
-            Files.copy(file.toPath(), file2.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            CrawlerTask.copy(file, file2);
 
             Mp3File mp3File = new Mp3File(file);
             mp3File.removeId3v1Tag();
@@ -192,7 +192,7 @@ public final class MusicReader {
 
     private static void copyFileBack(File file, File file2) {
         try {
-            Files.copy(file2.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            CrawlerTask.copy(file2.toPath(), file);
             Files.deleteIfExists(file2.toPath());
         } catch (IOException e1) {
             LOG.error("ERROR COPYING " + file.getName() + "-> " + file2.getName(), e1);

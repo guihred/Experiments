@@ -3,14 +3,12 @@ package fxsamples;
 import static utils.ResourceFXUtils.getOutFile;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.util.List;
 import javafx.concurrent.Task;
-import org.apache.poi.util.IOUtils;
+import utils.CrawlerTask;
 import utils.ResourceFXUtils;
 
 public final class SimpleCopyTask extends Task<Boolean> {
@@ -41,7 +39,7 @@ public final class SimpleCopyTask extends Task<Boolean> {
 
     private void copyFile(String src, String dest) throws InterruptedException, IOException {
         // simulate a long time
-        IOUtils.copy(new FileInputStream(src), new FileOutputStream(dest));
+        CrawlerTask.copy(src, dest);
 
         long millis = rnd.nextInt(1000);
         Thread.sleep(millis);

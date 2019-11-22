@@ -148,11 +148,6 @@ public class JavaFileDependency {
 
     public boolean search(Predicate<JavaFileDependency> test, List<JavaFileDependency> visited,
         List<JavaFileDependency> path) {
-        for (JavaFileDependency d : getDependents()) {
-            if (matchesAndNotIn(test, path, d)) {
-                path.add(d);
-            }
-        }
         if (matchesAndNotIn(test, path, this)) {
             path.add(this);
         }

@@ -9,13 +9,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public class ColorChooser extends Application {
-    private static final Logger LOG = HasLogging.log();
 
 	private ColorChooserController controller = new ColorChooserController();
 
@@ -45,11 +42,7 @@ public class ColorChooser extends Application {
     }
 
     public void show() {
-        try {
-            start(new Stage());
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
+        RunnableEx.run(() -> start(new Stage()));
     }
 
     @Override

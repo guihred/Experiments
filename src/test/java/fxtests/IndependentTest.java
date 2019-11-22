@@ -12,15 +12,12 @@ import ex.j9.ch4.Ch4;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.LineCh4;
 import ex.j9.ch4.PointCh4;
-import extract.UnRar;
-import extract.UnZip;
 import extract.WikiImagesUtils;
 import image.ImageCreating;
 import image.ImageLoading;
 import japstudy.HiraganaMaker;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -205,15 +202,7 @@ public class IndependentTest {
         measureTime("RandomHelloWorld.displayHelloWorld", RandomHelloWorld::displayHelloWorld);
     }
 
-    @Test
-    public void testRarAndZIP() {
-        measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
-        File userFolder = new File(UnRar.SRC_DIRECTORY).getParentFile();
-        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(userFolder, "rar");
-        measureTime("UnRar.extractRarFiles",
-            () -> pathByExtension.forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile()))));
-        measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
-    }
+
 
     @Test
     public void testSpeaker() {

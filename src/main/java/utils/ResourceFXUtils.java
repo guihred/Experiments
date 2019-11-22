@@ -47,7 +47,7 @@ public final class ResourceFXUtils {
     private ResourceFXUtils() {
     }
 
-    public static double clamp(final double value, final double min, final double max) {
+    public static double clamp(double value, double min, double max) {
         if (Double.compare(value, min) < 0) {
             return min;
         }
@@ -61,7 +61,7 @@ public final class ResourceFXUtils {
         return SupplierEx.get(() -> arquivo.toURI().toURL());
     }
 
-    public static Image createImage(final double size1, final float[][] noise) {
+    public static Image createImage(double size1, float[][] noise) {
         int width = (int) size1;
         int height = (int) size1;
 
@@ -79,7 +79,7 @@ public final class ResourceFXUtils {
         return wr;
     }
 
-    public static Path getFirstPathByExtension(final File dir, final String other) {
+    public static Path getFirstPathByExtension(File dir, String... other) {
         return getPathByExtension(dir, other).stream().findFirst().orElse(null);
     }
 
@@ -105,7 +105,7 @@ public final class ResourceFXUtils {
         return new File(file, out);
     }
 
-    public static List<Path> getPathByExtension(final File dir, final String... other) {
+    public static List<Path> getPathByExtension(File dir, String... other) {
         return SupplierEx.get(() -> {
             try (Stream<Path> walk = Files.walk(dir.toPath(), 20)) {
                 return walk
@@ -115,7 +115,7 @@ public final class ResourceFXUtils {
         }, Collections.emptyList());
     }
 
-    public static File getUserFolder(final String dir) {
+    public static File getUserFolder(String dir) {
         String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
         return new File(new File(path).getParentFile(), dir);
     }
@@ -131,18 +131,18 @@ public final class ResourceFXUtils {
         }
     }
 
-    public static Mesh importStlMesh(final File file) {
+    public static Mesh importStlMesh(File file) {
         StlMeshImporter importer = new StlMeshImporter();
         importer.read(file);
         return importer.getImport();
     }
 
-    public static Mesh importStlMesh(final String arquivo) {
+    public static Mesh importStlMesh(String arquivo) {
         File file = new File(arquivo);
         return importStlMesh(file);
     }
 
-    public static Mesh importStlMesh(final URL file) {
+    public static Mesh importStlMesh(URL file) {
         StlMeshImporter importer = new StlMeshImporter();
         importer.read(file);
         return importer.getImport();
@@ -153,7 +153,7 @@ public final class ResourceFXUtils {
         new JFXPanel().toString();
     }
 
-    public static void runOnFiles(final File userFolder, final ConsumerEx<File> run) {
+    public static void runOnFiles(File userFolder, ConsumerEx<File> run) {
 
         try (Stream<Path> s = Files.list(userFolder.toPath())) {
             s.forEach(ConsumerEx.makeConsumer(e -> run.accept(e.toFile())));
@@ -162,17 +162,17 @@ public final class ResourceFXUtils {
         }
     }
 
-    public static String toExternalForm(final String arquivo) {
+    public static String toExternalForm(String arquivo) {
         return SupplierEx.remap(
             () -> Thread.currentThread().getContextClassLoader().getResource(arquivo).toExternalForm(),
             "ERRO FILE \"" + arquivo + "\"");
     }
 
-    public static File toFile(final String arquivo) {
+    public static File toFile(String arquivo) {
         return new File(toFullPath(arquivo));
     }
 
-    public static String toFullPath(final String arquivo) {
+    public static String toFullPath(String arquivo) {
         try {
             return URLDecoder.decode(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile(),
                 "UTF-8");
@@ -187,19 +187,19 @@ public final class ResourceFXUtils {
         }
     }
 
-    public static Path toPath(final String arquivo) {
+    public static Path toPath(String arquivo) {
         return new File(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile()).toPath();
     }
 
-    public static InputStream toStream(final String arquivo) {
+    public static InputStream toStream(String arquivo) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(arquivo);
     }
 
-    public static URI toURI(final String arquivo) {
+    public static URI toURI(String arquivo) {
         return new File(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile()).toURI();
     }
 
-    public static URL toURL(final String arquivo) {
+    public static URL toURL(String arquivo) {
         return Thread.currentThread().getContextClassLoader().getResource(arquivo);
     }
 

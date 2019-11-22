@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.SupplierEx;
@@ -121,8 +122,8 @@ public final class CoverageUtils {
         File csvFile = new File("target/site/jacoco/jacoco.csv");
         DataframeML b = DataframeBuilder.build(csvFile);
         Set<String> cols = new HashSet<>(b.cols());
-        List<String> coveredAttr = cols.stream().filter(e -> e.endsWith(COVERED))
-            .map(e -> e.replaceFirst(COVERED, "")).collect(Collectors.toList());
+        List<String> coveredAttr = cols.stream().filter(e -> e.endsWith(COVERED)).map(e -> e.replaceFirst(COVERED, ""))
+            .collect(Collectors.toList());
         for (String colName : coveredAttr) {
             DataframeUtils.crossFeature(b, PERCENTAGE + "_" + colName, CoverageUtils::getPercentage,
                 colName + "_MISSED", colName + COVERED);
@@ -141,7 +142,8 @@ public final class CoverageUtils {
     }
 
     private static boolean containsPath(List<String> allPaths, Entry<String, List<String>> e) {
-        return e.getValue().stream().anyMatch(l -> allPaths.stream().anyMatch(l::contains));
+        return e.getValue().stream()
+            .anyMatch(l -> allPaths.stream().anyMatch(t -> StringUtils.containsIgnoreCase(l, t)));
     }
 
     private static <T> List<T> getByCoverage(Function<List<String>, List<T>> func) {

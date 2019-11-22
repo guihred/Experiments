@@ -1,10 +1,12 @@
 package utils;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.Authenticator;
 import java.net.InetAddress;
 import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.concurrent.Task;
 import javax.net.ssl.HttpsURLConnection;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jsoup.Connection;
@@ -69,6 +72,31 @@ public abstract class CrawlerTask extends Task<String> {
             updateMessage("Time estimated unknown");
         }
         updateProgress(i, total);
+    }
+
+    public static void copy(File input, File outFile) throws IOException {
+        try (FileInputStream inputStream = new FileInputStream(input)) {
+            copy(inputStream, outFile);
+        }
+    }
+
+    public static void copy(InputStream inputStream, File outFile) throws IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(outFile)) {
+            IOUtils.copy(inputStream, fileOutputStream);
+        }
+    }
+
+    public static void copy(Path input, File outFile) throws IOException {
+        copy(input.toFile(), outFile);
+    }
+
+    public static void copy(String url, File outFile) throws IOException {
+        InputStream input = new URL(url).openConnection().getInputStream();
+        copy(input, outFile);
+    }
+
+    public static void copy(String src, String dest) throws IOException {
+        copy(new File(src), new File(dest));
     }
 
     public static Document getDocument(final String url, String encoded) throws IOException {

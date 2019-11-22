@@ -1,19 +1,16 @@
 package extract;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import utils.CrawlerTask;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
@@ -68,11 +65,9 @@ public final class WordService {
 
     private static void recordPicture(XSLFPictureData data) {
         RunnableEx.run(() -> {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(
-                ResourceFXUtils.getOutFile(data.getFileName()))) {
-                InputStream inputStream = data.getInputStream();
-                IOUtils.copy(inputStream, fileOutputStream);
-            }
+            File outFile = ResourceFXUtils.getOutFile(data.getFileName());
+            InputStream inputStream = data.getInputStream();
+            CrawlerTask.copy(inputStream, outFile);
         });
     }
 

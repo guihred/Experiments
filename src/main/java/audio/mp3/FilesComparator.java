@@ -146,7 +146,7 @@ public class FilesComparator extends Application {
                 }
                 boolean exists = file2.exists();
                 Files.deleteIfExists(file2.toPath());
-                Files.copy(selectedItem.toPath(), file2.toPath());
+                CrawlerTask.copy(selectedItem, file2);
                 if (!exists) {
                     items2.add(file2);
                 } else {

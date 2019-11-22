@@ -1,6 +1,5 @@
 package fxtests;
 
-import static java.nio.file.Files.copy;
 
 import audio.mp3.EditSongController;
 import audio.mp3.MusicOrganizer;
@@ -69,23 +68,22 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
     }
 
     @Test
-    public void verifyBasicAudioPlayerWithControlLauncher() throws MalformedURLException {
+    public void verifyBasicAudioPlayerWithControlLauncher() {
         BasicAudioPlayerWithControlLauncher show = show(BasicAudioPlayerWithControlLauncher.class);
         Set<Node> queryAll = lookup(".button").queryAll();
         queryAll.forEach(ConsumerEx.ignore(t -> {
             clickOn(t);
             type(KeyCode.ESCAPE);
         }));
-        show.playUrl(getRandomSong().toUri().toURL().toExternalForm());
+        interactNoWait(RunnableEx.make(() -> show.playUrl(getRandomSong().toUri().toURL().toExternalForm())));
     }
 
     @Test
     public void verifyEditSong2() {
         FXTesting.measureTime("new EditSongController(song)", () -> {
-            Path firstSong = getRandomSong();
-            File file = firstSong.toFile();
+            File file = getRandomSong().toFile();
             File outFile2 = ResourceFXUtils.getOutFile(file.getName());
-            copy(firstSong, outFile2.toPath());
+            CrawlerTask.copy(file, outFile2);
 
             Music readTags = MusicReader.readTags(outFile2);
             show(new EditSongController(readTags));

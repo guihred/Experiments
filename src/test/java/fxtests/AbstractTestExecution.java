@@ -144,6 +144,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         return random.nextInt(bound) - bound / 2;
     }
 
+    protected <T> T randomRemoveItem(List<T> bound) {
+        return bound.remove(random.nextInt(bound.size()));
+    }
+
     protected void selectComboItems(ComboBox<?> e, int max) {
         for (int i = 0; i < max && i < e.getItems().size(); i++) {
             int j = i;

@@ -12,6 +12,7 @@ public final class CheckersHelper {
 
     public static final int SIZE = 8;
     public static final List<CheckersPlayer> PLAYERS = Arrays.asList(CheckersPlayer.WHITE, CheckersPlayer.BLACK);
+
     private CheckersHelper() {
     }
 
@@ -63,9 +64,11 @@ public final class CheckersHelper {
     public static boolean gameOver(List<CheckersPlayer> squares) {
         return squares.stream().distinct().count() < 3;
     }
+
     public static CheckersPlayer getPlayer(int currentPlayer) {
         return CheckersHelper.PLAYERS.get(currentPlayer % CheckersHelper.PLAYERS.size());
     }
+
     public static CheckersPlayer getWinner(List<CheckersSquare> squares) {
         return getWinner2(squares.stream().map(CheckersSquare::getState).collect(Collectors.toList()));
     }
@@ -218,7 +221,7 @@ public final class CheckersHelper {
         if (player == CheckersPlayer.BLACK) {
             boolean verifyWin = CheckersHelper.isGameOver(squares);
             if (!verifyWin) {
-                Platform.runLater(() -> runAI(squares,currentPlayer));
+                Platform.runLater(() -> runAI(squares, currentPlayer));
             }
         }
     }
@@ -237,8 +240,7 @@ public final class CheckersHelper {
         new SimpleDialogBuilder().text(txt).button("Reset", () -> {
             reset(squares);
             CheckersHelper.runIfAI(squares, currentPlayer);
-        }).bindWindow(squares.get(0))
-            .displayDialog();
+        }).bindWindow(squares.get(0)).displayDialog();
     }
 
     private static void runAI(List<CheckersSquare> squares, AtomicInteger currentPlayer) {

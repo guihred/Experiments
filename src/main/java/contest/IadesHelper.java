@@ -8,9 +8,7 @@ import extract.PdfUtils;
 import extract.UnRar;
 import extract.UnZip;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,9 +23,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.stage.Stage;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.CrawlerTask;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.SupplierEx;
@@ -64,10 +62,7 @@ public final class IadesHelper {
             String[] split = file.split("/");
             String out = split[split.length - 1];
             File outFile = ResourceFXUtils.getOutFile(out);
-            InputStream input = new URL(url).openConnection().getInputStream();
-            try (FileOutputStream output = new FileOutputStream(outFile)) {
-                IOUtils.copy(input, output);
-            }
+            CrawlerTask.copy(url, outFile);
             if (url.endsWith(".zip")) {
                 UnZip.extractZippedFiles(outFile);
             }

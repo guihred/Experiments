@@ -8,8 +8,6 @@ import extract.Music;
 import extract.MusicReader;
 import extract.SongUtils;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.file.Files;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -33,6 +31,7 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
+import utils.CrawlerTask;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.StageHelper;
@@ -87,9 +86,8 @@ public final class EditSongHelper {
                     mediaPlayer.get().dispose();
                     run(() -> {
                         MusicReader.saveMetadata(selectedItem, outFile);
-                        try (FileOutputStream out = new FileOutputStream(selectedItem.getArquivo())) {
-                            Files.copy(outFile.toPath(), out);
-                        }
+                        File arquivo = selectedItem.getArquivo();
+                        CrawlerTask.copy(arquivo, outFile);
                     });
                     StageHelper.closeStage(progressIndicator);
                 });

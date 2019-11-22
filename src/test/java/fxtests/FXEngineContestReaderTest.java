@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
         type(KeyCode.TAB);
         type(KeyCode.SPACE);
         type(KeyCode.DOWN, 1);
-
+        IadesHelper.addDomain(new SimpleStringProperty(""), "");
     }
 
     @Test

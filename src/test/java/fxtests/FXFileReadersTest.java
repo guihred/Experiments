@@ -5,40 +5,49 @@ import static fxtests.FXTesting.measureTime;
 import com.google.common.collect.ImmutableMap;
 import ethical.hacker.ImageCracker;
 import extract.ExcelService;
+import extract.UnRar;
+import extract.UnZip;
 import extract.WordService;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.util.*;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
-import javafx.stage.Stage;
 import ml.data.CSVUtils;
 import org.junit.Assert;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.testfx.framework.junit.ApplicationTest;
+import org.junit.runners.MethodSorters;
 import org.testfx.util.WaitForAsyncUtils;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
+import utils.ConsumerEx;
 import utils.FunctionEx;
 import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
-public class FXFileReadersTest extends ApplicationTest {
-    @Override
-    public void start(Stage stage) {
-        ResourceFXUtils.initializeFX();
-        stage.show();
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class FXFileReadersTest extends AbstractTestExecution {
+    @Test
+    public void testARarZIP() {
+        measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
+        File userFolder = new File(UnRar.SRC_DIRECTORY).getParentFile();
+        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(userFolder, "rar");
+        measureTime("UnRar.extractRarFiles",
+            () -> pathByExtension.forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile()))));
+        measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
     }
 
     @Test
     public void testCSVUtils() {
         measureTime("CSVUtils.splitFile",
             () -> CSVUtils.splitFile(ResourceFXUtils.getOutFile("WDIData.csv").getAbsolutePath(), 3));
-        measureTime("CSVUtils.splitFile",
-            () -> CSVUtils.splitFile(ResourceFXUtils.getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(),
-                3));
+        measureTime("CSVUtils.splitFile", () -> CSVUtils
+            .splitFile(ResourceFXUtils.getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3));
     }
 
     @Test
@@ -136,9 +145,8 @@ public class FXFileReadersTest extends ApplicationTest {
     public void testImageCracker() {
         measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA.jpg")));
         measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA2.jpg")));
-        measureTime("ImageCracker.createSelectedImage",
-            () -> ImageCracker.crackImage(
-                ImageCracker.createSelectedImage(new Image(ResourceFXUtils.toExternalForm("CAPTCHA.jpg")))));
+        measureTime("ImageCracker.createSelectedImage", () -> ImageCracker
+            .crackImage(ImageCracker.createSelectedImage(new Image(ResourceFXUtils.toExternalForm("CAPTCHA.jpg")))));
     }
 
     @Test

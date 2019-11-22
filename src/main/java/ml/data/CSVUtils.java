@@ -167,7 +167,7 @@ public class CSVUtils {
         return SupplierEx.remap(() -> {
             File file = new File(csvFile);
             if (file.exists()) {
-                Files.delete(file.toPath());
+                Files.deleteIfExists(file.toPath());
             }
             boolean created = file.createNewFile();
             LOGGER.trace("file {} created {}", csvFile, created);
