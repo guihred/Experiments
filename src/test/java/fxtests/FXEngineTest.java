@@ -7,6 +7,7 @@ import ex.j8.Chapter4;
 import extract.FileAttrApp;
 import fractal.LeafFractalApp;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -125,6 +126,17 @@ public class FXEngineTest extends AbstractTestExecution {
         clickOn(lookupFirst(TreeView.class));
         targetPos(Pos.CENTER);
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
+    }
+
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void verifyTimelineExample() {
+        show(TimelineExample.class);
+        List<CheckBox> lookupList = lookupList(CheckBox.class);
+        Collections.shuffle(lookupList);
+        lookupList.stream().limit(5).forEach(this::tryClickOn);
+        List<ComboBox> combos = lookupList(ComboBox.class);
+        selectComboItems(randomItem(combos), 5);
     }
 
     @Test

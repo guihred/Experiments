@@ -23,8 +23,8 @@ public final class MapCallback<T, E> implements Callback<Entry<T, E>, Observable
             } else {
                 mapValues.remove(c.getKey());
             }
-            for (int i = 0; i < run.length; i++) {
-                run[i].run();
+            for (Runnable element : run) {
+                element.run();
             }
         });
         return simpleBooleanProperty;
