@@ -175,13 +175,7 @@ public final class CheckersHelper {
             squares.forEach(e -> e.setMarked(false));
 
             if (isGameOver(squares)) {
-                CheckersPlayer winner = getWinner(squares);
-                String txt = winner != CheckersPlayer.NONE ? winner + " Won!" : "It's a draw!";
-                new SimpleDialogBuilder().text(txt).button("Reset", () -> {
-                    reset(squares);
-                    CheckersHelper.runIfAI(squares, currentPlayer);
-                }).bindWindow(squares.get(0))
-                    .displayDialog();
+                displayDialog(currentPlayer, squares);
             }
             return true;
 
@@ -237,10 +231,25 @@ public final class CheckersHelper {
         return k >= 0 && k < SIZE;
     }
 
+    private static void displayDialog(AtomicInteger currentPlayer, List<CheckersSquare> squares) {
+        CheckersPlayer winner = getWinner(squares);
+        String txt = winner != CheckersPlayer.NONE ? winner + " Won!" : "It's a draw!";
+        new SimpleDialogBuilder().text(txt).button("Reset", () -> {
+            reset(squares);
+            CheckersHelper.runIfAI(squares, currentPlayer);
+        }).bindWindow(squares.get(0))
+            .displayDialog();
+    }
+
     private static void runAI(List<CheckersSquare> squares, AtomicInteger currentPlayer) {
         CheckersPlayer player = CheckersHelper.getPlayer(currentPlayer.get());
         CheckersTree CheckersTree = new CheckersTree(squares, currentPlayer.get(), null);
         CheckersTree makeDecision = CheckersTree.makeDecision(player);
+        if (makeDecision == null) {
+            displayDialog(currentPlayer, squares);
+            return;
+        }
+
         Entry<CheckersSquare, CheckersSquare> j = makeDecision.getAction();
         CheckersHelper.replaceStates(squares, j.getValue(), j.getKey(), player);
         currentPlayer.incrementAndGet();

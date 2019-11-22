@@ -25,7 +25,7 @@ public class CheckersTree {
 
     public CheckersTree makeDecision(CheckersPlayer player) {
         double max = Double.NEGATIVE_INFINITY;
-        CheckersTree decision = this;
+        CheckersTree decision = null;
         for (CheckersTree e : getChildren()) {
             double maxValue = e.maxValue(player, depth + MAX_DEPTH);
             if (maxValue > max) {
