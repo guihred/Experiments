@@ -38,14 +38,15 @@ public class CheckersTree {
 
     @Override
     public String toString() {
-        return SupplierEx.orElse(toStr, this::getStrRepresentation);
+        return SupplierEx.orElse(toStr, () -> toStr = getStrRepresentation());
 
     }
 
     public double utility(CheckersPlayer player) {
-        Map<CheckersPlayer, Long> collect = squares.stream()
+        Map<CheckersPlayer, Long> squaresCount = squares.stream()
             .collect(Collectors.groupingBy(CheckersSquare::getState, Collectors.counting()));
-        return collect.getOrDefault(player, 0L) - collect.getOrDefault(player.opposite(), 0L);
+        double curPlayer = squaresCount.getOrDefault(player, 0L).doubleValue();
+        return curPlayer - squaresCount.getOrDefault(player.opposite(), 0L);
     }
 
     private List<Map.Entry<CheckersSquare, CheckersSquare>> actions(CheckersPlayer player) {
@@ -90,7 +91,7 @@ public class CheckersTree {
                 s.append("\n");
             }
         }
-        return toStr = s.toString();
+        return s.toString();
     }
 
     private double maxValue(CheckersPlayer player, int i) {

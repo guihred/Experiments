@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.DateFormatUtils;
 import utils.HasLogging;
+import utils.StringSigaUtils;
 
 public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
 
@@ -70,9 +71,9 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
                     candidato.setHref(href);
                     candidato.setNome(element.select(".candidate-name").text());
                     String text = element.select(".candidate-name").text();
-                    candidato.setNumero(convertNumerico(text));
+                    candidato.setNumero(StringSigaUtils.convertNumerico(text));
                     candidato.setPartido(element.select(".candidate-party").text().split(" - ")[0]);
-                    candidato.setVotos(convertNumerico(element.select(".number-votes").first().text()));
+                    candidato.setVotos(StringSigaUtils.convertNumerico(element.select(".number-votes").first().text()));
                     String text2 = element.select(".elect-state").text().trim();
                     boolean equals = "Eleito".equals(text2);
                     umEleito |= equals;

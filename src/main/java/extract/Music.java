@@ -115,7 +115,7 @@ public class Music {
     }
 
     public boolean isNotMP3() {
-        return !getTitulo().matches(".+\\.mp3");
+        return !arquivo.getName().matches(".+\\.mp3");
     }
 
     public StringProperty pastaProperty() {

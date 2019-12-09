@@ -66,19 +66,7 @@ public final class CheckersHelper {
                 dirI -= 2 * player.getDir()) {
             for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
                 int iterations = !target.getQueen() ? 1 : SIZE - 1;
-                for (int k = 1; k <= iterations && withinBounds(j + dirJ * k) && withinBounds(i + dirI * k); k++) {
-                    CheckersSquare checkersSquare = squares.get(toIndex(i + dirI * k, j + dirJ * k));
-                    if (checkersSquare.getState() == CheckersPlayer.NONE) {
-                        checkersSquare.setHighlight(true);
-                        highlighted.add(checkersSquare);
-                    }
-                    List<CheckersSquare> kills =
-                            markPossibleKills(squares, player, i + dirI * k, j + dirJ * k, dirI, dirJ);
-                    kills.stream().filter(CheckersSquare::getHighlight).forEach(highlighted::add);
-                    if (checkersSquare.getState() == player) {
-                        break;
-                    }
-                }
+                highlight(squares, player, i, j, highlighted, dirI, dirJ, iterations);
             }
         }
         for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
@@ -213,6 +201,23 @@ public final class CheckersHelper {
             reset(squares);
             CheckersHelper.runIfAI(squares, currentPlayer);
         }).bindWindow(squares.get(0)).displayDialog();
+    }
+
+    private static void highlight(List<CheckersSquare> squares, CheckersPlayer player, final int i, final int j,
+        List<CheckersSquare> highlighted, int dirI, int dirJ, int iterations) {
+        for (int k = 1; k <= iterations && withinBounds(j + dirJ * k) && withinBounds(i + dirI * k); k++) {
+            CheckersSquare checkersSquare = squares.get(toIndex(i + dirI * k, j + dirJ * k));
+            if (checkersSquare.getState() == CheckersPlayer.NONE) {
+                checkersSquare.setHighlight(true);
+                highlighted.add(checkersSquare);
+            }
+            List<CheckersSquare> kills =
+                    markPossibleKills(squares, player, i + dirI * k, j + dirJ * k, dirI, dirJ);
+            kills.stream().filter(CheckersSquare::getHighlight).forEach(highlighted::add);
+            if (checkersSquare.getState() == player) {
+                break;
+            }
+        }
     }
 
     private static void markAllDirections(List<CheckersSquare> squares, CheckersPlayer player, int i, int j, int dirI,

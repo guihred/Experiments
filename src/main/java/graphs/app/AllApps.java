@@ -1,9 +1,16 @@
 package graphs.app;
 
-import java.lang.reflect.Method;
-import java.util.List;
+import static graphs.app.JavaFileDependency.getAllFileDependencies;
+import static java.util.stream.Collectors.toCollection;
+import static utils.ClassReflectionUtils.getInstance;
+import static utils.CommonsFX.newFastFilter;
+import static utils.FunctionEx.apply;
+import static utils.HibernateUtil.shutdown;
+import static utils.PredicateEx.makeTest;
+import static utils.RunnableEx.make;
+import static utils.RunnableEx.run;
+
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -14,24 +21,23 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import simplebuilder.SimpleListViewBuilder;
-import utils.*;
+import utils.CrawlerTask;
 
 public class AllApps extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        CrawlerTask.insertProxyConfig();
         primaryStage.setTitle("All Apps");
-        List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
-        List<Class<?>> collect = allFileDependencies.stream().map(JavaFileDependency::getFullName)
-                .map(FunctionEx.makeFunction(Class::forName)).filter(Objects::nonNull)
-                .filter(PredicateEx.makeTest(e -> e.getMethod("main", String[].class) != null))
-                .collect(Collectors.toList());
-        ObservableList<Class<?>> items = FXCollections.observableArrayList(collect);
+        ObservableList<Class<?>> items = getAllFileDependencies().stream().map(JavaFileDependency::getFullName)
+            .map(a -> apply(Class::forName, a)).filter(Objects::nonNull)
+            .filter(makeTest(e -> e.getMethod("main", String[].class) != null))
+            .collect(toCollection(FXCollections::observableArrayList));
         TextField resultsFilter = new TextField();
         ListView<Class<?>> build = new SimpleListViewBuilder<Class<?>>().onDoubleClick(AllApps::invoke)
-                .items(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true))).build();
+            .items(newFastFilter(resultsFilter, items.filtered(e -> true))).build();
         primaryStage.setScene(new Scene(new BorderPane(build, resultsFilter, null, null, null)));
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        primaryStage.setOnCloseRequest(e -> shutdown());
         primaryStage.show();
     }
 
@@ -41,15 +47,12 @@ public class AllApps extends Application {
 
     private static void invoke(Class<?> appClass) {
         if (Application.class.isAssignableFrom(appClass)) {
-            Platform.runLater(RunnableEx.make(() -> {
-                Application a = (Application) ClassReflectionUtils.getInstance(appClass);
+            Platform.runLater(make(() -> {
+                Application a = (Application) getInstance(appClass);
                 a.start(new Stage());
             }));
             return;
         }
-        RunnableEx.run(() -> {
-            Method method = appClass.getMethod("main", String[].class);
-            method.invoke(null, new Object[] { new String[0] });
-        });
+        run(() -> appClass.getMethod("main", String[].class).invoke(null, new Object[] { new String[0] }));
     }
 }

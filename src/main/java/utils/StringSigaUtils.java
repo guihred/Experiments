@@ -27,6 +27,11 @@ public class StringSigaUtils extends StringUtils {
         Double.class);
     public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
 
+    public static Integer convertNumerico(final String eleitores) {
+        String replaceAll = eleitores.replaceAll("\\D", "");
+        return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
+    }
+
     public static String changeCase(String simpleName) {
         if (Character.isLowerCase(simpleName.charAt(0))) {
             return simpleName.substring(0, 1).toUpperCase() + simpleName.substring(1);

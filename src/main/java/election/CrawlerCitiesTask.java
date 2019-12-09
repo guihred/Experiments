@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.StringSigaUtils;
 
 public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
 
@@ -40,7 +41,7 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
                 String eleitores = element.select("span").first().text().replaceAll("\\D", "");
                 Cidade cidade = new Cidade();
                 cidade.setHref(href);
-                cidade.setEleitores(convertNumerico(eleitores));
+                cidade.setEleitores(StringSigaUtils.convertNumerico(eleitores));
                 cidade.setNome(link.text());
                 cidade.setEstado(estado.toUpperCase());
                 cidadeDAO.saveOrUpdate(cidade);

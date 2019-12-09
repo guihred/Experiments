@@ -6,6 +6,7 @@ import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
 import extract.FileAttrApp;
 import fractal.LeafFractalApp;
+import graphs.app.AllApps;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,10 +16,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.SVGPath;
 import ml.*;
@@ -30,6 +28,13 @@ import utils.ImageFXUtils;
 import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
+
+    @Test
+    public void verifyAllApps() {
+        show(AllApps.class);
+        doubleClickOn(randomItem(lookup(ListCell.class)));
+
+    }
 
     @Test
     public void verifyButtons() {

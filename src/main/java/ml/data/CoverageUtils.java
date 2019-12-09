@@ -20,7 +20,7 @@ import utils.SupplierEx;
 public final class CoverageUtils {
     private static final String COVERED = "_COVERED";
 
-    private static final int MAX_LINE_COVERAGE = 70;
+    private static final int MAX_LINE_COVERAGE = 50;
 
     private static final int MAX_BRANCH_COVERAGE = 80;
 

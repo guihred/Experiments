@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.StringSigaUtils;
 
 public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
 
@@ -36,9 +37,9 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
                     candidato.setHref(element.select(".nome").attr("href"));
                     candidato.setNome(element.select(".nome").text());
                     String text = element.select(".nome span").text();
-                    candidato.setNumero(convertNumerico(text));
+                    candidato.setNumero(StringSigaUtils.convertNumerico(text));
                     candidato.setPartido(element.select(".partido").text());
-                    candidato.setVotos(convertNumerico(element.select(".votos").first().text()));
+                    candidato.setVotos(StringSigaUtils.convertNumerico(element.select(".votos").first().text()));
                     candidato.setEleito(element.className().contains("eleito"));
                     cidadeDAO.saveOrUpdate(candidato);
                 }

@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 import javafx.concurrent.Task;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -146,11 +145,6 @@ public abstract class CrawlerTask extends Task<String> {
 
     public static boolean isNotProxied() {
         return !IS_PROXIED;
-    }
-
-    protected static Integer convertNumerico(final String eleitores) {
-        String replaceAll = eleitores.replaceAll("\\D", "");
-        return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
     }
 
     private static Predicate<Integer> isProxied() {
