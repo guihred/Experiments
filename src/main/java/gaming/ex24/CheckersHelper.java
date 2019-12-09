@@ -11,7 +11,7 @@ import simplebuilder.SimpleDialogBuilder;
 public final class CheckersHelper {
 
     public static final int SIZE = 8;
-    protected static final List<CheckersPlayer> PLAYERS = Arrays.asList(CheckersPlayer.WHITE, CheckersPlayer.BLACK);
+    private static final List<CheckersPlayer> PLAYERS = Arrays.asList(CheckersPlayer.WHITE, CheckersPlayer.BLACK);
 
     private CheckersHelper() {
     }
@@ -40,7 +40,7 @@ public final class CheckersHelper {
 
     }
 
-    public static boolean gameOver(List<CheckersPlayer> squares) {
+    public static boolean gameOver(Collection<CheckersPlayer> squares) {
         return squares.stream().distinct().count() < 3;
     }
 
@@ -48,11 +48,11 @@ public final class CheckersHelper {
         return CheckersHelper.PLAYERS.get(currentPlayer % CheckersHelper.PLAYERS.size());
     }
 
-    public static CheckersPlayer getWinner(List<CheckersSquare> squares) {
+    public static CheckersPlayer getWinner(Collection<CheckersSquare> squares) {
         return getWinner2(squares.stream().map(CheckersSquare::getState).collect(Collectors.toList()));
     }
 
-    public static CheckersPlayer getWinner2(List<CheckersPlayer> squares) {
+    public static CheckersPlayer getWinner2(Collection<CheckersPlayer> squares) {
         return squares.stream().filter(e -> e != CheckersPlayer.NONE).findFirst().orElse(CheckersPlayer.NONE);
     }
 
@@ -77,7 +77,7 @@ public final class CheckersHelper {
         return highlighted;
     }
 
-    public static boolean isGameOver(List<CheckersSquare> squares) {
+    public static boolean isGameOver(Collection<CheckersSquare> squares) {
         return squares.stream().map(CheckersSquare::getState).distinct().count() < 3;
     }
 
