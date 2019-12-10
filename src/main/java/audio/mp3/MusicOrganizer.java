@@ -55,6 +55,7 @@ public class MusicOrganizer extends Application {
         ObservableList<Music> musics = FXCollections.observableArrayList();
         configurarFiltroRapido(filterField, musicasTable, musics);
         Button buttonVideos = loadVideos(musicasTable, filterField);
+        progress.setMinSize(40, 40);
         root.getChildren().add(new VBox(new Label("Lista Músicas"),
             new HBox(buttonMusic, buttonVideos, fixMusic, filterField, progress), musicasTable));
         Scene scene = new Scene(root, WIDTH, HEIGHT);
@@ -62,6 +63,7 @@ public class MusicOrganizer extends Application {
         primaryStage.setTitle("Organizador de Músicas");
         primaryStage.setScene(scene);
         primaryStage.show();
+
     }
 
     private void convertToImage(Music music, TableCell<Music, Object> cell) {

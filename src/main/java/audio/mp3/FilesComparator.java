@@ -87,6 +87,7 @@ public class FilesComparator extends Application {
 
         addTable(root, "File 1", ">", items1, items2, directory1);
         progress = new ProgressIndicator();
+        progress.setMinSize(40, 40);
         root.getChildren().add(new VBox(10, progress));
         addTable(root, "File 2", "<", items2, items1, directory2);
         final int width = 550;

@@ -15,13 +15,9 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import org.junit.FixMethodOrder;
@@ -88,11 +84,10 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             Music readTags = MusicReader.readTags(outFile2);
             show(new EditSongController(readTags));
             moveSliders(10);
-            List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
+            List<Button> queryAll = lookupList(Button.class);
             for (int i = 0; i < queryAll.size(); i++) {
                 Node node = queryAll.get(i);
                 clickOn(node);
-                sleep(1000);
             }
             lookup(ImageView.class).stream().anyMatch(PredicateEx.makeTest(e -> {
                 doubleClickOn(e);
@@ -101,10 +96,14 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         });
         FXTesting.measureTime("new EditSongController", () -> {
             show(EditSongController.class);
-            List<Node> queryAll = lookup(".button").queryAll().stream().collect(Collectors.toList());
+            List<Button> queryAll = lookupList(Button.class);
+            moveSliders(10);
             runReversed(queryAll, node -> {
                 clickOn(node);
-                moveSliders(10);
+                List<Button> queryAll2 = lookupList(Button.class, b -> !queryAll.contains(b));
+                for (Button button : queryAll2) {
+                    clickOn(button);
+                }
             });
         });
         WaitForAsyncUtils.waitForFxEvents();

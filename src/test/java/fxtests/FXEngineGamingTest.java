@@ -50,8 +50,8 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     @Test
     public void verifyCheckers() {
         show(CheckersLauncher.class);
-        List<CheckersSquare> queryAll = lookupList(CheckersSquare.class, CheckersSquare::isBlack);
         for (int i = 0; i < 12; i++) {
+            List<CheckersSquare> queryAll = lookupList(CheckersSquare.class, CheckersSquare::isBlack);
             Collections.shuffle(queryAll);
             List<CheckersSquare> whitePieces = queryAll.stream().filter(e -> e.getState() == CheckersPlayer.WHITE)
                 .collect(toList());
