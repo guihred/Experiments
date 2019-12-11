@@ -46,7 +46,7 @@ public class UserChartVariables extends VBox {
     protected Text yellowPoints;
     @FXML
     protected Group cardGroup;
-    protected EnumMap<PlayerColor, SimpleLongProperty> playersPoints = new EnumMap<>(PlayerColor.class);
+    protected final EnumMap<PlayerColor, SimpleLongProperty> playersPoints = new EnumMap<>(PlayerColor.class);
     protected Runnable onWin;
 
     public UserChartVariables() {
@@ -55,6 +55,10 @@ public class UserChartVariables extends VBox {
 
     public PlayerColor getColor() {
         return color.get();
+    }
+
+    public EnumMap<PlayerColor, SimpleLongProperty> getPlayersPoints() {
+        return playersPoints;
     }
 
     public void setColor(PlayerColor newV) {

@@ -1,5 +1,7 @@
 package gaming.ex21;
 
+import static gaming.ex21.CatanHelper.isPositioningPhase;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -112,7 +114,7 @@ public class CatanModel extends CatanVariables {
         exchangeButton.setDisable(true);
         cards.get(getCurrentPlayer()).forEach(e -> e.setSelected(false));
         turnCount++;
-        if (isPositioningPhase()) {
+        if (isPositioningPhase(turnCount)) {
             diceThrown.set(true);
             elements.add(new Village(playerColor));
             elements.add(new Road(playerColor));
@@ -128,13 +130,13 @@ public class CatanModel extends CatanVariables {
         CatanLogger.log(row(), CatanAction.SKIP_TURN);
     }
 
+
+
     public Map<String, Object> row() {
         return new CatanLogBuilder().playerColor(getCurrentPlayer()).allCards(cards).userChart(userChart)
             .usedCards(usedCards).settlePoints(settlePoints).edges(edges).deals(deals)
             .resourcesToSelect(resourcesToSelect).elements(elements).build();
     }
-
-
 
     public void throwDice() {
         int diceValue = userChart.throwDice();
@@ -157,10 +159,6 @@ public class CatanModel extends CatanVariables {
     private void invalidateDice() {
         diceThrown.set(!diceThrown.get());
         diceThrown.set(!diceThrown.get());
-    }
-
-    private boolean isPositioningPhase() {
-        return turnCount <= 8;
     }
 
     private void makeDealButton(ResourceType selectedType) {
@@ -237,7 +235,8 @@ public class CatanModel extends CatanVariables {
 
     private void onReleaseVillage(double x, double y, Village village) {
         Optional<SettlePoint> findFirst = settlePoints.stream().filter(e -> CatanHelper.inArea(x, y, e))
-            .filter(t -> !t.isPointDisabled()).filter(t -> isPositioningPhase() || t.pointAcceptVillage(village))
+            .filter(t -> !t.isPointDisabled())
+            .filter(t -> isPositioningPhase(turnCount) || t.pointAcceptVillage(village))
             .findFirst();
         if (findFirst.isPresent()) {
             findFirst.get().setElement(village);
@@ -307,5 +306,6 @@ public class CatanModel extends CatanVariables {
         userChart.updatePorts(newV, ports, settlePoints, currentPlayer);
         invalidateDice();
     }
+
 
 }

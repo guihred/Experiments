@@ -31,14 +31,13 @@ import gaming.ex19.SudokuSquare;
 import gaming.ex20.RoundMazeLauncher;
 import gaming.ex23.TicTacToeLauncher;
 import gaming.ex23.TicTacToeSquare;
-import gaming.ex24.CheckersLauncher;
-import gaming.ex24.CheckersPlayer;
-import gaming.ex24.CheckersSquare;
+import gaming.ex24.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
@@ -62,6 +61,11 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             List<CheckersSquare> collect = queryAll.stream().filter(CheckersSquare::getHighlight).collect(toList());
             tryClickOn(randomItem(collect));
         }
+        List<CheckersSquare> collect = IntStream.range(0, 8 * 8).mapToObj(i -> new CheckersSquare(i % 2 == i / 8 % 2))
+            .collect(Collectors.toList());
+        CheckersHelper.reset(collect);
+        getLogger().info("{}", new CheckersTree(collect, 0, null));
+
     }
 
     @Test

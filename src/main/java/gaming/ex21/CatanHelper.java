@@ -1,6 +1,9 @@
 package gaming.ex21;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -63,6 +66,16 @@ public final class CatanHelper {
         }
     }
 
+    public static int getDirection(int turnCount2) {
+            if (turnCount2 == 4) {
+                return 0;
+            } else if (turnCount2 > 4 && turnCount2 < 8) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+
     public static List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
         List<SettlePoint> points = new ArrayList<>();
         double off = Math.PI / 6;
@@ -91,6 +104,10 @@ public final class CatanHelper {
         return e.getBoundsInParent().intersects(p.getBoundsInParent());
     }
 
+    public static  boolean isPositioningPhase(int turnCount) {
+        return turnCount <= 8;
+    }
+
     public static boolean isSkippable(BooleanProperty diceThrown2, HBox resourceChoices2,
         ObservableList<CatanResource> elements2, ObjectProperty<PlayerColor> currentPlayer2) {
         return !diceThrown2.get() || resourceChoices2.isVisible()
@@ -99,15 +116,5 @@ public final class CatanHelper {
 
     public static ImageView newResource(final ResourceType type) {
         return CatanResource.newImage(type.getPure(), Port.SIZE / 4.);
-    }
-
-    static int getDirection(int turnCount2) {
-        if (turnCount2 == 4) {
-            return 0;
-        } else if (turnCount2 > 4 && turnCount2 < 8) {
-            return -1;
-        } else {
-            return 1;
-        }
     }
 }

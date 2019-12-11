@@ -1,6 +1,5 @@
 package fxtests;
 
-
 import audio.mp3.EditSongController;
 import audio.mp3.MusicOrganizer;
 import extract.Music;
@@ -100,16 +99,14 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             moveSliders(10);
             runReversed(queryAll, node -> {
                 clickOn(node);
-                List<Button> queryAll2 = lookupList(Button.class, b -> !queryAll.contains(b));
-                for (Button button : queryAll2) {
+                for (Button button : lookupList(Button.class, b -> !queryAll.contains(b))) {
                     clickOn(button);
+                    moveSliders(10);
                 }
             });
         });
         WaitForAsyncUtils.waitForFxEvents();
     }
-
-
 
     @Test
     public void verifyPlayingAudio() {

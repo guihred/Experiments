@@ -60,6 +60,7 @@ public class CatanVariables {
     public ObservableList<CatanResource> getElements() {
         return elements;
     }
+
     public PlayerColor getPlayerWinner() {
         return userChart.getWinner(settlePoints, usedCards, edges, cards);
     }
@@ -68,12 +69,20 @@ public class CatanVariables {
         return ports;
     }
 
+    public SelectResourceType getResourcesToSelect() {
+        return resourcesToSelect;
+    }
+
     public List<SettlePoint> getSettlePoints() {
         return settlePoints;
     }
 
     public List<Terrain> getTerrains() {
         return terrains;
+    }
+
+    public Map<PlayerColor, List<DevelopmentType>> getUsedCards() {
+        return usedCards;
     }
 
     public void setCurrentPlayer(PlayerColor value) {
