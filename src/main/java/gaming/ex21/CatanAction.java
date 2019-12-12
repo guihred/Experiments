@@ -38,7 +38,23 @@ public enum CatanAction {
     RESOURCE_WOOD;
 
 
-    public static CatanAction getAction(String prefix, Enum<?> type) {
+    public static CatanAction action(Combination combination) {
+        return getAction("BUY_", combination);
+    }
+
+    public static CatanAction action(DevelopmentType development) {
+        return getAction("SELECT_", development);
+    }
+
+    public static CatanAction action(ResourceType resource) {
+        return getAction("SELECT_", resource);
+    }
+
+    public static CatanAction actionResource(ResourceType resource) {
+        return getAction("RESOURCE_", resource);
+    }
+
+    private static CatanAction getAction(String prefix, Enum<?> type) {
         CatanAction[] values = values();
         for (CatanAction action : values) {
             if (action.name().contains(prefix) && action.name().contains(type.name())) {

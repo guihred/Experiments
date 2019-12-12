@@ -29,10 +29,10 @@ public enum Combination {
         resources = Arrays.asList(type);
     }
 
-    public boolean disableCombination(PlayerColor key, Map<PlayerColor, List<CatanCard>> cards,
+    public boolean disableCombination(PlayerColor player, Map<PlayerColor, List<CatanCard>> cards,
         Collection<SettlePoint> settlePoints, Collection<EdgeCatan> edges,
         Collection<DevelopmentType> developmentCards) {
-        List<CatanCard> list = cards.get(key);
+        List<CatanCard> list = cards.get(player);
         if (list == null) {
             return true;
         }
@@ -40,19 +40,19 @@ public enum Combination {
             return true;
         }
         Map<Class<?>, Long> elementCount = settlePoints.stream()
-            .filter(s -> s.getElement() != null && s.getElement().getPlayer() == key).map(SettlePoint::getElement)
+            .filter(s -> s.getElement() != null && s.getElement().getPlayer() == player).map(SettlePoint::getElement)
             .collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting()));
         
-        elementCount.putAll(edges.stream().filter(s -> s.getElement() != null && s.getElement().getPlayer() == key)
+        elementCount.putAll(edges.stream().filter(s -> s.getElement() != null && s.getElement().getPlayer() == player)
             .map(EdgeCatan::getElement).collect(Collectors.groupingBy(CatanResource::getClass, Collectors.counting())));
         
         switch (this) {
             case CITY:
                 return elementCount.getOrDefault(City.class, 0L) >= 4
-                    || settlePoints.stream().noneMatch(s -> s.acceptCity(key));
+                    || settlePoints.stream().noneMatch(s -> s.acceptCity(player));
             case VILLAGE:
                 return elementCount.getOrDefault(Village.class, 0L) >= 5
-                    || settlePoints.stream().noneMatch(s -> s.acceptVillage(key));
+                    || settlePoints.stream().noneMatch(s -> s.acceptVillage(player));
             case ROAD:
                 return elementCount.getOrDefault(Road.class, 0L) >= 15;
             case DEVELOPMENT:

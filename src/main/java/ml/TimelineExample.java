@@ -10,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
@@ -79,10 +78,8 @@ public class TimelineExample extends Application {
             }).build();
 
         left.getChildren().add(indicators);
-        final Canvas canvas1 = canvas;
-        left.getChildren().add(SimpleButtonBuilder.newButton("Export", d -> ImageFXUtils.take(canvas1)));
+        left.getChildren().add(SimpleButtonBuilder.newButton("Export", d -> ImageFXUtils.take(canvas)));
         root.setCenter(new HBox(canvas, listVies));
-
 		theStage.show();
 	}
 

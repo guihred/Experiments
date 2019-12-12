@@ -1,7 +1,7 @@
 package gaming.ex21;
 
 import java.io.File;
-import java.util.*;
+import java.util.Map;
 import ml.data.CSVUtils;
 import ml.data.DataframeML;
 import org.slf4j.Logger;
@@ -25,40 +25,24 @@ public final class CatanLogger {
 
     public static void log(Map<String, Object> model, CatanCard catanCard) {
         if (catanCard.getDevelopment() != null) {
-            log(model, action(catanCard.getDevelopment()));
+            log(model, CatanAction.action(catanCard.getDevelopment()));
         } else {
-            log(model, action(catanCard.getResource()));
+            log(model, CatanAction.action(catanCard.getResource()));
         }
     }
 
     public static void log(Map<String, Object> model, Combination combination) {
-        log(model, action(combination));
+        log(model, CatanAction.action(combination));
     }
 
     public static void log(Map<String, Object> model, ResourceType catanCard) {
-        log(model, actionResource(catanCard));
+        log(model, CatanAction.actionResource(catanCard));
     }
 
     public static void winner(PlayerColor playerWinner) {
         DATAFRAME_ML.filter(CatanLogBuilder.PLAYER, c -> c.equals(playerWinner.toString()));
         File outFile = ResourceFXUtils.getOutFile(CATAN_LOG);
         DATAFRAME_ML.forEachRow(c -> CSVUtils.appendLine(outFile, c));
-    }
-
-    private static CatanAction action(Combination combination) {
-        return CatanAction.getAction("BUY_", combination);
-    }
-
-    private static CatanAction action(DevelopmentType development) {
-        return CatanAction.getAction("SELECT_", development);
-    }
-
-    private static CatanAction action(ResourceType resource) {
-        return CatanAction.getAction("SELECT_", resource);
-    }
-
-    private static CatanAction actionResource(ResourceType resource) {
-        return CatanAction.getAction("RESOURCE_", resource);
     }
 
 }

@@ -15,7 +15,6 @@ public class CatanTree {
     private Map<PlayerColor, List<CatanCard>> cards = PlayerColor.newMapList();
     private int[] terrainsNumbers;
     private CatanResource[] settlePoints;
-    private List<EdgeCatan> edges;
     private Map<PlayerColor, List<DevelopmentType>> usedCards = PlayerColor.newMapList();
     private PlayerColor currentPlayer;
     private CatanResource[] elements;
@@ -33,9 +32,13 @@ public class CatanTree {
     private Entry<CatanAction, Object> action;
     private int depth;
 
-    List<CatanTree> children;
+    private List<CatanTree> children;
     private List<Boolean> terrainsAvailable;
     private CatanResource[] roads;
+    private List<List<CatanResource>> settlePointsNeighbors;
+    private List<List<CatanResource>> settlePointsEdges;
+    private List<List<CatanResource>> edgesPoints;
+    private List<List<CatanResource>> edgesPointsRoads;
 
     public CatanTree(CatanVariables var) {
         var.getCards().forEach((k, v) -> cards.get(k).addAll(v));
@@ -43,7 +46,15 @@ public class CatanTree {
         terrainsResources = var.getTerrains().stream().map(Terrain::getType).collect(Collectors.toList());
         terrainsAvailable = var.getTerrains().stream().map(e -> e.getThief() == null).collect(Collectors.toList());
         settlePoints = var.getSettlePoints().stream().map(SettlePoint::getElement).toArray(CatanResource[]::new);
-        edges = var.getEdges();
+        settlePointsNeighbors = var.getSettlePoints().stream().map(SettlePoint::getNeighbors)
+            .map(e -> e.stream().map(n -> n.getElement()).collect(Collectors.toList())).collect(Collectors.toList());
+        settlePointsEdges = var.getSettlePoints().stream().map(SettlePoint::getEdges)
+            .map(e -> e.stream().map(n -> n.getElement()).collect(Collectors.toList())).collect(Collectors.toList());
+        edgesPoints = var.getEdges().stream().map(EdgeCatan::getPoints)
+            .map(e -> e.stream().map(n -> n.getElement()).collect(Collectors.toList())).collect(Collectors.toList());
+        edgesPointsRoads = var.getEdges().stream().map(EdgeCatan::getPoints).map(
+            e -> e.stream().flatMap(n -> n.getEdges().stream()).map(n -> n.getElement()).collect(Collectors.toList()))
+            .collect(Collectors.toList());
         roads = var.getEdges().stream().map(EdgeCatan::getElement).toArray(i -> new CatanResource[i]);
         elements = var.getElements().toArray(new CatanResource[0]);
         currentPlayer = var.getCurrentPlayer();
@@ -85,27 +96,14 @@ public class CatanTree {
 //        THROW_DICE,
 //        SKIP_TURN,
 //        ACCEPT_DEAL,
-        if (Stream.of(elements).anyMatch(e -> e instanceof Thief)) {
-            // PLACE_THIEF,
-            List<SimpleEntry<CatanAction, Integer>> collect = IntStream.range(0, terrainsResources.size())
-                .filter(e -> terrainsResources.get(e) != ResourceType.DESERT)
-                .filter(e -> terrainsAvailable.get(e))
-                .mapToObj(e -> new AbstractMap.SimpleEntry<>(CatanAction.PLACE_THIEF, e)).collect(Collectors.toList());
-            actions.addAll(collect);
-        }
-        if (Stream.of(elements).anyMatch(e -> e instanceof Village)) {
-//        PLACE_VILLAGE,
-//            List<SimpleEntry<CatanAction, Integer>> collect = IntStream.range(0, settlePoints.length)
-//                .filter(e -> settlePoints[e] == null&&CatanHelper.isPositioningPhase(turnCount)
-//                    ||edges.get(0).edgeAcceptRoad(edge, road)
-//                    ).filter(e -> terrainsAvailable.get(e))
-//                .mapToObj(e -> new AbstractMap.SimpleEntry<>(CatanAction.PLACE_VILLAGE, e))
-//                .collect(Collectors.toList());
-//            actions.addAll(collect);
-        }
-//        PLACE_ROAD,
-//        PLACE_CITY,
+        placeActions(actions);
 //
+
+//        Stream.of(Combination.values())
+//            .filter(e -> !e.disableCombination(currentPlayer, cards, settlePoints, edges, developmentCards))
+
+        
+
 //        BUY_VILLAGE,
 //        BUY_ROAD,
 //        BUY_CITY,
@@ -145,6 +143,12 @@ public class CatanTree {
         });
     }
 
+    private boolean isSettlePointSuitable(int e) {
+        return settlePoints[e] == null && (CatanHelper.isPositioningPhase(turnCount)
+            || settlePointsNeighbors.get(e).stream().allMatch(n -> n == null)
+                && settlePointsEdges.get(e).stream().anyMatch(d -> d != null && d.getPlayer() == currentPlayer));
+    }
+
     private double maxValue(PlayerColor player, int i) {
 
         if (i > depth) {
@@ -156,6 +160,49 @@ public class CatanTree {
             v += a.maxValue(player, i);
         }
         return v / children2.size();
+    }
+
+    private void placeActions(List<Entry<CatanAction, Integer>> actions) {
+        if (Stream.of(elements).anyMatch(e -> e instanceof Thief)) {
+            // PLACE_THIEF,
+            List<SimpleEntry<CatanAction, Integer>> collect = IntStream.range(0, terrainsResources.size())
+                .filter(e -> terrainsResources.get(e) != ResourceType.DESERT).filter(e -> terrainsAvailable.get(e))
+                .mapToObj(e -> new AbstractMap.SimpleEntry<>(CatanAction.PLACE_THIEF, e)).collect(Collectors.toList());
+            actions.addAll(collect);
+        }
+        if (Stream.of(elements).anyMatch(e -> e instanceof Village)) {
+//        PLACE_VILLAGE,
+            List<SimpleEntry<CatanAction, Integer>> collect = IntStream.range(0, settlePoints.length)
+                .filter(e -> isSettlePointSuitable(e))
+                .mapToObj(e -> new AbstractMap.SimpleEntry<>(CatanAction.PLACE_VILLAGE, e))
+                .collect(Collectors.toList());
+            actions.addAll(collect);
+        }
+        if (Stream.of(elements).anyMatch(e -> e instanceof Road)) {
+//        PLACE_ROAD,
+            List<SimpleEntry<CatanAction, Integer>> collect = IntStream.range(0, settlePoints.length)
+                .filter(e -> roads[e] == null
+                    && (edgesPoints.get(e).stream().anyMatch(p -> p != null && p.getPlayer() == currentPlayer)
+                        || edgesPointsRoads.get(e).stream().anyMatch(p -> p != null && p.getPlayer() == currentPlayer)))
+                .mapToObj(e -> new AbstractMap.SimpleEntry<>(CatanAction.PLACE_ROAD, e)).collect(Collectors.toList());
+            actions.addAll(collect);
+        }
+        if (Stream.of(elements).anyMatch(e -> e instanceof Road)) {
+//        PLACE_ROAD,
+            List<SimpleEntry<CatanAction, Integer>> collect = IntStream.range(0, settlePoints.length)
+                .filter(e -> roads[e] == null
+                    && (edgesPoints.get(e).stream().anyMatch(p -> p != null && p.getPlayer() == currentPlayer)
+                        || edgesPointsRoads.get(e).stream().anyMatch(p -> p != null && p.getPlayer() == currentPlayer)))
+                .mapToObj(e -> new AbstractMap.SimpleEntry<>(CatanAction.PLACE_ROAD, e)).collect(Collectors.toList());
+            actions.addAll(collect);
+        }
+        if (Stream.of(elements).anyMatch(e -> e instanceof City)) {
+//        PLACE_CITY,
+            List<SimpleEntry<CatanAction, Integer>> collect = IntStream.range(0, settlePoints.length)
+                .filter(e -> settlePoints[e] instanceof Village && settlePoints[e].getPlayer() == currentPlayer)
+                .mapToObj(e -> new AbstractMap.SimpleEntry<>(CatanAction.PLACE_ROAD, e)).collect(Collectors.toList());
+            actions.addAll(collect);
+        }
     }
 
     private CatanTree result(PlayerColor player, Entry<CatanAction, Integer> j) {
