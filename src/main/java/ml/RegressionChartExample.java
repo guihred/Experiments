@@ -2,6 +2,7 @@ package ml;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,6 +14,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ml.data.CSVUtils;
@@ -23,21 +25,26 @@ import simplebuilder.SimpleComboBoxBuilder;
 import utils.StringSigaUtils;
 
 public class RegressionChartExample extends Application {
+    private DataframeML dataframe;
+
     @Override
     public void start(Stage primaryStage) {
         String[] list = CSVUtils.getDataframeCSVs();
-        DataframeML x = DataframeBuilder.builder("out/" + list[0]).build();
+        dataframe = DataframeBuilder.builder("out/" + list[0]).build();
 
         String key = "Country Name";
         ObservableList<Series<Number, Number>> data = observableArrayList();
         LineChart<Number, Number> lineChart = lineChart(data, String.format(""));
-        List<Object> list2 = x.list(key);
+        List<Object> list2 = dataframe.list(key);
         ComboBox<Object> build = new SimpleComboBoxBuilder<>().items(list2)
-            .onSelect(country -> onChangeCountry(x, key, lineChart, list2, country)).select(0).build();
-
-
+            .onSelect(country -> onChangeCountry(dataframe, key, lineChart, list2, country)).select(0).build();
+        ComboBox<String> file = new SimpleComboBoxBuilder<String>().items(Arrays.asList(list)).onSelect(datafile -> {
+            dataframe = DataframeBuilder.builder("out/" + datafile).build();
+            onChangeCountry(dataframe, key, lineChart, dataframe.list(key),
+                build.getSelectionModel().getSelectedItem());
+        }).select(0).build();
         VBox root = new VBox();
-        root.getChildren().add(build);
+        root.getChildren().add(new HBox(file, build));
         root.getChildren().add(lineChart);
 
         primaryStage.setTitle("Regression Chart Example");
@@ -73,6 +80,7 @@ public class RegressionChartExample extends Application {
         Series<Number, Number> expected = regressionModel.getExpectedSeries();
         Series<Number, Number> polinominalSeries = regressionModel.getPolinominalSeries();
         data.setData(observableArrayList(series, expected, polinominalSeries));
+        data.setTitle(rowMap.get("Indicator Name").toString());
 
     }
 }
