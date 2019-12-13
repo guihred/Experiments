@@ -97,7 +97,10 @@ public class ContestApplicationController {
         updateCellFactory();
         current.addListener((ob, old, value) -> {
             int cur = value.intValue();
-            questions.getSelectionModel().select(cur);
+            if (cur < 0) {
+                question.setText("");
+                return;
+            }
             String text2 = ContestApplicationController.getText(contestQuestions, cur);
             text.setText(text2);
             double[] dividerPositions = splitPane.getDividerPositions();
@@ -105,10 +108,7 @@ public class ContestApplicationController {
                 ? dividerPositions[dividerPositions.length - 2]
                 : 4. / 6;
             splitPane.setDividerPositions(dividerPositions);
-            if (cur < 0) {
-                question.setText("");
-                return;
-            }
+            questions.getSelectionModel().select(cur);
             ContestQuestion contestQuestion = contestQuestions.getListQuestions().get(cur);
             question.setText(contestQuestion.getExercise());
             changeOptions(contestQuestion);
@@ -131,16 +131,16 @@ public class ContestApplicationController {
             ContestReader c = allContests.getSelectionModel().getSelectedItem();
             contestQuestions = c;
             current.set(-1);
-            current.set(0);
             questions.setItems(c.getListQuestions());
+            current.set(0);
         }
     }
 
     public void setContestQuestions(ContestReader contestQuestions) {
         this.contestQuestions = contestQuestions;
         current.set(-1);
-        current.set(0);
         questions.setItems(contestQuestions.getListQuestions());
+        current.set(0);
     }
 
     private void addImages(String item) {
