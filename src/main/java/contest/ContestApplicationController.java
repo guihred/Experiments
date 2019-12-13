@@ -74,7 +74,7 @@ public class ContestApplicationController {
         questions.getSelectionModel().selectedIndexProperty().addListener((o, old, n) -> current.set(n.intValue()));
 
         questions.setCellFactory(newCellFactory(
-            (c, v) -> v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber() + 1)))));
+            (c, v) -> v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())))));
         options.getSelectionModel().selectedItemProperty().addListener((observable, old, value) -> {
             if (value == null) {
                 return;
