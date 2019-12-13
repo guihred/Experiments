@@ -1,5 +1,6 @@
 package contest;
 
+import static java.lang.String.format;
 import static simplebuilder.SimpleListViewBuilder.newCellFactory;
 import static utils.FunctionEx.mapIf;
 
@@ -25,7 +26,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.FunctionEx;
 import utils.HasLogging;
 import utils.ImageTableCell;
 import utils.StringSigaUtils;
@@ -36,6 +36,8 @@ public class ContestApplicationController {
     private static final Logger LOG = HasLogging.log();
     @FXML
     private ScrollPane scrollPane2;
+    @FXML
+    private ListView<ContestQuestion> questions;
     @FXML
     private ListView<ContestQuestionAnswer> options;
     @FXML
@@ -63,17 +65,23 @@ public class ContestApplicationController {
         allContests.setItems(allContests2);
         if (!allContests2.isEmpty()) {
             contestQuestions = allContests2.get(0);
-            splitPane.setDividerPositions(1. / 5, 3. / 5);
+            questions.setItems(contestQuestions.getListQuestions());
+            splitPane.setDividerPositions(1. / 6, 2. / 6, 4. / 6);
         } else {
             splitPane.getItems().remove(0);
         }
 
+        questions.getSelectionModel().selectedIndexProperty().addListener((o, old, n) -> current.set(n.intValue()));
+
+        questions.setCellFactory(newCellFactory(
+            (c, v) -> v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber() + 1)))));
         options.getSelectionModel().selectedItemProperty().addListener((observable, old, value) -> {
             if (value == null) {
                 return;
             }
             Boolean correct = value.getCorrect();
             ObservableList<ContestQuestion> contestTexts = contestQuestions.getListQuestions();
+            questions.setItems(contestTexts);
             Integer number = contestTexts.get(current.get()).getNumber();
             LOG.info("Question {} Answer {}", number, correct);
             splitPane.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
@@ -89,8 +97,14 @@ public class ContestApplicationController {
         updateCellFactory();
         current.addListener((ob, old, value) -> {
             int cur = value.intValue();
-
-            text.setText(ContestApplicationController.getText(contestQuestions, cur));
+            questions.getSelectionModel().select(cur);
+            String text2 = ContestApplicationController.getText(contestQuestions, cur);
+            text.setText(text2);
+            double[] dividerPositions = splitPane.getDividerPositions();
+            dividerPositions[dividerPositions.length - 1] = text2.isEmpty()
+                ? dividerPositions[dividerPositions.length - 2]
+                : 4. / 6;
+            splitPane.setDividerPositions(dividerPositions);
             if (cur < 0) {
                 question.setText("");
                 return;
@@ -118,6 +132,7 @@ public class ContestApplicationController {
             contestQuestions = c;
             current.set(-1);
             current.set(0);
+            questions.setItems(c.getListQuestions());
         }
     }
 
@@ -125,12 +140,12 @@ public class ContestApplicationController {
         this.contestQuestions = contestQuestions;
         current.set(-1);
         current.set(0);
+        questions.setItems(contestQuestions.getListQuestions());
     }
 
     private void addImages(String item) {
         ImageView[] imageViews = Stream.of(item.split(";"))
-            .map(e -> ImageTableCell.newImage(e, scrollPane2.widthProperty()))
-            .toArray(ImageView[]::new);
+            .map(e -> ImageTableCell.newImage(e, scrollPane2.widthProperty())).toArray(ImageView[]::new);
         images.getChildren().addAll(imageViews);
     }
 
@@ -151,8 +166,8 @@ public class ContestApplicationController {
             Text text1 = new Text(el != null ? el.getAnswer() : "");
             text1.wrappingWidthProperty().bind(options.widthProperty().add(-10));
             cell.setGraphic(text1);
-            cell.getStyleClass().removeAll("certo", "errado", CERTO0, ERRADO0);
-            cell.getStyleClass().add(FunctionEx.mapIf(el, e -> e.getCorrect() ? CERTO0 : ERRADO0, ""));
+            cell.getStyleClass().removeAll("", "certo", "errado", CERTO0, ERRADO0);
+            cell.getStyleClass().add(mapIf(el, e -> e.getCorrect() ? CERTO0 : ERRADO0, ""));
         }));
         options.getSelectionModel().clearSelection();
     }
@@ -183,8 +198,7 @@ public class ContestApplicationController {
     }
 
     private static Stream<ContestText> getContextTexts(ContestReader contestQuestions2, int cur) {
-        return contestQuestions2.getContestTexts().stream()
-            .filter(t -> ContestApplicationController.isBetween(t, cur));
+        return contestQuestions2.getContestTexts().stream().filter(t -> ContestApplicationController.isBetween(t, cur));
     }
 
     private static void setText(ContestReader item, ListCell<ContestReader> cell) {

@@ -98,9 +98,9 @@ public class CatanTree {
 //        ACCEPT_DEAL,
         placeActions(actions);
 //
-
+//        new SettlePoint();
 //        Stream.of(Combination.values())
-//            .filter(e -> !e.disableCombination(currentPlayer, cards, settlePoints, edges, developmentCards))
+//            .filter(e -> !e.disableCombination(currentPlayer, cards, settlePoints, edges, Arrays.asList(developmentCards)));
 
         
 

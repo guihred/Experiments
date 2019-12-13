@@ -16,7 +16,6 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         table = node;
     }
 
-
     public SimpleListViewBuilder<T> cellFactory(Callback<ListView<T>, ListCell<T>> value) {
         table.setCellFactory(value);
         return this;
@@ -48,27 +47,15 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <C, V extends ListCell<C>> Callback<ListView<C>, ListCell<C>> newCellFactory(
-        final BiConsumer<C, V> value) {
-        return p -> new CustomableListCell<C>() {
+    public static <C> Callback<ListView<C>, ListCell<C>> newCellFactory(final BiConsumer<C, ListCell<C>> value) {
+        return p -> new ListCell<C>() {
             @Override
-            protected void setVisual(C auxMed) {
-                value.accept(getItem(), (V) this);
+            protected void updateItem(final C item, final boolean empty) {
+                super.updateItem(item, empty);
+                value.accept(getItem(), this);
             }
 
         };
-    }
-
-    public abstract static class CustomableListCell<M> extends ListCell<M> {
-
-        protected abstract void setVisual(M auxMed);
-
-        @Override
-        protected void updateItem(final M item, final boolean empty) {
-            super.updateItem(item, empty);
-            setVisual(getItem());
-        }
     }
 
 }

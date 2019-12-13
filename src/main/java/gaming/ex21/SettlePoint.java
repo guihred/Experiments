@@ -21,17 +21,18 @@ public class SettlePoint extends Group {
     private final Circle circle = new Circle(20, Color.BLACK);
     private final ObservableList<Terrain> terrains = FXCollections.observableArrayList();
     private final ObservableList<SettlePoint> neighbors = FXCollections.observableArrayList();
-    private final int id;
+    private final int id = pointsCount++;
     private final FadeTransition highlightTransition = new SimpleFadeTransitionBuilder().node(circle)
         .duration(Duration.millis(200)).fromValue(1).toValue(0).build();
 
     public SettlePoint() {
         highlightTransition.play();
-
         getChildren().add(circle);
-        id = pointsCount++;
         setManaged(false);
+    }
 
+    public SettlePoint(CatanResource element) {
+        this.element = element;
     }
 
     public boolean acceptCity(final PlayerColor player) {

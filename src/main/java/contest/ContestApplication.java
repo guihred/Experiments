@@ -3,7 +3,6 @@ package contest;
 import static utils.ResourceFXUtils.convertToURL;
 import static utils.SupplierEx.get;
 
-import java.io.File;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -26,10 +25,8 @@ public class ContestApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Contest Questions");
-        File file = ResourceFXUtils.toFile("ContestApplication.fxml");
-
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(convertToURL(file));
+        fxmlLoader.setLocation(convertToURL(ResourceFXUtils.toFile("ContestApplication.fxml")));
         Scene scene = new Scene(get(fxmlLoader::load));
         ContestApplicationController controller = fxmlLoader.getController();
         if (contestQuestions != null) {

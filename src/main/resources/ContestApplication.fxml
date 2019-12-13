@@ -16,12 +16,17 @@
 	</fx:define>
 	<items>
 		<ListView fx:id="allContests"
-			onMouseClicked="#onMouseClickedListView1">
+			onMouseClicked="#onMouseClickedListView1"
+			prefWidth="${splitPane.width*0.2}">
+		</ListView>
+		<ListView fx:id="questions"
+			prefWidth="${splitPane.width*0.2}" >
 		</ListView>
 		<ScrollPane fx:id="scrollPane2">
 			<content>
 				<VBox>
-					<Text fx:id="text" wrappingWidth="500.0" />
+					<Text fx:id="text" wrappingWidth="500.0"
+						prefWidth="${splitPane.width*0.3}" />
 					<VBox fx:id="images" />
 				</VBox>
 			</content>
@@ -30,11 +35,11 @@
 			<content>
 				<VBox>
 					<children>
-						<Text fx:id="questionNumber"/>
+						<Text fx:id="questionNumber" />
 						<Text fx:id="question" />
 						<Button onAction="#onActionNext" text="Next" />
 						<ListView fx:id="options"
-							prefWidth="${splitPane.width*0.4}">
+							prefWidth="${splitPane.width*0.3}">
 						</ListView>
 					</children>
 				</VBox>
