@@ -67,14 +67,14 @@ public final class CatanHelper {
     }
 
     public static int getDirection(int turnCount2) {
-            if (turnCount2 == 4) {
-                return 0;
-            } else if (turnCount2 > 4 && turnCount2 < 8) {
-                return -1;
-            } else {
-                return 1;
-            }
+        if (turnCount2 == 4) {
+            return 0;
+        } else if (turnCount2 > 4 && turnCount2 < 8) {
+            return -1;
+        } else {
+            return 1;
         }
+    }
 
     public static List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
         List<SettlePoint> points = new ArrayList<>();
@@ -104,7 +104,7 @@ public final class CatanHelper {
         return e.getBoundsInParent().intersects(p.getBoundsInParent());
     }
 
-    public static  boolean isPositioningPhase(int turnCount) {
+    public static boolean isPositioningPhase(int turnCount) {
         return turnCount <= 8;
     }
 

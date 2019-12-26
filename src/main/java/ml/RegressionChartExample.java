@@ -34,15 +34,12 @@ public class RegressionChartExample extends Application {
 
         String key = "Country Name";
         ObservableList<Series<Number, Number>> data = observableArrayList();
-        LineChart<Number, Number> lineChart = lineChart(data, String.format(""));
+        LineChart<Number, Number> lineChart = lineChart(data, "");
         List<Object> list2 = dataframe.list(key);
         ComboBox<Object> build = new SimpleComboBoxBuilder<>().items(list2)
             .onSelect(country -> onChangeCountry(dataframe, key, lineChart, list2, country)).select(0).build();
-        ComboBox<String> file = new SimpleComboBoxBuilder<String>().items(Arrays.asList(list)).onSelect(datafile -> {
-            dataframe = DataframeBuilder.builder("out/" + datafile).build();
-            onChangeCountry(dataframe, key, lineChart, dataframe.list(key),
-                build.getSelectionModel().getSelectedItem());
-        }).select(0).build();
+        ComboBox<String> file = new SimpleComboBoxBuilder<String>().items(Arrays.asList(list))
+            .onSelect(datafile -> onChangeFile(key, lineChart, build, datafile)).select(0).build();
         VBox root = new VBox();
         root.getChildren().add(new HBox(file, build));
         root.getChildren().add(lineChart);
@@ -50,6 +47,12 @@ public class RegressionChartExample extends Application {
         primaryStage.setTitle("Regression Chart Example");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+    }
+
+    private void onChangeFile(String key, LineChart<Number, Number> lineChart, ComboBox<Object> build,
+        String datafile) {
+        dataframe = DataframeBuilder.builder("out/" + datafile).build();
+        onChangeCountry(dataframe, key, lineChart, dataframe.list(key), build.getSelectionModel().getSelectedItem());
     }
 
     public static void main(String[] args) {

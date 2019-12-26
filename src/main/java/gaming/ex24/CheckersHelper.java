@@ -17,24 +17,24 @@ public final class CheckersHelper {
     }
 
     public static void clearEaten(List<CheckersSquare> squares, CheckersSquare selected, CheckersSquare target,
-            CheckersPlayer player) {
+        CheckersPlayer player) {
         int indexOf = squares.indexOf(selected);
         int i = indexOf / SIZE;
         int j = indexOf % SIZE;
-        for (int dirI = player.getDir(); dirI == player.getDir() || selected.getQueen() && dirI == -player.getDir();
-                dirI -= 2 * player.getDir()) {
+        for (int dirI = player.getDir(); dirI == player.getDir()
+            || selected.getQueen() && dirI == -player.getDir(); dirI -= 2 * player.getDir()) {
             for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
                 int iterations = !selected.getQueen() ? 1 : SIZE - 1;
                 for (int k = 1; k <= iterations && withinBounds(j + dirJ * k) && withinBounds(i + dirI * k); k++) {
-                    List<CheckersSquare> markPossibleKills =
-                            markPossibleKills(squares, player, i + dirI * k, j + dirJ * k, dirI, dirJ);
+                    List<CheckersSquare> markPossibleKills = markPossibleKills(squares, player, i + dirI * k,
+                        j + dirJ * k, dirI, dirJ);
                     clearPossibleKills(target, markPossibleKills);
                 }
             }
         }
         for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
-            List<CheckersSquare> markPossibleKills =
-                    markPossibleKills(squares, player, i - player.getDir(), j + dirJ, -player.getDir(), dirJ);
+            List<CheckersSquare> markPossibleKills = markPossibleKills(squares, player, i - player.getDir(), j + dirJ,
+                -player.getDir(), dirJ);
             clearPossibleKills(target, markPossibleKills);
         }
 
@@ -57,21 +57,21 @@ public final class CheckersHelper {
     }
 
     public static List<CheckersSquare> highlightPossibleMovements(List<CheckersSquare> squares, CheckersPlayer player,
-            CheckersSquare target) {
+        CheckersSquare target) {
         int indexOf = squares.indexOf(target);
         final int i = indexOf / SIZE;
         final int j = indexOf % SIZE;
         List<CheckersSquare> highlighted = new ArrayList<>();
-        for (int dirI = player.getDir(); dirI == player.getDir() || target.getQueen() && dirI == -player.getDir();
-                dirI -= 2 * player.getDir()) {
+        for (int dirI = player.getDir(); dirI == player.getDir()
+            || target.getQueen() && dirI == -player.getDir(); dirI -= 2 * player.getDir()) {
             for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
                 int iterations = !target.getQueen() ? 1 : SIZE - 1;
-                highlight(squares, player, i, j, highlighted, dirI, dirJ, iterations);
+                highlight(squares, player, i, j, highlighted, iterations, dirI, dirJ);
             }
         }
         for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
-            List<CheckersSquare> kills =
-                    markPossibleKills(squares, player, i - player.getDir(), j + dirJ, -player.getDir(), dirJ);
+            List<CheckersSquare> kills = markPossibleKills(squares, player, i - player.getDir(), j + dirJ,
+                -player.getDir(), dirJ);
             kills.stream().filter(CheckersSquare::getHighlight).forEach(highlighted::add);
         }
         return highlighted;
@@ -82,12 +82,12 @@ public final class CheckersHelper {
     }
 
     public static List<CheckersSquare> markPossibleKills(List<CheckersSquare> squares, CheckersPlayer player, int i,
-            int j, int dirI, int dirJ) {
+        int j, int dirI, int dirJ) {
         return markPossibleKills(squares, player, i, j, dirI, dirJ, new ArrayList<>());
     }
 
     public static List<CheckersSquare> markPossibleKills(List<CheckersSquare> squares, CheckersPlayer player, int i,
-            int j, int dirI, int dirJ, List<CheckersSquare> marked) {
+        int j, int dirI, int dirJ, List<CheckersSquare> marked) {
         if (!withinBounds(i) || !withinBounds(j)) {
             return marked;
         }
@@ -135,7 +135,7 @@ public final class CheckersHelper {
     }
 
     public static void replaceStates(List<CheckersSquare> squares, CheckersSquare target, CheckersSquare selected,
-            CheckersPlayer player) {
+        CheckersPlayer player) {
         clearEaten(squares, selected, target, player);
 
         target.setState(player);
@@ -204,15 +204,17 @@ public final class CheckersHelper {
     }
 
     private static void highlight(List<CheckersSquare> squares, CheckersPlayer player, final int i, final int j,
-        List<CheckersSquare> highlighted, int dirI, int dirJ, int iterations) {
+        List<CheckersSquare> highlighted, int iterations, int... dirs) {
+        int dirI = dirs[0];
+        int dirJ = dirs[1];
+
         for (int k = 1; k <= iterations && withinBounds(j + dirJ * k) && withinBounds(i + dirI * k); k++) {
             CheckersSquare checkersSquare = squares.get(toIndex(i + dirI * k, j + dirJ * k));
             if (checkersSquare.getState() == CheckersPlayer.NONE) {
                 checkersSquare.setHighlight(true);
                 highlighted.add(checkersSquare);
             }
-            List<CheckersSquare> kills =
-                    markPossibleKills(squares, player, i + dirI * k, j + dirJ * k, dirI, dirJ);
+            List<CheckersSquare> kills = markPossibleKills(squares, player, i + dirI * k, j + dirJ * k, dirI, dirJ);
             kills.stream().filter(CheckersSquare::getHighlight).forEach(highlighted::add);
             if (checkersSquare.getState() == player) {
                 break;
@@ -221,7 +223,7 @@ public final class CheckersHelper {
     }
 
     private static void markAllDirections(List<CheckersSquare> squares, CheckersPlayer player, int i, int j, int dirI,
-            int dirJ, List<CheckersSquare> marked) {
+        int dirJ, List<CheckersSquare> marked) {
         for (int dirI2 = -1; dirI2 <= 1; dirI2 += 2) {
             for (int dirJ2 = -1; dirJ2 <= 1; dirJ2 += 2) {
                 markPossibleKills(squares, player, i + dirI + dirI2, j + dirJ + dirJ2, dirI2, dirJ2, marked);

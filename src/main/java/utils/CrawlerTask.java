@@ -24,7 +24,7 @@ import org.jsoup.nodes.Document;
 public abstract class CrawlerTask extends Task<String> {
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
     private static final String LOGIN = "guilherme.hmedeiros";
-    private static final String PASS = "14-juuYON";
+    private static final String PASS = "15-juuGO";
     private static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
     private static final boolean IS_PROXIED = isProxied().test(5000);
 

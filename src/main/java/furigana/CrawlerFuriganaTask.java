@@ -111,8 +111,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     private String computeReading(String key) {
-        return mapReading.computeIfAbsent(key, FunctionEx
-            .makeFunction((String k) -> computeReading(k.substring(0, k.length() - 1), k.charAt(k.length() - 1))));
+        return mapReading.computeIfAbsent(key,
+            s -> FunctionEx.apply(k -> computeReading(k.substring(0, k.length() - 1), k.charAt(k.length() - 1)), s));
     }
 
     private String computeReading(String currentWord, char currentLetter) throws IOException {

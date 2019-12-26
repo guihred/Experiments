@@ -74,7 +74,7 @@ public class CheckersTree {
     }
 
     private String getStrRepresentation() {
-        StringBuilder s = new StringBuilder();
+        StringBuilder s = new StringBuilder("\n");
         for (int i = 0; i < squares.size(); i++) {
             CheckersSquare sq = squares.get(i);
             CheckersPlayer state = sq.getState();
@@ -87,7 +87,7 @@ public class CheckersTree {
             } else {
                 s.append("_");
             }
-            if (i % 8 == 0) {
+            if (i % 8 == 7) {
                 s.append("\n");
             }
         }

@@ -19,6 +19,7 @@ import utils.SupplierEx;
 
 public class RegressionModel {
 
+    private static final double MIN_DIFFERENCE = 1E-4;
     private static final int MAX_SIZE = 50;
     private int i;
     private List<Double> target;
@@ -98,7 +99,6 @@ public class RegressionModel {
 
             DoubleUnaryOperator polynomialRegression = polynomialRegression(x, y, 3);
 
-//            DoubleUnaryOperator polyRegression = polyRegression(x, y);
             List<Data<Number, Number>> expectedPoints = IntStream.range(0, features.size())
                 .mapToObj(j -> toData(features.get(j), polynomialRegression.applyAsDouble(features.get(j))))
                 .collect(Collectors.toList());
@@ -116,7 +116,8 @@ public class RegressionModel {
         int n = x.length;
 
         // first pass
-        double sumx = 0.0, sumy = 0.0;
+        double sumx = 0.0;
+        double sumy = 0.0;
         for (int j = 0; j < n; j++) {
             sumx += x[j];
             sumy += y[j];
@@ -125,12 +126,13 @@ public class RegressionModel {
         double ybar = sumy / n;
 
         // second pass: compute summary statistics
-        double xxbar = 0.0, xybar = 0.0;
+        double xxbar = 0.0;
+        double xybar = 0.0;
         for (int j = 0; j < n; j++) {
             xxbar += (x[j] - xbar) * (x[j] - xbar);
             xybar += (x[j] - xbar) * (y[j] - ybar);
         }
-        bestSlope = xybar / xxbar;
+        bestSlope = xxbar == 0 ? Double.POSITIVE_INFINITY : xybar / xxbar;
         bestInitial = ybar - bestSlope * xbar;
     }
 
@@ -168,7 +170,7 @@ public class RegressionModel {
 
     public static double beta(RealMatrix beta, int j) {
         // to make -0.0 print as 0.0
-        if (Math.abs(beta.getEntry(j, 0)) < 1E-4) {
+        if (Math.abs(beta.getEntry(j, 0)) < MIN_DIFFERENCE) {
             return 0.0;
         }
         return beta.getEntry(j, 0);

@@ -33,6 +33,7 @@ import utils.SupplierEx;
 
 public class MusicOrganizer extends Application {
 
+    private static final int PREF_SIZE = 40;
     private static final int HEIGHT = 250;
     private static final int WIDTH = 600;
     private static final Image DEFAULT_VIEW = defaultView();
@@ -55,7 +56,7 @@ public class MusicOrganizer extends Application {
         ObservableList<Music> musics = FXCollections.observableArrayList();
         configurarFiltroRapido(filterField, musicasTable, musics);
         Button buttonVideos = loadVideos(musicasTable, filterField);
-        progress.setMinSize(40, 40);
+        progress.setMinSize(PREF_SIZE, PREF_SIZE);
         root.getChildren().add(new VBox(new Label("Lista Músicas"),
             new HBox(buttonMusic, buttonVideos, fixMusic, filterField, progress), musicasTable));
         Scene scene = new Scene(root, WIDTH, HEIGHT);

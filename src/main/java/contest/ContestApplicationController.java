@@ -95,30 +95,7 @@ public class ContestApplicationController {
         });
         questionNumber.textProperty().bind(current.add(1).asString("Questão %d"));
         updateCellFactory();
-        current.addListener((ob, old, value) -> {
-            int cur = value.intValue();
-            if (cur < 0) {
-                question.setText("");
-                return;
-            }
-            String text2 = ContestApplicationController.getText(contestQuestions, cur);
-            text.setText(text2);
-            double[] dividerPositions = splitPane.getDividerPositions();
-            dividerPositions[dividerPositions.length - 1] = text2.isEmpty()
-                ? dividerPositions[dividerPositions.length - 2]
-                : 4. / 6;
-            splitPane.setDividerPositions(dividerPositions);
-            questions.getSelectionModel().select(cur);
-            ContestQuestion contestQuestion = contestQuestions.getListQuestions().get(cur);
-            question.setText(contestQuestion.getExercise());
-            changeOptions(contestQuestion);
-            images.getChildren().clear();
-            getContextTexts(contestQuestions, cur).map(ContestText::getImage).filter(Objects::nonNull)
-                .forEach(this::addImages);
-            if (contestQuestion.getImage() != null) {
-                addImages(contestQuestion.getImage());
-            }
-        });
+        current.addListener((ob, old, value) -> onCurrentChange(value));
         current.set(0);
     }
 
@@ -159,6 +136,31 @@ public class ContestApplicationController {
             }
         }
         updateCellFactory();
+    }
+
+    private void onCurrentChange(Number value) {
+        int cur = value.intValue();
+        if (cur < 0) {
+            question.setText("");
+            return;
+        }
+        String text2 = ContestApplicationController.getText(contestQuestions, cur);
+        text.setText(text2);
+        double[] dividerPositions = splitPane.getDividerPositions();
+        dividerPositions[dividerPositions.length - 1] = text2.isEmpty()
+            ? dividerPositions[dividerPositions.length - 2]
+            : 4. / 6;
+        splitPane.setDividerPositions(dividerPositions);
+        questions.getSelectionModel().select(cur);
+        ContestQuestion contestQuestion = contestQuestions.getListQuestions().get(cur);
+        question.setText(contestQuestion.getExercise());
+        changeOptions(contestQuestion);
+        images.getChildren().clear();
+        getContextTexts(contestQuestions, cur).map(ContestText::getImage).filter(Objects::nonNull)
+            .forEach(this::addImages);
+        if (contestQuestion.getImage() != null) {
+            addImages(contestQuestion.getImage());
+        }
     }
 
     private void updateCellFactory() {
