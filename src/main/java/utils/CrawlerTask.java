@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,7 +19,9 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jsoup.Connection;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 
 public abstract class CrawlerTask extends Task<String> {
@@ -96,6 +99,26 @@ public abstract class CrawlerTask extends Task<String> {
 
     public static void copy(String src, String dest) throws IOException {
         copy(new File(src), new File(dest));
+    }
+
+    public static Response executeRequest(String url, Map<String, String> cookies) throws IOException {
+        Connection connect = HttpConnection.connect(url);
+        if (!isNotProxied()) {
+            connect.header("Proxy-Authorization",
+                "Basic " + getEncodedAuthorization());
+        }
+        connect.timeout(10000);
+        connect.cookies(cookies);
+        connect.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
+        Response execute = connect.execute();
+        return execute;
+    }
+
+    public static Document getDocument(String url, Map<String, String> cookies) throws IOException {
+        Response execute = executeRequest(url, cookies);
+        Map<String, String> cookies2 = execute.cookies();
+        cookies.putAll(cookies2);
+        return execute.parse();
     }
 
     public static Document getDocument(final String url, String encoded) throws IOException {

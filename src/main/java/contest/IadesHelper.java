@@ -61,7 +61,13 @@ public final class IadesHelper {
             String file = new URL(url).getFile();
             String[] split = file.split("/");
             String out = split[split.length - 1];
-            File outFile = ResourceFXUtils.getOutFile(out);
+            return extractURL(out, url);
+        });
+    }
+
+    public static File extractURL(String name, String url) {
+        return SupplierEx.get(() -> {
+            File outFile = ResourceFXUtils.getOutFile(name);
             CrawlerTask.copy(url, outFile);
             if (url.endsWith(".zip")) {
                 UnZip.extractZippedFiles(outFile);
@@ -69,7 +75,7 @@ public final class IadesHelper {
             if (url.endsWith(".rar")) {
                 UnRar.extractRarFiles(outFile);
             }
-            LOG.info("FILE {} SAVED", out);
+            LOG.info("FILE {} SAVED", name);
             return outFile;
         });
     }

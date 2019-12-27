@@ -25,15 +25,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ImageTableCell;
 import utils.StringSigaUtils;
 
 public class ContestApplicationController {
     private static final String ERRADO0 = "errado0";
     private static final String CERTO0 = "certo0";
-    private static final Logger LOG = HasLogging.log();
     @FXML
     private ScrollPane scrollPane2;
     @FXML
@@ -79,11 +76,8 @@ public class ContestApplicationController {
             if (value == null) {
                 return;
             }
-            Boolean correct = value.getCorrect();
             ObservableList<ContestQuestion> contestTexts = contestQuestions.getListQuestions();
             questions.setItems(contestTexts);
-            Integer number = contestTexts.get(current.get()).getNumber();
-            LOG.info("Question {} Answer {}", number, correct);
             splitPane.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
                 if (e.contains(CERTO0)) {
                     e.add("certo");
