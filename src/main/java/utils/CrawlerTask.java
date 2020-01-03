@@ -170,7 +170,7 @@ public abstract class CrawlerTask extends Task<String> {
         return !IS_PROXIED;
     }
 
-    private static Predicate<Integer> isProxied() {
+    public static Predicate<Integer> isProxied() {
         return PredicateEx.makeTest(timeout -> InetAddress.getByName(PROXY_CONFIG).isReachable(timeout));
     }
 

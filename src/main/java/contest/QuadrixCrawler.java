@@ -10,9 +10,10 @@ import extract.UnRar;
 import extract.UnZip;
 import java.io.File;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
@@ -31,6 +32,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import simplebuilder.SimpleListViewBuilder;
@@ -59,30 +61,35 @@ public class QuadrixCrawler extends Application {
 
     private Parent createSplitTreeListDemoNode() {
         SimpleTreeViewBuilder<Map.Entry<String, String>> root = new SimpleTreeViewBuilder<Map.Entry<String, String>>()
-            .root(new AbstractMap.SimpleEntry<>("", DOMAIN + "/encerrados.aspx"));
+                .root(new AbstractMap.SimpleEntry<>("", DOMAIN + "/encerrados.aspx"));
         TreeView<Map.Entry<String, String>> treeBuilder = root.build();
         Set<String> links = new HashSet<>();
         Property<Concurso> concurso = new SimpleObjectProperty<>();
         root.onSelect(t -> getNewLinks(t, links, treeBuilder));
         SimpleListViewBuilder<String> listBuilder = new SimpleListViewBuilder<>();
-        listBuilder.items(FXCollections.observableArrayList()).onSelect(
-            (old, value) -> new Thread(() -> saveContestValues(concurso, value, listBuilder.build()), "Save Contest")
-                .start());
-        SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
-            .addColumns("nome").onSelect((old, value) -> {
-                concurso.setValue(value);
-                listBuilder.items(value.getVagas());
-            }).prefWidthColumns(1).minWidth(200);
+        listBuilder.items(FXCollections.observableArrayList()).onSelect((old,
+                value) -> new Thread(() -> saveContestValues(concurso, value, listBuilder.build()), "Save Contest")
+                        .start());
+        SimpleTableViewBuilder<Concurso> tableBuilder =
+                new SimpleTableViewBuilder<Concurso>().items(concursos).addColumns("nome").onSelect((old, value) -> {
+                    concurso.setValue(value);
+                    listBuilder.items(value.getVagas());
+                }).prefWidthColumns(1).minWidth(200);
 
         return new VBox(new SplitPane(treeBuilder, tableBuilder.build(), listBuilder.build()));
     }
 
     private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
-        SimpleStringProperty domain, Set<String> links, int level) {
-        List<Map.Entry<String, String>> linksFound = doc.select("a").stream()
-            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), addDomain(domain, l.attr("href"))))
-            .filter(t -> !"#".equals(t.getValue())).filter(t -> level < 1 || t.getKey().contains("aplicada"))
-            .filter(t -> links.add(t.getValue())).distinct().collect(Collectors.toList());
+            SimpleStringProperty domain, Set<String> links, int level) {
+        List<SimpleEntry<String, String>> allLinks = doc.select("a").stream()
+                .map(l -> new AbstractMap.SimpleEntry<>(l.text(), addDomain(domain, l.attr("href"))))
+                .filter(t -> !"#".equals(t.getValue())).collect(Collectors.toList());
+        List<Map.Entry<String, String>> linksFound =
+                allLinks.stream()
+                        .filter(t -> level < 2 || StringUtils.containsIgnoreCase(t.getKey(), "aplicada")
+                                || StringUtils.containsIgnoreCase(t.getKey(), "Gabarito")
+                                || t.getKey().contains("Caderno"))
+                .filter(t -> links.add(t.getValue())).distinct().collect(Collectors.toList());
         if (level == 2 && !linksFound.isEmpty()) {
             Concurso e2 = new Concurso();
             e2.setUrl(url.getValue());
@@ -91,14 +98,14 @@ public class QuadrixCrawler extends Application {
             e2.setNome(split[0]);
             e2.setLinksFound(linksFound);
             doc.select("fieldset").stream().filter(e -> e.select("legend").text().contains("Vagas"))
-                .flatMap(e -> e.select("b").stream()).forEach(e -> e2.getVagas().add(e.text()));
+                    .flatMap(e -> e.select("b").stream()).forEach(e -> e2.getVagas().add(e.text()));
             concursos.add(e2);
         }
         return linksFound;
     }
 
     private void getNewLinks(TreeItem<Map.Entry<String, String>> newValue, Set<String> links,
-        TreeView<Map.Entry<String, String>> build) {
+            TreeView<Map.Entry<String, String>> build) {
         if (newValue == null) {
             return;
         }
@@ -111,18 +118,22 @@ public class QuadrixCrawler extends Application {
             String url1 = DOMAIN + "/" + url;
             SupplierEx.get(() -> {
                 // TODO Solve problem
-
                 File outFile = ResourceFXUtils.getOutFile(key);
                 URL url2 = new URL(url1);
-                URLConnection openConnection = url2.openConnection();
-                openConnection.addRequestProperty("Proxy-Authorization",
-                    "Basic " + CrawlerTask.getEncodedAuthorization());
-                String collect = cookies.entrySet().stream().map(e -> e.toString()).collect(Collectors.joining("; "));
-                openConnection.addRequestProperty("Cookie", collect);
-                openConnection.setAllowUserInteraction(true);
-                openConnection.setConnectTimeout(10000);
-                System.out.println(openConnection.getRequestProperties());
-                InputStream input = openConnection.getInputStream();
+                HttpURLConnection con = (HttpURLConnection) url2.openConnection();
+                if (!CrawlerTask.isNotProxied()) {
+                    con.addRequestProperty("Proxy-Authorization",
+                            "Basic " + CrawlerTask.getEncodedAuthorization());
+                }
+                con.setRequestMethod("GET");
+                con.setDoOutput(true);
+                con.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                con.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0");
+                con.setRequestProperty("Accept-Encoding"
+                        , "gzip, deflate");
+                con.setConnectTimeout(100000);
+                con.setReadTimeout(100000);
+                InputStream input = con.getInputStream();
                 CrawlerTask.copy(input, outFile);
                 if (url1.endsWith(".zip")) {
                     UnZip.extractZippedFiles(outFile);
