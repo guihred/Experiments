@@ -34,6 +34,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
@@ -61,51 +63,60 @@ public class QuadrixCrawler extends Application {
 
     private Parent createSplitTreeListDemoNode() {
         SimpleTreeViewBuilder<Map.Entry<String, String>> root = new SimpleTreeViewBuilder<Map.Entry<String, String>>()
-                .root(new AbstractMap.SimpleEntry<>("", DOMAIN + "/encerrados.aspx"));
+            .root(new AbstractMap.SimpleEntry<>("", DOMAIN + "/encerrados.aspx"));
         TreeView<Map.Entry<String, String>> treeBuilder = root.build();
         Set<String> links = new HashSet<>();
         Property<Concurso> concurso = new SimpleObjectProperty<>();
         root.onSelect(t -> getNewLinks(t, links, treeBuilder));
         SimpleListViewBuilder<String> listBuilder = new SimpleListViewBuilder<>();
-        listBuilder.items(FXCollections.observableArrayList()).onSelect((old,
-                value) -> new Thread(() -> saveContestValues(concurso, value, listBuilder.build()), "Save Contest")
-                        .start());
-        SimpleTableViewBuilder<Concurso> tableBuilder =
-                new SimpleTableViewBuilder<Concurso>().items(concursos).addColumns("nome").onSelect((old, value) -> {
-                    concurso.setValue(value);
-                    listBuilder.items(value.getVagas());
-                }).prefWidthColumns(1).minWidth(200);
+        listBuilder.items(FXCollections.observableArrayList()).onSelect(
+            (old, value) -> new Thread(() -> saveContestValues(concurso, value, listBuilder.build()), "Save Contest")
+                .start());
+        SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
+            .addColumns("nome").onSelect((old, value) -> {
+                concurso.setValue(value);
+                listBuilder.items(value.getVagas());
+            }).prefWidthColumns(1).minWidth(200);
 
         return new VBox(new SplitPane(treeBuilder, tableBuilder.build(), listBuilder.build()));
     }
 
+    private boolean extracted(Element e) {
+        String text = e.select("span").first().text();
+        return text.contains("Escolaridade");
+    }
+
     private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
-            SimpleStringProperty domain, Set<String> links, int level) {
-        List<SimpleEntry<String, String>> allLinks = doc.select("a").stream()
-                .map(l -> new AbstractMap.SimpleEntry<>(l.text(), addDomain(domain, l.attr("href"))))
-                .filter(t -> !"#".equals(t.getValue())).collect(Collectors.toList());
-        List<Map.Entry<String, String>> linksFound =
-                allLinks.stream()
-                        .filter(t -> level < 2 || StringUtils.containsIgnoreCase(t.getKey(), "aplicada")
-                                || StringUtils.containsIgnoreCase(t.getKey(), "Gabarito")
-                                || t.getKey().contains("Caderno"))
-                .filter(t -> links.add(t.getValue())).distinct().collect(Collectors.toList());
-        if (level == 2 && !linksFound.isEmpty()) {
+        SimpleStringProperty domain, Set<String> links, int level) {
+        Elements select = doc.select("a");
+        List<SimpleEntry<String, String>> allLinks = select.stream().map((Element l) -> {
+            return new AbstractMap.SimpleEntry<>(l.text(), addDomain(domain, l.attr("href")));
+        }).filter(t -> !"#".equals(t.getValue()) && StringUtils.isNotBlank(t.getKey()))
+            .filter(t -> links.add(t.getValue())).collect(Collectors.toList());
+        List<Map.Entry<String, String>> linksFound = allLinks.stream()
+            .filter(t -> level < 2 || StringUtils.containsIgnoreCase(t.getKey(), "aplicada")
+                || StringUtils.containsIgnoreCase(t.getKey(), "Gabarito Definitivo") || t.getKey().contains("Caderno"))
+            .distinct().collect(Collectors.toList());
+        if (level == 1 && !linksFound.isEmpty()) {
             Concurso e2 = new Concurso();
             e2.setUrl(url.getValue());
             String key = url.getKey();
-            String[] split = key.split("Processo|Inscriç|Concurso|Vestibular");
+            String[] split = key.split("-");
             e2.setNome(split[0]);
             e2.setLinksFound(linksFound);
-            doc.select("fieldset").stream().filter(e -> e.select("legend").text().contains("Vagas"))
-                    .flatMap(e -> e.select("b").stream()).forEach(e -> e2.getVagas().add(e.text()));
+            Elements children = doc.select("#ficha-lateral-direita-abertos");
+
+            children.stream().filter(e -> {
+                String text = e.select("span").first().text();
+                return text.contains("Escolaridade");
+            }).map(e -> e.select("span").last()).forEach(e -> e2.getVagas().add(e.text()));
             concursos.add(e2);
         }
         return linksFound;
     }
 
     private void getNewLinks(TreeItem<Map.Entry<String, String>> newValue, Set<String> links,
-            TreeView<Map.Entry<String, String>> build) {
+        TreeView<Map.Entry<String, String>> build) {
         if (newValue == null) {
             return;
         }
@@ -122,15 +133,15 @@ public class QuadrixCrawler extends Application {
                 URL url2 = new URL(url1);
                 HttpURLConnection con = (HttpURLConnection) url2.openConnection();
                 if (!CrawlerTask.isNotProxied()) {
-                    con.addRequestProperty("Proxy-Authorization",
-                            "Basic " + CrawlerTask.getEncodedAuthorization());
+                    con.addRequestProperty("Proxy-Authorization", "Basic " + CrawlerTask.getEncodedAuthorization());
                 }
                 con.setRequestMethod("GET");
                 con.setDoOutput(true);
-                con.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-                con.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0");
-                con.setRequestProperty("Accept-Encoding"
-                        , "gzip, deflate");
+                con.setRequestProperty("Accept",
+                    "text/html,application/xhtml+xml,application/xml,application/pdf;q=0.9,*/*;q=0.8");
+                con.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0");
+                con.setRequestProperty("Accept-Encoding", "gzip, deflate");
                 con.setConnectTimeout(100000);
                 con.setReadTimeout(100000);
                 InputStream input = con.getInputStream();
