@@ -107,11 +107,10 @@ public abstract class CrawlerTask extends Task<String> {
             connect.header("Proxy-Authorization",
                 "Basic " + getEncodedAuthorization());
         }
-        connect.timeout(10000);
+        connect.timeout(100000);
         connect.cookies(cookies);
         connect.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
-        Response execute = connect.execute();
-        return execute;
+        return connect.execute();
     }
 
     public static Document getDocument(String url, Map<String, String> cookies) throws IOException {
