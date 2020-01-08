@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.LocalTime;
 import org.slf4j.Logger;
+import utils.ConsoleUtils;
 import utils.HasLogging;
 
 public final class UnRar {
+    private static final String UNRAR_FILE = "\"C:\\Program Files\\WinRAR\\UnRAR.exe\"";
     private static final Logger LOGGER = HasLogging.log();
     public static final String SRC_DIRECTORY = new File("").getAbsolutePath();
 
@@ -109,6 +111,8 @@ public final class UnRar {
         } catch (Exception e) {
             LOGGER.trace("file: {} extraction error - does the file exist? {}", file, e);
             errorFiles.add(file.toString());
+            ConsoleUtils.startProcessAndWait(
+                String.format("%s e \"%s\" \"%s\" -y", UNRAR_FILE, file, output), "Tudo OK");
         }
     }
 

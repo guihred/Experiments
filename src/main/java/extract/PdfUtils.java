@@ -125,10 +125,10 @@ public final class PdfUtils {
         return pdfInfo;
     }
 
-    public static void runOnFile(File file, BiConsumer<String, List<TextPosition>> onTextPosition, IntConsumer onPage,
-        Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
+    public static void runOnFile(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
+        IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
         PdfUtils.extractImages(file);
-        RunnableEx.ignore(() -> runOnLines(file, onTextPosition, onPage, onLines, onImages));
+        RunnableEx.ignore(() -> runOnLines(init, file, onTextPosition, onPage, onLines, onImages));
     }
 
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
@@ -168,8 +168,9 @@ public final class PdfUtils {
         }
     }
 
-    private static void runOnLines(File file, BiConsumer<String, List<TextPosition>> onTextPosition, IntConsumer onPage,
-        Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) throws IOException {
+    private static void runOnLines(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
+        IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages)
+        throws IOException {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -182,7 +183,7 @@ public final class PdfUtils {
             };
             int numberOfPages = pdDoc.getNumberOfPages();
             PrintImageLocations printImageLocations = new PrintImageLocations(file);
-            for (int i = 2; i <= numberOfPages; i++) {
+            for (int i = init; i <= numberOfPages; i++) {
                 PDPage page = pdDoc.getPage(i - 1);
                 onPage.accept(i);
                 pdfStripper.setStartPage(i);

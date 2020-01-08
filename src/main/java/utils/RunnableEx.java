@@ -7,12 +7,6 @@ import org.assertj.core.api.exception.RuntimeIOException;
 public interface RunnableEx {
     void run() throws Exception;
 
-    static <T> void runIf(T length, ConsumerEx<T> func) {
-        if (length != null) {
-            ConsumerEx.makeConsumer(func).accept(length);
-        }
-    }
-
     static void ignore(RunnableEx run) {
         try {
             run.run();
@@ -63,5 +57,15 @@ public interface RunnableEx {
         } catch (Exception e) {
             HasLogging.log(1).error("", e);
         }
+    }
+
+    static <T> void runIf(T length, ConsumerEx<T> func) {
+        if (length != null) {
+            ConsumerEx.makeConsumer(func).accept(length);
+        }
+    }
+
+    static void runNewThread(RunnableEx run) {
+        new Thread(make(run)).start();
     }
 }

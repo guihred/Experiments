@@ -105,15 +105,6 @@ public final class IadesHelper {
         return instance;
     }
 
-    public static ContestReader getContestQuestions(File file, Runnable... r) {
-        ContestReader instance = new ContestReader();
-        new Thread(() -> {
-            instance.readFile(file);
-            Stream.of(r).forEach(Runnable::run);
-        }).start();
-        return instance;
-    }
-
     public static Path getFirstPDF(File file, String number) throws IOException {
 		try (Stream<Path> find = Files.find(file.toPath(), 3, (path, info) -> nameMatches(number, path))) {
             Optional<Path> findFirst = find.findFirst();
@@ -122,6 +113,7 @@ public final class IadesHelper {
 
             }
         }
+
         try (Stream<Path> find = Files.find(file.toPath(), 3,
 				(path, info) -> path.toFile().getName().endsWith(".pdf"))) {
             Optional<Path> findFirst = find.findFirst();
@@ -144,7 +136,9 @@ public final class IadesHelper {
     }
 
     public static boolean nameMatches(String number, Path path) {
-        return path.toFile().getName().contains(number) && path.toFile().getName().endsWith(".pdf");
+        return (StringUtils.containsIgnoreCase(path.toFile().getName(), number)
+            || path.toFile().getName().matches(".*" + number.replaceAll(" ", ".*") + ".*"))
+            && path.toFile().getName().endsWith(".pdf");
     }
 
     public static void saveContestValues(Property<Concurso> concurso, String vaga, Node vagasView) {

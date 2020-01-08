@@ -53,7 +53,7 @@ public class ContestQuestionEditingDisplay extends Application {
     public ContestQuestionEditingDisplay() {
         instance = IadesHelper.getContestQuestions(
             ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"),
-            () -> Platform.runLater(() -> current.set(0)));
+            r -> Platform.runLater(() -> current.set(0)));
         lessons = instance.getListQuestions();
     }
 
