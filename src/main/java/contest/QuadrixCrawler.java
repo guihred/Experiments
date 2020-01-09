@@ -1,10 +1,12 @@
 
 package contest;
 
-import static contest.IadesHelper.addDomain;
 import static contest.IadesHelper.containsNumber;
+import static contest.IadesHelper.getAnswers;
 import static contest.IadesHelper.getContestQuestions;
 import static contest.IadesHelper.getPDF;
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static simplebuilder.SimpleDialogBuilder.bindWindow;
 import static utils.CrawlerTask.executeRequest;
 import static utils.FunctionEx.makeFunction;
 import static utils.RunnableEx.run;
@@ -13,13 +15,11 @@ import static utils.StringSigaUtils.decodificar;
 import static utils.SupplierEx.getIgnore;
 import static utils.SupplierEx.orElse;
 
+import contest.db.ContestQuestion;
+import contest.db.Organization;
 import extract.PdfUtils;
-import extract.UnRar;
-import extract.UnZip;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
@@ -36,6 +36,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
@@ -55,12 +56,12 @@ import utils.*;
 
 public class QuadrixCrawler extends Application {
 
-    private static final Logger LOG = HasLogging.log();
+    public static final Logger LOG = HasLogging.log();
     private static final String DOMAIN = "http://www.quadrix.org.br";
 
-    private ObservableList<Concurso> concursos = FXCollections.observableArrayList();
+    private static Map<String, String> cookies = new HashMap<>();
 
-    private Map<String, String> cookies = new HashMap<>();
+    private ObservableList<Concurso> concursos = FXCollections.observableArrayList();
 
     private Set<String> links = new HashSet<>();
 
@@ -76,7 +77,7 @@ public class QuadrixCrawler extends Application {
 
     private Parent createSplitTreeListDemoNode() {
         SimpleTreeViewBuilder<Map.Entry<String, String>> root = new SimpleTreeViewBuilder<Map.Entry<String, String>>()
-            .root(new AbstractMap.SimpleEntry<>("", DOMAIN + "/encerrados.aspx"));
+            .root(new AbstractMap.SimpleEntry<>("", addDomain("encerrados.aspx")));
         TreeView<Map.Entry<String, String>> treeBuilder = root.build();
         Property<Concurso> concurso = new SimpleObjectProperty<>();
         root.onSelect(t -> getNewLinks(t, treeBuilder));
@@ -87,52 +88,18 @@ public class QuadrixCrawler extends Application {
         SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
             .addColumns("nome").onSelect((old, value) -> {
                 concurso.setValue(value);
+                value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
                 listBuilder.items(value.getVagas());
             }).prefWidthColumns(1).minWidth(200);
 
         return new VBox(new SplitPane(treeBuilder, tableBuilder.build(), listBuilder.build()));
     }
 
-    private void findVagas(List<Map.Entry<String, String>> linksFound, Concurso e2) {
-        runNewThread(() -> {
-            if (e2.getVagas().isEmpty()) {
-                List<Entry<String, String>> collect = linksFound.stream()
-                    .filter(t -> StringUtils.containsIgnoreCase(t.getKey(), "Resultado")).collect(Collectors.toList());
-                for (Entry<String, String> entry : collect) {
-                    getVagas(e2, entry);
-                    if (!e2.getVagas().isEmpty()) {
-                        break;
-                    }
-                }
-            }
-        });
-    }
-
-    private File getFileFromPage(String text, String url3) throws IOException {
-        // PDFs are redirected to an html visualization page
-        if (!text.endsWith(".pdf")) {
-            return getFile(text, url3);
-        }
-        Response executeRequest = executeRequest(url3, cookies);
-        String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
-        return SupplierEx.makeSupplier(() -> getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
-            .get();
-    }
-
-    private List<File> getFilesFromPage(Entry<String, String> link) {
-        String url = link.getValue();
-        URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(DOMAIN + "/" + url));
-        return SupplierEx.get(() -> CrawlerTask.getDocument(url2.toExternalForm(), cookies)).select("a").stream()
-            .filter(e -> hasFileExtension(e.text()))
-            .map(makeFunction(e -> getFileFromPage(e.text(), DOMAIN + "/" + e.attr("href"))))
-            .filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
     private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
         SimpleStringProperty domain, int level) {
         Elements select = doc.select("a");
         List<SimpleEntry<String, String>> allLinks = select.stream()
-            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), addDomain(domain, l.attr("href"))))
+            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
             .filter(t -> !"#".equals(t.getValue()) && StringUtils.isNotBlank(t.getKey()))
             .filter(t -> links.add(t.getValue())).collect(Collectors.toList());
         List<Map.Entry<String, String>> linksFound = allLinks.stream()
@@ -171,9 +138,9 @@ public class QuadrixCrawler extends Application {
         String key = entry.getKey();
         String url = entry.getValue();
 
-        if (hasFileExtension(key)) {
-            String url1 = DOMAIN + "/" + url;
-            SupplierEx.get(() -> getFile(key, url1));
+        if (IadesHelper.hasFileExtension(key)) {
+            String url1 = addDomain(url);
+            SupplierEx.get(() -> CrawlerTask.getFile(key, url1));
             return;
         }
         if (!newValue.getChildren().isEmpty()) {
@@ -182,7 +149,7 @@ public class QuadrixCrawler extends Application {
         int level = tree.getTreeItemLevel(newValue);
         SimpleStringProperty domain = new SimpleStringProperty(DOMAIN);
         CompletableFuture.supplyAsync(SupplierEx.makeSupplier(() -> {
-            URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(DOMAIN + "/" + url));
+            URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(addDomain(url)));
             domain.set(url2.getProtocol() + "://" + url2.getHost());
             LOG.info("GETTING {} level {}", url, level);
             return CrawlerTask.getDocument(url2.toExternalForm(), cookies);
@@ -194,11 +161,128 @@ public class QuadrixCrawler extends Application {
         ForkJoinPool.commonPool().awaitQuiescence(500, TimeUnit.SECONDS);
     }
 
-    private void getVagas(Concurso e2, Entry<String, String> resultado) {
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public static void saveQuestions(Property<Concurso> concurso, String vaga,
+        ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities, Node vagasView) {
+        entities.getContest().setName(concurso.getValue().getNome());
+        entities.getContest().setJob(vaga);
+        entities.saveAll();
+        File gabaritoFile = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
+            .sorted(Comparator.comparing(e -> containsNumber(number, e))).map(gab -> getFilesFromPage(gab))
+            .filter(l -> !l.isEmpty()).map(l -> l.get(0)).findFirst().orElse(null);
+        if (gabaritoFile == null) {
+            LOG.info("SEM gabarito {}", linksFound);
+            return;
+        }
+        List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
+            .collect(Collectors.toList());
+        String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");
+        String cargo = split[split.length - 1].trim();
+        Optional<String> findFirst = linesRead.stream()
+            .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
+        if (!findFirst.isPresent()) {
+            LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabaritoFile, linesRead);
+            return;
+        }
+        String answers = getAnswers(entities, linesRead, findFirst.get());
+        if (answers.length() != entities.getListQuestions().size()) {
+            LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(), entities.getListQuestions().size());
+            return;
+        }
+        ObservableList<ContestQuestion> listQuestions = entities.getListQuestions();
+        for (int i = 0; i < listQuestions.size(); i++) {
+            ContestQuestion contestQuestion = listQuestions.get(i);
+            contestQuestion.setAnswer(answers.charAt(i));
+        }
+        entities.saveAll();
+        Platform.runLater(
+            () -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
+    }
+
+    private static String addDomain(String url) {
+        if (url.startsWith("http")) {
+            return url;
+        }
+        return DOMAIN + "/" + url;
+    }
+
+    private static void addVaga(Concurso e2, String vaga) {
+        if (!e2.getVagas().contains(vaga)) {
+            Platform.runLater(() -> {
+                if (!e2.getVagas().contains(vaga)) {
+                    e2.getVagas().add(vaga);
+                }
+            });
+        }
+    }
+
+    private static void extrairVagas(Concurso e2, File f) {
+        for (String string : PdfUtils.getAllLines(f)) {
+            if (string.matches(".+\\(código \\d+\\).*")) {
+                String split = string.split(" *\\(")[0];
+                addVaga(e2, split);
+                continue;
+            }
+            String[] split = string.split(" ");
+            String regex = "\\d{3}\\.\\d+\\/\\d";
+            List<String> asList = Arrays.asList(split);
+            Optional<String> findFirst = asList.stream().filter(e -> e.matches(regex)).findFirst();
+            if (findFirst.isPresent()) {
+                int indexOf = asList.indexOf(findFirst.get());
+                String collect = Stream.of(split).skip(1).limit(indexOf - 1).collect(Collectors.joining(" "));
+                String vaga = collect.split(" *-")[0];
+                if (!vaga.matches(".*" + regex + ".*")) {
+                    addVaga(e2, vaga);
+                }
+            }
+        }
+        f.delete();
+    }
+
+    private static void findVagas(List<Map.Entry<String, String>> linksFound, Concurso e2) {
+        runNewThread(() -> {
+            if (e2.getVagas().isEmpty()) {
+                List<Entry<String, String>> collect = linksFound.stream()
+                    .filter(t -> StringUtils.containsIgnoreCase(t.getKey(), "Resultado")).collect(Collectors.toList());
+                for (Entry<String, String> entry : collect) {
+                    getVagas(e2, entry);
+                    if (!e2.getVagas().isEmpty()) {
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    private static File getFileFromPage(String text, String url3) throws IOException {
+        // PDFs are redirected to an html visualization page
+        if (!text.endsWith(".pdf")) {
+            return CrawlerTask.getFile(text, url3);
+        }
+        Response executeRequest = executeRequest(url3, cookies);
+        String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
+        return SupplierEx.makeSupplier(() -> CrawlerTask.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
+            .get();
+    }
+
+    private static List<File> getFilesFromPage(Entry<String, String> link) {
+        String url = link.getValue();
+        URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(addDomain(url)));
+        Elements select = SupplierEx.get(() -> CrawlerTask.getDocument(url2.toExternalForm(), cookies)).select("a");
+        return select.stream()
+            .filter(e -> IadesHelper.hasFileExtension(e.text()))
+            .map(makeFunction(e -> getFileFromPage(e.text(), addDomain(e.attr("href")))))
+            .filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    private static void getVagas(Concurso e2, Entry<String, String> resultado) {
         getFilesFromPage(resultado).forEach(ConsumerEx.ignore(f -> extrairVagas(e2, f)));
     }
 
-    private void saveConcurso(Property<Concurso> concurso, SimpleListViewBuilder<String> listBuilder, String value) {
+    private static void saveConcurso(Property<Concurso> concurso, SimpleListViewBuilder<String> listBuilder, String value) {
         if (value == null) {
             return;
         }
@@ -218,72 +302,10 @@ public class QuadrixCrawler extends Application {
         }
         File file2 = getPDF(value, file);
 
-        getContestQuestions(file2,
+        getContestQuestions(file2, Organization.QUADRIX,
             entities -> {
-//                saveQuestions(concurso, value, linksFound, number, entities, listBuilder.build());
-                System.out.println(entities);
-
+                saveQuestions(concurso, value, linksFound, number, entities, listBuilder.build());
             });
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    private static void extrairVagas(Concurso e2, File f) {
-        for (String string : PdfUtils.getAllLines(f)) {
-            String[] split = string.split(" ");
-            String regex = "\\d{3}\\.\\d+\\/\\d";
-            List<String> asList = Arrays.asList(split);
-            Optional<String> findFirst = asList.stream().filter(e -> e.matches(regex)).findFirst();
-            if (findFirst.isPresent()) {
-                int indexOf = asList.indexOf(findFirst.get());
-                String collect = Stream.of(split).skip(1).limit(indexOf - 1).collect(Collectors.joining(" "));
-                String vaga = collect.split(" *-")[0];
-                if (!e2.getVagas().contains(vaga)) {
-                    Platform.runLater(() -> {
-                        if (!e2.getVagas().contains(vaga)) {
-                            e2.getVagas().add(vaga);
-                        }
-                    });
-                }
-            }
-        }
-        f.delete();
-    }
-
-    private static File getFile(String key, String url1) throws IOException {
-        File outFile = ResourceFXUtils.getOutFile(key);
-        URL url2 = new URL(url1);
-        HttpURLConnection con = (HttpURLConnection) url2.openConnection();
-        if (!CrawlerTask.isNotProxied()) {
-            con.addRequestProperty("Proxy-Authorization", "Basic " + CrawlerTask.getEncodedAuthorization());
-        }
-
-        con.setRequestMethod("GET");
-        con.setDoOutput(true);
-        con.setRequestProperty("Accept",
-            "text/html,application/xhtml+xml,application/xml,application/pdf;q=0.9,*/*;q=0.8");
-        con.setRequestProperty("User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0");
-        con.setRequestProperty("Accept-Encoding", "gzip, deflate");
-        con.setRequestProperty("Connection", "keep-alive");
-        con.setConnectTimeout(100000);
-        con.setReadTimeout(100000);
-        InputStream input = con.getInputStream();
-        CrawlerTask.copy(input, outFile);
-        if (url1.endsWith(".zip") || key.endsWith(".zip")) {
-            UnZip.extractZippedFiles(outFile);
-        }
-        if (url1.endsWith(".rar") || key.endsWith(".rar")) {
-            UnRar.extractRarFiles(outFile);
-        }
-        LOG.info("FILE {} SAVED", key);
-        return outFile;
-    }
-
-    private static boolean hasFileExtension(String key) {
-        return key.endsWith(".pdf") || key.endsWith(".zip") || key.endsWith(".rar");
     }
 
 }

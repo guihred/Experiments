@@ -1,10 +1,9 @@
 package utils;
 
+import extract.UnRar;
+import extract.UnZip;
 import java.io.*;
-import java.net.Authenticator;
-import java.net.InetAddress;
-import java.net.PasswordAuthentication;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -23,8 +22,10 @@ import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
 
 public abstract class CrawlerTask extends Task<String> {
+    private static final Logger LOG = HasLogging.log();
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PASS = "15-juuGO";
@@ -114,6 +115,30 @@ public abstract class CrawlerTask extends Task<String> {
         return connect.execute();
     }
 
+    public static File extractURL(String url) {
+        return SupplierEx.get(() -> {
+            String file = new URL(url).getFile();
+            String[] split = file.split("/");
+            String out = split[split.length - 1];
+            return extractURL(out, url);
+        });
+    }
+
+    public static File extractURL(String name, String url) {
+        return SupplierEx.get(() -> {
+            File outFile = ResourceFXUtils.getOutFile(name);
+            copy(url, outFile);
+            if (url.endsWith(".zip")) {
+                UnZip.extractZippedFiles(outFile);
+            }
+            if (url.endsWith(".rar")) {
+                UnRar.extractRarFiles(outFile);
+            }
+            LOG.info("FILE {} SAVED", name);
+            return outFile;
+        });
+    }
+
     public static Document getDocument(String url, Map<String, String> cookies) throws IOException {
         Response execute = executeRequest(url, cookies);
         Map<String, String> cookies2 = execute.cookies();
@@ -133,6 +158,36 @@ public abstract class CrawlerTask extends Task<String> {
     public static String getEncodedAuthorization() {
         return Base64.getEncoder()
             .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static File getFile(String key, String url1) throws IOException {
+        File outFile = ResourceFXUtils.getOutFile(key);
+        URL url2 = new URL(url1);
+        HttpURLConnection con = (HttpURLConnection) url2.openConnection();
+        if (!isNotProxied()) {
+            con.addRequestProperty("Proxy-Authorization", "Basic " + getEncodedAuthorization());
+        }
+    
+        con.setRequestMethod("GET");
+        con.setDoOutput(true);
+        con.setRequestProperty("Accept",
+            "text/html,application/xhtml+xml,application/xml,application/pdf;q=0.9,*/*;q=0.8");
+        con.setRequestProperty("User-Agent",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0");
+        con.setRequestProperty("Accept-Encoding", "gzip, deflate");
+        con.setRequestProperty("Connection", "keep-alive");
+        con.setConnectTimeout(100000);
+        con.setReadTimeout(100000);
+        InputStream input = con.getInputStream();
+        copy(input, outFile);
+        if (url1.endsWith(".zip") || key.endsWith(".zip")) {
+            UnZip.extractZippedFiles(outFile);
+        }
+        if (url1.endsWith(".rar") || key.endsWith(".rar")) {
+            UnRar.extractRarFiles(outFile);
+        }
+        LOG.info("FILE {} SAVED", key);
+        return outFile;
     }
 
     public static String getHTTPPassword() {

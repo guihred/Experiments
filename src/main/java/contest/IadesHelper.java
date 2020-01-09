@@ -4,12 +4,10 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
 
 import contest.db.ContestQuestion;
+import contest.db.Organization;
 import extract.PdfUtils;
-import extract.UnRar;
-import extract.UnZip;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -27,17 +25,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CrawlerTask;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 import utils.SupplierEx;
 
 public final class IadesHelper {
-    private static final Logger LOG = HasLogging.log();
+    public static final Logger LOG = HasLogging.log();
 
     private IadesHelper() {
     }
 
+    public static boolean hasFileExtension(String key) {
+        return key.endsWith(".pdf") || key.endsWith(".zip") || key.endsWith(".rar");
+    }
+
     public static String addDomain(SimpleStringProperty domain, String l) {
-        return l.startsWith("/") ? domain.get() + l : l;
+        return !l.startsWith("http") ? domain.get() + (!l.startsWith("/") ? "/" + l : l) : l;
     }
 
     public static int containsNumber(String number, Entry<String, String> e) {
@@ -54,30 +55,6 @@ public final class IadesHelper {
             return 2;
         }
         return 5;
-    }
-
-    public static File extractURL(String url) {
-        return SupplierEx.get(() -> {
-            String file = new URL(url).getFile();
-            String[] split = file.split("/");
-            String out = split[split.length - 1];
-            return extractURL(out, url);
-        });
-    }
-
-    public static File extractURL(String name, String url) {
-        return SupplierEx.get(() -> {
-            File outFile = ResourceFXUtils.getOutFile(name);
-            CrawlerTask.copy(url, outFile);
-            if (url.endsWith(".zip")) {
-                UnZip.extractZippedFiles(outFile);
-            }
-            if (url.endsWith(".rar")) {
-                UnRar.extractRarFiles(outFile);
-            }
-            LOG.info("FILE {} SAVED", name);
-            return outFile;
-        });
     }
 
     public static String getAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
@@ -97,10 +74,11 @@ public final class IadesHelper {
     }
 
     @SafeVarargs
-    public static ContestReader getContestQuestions(File file, Consumer<ContestReader>... r) {
+    public static ContestReader getContestQuestions(File file, Organization organization,
+        Consumer<ContestReader>... r) {
         ContestReader instance = new ContestReader();
 		LOG.info("READING {}", file);
-        instance.readFile(file);
+        instance.readFile(file, organization);
         Stream.of(r).forEach(e -> e.accept(instance));
         return instance;
     }
@@ -154,13 +132,14 @@ public final class IadesHelper {
             LOG.info("NO LINK FOR Provas found {} - {}", vaga, value);
             return;
         }
-        File file = extractURL(orElse.getValue());
+        File file = CrawlerTask.extractURL(orElse.getValue());
         if (file == null) {
             LOG.info("COULD NOT DOWNLOAD {}/{} - {}", orElse, value, vaga);
             return;
         }
         File file2 = getPDF(number, file);
-        getContestQuestions(file2, entities -> saveQuestions(concurso, vaga, linksFound, number, entities, vagasView));
+        getContestQuestions(file2, Organization.IADES,
+            entities -> saveQuestions(concurso, vaga, linksFound, number, entities, vagasView));
     }
 
     public static void saveQuestions(Property<Concurso> concurso, String vaga,
@@ -174,7 +153,7 @@ public final class IadesHelper {
             LOG.info("SEM gabarito {}", linksFound);
             return;
         }
-        File gabaritoFile = extractURL(gabarito.getValue());
+        File gabaritoFile = CrawlerTask.extractURL(gabarito.getValue());
         List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
             .collect(Collectors.toList());
         String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");

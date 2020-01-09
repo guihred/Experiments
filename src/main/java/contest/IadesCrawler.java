@@ -2,7 +2,6 @@
 package contest;
 
 import static contest.IadesHelper.addDomain;
-import static contest.IadesHelper.extractURL;
 import static contest.IadesHelper.saveContestValues;
 
 import java.net.URL;
@@ -103,7 +102,7 @@ public class IadesCrawler extends Application {
         String url = entry.getValue();
 
         if (url.endsWith(".pdf") || url.endsWith(".zip") || url.endsWith(".rar")) {
-            extractURL(url);
+            CrawlerTask.extractURL(url);
             return;
         }
         if (!newValue.getChildren().isEmpty()) {

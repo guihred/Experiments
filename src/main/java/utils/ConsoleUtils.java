@@ -198,7 +198,7 @@ public final class ConsoleUtils {
                 new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in.readLine()) != null) {
-                    LOGGER.info(line);
+                    LOGGER.trace(line);
                     String line0 = line;
                     if (response.stream().anyMatch(line0::matches)) {
                         response.clear();

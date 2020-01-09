@@ -7,6 +7,7 @@ import static utils.StringSigaUtils.intValue;
 import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;
 import contest.db.ContestText;
+import contest.db.Organization;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
@@ -53,6 +54,7 @@ public class ContestQuestionEditingDisplay extends Application {
     public ContestQuestionEditingDisplay() {
         instance = IadesHelper.getContestQuestions(
             ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"),
+            Organization.IADES,
             r -> Platform.runLater(() -> current.set(0)));
         lessons = instance.getListQuestions();
     }

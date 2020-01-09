@@ -69,17 +69,13 @@ public class ContestReader implements HasLogging {
         return state.get();
     }
 
-    public void readFile(File file) {
-        contest = new Contest(Organization.IADES);
-        PdfUtils.runOnFile(2, file, this::getQuestionPositions, i -> pageNumber = i, this::tryReadQuestionFromLines,
+    public void readFile(File file, Organization organization) {
+        contest = new Contest(organization);
+        PdfUtils.runOnFile(organization == Organization.QUADRIX ? 1 : 2, file, this::getQuestionPositions,
+            i -> pageNumber = i, this::tryReadQuestionFromLines,
             this::mapImages);
     }
 
-    public void readQuadrixFile(File file) {
-        contest = new Contest(Organization.QUADRIX);
-        PdfUtils.runOnFile(2, file, this::getQuestionPositions, i -> pageNumber = i, this::tryReadQuestionFromLines,
-            this::mapImages);
-    }
 
     public void saveAll() {
         if (!validate()) {
