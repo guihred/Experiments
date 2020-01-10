@@ -9,6 +9,7 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
 import static utils.CrawlerTask.executeRequest;
 import static utils.FunctionEx.makeFunction;
+import static utils.ResourceFXUtils.toExternalForm;
 import static utils.RunnableEx.run;
 import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.decodificar;
@@ -21,6 +22,7 @@ import extract.PdfUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
@@ -31,12 +33,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
@@ -70,8 +72,11 @@ public class QuadrixCrawler extends Application {
         primaryStage.setTitle("Quadrix Crawler");
         CrawlerTask.insertProxyConfig();
         Parent node = createSplitTreeListDemoNode();
-        primaryStage.setScene(new Scene(node));
+        Scene value = new Scene(node);
+        value.getStylesheets().add(toExternalForm("filesComparator.css"));
+        primaryStage.setScene(value);
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+
         primaryStage.show();
     }
 
@@ -86,7 +91,19 @@ public class QuadrixCrawler extends Application {
             saveConcurso(concurso, listBuilder, value);
         }));
         SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
-            .addColumns("nome").onSelect((old, value) -> {
+            .addColumn("Nome", (con, cell) -> {
+                cell.setText(con.getNome());
+                cell.getStyleClass().removeAll("", "vermelho");
+                if (con.getVagas().isEmpty()) {
+                    cell.getStyleClass().add("vermelho");
+                    con.getVagas().addListener((Observable c) -> {
+                        if (!((ObservableList<?>) c).isEmpty()) {
+
+                            cell.getStyleClass().remove("vermelho");
+                        }
+                    });
+                }
+            }).onSelect((old, value) -> {
                 concurso.setValue(value);
                 value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
                 listBuilder.items(value.getVagas());
@@ -166,7 +183,7 @@ public class QuadrixCrawler extends Application {
     }
 
     public static void saveQuestions(Property<Concurso> concurso, String vaga,
-        ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities, Node vagasView) {
+        ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities) {
         entities.getContest().setName(concurso.getValue().getNome());
         entities.getContest().setJob(vaga);
         entities.saveAll();
@@ -198,8 +215,6 @@ public class QuadrixCrawler extends Application {
             contestQuestion.setAnswer(answers.charAt(i));
         }
         entities.saveAll();
-        Platform.runLater(
-            () -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
     }
 
     private static String addDomain(String url) {
@@ -239,7 +254,7 @@ public class QuadrixCrawler extends Application {
                 }
             }
         }
-        f.delete();
+        RunnableEx.run(() -> Files.deleteIfExists(f.toPath()));
     }
 
     private static void findVagas(List<Map.Entry<String, String>> linksFound, Concurso e2) {
@@ -264,7 +279,8 @@ public class QuadrixCrawler extends Application {
         }
         Response executeRequest = executeRequest(url3, cookies);
         String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
-        return SupplierEx.makeSupplier(() -> CrawlerTask.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
+        return SupplierEx
+            .makeSupplier(() -> CrawlerTask.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
             .get();
     }
 
@@ -272,17 +288,17 @@ public class QuadrixCrawler extends Application {
         String url = link.getValue();
         URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(addDomain(url)));
         Elements select = SupplierEx.get(() -> CrawlerTask.getDocument(url2.toExternalForm(), cookies)).select("a");
-        return select.stream()
-            .filter(e -> IadesHelper.hasFileExtension(e.text()))
-            .map(makeFunction(e -> getFileFromPage(e.text(), addDomain(e.attr("href")))))
-            .filter(Objects::nonNull).collect(Collectors.toList());
+        return select.stream().filter(e -> IadesHelper.hasFileExtension(e.text()))
+            .map(makeFunction(e -> getFileFromPage(e.text(), addDomain(e.attr("href"))))).filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     private static void getVagas(Concurso e2, Entry<String, String> resultado) {
         getFilesFromPage(resultado).forEach(ConsumerEx.ignore(f -> extrairVagas(e2, f)));
     }
 
-    private static void saveConcurso(Property<Concurso> concurso, SimpleListViewBuilder<String> listBuilder, String value) {
+    private static void saveConcurso(Property<Concurso> concurso, SimpleListViewBuilder<String> listBuilder,
+        String value) {
         if (value == null) {
             return;
         }
@@ -295,17 +311,18 @@ public class QuadrixCrawler extends Application {
             LOG.info("NO LINK FOR Provas found {} - {}", value, value1);
             return;
         }
-        File file = getFilesFromPage(orElse).get(0);
+        File file = getFilesFromPage(orElse).stream().findFirst().orElse(null);
         if (file == null) {
             LOG.info("COULD NOT DOWNLOAD {}/{} - {}", orElse, value1, value);
             return;
         }
         File file2 = getPDF(value, file);
 
-        getContestQuestions(file2, Organization.QUADRIX,
-            entities -> {
-                saveQuestions(concurso, value, linksFound, number, entities, listBuilder.build());
-            });
+        getContestQuestions(file2, Organization.QUADRIX, entities -> {
+            saveQuestions(concurso, value, linksFound, number, entities);
+            Platform
+                .runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder.build())));
+        });
     }
 
 }
