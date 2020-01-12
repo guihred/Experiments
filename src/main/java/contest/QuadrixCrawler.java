@@ -8,7 +8,6 @@ import static contest.IadesHelper.getPDF;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
 import static utils.CrawlerTask.executeRequest;
-import static utils.FunctionEx.makeFunction;
 import static utils.ResourceFXUtils.toExternalForm;
 import static utils.RunnableEx.run;
 import static utils.RunnableEx.runNewThread;
@@ -82,7 +81,7 @@ public class QuadrixCrawler extends Application {
 
     private Parent createSplitTreeListDemoNode() {
         SimpleTreeViewBuilder<Map.Entry<String, String>> root = new SimpleTreeViewBuilder<Map.Entry<String, String>>()
-            .root(new AbstractMap.SimpleEntry<>("", addDomain("encerrados.aspx")));
+                .root(new AbstractMap.SimpleEntry<>("", addDomain("encerrados.aspx")));
         TreeView<Map.Entry<String, String>> treeBuilder = root.build();
         Property<Concurso> concurso = new SimpleObjectProperty<>();
         root.onSelect(t -> getNewLinks(t, treeBuilder));
@@ -90,39 +89,39 @@ public class QuadrixCrawler extends Application {
         listBuilder.items(FXCollections.observableArrayList()).onSelect((old, value) -> runNewThread(() -> {
             saveConcurso(concurso, listBuilder, value);
         }));
-        SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
-            .addColumn("Nome", (con, cell) -> {
-                cell.setText(con.getNome());
-                cell.getStyleClass().removeAll("", "vermelho");
-                if (con.getVagas().isEmpty()) {
-                    cell.getStyleClass().add("vermelho");
-                    con.getVagas().addListener((Observable c) -> {
-                        if (!((ObservableList<?>) c).isEmpty()) {
-
-                            cell.getStyleClass().remove("vermelho");
-                        }
-                    });
-                }
-            }).onSelect((old, value) -> {
-                concurso.setValue(value);
-                value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
-                listBuilder.items(value.getVagas());
-            }).prefWidthColumns(1).minWidth(200);
+        SimpleTableViewBuilder<Concurso> tableBuilder =
+                new SimpleTableViewBuilder<Concurso>().items(concursos).addColumn("Nome", (con, cell) -> {
+                    cell.setText(con.getNome());
+                    cell.getStyleClass().removeAll("", "vermelho");
+                    if (con.getVagas().isEmpty()) {
+                        cell.getStyleClass().add("vermelho");
+                        con.getVagas().addListener((Observable c) -> {
+                            if (con.getNome().equals(cell.getText()) && !((ObservableList<?>) c).isEmpty()) {
+                                cell.getStyleClass().remove("vermelho");
+                            }
+                        });
+                    }
+                }).onSelect((old, value) -> {
+                    concurso.setValue(value);
+                    value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
+                    listBuilder.items(value.getVagas());
+                }).prefWidthColumns(1).minWidth(200);
 
         return new VBox(new SplitPane(treeBuilder, tableBuilder.build(), listBuilder.build()));
     }
 
     private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
-        SimpleStringProperty domain, int level) {
+            SimpleStringProperty domain, int level) {
         Elements select = doc.select("a");
         List<SimpleEntry<String, String>> allLinks = select.stream()
-            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
-            .filter(t -> !"#".equals(t.getValue()) && StringUtils.isNotBlank(t.getKey()))
-            .filter(t -> links.add(t.getValue())).collect(Collectors.toList());
+                .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
+                .filter(t -> !"#".equals(t.getValue()) && StringUtils.isNotBlank(t.getKey()))
+                .filter(t -> links.add(t.getValue())).collect(Collectors.toList());
         List<Map.Entry<String, String>> linksFound = allLinks.stream()
-            .filter(t -> level < 2 || StringUtils.containsIgnoreCase(t.getKey(), "aplicada")
-                || StringUtils.containsIgnoreCase(t.getKey(), "Gabarito Definitivo") || t.getKey().contains("Caderno"))
-            .distinct().collect(Collectors.toList());
+                .filter(t -> level < 2 || StringUtils.containsIgnoreCase(t.getKey(), "aplicada")
+                        || StringUtils.containsIgnoreCase(t.getKey(), "Gabarito Definitivo")
+                        || t.getKey().contains("Caderno"))
+                .distinct().collect(Collectors.toList());
         if (level == 2) {
             run(() -> getFilesFromPage(url));
         }
@@ -134,11 +133,11 @@ public class QuadrixCrawler extends Application {
             e2.setNome(split[0]);
             e2.setLinksFound(linksFound);
             linksFound.stream().filter(e -> StringUtils.containsIgnoreCase(e.getKey(), "Caderno de prova -")
-                || e.getKey().matches("\\d+ *- *.+")).map(s -> s.getKey().split("- *")[1]).forEach(e -> {
-                    if (!e2.getVagas().contains(e)) {
-                        e2.getVagas().add(e);
-                    }
-                });
+                    || e.getKey().matches("\\d+ *- *.+")).map(s -> s.getKey().split("- *")[1]).forEach(e -> {
+                        if (!e2.getVagas().contains(e)) {
+                            e2.getVagas().add(e);
+                        }
+                    });
             findVagas(linksFound, e2);
 
             concursos.add(e2);
@@ -183,23 +182,23 @@ public class QuadrixCrawler extends Application {
     }
 
     public static void saveQuestions(Property<Concurso> concurso, String vaga,
-        ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities) {
+            ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities) {
         entities.getContest().setName(concurso.getValue().getNome());
         entities.getContest().setJob(vaga);
         entities.saveAll();
         File gabaritoFile = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
-            .sorted(Comparator.comparing(e -> containsNumber(number, e))).map(gab -> getFilesFromPage(gab))
-            .filter(l -> !l.isEmpty()).map(l -> l.get(0)).findFirst().orElse(null);
+                .sorted(Comparator.comparing(e -> containsNumber(number, e))).map(gab -> getFilesFromPage(gab))
+                .filter(l -> !l.isEmpty()).map(l -> l.get(0)).findFirst().orElse(null);
         if (gabaritoFile == null) {
             LOG.info("SEM gabarito {}", linksFound);
             return;
         }
         List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
         String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");
         String cargo = split[split.length - 1].trim();
         Optional<String> findFirst = linesRead.stream()
-            .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
+                .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
         if (!findFirst.isPresent()) {
             LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabaritoFile, linesRead);
             return;
@@ -260,8 +259,9 @@ public class QuadrixCrawler extends Application {
     private static void findVagas(List<Map.Entry<String, String>> linksFound, Concurso e2) {
         runNewThread(() -> {
             if (e2.getVagas().isEmpty()) {
-                List<Entry<String, String>> collect = linksFound.stream()
-                    .filter(t -> StringUtils.containsIgnoreCase(t.getKey(), "Resultado")).collect(Collectors.toList());
+                List<Entry<String, String>> collect =
+                        linksFound.stream().filter(t -> StringUtils.containsIgnoreCase(t.getKey(), "Resultado"))
+                                .collect(Collectors.toList());
                 for (Entry<String, String> entry : collect) {
                     getVagas(e2, entry);
                     if (!e2.getVagas().isEmpty()) {
@@ -280,8 +280,8 @@ public class QuadrixCrawler extends Application {
         Response executeRequest = executeRequest(url3, cookies);
         String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
         return SupplierEx
-            .makeSupplier(() -> CrawlerTask.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
-            .get();
+                .makeSupplier(() -> CrawlerTask.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
+                .get();
     }
 
     private static List<File> getFilesFromPage(Entry<String, String> link) {
@@ -289,8 +289,9 @@ public class QuadrixCrawler extends Application {
         URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(addDomain(url)));
         Elements select = SupplierEx.get(() -> CrawlerTask.getDocument(url2.toExternalForm(), cookies)).select("a");
         return select.stream().filter(e -> IadesHelper.hasFileExtension(e.text()))
-            .map(makeFunction(e -> getFileFromPage(e.text(), addDomain(e.attr("href"))))).filter(Objects::nonNull)
-            .collect(Collectors.toList());
+                .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), addDomain(e.attr("href")))))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private static void getVagas(Concurso e2, Entry<String, String> resultado) {
@@ -298,7 +299,7 @@ public class QuadrixCrawler extends Application {
     }
 
     private static void saveConcurso(Property<Concurso> concurso, SimpleListViewBuilder<String> listBuilder,
-        String value) {
+            String value) {
         if (value == null) {
             return;
         }
@@ -306,7 +307,7 @@ public class QuadrixCrawler extends Application {
         ObservableList<Entry<String, String>> linksFound = value1.getLinksFound();
         String number = Objects.toString(value);
         Entry<String, String> orElse = linksFound.stream().filter(e -> e.getKey().contains("Provas"))
-            .sorted(Comparator.comparing(e -> containsNumber(number, e))).findFirst().orElse(null);
+                .sorted(Comparator.comparing(e -> containsNumber(number, e))).findFirst().orElse(null);
         if (orElse == null) {
             LOG.info("NO LINK FOR Provas found {} - {}", value, value1);
             return;
@@ -320,8 +321,8 @@ public class QuadrixCrawler extends Application {
 
         getContestQuestions(file2, Organization.QUADRIX, entities -> {
             saveQuestions(concurso, value, linksFound, number, entities);
-            Platform
-                .runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder.build())));
+            Platform.runLater(
+                    () -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder.build())));
         });
     }
 

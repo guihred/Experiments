@@ -15,6 +15,17 @@ public interface FunctionEx<T, R> {
         }
     }
 
+    static <A, B> Function<A, B> ignore(FunctionEx<A, B> run) {
+        return (A a) -> {
+            try {
+                return run.apply(a);
+            } catch (Exception e) {
+                HasLogging.log(1).trace("", e);
+                return null;
+            }
+        };
+    }
+
     static <A, B> Function<A, B> makeFunction(FunctionEx<A, B> run) {
         return (A a) -> {
             try {
