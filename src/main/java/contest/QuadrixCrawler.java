@@ -6,6 +6,7 @@ import static contest.IadesHelper.getAnswers;
 import static contest.IadesHelper.getContestQuestions;
 import static contest.IadesHelper.getPDF;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
 import static utils.CrawlerTask.executeRequest;
 import static utils.ResourceFXUtils.toExternalForm;
@@ -110,12 +111,31 @@ public class QuadrixCrawler extends Application {
         return new VBox(new SplitPane(treeBuilder, tableBuilder.build(), listBuilder.build()));
     }
 
+    private  void findVagas(List<Map.Entry<String, String>> linksFound, Concurso e2) {
+        runNewThread(() -> {
+            if (e2.getVagas().isEmpty()) {
+                List<Entry<String, String>> collect =
+                        linksFound.stream().filter(t -> StringUtils.containsIgnoreCase(t.getKey(), "Resultado"))
+                                .collect(Collectors.toList());
+                for (Entry<String, String> entry : collect) {
+                    getVagas(e2, entry);
+                    if (!e2.getVagas().isEmpty()) {
+                        break;
+                    }
+                }
+                if (e2.getVagas().isEmpty()) {
+                    Platform.runLater(() -> concursos.remove(e2));
+                }
+            }
+        });
+    }
+
     private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
             SimpleStringProperty domain, int level) {
         Elements select = doc.select("a");
         List<SimpleEntry<String, String>> allLinks = select.stream()
                 .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
-                .filter(t -> !"#".equals(t.getValue()) && StringUtils.isNotBlank(t.getKey()))
+            .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey()))
                 .filter(t -> links.add(t.getValue())).collect(Collectors.toList());
         List<Map.Entry<String, String>> linksFound = allLinks.stream()
                 .filter(t -> level < 2 || StringUtils.containsIgnoreCase(t.getKey(), "aplicada")
@@ -224,7 +244,7 @@ public class QuadrixCrawler extends Application {
     }
 
     private static void addVaga(Concurso e2, String vaga) {
-        if (!e2.getVagas().contains(vaga)) {
+        if (isNotBlank(vaga) && !vaga.matches("\\d+:") && !e2.getVagas().contains(vaga)) {
             Platform.runLater(() -> {
                 if (!e2.getVagas().contains(vaga)) {
                     e2.getVagas().add(vaga);
@@ -235,7 +255,7 @@ public class QuadrixCrawler extends Application {
 
     private static void extrairVagas(Concurso e2, File f) {
         for (String string : PdfUtils.getAllLines(f)) {
-            if (string.matches(".+\\(código \\d+\\).*")) {
+            if (string.matches("(?i).+\\(código \\d+\\).*")) {
                 String split = string.split(" *\\(")[0];
                 addVaga(e2, split);
                 continue;
@@ -256,22 +276,6 @@ public class QuadrixCrawler extends Application {
         RunnableEx.run(() -> Files.deleteIfExists(f.toPath()));
     }
 
-    private static void findVagas(List<Map.Entry<String, String>> linksFound, Concurso e2) {
-        runNewThread(() -> {
-            if (e2.getVagas().isEmpty()) {
-                List<Entry<String, String>> collect =
-                        linksFound.stream().filter(t -> StringUtils.containsIgnoreCase(t.getKey(), "Resultado"))
-                                .collect(Collectors.toList());
-                for (Entry<String, String> entry : collect) {
-                    getVagas(e2, entry);
-                    if (!e2.getVagas().isEmpty()) {
-                        break;
-                    }
-                }
-            }
-        });
-    }
-
     private static File getFileFromPage(String text, String url3) throws IOException {
         // PDFs are redirected to an html visualization page
         if (!text.endsWith(".pdf")) {
@@ -287,7 +291,11 @@ public class QuadrixCrawler extends Application {
     private static List<File> getFilesFromPage(Entry<String, String> link) {
         String url = link.getValue();
         URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(addDomain(url)));
-        Elements select = SupplierEx.get(() -> CrawlerTask.getDocument(url2.toExternalForm(), cookies)).select("a");
+        Document document = SupplierEx.getIgnore(() -> CrawlerTask.getDocument(url2.toExternalForm(), cookies));
+        if (document == null) {
+            return Collections.emptyList();
+        }
+        Elements select = document.select("a");
         return select.stream().filter(e -> IadesHelper.hasFileExtension(e.text()))
                 .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), addDomain(e.attr("href")))))
                 .filter(Objects::nonNull)

@@ -31,7 +31,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
@@ -50,7 +49,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table.getColumns().add(column);
         return this;
     }
-
 
     public SimpleTableViewBuilder<T> addColumns(final String... columnName) {
         for (String columnProp : columnName) {
@@ -111,7 +109,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public static <S> void equalColumns(TableView<S> table) {
         ObservableList<TableColumn<S, ?>> columns = table.getColumns();
-        prefWidthColumns(table,columns.stream().mapToDouble(e -> 1).toArray());
+        prefWidthColumns(table, columns.stream().mapToDouble(e -> 1).toArray());
     }
 
     public static <C, M> Callback<TableColumn<C, M>, TableCell<C, M>> newCellFactory(
@@ -156,6 +154,9 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             if (index >= 0 && index < size) {
                 M auxMed = getTableView().getItems().get(index);
                 setStyleable(auxMed);
+            } else {
+                setText(null);
+                setGraphic(null);
             }
         }
     }

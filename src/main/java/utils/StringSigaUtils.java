@@ -27,11 +27,6 @@ public class StringSigaUtils extends StringUtils {
         Double.class);
     public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
 
-    public static Integer convertNumerico(final String eleitores) {
-        String replaceAll = eleitores.replaceAll("\\D", "");
-        return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
-    }
-
     public static String changeCase(String simpleName) {
         if (Character.isLowerCase(simpleName.charAt(0))) {
             return simpleName.substring(0, 1).toUpperCase() + simpleName.substring(1);
@@ -41,6 +36,11 @@ public class StringSigaUtils extends StringUtils {
 
     public static String codificar(String nome) {
         return getIgnore(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
+    }
+
+    public static Integer convertNumerico(final String eleitores) {
+        String replaceAll = eleitores.replaceAll("\\D", "");
+        return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
     }
 
     public static String corrigirProblemaEncoding(String nomeEncoding) {
@@ -204,7 +204,7 @@ public class StringSigaUtils extends StringUtils {
         if (fixEncoding == null) {
             return null;
         }
-        return fixEncoding.replaceAll("[\u0000-\u0010]", "?");
+        return fixEncoding.replaceAll("[\u0000-\u0010]", "?").replaceAll("\u00A0", " ");
     }
 
     public static String removerDiacritico(String string) {
