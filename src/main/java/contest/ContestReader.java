@@ -22,6 +22,7 @@ import utils.HasLogging;
 import utils.StringSigaUtils;
 
 public class ContestReader implements HasLogging {
+    private static final String QUESTÃO = "QUESTÃO";
     private static final String DISCURSIVA_PATTERN = " *P *R *O *V *A *D *I *S *C *U *R *S *I *V *A *";
     private static final int OPTIONS_PER_QUESTION = 5;
     private static final String LINE_PATTERN = "^\\s*\\d+\\s*$";
@@ -446,7 +447,7 @@ public class ContestReader implements HasLogging {
     }
 
     private static boolean isQuestionPattern(String s) {
-        return s.matches(QUESTION_PATTERN) || s.startsWith("QUESTÃO");
+        return s.matches(QUESTION_PATTERN) || s.startsWith(QUESTÃO);
     }
 
     private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
