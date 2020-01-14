@@ -35,7 +35,10 @@ public final class IadesHelper {
     }
 
     public static String addDomain(SimpleStringProperty domain, String l) {
-        return !l.startsWith("http") ? domain.get() + (!l.startsWith("/") ? "/" + l : l) : l;
+        if (l.startsWith("http")) {
+            return l;
+        }
+        return domain.get() + (!l.startsWith("/") ? "/" + l : l);
     }
 
     public static int containsNumber(String number, Entry<String, String> e) {
@@ -119,14 +122,13 @@ public final class IadesHelper {
 
     public static boolean nameMatches(String number, Path path) {
         String fileName = path.toFile().getName();
-        boolean b = (StringUtils.containsIgnoreCase(fileName, number)
+        return (StringUtils.containsIgnoreCase(fileName, number)
             || fileName.matches(".*" + number.replaceAll(" ", ".*") + ".*")
             || Stream.of(number.split(" ")).filter(e -> e.length() > 2)
                 .anyMatch(m -> StringUtils.containsIgnoreCase(fileName, m))
             || Stream.of(number.split(" ")).map(StringSigaUtils::removerDiacritico).filter(e -> e.length() > 2)
                 .anyMatch(m -> StringUtils.containsIgnoreCase(fileName, m))
         ) && fileName.endsWith(".pdf");
-        return b;
     }
 
     public static void saveContestValues(Property<Concurso> concurso, String vaga, Node vagasView) {

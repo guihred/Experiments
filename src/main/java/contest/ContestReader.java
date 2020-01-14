@@ -22,7 +22,7 @@ import utils.HasLogging;
 import utils.StringSigaUtils;
 
 public class ContestReader implements HasLogging {
-    private static final String QUESTÃO = "QUESTÃO";
+    private static final String QUESTAO = "QUESTÃO";
     private static final String DISCURSIVA_PATTERN = " *P *R *O *V *A *D *I *S *C *U *R *S *I *V *A *";
     private static final int OPTIONS_PER_QUESTION = 5;
     private static final String LINE_PATTERN = "^\\s*\\d+\\s*$";
@@ -211,6 +211,12 @@ public class ContestReader implements HasLogging {
         }
     }
 
+    private void addQuestionIfDifferentNumber(String s) {
+        if (intValue(s.split("\\D+")[0]) != listQuestions.size() + 1) {
+            addQuestion();
+        }
+    }
+
     private void addTextIfMatches(String[] linhas, int i, String s) {
         if (isTextPattern(linhas, i, s)) {
             String[] split = linhas[i + 1].split("\\D+");
@@ -225,6 +231,13 @@ public class ContestReader implements HasLogging {
     private void addTextIfNeeded() {
         if (getState() == ReaderState.TEXT) {
             addNewText();
+        }
+    }
+
+    private void changeTypeOfQuestions(String s) {
+        if (getState() == ReaderState.IGNORE && s.matches(".*CERTO.+ERRADO.*")
+            && contest.getOrganization() == Organization.QUADRIX) {
+            questionType = QuestionType.TRUE_FALSE;
         }
     }
 
@@ -343,10 +356,7 @@ public class ContestReader implements HasLogging {
             getLogger().info("SUBJECT={}", subject);
             return;
         }
-        if (getState() == ReaderState.IGNORE && s.matches(".*CERTO.+ERRADO.*")
-            && contest.getOrganization() == Organization.QUADRIX) {
-            questionType = QuestionType.TRUE_FALSE;
-        }
+        changeTypeOfQuestions(s);
         if (s.matches(TEXTS_PATTERN) || s.startsWith("Texto")) {
             setState(ReaderState.TEXT);
             String[] split = s.split("\\D+");
@@ -369,17 +379,13 @@ public class ContestReader implements HasLogging {
         if (questionType == QuestionType.TRUE_FALSE && s.matches("^\\s*_____+\\s*$")) {
             if (getState() == ReaderState.QUESTION) {
                 addQuestion();
-            }
-            if (getState() != ReaderState.TEXT) {
                 addNewText();
             }
             setState(ReaderState.TEXT);
             return;
         }
         if (isTrueFalseQuestion(s)) {
-            if (intValue(s.split("\\D+")[0]) != listQuestions.size() + 1) {
-                addQuestion();
-            }
+            addQuestionIfDifferentNumber(s);
             contestQuestion.setNumber(intValue(s.split("\\D+")[0]));
             setState(ReaderState.QUESTION);
         }
@@ -447,7 +453,7 @@ public class ContestReader implements HasLogging {
     }
 
     private static boolean isQuestionPattern(String s) {
-        return s.matches(QUESTION_PATTERN) || s.startsWith(QUESTÃO);
+        return s.matches(QUESTION_PATTERN) || s.startsWith(QUESTAO);
     }
 
     private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {

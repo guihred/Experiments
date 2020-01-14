@@ -64,6 +64,26 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
     }
 
     @Test
+    public void testQuadrix() {
+        show(QuadrixCrawler.class);
+        clickOn(lookupFirst(TreeView.class));
+        type(KeyCode.SPACE);
+        type(KeyCode.RIGHT);
+        type(KeyCode.DOWN, 8);
+        type(KeyCode.RIGHT);
+
+        type(KeyCode.DOWN, 30);
+        type(KeyCode.TAB);
+
+        type(KeyCode.DOWN, 9);
+
+        type(KeyCode.TAB);
+        type(KeyCode.SPACE);
+        type(KeyCode.DOWN, 1);
+        IadesHelper.addDomain(new SimpleStringProperty(""), "");
+    }
+
+    @Test
     public void verifyContestApplication() {
         show(ContestApplication.class);
     }

@@ -87,9 +87,8 @@ public class QuadrixCrawler extends Application {
         Property<Concurso> concurso = new SimpleObjectProperty<>();
         root.onSelect(t -> getNewLinks(t, treeBuilder));
         SimpleListViewBuilder<String> listBuilder = new SimpleListViewBuilder<>();
-        listBuilder.items(FXCollections.observableArrayList()).onSelect((old, value) -> runNewThread(() -> {
-            saveConcurso(concurso, listBuilder, value);
-        }));
+        listBuilder.items(FXCollections.observableArrayList())
+            .onSelect((old, value) -> runNewThread(() -> saveConcurso(concurso, listBuilder, value)));
         SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
             .addColumn("Nome", (con, cell) -> {
                 cell.setText(con.getNome());
@@ -211,7 +210,7 @@ public class QuadrixCrawler extends Application {
         entities.getContest().setJob(vaga);
         entities.saveAll();
         File gabaritoFile = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
-            .sorted(Comparator.comparing(e -> containsNumber(number, e))).map(gab -> getFilesFromPage(gab))
+            .sorted(Comparator.comparing(e -> containsNumber(number, e))).map(QuadrixCrawler::getFilesFromPage)
             .filter(l -> !l.isEmpty()).map(l -> l.get(0)).findFirst().orElse(null);
         if (gabaritoFile == null) {
             LOG.info("SEM gabarito {}", linksFound);
@@ -270,7 +269,7 @@ public class QuadrixCrawler extends Application {
             Optional<String> findFirst = asList.stream().filter(e -> e.matches(regex)).findFirst();
             if (findFirst.isPresent()) {
                 int indexOf = asList.indexOf(findFirst.get());
-                String collect = Stream.of(split).skip(1).limit(indexOf - 1).collect(Collectors.joining(" "));
+                String collect = Stream.of(split).skip(1).limit(indexOf - 1L).collect(Collectors.joining(" "));
                 String vaga = collect.split(" *-")[0];
                 if (!vaga.matches(".*" + regex + ".*")) {
                     addVaga(e2, vaga);
@@ -326,7 +325,7 @@ public class QuadrixCrawler extends Application {
             .filter(e -> e.getKey().contains("Provas") || e.getKey().contains(number))
             .sorted(Comparator.comparing(e -> containsNumber(number, e))).collect(Collectors.toList());
         File file = collect.stream()
-            .map(entry -> getFilesFromPage(entry))
+            .map(QuadrixCrawler::getFilesFromPage)
             .filter(e -> !e.isEmpty()).map(e -> e.get(0)).findFirst().orElse(null);
         if (file == null) {
             LOG.info("COULD NOT DOWNLOAD {}/{} - {}", collect, value1, value);

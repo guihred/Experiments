@@ -25,6 +25,7 @@ import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 
 public abstract class CrawlerTask extends Task<String> {
+    private static final int HUNDRED_SECONDS = 100000;
     private static final Logger LOG = HasLogging.log();
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
     private static final String LOGIN = "guilherme.hmedeiros";
@@ -108,7 +109,7 @@ public abstract class CrawlerTask extends Task<String> {
             connect.header("Proxy-Authorization",
                 "Basic " + getEncodedAuthorization());
         }
-        connect.timeout(100000);
+        connect.timeout(HUNDRED_SECONDS);
         connect.cookies(cookies);
         connect.ignoreContentType(true);
         connect.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
@@ -176,8 +177,8 @@ public abstract class CrawlerTask extends Task<String> {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0");
         con.setRequestProperty("Accept-Encoding", "gzip, deflate");
         con.setRequestProperty("Connection", "keep-alive");
-        con.setConnectTimeout(100000);
-        con.setReadTimeout(100000);
+        con.setConnectTimeout(HUNDRED_SECONDS);
+        con.setReadTimeout(HUNDRED_SECONDS);
         InputStream input = con.getInputStream();
         copy(input, outFile);
         if (url1.endsWith(".zip") || key.endsWith(".zip")) {
