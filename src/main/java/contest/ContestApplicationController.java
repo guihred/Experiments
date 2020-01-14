@@ -7,12 +7,14 @@ import static utils.FunctionEx.mapIf;
 import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;
 import contest.db.ContestText;
+import contest.db.QuestionType;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -121,6 +123,17 @@ public class ContestApplicationController {
     }
 
     private void changeOptions(ContestQuestion contestQuestion) {
+        if (contestQuestion.getOptions() == null && contestQuestion.getType() == QuestionType.TRUE_FALSE) {
+            ContestQuestionAnswer e = new ContestQuestionAnswer();
+            e.setAnswer("Certo");
+            options.getItems().add(e);
+            e = new ContestQuestionAnswer();
+            e.setAnswer("Errado");
+            options.getItems().add(e);
+            updateCellFactory();
+            return;
+        }
+
         ObservableList<ContestQuestionAnswer> items = options.getItems();
         for (int i = 0; i < contestQuestion.getOptions().size(); i++) {
             if (i < 0 || i >= items.size()) {
@@ -134,17 +147,12 @@ public class ContestApplicationController {
 
     private void onCurrentChange(Number value) {
         int cur = value.intValue();
-        if (cur < 0) {
+        if (cur < 0 || contestQuestions.getListQuestions().isEmpty()) {
             question.setText("");
+            text.setText("");
+            options.setItems(FXCollections.observableArrayList());
             return;
         }
-        String text2 = ContestApplicationController.getText(contestQuestions, cur);
-        text.setText(text2);
-        double[] dividerPositions = splitPane.getDividerPositions();
-        dividerPositions[dividerPositions.length - 1] = text2.isEmpty()
-            ? dividerPositions[dividerPositions.length - 2]
-            : 4. / 6;
-        splitPane.setDividerPositions(dividerPositions);
         questions.getSelectionModel().select(cur);
         ContestQuestion contestQuestion = contestQuestions.getListQuestions().get(cur);
         question.setText(contestQuestion.getExercise());
@@ -155,6 +163,17 @@ public class ContestApplicationController {
         if (contestQuestion.getImage() != null) {
             addImages(contestQuestion.getImage());
         }
+        setText(cur);
+    }
+
+    private void setText(int cur) {
+        String text2 = ContestApplicationController.getText(contestQuestions, cur);
+        text.setText(text2);
+        double[] dividerPositions = splitPane.getDividerPositions();
+        dividerPositions[dividerPositions.length - 1] = text2.isEmpty()
+            ? dividerPositions[dividerPositions.length - 2]
+            : 4. / 6;
+        splitPane.setDividerPositions(dividerPositions);
     }
 
     private void updateCellFactory() {

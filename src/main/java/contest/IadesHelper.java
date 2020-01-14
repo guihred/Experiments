@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CrawlerTask;
 import utils.HasLogging;
+import utils.StringSigaUtils;
 import utils.SupplierEx;
 
 public final class IadesHelper {
@@ -33,16 +34,15 @@ public final class IadesHelper {
     private IadesHelper() {
     }
 
-    public static boolean hasFileExtension(String key) {
-        return key.endsWith(".pdf") || key.endsWith(".zip") || key.endsWith(".rar");
-    }
-
     public static String addDomain(SimpleStringProperty domain, String l) {
         return !l.startsWith("http") ? domain.get() + (!l.startsWith("/") ? "/" + l : l) : l;
     }
 
     public static int containsNumber(String number, Entry<String, String> e) {
         if (e.getKey().contains(number)) {
+            return 0;
+        }
+        if (Stream.of(number.split(" ")).anyMatch(m -> StringUtils.containsIgnoreCase(e.getKey(), m))) {
             return 0;
         }
         if (number.startsWith("2") && StringUtils.containsIgnoreCase(e.getKey(), "médio")) {
@@ -113,10 +113,20 @@ public final class IadesHelper {
         return SupplierEx.get(() -> getFirstPDF(file3, number).toFile());
     }
 
+    public static boolean hasFileExtension(String key) {
+        return key.endsWith(".pdf") || key.endsWith(".zip") || key.endsWith(".rar");
+    }
+
     public static boolean nameMatches(String number, Path path) {
-        return (StringUtils.containsIgnoreCase(path.toFile().getName(), number)
-            || path.toFile().getName().matches(".*" + number.replaceAll(" ", ".*") + ".*"))
-            && path.toFile().getName().endsWith(".pdf");
+        String fileName = path.toFile().getName();
+        boolean b = (StringUtils.containsIgnoreCase(fileName, number)
+            || fileName.matches(".*" + number.replaceAll(" ", ".*") + ".*")
+            || Stream.of(number.split(" ")).filter(e -> e.length() > 2)
+                .anyMatch(m -> StringUtils.containsIgnoreCase(fileName, m))
+            || Stream.of(number.split(" ")).map(StringSigaUtils::removerDiacritico).filter(e -> e.length() > 2)
+                .anyMatch(m -> StringUtils.containsIgnoreCase(fileName, m))
+        ) && fileName.endsWith(".pdf");
+        return b;
     }
 
     public static void saveContestValues(Property<Concurso> concurso, String vaga, Node vagasView) {

@@ -22,6 +22,18 @@ public class ContestQuestionAnswer extends BaseEntity {
     @Column
     private Integer number;
 
+
+    public ContestQuestionAnswer() {
+    }
+
+    public ContestQuestionAnswer(String answer, Boolean correct, ContestQuestion exercise, 
+        Integer number) {
+        this.answer = answer;
+        this.correct = correct;
+        this.exercise = exercise;
+        this.number = number;
+    }
+
 	public void appendAnswer(String english) {
 		answer = Objects.toString(answer, "") + english;
 	}

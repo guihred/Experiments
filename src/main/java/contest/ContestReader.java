@@ -82,7 +82,7 @@ public class ContestReader implements HasLogging {
         }
         CONTEST_DAO.saveOrUpdate(getContest());
         CONTEST_DAO.saveOrUpdate(listQuestions);
-        CONTEST_DAO.saveOrUpdate(listQuestions.stream().flatMap(e -> {
+        CONTEST_DAO.saveOrUpdate(listQuestions.stream().filter(e -> e.getOptions() != null).flatMap(e -> {
             e.getOptions().forEach(o -> o.setExercise(e));
             return e.getOptions().stream();
         }).collect(Collectors.toList()));
@@ -106,8 +106,14 @@ public class ContestReader implements HasLogging {
             return false;
         }
         if (listQuestions.size() % 10 != 0) {
-            getLogger().error("Invalid Questions Size {}", listQuestions.size());
-            return false;
+            if (StringUtils.isNotBlank(contestQuestion.getExercise())
+                && listQuestions.stream().noneMatch(e -> e == contestQuestion)) {
+                listQuestions.add(contestQuestion);
+            }
+            if (listQuestions.size() % 10 != 0) {
+                getLogger().error("Invalid Questions Size {}", listQuestions.size());
+                return false;
+            }
         }
         if (texts.isEmpty() || texts.stream().allMatch(e -> StringUtils.isBlank(e.getText()))) {
             getLogger().error("Text is Empty {}", texts);
@@ -359,6 +365,16 @@ public class ContestReader implements HasLogging {
         if (s.matches(LINE_PATTERN)) {
             return;
         }
+        if (questionType == QuestionType.TRUE_FALSE && s.matches("^\\s*_____+\\s*$")) {
+            if (getState() == ReaderState.QUESTION) {
+                addQuestion();
+            }
+            if (getState() != ReaderState.TEXT) {
+                addNewText();
+            }
+            setState(ReaderState.TEXT);
+            return;
+        }
         if (isTrueFalseQuestion(s)) {
             if (intValue(s.split("\\D+")[0]) != listQuestions.size() + 1) {
                 addQuestion();
@@ -402,9 +418,10 @@ public class ContestReader implements HasLogging {
             option = 0;
             text = new ContestText(contest);
             texts.add(text);
-            for (int i = 0; i < lines.length && !lines[i].matches(DISCURSIVA_PATTERN); i++) {
+            for (int i = 0; i < lines.length && !removeNotPrintable(lines[i]).matches(DISCURSIVA_PATTERN); i++) {
                 processQuestion(lines, i);
             }
+
         } catch (Exception e) {
             getLogger().error("", e);
         }
@@ -429,8 +446,7 @@ public class ContestReader implements HasLogging {
     }
 
     private static boolean isQuestionPattern(String s) {
-        return s.matches(QUESTION_PATTERN) || s.startsWith("QUESTÃO")
-            ;
+        return s.matches(QUESTION_PATTERN) || s.startsWith("QUESTÃO");
     }
 
     private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {

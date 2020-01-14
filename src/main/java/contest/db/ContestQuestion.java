@@ -11,15 +11,17 @@ import utils.HasImage;
 @Entity
 @Table
 public class ContestQuestion extends BaseEntity implements HasImage {
+    public static final String QUESTION_PATTERN = " *QUESTÃO +(\\d+)\\s*___+\\s+";
+
     @ManyToOne
     @JoinColumn
     private Contest contest;
 
     @Column(length = 5000)
     private String exercise;
-
     @Column(length = 5000)
     private String subject;
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer key;
@@ -35,8 +37,6 @@ public class ContestQuestion extends BaseEntity implements HasImage {
 
     @Column(length = 5000)
     private String image;
-
-    public static final String QUESTION_PATTERN = " *QUESTÃO +(\\d+)\\s*___+\\s+";
 
     public void addOption(ContestQuestionAnswer e) {
         if (options == null) {
@@ -127,8 +127,12 @@ public class ContestQuestion extends BaseEntity implements HasImage {
 
     public void setAnswer(char charAt) {
         int index = charAt - 'A';
-        if (index >= 0 && index < options.size()) {
+        if (options != null && index >= 0 && index < options.size()) {
             options.get(index).setCorrect(true);
+        } else if (type == QuestionType.TRUE_FALSE) {
+            options = new ArrayList<>();
+            options.add(new ContestQuestionAnswer("CERTO", charAt == 'C', this, 1));
+            options.add(new ContestQuestionAnswer("ERRADO", charAt == 'E', this, 2));
         } else {
             getLogger().error("ANSWER not SET {} {}", this, charAt);
         }
