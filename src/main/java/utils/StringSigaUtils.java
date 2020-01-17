@@ -267,12 +267,16 @@ public class StringSigaUtils extends StringUtils {
         Pattern compile = Pattern.compile(" +");
         Matcher matcher = compile.matcher(str);
         StringBuffer sb = new StringBuffer();
-        for (int j = 0; j < diff; j++) {
+        for (int j = 0; j < Math.abs(diff); j++) {
             if (!matcher.find()) {
                 matcher.appendTail(sb);
-                matcher = compile.matcher(sb.toString().trim());
+                String trim = sb.toString().trim();
+                matcher = compile.matcher(trim);
                 sb.delete(0, sb.length());
                 j--;
+                if (sb.toString().isEmpty()) {
+                    break;
+                }
             } else {
                 String group = matcher.group(0);
                 matcher.appendReplacement(sb, group + " ");

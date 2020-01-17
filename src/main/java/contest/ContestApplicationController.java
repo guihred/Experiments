@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,6 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import utils.ImageTableCell;
+import utils.RunnableEx;
 import utils.StringSigaUtils;
 
 public class ContestApplicationController {
@@ -72,8 +74,8 @@ public class ContestApplicationController {
 
         questions.getSelectionModel().selectedIndexProperty().addListener((o, old, n) -> current.set(n.intValue()));
 
-        questions.setCellFactory(newCellFactory(
-            (c, v) -> v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())))));
+        questions.setCellFactory(
+            newCellFactory((c, v) -> v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())))));
         options.getSelectionModel().selectedItemProperty().addListener((observable, old, value) -> {
             if (value == null) {
                 return;
@@ -101,6 +103,7 @@ public class ContestApplicationController {
 
     public void onMouseClickedListView1(MouseEvent e) {
         if (e.getClickCount() > 1) {
+
             ContestReader c = allContests.getSelectionModel().getSelectedItem();
             contestQuestions = c;
             current.set(-1);
@@ -167,13 +170,17 @@ public class ContestApplicationController {
     }
 
     private void setText(int cur) {
-        String text2 = ContestApplicationController.getText(contestQuestions, cur);
-        text.setText(text2);
-        double[] dividerPositions = splitPane.getDividerPositions();
-        dividerPositions[dividerPositions.length - 1] = text2.isEmpty()
-            ? dividerPositions[dividerPositions.length - 2]
-            : 4. / 6;
-        splitPane.setDividerPositions(dividerPositions);
+        RunnableEx.runNewThread(() -> {
+            String text2 = ContestApplicationController.getText(contestQuestions, cur);
+            Platform.runLater(() -> {
+                text.setText(text2);
+                double[] dividerPositions = splitPane.getDividerPositions();
+                dividerPositions[dividerPositions.length - 1] = text2.isEmpty()
+                    ? dividerPositions[dividerPositions.length - 2]
+                    : 4. / 6;
+                splitPane.setDividerPositions(dividerPositions);
+            });
+        });
     }
 
     private void updateCellFactory() {

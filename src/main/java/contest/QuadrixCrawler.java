@@ -46,7 +46,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -108,9 +107,11 @@ public class QuadrixCrawler extends Application {
                     cell.getStyleClass().add("amarelo");
                 }
             }).onSelect((old, value) -> {
-                concurso.setValue(value);
-                value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
-                listBuilder.items(value.getVagas());
+                if (value != null) {
+                    concurso.setValue(value);
+                    value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
+                    listBuilder.items(value.getVagas());
+                }
             }).prefWidthColumns(1).minWidth(200);
 
         return new VBox(new SplitPane(treeBuilder, tableBuilder.build(), listBuilder.build()));
@@ -120,7 +121,7 @@ public class QuadrixCrawler extends Application {
         runNewThread(() -> {
             if (e2.getVagas().isEmpty()) {
                 List<Entry<String, String>> collect = linksFound.stream()
-                    .filter(t -> StringUtils.containsIgnoreCase(t.getKey(), "Resultado")).collect(Collectors.toList());
+                    .filter(t -> containsIgnoreCase(t.getKey(), "Resultado")).collect(Collectors.toList());
                 for (Entry<String, String> entry : collect) {
                     getVagas(e2, entry);
                     if (!e2.getVagas().isEmpty()) {
@@ -142,8 +143,8 @@ public class QuadrixCrawler extends Application {
             .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
             .collect(Collectors.toList());
         List<Map.Entry<String, String>> linksFound = allLinks.stream()
-            .filter(t -> level < 2 || StringUtils.containsIgnoreCase(t.getKey(), "aplicada")
-                || StringUtils.containsIgnoreCase(t.getKey(), "Gabarito Definitivo") || t.getKey().contains("Caderno"))
+            .filter(t -> level < 2 || containsIgnoreCase(t.getKey(), "aplicada")
+                || containsIgnoreCase(t.getKey(), "Gabarito Definitivo") || t.getKey().contains("Caderno"))
             .distinct().collect(Collectors.toList());
         if (level == 2) {
             run(() -> getFilesFromPage(url));
@@ -155,8 +156,9 @@ public class QuadrixCrawler extends Application {
             String[] split = key.split("-");
             e2.setNome(split[0]);
             e2.setLinksFound(linksFound);
-            linksFound.stream().filter(e -> StringUtils.containsIgnoreCase(e.getKey(), "Caderno de prova -")
-                || e.getKey().matches("\\d+ *- *.+")).map(s -> s.getKey().split("- *")[1]).forEach(e -> {
+            linksFound.stream()
+                .filter(e -> containsIgnoreCase(e.getKey(), "Caderno de prova -") || e.getKey().matches("\\d+ *- *.+"))
+                .map(s -> s.getKey().split("- *")[1]).forEach(e -> {
                     if (!e2.getVagas().contains(e)) {
                         e2.getVagas().add(e);
                     }
@@ -324,9 +326,8 @@ public class QuadrixCrawler extends Application {
         List<Entry<String, String>> collect = linksFound.stream()
             .filter(e -> e.getKey().contains("Provas") || e.getKey().contains(number))
             .sorted(Comparator.comparing(e -> containsNumber(number, e))).collect(Collectors.toList());
-        File file = collect.stream()
-            .map(QuadrixCrawler::getFilesFromPage)
-            .filter(e -> !e.isEmpty()).map(e -> e.get(0)).findFirst().orElse(null);
+        File file = collect.stream().map(QuadrixCrawler::getFilesFromPage).filter(e -> !e.isEmpty()).map(e -> e.get(0))
+            .findFirst().orElse(null);
         if (file == null) {
             LOG.info("COULD NOT DOWNLOAD {}/{} - {}", collect, value1, value);
             return;

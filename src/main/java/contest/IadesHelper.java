@@ -42,10 +42,11 @@ public final class IadesHelper {
     }
 
     public static int containsNumber(String number, Entry<String, String> e) {
-        if (e.getKey().contains(number)) {
+        if (StringUtils.containsIgnoreCase(e.getKey(), number)) {
             return 0;
         }
-        if (Stream.of(number.split(" ")).anyMatch(m -> StringUtils.containsIgnoreCase(e.getKey(), m))) {
+        if (Stream.of(number.split(" ")).filter(s -> s.length() > 2)
+            .anyMatch(m -> StringUtils.containsIgnoreCase(e.getKey(), m))) {
             return 0;
         }
         if (number.startsWith("2") && StringUtils.containsIgnoreCase(e.getKey(), "médio")) {

@@ -22,6 +22,7 @@ import utils.HasLogging;
 import utils.StringSigaUtils;
 
 public class ContestReader implements HasLogging {
+    private static final String CONHECIMENTO = "C(?i)ONHECIMENTO.*";
     private static final String QUESTAO = "QUESTÃO";
     private static final String DISCURSIVA_PATTERN = " *P *R *O *V *A *D *I *S *C *U *R *S *I *V *A *";
     private static final int OPTIONS_PER_QUESTION = 5;
@@ -179,7 +180,16 @@ public class ContestReader implements HasLogging {
 
     private void addNewText() {
         text.setContest(contest);
-        texts.add(text);
+        if (StringUtils.isNotBlank(text.getText())) {
+            texts.add(text);
+            if (text.getMin() == null) {
+                text.setMin(Math.max(1, listQuestions.size() + 1));
+            }
+            if (text.getMax() == null) {
+                text.setMax(Math.max(2, listQuestions.size() + 2));
+            }
+        }
+
         text = new ContestText(contest);
     }
 
@@ -199,6 +209,7 @@ public class ContestReader implements HasLogging {
         if (questionType == QuestionType.OPTIONS) {
             answer = new ContestQuestionAnswer();
         }
+        contestQuestion.setSubject(subject);
         contestQuestion.setType(questionType);
         listQuestions.add(contestQuestion);
         contestQuestion = new ContestQuestion();
@@ -323,7 +334,7 @@ public class ContestReader implements HasLogging {
 
     private boolean isTextToBeAdded(String s) {
         return StringUtils.isBlank(s) && getState() == ReaderState.TEXT && !listQuestions.isEmpty()
-            && StringUtils.isNotBlank(text.getText()) && !isBetween();
+            && StringUtils.isNotBlank(text.getText()) && text.getText().split("\n").length > 1 && !isBetween();
     }
 
     private boolean isTrueFalseQuestion(String s) {
@@ -354,6 +365,12 @@ public class ContestReader implements HasLogging {
         if (s.matches(SUBJECT_PATTERN) && i > 0) {
             subject = linhas[i - 1];
             getLogger().info("SUBJECT={}", subject);
+            return;
+        }
+        if (s.matches(CONHECIMENTO) && getState() == ReaderState.IGNORE) {
+            subject = s.trim();
+            getLogger().info("SUBJECT={}", subject);
+            setState(ReaderState.TEXT);
             return;
         }
         changeTypeOfQuestions(s);
@@ -413,9 +430,9 @@ public class ContestReader implements HasLogging {
         }
         insertOptionIfNeeded(s);
 
+        logIndicative(i, s);
         executeAppending(s, linhas, i);
 
-        logIndicative(i, s);
     }
 
     private void tryReadQuestionFromLines(String[] lines) {

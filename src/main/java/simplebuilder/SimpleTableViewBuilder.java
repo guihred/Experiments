@@ -154,10 +154,13 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             if (index >= 0 && index < size) {
                 M auxMed = getTableView().getItems().get(index);
                 setStyleable(auxMed);
-            } else {
-                setText(null);
-                setGraphic(null);
+                return;
             }
+            if (getStyleClass().size() > 4) {
+                getStyleClass().remove(4, getStyleClass().size());
+            }
+            setText(null);
+            setGraphic(null);
         }
     }
 
