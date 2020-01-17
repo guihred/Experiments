@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,7 +28,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import utils.ImageTableCell;
-import utils.RunnableEx;
 import utils.StringSigaUtils;
 
 public class ContestApplicationController {
@@ -170,17 +168,12 @@ public class ContestApplicationController {
     }
 
     private void setText(int cur) {
-        RunnableEx.runNewThread(() -> {
-            String text2 = ContestApplicationController.getText(contestQuestions, cur);
-            Platform.runLater(() -> {
-                text.setText(text2);
-                double[] dividerPositions = splitPane.getDividerPositions();
-                dividerPositions[dividerPositions.length - 1] = text2.isEmpty()
-                    ? dividerPositions[dividerPositions.length - 2]
-                    : 4. / 6;
-                splitPane.setDividerPositions(dividerPositions);
-            });
-        });
+        String text2 = ContestApplicationController.getText(contestQuestions, cur);
+        text.setText(text2);
+        double[] dividerPositions = splitPane.getDividerPositions();
+        dividerPositions[dividerPositions.length - 1] = text2.isEmpty() ? dividerPositions[dividerPositions.length - 2]
+            : 4. / 6;
+        splitPane.setDividerPositions(dividerPositions);
     }
 
     private void updateCellFactory() {
@@ -214,7 +207,6 @@ public class ContestApplicationController {
     }
 
     static String mapLines(List<String> map, int orElse, int i) {
-
         String object = StringSigaUtils.justified(map, orElse, i);
         return String.format("(%02d)    %s", i + 1, object);
     }
