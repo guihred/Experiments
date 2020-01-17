@@ -42,20 +42,20 @@ public final class IadesHelper {
     }
 
     public static int containsNumber(String number, Entry<String, String> e) {
-        if (StringUtils.containsIgnoreCase(e.getKey(), number)) {
+        if (containsIgnoreCase(e.getKey(), number)) {
             return 0;
         }
         if (Stream.of(number.split(" ")).filter(s -> s.length() > 2)
-            .anyMatch(m -> StringUtils.containsIgnoreCase(e.getKey(), m))) {
+            .anyMatch(m -> containsIgnoreCase(e.getKey(), m))) {
             return 0;
         }
-        if (number.startsWith("2") && StringUtils.containsIgnoreCase(e.getKey(), "médio")) {
+        if (number.startsWith("2") && containsIgnoreCase(e.getKey(), "médio")) {
             return 1;
         }
-        if (number.startsWith("1") && StringUtils.containsIgnoreCase(e.getKey(), "superior")) {
+        if (number.startsWith("1") && containsIgnoreCase(e.getKey(), "superior")) {
             return 1;
         }
-        if (StringUtils.containsIgnoreCase(e.getKey(), "definitivo")) {
+        if (containsIgnoreCase(e.getKey(), "definitivo")) {
             return 2;
         }
         return 5;
@@ -123,12 +123,12 @@ public final class IadesHelper {
 
     public static boolean nameMatches(String number, Path path) {
         String fileName = path.toFile().getName();
-        return (StringUtils.containsIgnoreCase(fileName, number)
+        return (containsIgnoreCase(fileName, number)
             || fileName.matches(".*" + number.replaceAll(" ", ".*") + ".*")
             || Stream.of(number.split(" ")).filter(e -> e.length() > 2)
-                .anyMatch(m -> StringUtils.containsIgnoreCase(fileName, m))
+                .anyMatch(m -> containsIgnoreCase(fileName, m))
             || Stream.of(number.split(" ")).map(StringSigaUtils::removerDiacritico).filter(e -> e.length() > 2)
-                .anyMatch(m -> StringUtils.containsIgnoreCase(fileName, m))
+                .anyMatch(m -> containsIgnoreCase(fileName, m))
         ) && fileName.endsWith(".pdf");
     }
 

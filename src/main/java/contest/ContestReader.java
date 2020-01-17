@@ -2,6 +2,7 @@ package contest;
 
 import static contest.db.ContestQuestion.QUESTION_PATTERN;
 import static contest.db.ContestText.TEXTS_PATTERN;
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static utils.StringSigaUtils.intValue;
 import static utils.StringSigaUtils.removeNotPrintable;
 
@@ -209,7 +210,13 @@ public class ContestReader implements HasLogging {
         if (questionType == QuestionType.OPTIONS) {
             answer = new ContestQuestionAnswer();
         }
-        contestQuestion.setSubject(subject);
+        if (containsIgnoreCase(contestQuestion.getExercise(), "texto") && isBetween()
+            && contestQuestion.getNumber() != null) {
+            text.setMax(contestQuestion.getNumber());
+        }
+        if (StringUtils.isBlank(contestQuestion.getSubject())) {
+            contestQuestion.setSubject(subject);
+        }
         contestQuestion.setType(questionType);
         listQuestions.add(contestQuestion);
         contestQuestion = new ContestQuestion();
@@ -328,7 +335,7 @@ public class ContestReader implements HasLogging {
     }
 
     private boolean isTextPattern(String[] linhas, int i, String s) {
-        return StringUtils.containsIgnoreCase(s, "Questões") && getState() == ReaderState.IGNORE
+        return containsIgnoreCase(s, "Questões") && getState() == ReaderState.IGNORE
             && i < linhas.length - 1;
     }
 
