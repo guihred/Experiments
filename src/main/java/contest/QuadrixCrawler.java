@@ -13,6 +13,7 @@ import static utils.ResourceFXUtils.toExternalForm;
 import static utils.RunnableEx.run;
 import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.decodificar;
+import static utils.StringSigaUtils.removerDiacritico;
 import static utils.SupplierEx.getIgnore;
 import static utils.SupplierEx.orElse;
 
@@ -312,7 +313,9 @@ public class QuadrixCrawler extends Application {
 
     private static boolean hasTI(ObservableList<?> observableList) {
         List<String> keys = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informatica");
-        return observableList.stream().anyMatch(e -> keys.stream().anyMatch(m -> containsIgnoreCase(e.toString(), m)));
+        return observableList.stream().map(Objects::toString)
+            .anyMatch(e -> keys.stream().anyMatch(
+                m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
     private static void saveConcurso(Property<Concurso> concurso, SimpleListViewBuilder<String> listBuilder,
