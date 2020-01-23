@@ -28,7 +28,8 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-		songModel.setURL(Chapter8Resource.TEEN_TITANS.getURL().toString());
+        CrawlerTask.insertProxyConfig();
+        songModel.setURL(Chapter8Resource.TEEN_TITANS.getURL().toString());
         MetadataView metaDataView = new MetadataView(songModel);
         PlayerControlView playerControlsView = new PlayerControlView(songModel);
         final BorderPane root = new BorderPane();
@@ -50,7 +51,7 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
     }
 
     public static void main(String[] args) {
-        CrawlerTask.insertProxyConfig();
+
         launch(args);
 	}
 }

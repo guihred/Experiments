@@ -1,5 +1,7 @@
 package furigana;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.Character.UnicodeBlock;
@@ -12,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,6 +23,8 @@ import org.slf4j.Logger;
 import utils.*;
 
 public class CrawlerFuriganaTask extends CrawlerTask {
+
+    private static final String FURIGANA_READING = "hiraganaReading.txt";
 
     private static final Logger LOG = HasLogging.log();
 
@@ -37,6 +42,12 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     private Map<String, String> mapReading = Collections.synchronizedMap(new HashMap<>());
 
     private List<Character> skipCharacters = Arrays.asList('、', 'を', '？', '}', '　', '』', '！', '…', '。');
+
+    private BufferedWriter output;
+
+    public CrawlerFuriganaTask() {
+        readHiraganaFiles();
+    }
 
     public String getReading(String currentWord, char currentLetter) {
         String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
@@ -181,6 +192,21 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             .orElse(null);
     }
 
+    private void log(Object a, Object b) {
+        LOG.info("{}={}", a, b);
+        RunnableEx.run(() -> {
+            if (output == null) {
+                output = new BufferedWriter(
+                    new FileWriterWithEncoding(ResourceFXUtils.getOutFile(FURIGANA_READING), "UTF-8", true));
+            }
+            synchronized (output) {
+                output.append(a + "=" + b + "\n");
+                output.flush();
+            }
+        });
+
+    }
+
     private String onReading(String str) {
         return Objects.toString(mapReading.computeIfAbsent(str, FunctionEx.makeFunction(this::getOnReadings)), "");
     }
@@ -213,6 +239,18 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return currentLine;
     }
 
+    private final void readHiraganaFiles() {
+        RunnableEx.run(() -> {
+            File outFile = ResourceFXUtils.getOutFile(FURIGANA_READING);
+            if (outFile.exists()) {
+                Files.lines(outFile.toPath(), StandardCharsets.UTF_8).forEach(l -> {
+                    String[] split = l.split("=");
+                    mapReading.put(split[0], split[1]);
+                });
+            }
+        });
+    }
+
     private String splitWord(String currentWord, char currentLetter) {
         Matcher matcher = NUMBERS.matcher(currentWord);
         if (matcher.find()) {
@@ -234,14 +272,14 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     private static void endTask(List<String> lines) {
-        try (PrintStream printStream = new PrintStream(ResourceFXUtils.getOutFile("hp1Tex2Converted.tex"),
-            StandardCharsets.UTF_8.displayName())) {
-            for (String s : lines) {
-                printStream.println(s);
+        RunnableEx.run(() -> {
+            try (PrintStream printStream = new PrintStream(ResourceFXUtils.getOutFile("hp1Tex2Converted.tex"),
+                StandardCharsets.UTF_8.displayName())) {
+                for (String s : lines) {
+                    printStream.println(s);
+                }
             }
-        } catch (Exception e) {
-            LOG.error("ERROR ", e);
-        }
+        });
     }
 
     private static boolean existsKunReading(String currentWord, Elements kun) {
@@ -250,20 +288,16 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private static List<String> getLines() {
         List<String> lines = new ArrayList<>();
-        try (Stream<String> lines2 = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
-            lines.addAll(lines2.collect(Collectors.toList()));
-        } catch (IOException e) {
-            LOG.error("ERROR ", e);
-        }
+        RunnableEx.run(() -> {
+            try (Stream<String> lines2 = Files.lines(ResourceFXUtils.toPath("hp1Tex2.tex"))) {
+                lines.addAll(lines2.collect(Collectors.toList()));
+            }
+        });
         return lines;
     }
 
     private static boolean isNotKatakana(String e) {
         return e.codePoints().allMatch(a -> UnicodeBlock.KATAKANA != UnicodeBlock.of(a));
-    }
-
-    private static void log(Object a, Object b) {
-        LOG.info("{}={}", a, b);
     }
 
     private static boolean matchesCurrentWord(String currentWord, char currentLetter, Element link) {

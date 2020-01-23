@@ -1,8 +1,12 @@
 package contest;
 
+import static java.util.stream.Stream.of;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
 import static utils.CrawlerTask.executeRequest;
+import static utils.CrawlerTask.extractURL;
+import static utils.CrawlerTask.getDocument;
+import static utils.CrawlerTask.getFile;
 import static utils.StringSigaUtils.decodificar;
 import static utils.StringSigaUtils.removerDiacritico;
 import static utils.SupplierEx.getIgnore;
@@ -33,53 +37,17 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import simplebuilder.SimpleListViewBuilder;
-import utils.*;
+import utils.FunctionEx;
+import utils.HasLogging;
+import utils.StringSigaUtils;
+import utils.SupplierEx;
 
 public final class IadesHelper {
     public static final Logger LOG = HasLogging.log();
-    static final String QUADRIX_DOMAIN = "http://www.quadrix.org.br";
+    public static final String QUADRIX_DOMAIN = "http://www.quadrix.org.br";
+    public static final Map<String, String> COOKIES = new HashMap<>();
 
     private IadesHelper() {
-    }
-
-    public static void saveConcurso(Property<Concurso> concurso, SimpleListViewBuilder<String> listBuilder,
-        String value) {
-        if (value == null) {
-            return;
-        }
-        Concurso value1 = concurso.getValue();
-        ObservableList<Entry<String, String>> linksFound = value1.getLinksFound();
-        String number = Objects.toString(value) + "";
-        List<Entry<String, String>> collect = linksFound.stream()
-            .filter(e -> e.getKey().contains("Provas") || e.getKey().contains(number))
-            .sorted(Comparator.comparing(e -> containsNumber(number, e))).collect(Collectors.toList());
-        File file = collect.stream().map(IadesHelper::getFilesFromPage).filter(e -> !e.isEmpty()).map(e -> e.get(0))
-            .findFirst().orElse(null);
-        if (file == null) {
-            QuadrixCrawler.LOG.info("COULD NOT DOWNLOAD {}/{} - {}", collect, value1, value);
-            return;
-        }
-        File file2 = getPDF(value, file);
-    
-        getContestQuestions(file2, Organization.QUADRIX, entities -> {
-            saveQuadrixQuestions(concurso, value, linksFound, number, entities);
-            Platform
-                .runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder.build())));
-        });
-    }
-
-    public static String addQuadrixDomain(String url) {
-        if (url.startsWith("http")) {
-            return url;
-        }
-        return IadesHelper.QUADRIX_DOMAIN + "/" + url;
-    }
-
-    static boolean hasTI(ObservableList<?> observableList) {
-        List<String> keys = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
-        return observableList.stream().map(Objects::toString)
-            .anyMatch(e -> keys.stream().anyMatch(
-                m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
     public static String addDomain(SimpleStringProperty domain, String l) {
@@ -89,12 +57,19 @@ public final class IadesHelper {
         return domain.get() + (!l.startsWith("/") ? "/" + l : l);
     }
 
+    public static String addQuadrixDomain(String url) {
+        if (url.startsWith("http")) {
+            return url;
+        }
+        return IadesHelper.QUADRIX_DOMAIN + "/" + url;
+    }
+
     public static int containsNumber(String number, Entry<String, String> e) {
         if (containsIgnoreCase(e.getKey(), number)) {
             return 0;
         }
-        if (Stream.of(number.split(" ")).filter(s -> s.length() > 2)
-            .anyMatch(m -> containsIgnoreCase(e.getKey(), m))) {
+        if (of(number.split(" "))
+            .filter(s -> s.length() > 2).anyMatch(m -> containsIgnoreCase(e.getKey(), m))) {
             return 0;
         }
         if (number.startsWith("2") && containsIgnoreCase(e.getKey(), "médio")) {
@@ -112,11 +87,12 @@ public final class IadesHelper {
     public static String getAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
         int indexOf = linesRead.indexOf(findFirst);
         List<String> subList = linesRead.subList(indexOf, linesRead.size() - 1);
-        List<String> answersList = subList.stream().filter(StringUtils::isNotBlank).filter(s -> s.matches("[\\sA-E#]+"))
+        List<String> answersList = subList.stream()
+            .filter(StringUtils::isNotBlank).filter(s -> s.matches("[\\sA-E#]+"))
             .collect(Collectors.toList());
         StringBuilder answers = new StringBuilder();
         for (String string : answersList) {
-            String split = Stream.of(string.split("")).filter(s -> s.matches("[A-E#]")).collect(Collectors.joining());
+            String split = of(string.split("")).filter(s -> s.matches("[A-E#]")).collect(Collectors.joining());
             answers.append(split);
             if (answers.length() >= entities.getListQuestions().size()) {
                 return answers.toString();
@@ -129,39 +105,39 @@ public final class IadesHelper {
     public static ContestReader getContestQuestions(File file, Organization organization,
         Consumer<ContestReader>... r) {
         ContestReader instance = new ContestReader();
-		LOG.info("READING {}", file);
+        LOG.info("READING {}", file);
         instance.readFile(file, organization);
-        Stream.of(r).forEach(e -> e.accept(instance));
+        of(r).forEach(e -> e.accept(instance));
         return instance;
     }
 
     public static File getFileFromPage(String text, String url3) throws IOException {
         // PDFs are redirected to an html visualization page
         if (!text.endsWith(".pdf")) {
-            return CrawlerTask.getFile(text, url3);
+            return getFile(text, url3);
         }
-        Response executeRequest = executeRequest(url3, QuadrixCrawler.cookies);
+        Response executeRequest = executeRequest(url3, IadesHelper.COOKIES);
         String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
-        return SupplierEx
-            .makeSupplier(() -> CrawlerTask.getFile(text, fileParameter), e -> QuadrixCrawler.LOG.info("{} Failed", fileParameter))
-            .get();
+        return SupplierEx.makeSupplier(() -> getFile(text, fileParameter),
+            e -> LOG.info("{} Failed", fileParameter)).get();
     }
 
     public static List<File> getFilesFromPage(Entry<String, String> link) {
         String url = link.getValue();
         URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(IadesHelper.addQuadrixDomain(url)));
-        Document document = SupplierEx.getIgnore(() -> CrawlerTask.getDocument(url2.toExternalForm(), QuadrixCrawler.cookies));
+        Document document = SupplierEx
+            .getIgnore(() -> getDocument(url2.toExternalForm(), IadesHelper.COOKIES));
         if (document == null) {
             return Collections.emptyList();
         }
         Elements select = document.select("a");
         return select.stream().filter(e -> hasFileExtension(e.text()))
-            .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), IadesHelper.addQuadrixDomain(e.attr("href"))))).filter(Objects::nonNull)
-            .collect(Collectors.toList());
+            .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), IadesHelper.addQuadrixDomain(e.attr("href")))))
+            .filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public static Path getFirstPDF(File file, String number) throws IOException {
-		try (Stream<Path> find = Files.find(file.toPath(), 3, (path, info) -> nameMatches(number, path))) {
+        try (Stream<Path> find = Files.find(file.toPath(), 3, (path, info) -> nameMatches(number, path))) {
             Optional<Path> findFirst = find.findFirst();
             if (findFirst.isPresent()) {
                 return findFirst.get();
@@ -170,7 +146,7 @@ public final class IadesHelper {
         }
 
         try (Stream<Path> find = Files.find(file.toPath(), 3,
-				(path, info) -> path.toFile().getName().endsWith(".pdf"))) {
+            (path, info) -> path.toFile().getName().endsWith(".pdf"))) {
             Optional<Path> findFirst = find.findFirst();
             if (findFirst.isPresent()) {
                 return findFirst.get();
@@ -196,13 +172,37 @@ public final class IadesHelper {
 
     public static boolean nameMatches(String number, Path path) {
         String fileName = path.toFile().getName();
-        return (containsIgnoreCase(fileName, number)
-            || fileName.matches(".*" + number.replaceAll(" ", ".*") + ".*")
-            || Stream.of(number.split(" ")).filter(e -> e.length() > 2)
-                .anyMatch(m -> containsIgnoreCase(fileName, m))
-            || Stream.of(number.split(" ")).map(StringSigaUtils::removerDiacritico).filter(e -> e.length() > 2)
-                .anyMatch(m -> containsIgnoreCase(fileName, m))
-        ) && fileName.endsWith(".pdf");
+        return (containsIgnoreCase(fileName, number) || fileName.matches(".*" + number.replaceAll(" ", ".*") + ".*")
+            || of(number.split(" ")).filter(e -> e.length() > 2).anyMatch(m -> containsIgnoreCase(fileName, m))
+            || of(number.split(" ")).map(StringSigaUtils::removerDiacritico).filter(e -> e.length() > 2)
+                .anyMatch(m -> containsIgnoreCase(fileName, m)))
+            && fileName.endsWith(".pdf");
+    }
+
+    public static void saveConcurso(Property<Concurso> concurso, SimpleListViewBuilder<String> listBuilder,
+        String value) {
+        if (value == null) {
+            return;
+        }
+        Concurso value1 = concurso.getValue();
+        ObservableList<Entry<String, String>> linksFound = value1.getLinksFound();
+        String number = Objects.toString(value) + "";
+        List<Entry<String, String>> collect = linksFound.stream()
+            .filter(e -> e.getKey().contains("Provas") || e.getKey().contains(number))
+            .sorted(Comparator.comparing(e -> containsNumber(number, e))).collect(Collectors.toList());
+        File file = collect.stream().map(IadesHelper::getFilesFromPage).filter(e -> !e.isEmpty()).map(e -> e.get(0))
+            .findFirst().orElse(null);
+        if (file == null) {
+            LOG.info("COULD NOT DOWNLOAD {}/{} - {}", collect, value1, value);
+            return;
+        }
+        File file2 = getPDF(value, file);
+
+        getContestQuestions(file2, Organization.QUADRIX, entities -> {
+            saveQuadrixQuestions(concurso, value, linksFound, number, entities);
+            Platform
+                .runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder.build())));
+        });
     }
 
     public static void saveContestValues(Property<Concurso> concurso, String vaga, Node vagasView) {
@@ -218,7 +218,7 @@ public final class IadesHelper {
             LOG.info("NO LINK FOR Provas found {} - {}", vaga, value);
             return;
         }
-        File file = CrawlerTask.extractURL(orElse.getValue());
+        File file = extractURL(orElse.getValue());
         if (file == null) {
             LOG.info("COULD NOT DOWNLOAD {}/{} - {}", orElse, value, vaga);
             return;
@@ -237,7 +237,7 @@ public final class IadesHelper {
             .sorted(Comparator.comparing(e -> containsNumber(number, e))).map(IadesHelper::getFilesFromPage)
             .filter(l -> !l.isEmpty()).map(l -> l.get(0)).findFirst().orElse(null);
         if (gabaritoFile == null) {
-            QuadrixCrawler.LOG.info("SEM gabarito {}", linksFound);
+            LOG.info("SEM gabarito {}", linksFound);
             return;
         }
         List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
@@ -247,12 +247,13 @@ public final class IadesHelper {
         Optional<String> findFirst = linesRead.stream()
             .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
         if (!findFirst.isPresent()) {
-            QuadrixCrawler.LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabaritoFile, linesRead);
+            LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabaritoFile, linesRead);
             return;
         }
         String answers = getAnswers(entities, linesRead, findFirst.get());
         if (answers.length() != entities.getListQuestions().size()) {
-            QuadrixCrawler.LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(), entities.getListQuestions().size());
+            LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(),
+                entities.getListQuestions().size());
             return;
         }
         ObservableList<ContestQuestion> listQuestions = entities.getListQuestions();
@@ -274,7 +275,7 @@ public final class IadesHelper {
             LOG.info("SEM gabarito {}", linksFound);
             return;
         }
-        File gabaritoFile = CrawlerTask.extractURL(gabarito.getValue());
+        File gabaritoFile = extractURL(gabarito.getValue());
         List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
             .collect(Collectors.toList());
         String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");
@@ -296,8 +297,13 @@ public final class IadesHelper {
             contestQuestion.setAnswer(answers.charAt(i));
         }
         entities.saveAll();
-        Platform.runLater(
-            () -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
+        Platform.runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
+    }
+
+    static boolean hasTI(ObservableList<?> observableList) {
+        List<String> keys = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
+        return observableList.stream().map(Objects::toString).anyMatch(e -> keys.stream()
+            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
 }

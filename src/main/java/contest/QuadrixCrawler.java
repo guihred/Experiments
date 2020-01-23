@@ -48,8 +48,6 @@ import utils.*;
 public class QuadrixCrawler extends Application {
 
     public static final Logger LOG = HasLogging.log();
-    static Map<String, String> cookies = new HashMap<>();
-
     private ObservableList<Concurso> concursos = FXCollections.observableArrayList();
 
     private Set<String> links = new HashSet<>();
@@ -182,7 +180,7 @@ public class QuadrixCrawler extends Application {
             URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(IadesHelper.addQuadrixDomain(url)));
             domain.set(url2.getProtocol() + "://" + url2.getHost());
             LOG.info("GETTING {} level {}", url, level);
-            return CrawlerTask.getDocument(url2.toExternalForm(), cookies);
+            return CrawlerTask.getDocument(url2.toExternalForm(), IadesHelper.COOKIES);
         })).thenApply(doc -> getLinks(doc, entry, domain, level)).thenAccept(l -> {
             LOG.info("Links {}", l);
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));

@@ -23,32 +23,21 @@ public class EarthriseChristmasApp extends Application {
 
     @Override
     public void start(Stage stage) {
-        String message
-                = "Earthrise at Christmas: "
-                + "[Forty] years ago this Christmas, a turbulent world "
-                + "looked to the heavens for a unique view of our home "
-                + "planet. This photo of Earthrise over the lunar horizon "
-                + "was taken by the Apollo 8 crew in December 1968, showing "
-                + "Earth for the first time as it appears from deep space. "
-                + "Astronauts Frank Borman, Jim Lovell and William Anders "
-                + "had become the first humans to leave Earth orbit, "
-                + "entering lunar orbit on Christmas Eve. In a historic live "
-                + "broadcast that night, the crew took turns reading from "
-                + "the Book of Genesis, closing with a holiday wish from "
-                + "Commander Borman: \"We close with good night, good luck, "
-                + "a Merry Christmas, and God bless all of you -- all of "
-                + "you on the good Earth.\"";
-        Text textRef = new SimpleTextBuilder()
-        		.text(message)
-        		.layoutY(100)
-                .wrappingWidth(WRAPPING)
-        		.build();
- 
-        
+        CrawlerTask.insertProxyConfig();
+        String message = "Earthrise at Christmas: [Forty] years ago this Christmas, a turbulent world looked to"
+            + " the heavens for a unique view of our home planet. This photo of Earthrise over the lunar horizon"
+            + " was taken by the Apollo 8 crew in December 1968, showing Earth for the first time as it appears"
+            + " from deep space. Astronauts Frank Borman, Jim Lovell and William Anders had become the first"
+            + " humans to leave Earth orbit, entering lunar orbit on Christmas Eve. In a historic live broadcast"
+            + " that night, the crew took turns reading from the Book of Genesis, closing with a holiday wish from"
+            + " Commander Borman: \"We close with good night, good luck, a Merry Christmas, and God bless all of"
+            + " you -- all of you on the good Earth.\"";
+        Text textRef = new SimpleTextBuilder().text(message).layoutY(100).wrappingWidth(WRAPPING).build();
+
         TranslateTransition transTransition = new TranslateTransition(Duration.seconds(60), textRef);
         transTransition.setToY(-WRAPPING * 2);
         transTransition.setInterpolator(Interpolator.LINEAR);
-		transTransition.setCycleCount(Animation.INDEFINITE);
+        transTransition.setCycleCount(Animation.INDEFINITE);
 
         final ImageView image = new ImageView(new Image("http://projavafx.com/images/earthrise.jpg"));
         image.setPreserveRatio(true);
@@ -60,7 +49,8 @@ public class EarthriseChristmasApp extends Application {
         Scene scene = new Scene(new StackPane(image, group));
         image.fitWidthProperty().bind(scene.widthProperty());
         group.setLayoutX(image.getBoundsInParent().getMinX() + image.getBoundsInParent().getWidth() / 2 - WRAPPING / 2);
-        group.layoutXProperty().bind(Bindings.createDoubleBinding(
+        group.layoutXProperty()
+            .bind(Bindings.createDoubleBinding(
                 () -> image.getBoundsInParent().getMinX() + image.getBoundsInParent().getWidth() / 2 - WRAPPING / 2,
                 image.boundsInParentProperty()));
         stage.setScene(scene);
@@ -71,7 +61,7 @@ public class EarthriseChristmasApp extends Application {
     }
 
     public static void main(String[] args) {
-        CrawlerTask.insertProxyConfig();
+
         Application.launch(args);
     }
 }

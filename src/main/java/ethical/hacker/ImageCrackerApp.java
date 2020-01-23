@@ -44,7 +44,6 @@ public class ImageCrackerApp extends Application {
     public BooleanProperty loadURL() {
         successfull.set(false);
         try {
-            CrawlerTask.insertProxyConfig();
             engine.load(URL);
         } catch (Exception ex) {
             LOG.info("", ex);
@@ -59,7 +58,7 @@ public class ImageCrackerApp extends Application {
     @Override
 	public void start(Stage stage) {
         WebView browser = new WebView();
-
+        CrawlerTask.insertProxyConfig();
         ImageView imageView = new ImageView();
         engine = browser.getEngine();
         Button loadButton = SimpleButtonBuilder.newButton("Go", e -> loadURL());
@@ -125,7 +124,7 @@ public class ImageCrackerApp extends Application {
     }
 
     public static void main(String[] args) {
-        CrawlerTask.insertProxyConfig();
+
         launch(args);
     }
 

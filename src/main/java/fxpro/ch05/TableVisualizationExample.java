@@ -22,6 +22,7 @@ public class TableVisualizationExample extends TableVisualizationVar {
     protected ContextMenu contextMenu;
 
     public void initialize() {
+        CrawlerTask.insertProxyConfig();
         listView25.setItems(LIST_VIEW_ITEMS);
         tableView4.setItems(getTeamMembers());
         tableView4.getSelectionModel().selectedItemProperty()
@@ -159,7 +160,7 @@ public class TableVisualizationExample extends TableVisualizationVar {
     }
 
     public static void main(String[] args) {
-        CrawlerTask.insertProxyConfig();
+
         launch(args);
     }
 }

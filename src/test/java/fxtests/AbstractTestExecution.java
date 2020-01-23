@@ -1,6 +1,5 @@
 package fxtests;
 
-
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -16,7 +15,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.apache.commons.lang.SystemUtils;
-import org.assertj.core.api.exception.RuntimeIOException;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
@@ -58,7 +56,6 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         currentStage.setY(0);
     }
 
-
     @Override
     public void stop() {
         currentStage.close();
@@ -88,19 +85,19 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     protected <M extends Node> Set<M> lookup(Class<M> cl) {
-        return lookup(e -> cl.isInstance(e)).queryAllAs(cl);
+        return lookup(cl::isInstance).queryAllAs(cl);
     }
 
     protected <M extends Node> M lookupFirst(Class<M> cl) {
-        return lookup(e -> cl.isInstance(e)).queryAs(cl);
+        return lookup(cl::isInstance).queryAs(cl);
     }
 
     protected <M extends Node> List<M> lookupList(Class<M> cl) {
-        return lookup(e -> cl.isInstance(e)).queryAllAs(cl).stream().collect(Collectors.toList());
+        return lookup(cl::isInstance).queryAllAs(cl).stream().collect(Collectors.toList());
     }
 
     protected <M extends Node> List<M> lookupList(Class<M> cl, Predicate<? super M> predicate) {
-        return lookup(e -> cl.isInstance(e)).queryAllAs(cl).stream().filter(predicate).collect(Collectors.toList());
+        return lookup(cl::isInstance).queryAllAs(cl).stream().filter(predicate).collect(Collectors.toList());
     }
 
     protected void moveRandom(int bound) {
@@ -156,32 +153,28 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     protected <T extends Application> T show(Class<T> c) {
-        try {
+        return SupplierEx.remap(() -> {
             resetStage();
             logger.info("SHOWING {}", c.getSimpleName());
             T newInstance = c.newInstance();
             interactNoWait(RunnableEx.make(() -> newInstance.start(currentStage)));
             return newInstance;
-        } catch (Exception e) {
-            throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
-        }
+        }, String.format("ERRO IN %s", c));
     }
 
     protected <T extends Application> void show(T application) {
-        try {
+        RunnableEx.remap(() -> {
             resetStage();
             logger.info("SHOWING {}", application.getClass().getSimpleName());
             interactNoWait(RunnableEx.make(() -> {
                 application.start(currentStage);
                 currentStage.toFront();
             }));
-        } catch (Exception e) {
-            throw new RuntimeIOException(String.format("ERRO IN %s", application), e);
-        }
+        }, String.format("ERRO IN %s", application));
     }
 
     protected <T extends Application> T showNewStage(Class<T> c, ConsumerEx<T> run) {
-        try {
+        return SupplierEx.remap(() -> {
             logger.info("SHOWING {}", c.getSimpleName());
             T newInstance = c.newInstance();
             Stage primaryStage = WaitForAsyncUtils.asyncFx(() -> new Stage()).get();
@@ -189,9 +182,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
             run.accept(newInstance);
             interactNoWait(primaryStage::close);
             return newInstance;
-        } catch (Exception e) {
-            throw new RuntimeIOException(String.format("ERRO IN %s", c), e);
-        }
+        }, String.format("ERRO IN %s", c));
     }
 
     protected <T extends Application> T showNewStage(Class<T> c, RunnableEx run) {
@@ -239,8 +230,8 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         new FXTesting().testApplications(applicationClasses);
     }
 
-    protected static <T>void runReversed(List<T> list,Consumer<T> consu) {
-        for (int i = list.size()-1; i >= 0; i--) {
+    protected static <T> void runReversed(List<T> list, Consumer<T> consu) {
+        for (int i = list.size() - 1; i >= 0; i--) {
             T t = list.get(i);
             consu.accept(t);
         }
