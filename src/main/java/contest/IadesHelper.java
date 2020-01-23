@@ -30,13 +30,13 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import simplebuilder.SimpleListViewBuilder;
 import utils.FunctionEx;
 import utils.HasLogging;
 import utils.StringSigaUtils;
@@ -179,7 +179,7 @@ public final class IadesHelper {
             && fileName.endsWith(".pdf");
     }
 
-    public static void saveConcurso(Property<Concurso> concurso, SimpleListViewBuilder<String> listBuilder,
+    public static void saveConcurso(Property<Concurso> concurso, ListView<String> listBuilder,
         String value) {
         if (value == null) {
             return;
@@ -201,7 +201,7 @@ public final class IadesHelper {
         getContestQuestions(file2, Organization.QUADRIX, entities -> {
             saveQuadrixQuestions(concurso, value, linksFound, number, entities);
             Platform
-                .runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder.build())));
+                .runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder)));
         });
     }
 

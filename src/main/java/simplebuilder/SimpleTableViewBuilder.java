@@ -123,6 +123,11 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         };
     }
 
+    public static <T> void onSelect(TableView<T> table, final BiConsumer<T, T> value) {
+        table.getSelectionModel().selectedItemProperty()
+        .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+    }
+
     public static <S> void prefWidthColumns(TableView<S> table1, double... prefs) {
         ObservableList<TableColumn<S, ?>> columns = table1.getColumns();
         double sum = DoubleStream.of(prefs).sum();

@@ -1,9 +1,7 @@
-
 package contest;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static utils.ResourceFXUtils.toExternalForm;
 import static utils.RunnableEx.run;
 import static utils.RunnableEx.runNewThread;
 import static utils.SupplierEx.getIgnore;
@@ -29,13 +27,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.layout.VBox;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -46,80 +39,45 @@ import simplebuilder.SimpleTreeViewBuilder;
 import utils.*;
 
 public class QuadrixCrawler extends Application {
+    private static final Logger LOG = HasLogging.log();
+    @FXML
+    private ListView<String> vagasList;
+    @FXML
+    private TreeView<Map.Entry<String, String>> treeBuilder;
+    @FXML
+    private TableView<Concurso> concursosTable;
+    @FXML
+    private TableColumn<Concurso, Object> tableColumn4;
 
-    public static final Logger LOG = HasLogging.log();
     private ObservableList<Concurso> concursos = FXCollections.observableArrayList();
-
     private Set<String> links = new HashSet<>();
 
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Quadrix Crawler");
-        CrawlerTask.insertProxyConfig();
-        Parent node = createSplitTreeListDemoNode();
-        Scene value = new Scene(node);
-        value.getStylesheets().add(toExternalForm("filesComparator.css"));
-        primaryStage.setScene(value);
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
-        primaryStage.show();
-    }
-
-    private void addClasses(Concurso con, TableCell<Concurso, Object> cell) {
-        cell.setText(con.getNome());
-        cell.getStyleClass().removeAll("amarelo", "vermelho");
-        if (con.getVagas().isEmpty()) {
-            cell.getStyleClass().add("vermelho");
-            con.getVagas().addListener((Observable c) -> {
-                ObservableList<?> observableList = (ObservableList<?>) c;
-                if (con.getNome().equals(cell.getText()) && !observableList.isEmpty()) {
-                    cell.getStyleClass().remove("vermelho");
-                    if (IadesHelper.hasTI(observableList)) {
-                        cell.getStyleClass().add("amarelo");
-                    }
-                }
-            });
-        } else if (IadesHelper.hasTI(con.getVagas())) {
-            cell.getStyleClass().add("amarelo");
-        }
-    }
-
-    private Parent createSplitTreeListDemoNode() {
-        SimpleTreeViewBuilder<Map.Entry<String, String>> root = new SimpleTreeViewBuilder<Map.Entry<String, String>>()
-            .root(new AbstractMap.SimpleEntry<>("", IadesHelper.addQuadrixDomain("encerrados.aspx")));
-        TreeView<Map.Entry<String, String>> treeBuilder = root.build();
+    public void initialize() {
+        Map.Entry<String, String> simpleEntry = new SimpleEntry<>("", IadesHelper.addQuadrixDomain("encerrados.aspx"));
+        treeBuilder.setRoot(new TreeItem<>(simpleEntry));
         Property<Concurso> concurso = new SimpleObjectProperty<>();
-        root.onSelect(t -> getNewLinks(t, treeBuilder));
-        SimpleListViewBuilder<String> listBuilder = new SimpleListViewBuilder<>();
-        listBuilder.items(FXCollections.observableArrayList())
-            .onSelect((old, value) -> runNewThread(() -> IadesHelper.saveConcurso(concurso, listBuilder, value)));
-        SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
-            .addColumn("Nome", this::addClasses).onSelect((old, value) -> {
-                if (value != null) {
-                    concurso.setValue(value);
-                    value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
-                    listBuilder.items(value.getVagas());
-                }
-            }).prefWidthColumns(1).minWidth(200);
 
-        return new VBox(new SplitPane(treeBuilder, tableBuilder.build(), listBuilder.build()));
-    }
+        SimpleTreeViewBuilder.onSelect(treeBuilder, t -> getNewLinks(t, treeBuilder));
+        vagasList.setItems(FXCollections.observableArrayList());
 
-    private void findVagas(List<Map.Entry<String, String>> linksFound, Concurso e2) {
-        runNewThread(() -> {
-            if (e2.getVagas().isEmpty()) {
-                List<Entry<String, String>> collect = linksFound.stream()
-                    .filter(t -> containsIgnoreCase(t.getKey(), "Resultado")).collect(Collectors.toList());
-                for (Entry<String, String> entry : collect) {
-                    getVagas(e2, entry);
-                    if (!e2.getVagas().isEmpty()) {
-                        break;
-                    }
-                }
-                if (e2.getVagas().isEmpty()) {
-                    Platform.runLater(() -> concursos.remove(e2));
-                }
+        tableColumn4.setCellFactory(SimpleTableViewBuilder.newCellFactory(QuadrixCrawler::addClasses));
+        SimpleListViewBuilder.onSelect(vagasList,
+            (old, value) -> runNewThread(() -> IadesHelper.saveConcurso(concurso, vagasList, value)));
+        concursosTable.setItems(concursos);
+        SimpleTableViewBuilder.onSelect(concursosTable, (old, value) -> {
+            if (value != null) {
+                concurso.setValue(value);
+                value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
+                vagasList.setItems(value.getVagas());
             }
         });
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        CrawlerTask.insertProxyConfig();
+        CommonsFX.loadFXML("Quadrix Crawler", "QuadrixCrawler.fxml", this, primaryStage);
+        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
     }
 
     private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
@@ -150,7 +108,7 @@ public class QuadrixCrawler extends Application {
                         e2.getVagas().add(e);
                     }
                 });
-            findVagas(linksFound, e2);
+            findVagas(linksFound, e2, concursos);
 
             concursos.add(e2);
         }
@@ -174,6 +132,7 @@ public class QuadrixCrawler extends Application {
         if (!newValue.getChildren().isEmpty()) {
             return;
         }
+        HasLogging.log();
         int level = tree.getTreeItemLevel(newValue);
         SimpleStringProperty domain = new SimpleStringProperty(IadesHelper.QUADRIX_DOMAIN);
         CompletableFuture.supplyAsync(SupplierEx.makeSupplier(() -> {
@@ -187,6 +146,44 @@ public class QuadrixCrawler extends Application {
             l.forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
         });
         ForkJoinPool.commonPool().awaitQuiescence(500, TimeUnit.SECONDS);
+    }
+
+    public static void addClasses(Concurso con, TableCell<Concurso, Object> cell) {
+        cell.setText(con.getNome());
+        cell.getStyleClass().removeAll("amarelo", "vermelho");
+        if (con.getVagas().isEmpty()) {
+            cell.getStyleClass().add("vermelho");
+            con.getVagas().addListener((Observable c) -> {
+                ObservableList<?> observableList = (ObservableList<?>) c;
+                if (con.getNome().equals(cell.getText()) && !observableList.isEmpty()) {
+                    cell.getStyleClass().remove("vermelho");
+                    if (IadesHelper.hasTI(observableList)) {
+                        cell.getStyleClass().add("amarelo");
+                    }
+                }
+            });
+        } else if (IadesHelper.hasTI(con.getVagas())) {
+            cell.getStyleClass().add("amarelo");
+        }
+    }
+
+    public static void findVagas(List<Map.Entry<String, String>> linksFound, Concurso e2,
+        ObservableList<Concurso> concursos) {
+        runNewThread(() -> {
+            if (e2.getVagas().isEmpty()) {
+                List<Entry<String, String>> collect = linksFound.stream()
+                    .filter(t -> containsIgnoreCase(t.getKey(), "Resultado")).collect(Collectors.toList());
+                for (Entry<String, String> entry : collect) {
+                    getVagas(e2, entry);
+                    if (!e2.getVagas().isEmpty()) {
+                        break;
+                    }
+                }
+                if (e2.getVagas().isEmpty()) {
+                    Platform.runLater(() -> concursos.remove(e2));
+                }
+            }
+        });
     }
 
     public static void main(String[] args) {

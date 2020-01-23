@@ -62,4 +62,8 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         };
     }
 
+    public static <T> void onSelect(TreeView<T> treeView, Consumer<TreeItem<T>> consume) {
+        treeView.getSelectionModel().selectedItemProperty().addListener((ob, old, n) -> consume.accept(n));
+    }
+
 }

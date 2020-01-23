@@ -58,4 +58,9 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         };
     }
 
+    public static <T> void onSelect(ListView<T> table,final BiConsumer<T, T> value) {
+        table.getSelectionModel().selectedItemProperty()
+        .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+    }
+
 }
