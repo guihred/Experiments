@@ -92,7 +92,7 @@ public class SngpcViewer extends Application {
             return children.get(j).getValue().values().stream().collect(Collectors.joining("\n"));
         }
 
-        return FunctionEx.mapIf(i.getValue(), m -> i.getValue().values().toString(), "");
+        return FunctionEx.mapIf(i.getValue(), m -> m.values().toString(), "");
     }
 
     private static void onSelectTreeItem(ObservableList<Map<String, String>> list,
