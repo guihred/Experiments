@@ -71,7 +71,7 @@
 						</goals>
 						<configuration>
 							<dataFile>${jacoco.ut.execution.data.file}</dataFile>
-							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
 						</configuration>
 					</execution>
 					<execution>
@@ -83,17 +83,6 @@
 						<configuration>
 							<destFile>${jacoco.it.execution.data.file}</destFile>
 							<propertyName>failsafeArgLine</propertyName>
-						</configuration>
-					</execution>
-					<execution>
-						<id>post-integration-test</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration>
-							<dataFile>${jacoco.it.execution.data.file}</dataFile>
-							<outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
