@@ -4,6 +4,7 @@ import static utils.PredicateEx.makeTest;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
+import extract.FileAttrApp;
 import graphs.app.JavaFileDependency;
 import java.io.File;
 import java.lang.reflect.Modifier;
@@ -15,6 +16,7 @@ import javafx.application.Application;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.ResourceFXUtils;
 import utils.SupplierEx;
 
 public final class CoverageUtils {
@@ -121,7 +123,8 @@ public final class CoverageUtils {
     }
 
     public static void showSummary() {
-        File csvFile = new File("target/site/jacoco/jacoco.csv");
+        File csvFile = getCoverageFile();
+
         DataframeML b = DataframeBuilder.build(csvFile);
         Set<String> cols = new HashSet<>(b.cols());
         List<String> coveredAttr = cols.stream().filter(e -> e.endsWith(COVERED)).map(e -> e.replaceFirst(COVERED, ""))
@@ -169,9 +172,14 @@ public final class CoverageUtils {
         return Collections.emptyList();
     }
 
+    private static File getCoverageFile() {
+        return ResourceFXUtils.getPathByExtension(new File("target/site/"), ".csv").stream()
+            .map(e -> e.toFile()).filter(e -> FileAttrApp.computeAttributes(e).size() > 0L).findFirst().orElse(null);
+    }
+
     private static List<String> getUncoveredAttribute(int min, String string, String string2, String percentage2) {
-        File csvFile = new File("target/site/jacoco/jacoco.csv");
-        if (!csvFile.exists()) {
+        File csvFile = getCoverageFile();
+        if (csvFile == null || !csvFile.exists()) {
             return Collections.emptyList();
         }
         DataframeML b = DataframeBuilder.build(csvFile);

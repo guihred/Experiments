@@ -111,12 +111,12 @@ public class FileAttrApp extends Application {
 
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public static BasicFileAttributes computeAttributes(File v) {
+        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
     }
 
-    private static BasicFileAttributes computeAttributes(File v) {
-        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
+    public static void main(String[] args) {
+        launch(args);
     }
 
     private static String getFileSize(long sizeInBytes) {

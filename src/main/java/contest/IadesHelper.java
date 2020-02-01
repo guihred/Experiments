@@ -250,18 +250,7 @@ public final class IadesHelper {
             LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabaritoFile, linesRead);
             return;
         }
-        String answers = getAnswers(entities, linesRead, findFirst.get());
-        if (answers.length() != entities.getListQuestions().size()) {
-            LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(),
-                entities.getListQuestions().size());
-            return;
-        }
-        ObservableList<ContestQuestion> listQuestions = entities.getListQuestions();
-        for (int i = 0; i < listQuestions.size(); i++) {
-            ContestQuestion contestQuestion = listQuestions.get(i);
-            contestQuestion.setAnswer(answers.charAt(i));
-        }
-        entities.saveAll();
+        saveAnswers(entities, linesRead, findFirst.get());
     }
 
     public static void saveQuestions(Property<Concurso> concurso, String vaga,
@@ -286,9 +275,21 @@ public final class IadesHelper {
             LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabarito.getKey(), linesRead);
             return;
         }
-        String answers = getAnswers(entities, linesRead, findFirst.get());
+        saveAnswers(entities, linesRead, findFirst.get());
+        Platform.runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
+    }
+
+    static boolean hasTI(ObservableList<?> observableList) {
+        List<String> keys = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
+        return observableList.stream().map(Objects::toString).anyMatch(e -> keys.stream()
+            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
+    }
+
+    private static void saveAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
+        String answers = getAnswers(entities, linesRead, findFirst);
         if (answers.length() != entities.getListQuestions().size()) {
-            LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(), entities.getListQuestions().size());
+            LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(),
+                entities.getListQuestions().size());
             return;
         }
         ObservableList<ContestQuestion> listQuestions = entities.getListQuestions();
@@ -297,13 +298,6 @@ public final class IadesHelper {
             contestQuestion.setAnswer(answers.charAt(i));
         }
         entities.saveAll();
-        Platform.runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
-    }
-
-    static boolean hasTI(ObservableList<?> observableList) {
-        List<String> keys = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
-        return observableList.stream().map(Objects::toString).anyMatch(e -> keys.stream()
-            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
 }

@@ -4,7 +4,6 @@ import extract.UnRar;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.Character.UnicodeBlock;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -286,14 +285,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     private static void endTask(List<String> lines) {
-        RunnableEx.run(() -> {
-            try (PrintStream printStream = new PrintStream(ResourceFXUtils.getOutFile("hp1Tex2Converted.tex"),
-                StandardCharsets.UTF_8.displayName())) {
-                for (String s : lines) {
-                    printStream.println(s);
-                }
-            }
-        });
+        RunnableEx.run(() -> Files.write(ResourceFXUtils.getOutFile("hp1Tex2Converted.tex").toPath(), lines,
+            StandardCharsets.UTF_8));
     }
 
     private static boolean existsKunReading(String currentWord, Elements kun) {

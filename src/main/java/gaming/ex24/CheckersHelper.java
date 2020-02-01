@@ -1,9 +1,10 @@
 package gaming.ex24;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
 import simplebuilder.SimpleDialogBuilder;
@@ -49,7 +50,7 @@ public final class CheckersHelper {
     }
 
     public static CheckersPlayer getWinner(Collection<CheckersSquare> squares) {
-        return getWinner2(squares.stream().map(CheckersSquare::getState).collect(Collectors.toList()));
+        return getWinner2(squares.stream().map(CheckersSquare::getState).collect(toList()));
     }
 
     public static CheckersPlayer getWinner2(Collection<CheckersPlayer> squares) {
@@ -72,7 +73,7 @@ public final class CheckersHelper {
         for (int dirJ = -1; dirJ <= 1; dirJ += 2) {
             List<CheckersSquare> kills = markPossibleKills(squares, player, i - player.getDir(), j + dirJ,
                 -player.getDir(), dirJ);
-            kills.stream().filter(CheckersSquare::getHighlight).forEach(highlighted::add);
+            highlighted.addAll(kills.stream().filter(CheckersSquare::getHighlight).collect(toList()));
         }
         return highlighted;
     }
@@ -215,7 +216,7 @@ public final class CheckersHelper {
                 highlighted.add(checkersSquare);
             }
             List<CheckersSquare> kills = markPossibleKills(squares, player, i + dirI * k, j + dirJ * k, dirI, dirJ);
-            kills.stream().filter(CheckersSquare::getHighlight).forEach(highlighted::add);
+            highlighted.addAll(kills.stream().filter(CheckersSquare::getHighlight).collect(toList()));
             if (checkersSquare.getState() == player) {
                 break;
             }

@@ -3,7 +3,6 @@ package extract;
 import static utils.StringSigaUtils.removeMathematicalOperators;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +134,7 @@ public final class PdfUtils {
         return SupplierEx.get(() -> printImageLocations.processPage(page, i), new ArrayList<>());
     }
 
-    private static void read(PdfInfo pdfInfo, File file1, PrintStream out) throws IOException {
+    private static void read(PdfInfo pdfInfo, File file1, PrintStream out) throws Exception {
         try (RandomAccessFile source = new RandomAccessFile(file1, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -170,7 +169,7 @@ public final class PdfUtils {
 
     private static void runOnLines(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
         IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages)
-        throws IOException {
+        throws Exception {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {
