@@ -4,6 +4,7 @@ package crypt;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -116,7 +117,8 @@ public class VigenereXORCipher {
     }
 
     public long findKeySize() {
-		try (Stream<String> lines = Files.lines(ResourceFXUtils.toPath("ctext.txt"))) {
+		Path path = ResourceFXUtils.toPath("ctext.txt");
+        try (Stream<String> lines = Files.lines(path)) {
             String line = lines.findFirst().orElse("");
             String[] split = line.split("(?<=\\G..)");
             List<Integer> keySizeList = Stream.of(split).map(s -> Integer.valueOf(s, 16)).collect(Collectors.toList());
@@ -150,8 +152,8 @@ public class VigenereXORCipher {
     public static void main(String[] args) {
         try {
             VigenereXORCipher vigenereCypher = new VigenereXORCipher();
-            vigenereCypher.findKey(7L);
-        } catch (IOException e) {
+            vigenereCypher.findKeySize();
+        } catch (Exception e) {
             LOGGER.error("", e);
         }
     }

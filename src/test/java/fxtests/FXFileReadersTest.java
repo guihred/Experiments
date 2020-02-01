@@ -25,6 +25,7 @@ import org.testfx.util.WaitForAsyncUtils;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
 import utils.ConsumerEx;
+import utils.CrawlerTask;
 import utils.FunctionEx;
 import utils.ResourceFXUtils;
 
@@ -32,16 +33,6 @@ import utils.ResourceFXUtils;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXFileReadersTest extends AbstractTestExecution {
-    @Test
-    public void testARarZIP() {
-        measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
-        File userFolder = new File(UnRar.SRC_DIRECTORY).getParentFile();
-        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(userFolder, "rar");
-        measureTime("UnRar.extractRarFiles",
-            () -> pathByExtension.forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile()))));
-        measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
-    }
-
     @Test
     public void testCSVUtils() {
         measureTime("CSVUtils.splitFile",
@@ -181,6 +172,25 @@ public class FXFileReadersTest extends AbstractTestExecution {
             WaitForAsyncUtils.waitForFxEvents();
             Assert.assertEquals("Size must be equal", 679, medicamentos.size());
         });
+    }
+
+    @Test
+    public void testRar() {
+        measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
+        File userFolder = ResourceFXUtils.getOutFile().getParentFile();
+        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(userFolder, "rar");
+        pathByExtension.stream().map(FunctionEx.makeFunction(e -> {
+            Path name = e.getName(e.getNameCount() - 1);
+            File outFile = ResourceFXUtils.getOutFile(name.toString());
+            CrawlerTask.copy(e, outFile);
+            return outFile.toPath();
+        })).forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile())));
+
+    }
+
+    @Test
+    public void testZIP() {
+        measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
     }
 
 }

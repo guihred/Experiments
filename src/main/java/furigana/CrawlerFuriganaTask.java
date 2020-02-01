@@ -1,5 +1,6 @@
 package furigana;
 
+import extract.UnRar;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.lang.Character.UnicodeBlock;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -269,6 +271,18 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         String firstPart = currentWord.substring(0, currentWord.length() - 1);
         String secondPart = currentWord.substring(currentWord.length() - 1, currentWord.length());
         return computeReading(firstPart + secondPart.charAt(0)) + computeReading(secondPart + currentLetter);
+    }
+
+    public static void main(String[] args) {
+        File userFolder = ResourceFXUtils.getOutFile().getParentFile();
+        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(userFolder, "rar");
+        pathByExtension.stream().map(FunctionEx.makeFunction(e -> {
+            Path name = e.getName(e.getNameCount() - 1);
+            File outFile = ResourceFXUtils.getOutFile(name.toString());
+            CrawlerTask.copy(e, outFile);
+            return outFile.toPath();
+        })).forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile())));
+
     }
 
     private static void endTask(List<String> lines) {

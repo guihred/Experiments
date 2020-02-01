@@ -167,7 +167,7 @@ public class QuadrixCrawler extends Application {
         }
     }
 
-    public static void findVagas(List<Map.Entry<String, String>> linksFound, Concurso e2,
+    public static void findVagas(Collection<Map.Entry<String, String>> linksFound, Concurso e2,
         ObservableList<Concurso> concursos) {
         runNewThread(() -> {
             if (e2.getVagas().isEmpty()) {

@@ -45,7 +45,7 @@ import utils.SupplierEx;
 public final class IadesHelper {
     public static final Logger LOG = HasLogging.log();
     public static final String QUADRIX_DOMAIN = "http://www.quadrix.org.br";
-    public static final Map<String, String> COOKIES = new HashMap<>();
+    protected static final Map<String, String> COOKIES = new HashMap<>();
 
     private IadesHelper() {
     }

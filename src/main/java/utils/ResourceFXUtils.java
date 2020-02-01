@@ -163,8 +163,7 @@ public final class ResourceFXUtils {
     }
 
     public static String toExternalForm(String arquivo) {
-        return SupplierEx.remap(
-            () -> Thread.currentThread().getContextClassLoader().getResource(arquivo).toExternalForm(),
+        return SupplierEx.remap(() -> getClassLoader().getResource(arquivo).toExternalForm(),
             "ERRO FILE \"" + arquivo + "\"");
     }
 
@@ -174,33 +173,31 @@ public final class ResourceFXUtils {
 
     public static String toFullPath(String arquivo) {
         try {
-            return URLDecoder.decode(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile(),
-                "UTF-8");
+            return URLDecoder.decode(getClassLoader().getResource(arquivo).getFile(), "UTF-8");
         } catch (Exception e) {
             LOGGER.trace("File Error:" + arquivo, e);
-            try {
-                return URLDecoder.decode(new File(arquivo).getAbsolutePath(), "UTF-8");
-            } catch (Exception e1) {
-                LOGGER.error("File Error:" + arquivo, e1);
-                return null;
-            }
+            return SupplierEx.get(() -> URLDecoder.decode(new File(arquivo).getAbsolutePath(), "UTF-8"));
         }
     }
 
     public static Path toPath(String arquivo) {
-        return new File(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile()).toPath();
+        return new File(getClassLoader().getResource(arquivo).getFile()).toPath();
     }
 
     public static InputStream toStream(String arquivo) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(arquivo);
+        return getClassLoader().getResourceAsStream(arquivo);
     }
 
     public static URI toURI(String arquivo) {
-        return new File(Thread.currentThread().getContextClassLoader().getResource(arquivo).getFile()).toURI();
+        return new File(getClassLoader().getResource(arquivo).getFile()).toURI();
     }
 
     public static URL toURL(String arquivo) {
-        return Thread.currentThread().getContextClassLoader().getResource(arquivo);
+        return getClassLoader().getResource(arquivo);
+    }
+
+    private static ClassLoader getClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
     }
 
     private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {

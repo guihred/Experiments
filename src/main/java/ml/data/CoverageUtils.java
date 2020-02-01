@@ -18,11 +18,13 @@ import utils.HasLogging;
 import utils.SupplierEx;
 
 public final class CoverageUtils {
+    private static final String MISSED = "_MISSED";
+
     private static final String COVERED = "_COVERED";
 
     private static final int MAX_LINE_COVERAGE = 60;
 
-    private static final int MAX_BRANCH_COVERAGE = 80;
+    private static final int MAX_BRANCH_COVERAGE = 50;
 
     private static final String PERCENTAGE = "PERCENTAGE";
 
@@ -126,11 +128,11 @@ public final class CoverageUtils {
             .collect(Collectors.toList());
         for (String colName : coveredAttr) {
             DataframeUtils.crossFeature(b, PERCENTAGE + "_" + colName, CoverageUtils::getPercentage,
-                colName + "_MISSED", colName + COVERED);
+                colName + MISSED, colName + COVERED);
         }
         Map<String, DataframeStatisticAccumulator> makeStats = DataframeUtils.makeStats(b);
         for (String colName : coveredAttr) {
-            makeStats.remove(colName + "_MISSED");
+            makeStats.remove(colName + MISSED);
             makeStats.remove(colName + COVERED);
         }
         makeStats.remove("CLASS");
