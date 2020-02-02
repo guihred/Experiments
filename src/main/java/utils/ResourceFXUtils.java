@@ -107,6 +107,10 @@ public final class ResourceFXUtils {
 
     public static List<Path> getPathByExtension(File dir, String... other) {
         return SupplierEx.get(() -> {
+            if (!dir.exists()) {
+                return Collections.emptyList();
+            }
+
             try (Stream<Path> walk = Files.walk(dir.toPath(), 20)) {
                 return walk
                     .filter(PredicateEx.makeTest(e -> Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex))))

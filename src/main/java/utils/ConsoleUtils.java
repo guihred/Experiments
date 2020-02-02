@@ -108,7 +108,7 @@ public final class ConsoleUtils {
 
     public static List<String> executeInConsoleInfo(final String cmd) {
         List<String> execution = new ArrayList<>();
-        LOGGER.trace(EXECUTING, cmd);
+        LOGGER.info(EXECUTING, cmd);
 
         Process p = newProcess(cmd);
 

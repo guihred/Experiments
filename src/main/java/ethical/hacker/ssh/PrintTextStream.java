@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import javafx.application.Platform;
 import javafx.scene.text.Text;
 
 public final class PrintTextStream extends PrintStream {
@@ -18,6 +19,8 @@ public final class PrintTextStream extends PrintStream {
     @Override
     public void write(byte[] b, int off, int len) {
         super.write(b, off, len);
-        text2.setText(text2.getText() + new String(b, off, len, StandardCharsets.UTF_8));
+        if (Platform.isFxApplicationThread()) {
+            text2.setText(text2.getText() + new String(b, off, len, StandardCharsets.UTF_8));
+        }
     }
 }

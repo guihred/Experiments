@@ -11,6 +11,7 @@ import static utils.RunnableEx.make;
 import static utils.RunnableEx.run;
 
 import ethical.hacker.ssh.PrintTextStream;
+import java.io.PrintStream;
 import java.util.Objects;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -39,7 +40,8 @@ public class AllApps extends Application {
             .map(a -> apply(Class::forName, a)).filter(Objects::nonNull)
             .filter(makeTest(e -> e.getMethod("main", String[].class) != null))
             .collect(toCollection(FXCollections::observableArrayList));
-        System.setOut(new PrintTextStream(System.out, true, "UTF-8", right));
+        PrintStream out = System.out;
+        System.setOut(new PrintTextStream(out, true, "UTF-8", right));
         TextField resultsFilter = new TextField();
         ListView<Class<?>> build = new SimpleListViewBuilder<Class<?>>().onDoubleClick(AllApps::invoke)
             .items(newFastFilter(resultsFilter, items.filtered(e -> true))).build();
@@ -54,6 +56,11 @@ public class AllApps extends Application {
         primaryStage.setOnCloseRequest(e -> {
             shutdown();
             System.exit(0);
+        });
+        primaryStage.showingProperty().addListener((ob, old, val) -> {
+            if (!val) {
+                System.setOut(out);
+            }
         });
         primaryStage.show();
     }

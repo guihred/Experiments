@@ -29,7 +29,7 @@ import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
-    @Test
+//    @Test
     public void verifyAllApps() {
         show(AllApps.class);
         doubleClickOn(randomItem(lookup(ListCell.class)));

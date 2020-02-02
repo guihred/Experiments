@@ -31,7 +31,7 @@ public class JavaDependencyTest {
             List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
                 .collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
-            for (int i = 0; i < uncoveredTests.size(); i++) {
+            for (int i = 0; i < 10 && i < uncoveredTests.size(); i++) {
                 String className = uncoveredTests.get(i);
                 if (className.equals("JavaDependencyTest")) {
                     continue;
