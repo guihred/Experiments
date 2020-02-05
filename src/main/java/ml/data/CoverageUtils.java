@@ -73,12 +73,16 @@ public final class CoverageUtils {
             dependecy.setDependents(allFileDependencies);
         }
         List<Class<? extends Application>> classes = CoverageUtils.getClasses(Application.class);
-        Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, m -> contains(classes, m),
+        List<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, m -> contains(classes, m),
             path);
         if (!displayTestsToBeRun.isEmpty()) {
             LOG.error("{} APPS FOUND= {}", displayTestsToBeRun.size(), displayTestsToBeRun);
         }
-        return displayTestsToBeRun.stream().distinct()
+
+        Map<String, Long> count = displayTestsToBeRun.stream()
+            .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+
+        return displayTestsToBeRun.stream().distinct().sorted(Comparator.comparing(count::get).reversed())
             .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e))).collect(Collectors.toList());
     }
 
@@ -174,7 +178,8 @@ public final class CoverageUtils {
 
     private static File getCoverageFile() {
         return ResourceFXUtils.getPathByExtension(new File("target/site/"), ".csv").stream()
-            .map(e -> e.toFile()).filter(e -> FileAttrApp.computeAttributes(e).size() > 0L).findFirst().orElse(null);
+            .map(e -> e.toFile()).filter(e -> FileAttrApp.computeAttributes(e).size() > 0L)
+            .max(Comparator.comparing(e -> FileAttrApp.computeAttributes(e).size())).orElse(null);
     }
 
     private static List<String> getUncoveredAttribute(int min, String string, String string2, String percentage2) {
@@ -191,7 +196,13 @@ public final class CoverageUtils {
     }
 
     private static List<String> getUncoveredFxTest(List<String> uncovered, List<String> allPaths) {
-        return JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests", allPaths).stream().distinct().sorted()
+        List<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests", allPaths);
+
+        Map<String, Long> count = displayTestsToBeRun.stream()
+            .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+
+        return displayTestsToBeRun.stream().distinct().sorted()
+            .sorted(Comparator.comparing(count::get).reversed())
             .collect(Collectors.toList());
     }
 }

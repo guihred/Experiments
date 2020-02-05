@@ -6,7 +6,6 @@ import graphs.app.JavaFileDependency;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import ml.data.CoverageUtils;
 import org.junit.FixMethodOrder;
@@ -25,8 +24,8 @@ public class ToBeRunTest {
         measureTime("JavaFileDependency.javaCoverage", () -> {
             List<String> uncovered = CoverageUtils.getUncovered();
             LOG.info("Uncovered classes ={}", uncovered);
-            Set<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests");
-            String tests = displayTestsToBeRun.stream().sorted().collect(Collectors.joining(",*", "*", ""));
+            List<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests");
+            String tests = displayTestsToBeRun.stream().distinct().sorted().collect(Collectors.joining(",*", "*", ""));
             LOG.info("TestsToBeRun ={}", tests);
         });
     }
@@ -70,7 +69,7 @@ public class ToBeRunTest {
     public void testJavaDependency() {
 
         measureTime("JavaFileDependency.displayTestsToBeRun",
-            () -> JavaFileDependency.displayTestsToBeRun(Arrays.asList(), "fxtests").stream().sorted()
+            () -> JavaFileDependency.displayTestsToBeRun(Arrays.asList(), "fxtests").stream().distinct().sorted()
                 .collect(Collectors.joining(",*", "*", "")));
     }
 

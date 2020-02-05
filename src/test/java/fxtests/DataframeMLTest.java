@@ -19,6 +19,10 @@ public class DataframeMLTest {
     @Test
 	public void testCoverageFile() {
     	File csvFile = new File("target/site/jacoco/jacoco.csv");
+        if (!csvFile.exists()) {
+            return;
+        }
+
         DataframeML b = DataframeBuilder.build(csvFile);
         b.filter("INSTRUCTION_COVERED", v -> ((Number) v).intValue() == 0);
         DataframeUtils.describe(b);

@@ -167,13 +167,13 @@ public class JavaFileDependency {
         return getPackage() + "." + getName() + " " + getClasses();
     }
 
-    public static Set<String> displayTestsToBeRun(Collection<String> dependecyList,
+    public static List<String> displayTestsToBeRun(Collection<String> dependecyList,
             Predicate<JavaFileDependency> filter, List<String> allPaths) {
         List<JavaFileDependency> allFileDependencies = getAllFileDependencies();
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
         }
-        Set<String> testClasses = new LinkedHashSet<>();
+        List<String> testClasses = new ArrayList<>();
         for (JavaFileDependency dependecy : allFileDependencies) {
             if (dependecyList == null || dependecyList.contains(dependecy.getName())) {
                 List<JavaFileDependency> visited = new ArrayList<>();
@@ -193,11 +193,11 @@ public class JavaFileDependency {
         return testClasses;
     }
 
-    public static Set<String> displayTestsToBeRun(Collection<String> asList, String name1) {
+    public static List<String> displayTestsToBeRun(Collection<String> asList, String name1) {
         return displayTestsToBeRun(asList, name1, new ArrayList<>());
     }
 
-    public static Set<String> displayTestsToBeRun(Collection<String> dependecyList, String name1,
+    public static List<String> displayTestsToBeRun(Collection<String> dependecyList, String name1,
             List<String> allPaths) {
         return displayTestsToBeRun(dependecyList, e -> e.getFullName().contains(name1), allPaths);
     }

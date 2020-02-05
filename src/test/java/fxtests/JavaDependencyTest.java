@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
+import javafx.application.Application;
 import ml.data.CoverageUtils;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
@@ -31,7 +32,7 @@ public class JavaDependencyTest {
             List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
                 .collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
-            for (int i = 0; i < 10 && i < uncoveredTests.size(); i++) {
+            for (int i = 0; i < 2 && i < uncoveredTests.size(); i++) {
                 String className = uncoveredTests.get(i);
                 if (className.equals("JavaDependencyTest")) {
                     continue;
@@ -75,7 +76,10 @@ public class JavaDependencyTest {
     @Test
     public void testHTestUncoveredApps() {
         measureTime("JavaFileDependency.testUncoveredApps",
-            () -> AbstractTestExecution.testApps(CoverageUtils.getUncoveredApplications()));
+            () -> {
+                List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
+                AbstractTestExecution.testApps(uncoveredApplications.subList(0, uncoveredApplications.size() / 5));
+            });
     }
 
 
