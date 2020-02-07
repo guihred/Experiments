@@ -36,12 +36,6 @@ public final class QuadrixHelper {
     private QuadrixHelper() {
     }
 
-    public static boolean hasTI(ObservableList<?> observableList) {
-        List<String> keys = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
-        return observableList.stream().map(Objects::toString).anyMatch(e -> keys.stream()
-            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
-    }
-
     public static void addClasses(Concurso con, TableCell<Concurso, Object> cell) {
         cell.setText(con.getNome());
         cell.getStyleClass().removeAll("amarelo", "vermelho");
@@ -89,6 +83,12 @@ public final class QuadrixHelper {
 
     public static Document getDocumentCookies(URL url2) throws IOException {
         return CrawlerTask.getDocument(url2.toExternalForm(), COOKIES);
+    }
+
+    public static boolean hasTI(ObservableList<?> observableList) {
+        List<String> keys = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
+        return observableList.stream().map(Objects::toString).anyMatch(e -> keys.stream()
+            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
     public static void saveConcurso(Property<Concurso> concurso, ListView<String> listBuilder,

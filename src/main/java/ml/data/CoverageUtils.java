@@ -25,7 +25,7 @@ public final class CoverageUtils {
 
     private static final String COVERED = "_COVERED";
 
-    private static final int MAX_LINE_COVERAGE = 60;
+    private static final int MAX_LINE_COVERAGE = 85;
 
     private static final int MAX_BRANCH_COVERAGE = 50;
 

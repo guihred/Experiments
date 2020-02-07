@@ -20,7 +20,6 @@ import utils.*;
 public class JavaDependencyTest {
     static final Logger LOG = HasLogging.log();
 
-
     @Test
     public void testGTestUncovered() {
 
@@ -75,15 +74,12 @@ public class JavaDependencyTest {
 
     @Test
     public void testHTestUncoveredApps() {
-        measureTime("JavaFileDependency.testUncoveredApps",
-            () -> {
-                List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
-                AbstractTestExecution
-                    .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), 10)));
-            });
+        measureTime("JavaFileDependency.testUncoveredApps", () -> {
+            List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
+            AbstractTestExecution
+                .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), 10)));
+        });
     }
-
-
 
     private boolean isNotSame(Throwable e, Class<? extends Throwable> expected) {
         boolean notSame = expected != e.getCause().getClass();
@@ -97,20 +93,20 @@ public class JavaDependencyTest {
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
-            .forEach(e -> ClassReflectionUtils.invoke(test, e));
+                .forEach(e -> ClassReflectionUtils.invoke(test, e));
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
-            .sorted(Comparator.comparing(Method::getName))
-            .forEach(ConsumerEx.make(e -> e.invoke(test), (Method o, Throwable e) -> {
-                Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
-                if (expected == null || isNotSame(e, expected)) {
-                    failedTests.add(o + "");
-                    LOG.error("ERROR invoking " + o, e);
-                }
-            }));
+                .sorted(Comparator.comparing(Method::getName))
+                .forEach(ConsumerEx.make(e -> e.invoke(test), (Method o, Throwable e) -> {
+                    Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
+                    if (expected == null || isNotSame(e, expected)) {
+                        failedTests.add(o + "");
+                        LOG.error("ERROR invoking " + o, e);
+                    }
+                }));
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
-            .forEach(e -> ClassReflectionUtils.invoke(test, e));
+                .forEach(e -> ClassReflectionUtils.invoke(test, e));
         });
-        
+
     }
 
     private void runTest(Class<?> testClass, Object test, List<String> failedTests, List<String> methods) {
@@ -133,6 +129,5 @@ public class JavaDependencyTest {
         });
 
     }
-
 
 }

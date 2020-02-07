@@ -49,7 +49,7 @@ public class FileAttrApp extends Application {
                 }
             }
         }
-        size += SupplierEx.get(() -> getAttributes(file).size(), 0L);
+        size += SupplierEx.getIgnore(() -> getAttributes(file).size(), 0L);
         return size;
     }
 

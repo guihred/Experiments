@@ -82,8 +82,11 @@ public class QuadrixCrawler extends Application {
             .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
             .collect(Collectors.toList());
         List<Map.Entry<String, String>> linksFound = allLinks.stream()
-            .filter(t -> level < 2 || containsIgnoreCase(t.getKey(), "aplicada")
-                || containsIgnoreCase(t.getKey(), "Gabarito Definitivo") || t.getKey().contains("Caderno"))
+            .filter(t -> {
+                return level == 0 && containsIgnoreCase(t.getKey(), "•") || level == 1
+                    || containsIgnoreCase(t.getKey(), "aplicada")
+                    || containsIgnoreCase(t.getKey(), "Gabarito Definitivo") || t.getKey().contains("Caderno");
+            })
             .distinct().collect(Collectors.toList());
         if (level == 2) {
             run(() -> IadesHelper.getFilesFromPage(url));
