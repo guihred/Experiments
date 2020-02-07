@@ -32,7 +32,7 @@ public class JavaDependencyTest {
             List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
                 .collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
-            for (int i = 0; i < 2 && i < uncoveredTests.size(); i++) {
+            for (int i = 0; i < Math.min(uncoveredTests.size(), 5); i++) {
                 String className = uncoveredTests.get(i);
                 if (className.equals("JavaDependencyTest")) {
                     continue;
@@ -78,7 +78,8 @@ public class JavaDependencyTest {
         measureTime("JavaFileDependency.testUncoveredApps",
             () -> {
                 List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
-                AbstractTestExecution.testApps(uncoveredApplications.subList(0, uncoveredApplications.size() / 5));
+                AbstractTestExecution
+                    .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), 10)));
             });
     }
 

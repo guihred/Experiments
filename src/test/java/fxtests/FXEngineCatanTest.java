@@ -209,6 +209,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         moveTo(remove);
         drop();
         if (next.getParent() instanceof StackPane) {
+
             return false;
         }
         settlePoints.remove(remove);

@@ -10,25 +10,29 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.apache.sshd.server.SshServer;
+import org.assertj.core.api.exception.RuntimeIOException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.testfx.util.WaitForAsyncUtils;
 import utils.CrawlerTask;
 
 public class FXSSHTest extends AbstractTestExecution {
     private SshServer sshd;
 
-//    @Before
+    @Before
     public void setUp() throws Exception {
         CrawlerTask.insertProxyConfig();
         sshd = BaseTestSupport.setupTestServer();
         sshd.start();
     }
 
-//    @After
+    @After
     public void tearDown() throws Exception {
         sshd.stop(true);
     }
 
-    // @Test
+    @Test
     @SuppressWarnings("static-method")
     public void testCommonTestSupportUtils() {
         measureTime("CommonTestSupportUtils.getClassContainerLocationURL",
@@ -37,14 +41,14 @@ public class FXSSHTest extends AbstractTestExecution {
             () -> CommonTestSupportUtils.getClassContainerLocationURL(Integer.class));
     }
 
-    // @Test
+    @Test
     public void testMessages() throws Exception {
         String name = BaseTestSupport.getCurrentTestName();
         SSHClientUtils.sendMessage("ipconfig", BaseTestSupport.TEST_LOCALHOST, sshd.getPort(), name, name,
             new PrintTextStream(System.out, true, "UTF-8", new Text()));
     }
 
-    // @Test
+    @Test
     public void verifySSHApp() {
         show(SSHSessionApp.class);
         List<Button> collect = lookupList(Button.class);
@@ -55,14 +59,14 @@ public class FXSSHTest extends AbstractTestExecution {
         tryClickOn(collect.get(0));
     }
 
-//    @Test
+    @Test
     public void  verifySSHMessages2() throws Exception {
         String name = BaseTestSupport.getCurrentTestName();
         SSHClientUtils.sendMessage("exit", BaseTestSupport.TEST_LOCALHOST, sshd.getPort(), name, name,
             new PrintStream(System.out));
     }
 
-    // @Test(expected = RuntimeIOException.class)
+    @Test(expected = RuntimeIOException.class)
     public void verifySSHSessionApp2() {
         show(SSHSessionApp.class);
         List<Button> collect = lookupList(Button.class);

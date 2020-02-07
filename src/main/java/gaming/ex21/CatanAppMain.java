@@ -41,6 +41,7 @@ public class CatanAppMain extends Application {
     }
 
     public void initialize() {
+        center.setPrefWidth(700);
         catanModel.setEdges(CatanHelper.addTerrains(center, catanModel.getSettlePoints(), catanModel.getTerrains(),
             catanModel.getPorts()));
         catanModel.setUserChart(userChart);
@@ -100,7 +101,7 @@ public class CatanAppMain extends Application {
     @Override
     public void start(Stage primaryStage) {
         double size = CatanResource.RADIUS * Math.sqrt(3) * 11 / 2;
-        CommonsFX.loadFXML("Settlers of Catan", "CatanApp.fxml", this, primaryStage, size * 3 / 2, size);
+        CommonsFX.loadFXML("Settlers of Catan", "CatanApp.fxml", this, primaryStage, size * 3, size);
     }
 
     public static void main(String[] args) {

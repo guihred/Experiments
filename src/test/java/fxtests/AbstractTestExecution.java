@@ -49,6 +49,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     @Override
+    public FxRobotInterface moveTo(Node bounds) {
+        return SupplierEx.get(()->super.moveTo(bounds));
+    }
+    @Override
     public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
         currentStage = stage != null ? stage : new Stage();

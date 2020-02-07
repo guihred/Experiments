@@ -14,6 +14,7 @@
 		<downloadJavadocs>true</downloadJavadocs>
 		<jacoco.version>0.8.5</jacoco.version>
 		<jacoco.skip>false</jacoco.skip>
+		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco-merged-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 	</properties>
 	<!-- mvn org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false -->

@@ -8,6 +8,7 @@ import extract.FileAttrApp;
 import graphs.app.JavaFileDependency;
 import java.io.File;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -156,7 +157,7 @@ public final class CoverageUtils {
     }
 
     private static <T> List<T> getByCoverage(Function<List<String>, List<T>> func) {
-        for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i++) {
+        for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i += 5) {
             List<String> uncovered = getUncovered(i);
             List<T> uncoveredApplications = func.apply(uncovered);
             if (!uncoveredApplications.isEmpty()) {
@@ -178,7 +179,7 @@ public final class CoverageUtils {
 
     private static File getCoverageFile() {
         return ResourceFXUtils.getPathByExtension(new File("target/site/"), ".csv").stream()
-            .map(e -> e.toFile()).filter(e -> FileAttrApp.computeAttributes(e).size() > 0L)
+            .map(Path::toFile).filter(e -> FileAttrApp.computeAttributes(e).size() > 0L)
             .max(Comparator.comparing(e -> FileAttrApp.computeAttributes(e).size())).orElse(null);
     }
 

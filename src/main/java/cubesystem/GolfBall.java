@@ -22,11 +22,10 @@ public class GolfBall extends Application {
     // radius of the sphere
     private static final float RADIUS = 300;
 
+    private static final int DIVISION_NUMBER = 18;
     @Override
 	public void start(Stage primaryStage) {
-
-        final int divisionNumber = 18;
-        List<Point3D> createSpheres = createSpheres(divisionNumber, RADIUS * RADIUS_PROPORTION);
+        List<Point3D> createSpheres = createSpheres(DIVISION_NUMBER, RADIUS * RADIUS_PROPORTION);
         final TriangleMesh triangleMesh = createMesh(DIVISION, createSpheres);
         MeshView a = new MeshView(triangleMesh);
         a.setDrawMode(DrawMode.FILL);
