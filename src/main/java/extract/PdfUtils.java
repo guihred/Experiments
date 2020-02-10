@@ -65,8 +65,7 @@ public final class PdfUtils {
                     Platform.runLater(() -> progress.set(1));
                 }
             }
-        }, e -> LOG.error(ERROR_IN_FILE
-            + "{}", file))).start();
+        }, e -> LOG.error(ERROR_IN_FILE + "{}", file))).start();
         return images;
     }
 
@@ -168,8 +167,7 @@ public final class PdfUtils {
     }
 
     private static void runOnLines(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
-        IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages)
-        throws Exception {
+        IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) throws Exception {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {

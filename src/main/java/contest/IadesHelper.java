@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.stage.Stage;
@@ -35,11 +34,11 @@ public final class IadesHelper {
     private IadesHelper() {
     }
 
-    public static String addDomain(SimpleStringProperty domain, String l) {
+    public static String addDomain(Property<String> domain, String l) {
         if (l.startsWith("http")) {
             return l;
         }
-        return domain.get() + (!l.startsWith("/") ? "/" + l : l);
+        return domain.getValue() + (!l.startsWith("/") ? "/" + l : l);
     }
 
     public static int containsNumber(String number, Entry<String, String> e) {

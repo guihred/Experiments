@@ -1,5 +1,6 @@
 package contest;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
@@ -27,57 +28,27 @@ import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.stage.Stage;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
 import utils.*;
 
 public final class QuadrixHelper {
 
-
+    private static final Logger LOG = HasLogging.log();
     public static final String QUADRIX_DOMAIN = "http://www.quadrix.org.br";
     private static final Map<String, String> COOKIES = new HashMap<>();
-    private static final List<String> keywords = Arrays.asList("aplicada", "Gabarito Definitivo", "Caderno");
+    private static final List<String> LINK_KEYWORDS = Arrays.asList("aplicada", "Gabarito Definitivo", "Caderno");
+
+    private static final List<String> IT_KEYWORDS = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
 
     private QuadrixHelper() {
-    }
-
-    public static List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
-        SimpleStringProperty domain, int level,ObservableList<Concurso> concursos,Set<String> links) {
-        Elements select = doc.select("a");
-        List<SimpleEntry<String, String>> allLinks = select.stream()
-            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
-            .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
-            .collect(Collectors.toList());
-        List<Map.Entry<String, String>> linksFound = allLinks.stream().filter(t -> isValidLink(level, t))
-            .distinct().collect(Collectors.toList());
-        if (level == 2) {
-            run(() -> getFilesFromPage(url));
-        }
-        if (level == 1 && !linksFound.isEmpty()) {
-            Concurso e2 = new Concurso();
-            e2.setUrl(url.getValue());
-            String key = url.getKey();
-            String[] split = key.split("-");
-            e2.setNome(split[0]);
-            e2.setLinksFound(linksFound);
-            linksFound.stream()
-                .filter(e -> containsIgnoreCase(e.getKey(), "Caderno de prova -") || e.getKey().matches("\\d+ *- *.+"))
-                .map(s -> s.getKey().split("- *")[1]).forEach(e -> {
-                    if (!e2.getVagas().contains(e)) {
-                        e2.getVagas().add(e);
-                    }
-                });
-            findVagas(linksFound, e2, concursos);
-    
-            concursos.add(e2);
-        }
-        return linksFound;
     }
 
     public static void addClasses(Concurso con, TableCell<Concurso, Object> cell) {
@@ -89,12 +60,12 @@ public final class QuadrixHelper {
                 ObservableList<?> observableList = (ObservableList<?>) c;
                 if (con.getNome().equals(cell.getText()) && !observableList.isEmpty()) {
                     cell.getStyleClass().remove("vermelho");
-                    if (QuadrixHelper.hasTI(observableList)) {
+                    if (hasTI(observableList)) {
                         cell.getStyleClass().add("amarelo");
                     }
                 }
             });
-        } else if (QuadrixHelper.hasTI(con.getVagas())) {
+        } else if (hasTI(con.getVagas())) {
             cell.getStyleClass().add("amarelo");
         }
     }
@@ -103,7 +74,7 @@ public final class QuadrixHelper {
         if (url.startsWith("http")) {
             return url;
         }
-        return QuadrixHelper.QUADRIX_DOMAIN + "/" + url;
+        return QUADRIX_DOMAIN + "/" + url;
     }
 
     public static void findVagas(Collection<Map.Entry<String, String>> linksFound, Concurso e2,
@@ -111,7 +82,7 @@ public final class QuadrixHelper {
         runNewThread(() -> {
             if (e2.getVagas().isEmpty()) {
                 List<Entry<String, String>> collect = linksFound.stream()
-                    .filter(t -> containsIgnoreCase(t.getKey(), "Resultado")).collect(Collectors.toList());
+                    .filter(t -> containsIgnoreCase(t.getKey(), "Resultado")).collect(toList());
                 for (Entry<String, String> entry : collect) {
                     getVagas(e2, entry);
                     if (!e2.getVagas().isEmpty()) {
@@ -134,35 +105,66 @@ public final class QuadrixHelper {
         if (!text.endsWith(".pdf")) {
             return getFile(text, url3);
         }
-        Response executeRequest = executeRequest(url3, QuadrixHelper.COOKIES);
+        Response executeRequest = executeRequest(url3, COOKIES);
         String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
-        return SupplierEx
-            .makeSupplier(() -> getFile(text, fileParameter), e -> HasLogging.log().info("{} Failed", fileParameter))
+        return SupplierEx.makeSupplier(() -> getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
             .get();
     }
 
     public static List<File> getFilesFromPage(Entry<String, String> link) {
         String url = link.getValue();
-        URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
-        Document document = SupplierEx.getIgnore(() -> getDocument(url2.toExternalForm(), QuadrixHelper.COOKIES));
+        URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(addQuadrixDomain(url)));
+        Document document = SupplierEx.getIgnore(() -> getDocument(url2.toExternalForm(), COOKIES));
         if (document == null) {
             return Collections.emptyList();
         }
         Elements select = document.select("a");
         return select.stream().filter(e -> IadesHelper.hasFileExtension(e.text()))
-            .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), QuadrixHelper.addQuadrixDomain(e.attr("href")))))
-            .filter(Objects::nonNull).collect(Collectors.toList());
+            .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), addQuadrixDomain(e.attr("href")))))
+            .filter(Objects::nonNull).collect(toList());
+    }
+
+    public static List<Map.Entry<String, String>> getLinks(Element doc, Map.Entry<String, String> url,
+        Property<String> domain, int level, ObservableList<Concurso> concursos, Set<String> links) {
+        Elements select = doc.select("a");
+        List<SimpleEntry<String, String>> allLinks = select.stream()
+            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
+            .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
+            .collect(toList());
+        List<Map.Entry<String, String>> linksFound = allLinks.stream().filter(t -> isValidLink(level, t)).distinct()
+            .collect(toList());
+        if (level == 2) {
+            run(() -> getFilesFromPage(url));
+        }
+        if (level == 1 && !linksFound.isEmpty()) {
+            Concurso e2 = new Concurso();
+            e2.setUrl(url.getValue());
+            String key = url.getKey();
+            String[] split = key.split("-");
+            e2.setNome(split[0]);
+            e2.setLinksFound(linksFound);
+            linksFound.stream()
+                .filter(e -> containsIgnoreCase(e.getKey(), "Caderno de prova -") || e.getKey().matches("\\d+ *- *.+"))
+                .map(s -> s.getKey().split("- *")[1]).forEach(e -> {
+                    if (!e2.getVagas().contains(e)) {
+                        e2.getVagas().add(e);
+                    }
+                });
+            findVagas(linksFound, e2, concursos);
+
+            concursos.add(e2);
+        }
+        return linksFound;
     }
 
     public static boolean hasTI(ObservableList<?> observableList) {
-        List<String> keys = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
-        return observableList.stream().map(Objects::toString).anyMatch(e -> keys.stream()
+        return observableList.stream().map(Objects::toString).anyMatch(e -> IT_KEYWORDS.stream()
             .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
     public static boolean isValidLink(int level, Map.Entry<String, String> t) {
         return level == 0 && containsIgnoreCase(t.getKey(), "•") || level == 1
-            || keywords.stream().anyMatch(e -> containsIgnoreCase(t.getKey(), e));
+            || LINK_KEYWORDS.stream().anyMatch(e -> containsIgnoreCase(t.getKey(), e));
     }
 
     public static void saveConcurso(Property<Concurso> concurso, ListView<String> listBuilder, String value) {
@@ -174,17 +176,17 @@ public final class QuadrixHelper {
         String number = Objects.toString(value) + "";
         List<Entry<String, String>> collect = linksFound.stream()
             .filter(e -> e.getKey().contains("Provas") || e.getKey().contains(number))
-            .sorted(Comparator.comparing(e -> IadesHelper.containsNumber(number, e))).collect(Collectors.toList());
+            .sorted(Comparator.comparing(e -> IadesHelper.containsNumber(number, e))).collect(toList());
         File file = collect.stream().map(QuadrixHelper::getFilesFromPage).filter(e -> !e.isEmpty()).map(e -> e.get(0))
             .findFirst().orElse(null);
         if (file == null) {
-            IadesHelper.LOG.info("COULD NOT DOWNLOAD {}/{} - {}", collect, value1, value);
+            LOG.info("COULD NOT DOWNLOAD {}/{} - {}", collect, value1, value);
             return;
         }
         File file2 = IadesHelper.getPDF(value, file);
 
         IadesHelper.getContestQuestions(file2, Organization.QUADRIX, entities -> {
-            QuadrixHelper.saveQuadrixQuestions(concurso, value, linksFound, number, entities);
+            saveQuadrixQuestions(concurso, value, linksFound, number, entities);
             Platform.runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder)));
         });
     }
@@ -198,17 +200,17 @@ public final class QuadrixHelper {
             .sorted(Comparator.comparing(e -> IadesHelper.containsNumber(number, e)))
             .map(QuadrixHelper::getFilesFromPage).filter(l -> !l.isEmpty()).map(l -> l.get(0)).findFirst().orElse(null);
         if (gabaritoFile == null) {
-            IadesHelper.LOG.info("SEM gabarito {}", linksFound);
+            LOG.info("SEM gabarito {}", linksFound);
             return;
         }
         List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
-            .collect(Collectors.toList());
+            .collect(toList());
         String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");
         String cargo = split[split.length - 1].trim();
         Optional<String> findFirst = linesRead.stream()
             .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
         if (!findFirst.isPresent()) {
-            IadesHelper.LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabaritoFile, linesRead);
+            LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabaritoFile, linesRead);
             return;
         }
         IadesHelper.saveAnswers(entities, linesRead, findFirst.get());
@@ -248,7 +250,7 @@ public final class QuadrixHelper {
     }
 
     private static void getVagas(Concurso e2, Entry<String, String> resultado) {
-        QuadrixHelper.getFilesFromPage(resultado).forEach(ConsumerEx.ignore(f -> extrairVagas(e2, f)));
+        getFilesFromPage(resultado).forEach(ConsumerEx.ignore(f -> extrairVagas(e2, f)));
     }
 
 }
