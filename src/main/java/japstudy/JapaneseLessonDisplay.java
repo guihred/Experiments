@@ -3,7 +3,7 @@ package japstudy;
 
 import static utils.RunnableEx.runIf;
 
-import java.security.SecureRandom;
+import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
@@ -38,7 +38,7 @@ public class JapaneseLessonDisplay extends Application {
     private Text japaneseText;
     @FXML
     private Text romajiText;
-    private SecureRandom random = new SecureRandom();
+    private Random random = new Random();
     private IntegerProperty current = new SimpleIntegerProperty(1);
     private ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessonsWait();
     private DoubleProperty score = new SimpleDoubleProperty(1);

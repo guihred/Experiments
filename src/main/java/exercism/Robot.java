@@ -1,6 +1,5 @@
 package exercism;
 
-import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -28,7 +27,7 @@ public class Robot {
 	private String name;
 
 	/** The random. */
-    private Random random = new SecureRandom();
+    private Random random = new Random();
 
 	/**
 	 * Instantiates a new robot.

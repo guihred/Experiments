@@ -1,6 +1,6 @@
 package fxpro.ch05;
 
-import java.security.SecureRandom;
+import java.util.Random;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -24,7 +24,7 @@ public final class TableVisualizationModel {
 	public static final double MAX_RPM = 8000.0;
 	public static final DoubleProperty RPM = new SimpleDoubleProperty(0);
 
-	public static final	SecureRandom secureRandom = new SecureRandom();
+    public static final Random secureRandom = new Random();
 
     private TableVisualizationModel() {
 	}

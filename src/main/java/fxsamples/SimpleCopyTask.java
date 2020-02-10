@@ -5,8 +5,8 @@ import static utils.ResourceFXUtils.getOutFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.security.SecureRandom;
 import java.util.List;
+import java.util.Random;
 import javafx.concurrent.Task;
 import utils.CrawlerTask;
 import utils.ResourceFXUtils;
@@ -14,7 +14,7 @@ import utils.ResourceFXUtils;
 public final class SimpleCopyTask extends Task<Boolean> {
     private final int numFiles;
 
-    private SecureRandom rnd = new SecureRandom();
+    private Random rnd = new Random();
 
     SimpleCopyTask(int numFiles) {
         this.numFiles = numFiles;

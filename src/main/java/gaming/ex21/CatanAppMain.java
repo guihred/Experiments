@@ -41,7 +41,6 @@ public class CatanAppMain extends Application {
     }
 
     public void initialize() {
-        center.setPrefWidth(700);
         catanModel.setEdges(CatanHelper.addTerrains(center, catanModel.getSettlePoints(), catanModel.getTerrains(),
             catanModel.getPorts()));
         catanModel.setUserChart(userChart);

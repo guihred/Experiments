@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.List;
 import javafx.scene.input.KeyCode;
 import org.junit.Test;
-import pdfreader.PdfReader;
+import pdfreader.PdfController;
 import utils.ResourceFXUtils;
 
 public class FXPDFReaderTest extends AbstractTestExecution {
@@ -24,7 +24,7 @@ public class FXPDFReaderTest extends AbstractTestExecution {
 
     @Test
     public void verifyButtons() {
-        show(PdfReader.class);
+        show(PdfController.class);
         lookup(".button").queryAll().forEach(t -> {
             sleep(1000);
             tryClickOn(t);

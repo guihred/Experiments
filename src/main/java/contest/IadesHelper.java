@@ -3,20 +3,13 @@ package contest;
 import static java.util.stream.Stream.of;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
-import static utils.CrawlerTask.executeRequest;
 import static utils.CrawlerTask.extractURL;
-import static utils.CrawlerTask.getDocument;
-import static utils.CrawlerTask.getFile;
-import static utils.StringSigaUtils.decodificar;
-import static utils.SupplierEx.getIgnore;
-import static utils.SupplierEx.orElse;
 
 import contest.db.ContestQuestion;
 import contest.db.Organization;
 import extract.PdfUtils;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -31,11 +24,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Connection.Response;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.FunctionEx;
 import utils.HasLogging;
 import utils.StringSigaUtils;
 import utils.SupplierEx;
@@ -82,18 +71,7 @@ public final class IadesHelper {
         return instance;
     }
 
-    public static List<File> getFilesFromPage(Entry<String, String> link) {
-        String url = link.getValue();
-        URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
-        Document document = SupplierEx.getIgnore(() -> getDocument(url2.toExternalForm(), QuadrixHelper.COOKIES));
-        if (document == null) {
-            return Collections.emptyList();
-        }
-        Elements select = document.select("a");
-        return select.stream().filter(e -> hasFileExtension(e.text()))
-            .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), QuadrixHelper.addQuadrixDomain(e.attr("href")))))
-            .filter(Objects::nonNull).collect(Collectors.toList());
-    }
+
 
     public static File getPDF(String number, File file) {
         if (file.getName().endsWith(".pdf")) {
@@ -159,17 +137,6 @@ public final class IadesHelper {
             }
         }
         return answers.toString();
-    }
-
-    private static File getFileFromPage(String text, String url3) throws IOException {
-        // PDFs are redirected to an html visualization page
-        if (!text.endsWith(".pdf")) {
-            return getFile(text, url3);
-        }
-        Response executeRequest = executeRequest(url3, QuadrixHelper.COOKIES);
-        String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
-        return SupplierEx.makeSupplier(() -> getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
-            .get();
     }
 
     private static Path getFirstPDF(File file, String number) throws IOException {

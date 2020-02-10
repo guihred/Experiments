@@ -1,13 +1,13 @@
 package ml.data;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class DecisionNode {
 
-    private static final SecureRandom RANDOM = new SecureRandom();
+    private static final Random RANDOM = new Random();
 
     private DecisionNode trueNode;
     private DecisionNode falseNode;

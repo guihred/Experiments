@@ -2,15 +2,15 @@ package graphs.app;
 
 import graphs.entities.Cell;
 import graphs.entities.Graph;
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Random;
 import javafx.beans.NamedArg;
 
 public class GridLayout extends Layout {
 
-    private static final SecureRandom RND = new SecureRandom();
+    private static final Random RND = new Random();
 
 
     public GridLayout(@NamedArg("graph") Graph graph) {

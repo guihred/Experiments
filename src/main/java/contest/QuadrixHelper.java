@@ -3,8 +3,14 @@ package contest;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
+import static utils.CrawlerTask.executeRequest;
+import static utils.CrawlerTask.getDocument;
+import static utils.CrawlerTask.getFile;
 import static utils.RunnableEx.runNewThread;
+import static utils.StringSigaUtils.decodificar;
 import static utils.StringSigaUtils.removerDiacritico;
+import static utils.SupplierEx.getIgnore;
+import static utils.SupplierEx.orElse;
 
 import contest.db.Organization;
 import extract.PdfUtils;
@@ -13,6 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,15 +30,17 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.stage.Stage;
+import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
-import utils.ConsumerEx;
-import utils.CrawlerTask;
-import utils.RunnableEx;
+import org.jsoup.select.Elements;
+import utils.*;
 
 public final class QuadrixHelper {
 
+
     public static final String QUADRIX_DOMAIN = "http://www.quadrix.org.br";
-    static final Map<String, String> COOKIES = new HashMap<>();
+    private static final Map<String, String> COOKIES = new HashMap<>();
+    private static final List<String> keywords = Arrays.asList("aplicada", "Gabarito Definitivo", "Caderno");
 
     private QuadrixHelper() {
     }
@@ -85,14 +94,43 @@ public final class QuadrixHelper {
         return CrawlerTask.getDocument(url2.toExternalForm(), COOKIES);
     }
 
+    public static File getFileFromPage(String text, String url3) throws IOException {
+        // PDFs are redirected to an html visualization page
+        if (!text.endsWith(".pdf")) {
+            return getFile(text, url3);
+        }
+        Response executeRequest = executeRequest(url3, QuadrixHelper.COOKIES);
+        String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
+        return SupplierEx
+            .makeSupplier(() -> getFile(text, fileParameter), e -> HasLogging.log().info("{} Failed", fileParameter))
+            .get();
+    }
+
+    public static List<File> getFilesFromPage(Entry<String, String> link) {
+        String url = link.getValue();
+        URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
+        Document document = SupplierEx.getIgnore(() -> getDocument(url2.toExternalForm(), QuadrixHelper.COOKIES));
+        if (document == null) {
+            return Collections.emptyList();
+        }
+        Elements select = document.select("a");
+        return select.stream().filter(e -> IadesHelper.hasFileExtension(e.text()))
+            .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), QuadrixHelper.addQuadrixDomain(e.attr("href")))))
+            .filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
     public static boolean hasTI(ObservableList<?> observableList) {
         List<String> keys = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
         return observableList.stream().map(Objects::toString).anyMatch(e -> keys.stream()
             .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
-    public static void saveConcurso(Property<Concurso> concurso, ListView<String> listBuilder,
-        String value) {
+    public static boolean isValidLink(int level, SimpleEntry<String, String> t) {
+        return level == 0 && containsIgnoreCase(t.getKey(), "•") || level == 1
+            || keywords.stream().anyMatch(e -> containsIgnoreCase(t.getKey(), e));
+    }
+
+    public static void saveConcurso(Property<Concurso> concurso, ListView<String> listBuilder, String value) {
         if (value == null) {
             return;
         }
@@ -102,18 +140,17 @@ public final class QuadrixHelper {
         List<Entry<String, String>> collect = linksFound.stream()
             .filter(e -> e.getKey().contains("Provas") || e.getKey().contains(number))
             .sorted(Comparator.comparing(e -> IadesHelper.containsNumber(number, e))).collect(Collectors.toList());
-        File file = collect.stream().map(IadesHelper::getFilesFromPage).filter(e -> !e.isEmpty()).map(e -> e.get(0))
+        File file = collect.stream().map(QuadrixHelper::getFilesFromPage).filter(e -> !e.isEmpty()).map(e -> e.get(0))
             .findFirst().orElse(null);
         if (file == null) {
             IadesHelper.LOG.info("COULD NOT DOWNLOAD {}/{} - {}", collect, value1, value);
             return;
         }
         File file2 = IadesHelper.getPDF(value, file);
-    
+
         IadesHelper.getContestQuestions(file2, Organization.QUADRIX, entities -> {
             QuadrixHelper.saveQuadrixQuestions(concurso, value, linksFound, number, entities);
-            Platform
-                .runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder)));
+            Platform.runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder)));
         });
     }
 
@@ -123,8 +160,8 @@ public final class QuadrixHelper {
         entities.getContest().setJob(vaga);
         entities.saveAll();
         File gabaritoFile = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
-            .sorted(Comparator.comparing(e -> IadesHelper.containsNumber(number, e))).map(IadesHelper::getFilesFromPage)
-            .filter(l -> !l.isEmpty()).map(l -> l.get(0)).findFirst().orElse(null);
+            .sorted(Comparator.comparing(e -> IadesHelper.containsNumber(number, e)))
+            .map(QuadrixHelper::getFilesFromPage).filter(l -> !l.isEmpty()).map(l -> l.get(0)).findFirst().orElse(null);
         if (gabaritoFile == null) {
             IadesHelper.LOG.info("SEM gabarito {}", linksFound);
             return;
@@ -176,7 +213,7 @@ public final class QuadrixHelper {
     }
 
     private static void getVagas(Concurso e2, Entry<String, String> resultado) {
-        IadesHelper.getFilesFromPage(resultado).forEach(ConsumerEx.ignore(f -> extrairVagas(e2, f)));
+        QuadrixHelper.getFilesFromPage(resultado).forEach(ConsumerEx.ignore(f -> extrairVagas(e2, f)));
     }
 
 }

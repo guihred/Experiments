@@ -5,10 +5,10 @@
  */
 package gaming.ex18;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -26,7 +26,7 @@ public class Square2048Model {
 
     private final Square2048[][] map = new Square2048[MAP_WIDTH][MAP_HEIGHT];
     private List<Square2048> mapAsList = new ArrayList<>();
-    private final SecureRandom random = new SecureRandom();
+    private final Random random = new Random();
     private GridPane gridPane;
 
     public Square2048Model(GridPane gridPane) {

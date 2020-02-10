@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Timeline;
+import javafx.application.Application;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -20,16 +21,16 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.HasImage;
-import utils.ImageTableCell;
-import utils.ResourceFXUtils;
-import utils.StageHelper;
+import utils.*;
 
-public class PdfController {
+public class PdfController extends Application {
+
     private static final int WORD_DISPLAY_PERIOD = 200;
     private static final String PDF_FILE = ResourceFXUtils.toFullPath("sngpc2808.pdf");
+
     @FXML
     private TableView<HasImage> imageTable;
     @FXML
@@ -44,9 +45,7 @@ public class PdfController {
     private Text currentPage;
     @FXML
     private TableColumn<HasImage, String> tableColumn;
-
     private PdfInfo pdfInfo = new PdfInfo(PDF_FILE);
-
     private final ObservableList<HasImage> currentImages = FXCollections
         .synchronizedObservableList(FXCollections.observableArrayList());
 
@@ -132,6 +131,12 @@ public class PdfController {
             .handle(event);
     }
 
+    @Override
+    public void start(Stage primaryStage) {
+        final int width = 500;
+        CommonsFX.loadFXML("PDF Read Helper", "PdfReader.fxml", primaryStage, width, width);
+    }
+
     public void toggleTimelineStatus() {
         Status status = timeline.getStatus();
         if (status == Status.RUNNING) {
@@ -139,6 +144,10 @@ public class PdfController {
         } else {
             timeline.play();
         }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }

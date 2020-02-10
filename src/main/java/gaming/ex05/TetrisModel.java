@@ -5,10 +5,10 @@
 */
 package gaming.ex05;
 
-import java.security.SecureRandom;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import javafx.animation.Timeline;
 import javafx.scene.layout.GridPane;
 import simplebuilder.SimpleDialogBuilder;
@@ -25,7 +25,7 @@ public class TetrisModel {
 
     private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection = new EnumMap<>(TetrisPiece.class);
 
-    private SecureRandom random = new SecureRandom();
+    private Random random = new Random();
 
     public TetrisModel(GridPane gridPane) {
         for (int i = 0; i < MAP_WIDTH; i++) {

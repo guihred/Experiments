@@ -2,7 +2,6 @@ package fxsamples;
 
 import static utils.RunnableEx.runIf;
 
-import java.security.SecureRandom;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -49,7 +48,7 @@ public class PlayingAudio extends Application {
     @FXML
     protected Group vizContainer;
     protected Stage mainStage;
-    private Random rand = new SecureRandom();
+    private Random rand = new Random();
     private MediaPlayer mediaPlayer;
     private Point2D anchorPt;
     private Point2D previousLocation;

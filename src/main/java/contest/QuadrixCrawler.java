@@ -26,28 +26,29 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
 import utils.*;
 
 public class QuadrixCrawler extends Application {
-    private static final Logger LOG = HasLogging.log();
+
     @FXML
     private ListView<String> vagasList;
     @FXML
     private TreeView<Map.Entry<String, String>> treeBuilder;
     @FXML
     private TableView<Concurso> concursosTable;
+
     @FXML
     private TableColumn<Concurso, Object> tableColumn4;
-
     private ObservableList<Concurso> concursos = FXCollections.observableArrayList();
+
     private Set<String> links = new HashSet<>();
 
     public void initialize() {
-        Map.Entry<String, String> simpleEntry = new SimpleEntry<>("", QuadrixHelper.addQuadrixDomain("encerrados.aspx"));
+        Map.Entry<String, String> simpleEntry = new SimpleEntry<>("",
+            QuadrixHelper.addQuadrixDomain("encerrados.aspx"));
         treeBuilder.setRoot(new TreeItem<>(simpleEntry));
         Property<Concurso> concurso = new SimpleObjectProperty<>();
 
@@ -81,15 +82,10 @@ public class QuadrixCrawler extends Application {
             .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
             .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
             .collect(Collectors.toList());
-        List<Map.Entry<String, String>> linksFound = allLinks.stream()
-            .filter(t -> {
-                return level == 0 && containsIgnoreCase(t.getKey(), "•") || level == 1
-                    || containsIgnoreCase(t.getKey(), "aplicada")
-                    || containsIgnoreCase(t.getKey(), "Gabarito Definitivo") || t.getKey().contains("Caderno");
-            })
+        List<Map.Entry<String, String>> linksFound = allLinks.stream().filter(t -> QuadrixHelper.isValidLink(level, t))
             .distinct().collect(Collectors.toList());
         if (level == 2) {
-            run(() -> IadesHelper.getFilesFromPage(url));
+            run(() -> QuadrixHelper.getFilesFromPage(url));
         }
         if (level == 1 && !linksFound.isEmpty()) {
             Concurso e2 = new Concurso();
@@ -135,10 +131,8 @@ public class QuadrixCrawler extends Application {
         CompletableFuture.supplyAsync(SupplierEx.makeSupplier(() -> {
             URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
             domain.set(url2.getProtocol() + "://" + url2.getHost());
-            LOG.info("GETTING {} level {}", url, level);
             return QuadrixHelper.getDocumentCookies(url2);
         })).thenApply(doc -> getLinks(doc, entry, domain, level)).thenAccept(l -> {
-            LOG.info("Links {}", l);
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
             l.forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
         });

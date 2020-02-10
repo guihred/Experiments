@@ -1,6 +1,6 @@
 package physics;
 
-import java.security.SecureRandom;
+import java.util.Random;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -21,6 +21,7 @@ public class Physics extends Application {
     public static final int PHYSICAL_WIDTH = 100;
     public static final int PHYSICAL_HEIGHT = 100;
     public static final int MAX_BALLS = 200;
+    private final Random random = new Random();
 
     @Override
     public void start(Stage primaryStage) {
@@ -29,9 +30,8 @@ public class Physics extends Application {
         PhysicalScene scene = new PhysicalScene(root, BasePhysicalObject.WIDTH, BasePhysicalObject.HEIGHT);
 
         final Ball[] ball = new Ball[MAX_BALLS];
-        SecureRandom r = new SecureRandom();
         for (int i = 0; i < MAX_BALLS; i++) {
-            ball[i] = new Ball(r.nextInt(PHYSICAL_WIDTH), r.nextInt(PHYSICAL_WIDTH));
+            ball[i] = new Ball(random.nextInt(PHYSICAL_WIDTH), random.nextInt(PHYSICAL_WIDTH));
         }
 
         final Ramp leftNet = new Ramp(0, 90, 40, 85);
