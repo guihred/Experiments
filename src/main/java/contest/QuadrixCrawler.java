@@ -1,16 +1,15 @@
 package contest;
 
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static utils.RunnableEx.run;
 import static utils.RunnableEx.runNewThread;
 import static utils.SupplierEx.getIgnore;
 import static utils.SupplierEx.orElse;
 
 import java.net.URL;
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
@@ -24,8 +23,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
@@ -75,39 +72,6 @@ public class QuadrixCrawler extends Application {
         primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
     }
 
-    private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
-        SimpleStringProperty domain, int level) {
-        Elements select = doc.select("a");
-        List<SimpleEntry<String, String>> allLinks = select.stream()
-            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
-            .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
-            .collect(Collectors.toList());
-        List<Map.Entry<String, String>> linksFound = allLinks.stream().filter(t -> QuadrixHelper.isValidLink(level, t))
-            .distinct().collect(Collectors.toList());
-        if (level == 2) {
-            run(() -> QuadrixHelper.getFilesFromPage(url));
-        }
-        if (level == 1 && !linksFound.isEmpty()) {
-            Concurso e2 = new Concurso();
-            e2.setUrl(url.getValue());
-            String key = url.getKey();
-            String[] split = key.split("-");
-            e2.setNome(split[0]);
-            e2.setLinksFound(linksFound);
-            linksFound.stream()
-                .filter(e -> containsIgnoreCase(e.getKey(), "Caderno de prova -") || e.getKey().matches("\\d+ *- *.+"))
-                .map(s -> s.getKey().split("- *")[1]).forEach(e -> {
-                    if (!e2.getVagas().contains(e)) {
-                        e2.getVagas().add(e);
-                    }
-                });
-            QuadrixHelper.findVagas(linksFound, e2, concursos);
-
-            concursos.add(e2);
-        }
-        return linksFound;
-    }
-
     private void getNewLinks(TreeItem<Map.Entry<String, String>> newValue, TreeView<Map.Entry<String, String>> tree) {
         if (newValue == null) {
             return;
@@ -132,7 +96,7 @@ public class QuadrixCrawler extends Application {
             URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
             domain.set(url2.getProtocol() + "://" + url2.getHost());
             return QuadrixHelper.getDocumentCookies(url2);
-        })).thenApply(doc -> getLinks(doc, entry, domain, level)).thenAccept(l -> {
+        })).thenApply(doc -> QuadrixHelper.getLinks(doc, entry, domain, level, concursos, links)).thenAccept(l -> {
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
             l.forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
         });

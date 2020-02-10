@@ -10,7 +10,10 @@ import contest.db.*;
 import extract.PdfImage;
 import extract.PdfUtils;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.IntSummaryStatistics;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
@@ -33,21 +36,17 @@ public class ContestReader implements HasLogging {
     private static final String SUBJECT_PATTERN = "(?i)[\\w ]*Questões de \\d+ a \\d+\\.*\\s*";
     private static final String SUBJECT_2_PATTERN = "(?i)(.+)[-–]*\\s*\\(*Quest.*es .*\\d+ . \\d+\\)*\\s*";
 
-    private static final ContestQuestionDAO CONTEST_DAO = new ContestQuestionDAO();
-
     private ContestQuestionAnswer answer = new ContestQuestionAnswer();
-
     private Contest contest;
-
     private ContestQuestion contestQuestion = new ContestQuestion();
-
     private final ObservableList<ContestQuestion> listQuestions = FXCollections.observableArrayList();
     private QuestionType questionType = QuestionType.OPTIONS;
     private int option;
     private int pageNumber;
     private final List<QuestionPosition> questionPosition = new ArrayList<>();
 
-    private final SimpleObjectProperty<ReaderState> state = new SimpleObjectProperty<>(ReaderState.IGNORE);
+    private final SimpleObjectProperty<ContestHelper.ReaderState> state = new SimpleObjectProperty<>(
+        ContestHelper.ReaderState.IGNORE);
 
     private String subject;
     private ContestText text = new ContestText();
@@ -69,12 +68,16 @@ public class ContestReader implements HasLogging {
         return listQuestions;
     }
 
-    public ReaderState getState() {
+    public ContestHelper.ReaderState getState() {
         return state.get();
     }
 
+    public ObservableList<ContestText> getTexts() {
+        return texts;
+    }
+
     public void readFile(File file, Organization organization) {
-        contest = new Contest(organization);
+        setContest(new Contest(organization));
         PdfUtils.runOnFile(organization == Organization.QUADRIX ? 1 : 2, file, this::getQuestionPositions,
             i -> pageNumber = i, this::tryReadQuestionFromLines, this::mapImages);
     }
@@ -83,20 +86,14 @@ public class ContestReader implements HasLogging {
         if (!validate()) {
             return;
         }
-        CONTEST_DAO.saveOrUpdate(getContest());
-        CONTEST_DAO.saveOrUpdate(listQuestions);
-        CONTEST_DAO.saveOrUpdate(listQuestions.stream().filter(e -> e.getOptions() != null).flatMap(e -> {
-            e.getOptions().forEach(o -> o.setExercise(e));
-            return e.getOptions().stream();
-        }).collect(Collectors.toList()));
-
-        List<ContestText> nonNullTexts = texts.stream().filter(e -> StringUtils.isNotBlank(e.getText()))
-            .collect(Collectors.groupingBy(ContestText::getText)).entrySet().stream().map(e -> e.getValue().get(0))
-            .collect(Collectors.toList());
-        CONTEST_DAO.saveOrUpdate(nonNullTexts);
+        ContestHelper.saveAll(contest, listQuestions, texts);
     }
 
-    public void setState(ReaderState state) {
+    public void setContest(Contest contest) {
+        this.contest = contest;
+    }
+
+    public void setState(ContestHelper.ReaderState state) {
         this.state.set(state);
     }
 
@@ -140,7 +137,7 @@ public class ContestReader implements HasLogging {
             contestQuestion.addOption(answer);
         }
         addQuestion();
-        setState(ReaderState.IGNORE);
+        setState(ContestHelper.ReaderState.IGNORE);
         getLogger().info(s);
     }
 
@@ -153,34 +150,34 @@ public class ContestReader implements HasLogging {
             }
             if (Stream.of(linhas).skip(i + 1L).allMatch(str -> str.matches(LINE_PATTERN))) {
                 addQuestion();
-                setState(ReaderState.IGNORE);
+                setState(ContestHelper.ReaderState.IGNORE);
                 return;
             }
             String string = linhas[i + 1];
             if (string.matches(TEXTS_PATTERN)) {
                 addQuestion();
-                setState(ReaderState.TEXT);
+                setState(ContestHelper.ReaderState.TEXT);
                 return;
             }
             if (string.matches(SUBJECT_2_PATTERN)) {
                 addQuestion();
-                setState(ReaderState.IGNORE);
+                setState(ContestHelper.ReaderState.IGNORE);
                 return;
             }
             if (isQuestionPattern(string)) {
                 addQuestion();
-                setState(ReaderState.QUESTION);
+                setState(ContestHelper.ReaderState.QUESTION);
                 return;
             }
             if (StringUtils.containsIgnoreCase(string, "Questões") && s.matches(".+\\.\\s*")) {
                 addQuestion();
-                setState(ReaderState.IGNORE);
+                setState(ContestHelper.ReaderState.IGNORE);
             }
         }
     }
 
     private void addNewText() {
-        text.setContest(contest);
+        text.setContest(getContest());
         if (StringUtils.isNotBlank(text.getText())) {
             texts.add(text);
             if (text.getMin() == null) {
@@ -191,11 +188,11 @@ public class ContestReader implements HasLogging {
             }
         }
 
-        text = new ContestText(contest);
+        text = new ContestText(getContest());
     }
 
     private void addOptionIfStateOption() {
-        if (getState() == ReaderState.OPTION) {
+        if (getState() == ContestHelper.ReaderState.OPTION) {
             contestQuestion.addOption(answer);
             answer = new ContestQuestionAnswer();
             answer.setExercise(contestQuestion);
@@ -220,7 +217,7 @@ public class ContestReader implements HasLogging {
         contestQuestion.setType(questionType);
         listQuestions.add(contestQuestion);
         contestQuestion = new ContestQuestion();
-        contestQuestion.setContest(contest);
+        contestQuestion.setContest(getContest());
         contestQuestion.setSubject(subject);
         contestQuestion.setType(questionType);
         if (questionType == QuestionType.OPTIONS) {
@@ -239,7 +236,7 @@ public class ContestReader implements HasLogging {
         if (isTextPattern(linhas, i, s)) {
             String[] split = linhas[i + 1].split("\\D+");
             if (split.length > 1 && Stream.of(split).allMatch(StringUtils::isNumeric)) {
-                setState(ReaderState.TEXT);
+                setState(ContestHelper.ReaderState.TEXT);
                 text.setMin(intValue(split[0]));
                 text.setMax(intValue(split[1]));
             }
@@ -247,21 +244,21 @@ public class ContestReader implements HasLogging {
     }
 
     private void addTextIfNeeded() {
-        if (getState() == ReaderState.TEXT) {
+        if (getState() == ContestHelper.ReaderState.TEXT) {
             addNewText();
         }
     }
 
     private void changeTypeOfQuestions(String s) {
-        if (getState() == ReaderState.IGNORE && s.matches(".*CERTO.+ERRADO.*")
-            && contest.getOrganization() == Organization.QUADRIX) {
+        if (getState() == ContestHelper.ReaderState.IGNORE && s.matches(".*CERTO.+ERRADO.*")
+            && getContest().getOrganization() == Organization.QUADRIX) {
             questionType = QuestionType.TRUE_FALSE;
         }
     }
 
     private void executeAppending(String str, String[] linhas, int i) {
-        if (getState() == ReaderState.IGNORE) {
-            contestQuestion.setContest(contest);
+        if (getState() == ContestHelper.ReaderState.IGNORE) {
+            contestQuestion.setContest(getContest());
             contestQuestion.setSubject(subject);
             return;
         }
@@ -285,12 +282,12 @@ public class ContestReader implements HasLogging {
 
     private int getIndicative(int i) {
 
-        if (getState() == ReaderState.OPTION) {
+        if (getState() == ContestHelper.ReaderState.OPTION) {
             return contestQuestion != null && contestQuestion.getOptions() != null
                 ? contestQuestion.getOptions().size() + 1
                 : 1;
         }
-        if (getState() == ReaderState.QUESTION) {
+        if (getState() == ContestHelper.ReaderState.QUESTION) {
             Integer number = contestQuestion.getNumber();
             int j = listQuestions.size() + 1;
             if (number != null && j != number) {
@@ -298,7 +295,7 @@ public class ContestReader implements HasLogging {
             }
             return j;
         }
-        if (getState() == ReaderState.TEXT) {
+        if (getState() == ContestHelper.ReaderState.TEXT) {
             return texts.size();
         }
         return i;
@@ -320,12 +317,12 @@ public class ContestReader implements HasLogging {
     }
 
     private void insertOptionIfNeeded(String s) {
-        if (getState() == ReaderState.OPTION && StringUtils.isBlank(s)) {
+        if (getState() == ContestHelper.ReaderState.OPTION && StringUtils.isBlank(s)) {
             contestQuestion.addOption(answer);
             if (option == OPTIONS_PER_QUESTION) {
                 addQuestion();
             }
-            setState(ReaderState.IGNORE);
+            setState(ContestHelper.ReaderState.IGNORE);
         }
     }
 
@@ -335,12 +332,12 @@ public class ContestReader implements HasLogging {
     }
 
     private boolean isTextPattern(String[] linhas, int i, String s) {
-        return containsIgnoreCase(s, "Questões") && getState() == ReaderState.IGNORE
+        return containsIgnoreCase(s, "Questões") && getState() == ContestHelper.ReaderState.IGNORE
             && i < linhas.length - 1;
     }
 
     private boolean isTextToBeAdded(String s) {
-        return StringUtils.isBlank(s) && getState() == ReaderState.TEXT && !listQuestions.isEmpty()
+        return StringUtils.isBlank(s) && getState() == ContestHelper.ReaderState.TEXT && !listQuestions.isEmpty()
             && StringUtils.isNotBlank(text.getText()) && text.getText().split("\n").length > 1 && !isBetween();
     }
 
@@ -374,15 +371,15 @@ public class ContestReader implements HasLogging {
             getLogger().info("SUBJECT={}", subject);
             return;
         }
-        if (s.matches(CONHECIMENTO) && getState() == ReaderState.IGNORE) {
+        if (s.matches(CONHECIMENTO) && getState() == ContestHelper.ReaderState.IGNORE) {
             subject = s.trim();
             getLogger().info("SUBJECT={}", subject);
-            setState(ReaderState.TEXT);
+            setState(ContestHelper.ReaderState.TEXT);
             return;
         }
         changeTypeOfQuestions(s);
         if (s.matches(TEXTS_PATTERN) || s.startsWith("Texto")) {
-            setState(ReaderState.TEXT);
+            setState(ContestHelper.ReaderState.TEXT);
             String[] split = s.split("\\D+");
             IntSummaryStatistics stats = Stream.of(split).filter(StringUtils::isNotBlank)
                 .mapToInt(StringSigaUtils::intValue).summaryStatistics();
@@ -401,22 +398,22 @@ public class ContestReader implements HasLogging {
             return;
         }
         if (questionType == QuestionType.TRUE_FALSE && s.matches("^\\s*_____+\\s*$")) {
-            if (getState() == ReaderState.QUESTION) {
+            if (getState() == ContestHelper.ReaderState.QUESTION) {
                 addQuestion();
                 addNewText();
             }
-            setState(ReaderState.TEXT);
+            setState(ContestHelper.ReaderState.TEXT);
             return;
         }
         if (isTrueFalseQuestion(s)) {
             addQuestionIfDifferentNumber(s);
             contestQuestion.setNumber(intValue(s.split("\\D+")[0]));
-            setState(ReaderState.QUESTION);
+            setState(ContestHelper.ReaderState.QUESTION);
         }
         if (isQuestionPattern(s)) {
             addTextIfNeeded();
             contestQuestion.setNumber(intValue(s));
-            setState(ReaderState.QUESTION);
+            setState(ContestHelper.ReaderState.QUESTION);
             getLogger().info(s);
             return;
         }
@@ -429,11 +426,11 @@ public class ContestReader implements HasLogging {
 
             answer.setNumber(option);
             option++;
-            setState(ReaderState.OPTION);
+            setState(ContestHelper.ReaderState.OPTION);
         }
         if (isTextToBeAdded(s)) {
             addNewText();
-            setState(ReaderState.IGNORE);
+            setState(ContestHelper.ReaderState.IGNORE);
         }
         insertOptionIfNeeded(s);
 
@@ -445,9 +442,9 @@ public class ContestReader implements HasLogging {
     private void tryReadQuestionFromLines(String[] lines) {
 
         try {
-            setState(ReaderState.IGNORE);
+            setState(ContestHelper.ReaderState.IGNORE);
             option = 0;
-            text = new ContestText(contest);
+            text = new ContestText(getContest());
             texts.add(text);
             for (int i = 0; i < lines.length && !removeNotPrintable(lines[i]).matches(DISCURSIVA_PATTERN); i++) {
                 processQuestion(lines, i);
@@ -456,20 +453,6 @@ public class ContestReader implements HasLogging {
         } catch (Exception e) {
             getLogger().error("", e);
         }
-    }
-
-    public static ObservableList<ContestReader> getAllContests() {
-        List<Contest> listContests = CONTEST_DAO.listContests();
-        List<ContestText> listTexts = CONTEST_DAO.listTexts();
-        Map<Contest, List<ContestText>> textsByContest = listTexts.stream()
-            .collect(Collectors.groupingBy(ContestText::getContest));
-        return listContests.stream().map(c -> {
-            ContestReader contestReader = new ContestReader();
-            contestReader.contest = c;
-            contestReader.listQuestions.setAll(CONTEST_DAO.list(c));
-            contestReader.texts.setAll(textsByContest.getOrDefault(c, Collections.emptyList()));
-            return contestReader;
-        }).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
     private static boolean containsAllOptions(String s) {
@@ -482,13 +465,6 @@ public class ContestReader implements HasLogging {
 
     private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
         return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
-    }
-
-    enum ReaderState {
-        IGNORE,
-        OPTION,
-        QUESTION,
-        TEXT;
     }
 
 }

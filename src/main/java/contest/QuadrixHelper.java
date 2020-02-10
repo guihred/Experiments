@@ -6,6 +6,7 @@ import static simplebuilder.SimpleDialogBuilder.bindWindow;
 import static utils.CrawlerTask.executeRequest;
 import static utils.CrawlerTask.getDocument;
 import static utils.CrawlerTask.getFile;
+import static utils.RunnableEx.run;
 import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.decodificar;
 import static utils.StringSigaUtils.removerDiacritico;
@@ -26,6 +27,7 @@ import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
@@ -43,6 +45,39 @@ public final class QuadrixHelper {
     private static final List<String> keywords = Arrays.asList("aplicada", "Gabarito Definitivo", "Caderno");
 
     private QuadrixHelper() {
+    }
+
+    public static List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
+        SimpleStringProperty domain, int level,ObservableList<Concurso> concursos,Set<String> links) {
+        Elements select = doc.select("a");
+        List<SimpleEntry<String, String>> allLinks = select.stream()
+            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
+            .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
+            .collect(Collectors.toList());
+        List<Map.Entry<String, String>> linksFound = allLinks.stream().filter(t -> isValidLink(level, t))
+            .distinct().collect(Collectors.toList());
+        if (level == 2) {
+            run(() -> getFilesFromPage(url));
+        }
+        if (level == 1 && !linksFound.isEmpty()) {
+            Concurso e2 = new Concurso();
+            e2.setUrl(url.getValue());
+            String key = url.getKey();
+            String[] split = key.split("-");
+            e2.setNome(split[0]);
+            e2.setLinksFound(linksFound);
+            linksFound.stream()
+                .filter(e -> containsIgnoreCase(e.getKey(), "Caderno de prova -") || e.getKey().matches("\\d+ *- *.+"))
+                .map(s -> s.getKey().split("- *")[1]).forEach(e -> {
+                    if (!e2.getVagas().contains(e)) {
+                        e2.getVagas().add(e);
+                    }
+                });
+            findVagas(linksFound, e2, concursos);
+    
+            concursos.add(e2);
+        }
+        return linksFound;
     }
 
     public static void addClasses(Concurso con, TableCell<Concurso, Object> cell) {
@@ -125,7 +160,7 @@ public final class QuadrixHelper {
             .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
-    public static boolean isValidLink(int level, SimpleEntry<String, String> t) {
+    public static boolean isValidLink(int level, Map.Entry<String, String> t) {
         return level == 0 && containsIgnoreCase(t.getKey(), "•") || level == 1
             || keywords.stream().anyMatch(e -> containsIgnoreCase(t.getKey(), e));
     }
