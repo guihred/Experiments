@@ -13,11 +13,8 @@ import java.util.stream.Stream;
 import javafx.concurrent.Task;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.slf4j.Logger;
 
 public abstract class CrawlerTask extends Task<String> {
-    static final int HUNDRED_SECONDS = 100000;
-    static final Logger LOG = HasLogging.log();
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PASS = "15-juuGO";

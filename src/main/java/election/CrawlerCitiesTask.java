@@ -18,10 +18,10 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
 
     @Override
     protected List<String> getList() {
-
-        return Arrays.asList("ac", "al", "am", "ap", "ba", "ce", "es", "go", "ma", "mg", "ms", "mt",
-                "pa", "pb", "pe", "pi", "pr", "rj", "rn", "ro", "rr", "rs", "sc", "se", "sp", "to");
+        return Arrays.asList("ac", "al", "am", "ap", "ba", "ce", "es", "go", "ma", "mg", "ms", "mt", "pa", "pb", "pe",
+            "pi", "pr", "rj", "rn", "ro", "rr", "rs", "sc", "se", "sp", "to");
     }
+
     @Override
     protected void performTask(String estado) {
         String alphabet = "abcdefghijklmnopqrstuvwxyz";
@@ -33,7 +33,8 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
 
     private void crawlThroughSite(String estado, String letter) {
         try {
-            Document parse = ExtractUtils.getDocument("https://www.todapolitica.com/eleicoes-2016/" + estado + "/" + letter + "/");
+            Document parse = ExtractUtils
+                .getDocument("https://www.todapolitica.com/eleicoes-2016/" + estado + "/" + letter + "/");
 
             Elements select = parse.select(".lista-estados .custom li");
             for (Element element : select) {

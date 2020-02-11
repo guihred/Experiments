@@ -13,65 +13,14 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.text.TextPosition;
 import utils.HasImage;
-import utils.HasLogging;
 import utils.StringSigaUtils;
 
-public class ContestReader implements HasLogging {
-    private static final String CONHECIMENTO = "C(?i)ONHECIMENTO.*";
-    private static final String QUESTAO = "QUESTÃO";
-    private static final String DISCURSIVA_PATTERN = " *P *R *O *V *A *D *I *S *C *U *R *S *I *V *A *";
-    private static final int OPTIONS_PER_QUESTION = 5;
-    private static final String LINE_PATTERN = "^\\s*\\d+\\s*$";
-
-    private static final String OPTION_PATTERN = "[\\. ]*[ \\(][A-E]\\).+";
-    private static final String SUBJECT_PATTERN = "(?i)[\\w ]*Questões de \\d+ a \\d+\\.*\\s*";
-    private static final String SUBJECT_2_PATTERN = "(?i)(.+)[-–]*\\s*\\(*Quest.*es .*\\d+ . \\d+\\)*\\s*";
-
-    private ContestQuestionAnswer answer = new ContestQuestionAnswer();
-    private Contest contest;
-    private ContestQuestion contestQuestion = new ContestQuestion();
-    private final ObservableList<ContestQuestion> listQuestions = FXCollections.observableArrayList();
-    private QuestionType questionType = QuestionType.OPTIONS;
-    private int option;
-    private int pageNumber;
-    private final List<QuestionPosition> questionPosition = new ArrayList<>();
-
-    private final SimpleObjectProperty<ContestHelper.ReaderState> state = new SimpleObjectProperty<>(
-        ContestHelper.ReaderState.IGNORE);
-
-    private String subject;
-    private ContestText text = new ContestText();
-    private final ObservableList<ContestText> texts = FXCollections.observableArrayList();
-
-    public ContestReader() {
-        state.addListener((ob, old, value) -> getLogger().info("{}->{} {}", old, value, HasLogging.getCurrentLine(7)));
-    }
-
-    public Contest getContest() {
-        return contest;
-    }
-
-    public ObservableList<ContestText> getContestTexts() {
-        return texts;
-    }
-
-    public ObservableList<ContestQuestion> getListQuestions() {
-        return listQuestions;
-    }
-
-    public ContestHelper.ReaderState getState() {
-        return state.get();
-    }
-
-    public ObservableList<ContestText> getTexts() {
-        return texts;
-    }
+public class ContestReader extends ContestDTO {
 
     public void readFile(File file, Organization organization) {
         setContest(new Contest(organization));
@@ -86,13 +35,6 @@ public class ContestReader implements HasLogging {
         ContestHelper.saveAll(contest, listQuestions, texts);
     }
 
-    public void setContest(Contest contest) {
-        this.contest = contest;
-    }
-
-    public void setState(ContestHelper.ReaderState state) {
-        this.state.set(state);
-    }
 
     public boolean validate() {
         if (questionType == QuestionType.OPTIONS
@@ -452,10 +394,10 @@ public class ContestReader implements HasLogging {
         }
     }
 
-    public static ObservableList<ContestReader> getAllContests() {
+    public static ObservableList<ContestDTO> getAllContests() {
         Map<Contest, List<ContestText>> textsByContest = ContestHelper.textsByContest();
         return ContestHelper.listContests().stream().map(c -> {
-            ContestReader contestReader = new ContestReader();
+            ContestDTO contestReader = new ContestReader();
             contestReader.setContest(c);
             contestReader.getListQuestions().setAll(ContestHelper.listByContest(c));
             contestReader.getTexts().setAll(textsByContest.getOrDefault(c, Collections.emptyList()));

@@ -104,7 +104,8 @@ public final class QuadrixHelper {
         }
         Response executeRequest = ExtractUtils.executeRequest(url3, COOKIES);
         String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
-        return SupplierEx.makeSupplier(() -> ExtractUtils.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
+        return SupplierEx
+            .makeSupplier(() -> ExtractUtils.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
             .get();
     }
 

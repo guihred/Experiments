@@ -2,7 +2,6 @@ package ethical.hacker;
 
 import static ethical.hacker.EthicalHackApp.addColumns;
 import static ethical.hacker.EthicalHackApp.getCheckBox;
-//import static ethical.hacker.EthicalHackApp.updateItemOnChange;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.observableHashMap;
 import static javafx.collections.FXCollections.synchronizedObservableList;

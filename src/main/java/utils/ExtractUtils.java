@@ -20,26 +20,6 @@ public final class ExtractUtils {
     private ExtractUtils() {
     }
 
-    public static Document getDocument(final String url) throws IOException {
-        return getDocument(url, CrawlerTask.getEncodedAuthorization());
-    }
-
-    public static Document getDocument(final String url, String encoded) throws IOException {
-        Connection connect = Jsoup.connect(url);
-        if (!CrawlerTask.isNotProxied()) {
-            connect.header("Proxy-Authorization", "Basic " + encoded);
-        }
-        return connect
-            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0").get();
-    }
-
-    public static Document getDocument(String url, Map<String, String> cookies) throws IOException {
-        Response execute = executeRequest(url, cookies);
-        Map<String, String> cookies2 = execute.cookies();
-        cookies.putAll(cookies2);
-        return execute.parse();
-    }
-
     public static void copy(File input, File outFile) throws IOException {
         try (FileInputStream inputStream = new FileInputStream(input)) {
             ExtractUtils.copy(inputStream, outFile);
@@ -71,7 +51,7 @@ public final class ExtractUtils {
             connect.header("Proxy-Authorization",
                 "Basic " + CrawlerTask.getEncodedAuthorization());
         }
-        connect.timeout(CrawlerTask.HUNDRED_SECONDS);
+        connect.timeout(HUNDRED_SECONDS);
         connect.cookies(cookies);
         connect.ignoreContentType(true);
         connect.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
@@ -102,6 +82,26 @@ public final class ExtractUtils {
         });
     }
 
+    public static Document getDocument(final String url) throws IOException {
+        return getDocument(url, CrawlerTask.getEncodedAuthorization());
+    }
+
+    public static Document getDocument(String url, Map<String, String> cookies) throws IOException {
+        Response execute = executeRequest(url, cookies);
+        Map<String, String> cookies2 = execute.cookies();
+        cookies.putAll(cookies2);
+        return execute.parse();
+    }
+
+    public static Document getDocument(final String url, String encoded) throws IOException {
+        Connection connect = Jsoup.connect(url);
+        if (!CrawlerTask.isNotProxied()) {
+            connect.header("Proxy-Authorization", "Basic " + encoded);
+        }
+        return connect
+            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0").get();
+    }
+
     public static File getFile(String key, String url1) throws IOException {
         File outFile = ResourceFXUtils.getOutFile(key);
         URL url2 = new URL(url1);
@@ -128,7 +128,7 @@ public final class ExtractUtils {
         if (url1.endsWith(".rar") || key.endsWith(".rar")) {
             UnRar.extractRarFiles(outFile);
         }
-        CrawlerTask.LOG.info("FILE {} SAVED", key);
+        LOG.info("FILE {} SAVED", key);
         return outFile;
     }
 
