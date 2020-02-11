@@ -3,7 +3,6 @@ package contest;
 import static java.util.stream.Stream.of;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
-import static utils.CrawlerTask.extractURL;
 
 import contest.db.ContestQuestion;
 import contest.db.Organization;
@@ -24,6 +23,7 @@ import javafx.scene.Node;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.StringSigaUtils;
 import utils.SupplierEx;
@@ -112,7 +112,7 @@ public final class IadesHelper {
             LOG.info("NO LINK FOR Provas found {} - {}", vaga, value);
             return;
         }
-        File file = extractURL(orElse.getValue());
+        File file = ExtractUtils.extractURL(orElse.getValue());
         if (file == null) {
             LOG.info("COULD NOT DOWNLOAD {}/{} - {}", orElse, value, vaga);
             return;
@@ -179,7 +179,7 @@ public final class IadesHelper {
             LOG.info("SEM gabarito {}", linksFound);
             return;
         }
-        File gabaritoFile = extractURL(gabarito.getValue());
+        File gabaritoFile = ExtractUtils.extractURL(gabarito.getValue());
         List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
             .collect(Collectors.toList());
         String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");

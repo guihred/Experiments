@@ -170,6 +170,7 @@ public class JavaFileDependency {
     public static List<String> displayTestsToBeRun(Collection<String> dependecyList,
             Predicate<JavaFileDependency> filter, List<String> allPaths) {
         List<JavaFileDependency> allFileDependencies = getAllFileDependencies();
+        Collections.shuffle(allFileDependencies);
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
         }

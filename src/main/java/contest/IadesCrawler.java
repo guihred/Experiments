@@ -29,10 +29,7 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import utils.CrawlerTask;
-import utils.HasLogging;
-import utils.HibernateUtil;
-import utils.SupplierEx;
+import utils.*;
 
 public class IadesCrawler extends Application {
 
@@ -102,7 +99,7 @@ public class IadesCrawler extends Application {
         String url = entry.getValue();
 
         if (url.endsWith(".pdf") || url.endsWith(".zip") || url.endsWith(".rar")) {
-            CrawlerTask.extractURL(url);
+            ExtractUtils.extractURL(url);
             return;
         }
         if (!newValue.getChildren().isEmpty()) {
@@ -114,7 +111,7 @@ public class IadesCrawler extends Application {
             URL url2 = new URL(url);
             domain.set(url2.getProtocol() + "://" + url2.getHost());
             LOG.info("GETTING {} level {}", url, level);
-            return CrawlerTask.getDocument(url, CrawlerTask.getEncodedAuthorization());
+            return ExtractUtils.getDocument(url, CrawlerTask.getEncodedAuthorization());
         })).thenApply(doc -> getLinks(doc, entry, domain, links, level)).thenAccept(l -> {
             LOG.info("Links {}", l);
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));

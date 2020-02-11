@@ -177,7 +177,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
         pathByExtension.stream().map(FunctionEx.makeFunction(e -> {
             Path name = e.getName(e.getNameCount() - 1);
             File outFile = ResourceFXUtils.getOutFile(name.toString());
-            CrawlerTask.copy(e, outFile);
+            ExtractUtils.copy(e, outFile);
             return outFile.toPath();
         })).forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile())));
 

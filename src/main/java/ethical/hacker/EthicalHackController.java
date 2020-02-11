@@ -2,7 +2,7 @@ package ethical.hacker;
 
 import static ethical.hacker.EthicalHackApp.addColumns;
 import static ethical.hacker.EthicalHackApp.getCheckBox;
-import static ethical.hacker.EthicalHackApp.updateItemOnChange;
+//import static ethical.hacker.EthicalHackApp.updateItemOnChange;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.observableHashMap;
 import static javafx.collections.FXCollections.synchronizedObservableList;
@@ -23,6 +23,7 @@ import javafx.scene.text.Text;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ConsoleUtils;
+import utils.RunnableEx;
 
 public class EthicalHackController {
 
@@ -124,21 +125,21 @@ public class EthicalHackController {
     public void onActionPortScan() {
         items.clear();
         addColumns(commonTable, Arrays.asList("Host", "Ports", "Route", "OS"));
-        new Thread(() -> {
+        RunnableEx.runNewThread(() -> {
             progressIndicator.setVisible(true);
             ObservableMap<String, List<String>> scanNetworkOpenPorts = PortScanner
                 .scanNetworkOpenPorts(networkAddress.getText(), portsSelected);
-            scanNetworkOpenPorts.addListener(updateItemOnChange("Host", "Ports", count, items));
+            scanNetworkOpenPorts.addListener(EthicalHackApp.updateItemOnChange("Host", "Ports", count, items));
             ObservableMap<String, List<String>> oses = PortScanner.scanPossibleOSes(networkAddress.getText());
-            oses.addListener(updateItemOnChange("Host", "OS", count, items));
+            oses.addListener(EthicalHackApp.updateItemOnChange("Host", "OS", count, items));
             ObservableMap<String, List<String>> networkRoutes = TracerouteScanner
                 .scanNetworkRoutes(networkAddress.getText());
-            networkRoutes.addListener(updateItemOnChange("Host", "Route", count, items));
+            networkRoutes.addListener(EthicalHackApp.updateItemOnChange("Host", "Route", count, items));
             DoubleProperty defineProgress = ConsoleUtils.defineProgress(3);
             progressIndicator.progressProperty().unbind();
             progressIndicator.progressProperty().bind(defineProgress);
             ConsoleUtils.waitAllProcesses();
-        }).start();
+        });
     }
 
 }

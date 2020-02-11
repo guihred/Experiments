@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.StringSigaUtils;
 
@@ -32,7 +33,7 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
 
     private void crawlThroughSite(String estado, String letter) {
         try {
-            Document parse = getDocument("https://www.todapolitica.com/eleicoes-2016/" + estado + "/" + letter + "/");
+            Document parse = ExtractUtils.getDocument("https://www.todapolitica.com/eleicoes-2016/" + estado + "/" + letter + "/");
 
             Elements select = parse.select(".lista-estados .custom li");
             for (Element element : select) {

@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.StringSigaUtils;
 
@@ -25,7 +26,7 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
         while (true) {
             try {
                 String url = "https://www.todapolitica.com" + cidade.getHref() + i + "/";
-                Document parse = getDocument(url);
+                Document parse = ExtractUtils.getDocument(url);
 
                 Elements select = parse.select(".cr-js");
                 for (Element element : select) {

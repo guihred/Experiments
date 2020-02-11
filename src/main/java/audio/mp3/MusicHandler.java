@@ -10,7 +10,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import simplebuilder.SimpleDialogBuilder;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 import utils.ResourceFXUtils;
 
 public final class MusicHandler implements EventHandler<MouseEvent> {
@@ -42,7 +42,7 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
                     () -> {
                         Path path = selectedItem.getArquivo().toPath();
                         File outFile = ResourceFXUtils.getOutFile(path.toFile().getName());
-                        CrawlerTask.copy(path, outFile);
+                        ExtractUtils.copy(path, outFile);
                         Files.deleteIfExists(path);
                     })
                 .displayDialog();

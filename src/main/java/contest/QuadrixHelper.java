@@ -4,9 +4,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
-import static utils.CrawlerTask.executeRequest;
-import static utils.CrawlerTask.getDocument;
-import static utils.CrawlerTask.getFile;
 import static utils.RunnableEx.run;
 import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.decodificar;
@@ -97,24 +94,24 @@ public final class QuadrixHelper {
     }
 
     public static Document getDocumentCookies(URL url2) throws IOException {
-        return CrawlerTask.getDocument(url2.toExternalForm(), COOKIES);
+        return ExtractUtils.getDocument(url2.toExternalForm(), COOKIES);
     }
 
     public static File getFileFromPage(String text, String url3) throws IOException {
         // PDFs are redirected to an html visualization page
         if (!text.endsWith(".pdf")) {
-            return getFile(text, url3);
+            return ExtractUtils.getFile(text, url3);
         }
-        Response executeRequest = executeRequest(url3, COOKIES);
+        Response executeRequest = ExtractUtils.executeRequest(url3, COOKIES);
         String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
-        return SupplierEx.makeSupplier(() -> getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
+        return SupplierEx.makeSupplier(() -> ExtractUtils.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
             .get();
     }
 
     public static List<File> getFilesFromPage(Entry<String, String> link) {
         String url = link.getValue();
         URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(addQuadrixDomain(url)));
-        Document document = SupplierEx.getIgnore(() -> getDocument(url2.toExternalForm(), COOKIES));
+        Document document = SupplierEx.getIgnore(() -> ExtractUtils.getDocument(url2.toExternalForm(), COOKIES));
         if (document == null) {
             return Collections.emptyList();
         }

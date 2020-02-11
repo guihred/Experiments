@@ -78,7 +78,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         FXTesting.measureTime("new EditSongController(song)", () -> {
             File file = getRandomSong().toFile();
             File outFile2 = ResourceFXUtils.getOutFile(file.getName());
-            CrawlerTask.copy(file, outFile2);
+            ExtractUtils.copy(file, outFile2);
 
             Music readTags = MusicReader.readTags(outFile2);
             show(new EditSongController(readTags));

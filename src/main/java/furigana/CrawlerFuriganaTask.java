@@ -128,7 +128,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private String computeReading(String currentWord, char currentLetter) throws IOException {
         String url = "http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8");
-        Document parse = getDocument(url);
+        Document parse = ExtractUtils.getDocument(url);
         Elements kun = parse.select(".readings .japanese_gothic a");
         if (existsKunReading(currentWord, kun)) {
             if (kun.size() == 1) {
@@ -180,7 +180,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private String getOnReadings(String currentWord) throws IOException {
         String url = "http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8");
-        Document parse = getDocument(url);
+        Document parse = ExtractUtils.getDocument(url);
         Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
             .filter(element -> element.select(".text").first().text().equals(currentWord)).findFirst();
         if (firstRepresentation.isPresent() && currentWord.length() > 1) {
@@ -277,7 +277,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         pathByExtension.stream().map(FunctionEx.makeFunction(e -> {
             Path name = e.getName(e.getNameCount() - 1);
             File outFile = ResourceFXUtils.getOutFile(name.toString());
-            CrawlerTask.copy(e, outFile);
+            ExtractUtils.copy(e, outFile);
             return outFile.toPath();
         })).forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile())));
 

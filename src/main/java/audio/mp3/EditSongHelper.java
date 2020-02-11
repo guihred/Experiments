@@ -32,7 +32,7 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.StageHelper;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -87,7 +87,7 @@ public final class EditSongHelper {
                     run(() -> {
                         MusicReader.saveMetadata(selectedItem, outFile);
                         File arquivo = selectedItem.getArquivo();
-                        CrawlerTask.copy(arquivo, outFile);
+                        ExtractUtils.copy(arquivo, outFile);
                     });
                     StageHelper.closeStage(progressIndicator);
                 });

@@ -83,7 +83,7 @@ public class QuadrixCrawler extends Application {
 
         if (IadesHelper.hasFileExtension(key)) {
             String url1 = QuadrixHelper.addQuadrixDomain(url);
-            SupplierEx.get(() -> CrawlerTask.getFile(key, url1));
+            SupplierEx.get(() -> ExtractUtils.getFile(key, url1));
             return;
         }
         if (!newValue.getChildren().isEmpty()) {
