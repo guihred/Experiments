@@ -31,10 +31,10 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
+import simplebuilder.StageHelper;
 import utils.CrawlerTask;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
-import utils.StageHelper;
 
 public final class EditSongHelper {
     private static final Logger LOG = HasLogging.log();

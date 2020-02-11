@@ -1,4 +1,4 @@
-package extract;
+package utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,8 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public final class UnZip {
     public static final String ZIPPED_FILE_FOLDER = ResourceFXUtils.getOutFile().getParent();

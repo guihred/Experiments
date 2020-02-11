@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
-import utils.StageHelper;
+import simplebuilder.StageHelper;
 
 public final class PaintImageUtils {
     private static final int PREF_WIDTH = 300;

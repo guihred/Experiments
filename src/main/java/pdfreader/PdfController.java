@@ -24,6 +24,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
+import simplebuilder.StageHelper;
 import utils.*;
 
 public class PdfController extends Application {

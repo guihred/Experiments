@@ -5,8 +5,6 @@ import static fxtests.FXTesting.measureTime;
 import com.google.common.collect.ImmutableMap;
 import ethical.hacker.ImageCracker;
 import extract.ExcelService;
-import extract.UnRar;
-import extract.UnZip;
 import extract.WordService;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,10 +22,7 @@ import org.junit.runners.MethodSorters;
 import org.testfx.util.WaitForAsyncUtils;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
-import utils.ConsumerEx;
-import utils.CrawlerTask;
-import utils.FunctionEx;
-import utils.ResourceFXUtils;
+import utils.*;
 
 @SuppressWarnings("static-method")
 

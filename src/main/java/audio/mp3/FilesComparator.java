@@ -33,6 +33,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
+import simplebuilder.StageHelper;
 import utils.*;
 
 public class FilesComparator extends Application {

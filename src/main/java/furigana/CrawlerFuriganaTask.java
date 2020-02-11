@@ -1,6 +1,5 @@
 package furigana;
 
-import extract.UnRar;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;

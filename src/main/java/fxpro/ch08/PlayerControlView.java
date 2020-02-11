@@ -31,7 +31,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
 import simplebuilder.SimpleSliderBuilder;
-import utils.StageHelper;
+import simplebuilder.StageHelper;
 
 public class PlayerControlView extends BaseSongView {
 

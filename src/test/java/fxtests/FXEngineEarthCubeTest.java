@@ -16,7 +16,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.input.KeyCode;
 import ml.data.CoverageUtils;
 import org.junit.Test;
-import utils.StageHelper;
+import simplebuilder.StageHelper;
 
 public class FXEngineEarthCubeTest extends AbstractTestExecution {
     @Test

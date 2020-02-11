@@ -22,9 +22,9 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.StageHelper;
 
 public class EditSongController extends Application {
     @FXML

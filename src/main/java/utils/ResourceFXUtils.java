@@ -47,6 +47,10 @@ public final class ResourceFXUtils {
     private ResourceFXUtils() {
     }
 
+    public static BasicFileAttributes computeAttributes(File v) {
+        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
+    }
+
     public static double clamp(double value, double min, double max) {
         if (Double.compare(value, min) < 0) {
             return min;

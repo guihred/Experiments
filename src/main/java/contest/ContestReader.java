@@ -10,10 +10,7 @@ import contest.db.*;
 import extract.PdfImage;
 import extract.PdfUtils;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.IntSummaryStatistics;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleObjectProperty;
@@ -453,6 +450,17 @@ public class ContestReader implements HasLogging {
         } catch (Exception e) {
             getLogger().error("", e);
         }
+    }
+
+    public static ObservableList<ContestReader> getAllContests() {
+        Map<Contest, List<ContestText>> textsByContest = ContestHelper.textsByContest();
+        return ContestHelper.listContests().stream().map(c -> {
+            ContestReader contestReader = new ContestReader();
+            contestReader.setContest(c);
+            contestReader.getListQuestions().setAll(ContestHelper.listByContest(c));
+            contestReader.getTexts().setAll(textsByContest.getOrDefault(c, Collections.emptyList()));
+            return contestReader;
+        }).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
     private static boolean containsAllOptions(String s) {

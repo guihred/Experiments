@@ -4,7 +4,6 @@ import static utils.PredicateEx.makeTest;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
-import extract.FileAttrApp;
 import graphs.app.JavaFileDependency;
 import java.io.File;
 import java.lang.reflect.Modifier;
@@ -179,8 +178,8 @@ public final class CoverageUtils {
 
     private static File getCoverageFile() {
         return ResourceFXUtils.getPathByExtension(new File("target/site/"), ".csv").stream()
-            .map(Path::toFile).filter(e -> FileAttrApp.computeAttributes(e).size() > 0L)
-            .max(Comparator.comparing(e -> FileAttrApp.computeAttributes(e).size())).orElse(null);
+            .map(Path::toFile).filter(e -> ResourceFXUtils.computeAttributes(e).size() > 0L)
+            .max(Comparator.comparing(e -> ResourceFXUtils.computeAttributes(e).size())).orElse(null);
     }
 
     private static List<String> getUncoveredAttribute(int min, String string, String string2, String percentage2) {
