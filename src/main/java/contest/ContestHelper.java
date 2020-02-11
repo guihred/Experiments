@@ -3,9 +3,11 @@ package contest;
 import contest.db.Contest;
 import contest.db.ContestQuestion;
 import contest.db.ContestText;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,6 +16,17 @@ public final class ContestHelper {
     private static final ContestQuestionDAO CONTEST_DAO = new ContestQuestionDAO();
 
     private ContestHelper() {
+    }
+
+    public static ObservableList<ContestDTO> getAllContests() {
+        Map<Contest, List<ContestText>> textsByContest = textsByContest();
+        return listContests().stream().map(c -> {
+            ContestDTO contestReader = new ContestDTO();
+            contestReader.setContest(c);
+            contestReader.getListQuestions().setAll(listByContest(c));
+            contestReader.getTexts().setAll(textsByContest.getOrDefault(c, Collections.emptyList()));
+            return contestReader;
+        }).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
     public static List<ContestQuestion> listByContest(Contest c) {

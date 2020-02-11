@@ -10,11 +10,11 @@ import contest.db.*;
 import extract.PdfImage;
 import extract.PdfUtils;
 import java.io.File;
-import java.util.*;
+import java.util.Comparator;
+import java.util.IntSummaryStatistics;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.text.TextPosition;
 import utils.HasImage;
@@ -379,7 +379,6 @@ public class ContestReader extends ContestDTO {
     }
 
     private void tryReadQuestionFromLines(String[] lines) {
-
         try {
             setState(ContestHelper.ReaderState.IGNORE);
             option = 0;
@@ -392,17 +391,6 @@ public class ContestReader extends ContestDTO {
         } catch (Exception e) {
             getLogger().error("", e);
         }
-    }
-
-    public static ObservableList<ContestDTO> getAllContests() {
-        Map<Contest, List<ContestText>> textsByContest = ContestHelper.textsByContest();
-        return ContestHelper.listContests().stream().map(c -> {
-            ContestDTO contestReader = new ContestReader();
-            contestReader.setContest(c);
-            contestReader.getListQuestions().setAll(ContestHelper.listByContest(c));
-            contestReader.getTexts().setAll(textsByContest.getOrDefault(c, Collections.emptyList()));
-            return contestReader;
-        }).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
     private static boolean containsAllOptions(String s) {

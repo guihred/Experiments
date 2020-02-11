@@ -59,7 +59,7 @@ public class ContestApplicationController {
 
     public void initialize() {
         current.set(-1);
-        ObservableList<ContestDTO> allContests2 = ContestReader.getAllContests();
+        ObservableList<ContestDTO> allContests2 = ContestHelper.getAllContests();
         allContests.setCellFactory(newCellFactory(ContestApplicationController::setText));
         allContests.setItems(allContests2);
         if (!allContests2.isEmpty()) {
