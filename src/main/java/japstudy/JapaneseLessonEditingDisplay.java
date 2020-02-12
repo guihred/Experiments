@@ -133,7 +133,7 @@ public class JapaneseLessonEditingDisplay extends Application {
                 nextLesson();
             }
         });
-        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
     }
 
     protected void playLesson() {

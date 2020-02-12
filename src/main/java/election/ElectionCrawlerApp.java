@@ -25,7 +25,7 @@ public class ElectionCrawlerApp extends Application {
         TaskProgressView view = new TaskProgressView(worker);
         stage.setTitle("Election Crawler");
         stage.setScene(view.getScene());
-        onCloseWindow(stage, () -> HibernateUtil.shutdown());
+        onCloseWindow(stage, HibernateUtil::shutdown);
         stage.show();
     }
 

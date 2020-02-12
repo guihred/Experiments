@@ -270,6 +270,10 @@ public class ContestReader extends ContestDTO {
             && text.getMax() >= listQuestions.size() + 1;
     }
 
+    private boolean isTextMultiLine() {
+        return StringUtils.isNotBlank(text.getText()) && text.getText().split("\n").length > 1;
+    }
+
     private boolean isTextPattern(String[] linhas, int i, String s) {
         return containsIgnoreCase(s, "Questões") && getState() == ContestHelper.ReaderState.IGNORE
             && i < linhas.length - 1;
@@ -277,7 +281,7 @@ public class ContestReader extends ContestDTO {
 
     private boolean isTextToBeAdded(String s) {
         return StringUtils.isBlank(s) && getState() == ContestHelper.ReaderState.TEXT && !listQuestions.isEmpty()
-            && StringUtils.isNotBlank(text.getText()) && text.getText().split("\n").length > 1 && !isBetween();
+            && isTextMultiLine() && !isBetween();
     }
 
     private boolean isTrueFalseQuestion(String s) {

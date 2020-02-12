@@ -16,7 +16,7 @@ public class FuriganaCrawlerApp extends Application {
 	public void start(Stage stage) {
         stage.setTitle("Furigana Converter");
         stage.setScene(view.getScene());
-        onCloseWindow(stage, () -> worker.cancel());
+        onCloseWindow(stage, worker::cancel);
         stage.show();
     }
 

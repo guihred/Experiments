@@ -70,7 +70,7 @@ public class QuadrixCrawler extends Application {
     public void start(Stage primaryStage) throws Exception {
         CrawlerTask.insertProxyConfig();
         CommonsFX.loadFXML("Quadrix Crawler", "QuadrixCrawler.fxml", this, primaryStage);
-        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
     }
 
     private void getNewLinks(TreeItem<Map.Entry<String, String>> newValue, TreeView<Map.Entry<String, String>> tree) {

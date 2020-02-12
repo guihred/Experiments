@@ -44,7 +44,7 @@ public class JapaneseLessonApplication extends Application {
                 editItem(tableView1);
             }
         });
-        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
     }
 
     private void editItem(final TableView<JapaneseLesson> lessonsTable) {

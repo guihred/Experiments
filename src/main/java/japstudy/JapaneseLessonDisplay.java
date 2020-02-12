@@ -80,7 +80,7 @@ public class JapaneseLessonDisplay extends Application {
     @Override
 	public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Japanese Lesson Display", "JapaneseLessonDisplay.fxml", this, primaryStage);
-        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
         primaryStage.getScene().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
                 onActionNext();

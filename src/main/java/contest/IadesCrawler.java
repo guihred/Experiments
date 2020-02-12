@@ -45,7 +45,7 @@ public class IadesCrawler extends Application {
         CrawlerTask.insertProxyConfig();
         Parent node = createSplitTreeListDemoNode();
         primaryStage.setScene(new Scene(node));
-        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
         primaryStage.show();
     }
 

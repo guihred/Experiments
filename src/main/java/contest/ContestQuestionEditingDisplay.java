@@ -130,7 +130,7 @@ public class ContestQuestionEditingDisplay extends Application {
                 nextLesson();
             }
         });
-        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
         primaryStage.show();
         current.set(0);
     }

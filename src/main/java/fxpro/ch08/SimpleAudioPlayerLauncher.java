@@ -73,7 +73,7 @@ public class SimpleAudioPlayerLauncher extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simple Audio Player");
         primaryStage.show();
-        onCloseWindow(primaryStage, () -> stopAndDispose());
+        onCloseWindow(primaryStage, this::stopAndDispose);
     }
 
     private void createControls() {
