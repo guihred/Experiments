@@ -7,6 +7,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Slider;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
@@ -18,7 +19,7 @@ import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
-import utils.StageHelper;
+import simplebuilder.StageHelper;
 
 public final class PaintImageUtils {
     private static final int PREF_WIDTH = 300;
@@ -47,6 +48,10 @@ public final class PaintImageUtils {
             color -> changeColor(saturate, bright, hue, opacity, color));
         addAdjustOption(root, image, original, 1, opacity, "Opacity",
             color -> changeColor(saturate, bright, hue, opacity, color));
+        ColorAdjust colorAdjust = new ColorAdjust();
+        view.setEffect(colorAdjust);
+
+        addAdjustOption(root, 1, colorAdjust.contrastProperty(), "Contrast");
         root.getChildren().add(SimpleButtonBuilder.newButton("Adjust", e -> {
             final WritableImage writableImage = image;
 			paintController.setFinalImage(writableImage);
@@ -101,6 +106,16 @@ public final class PaintImageUtils {
         }
 		paintController.setFinalImage(writableImage);
         paintModel.createImageVersion();
+    }
+
+    private static void addAdjustOption(final VBox root, double max, DoubleProperty value,
+            final String text) {
+        Text e = new Text(text);
+        root.getChildren().add(e);
+        Slider saturation = new SimpleSliderBuilder(-max, max, value.get()).build();
+        value.bind(saturation.valueProperty());
+        e.textProperty().bind(saturation.valueProperty().divide(max).multiply(100).asString(text + " %.1f%%"));
+        root.getChildren().add(saturation);
     }
 
     private static void addAdjustOption(final VBox root, final WritableImage image, final WritableImage original,
