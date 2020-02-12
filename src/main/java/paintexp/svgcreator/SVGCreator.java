@@ -20,9 +20,9 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleSliderBuilder;
+import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.StageHelper;
 
 public class SVGCreator extends Application {
 

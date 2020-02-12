@@ -1,5 +1,7 @@
 package gaming.ex04;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -42,7 +44,7 @@ public class TronLauncher extends Application {
         stage.setScene(scene);
         stage.setWidth(WIDTH);
         stage.setHeight(WIDTH);
-        stage.setOnCloseRequest(e -> timeline.stop());
+        onCloseWindow(stage, () -> timeline.stop());
         stage.show();
     }
 

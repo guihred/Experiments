@@ -1,6 +1,6 @@
 package labyrinth;
 
-import java.security.SecureRandom;
+import java.util.Random;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Mesh;
@@ -12,7 +12,7 @@ public final class GhostGenerator {
 	public static final Color LIGHT_COLOR = Color.grayRgb(125);
     private static final String MESH_GHOST = ResourceFXUtils.toFullPath("ghost2.STL");
 
-    private static final SecureRandom random = new SecureRandom();
+    private static final Random random = new Random();
 
     private static String[][] mapa = { 
         { "_", "_", "_", "_", "_", "|" }, 
@@ -61,10 +61,6 @@ public final class GhostGenerator {
         return animal;
     }
 
-	private static double rnd(double bound) {
-		return random.nextDouble() * bound;
-    }
-
 	public static String[][] getMapa() {
 		return mapa;
 	}
@@ -72,5 +68,9 @@ public final class GhostGenerator {
 	public static void setMapa(String[][] mapa) {
 		GhostGenerator.mapa = mapa;
 	}
+
+	private static double rnd(double bound) {
+		return random.nextDouble() * bound;
+    }
 
 }

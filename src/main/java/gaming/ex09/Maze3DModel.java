@@ -5,9 +5,9 @@
  */
 package gaming.ex09;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.scene.layout.GridPane;
@@ -25,7 +25,7 @@ public class Maze3DModel {
     public static final int MAZE_SIZE = 24;
 	private final Circle circle;
 	private Maze3DSquare[][] maze = new Maze3DSquare[MAZE_SIZE][MAZE_SIZE];
-    private final SecureRandom random = new SecureRandom();
+    private final Random random = new Random();
 	private List<Maze3DSquare> history = new ArrayList<>();
     private int row;
     private int column;

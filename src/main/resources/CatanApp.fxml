@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml" styleClass="root">
+<BorderPane xmlns:fx="http://javafx.com/fxml" >
 	<fx:define>
 		<ToggleGroup fx:id="toggleGroup55" />
 		<Image fx:id="wood" url="@/catan/purewood.png" />
@@ -20,7 +20,7 @@
 		<Image fx:id="development" url="@/catan/development.png" />
 	</fx:define>
 	<center>
-		<StackPane fx:id="center"
+		<StackPane fx:id="center" 
 			onMouseDragged="#onMouseDraggedStackPane0"
 			onMousePressed="#onMousePressedStackPane0"
 			onMouseReleased="#onMouseReleasedStackPane0" />

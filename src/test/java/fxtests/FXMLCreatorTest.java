@@ -28,7 +28,7 @@ public final class FXMLCreatorTest {
     @Test
 	public  void testClassesNotClose() {
         List<Class<? extends Application>> classes = Arrays.asList(CheckersLauncher.class);
-        FXMLCreatorHelper.testApplications(classes, false);
+        FXMLCreatorHelper.testApplications(classes, true);
     }
 
     private static <T> String classNames(List<Class<? extends T>> testApplications) {

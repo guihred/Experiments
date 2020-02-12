@@ -7,8 +7,8 @@ package gaming.ex03;
 
 import static gaming.ex03.SlidingPuzzleSquare.MAP_SIZE;
 
-import java.security.SecureRandom;
 import java.util.Objects;
+import java.util.Random;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -24,7 +24,7 @@ public class SlidingPuzzleModel {
     private SlidingPuzzleSquare[][] map = new SlidingPuzzleSquare[MAP_SIZE][MAP_SIZE];
     private int moves;
 
-    private final SecureRandom random = new SecureRandom();
+    private final Random random = new Random();
 
     public SlidingPuzzleModel(GridPane gridPane) {
         this.gridPane = gridPane;

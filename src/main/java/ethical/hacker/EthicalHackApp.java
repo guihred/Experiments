@@ -1,7 +1,5 @@
 package ethical.hacker;
 
-import static utils.ResourceFXUtils.toFile;
-
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,11 +21,10 @@ import utils.HasLogging;
 public class EthicalHackApp extends Application {
 
     private static final Logger LOG = HasLogging.log();
-
+    private static final int WIDTH = 500;
     @Override
 	public void start(final Stage primaryStage) {
-        final int width = 500;
-        CommonsFX.loadFXML("Ethical Hack App", toFile("EthicalHackApp.fxml"), primaryStage, width, width);
+        CommonsFX.loadFXML("Ethical Hack App", "EthicalHackApp.fxml", primaryStage, WIDTH, WIDTH);
     }
 
     public static void main(final String[] args) {

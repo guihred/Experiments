@@ -1,5 +1,7 @@
 package audio.mp3;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import extract.Music;
 import extract.MusicReader;
 import extract.SongUtils;
@@ -22,9 +24,9 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.StageHelper;
 
 public class EditSongController extends Application {
     @FXML
@@ -123,7 +125,7 @@ public class EditSongController extends Application {
     @Override
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Edit Song", "EditSong.fxml", this, primaryStage);
-        primaryStage.setOnCloseRequest(e -> {
+        onCloseWindow(primaryStage, () -> {
             mediaPlayer.get().stop();
             mediaPlayer.get().dispose();
         });

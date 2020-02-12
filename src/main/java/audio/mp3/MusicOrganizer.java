@@ -26,9 +26,9 @@ import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTableViewBuilder;
+import simplebuilder.StageHelper;
 import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
-import utils.StageHelper;
 import utils.SupplierEx;
 
 public class MusicOrganizer extends Application {

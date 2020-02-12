@@ -10,7 +10,6 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -36,7 +35,7 @@ public final class Chapter8 {
      * equal objects). Hint: First compare the x-coordinates, then the
      * y-coordinates. Do the same for Rectangle2D.
      */
-    private static final Random RANDOM = new SecureRandom();
+    private static final Random RANDOM = new Random();
 
     private Chapter8() {
     }

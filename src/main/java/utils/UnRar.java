@@ -1,4 +1,4 @@
-package extract;
+package utils;
 
 import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.LocalTime;
 import org.slf4j.Logger;
-import utils.ConsoleUtils;
-import utils.HasLogging;
 
 public final class UnRar {
     private static final String UNRAR_FILE = "\"C:\\Program Files\\WinRAR\\UnRAR.exe\"";

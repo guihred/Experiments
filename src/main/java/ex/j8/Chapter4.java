@@ -29,7 +29,6 @@ import simplebuilder.*;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
-import utils.StageHelper;
 
 public final class Chapter4 {
     private Chapter4() {

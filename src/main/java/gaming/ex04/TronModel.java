@@ -5,8 +5,8 @@
  */
 package gaming.ex04;
 
-import java.security.SecureRandom;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
@@ -23,7 +23,7 @@ public class TronModel {
 	private final ObservableList<TronSquare> snake = FXCollections.observableArrayList();
 
 	private TronDirection direction = TronDirection.RIGHT;
-    private final SecureRandom random = new SecureRandom();
+    private final Random random = new Random();
 
     public TronModel() {
         for (int i = 0; i < TronSquare.MAP_SIZE; i++) {

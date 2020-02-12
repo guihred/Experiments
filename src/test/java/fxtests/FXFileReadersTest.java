@@ -5,8 +5,6 @@ import static fxtests.FXTesting.measureTime;
 import com.google.common.collect.ImmutableMap;
 import ethical.hacker.ImageCracker;
 import extract.ExcelService;
-import extract.UnRar;
-import extract.UnZip;
 import extract.WordService;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,10 +22,7 @@ import org.junit.runners.MethodSorters;
 import org.testfx.util.WaitForAsyncUtils;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
-import utils.ConsumerEx;
-import utils.CrawlerTask;
-import utils.FunctionEx;
-import utils.ResourceFXUtils;
+import utils.*;
 
 @SuppressWarnings("static-method")
 
@@ -182,7 +177,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
         pathByExtension.stream().map(FunctionEx.makeFunction(e -> {
             Path name = e.getName(e.getNameCount() - 1);
             File outFile = ResourceFXUtils.getOutFile(name.toString());
-            CrawlerTask.copy(e, outFile);
+            ExtractUtils.copy(e, outFile);
             return outFile.toPath();
         })).forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile())));
 

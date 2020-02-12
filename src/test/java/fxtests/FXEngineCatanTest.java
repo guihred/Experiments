@@ -47,7 +47,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         }
     }
 
-	@Test
+    @Test
 	public void testDecisionTree() {
 		CatanAppMain newInstance = show(CatanAppMain.class);
         DataframeML build = DataframeBuilder.builder("out/catan_log.txt").build();
@@ -102,6 +102,15 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 		getLogger().info("{}", decisionTree);
 
     }
+
+	@Test
+    @SuppressWarnings("static-method")
+	public void testExtraPoint() {
+	    ExtraPoint extraPoint = new ExtraPoint("largestarmy.png");
+	    extraPoint.getUrl();
+	    extraPoint.setRecord(5);
+	    extraPoint.getRecord();
+	}
 
     private void clickButton(List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {
         clickButton(null, allButtons, clickedButtons);
@@ -209,6 +218,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         moveTo(remove);
         drop();
         if (next.getParent() instanceof StackPane) {
+
             return false;
         }
         settlePoints.remove(remove);

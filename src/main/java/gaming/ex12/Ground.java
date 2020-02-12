@@ -33,7 +33,7 @@ public class Ground extends Player {
             height * picture.getScaledHeight() - colisionY - colisionHeight);
 	}
 
-	@Override
+    @Override
 	public void render(GraphicsContext gc) {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
@@ -43,6 +43,11 @@ public class Ground extends Player {
                     picture.getScaledHeight());
 			}
 		}
+	}
+
+	@Override
+	protected boolean isGround() {
+	    return true;
 	}
 
 }

@@ -1,8 +1,10 @@
 package extract;
 
+import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.removeMathematicalOperators;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +49,7 @@ public final class PdfUtils {
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
         DoubleProperty progress) {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
-        new Thread(RunnableEx.make(() -> {
+        runNewThread(() -> RunnableEx.remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -65,8 +67,7 @@ public final class PdfUtils {
                     Platform.runLater(() -> progress.set(1));
                 }
             }
-        }, e -> LOG.error(ERROR_IN_FILE
-            + "{}", file))).start();
+        }, ERROR_IN_FILE + file));
         return images;
     }
 
@@ -134,7 +135,7 @@ public final class PdfUtils {
         return SupplierEx.get(() -> printImageLocations.processPage(page, i), new ArrayList<>());
     }
 
-    private static void read(PdfInfo pdfInfo, File file1, PrintStream out) throws Exception {
+    private static void read(PdfInfo pdfInfo, File file1, PrintStream out) throws IOException {
         try (RandomAccessFile source = new RandomAccessFile(file1, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -169,7 +170,7 @@ public final class PdfUtils {
 
     private static void runOnLines(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
         IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages)
-        throws Exception {
+        throws IOException {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
             COSDocument cosDoc = PdfUtils.parseAndGet(source);
             PDDocument pdDoc = new PDDocument(cosDoc)) {

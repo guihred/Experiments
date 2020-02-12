@@ -1,5 +1,7 @@
 package japstudy;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.function.BiConsumer;
@@ -131,7 +133,7 @@ public class JapaneseLessonEditingDisplay extends Application {
                 nextLesson();
             }
         });
-        stage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
     }
 
     protected void playLesson() {

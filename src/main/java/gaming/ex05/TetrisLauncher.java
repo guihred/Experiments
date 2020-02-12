@@ -1,5 +1,7 @@
 package gaming.ex05;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -31,7 +33,7 @@ public class TetrisLauncher extends Application {
         timeline.play();
 		scene.setOnKeyPressed(this::handleKeyPressed);
         stage.setScene(scene);
-		stage.setOnCloseRequest(e -> timeline.stop());
+        onCloseWindow(stage, () -> timeline.stop());
         stage.show();
     }
 

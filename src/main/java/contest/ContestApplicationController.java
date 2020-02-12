@@ -52,14 +52,14 @@ public class ContestApplicationController {
     @FXML
     private ScrollPane scrollPane3;
     @FXML
-    private ListView<ContestReader> allContests;
-    private ContestReader contestQuestions;
+    private ListView<ContestDTO> allContests;
+    private ContestDTO contestQuestions;
     @FXML
     private IntegerProperty current;
 
     public void initialize() {
         current.set(-1);
-        ObservableList<ContestReader> allContests2 = ContestReader.getAllContests();
+        ObservableList<ContestDTO> allContests2 = ContestHelper.getAllContests();
         allContests.setCellFactory(newCellFactory(ContestApplicationController::setText));
         allContests.setItems(allContests2);
         if (!allContests2.isEmpty()) {
@@ -102,7 +102,7 @@ public class ContestApplicationController {
     public void onMouseClickedListView1(MouseEvent e) {
         if (e.getClickCount() > 1) {
 
-            ContestReader c = allContests.getSelectionModel().getSelectedItem();
+            ContestDTO c = allContests.getSelectionModel().getSelectedItem();
             contestQuestions = c;
             current.set(-1);
             questions.setItems(c.getListQuestions());
@@ -187,7 +187,7 @@ public class ContestApplicationController {
         options.getSelectionModel().clearSelection();
     }
 
-    static String getText(ContestReader contestQuestions2, int cur) {
+    static String getText(ContestDTO contestQuestions2, int cur) {
         List<String> map = getContextTexts(contestQuestions2, cur).map(ContestText::getText)
             .filter(StringUtils::isNotBlank).flatMap(s -> Stream.of(s.split("\n"))).map(String::trim)
             .collect(Collectors.toList());
@@ -211,11 +211,11 @@ public class ContestApplicationController {
         return String.format("(%02d)    %s", i + 1, object);
     }
 
-    private static Stream<ContestText> getContextTexts(ContestReader contestQuestions2, int cur) {
+    private static Stream<ContestText> getContextTexts(ContestDTO contestQuestions2, int cur) {
         return contestQuestions2.getContestTexts().stream().filter(t -> ContestApplicationController.isBetween(t, cur));
     }
 
-    private static void setText(ContestReader item, ListCell<ContestReader> cell) {
+    private static void setText(ContestDTO item, ListCell<ContestDTO> cell) {
         cell.setText(
             mapIf(item, it -> Objects.toString(it.getContest().getJob(), "") + "\n" + it.getContest().getName()));
     }

@@ -12,10 +12,27 @@ import javafx.scene.control.Cell;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import utils.HibernateUtil;
+import utils.ResourceFXUtils;
 
+@SuppressWarnings("static-method")
 public class FXJapaneseTest extends AbstractTestExecution {
-    @SuppressWarnings("static-method")
+    @After
+    public void cleanUp() {
+        HibernateUtil.setShutdownEnabled(true);
+        HibernateUtil.shutdown();
+    }
+
+    @Before
+    public void start() {
+        ResourceFXUtils.initializeFX();
+        HibernateUtil.getSessionFactory();
+        HibernateUtil.setShutdownEnabled(false);
+    }
+
     @Test
     public void testJapaneseFile() {
 
@@ -71,7 +88,6 @@ public class FXJapaneseTest extends AbstractTestExecution {
     }
 
     @Test
-    @SuppressWarnings("static-method")
     public void verifyLessons() {
         measureTime("JapaneseLessonReader.getLessons", () -> JapaneseLessonReader.getLessons("jaftranscript.docx"));
     }

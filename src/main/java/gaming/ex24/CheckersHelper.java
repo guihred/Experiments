@@ -165,6 +165,20 @@ public final class CheckersHelper {
         });
     }
 
+    public static void runAI(List<CheckersSquare> squares, AtomicInteger currentPlayer) {
+        CheckersPlayer player = CheckersHelper.getPlayer(currentPlayer.get());
+        CheckersTree checkersTree = new CheckersTree(squares, currentPlayer.get(), null);
+        CheckersTree makeDecision = checkersTree.makeDecision(player);
+        if (makeDecision == null) {
+            displayDialog(currentPlayer, squares);
+            return;
+        }
+
+        Entry<CheckersSquare, CheckersSquare> j = makeDecision.getAction();
+        CheckersHelper.replaceStates(squares, j.getValue(), j.getKey(), player);
+        currentPlayer.incrementAndGet();
+    }
+
     public static void runIfAI(List<CheckersSquare> squares, AtomicInteger currentPlayer) {
         CheckersPlayer player = CheckersHelper.getPlayer(currentPlayer.get());
         if (player == CheckersPlayer.BLACK) {
@@ -238,19 +252,5 @@ public final class CheckersHelper {
             e.setHighlight(false);
             e.setMarked(false);
         });
-    }
-
-    private static void runAI(List<CheckersSquare> squares, AtomicInteger currentPlayer) {
-        CheckersPlayer player = CheckersHelper.getPlayer(currentPlayer.get());
-        CheckersTree checkersTree = new CheckersTree(squares, currentPlayer.get(), null);
-        CheckersTree makeDecision = checkersTree.makeDecision(player);
-        if (makeDecision == null) {
-            displayDialog(currentPlayer, squares);
-            return;
-        }
-
-        Entry<CheckersSquare, CheckersSquare> j = makeDecision.getAction();
-        CheckersHelper.replaceStates(squares, j.getValue(), j.getKey(), player);
-        currentPlayer.incrementAndGet();
     }
 }

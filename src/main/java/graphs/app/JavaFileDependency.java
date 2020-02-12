@@ -160,6 +160,9 @@ public class JavaFileDependency {
         this.dependents =
                 dependents.stream().filter(d -> d.getClasses().contains(getName())).collect(Collectors.toList());
         dependsOn = dependents.stream().filter(d -> getClasses().contains(d.getName())).collect(Collectors.toList());
+        Collections.shuffle(dependsOn);
+        Collections.shuffle(this.dependents);
+
     }
 
     @Override
@@ -170,6 +173,7 @@ public class JavaFileDependency {
     public static List<String> displayTestsToBeRun(Collection<String> dependecyList,
             Predicate<JavaFileDependency> filter, List<String> allPaths) {
         List<JavaFileDependency> allFileDependencies = getAllFileDependencies();
+        Collections.shuffle(allFileDependencies);
         for (JavaFileDependency dependecy : allFileDependencies) {
             dependecy.setDependents(allFileDependencies);
         }

@@ -31,10 +31,10 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
-import utils.CrawlerTask;
+import simplebuilder.StageHelper;
+import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
-import utils.StageHelper;
 
 public final class EditSongHelper {
     private static final Logger LOG = HasLogging.log();
@@ -87,7 +87,7 @@ public final class EditSongHelper {
                     run(() -> {
                         MusicReader.saveMetadata(selectedItem, outFile);
                         File arquivo = selectedItem.getArquivo();
-                        CrawlerTask.copy(arquivo, outFile);
+                        ExtractUtils.copy(arquivo, outFile);
                     });
                     StageHelper.closeStage(progressIndicator);
                 });

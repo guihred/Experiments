@@ -22,9 +22,9 @@ import javafx.stage.Stage;
 import org.w3c.dom.Node;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
+import simplebuilder.StageHelper;
 import utils.FunctionEx;
 import utils.ResourceFXUtils;
-import utils.StageHelper;
 
 public class SngpcViewer extends Application {
 

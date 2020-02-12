@@ -1,5 +1,6 @@
 package contest;
 
+import static utils.CommonsFX.onCloseWindow;
 import static utils.ResourceFXUtils.convertToURL;
 import static utils.SupplierEx.get;
 
@@ -34,7 +35,7 @@ public class ContestApplication extends Application {
         }
         primaryStage.setTitle("Contest Questions");
         primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
         primaryStage.show();
     }
 

@@ -2,7 +2,6 @@
 package extract;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import javafx.application.Application;
@@ -19,10 +18,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.SimpleTreeViewBuilder;
-import utils.ConsumerEx;
-import utils.CrawlerTask;
-import utils.StageHelper;
-import utils.SupplierEx;
+import simplebuilder.StageHelper;
+import utils.*;
 
 public class FileAttrApp extends Application {
     private static final int BYTES_IN_A_KILOBYTE = 1024;
@@ -49,7 +46,7 @@ public class FileAttrApp extends Application {
                 }
             }
         }
-        size += SupplierEx.get(() -> getAttributes(file).size(), 0L);
+        size += SupplierEx.getIgnore(() -> getAttributes(file).size(), 0L);
         return size;
     }
 
@@ -74,7 +71,7 @@ public class FileAttrApp extends Application {
     }
 
     private BasicFileAttributes getAttributes(File value) {
-        return attrMap.computeIfAbsent(value, FileAttrApp::computeAttributes);
+        return attrMap.computeIfAbsent(value, ResourceFXUtils::computeAttributes);
     }
 
     private long getSize(File file) {
@@ -109,10 +106,6 @@ public class FileAttrApp extends Application {
         cell.setText(file == null ? "" : file.getName() + " " + getFileSize(getSize(file)));
         cell.setGraphic(file == null ? null : getGraphic(file));
 
-    }
-
-    public static BasicFileAttributes computeAttributes(File v) {
-        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
     }
 
     public static void main(String[] args) {

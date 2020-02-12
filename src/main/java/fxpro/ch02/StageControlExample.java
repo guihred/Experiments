@@ -1,6 +1,7 @@
 package fxpro.ch02;
 
 import static utils.CommonsFX.newTextField;
+import static utils.CommonsFX.onCloseWindow;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -100,7 +101,7 @@ public class StageControlExample extends Application {
         if (!fieldValue) {
             stage.initStyle(stageStyle);
         }
-        stage.setOnCloseRequest(we -> LOG.info("Stage is closing"));
+        onCloseWindow(stage, () -> LOG.info("Stage is closing"));
         stage.show();
         Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);

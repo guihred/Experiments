@@ -29,9 +29,6 @@ public final class FXMLCreatorHelper {
     public static void createXMLFile(Parent node, File file) {
         new FXMLCreator().createFXMLFile(node, file);
     }
-    public static void createXMLFile(Parent node, String file) {
-        new FXMLCreator().createFXMLFile(node, ResourceFXUtils.getOutFile(file));
-    }
 
     public static Stage duplicateStage(File file, String title, double... size) {
         Stage primaryStage = new Stage();

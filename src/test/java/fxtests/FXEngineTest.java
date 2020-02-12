@@ -29,7 +29,7 @@ import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
-//    @Test
+//    //@Test
     public void verifyAllApps() {
         show(AllApps.class);
         doubleClickOn(randomItem(lookup(ListCell.class)));
@@ -131,6 +131,10 @@ public class FXEngineTest extends AbstractTestExecution {
         clickOn(lookupFirst(TreeView.class));
         targetPos(Pos.CENTER);
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
+
+        List<Button> lookupList = lookupList(Button.class);
+        runReversed(lookupList, this::tryClickOn);
+        type(KeyCode.ESCAPE);
     }
 
     @Test

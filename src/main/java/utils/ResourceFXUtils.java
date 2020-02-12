@@ -57,6 +57,10 @@ public final class ResourceFXUtils {
         return value;
     }
 
+    public static BasicFileAttributes computeAttributes(File v) {
+        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
+    }
+
     public static URL convertToURL(File arquivo) {
         return SupplierEx.get(() -> arquivo.toURI().toURL());
     }
@@ -107,6 +111,7 @@ public final class ResourceFXUtils {
 
     public static List<Path> getPathByExtension(File dir, String... other) {
         return SupplierEx.get(() -> {
+
             if (!dir.exists()) {
                 return Collections.emptyList();
             }

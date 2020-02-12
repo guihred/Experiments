@@ -1,6 +1,6 @@
 package fxsamples;
 
-import java.security.SecureRandom;
+import java.util.Random;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -9,7 +9,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class DrawingText extends Application {
-    private SecureRandom rand = new SecureRandom();
+    private Random rand = new Random();
 	@Override
 	public void start(Stage primaryStage) {
         primaryStage.setTitle("Drawing Text");

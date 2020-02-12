@@ -1,9 +1,10 @@
 package japstudy;
 
 
+import static utils.CommonsFX.onCloseWindow;
 import static utils.RunnableEx.runIf;
 
-import java.security.SecureRandom;
+import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
@@ -38,7 +39,7 @@ public class JapaneseLessonDisplay extends Application {
     private Text japaneseText;
     @FXML
     private Text romajiText;
-    private SecureRandom random = new SecureRandom();
+    private Random random = new Random();
     private IntegerProperty current = new SimpleIntegerProperty(1);
     private ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessonsWait();
     private DoubleProperty score = new SimpleDoubleProperty(1);
@@ -79,7 +80,7 @@ public class JapaneseLessonDisplay extends Application {
     @Override
 	public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Japanese Lesson Display", "JapaneseLessonDisplay.fxml", this, primaryStage);
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
         primaryStage.getScene().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
                 onActionNext();

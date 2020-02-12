@@ -10,7 +10,7 @@ import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
@@ -67,7 +67,7 @@ public final class WordService {
         RunnableEx.run(() -> {
             File outFile = ResourceFXUtils.getOutFile(data.getFileName());
             InputStream inputStream = data.getInputStream();
-            CrawlerTask.copy(inputStream, outFile);
+            ExtractUtils.copy(inputStream, outFile);
         });
     }
 

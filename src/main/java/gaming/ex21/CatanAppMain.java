@@ -100,7 +100,9 @@ public class CatanAppMain extends Application {
     @Override
     public void start(Stage primaryStage) {
         double size = CatanResource.RADIUS * Math.sqrt(3) * 11 / 2;
-        CommonsFX.loadFXML("Settlers of Catan", "CatanApp.fxml", this, primaryStage, size * 3 / 2, size);
+        double d = size * 3 / 2;
+        CommonsFX.loadFXML("Settlers of Catan", "CatanApp.fxml", this, primaryStage, d, size);
+        primaryStage.setMinWidth(d);
     }
 
     public static void main(String[] args) {

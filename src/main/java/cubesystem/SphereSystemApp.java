@@ -1,6 +1,5 @@
 package cubesystem;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -21,7 +20,7 @@ public class SphereSystemApp extends Application {
 
 	private Timeline animation;
 
-	private Random r = new SecureRandom();
+    private Random r = new Random();
 
 	public Parent createContent() {
 		CubeXForm sceneRoot = new CubeXForm();

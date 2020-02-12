@@ -33,6 +33,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
+import simplebuilder.StageHelper;
 import utils.*;
 
 public class FilesComparator extends Application {
@@ -148,7 +149,7 @@ public class FilesComparator extends Application {
                 }
                 boolean exists = file2.exists();
                 Files.deleteIfExists(file2.toPath());
-                CrawlerTask.copy(selectedItem, file2);
+                ExtractUtils.copy(selectedItem, file2);
                 if (!exists) {
                     items2.add(file2);
                 } else {

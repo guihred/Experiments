@@ -1,6 +1,5 @@
 package utils;
 
-import java.util.function.Consumer;
 import org.assertj.core.api.exception.RuntimeIOException;
 
 @FunctionalInterface
@@ -25,13 +24,13 @@ public interface RunnableEx {
         };
     }
 
-    static Runnable make(RunnableEx run, Consumer<Throwable> onError) {
+    static Runnable make(RunnableEx run, ConsumerEx<Throwable> onError) {
         return () -> {
             try {
                 run.run();
             } catch (Throwable e) {
                 HasLogging.log(1).trace("", e);
-                onError.accept(e);
+                ConsumerEx.makeConsumer(onError).accept(e);
             }
         };
     }

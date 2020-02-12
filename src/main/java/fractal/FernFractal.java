@@ -1,6 +1,5 @@
 package fractal;
 
-import java.security.SecureRandom;
 import java.util.Random;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -44,7 +43,7 @@ public class FernFractal extends Canvas {
 
     private final GraphicsContext gc = getGraphicsContext2D();
 
-    private final Random random = new SecureRandom();
+    private final Random random = new Random();
 
     private final IntegerProperty limit = new SimpleIntegerProperty(10000);
 

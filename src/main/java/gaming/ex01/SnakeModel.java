@@ -5,8 +5,8 @@
  */
 package gaming.ex01;
 
-import java.security.SecureRandom;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
@@ -23,7 +23,7 @@ public class SnakeModel {
     private final ObservableList<SnakeSquare> snake = FXCollections.observableArrayList();
 
     private SnakeDirection direction = SnakeDirection.RIGHT;
-    private final SecureRandom random = new SecureRandom();
+    private final Random random = new Random();
 
     public SnakeModel() {
         for (int i = 0; i < SnakeSquare.MAP_SIZE; i++) {

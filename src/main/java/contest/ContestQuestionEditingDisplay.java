@@ -1,6 +1,7 @@
 package contest;
 
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
+import static utils.CommonsFX.onCloseWindow;
 import static utils.ResourceFXUtils.convertToURL;
 import static utils.StringSigaUtils.intValue;
 
@@ -129,8 +130,7 @@ public class ContestQuestionEditingDisplay extends Application {
                 nextLesson();
             }
         });
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
-
+        onCloseWindow(primaryStage, HibernateUtil::shutdown);
         primaryStage.show();
         current.set(0);
     }

@@ -137,4 +137,13 @@ public final class CommonsFX {
         return textField;
     }
 
+    public static void onCloseWindow(Stage stage, RunnableEx run) {
+        stage.showingProperty().addListener((ob, old, val) -> {
+            if (!val) {
+                RunnableEx.run(run);
+            }
+        });
+
+    }
+
 }

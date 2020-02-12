@@ -1,4 +1,4 @@
-package utils;
+package simplebuilder;
 
 import static utils.RunnableEx.runIf;
 
@@ -16,7 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.*;
-import simplebuilder.SimpleDialogBuilder;
+import utils.*;
 
 public final class StageHelper {
 

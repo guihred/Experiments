@@ -1,18 +1,18 @@
 package gaming.ex20;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class RoundMazeHandler {
-    private int r;
-    private int c;
-    private final SecureRandom random = new SecureRandom();
-	private final List<RoundMazeSquare> history = new ArrayList<>();
-	private final List<String> check = new ArrayList<>();
-	private final RoundMazeSquare[][] createdMaze;
     public static final int MAZE_WIDTH = 7;
     public static final int MAZE_HEIGHT = 40;
+    private int r;
+	private int c;
+	private final Random random = new Random();
+	private final List<RoundMazeSquare> history = new ArrayList<>();
+    private final List<String> check = new ArrayList<>();
+    private final RoundMazeSquare[][] createdMaze;
 
     public RoundMazeHandler(RoundMazeSquare[][] maze) {
 		createdMaze = maze;

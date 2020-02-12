@@ -23,8 +23,8 @@ import paintexp.tool.AreaTool;
 import paintexp.tool.PaintModel;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
+import simplebuilder.StageHelper;
 import utils.PixelatedImageView;
-import utils.StageHelper;
 
 public final class PaintViewUtils {
     private static final String PERCENTAGE_FIELD = "Percentage";

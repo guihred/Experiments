@@ -1,4 +1,4 @@
-package xylophone;
+package fxsamples;
 
 import static utils.ResourceFXUtils.toExternalForm;
 

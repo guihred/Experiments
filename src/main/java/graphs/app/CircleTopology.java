@@ -2,12 +2,12 @@ package graphs.app;
 
 import graphs.entities.CellType;
 import graphs.entities.Graph;
-import java.security.SecureRandom;
+import java.util.Random;
 import javafx.beans.NamedArg;
 
 public class CircleTopology extends BaseTopology {
 
-    private final SecureRandom random = new SecureRandom();
+    private final Random random = new Random();
 
     public CircleTopology(@NamedArg("graph") Graph graph) {
         super(graph, "Circle", 50);
