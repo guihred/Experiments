@@ -3,6 +3,7 @@ package contest;
 
 import static contest.IadesHelper.addDomain;
 import static contest.IadesHelper.saveContestValues;
+import static utils.CommonsFX.onCloseWindow;
 
 import java.net.URL;
 import java.util.*;
@@ -44,7 +45,7 @@ public class IadesCrawler extends Application {
         CrawlerTask.insertProxyConfig();
         Parent node = createSplitTreeListDemoNode();
         primaryStage.setScene(new Scene(node));
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
         primaryStage.show();
     }
 

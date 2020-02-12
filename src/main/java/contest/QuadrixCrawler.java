@@ -1,5 +1,6 @@
 package contest;
 
+import static utils.CommonsFX.onCloseWindow;
 import static utils.RunnableEx.runNewThread;
 import static utils.SupplierEx.getIgnore;
 import static utils.SupplierEx.orElse;
@@ -69,7 +70,7 @@ public class QuadrixCrawler extends Application {
     public void start(Stage primaryStage) throws Exception {
         CrawlerTask.insertProxyConfig();
         CommonsFX.loadFXML("Quadrix Crawler", "QuadrixCrawler.fxml", this, primaryStage);
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
     }
 
     private void getNewLinks(TreeItem<Map.Entry<String, String>> newValue, TreeView<Map.Entry<String, String>> tree) {

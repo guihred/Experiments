@@ -47,10 +47,6 @@ public final class ResourceFXUtils {
     private ResourceFXUtils() {
     }
 
-    public static BasicFileAttributes computeAttributes(File v) {
-        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
-    }
-
     public static double clamp(double value, double min, double max) {
         if (Double.compare(value, min) < 0) {
             return min;
@@ -59,6 +55,10 @@ public final class ResourceFXUtils {
             return max;
         }
         return value;
+    }
+
+    public static BasicFileAttributes computeAttributes(File v) {
+        return SupplierEx.get(() -> Files.readAttributes(v.toPath(), BasicFileAttributes.class));
     }
 
     public static URL convertToURL(File arquivo) {
@@ -111,6 +111,7 @@ public final class ResourceFXUtils {
 
     public static List<Path> getPathByExtension(File dir, String... other) {
         return SupplierEx.get(() -> {
+
             if (!dir.exists()) {
                 return Collections.emptyList();
             }

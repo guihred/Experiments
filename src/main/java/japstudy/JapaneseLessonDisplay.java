@@ -1,6 +1,7 @@
 package japstudy;
 
 
+import static utils.CommonsFX.onCloseWindow;
 import static utils.RunnableEx.runIf;
 
 import java.util.Random;
@@ -79,7 +80,7 @@ public class JapaneseLessonDisplay extends Application {
     @Override
 	public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Japanese Lesson Display", "JapaneseLessonDisplay.fxml", this, primaryStage);
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
         primaryStage.getScene().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
                 onActionNext();

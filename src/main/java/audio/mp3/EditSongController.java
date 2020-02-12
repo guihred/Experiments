@@ -1,5 +1,7 @@
 package audio.mp3;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import extract.Music;
 import extract.MusicReader;
 import extract.SongUtils;
@@ -123,7 +125,7 @@ public class EditSongController extends Application {
     @Override
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Edit Song", "EditSong.fxml", this, primaryStage);
-        primaryStage.setOnCloseRequest(e -> {
+        onCloseWindow(primaryStage, () -> {
             mediaPlayer.get().stop();
             mediaPlayer.get().dispose();
         });

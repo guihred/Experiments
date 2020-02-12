@@ -1,6 +1,7 @@
 package election;
 
 import static election.CandidatoHelper.*;
+import static utils.CommonsFX.onCloseWindow;
 
 import java.util.List;
 import javafx.beans.Observable;
@@ -35,7 +36,7 @@ public class CandidatoApp extends CandidatoAppVariables {
     @Override
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Candidato App", "CandidatoApp.fxml", this, primaryStage);
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
     }
 
     public static void main(String[] args) {

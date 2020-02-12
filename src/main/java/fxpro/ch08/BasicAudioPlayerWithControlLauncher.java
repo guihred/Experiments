@@ -5,6 +5,8 @@
  */
 package fxpro.ch08;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -40,7 +42,7 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
 
 		scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
         primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(e -> {
+        onCloseWindow(primaryStage, () -> {
             MediaPlayer mediaPlayer = songModel.getMediaPlayer();
             mediaPlayer.stop();
             mediaPlayer.dispose();

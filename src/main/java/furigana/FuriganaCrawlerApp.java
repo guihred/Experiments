@@ -1,5 +1,7 @@
 package furigana;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.stage.Stage;
@@ -14,7 +16,7 @@ public class FuriganaCrawlerApp extends Application {
 	public void start(Stage stage) {
         stage.setTitle("Furigana Converter");
         stage.setScene(view.getScene());
-        stage.setOnCloseRequest(e -> worker.cancel());
+        onCloseWindow(stage, () -> worker.cancel());
         stage.show();
     }
 

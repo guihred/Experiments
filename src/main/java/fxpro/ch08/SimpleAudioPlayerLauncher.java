@@ -5,6 +5,7 @@
  */
 package fxpro.ch08;
 
+import static utils.CommonsFX.onCloseWindow;
 import static utils.RunnableEx.runIf;
 
 import java.io.File;
@@ -72,8 +73,7 @@ public class SimpleAudioPlayerLauncher extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simple Audio Player");
         primaryStage.show();
-        primaryStage.setOnCloseRequest(e -> stopAndDispose());
-        primaryStage.showingProperty().addListener(e -> stopAndDispose());
+        onCloseWindow(primaryStage, () -> stopAndDispose());
     }
 
     private void createControls() {

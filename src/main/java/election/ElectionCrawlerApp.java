@@ -1,5 +1,7 @@
 package election;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.stage.Stage;
@@ -23,7 +25,7 @@ public class ElectionCrawlerApp extends Application {
         TaskProgressView view = new TaskProgressView(worker);
         stage.setTitle("Election Crawler");
         stage.setScene(view.getScene());
-        stage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        onCloseWindow(stage, () -> HibernateUtil.shutdown());
         stage.show();
     }
 

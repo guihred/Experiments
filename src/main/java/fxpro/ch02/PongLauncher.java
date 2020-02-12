@@ -6,6 +6,8 @@
 package fxpro.ch02;
 
 
+import static utils.CommonsFX.onCloseWindow;
+
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -170,7 +172,7 @@ public class PongLauncher extends Application {
         stage.setWidth(WIDTH + 8);
         stage.setHeight(WIDTH + 30);
         stage.setTitle("ZenPong Example");
-		stage.setOnCloseRequest(e -> pongAnimation.stop());
+        onCloseWindow(stage, () -> pongAnimation.stop());
         stage.show();
     }
 

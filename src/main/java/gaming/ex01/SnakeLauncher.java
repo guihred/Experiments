@@ -1,5 +1,7 @@
 package gaming.ex01;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -46,7 +48,7 @@ public class SnakeLauncher extends Application {
             .cycleCount(Animation.INDEFINITE).build();
         timeline.play();
         stage.setScene(scene);
-        stage.setOnCloseRequest(e -> timeline.stop());
+        onCloseWindow(primaryStage, () -> timeline.stop());
         stage.show();
     }
 

@@ -1,5 +1,6 @@
 package fxsamples;
 
+import static utils.CommonsFX.onCloseWindow;
 import static utils.RunnableEx.runIf;
 
 import java.util.Random;
@@ -118,7 +119,7 @@ public class PlayingAudio extends Application {
             updatePlayAndPauseButtons(true);
             mediaPlayer.stop();
         });
-        mainStage.setOnCloseRequest(e -> {
+        onCloseWindow(mainStage, () -> {
             mediaPlayer.stop();
             mediaPlayer.dispose();
         });
@@ -130,7 +131,7 @@ public class PlayingAudio extends Application {
     public void start(Stage primaryStage) throws Exception {
         mainStage = primaryStage;
         CommonsFX.loadFXML("Playing Audio", "PlayingAudio.fxml", this, primaryStage, 500, 500);
-        primaryStage.setOnCloseRequest(e -> runIf(mediaPlayer, t -> {
+        onCloseWindow(primaryStage, () -> runIf(mediaPlayer, t -> {
             t.stop();
             t.dispose();
         }));

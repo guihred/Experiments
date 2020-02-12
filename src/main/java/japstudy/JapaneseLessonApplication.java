@@ -1,5 +1,7 @@
 package japstudy;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
@@ -42,7 +44,7 @@ public class JapaneseLessonApplication extends Application {
                 editItem(tableView1);
             }
         });
-        primaryStage.setOnCloseRequest(e -> HibernateUtil.shutdown());
+        onCloseWindow(primaryStage, () -> HibernateUtil.shutdown());
     }
 
     private void editItem(final TableView<JapaneseLesson> lessonsTable) {

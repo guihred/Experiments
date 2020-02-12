@@ -16,10 +16,11 @@ public class FXPDFReaderTest extends AbstractTestExecution {
 
     @Test
     public void testPdfUtils() {
-        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(new File(""), ".pdf");
+        File parentFile = new File(".").getAbsoluteFile().getParentFile().getParentFile();
+        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(parentFile, ".pdf");
         File file2 = randomItem(pathByExtension).toFile();
         measureTime("PdfUtils.readFile", () -> PdfUtils.readFile(file2,
-            new PrintStream(ResourceFXUtils.getOutFile(file2.getName().replaceAll("\\.pdf", "") + ".txt"))));
+            new PrintStream(ResourceFXUtils.getOutFile(file2.getName().replaceAll("\\.pdf", ".txt")))));
     }
 
     @Test

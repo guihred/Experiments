@@ -1,5 +1,7 @@
 package fxsamples.bounds;
 
+import static utils.CommonsFX.onCloseWindow;
+
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -114,7 +116,7 @@ public class UtilityLayout {
                 Platform.runLater(reportingStage::close);
             }
         });
-        stage.setOnCloseRequest(windowEvent -> Platform.runLater(reportingStage::close));
+        onCloseWindow(stage, () -> Platform.runLater(reportingStage::close));
         CommonsFX.loadFXML("Control Panel", "UtilityLayout.fxml", this, reportingStage);
         reportingStage.show();
         testIntersections();
