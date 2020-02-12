@@ -1,5 +1,7 @@
 package furigana;
 
+import static utils.FunctionEx.makeFunction;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -178,20 +180,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             }).filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
     }
 
-    private String getOnReadings(String currentWord) throws IOException {
-        String url = "http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8");
-        Document parse = ExtractUtils.getDocument(url);
-        Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
-            .filter(element -> element.select(".text").first().text().equals(currentWord)).findFirst();
-        if (firstRepresentation.isPresent() && currentWord.length() > 1) {
-            return firstRepresentation.get().select(".furigana").text();
-        }
-        Elements kun = parse.select(".readings .japanese_gothic a");
-        List<String> kunReadings = kun.stream().map(Element::text).collect(Collectors.toList());
-        return kunReadings.stream().sorted(Comparator.comparing(CrawlerFuriganaTask::isNotKatakana)).findFirst()
-            .orElse(null);
-    }
-
     private void log(Object a, Object b) {
         LOG.info("{}={}", a, b);
         RunnableEx.run(() -> {
@@ -208,7 +196,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     private String onReading(String str) {
-        return Objects.toString(mapReading.computeIfAbsent(str, FunctionEx.makeFunction(this::getOnReadings)), "");
+        return Objects
+            .toString(mapReading.computeIfAbsent(str, makeFunction(CrawlerFuriganaTask::getOnReadings)), "");
     }
 
     private StringBuilder placeFurigana(String line) {
@@ -274,7 +263,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     public static void main(String[] args) {
         File userFolder = ResourceFXUtils.getOutFile().getParentFile();
         List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(userFolder, "rar");
-        pathByExtension.stream().map(FunctionEx.makeFunction(e -> {
+        pathByExtension.stream().map(makeFunction(e -> {
             Path name = e.getName(e.getNameCount() - 1);
             File outFile = ResourceFXUtils.getOutFile(name.toString());
             ExtractUtils.copy(e, outFile);
@@ -300,6 +289,20 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             }
         });
         return lines;
+    }
+
+    private static String getOnReadings(String currentWord) throws IOException {
+        String url = "http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8");
+        Document parse = ExtractUtils.getDocument(url);
+        Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
+            .filter(element -> element.select(".text").first().text().equals(currentWord)).findFirst();
+        if (firstRepresentation.isPresent() && currentWord.length() > 1) {
+            return firstRepresentation.get().select(".furigana").text();
+        }
+        Elements kun = parse.select(".readings .japanese_gothic a");
+        List<String> kunReadings = kun.stream().map(Element::text).collect(Collectors.toList());
+        return kunReadings.stream().sorted(Comparator.comparing(CrawlerFuriganaTask::isNotKatakana)).findFirst()
+            .orElse(null);
     }
 
     private static boolean isNotKatakana(String e) {

@@ -160,6 +160,9 @@ public class JavaFileDependency {
         this.dependents =
                 dependents.stream().filter(d -> d.getClasses().contains(getName())).collect(Collectors.toList());
         dependsOn = dependents.stream().filter(d -> getClasses().contains(d.getName())).collect(Collectors.toList());
+        Collections.shuffle(dependsOn);
+        Collections.shuffle(this.dependents);
+
     }
 
     @Override

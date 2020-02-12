@@ -41,10 +41,8 @@ public final class ContestHelper {
         ObservableList<ContestText> texts) {
         ContestHelper.CONTEST_DAO.saveOrUpdate(contest);
         ContestHelper.CONTEST_DAO.saveOrUpdate(listQuestions);
-        ContestHelper.CONTEST_DAO.saveOrUpdate(listQuestions.stream().filter(e -> e.getOptions() != null).flatMap(e -> {
-            e.getOptions().forEach(o -> o.setExercise(e));
-            return e.getOptions().stream();
-        }).collect(Collectors.toList()));
+        ContestHelper.CONTEST_DAO.saveOrUpdate(listQuestions.stream().filter(e -> e.getOptions() != null)
+            .flatMap(e -> e.getOptions().stream().peek(o -> o.setExercise(e))).collect(Collectors.toList()));
 
         List<ContestText> nonNullTexts = texts.stream().filter(e -> StringUtils.isNotBlank(e.getText()))
             .collect(Collectors.groupingBy(ContestText::getText)).entrySet().stream().map(e -> e.getValue().get(0))

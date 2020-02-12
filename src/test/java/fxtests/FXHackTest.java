@@ -33,6 +33,7 @@ public class FXHackTest extends AbstractTestExecution {
 
     @Test
     public void verifyEthicalHack() {
+        // EthicalHackController
         show(EthicalHackApp.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
             .forEach(this::tryClickOn);
