@@ -165,7 +165,7 @@ public final class CoverageUtils {
             }
         }
 
-        for (int i = BRANCH_MIN_COVERAGE; i < MAX_BRANCH_COVERAGE; i++) {
+        for (int i = BRANCH_MIN_COVERAGE; i <= MAX_BRANCH_COVERAGE; i++) {
             List<String> uncoveredBranches = getUncoveredBranches(i);
             List<T> uncoveredApplications = func.apply(uncoveredBranches);
             if (!uncoveredApplications.isEmpty()) {
