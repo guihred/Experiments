@@ -29,10 +29,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.stage.Stage;
-import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.*;
 
@@ -102,8 +99,7 @@ public final class QuadrixHelper {
         if (!text.endsWith(".pdf")) {
             return ExtractUtils.getFile(text, url3);
         }
-        Response executeRequest = ExtractUtils.executeRequest(url3, COOKIES);
-        String fileParameter = decodificar(executeRequest.url().getQuery().split("=")[1]);
+        String fileParameter = decodificar(ExtractUtils.executeRequest(url3, COOKIES).url().getQuery().split("=")[1]);
         return SupplierEx
             .makeSupplier(() -> ExtractUtils.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
             .get();
@@ -116,16 +112,14 @@ public final class QuadrixHelper {
         if (document == null) {
             return Collections.emptyList();
         }
-        Elements select = document.select("a");
-        return select.stream().filter(e -> IadesHelper.hasFileExtension(e.text()))
+        return document.select("a").stream().filter(e -> IadesHelper.hasFileExtension(e.text()))
             .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), addQuadrixDomain(e.attr("href")))))
             .filter(Objects::nonNull).collect(toList());
     }
 
-    public static List<Map.Entry<String, String>> getLinks(Element doc, Map.Entry<String, String> url,
+    public static List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
         Property<String> domain, int level, ObservableList<Concurso> concursos, Set<String> links) {
-        Elements select = doc.select("a");
-        List<SimpleEntry<String, String>> allLinks = select.stream()
+        List<SimpleEntry<String, String>> allLinks = doc.select("a").stream()
             .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
             .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
             .collect(toList());
