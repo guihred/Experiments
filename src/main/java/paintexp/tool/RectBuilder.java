@@ -93,8 +93,7 @@ public final class RectBuilder {
                     && within(j + startY, srcHeight)) {
                     Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
                     Color color = PixelHelper.asColor(PixelHelper.toArgb(color2) | 0xFF000000);
-                    PaintToolHelper.drawPointTransparency(i + (int) endX, j + (int) endY, color,
-                        color2.getOpacity(),
+                    PaintToolHelper.drawPointTransparency(i + (int) endX, j + (int) endY, color, color2.getOpacity(),
                         destImage, imageVersions);
                 }
 
@@ -110,6 +109,23 @@ public final class RectBuilder {
             int y = (int) Math.round(height * Math.sin(t));
             PaintToolHelper.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
                 imageVersions);
+        }
+    }
+
+    public void drawCircle(WritableImage image, ObservableList<WritableImage> imageVersions, double opacity) {
+        for (double w = 0; w <= width; w++) {
+            for (double h = 0; h <= height; h++) {
+                double nPoints = Math.max(w, h) * PaintToolHelper.N_POINTS_MULTIPLIER;
+                for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
+                    int x = (int) Math.round(w * Math.cos(t));
+                    int y = (int) Math.round(h * Math.sin(t));
+                    if (withinImage(x + (int) endX, y + (int) endY, image)) {
+                        Color color = image.getPixelReader().getColor(x + (int) endX, y + (int) endY);
+                        PaintToolHelper.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
+                            imageVersions);
+                    }
+                }
+            }
         }
     }
 
@@ -308,7 +324,7 @@ public final class RectBuilder {
     }
 
     public static void takeSnapshotFill(Node line2, WritableImage image, Group imageStack, ImageView imageView,
-			Node rectangleBorder) {
+        Node rectangleBorder) {
         Bounds bounds = line2.getBoundsInParent();
         int width = (int) bounds.getWidth() + 2;
         int height = (int) bounds.getHeight() + 2;
