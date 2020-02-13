@@ -23,10 +23,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
-import utils.CommonsFX;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RotateUtils;
+import utils.*;
 
 public class PlayingAudio extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -119,12 +116,11 @@ public class PlayingAudio extends Application {
             updatePlayAndPauseButtons(true);
             mediaPlayer.stop();
         });
-        onCloseWindow(mainStage, () -> {
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-        });
-        mediaPlayer
-            .setAudioSpectrumListener(this::onAudioSpectrum);
+        onCloseWindow(mainStage, () -> RunnableEx.runIf(mediaPlayer, m -> {
+            m.stop();
+            m.dispose();
+        }));
+        mediaPlayer.setAudioSpectrumListener(this::onAudioSpectrum);
     }
 
     @Override
@@ -132,7 +128,11 @@ public class PlayingAudio extends Application {
         mainStage = primaryStage;
         CommonsFX.loadFXML("Playing Audio", "PlayingAudio.fxml", this, primaryStage, 500, 500);
         onCloseWindow(primaryStage, () -> runIf(mediaPlayer, t -> {
-            t.stop();
+
+            Status status = t.getStatus();
+            if (status == Status.PLAYING) {
+                t.stop();
+            }
             t.dispose();
         }));
         plugEventsToScene(mainStage.getScene());

@@ -29,7 +29,8 @@ public class MirrorTool extends PaintTool {
     @Override
     public Node createIcon() {
         return new SimpleSvgPathBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
-            .content("m0 30 h50 v70 h-50 v-70 h25 v-20 h50 v70 h-25").build();
+            .content("m0 50 a 20 20 1 1 0 1 1m30 -30 a 20 20 1 1 0 1 1.00m-40 40 v5 h-20 v10 m50 -45 v5 h-20 v10 ")
+            .build();
     }
 
     @Override
@@ -129,9 +130,9 @@ public class MirrorTool extends PaintTool {
                 circle0.setCenterX(x - dx);
                 circle0.setCenterY(y - dy);
             }
-        } else if (circle0 != null) {
-            circle0.setCenterX(x);
-            circle0.setCenterY(y);
+            return;
         }
+        circle0.setCenterX(x);
+        circle0.setCenterY(y);
     }
 }
