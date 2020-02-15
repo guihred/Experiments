@@ -5,6 +5,7 @@ import static utils.DrawOnPoint.getWithinRange;
 
 import java.util.Map;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
@@ -149,6 +150,7 @@ public class TextTool extends PaintTool {
     @SuppressWarnings("unchecked")
     private void loadParent() {
         options = CommonsFX.loadParent("TextTool.fxml", this);
+        fontFamily.setItems(FXCollections.observableArrayList(Font.getFamilies()));
         fontFamily.setCellFactory(cellStyle(fontFamily, t -> "-fx-font-family:\"" + t + "\";"));
         fontFamily.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
         fontSize.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());

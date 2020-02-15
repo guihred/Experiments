@@ -258,9 +258,9 @@ public abstract class AreaTool extends PaintTool {
 			}
 
 			getArea().setFill(new ImagePattern(imageSelected));
-			final PaintModel model1 = model;
-			RectBuilder.build().startX(layoutX).startY(layoutY).width(width).height(height).drawRect(model1.getImage(),
+			RectBuilder.build().startX(layoutX).startY(layoutY).width(width).height(height).drawRect(model.getImage(),
 					model.getBackColor());
+            model.createImageVersion();
 		}
 		return imageSelected;
 	}

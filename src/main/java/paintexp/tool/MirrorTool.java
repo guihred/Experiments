@@ -6,6 +6,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyEvent;
@@ -59,15 +60,13 @@ public class MirrorTool extends PaintTool {
         int y2 = (int) e.getY();
         int x2 = (int) e.getX();
         onMouseMoved(e, model);
-        if (withinImage(x2, y2, model.getImage())) {
-            if (circle0 != null && circle1 != null) {
-                int r = length.get();
-                RectBuilder.build().startX(circle1.getCenterX()).startY(circle1.getCenterY()).endX(circle0.getCenterX())
-                    .endY(circle0.getCenterY()).width(r).height(r)
-                    .drawCircle(model.getImage(), model.getImageVersions(), opacity.get());
-                circle0.setCenterX(x2 - dx);
-                circle0.setCenterY(y2 - dy);
-            }
+        if (withinImage(x2, y2, model.getImage()) && circle0 != null && circle1 != null) {
+            int r = length.get();
+            RectBuilder.build().startX(circle1.getCenterX()).startY(circle1.getCenterY()).endX(circle0.getCenterX())
+                .endY(circle0.getCenterY()).width(r).height(r)
+                .drawCircle(model.getImage(), model.getImageVersions(), opacity.get());
+            circle0.setCenterX(x2 - dx);
+            circle0.setCenterY(y2 - dy);
         }
     }
 
@@ -91,6 +90,16 @@ public class MirrorTool extends PaintTool {
             onMouseMoved(e, model);
         }
         super.simpleHandleEvent(e, model);
+    }
+
+    private void addIfNotContains(PaintModel model) {
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (!children.contains(circle0)) {
+            children.add(circle0);
+        }
+        if (!children.contains(circle1)) {
+            children.add(circle1);
+        }
     }
 
     private Slider getLengthSlider() {
@@ -129,10 +138,13 @@ public class MirrorTool extends PaintTool {
             if (dx != 0) {
                 circle0.setCenterX(x - dx);
                 circle0.setCenterY(y - dy);
+
+                addIfNotContains(model);
             }
             return;
         }
         circle0.setCenterX(x);
         circle0.setCenterY(y);
+
     }
 }
