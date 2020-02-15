@@ -40,6 +40,7 @@ public final class PaintImageUtils {
         DoubleProperty bright = new SimpleDoubleProperty(0);
         DoubleProperty hue = new SimpleDoubleProperty(0);
         DoubleProperty opacity = new SimpleDoubleProperty(0);
+        ColorAdjust colorAdjust = new ColorAdjust();
         addAdjustOption(root, image, original, 1, saturate, "Saturate",
             color -> changeColor(saturate, bright, hue, opacity, color));
         addAdjustOption(root, image, original, 1, bright, "Brightness",
@@ -48,12 +49,11 @@ public final class PaintImageUtils {
             color -> changeColor(saturate, bright, hue, opacity, color));
         addAdjustOption(root, image, original, 1, opacity, "Opacity",
             color -> changeColor(saturate, bright, hue, opacity, color));
-        ColorAdjust colorAdjust = new ColorAdjust();
         view.setEffect(colorAdjust);
 
         addAdjustOption(root, 1, colorAdjust.contrastProperty(), "Contrast");
         root.getChildren().add(SimpleButtonBuilder.newButton("Adjust", e -> {
-            final WritableImage writableImage = image;
+            final WritableImage writableImage = view.snapshot(null, image);
 			paintController.setFinalImage(writableImage);
             paintModel.createImageVersion();
             StageHelper.closeStage(root);

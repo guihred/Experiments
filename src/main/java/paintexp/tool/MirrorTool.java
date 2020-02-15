@@ -13,6 +13,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
 
@@ -51,7 +52,9 @@ public class MirrorTool extends PaintTool {
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
+        model.getToolOptions().getChildren().add(new Text("Length"));
         model.getToolOptions().getChildren().add(getLengthSlider());
+        model.getToolOptions().getChildren().add(new Text("Opacity"));
         model.getToolOptions().getChildren().add(getOpacitySlider());
     }
 
