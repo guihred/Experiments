@@ -73,7 +73,7 @@ public abstract class PaintTool extends Group {
     }
 
     protected void onMouseReleased(PaintModel model) {
-
+        model.createImageVersion();
         // DOES NOTHING
     }
 

@@ -114,7 +114,7 @@ public final class PaintToolHelper {
 
     public static boolean isEqualImage(WritableImage image, WritableImage image2) {
         if(image.getWidth()!=image2.getWidth()||image.getHeight()!=image2.getHeight()) {
-            return true;
+            return false;
         }
         
         for (int i = 0; i < image.getWidth(); i++) {

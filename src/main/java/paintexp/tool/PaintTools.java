@@ -23,6 +23,7 @@ public enum PaintTools {
 	CIRCLE(new EllipseTool()),
 	PICTURE(new PictureTool()),
 	BLUR(new BlurTool()),
+    MIRROR(new MirrorTool()),
     BORDER(new BorderTool());
 
     private PaintTool tool = new DummyTool();

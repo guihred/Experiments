@@ -171,6 +171,13 @@ public class ContestReader extends ContestDTO {
         }
     }
 
+    private void addTextIfEnded(String s) {
+        if (isTextToBeAdded(s)) {
+            addNewText();
+            setState(ContestHelper.ReaderState.IGNORE);
+        }
+    }
+
     private void addTextIfMatches(String[] linhas, int i, String s) {
         if (isTextPattern(linhas, i, s)) {
             String[] split = linhas[i + 1].split("\\D+");
@@ -184,6 +191,13 @@ public class ContestReader extends ContestDTO {
 
     private void addTextIfNeeded() {
         if (getState() == ContestHelper.ReaderState.TEXT) {
+            addNewText();
+        }
+    }
+
+    private void addTextIfQuestion() {
+        if (getState() == ContestHelper.ReaderState.QUESTION) {
+            addQuestion();
             addNewText();
         }
     }
@@ -270,6 +284,14 @@ public class ContestReader extends ContestDTO {
             && text.getMax() >= listQuestions.size() + 1;
     }
 
+    private boolean isEndOfQuestion(String s) {
+        return questionType == QuestionType.TRUE_FALSE && s.matches("^\\s*_____+\\s*$");
+    }
+
+    private boolean isSubject(String s) {
+        return s.matches(CONHECIMENTO) && getState() == ContestHelper.ReaderState.IGNORE;
+    }
+
     private boolean isTextMultiLine() {
         return StringUtils.isNotBlank(text.getText()) && text.getText().split("\n").length > 1;
     }
@@ -314,14 +336,14 @@ public class ContestReader extends ContestDTO {
             getLogger().info("SUBJECT={}", subject);
             return;
         }
-        if (s.matches(CONHECIMENTO) && getState() == ContestHelper.ReaderState.IGNORE) {
+        if (isSubject(s)) {
             subject = s.trim();
             getLogger().info("SUBJECT={}", subject);
             setState(ContestHelper.ReaderState.TEXT);
             return;
         }
         changeTypeOfQuestions(s);
-        if (s.matches(TEXTS_PATTERN) || s.startsWith("Texto")) {
+        if (hasTexto(s)) {
             setState(ContestHelper.ReaderState.TEXT);
             String[] split = s.split("\\D+");
             IntSummaryStatistics stats = Stream.of(split).filter(StringUtils::isNotBlank)
@@ -340,19 +362,12 @@ public class ContestReader extends ContestDTO {
         if (s.matches(LINE_PATTERN)) {
             return;
         }
-        if (questionType == QuestionType.TRUE_FALSE && s.matches("^\\s*_____+\\s*$")) {
-            if (getState() == ContestHelper.ReaderState.QUESTION) {
-                addQuestion();
-                addNewText();
-            }
+        if (isEndOfQuestion(s)) {
+            addTextIfQuestion();
             setState(ContestHelper.ReaderState.TEXT);
             return;
         }
-        if (isTrueFalseQuestion(s)) {
-            addQuestionIfDifferentNumber(s);
-            contestQuestion.setNumber(intValue(s.split("\\D+")[0]));
-            setState(ContestHelper.ReaderState.QUESTION);
-        }
+        verifyTrueFalseQuestion(s);
         if (isQuestionPattern(s)) {
             addTextIfNeeded();
             contestQuestion.setNumber(intValue(s));
@@ -360,23 +375,14 @@ public class ContestReader extends ContestDTO {
             getLogger().info(s);
             return;
         }
-        if (s.matches(OPTION_PATTERN)) {
+        if (containsAllOptions(s)) {
             addOptionIfStateOption();
-            if (containsAllOptions(s)) {
-                addAllOptions(s);
-                return;
-            }
-
-            answer.setNumber(option);
-            option++;
-            setState(ContestHelper.ReaderState.OPTION);
+            addAllOptions(s);
+            return;
         }
-        if (isTextToBeAdded(s)) {
-            addNewText();
-            setState(ContestHelper.ReaderState.IGNORE);
-        }
+        verifyOptionPattern(s);
+        addTextIfEnded(s);
         insertOptionIfNeeded(s);
-
         logIndicative(i, s);
         executeAppending(s, linhas, i);
 
@@ -397,8 +403,29 @@ public class ContestReader extends ContestDTO {
         }
     }
 
+    private void verifyOptionPattern(String s) {
+        if (s.matches(OPTION_PATTERN)) {
+            addOptionIfStateOption();
+            answer.setNumber(option);
+            option++;
+            setState(ContestHelper.ReaderState.OPTION);
+        }
+    }
+
+    private void verifyTrueFalseQuestion(String s) {
+        if (isTrueFalseQuestion(s)) {
+            addQuestionIfDifferentNumber(s);
+            contestQuestion.setNumber(intValue(s.split("\\D+")[0]));
+            setState(ContestHelper.ReaderState.QUESTION);
+        }
+    }
+
     private static boolean containsAllOptions(String s) {
         return s.contains("(A)") && s.contains("(B)") && s.contains("(C)") && s.contains("(D)") && s.contains("(E)");
+    }
+
+    private static boolean hasTexto(String s) {
+        return s.matches(TEXTS_PATTERN) || s.startsWith("Texto");
     }
 
     private static boolean isQuestionPattern(String s) {
