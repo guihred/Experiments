@@ -115,10 +115,10 @@ public final class RectBuilder {
     public void drawCircle(WritableImage image, ObservableList<WritableImage> imageVersions, double opacity) {
         for (double w = 0; w <= width; w++) {
             for (double h = 0; h <= height; h++) {
-                if (w == 0 && h == 0) {
+                double nPoints = Math.max(w, h) * PaintToolHelper.N_POINTS_MULTIPLIER;
+                if (nPoints == 0) {
                     continue;
                 }
-                double nPoints = Math.max(w, h) * PaintToolHelper.N_POINTS_MULTIPLIER;
                 for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
                     int x = (int) Math.round(w * Math.cos(t));
                     int y = (int) Math.round(h * Math.sin(t));

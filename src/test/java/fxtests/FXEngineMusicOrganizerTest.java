@@ -30,6 +30,18 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
     @Test
     public void splitAudio() {
+        File userFolder = ResourceFXUtils.getUserFolder("Music");
+        List<Path> videos = ResourceFXUtils.getPathByExtension(userFolder, ".mp4", ".wma", ".webm");
+        if (videos.isEmpty()) {
+            List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".mp4",
+                ".wma", ".webm");
+            if (!pathByExtension.isEmpty()) {
+                Path randomItem = randomItem(pathByExtension);
+                RunnableEx
+                    .run(() -> ExtractUtils.copy(randomItem, new File(userFolder, randomItem.toFile().getName())));
+            }
+        }
+
         MusicOrganizer organizer = show(MusicOrganizer.class);
         clickOn("Carregar _Vídeos");
         type(KeyCode.ENTER);
