@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
+import paintexp.tool.RectBuilder;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.StageHelper;
@@ -31,7 +32,9 @@ public final class PaintImageUtils {
         VBox root = new VBox();
 		WritableImage original = paintController.getSelectedImage();
         PixelReader reader = original.getPixelReader();
-        WritableImage image = new WritableImage(reader, (int) original.getWidth(), (int) original.getHeight());
+        int width = (int) original.getWidth();
+        int height = (int) original.getHeight();
+        WritableImage image = new WritableImage(reader, width, height);
         ImageView view = new ImageView(image);
         view.setFitWidth(PREF_WIDTH);
         view.setPreserveRatio(true);
@@ -41,20 +44,18 @@ public final class PaintImageUtils {
         DoubleProperty hue = new SimpleDoubleProperty(0);
         DoubleProperty opacity = new SimpleDoubleProperty(0);
         ColorAdjust colorAdjust = new ColorAdjust();
-        addAdjustOption(root, image, original, 1, saturate, "Saturate",
-            color -> changeColor(saturate, bright, hue, opacity, color));
-        addAdjustOption(root, image, original, 1, bright, "Brightness",
-            color -> changeColor(saturate, bright, hue, opacity, color));
-        addAdjustOption(root, image, original, 180, hue, "Hue",
-            color -> changeColor(saturate, bright, hue, opacity, color));
+        view.setEffect(colorAdjust);
+        addAdjustOption(root, 1, colorAdjust.saturationProperty(), "Saturation");
+        addAdjustOption(root, 1, colorAdjust.brightnessProperty(), "Brightness");
+        addAdjustOption(root, 1, colorAdjust.hueProperty(), "Hue");
+        addAdjustOption(root, 1, colorAdjust.contrastProperty(), "Contrast");
         addAdjustOption(root, image, original, 1, opacity, "Opacity",
             color -> changeColor(saturate, bright, hue, opacity, color));
-        view.setEffect(colorAdjust);
-
-        addAdjustOption(root, 1, colorAdjust.contrastProperty(), "Contrast");
         root.getChildren().add(SimpleButtonBuilder.newButton("Adjust", e -> {
-            final WritableImage writableImage = view.snapshot(null, image);
-			paintController.setFinalImage(writableImage);
+            final WritableImage writableImage = RectBuilder.printNodeToImage(view, image);
+            view.setFitWidth(width);
+            view.setFitHeight(height);
+            paintController.setFinalImage(writableImage);
             paintModel.createImageVersion();
             StageHelper.closeStage(root);
         }));

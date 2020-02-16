@@ -13,6 +13,8 @@ import javafx.scene.image.*;
 import javafx.scene.image.PixelFormat.Type;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Transform;
+import paintexp.PaintViewUtils;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
 
@@ -307,6 +309,36 @@ public final class RectBuilder {
         double height = bounds.getHeight();
         RectBuilder.build().startX(x).startY(y).width(width).height(height).copyImagePart(srcImage, destImage,
             Color.TRANSPARENT);
+    }
+
+    public static WritableImage printNodeToImage(Node line2, WritableImage image) {
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+        Bounds local = line2.getBoundsInLocal();
+        params.setTransform(Transform.scale(width / local.getWidth(), height / local.getHeight()));
+        return line2.snapshot(params, new WritableImage(width, height));
+    }
+
+    public static WritableImage resizeImage(final WritableImage image, double newWidth, double newHeight) {
+        WritableImage newImage = new WritableImage((int) newWidth, (int) newHeight);
+        double width = image.getWidth();
+        double height = image.getHeight();
+        double yRatio = newHeight / height;
+        double xRatio = newWidth / width;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                Color color = image.getPixelReader().getColor(i, j);
+                int y = (int) (j * yRatio);
+                int x = (int) (i * xRatio);
+                if (withinImage(x, y, newImage)) {
+                    newImage.getPixelWriter().setColor(x, y, color);
+                }
+                PaintViewUtils.setPixels(newImage, color, x, y, xRatio, yRatio);
+            }
+        }
+        return newImage;
     }
 
     public static void takeSnapshot(Node line2, WritableImage image, Group imageStack, ImageView imageView,

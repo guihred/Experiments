@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import paintexp.tool.AreaTool;
 import paintexp.tool.PaintModel;
+import paintexp.tool.RectBuilder;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import simplebuilder.StageHelper;
@@ -116,22 +117,7 @@ public final class PaintViewUtils {
         double newHeight = Math.max(1, PERCENTAGE_FIELD.equals(selectedItem.getText())
             ? tryParse(heightField) * image.getHeight() / 100
             : tryParse(heightField));
-        WritableImage newImage = new WritableImage((int) newWidth, (int) newHeight);
-        double width = image.getWidth();
-        double height = image.getHeight();
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                Color color = image.getPixelReader().getColor(i, j);
-                double yRatio = newHeight / height;
-                int y = (int) (j * yRatio);
-                double xRatio = newWidth / width;
-                int x = (int) (i * xRatio);
-                if (withinImage(x, y, newImage)) {
-                    newImage.getPixelWriter().setColor(x, y, color);
-                }
-                setPixels(newImage, color, x, y, xRatio, yRatio);
-            }
-        }
+        WritableImage newImage = RectBuilder.resizeImage(image, newWidth, newHeight);
 		paintController.setFinalImage(newImage);
     }
 
@@ -151,7 +137,7 @@ public final class PaintViewUtils {
         }
     }
 
-    private static void setPixels(WritableImage newImage, Color color, int x, int y, double xRatio, double yRatio) {
+    public static void setPixels(WritableImage newImage, Color color, int x, int y, double xRatio, double yRatio) {
         for (int l = 0; l < xRatio; l++) {
             for (int k = 0; k < yRatio; k++) {
                 if (withinImage(x + l, y + k, newImage)) {
