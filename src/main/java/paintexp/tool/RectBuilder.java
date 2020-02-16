@@ -195,7 +195,7 @@ public final class RectBuilder {
         int startX2 = (int) startX;
         int startY2 = (int) startY;
         for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+            for (int j = 0; j <= height; j++) {
                 if (withinImage(startX2 + i, startY2 + j, image)) {
                     image.getPixelWriter().setColor(startX2 + i, startY2 + j, backColor);
                 }

@@ -192,8 +192,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String removeMathematicalOperators(String s) {
-        if (s.codePoints().mapToObj(UnicodeBlock::of).distinct().collect(Collectors.toList())
-            .contains(UnicodeBlock.MATHEMATICAL_OPERATORS)) {
+        if (s.codePoints().mapToObj(UnicodeBlock::of).anyMatch(b -> b == UnicodeBlock.MATHEMATICAL_OPERATORS)) {
             return s.replaceAll("[\u2200-\u22FF]", "?");
         }
         return s;

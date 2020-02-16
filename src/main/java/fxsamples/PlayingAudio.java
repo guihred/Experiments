@@ -1,8 +1,8 @@
 package fxsamples;
 
 import static utils.CommonsFX.onCloseWindow;
-import static utils.RunnableEx.runIf;
 
+import extract.SongUtils;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -23,7 +23,10 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
-import utils.*;
+import utils.CommonsFX;
+import utils.HasLogging;
+import utils.ResourceFXUtils;
+import utils.RotateUtils;
 
 public class PlayingAudio extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -78,10 +81,8 @@ public class PlayingAudio extends Application {
 
     public void onMouseClickedClosebutton() {
         mainStage.close();
-        runIf(mediaPlayer, t -> {
-            t.stop();
-            t.dispose();
-        });
+
+        SongUtils.stopAndDispose(mediaPlayer);
     }
 
     public void onMousePressedStopbutton() {
@@ -116,10 +117,7 @@ public class PlayingAudio extends Application {
             updatePlayAndPauseButtons(true);
             mediaPlayer.stop();
         });
-        onCloseWindow(mainStage, () -> RunnableEx.runIf(mediaPlayer, m -> {
-            m.stop();
-            m.dispose();
-        }));
+        onCloseWindow(mainStage, () -> SongUtils.stopAndDispose(mediaPlayer));
         mediaPlayer.setAudioSpectrumListener(this::onAudioSpectrum);
     }
 
@@ -127,14 +125,7 @@ public class PlayingAudio extends Application {
     public void start(Stage primaryStage) throws Exception {
         mainStage = primaryStage;
         CommonsFX.loadFXML("Playing Audio", "PlayingAudio.fxml", this, primaryStage, 500, 500);
-        onCloseWindow(primaryStage, () -> runIf(mediaPlayer, t -> {
-
-            Status status = t.getStatus();
-            if (status == Status.PLAYING) {
-                t.stop();
-            }
-            t.dispose();
-        }));
+        onCloseWindow(primaryStage, () -> SongUtils.stopAndDispose(mediaPlayer));
         plugEventsToScene(mainStage.getScene());
     }
 

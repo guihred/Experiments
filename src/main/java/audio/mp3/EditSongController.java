@@ -108,8 +108,7 @@ public class EditSongController extends Application {
                 mediaPlayer);
             return;
         }
-        mediaPlayer.get().stop();
-        mediaPlayer.get().dispose();
+        SongUtils.stopAndDispose(mediaPlayer.get());
         MusicReader.saveMetadata(selectedItem);
         StageHelper.closeStage(e.getTarget());
     }
@@ -125,10 +124,7 @@ public class EditSongController extends Application {
     @Override
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Edit Song", "EditSong.fxml", this, primaryStage);
-        onCloseWindow(primaryStage, () -> {
-            mediaPlayer.get().stop();
-            mediaPlayer.get().dispose();
-        });
+        onCloseWindow(primaryStage, () -> SongUtils.stopAndDispose(mediaPlayer.get()));
     }
 
     @SuppressWarnings("unused")

@@ -1,6 +1,7 @@
 package extract;
 
 import static utils.RunnableEx.ignore;
+import static utils.RunnableEx.runIf;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -128,6 +129,15 @@ public final class SongUtils {
             responses);
         return ConsoleUtils.defineProgress(duration, key, executeInConsoleAsync,
             s -> Math.abs(end.subtract(start).toMillis()), DateFormatUtils::convertTimeToMillis);
+    }
+
+    public static void stopAndDispose(MediaPlayer mediaPlayer) {
+        runIf(mediaPlayer, t -> {
+            if (t.getStatus() == Status.PLAYING) {
+                t.stop();
+            }
+            t.dispose();
+        });
     }
 
     public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, double pos) {

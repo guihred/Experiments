@@ -55,8 +55,7 @@ public final class EditSongHelper {
                 ImageView view = (ImageView) n;
                 Image image = view.getImage();
                 selectedItem.setImage(image);
-                mediaPlayer.get().stop();
-                mediaPlayer.get().dispose();
+                SongUtils.stopAndDispose(mediaPlayer.get());
                 MusicReader.saveMetadata(selectedItem);
             }
             StageHelper.closeStage(builder);
@@ -82,8 +81,7 @@ public final class EditSongHelper {
         progress.addListener((v, o, n) -> {
             if (n.intValue() == 1) {
                 Platform.runLater(() -> {
-                    mediaPlayer.get().stop();
-                    mediaPlayer.get().dispose();
+                    SongUtils.stopAndDispose(mediaPlayer.get());
                     run(() -> {
                         MusicReader.saveMetadata(selectedItem, outFile);
                         File arquivo = selectedItem.getArquivo();
@@ -121,8 +119,7 @@ public final class EditSongHelper {
 
     public static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
         Duration currentTime, Music music, ProgressIndicator progressIndicator, ObjectProperty<Duration> startTime) {
-        mediaPlayer.get().stop();
-        mediaPlayer.get().dispose();
+        SongUtils.stopAndDispose(mediaPlayer.get());
         String format = music.getArtista().isEmpty()
             ? String.format("%s.mp3", music.getTitulo().replaceAll("\\..+", ""))
             : String.format("%s-%s.mp3", music.getTitulo().replaceAll("\\..+", ""), music.getArtista());

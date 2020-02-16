@@ -1,5 +1,7 @@
 package paintexp.tool;
 
+import static utils.SupplierEx.orElse;
+
 import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
@@ -30,10 +32,8 @@ public class RectangleTool extends PaintTool {
 	}
 
 	public Rectangle getArea() {
-		if (area == null) {
-			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).build();
-		}
-		return area;
+        return orElse(area,
+            () -> area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).build());
 	}
 
 	@Override
@@ -142,11 +142,8 @@ public class RectangleTool extends PaintTool {
 	}
 
 	private Slider getArcWidthSlider() {
-		if (arcWidthSlider == null) {
-			arcWidthSlider = new SimpleSliderBuilder(0, 100, 0).bindBidirectional(getArea().arcWidthProperty())
-					.maxWidth(60).build();
-		}
-		return arcWidthSlider;
+        return orElse(arcWidthSlider, () -> arcWidthSlider = new SimpleSliderBuilder(0, 100, 0)
+            .bindBidirectional(getArea().arcWidthProperty()).maxWidth(60).build());
 	}
 
 }

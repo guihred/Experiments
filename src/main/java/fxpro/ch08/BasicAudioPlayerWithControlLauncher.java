@@ -7,10 +7,10 @@ package fxpro.ch08;
 
 import static utils.CommonsFX.onCloseWindow;
 
+import extract.SongUtils;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import utils.CrawlerTask;
 import utils.RotateUtils;
@@ -42,11 +42,7 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
 
 		scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
         primaryStage.setScene(scene);
-        onCloseWindow(primaryStage, () -> {
-            MediaPlayer mediaPlayer = songModel.getMediaPlayer();
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-        });
+        onCloseWindow(primaryStage, () -> SongUtils.stopAndDispose(songModel.getMediaPlayer()));
         primaryStage.setTitle("Basic Audio Player With Control");
         primaryStage.show();
         songModel.getPlayer().play();

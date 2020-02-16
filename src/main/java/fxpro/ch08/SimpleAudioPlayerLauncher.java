@@ -6,8 +6,8 @@
 package fxpro.ch08;
 
 import static utils.CommonsFX.onCloseWindow;
-import static utils.RunnableEx.runIf;
 
+import extract.SongUtils;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -28,7 +28,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import utils.*;
@@ -73,7 +72,7 @@ public class SimpleAudioPlayerLauncher extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simple Audio Player");
         primaryStage.show();
-        onCloseWindow(primaryStage, this::stopAndDispose);
+        onCloseWindow(primaryStage, () -> SongUtils.stopAndDispose(mediaPlayer));
     }
 
     private void createControls() {
@@ -132,15 +131,6 @@ public class SimpleAudioPlayerLauncher extends Application {
         if ("image".equals(key) && value instanceof Image) {
             albumCover.setImage(ImageFXUtils.imageCopy((Image) value));
         }
-    }
-
-    private void stopAndDispose() {
-        runIf(mediaPlayer, t -> {
-            if (t.getStatus() == Status.PLAYING) {
-                t.stop();
-            }
-            t.dispose();
-        });
     }
 
     public static void main(String[] args) {

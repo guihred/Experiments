@@ -18,7 +18,8 @@ import utils.*;
 @SuppressWarnings("static-method")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JavaDependencyTest {
-    static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
+    private static final int NUMBER_TESTS = 10;
 
     @Test
     public void testGTestUncovered() {
@@ -27,11 +28,18 @@ public class JavaDependencyTest {
         measureTime("JavaFileDependency.testUncovered", () -> {
             List<String> paths = new ArrayList<>();
             List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getJavaFileDependencies("fxtests");
-            List<String> uncoveredTests = CoverageUtils.getUncoveredTests(paths);
+            List<String> tests = CoverageUtils.getUncoveredTests(paths);
             List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
                 .collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
-            for (int i = 0; i < Math.min(uncoveredTests.size(), 5); i++) {
+            int min = Math.min(tests.size() / 2, NUMBER_TESTS / 2);
+            List<String> subList = tests.subList(0, min);
+            List<String> subList2 = tests.subList(min, tests.size());
+            List<String> uncoveredTests = new ArrayList<>(subList);
+            Collections.shuffle(subList2);
+            uncoveredTests.addAll(subList2);
+
+            for (int i = 0; i < Math.min(uncoveredTests.size(), NUMBER_TESTS); i++) {
                 String className = uncoveredTests.get(i);
                 if (className.equals("JavaDependencyTest")) {
                     continue;
@@ -77,7 +85,7 @@ public class JavaDependencyTest {
         measureTime("JavaFileDependency.testUncoveredApps", () -> {
             List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
             AbstractTestExecution
-                .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), 10)));
+                .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), NUMBER_TESTS)));
         });
     }
 
