@@ -1,7 +1,5 @@
 package paintexp;
 
-import static utils.DrawOnPoint.withinImage;
-
 import java.util.List;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
@@ -14,7 +12,6 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
@@ -133,16 +130,6 @@ public final class PaintViewUtils {
                 int width2 = tryParse(changedField);
                 String newHeight = "" + (int) (ratio * width2);
                 changeIfDifferent(otherField, newHeight);
-            }
-        }
-    }
-
-    public static void setPixels(WritableImage newImage, Color color, int x, int y, double xRatio, double yRatio) {
-        for (int l = 0; l < xRatio; l++) {
-            for (int k = 0; k < yRatio; k++) {
-                if (withinImage(x + l, y + k, newImage)) {
-                    newImage.getPixelWriter().setColor(x + l, y + k, color);
-                }
             }
         }
     }

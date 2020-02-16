@@ -14,7 +14,6 @@ import javafx.scene.image.PixelFormat.Type;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Transform;
-import paintexp.PaintViewUtils;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
 
@@ -298,6 +297,16 @@ public final class RectBuilder {
         centerX2 = Math.max(endX - radiusX, endX - width / 2);
     }
 
+    public static void setPixels(WritableImage newImage, Color color, int x, int y, double xRatio, double yRatio) {
+        for (int l = 0; l < xRatio; l++) {
+            for (int k = 0; k < yRatio; k++) {
+                if (withinImage(x + l, y + k, newImage)) {
+                    newImage.getPixelWriter().setColor(x + l, y + k, color);
+                }
+            }
+        }
+    }
+
     public static RectBuilder build() {
         return new RectBuilder();
     }
@@ -335,7 +344,7 @@ public final class RectBuilder {
                 if (withinImage(x, y, newImage)) {
                     newImage.getPixelWriter().setColor(x, y, color);
                 }
-                PaintViewUtils.setPixels(newImage, color, x, y, xRatio, yRatio);
+                RectBuilder.setPixels(newImage, color, x, y, xRatio, yRatio);
             }
         }
         return newImage;
