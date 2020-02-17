@@ -275,6 +275,13 @@
 									<Integer fx:value="36" />
 									<Integer fx:value="48" />
 									<Integer fx:value="72" />
+									<Integer fx:value="80" />
+									<Integer fx:value="90" />
+									<Integer fx:value="100" />
+									<Integer fx:value="110" />
+									<Integer fx:value="120" />
+									<Integer fx:value="130" />
+									<Integer fx:value="140" />
 								</FXCollections>
 							</items>
 							<value>
