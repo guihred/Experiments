@@ -1,11 +1,17 @@
 package utils;
 
+import static utils.ResourceFXUtils.clamp;
+
+import com.sun.javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.beans.NamedArg;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.transform.Scale;
 
@@ -23,8 +29,12 @@ public class ZoomableScrollPane extends ScrollPane {
         setContent(contentGroup);
         scaleTransform = new Scale(getScaleValue(), getScaleValue(), 0, 0);
         zoomGroup.getTransforms().add(scaleTransform);
-
         zoomGroup.setOnScroll(this::handle);
+        skinProperty().addListener((ob, old, val) -> {
+            ScrollPaneSkin scrollPaneSkin = (ScrollPaneSkin) val;
+            scrollPaneSkin.getBehavior().dispose();
+            addEventHandler(KeyEvent.ANY, e -> normalScroll(scrollPaneSkin, e));
+        });
     }
 
     public double getScaleValue() {
@@ -32,19 +42,20 @@ public class ZoomableScrollPane extends ScrollPane {
     }
 
     public void handle(ScrollEvent scrollEvent) {
-        double s = getScaleValue();
-        if (scrollEvent.getDeltaY() < 0) {
-            setScaleValue(getScaleValue() - DELTA_ZOOM);
-        } else {
-            setScaleValue(getScaleValue() + DELTA_ZOOM);
-        }
-        if (getScaleValue() <= DELTA_ZOOM) {
-            setScaleValue(s);
 
-        }
-        zoomTo(getScaleValue());
+        double mul = scrollEvent.getDeltaY() < 0 ? -1 : 1;
+        double scale = getScaleValue();
+        zoomTo(scale + mul * DELTA_ZOOM > DELTA_ZOOM ? scale + mul * DELTA_ZOOM : scale);
+        double x = scrollEvent.getX();
+        double y = scrollEvent.getY();
+        Bounds boundsInLocal = zoomGroup.getBoundsInLocal();
+        double a = x / boundsInLocal.getWidth();
+        double b = y / boundsInLocal.getHeight();
+        setHvalue(clamp(a, getHmin(), getHmax()));
+        setVvalue(clamp(b, getVmin(), getVmax()));
         scrollEvent.consume();
     }
+
     public DoubleProperty scaleValueProperty() {
         return scaleValue;
     }
@@ -53,18 +64,27 @@ public class ZoomableScrollPane extends ScrollPane {
         this.scaleValue.set(scaleValue);
     }
 
-
-
-
     public void zoomTo(double scaleValue1) {
 
         setScaleValue(scaleValue1);
-
         scaleTransform.setX(scaleValue1);
         scaleTransform.setY(scaleValue1);
 
     }
 
-
+    private static void normalScroll(ScrollPaneSkin scrollPaneSkin, KeyEvent e) {
+        KeyCode code = e.getCode();
+        switch (code) {
+            case PAGE_UP:
+                scrollPaneSkin.vsbPageDecrement();
+                break;
+            case SPACE:
+            case PAGE_DOWN:
+                scrollPaneSkin.vsbPageIncrement();
+                break;
+            default:
+                break;
+        }
+    }
 
 }
