@@ -117,22 +117,22 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    public static void moveArea(KeyCode code, Rectangle area2) {
+    public static boolean moveArea(KeyCode code, Rectangle area2) {
         switch (code) {
             case RIGHT:
                 area2.setLayoutX(area2.getLayoutX() + 1);
-                break;
+                return true;
             case LEFT:
                 area2.setLayoutX(area2.getLayoutX() - 1);
-                break;
+                return true;
             case DOWN:
                 area2.setLayoutY(area2.getLayoutY() + 1);
-                break;
+                return true;
             case UP:
                 area2.setLayoutY(area2.getLayoutY() - 1);
-                break;
+                return true;
             default:
-                break;
+                return false;
         }
     }
 

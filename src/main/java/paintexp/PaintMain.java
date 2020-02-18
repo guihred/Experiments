@@ -25,10 +25,10 @@ public class PaintMain extends Application {
             .addMenuItem("_Save", "Ctrl+S", e -> PaintFileUtils.saveFile(stage, paintModel))
             .addMenuItem("Save _As", "Ctrl+Shift+S", e -> PaintFileUtils.saveAsFile(stage, paintModel)).addMenu("_Edit")
             .addMenuItem("Select _All", "Ctrl+A", e -> PaintEditUtils.selectAll(paintModel, controller))
-            .addMenuItem("C_opy", "Ctrl+C", e -> PaintEditUtils.copy(paintModel, controller.getCurrentSelectTool()),
+            .addMenuItem("C_opy", "Ctrl+C", e -> PaintEditUtils.copy(controller),
                 controller.containsSelectedArea().not())
             .addMenuItem("_Paste", "Ctrl+V", e -> PaintEditUtils.paste(paintModel, controller))
-            .addMenuItem("_Cut", "Ctrl+X", e -> PaintEditUtils.cut(paintModel, controller.getCurrentSelectTool()),
+            .addMenuItem("_Cut", "Ctrl+X", e -> PaintEditUtils.cut(paintModel, controller),
                 controller.containsSelectedArea().not())
             .addMenuItem("Undo", "Ctrl+Z", e -> PaintEditUtils.undo(paintModel)).addMenu("_View")
             .addMenuItem("Resize/Ske_w", "Ctrl+W", e -> PaintViewUtils.resize(paintModel, controller))

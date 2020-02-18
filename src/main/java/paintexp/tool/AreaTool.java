@@ -23,297 +23,312 @@ import utils.CommonsFX;
 import utils.RunnableEx;
 
 public abstract class AreaTool extends PaintTool {
-	protected WritableImage imageSelected;
-	protected double initialX;
-	private double dragX;
-	private double dragY;
-	protected double initialY;
-	protected SelectOption option = SelectOption.OPAQUE;
-	private Rectangle area;
+    protected WritableImage imageSelected;
+    protected double initialX;
+    private double dragX;
+    private double dragY;
+    protected double initialY;
+    protected SelectOption option = SelectOption.OPAQUE;
+    private Rectangle area;
 
-	public final void copyFromClipboard(PaintModel model) {
-		Clipboard systemClipboard = Clipboard.getSystemClipboard();
-		Image image = systemClipboard.getImage();
-		if (image != null) {
-			copyImage(model, image, imageSelected);
-		} else if (systemClipboard.getFiles() != null) {
-			copyFromFile(model, systemClipboard.getFiles());
-		}
-		if (imageSelected != null) {
-			getArea().setFill(new ImagePattern(imageSelected));
-		}
-	}
+    public final void copyFromClipboard(PaintModel model) {
+        Clipboard systemClipboard = Clipboard.getSystemClipboard();
+        Image image = systemClipboard.getImage();
+        if (image != null) {
+            copyImage(model, image, imageSelected);
+        } else if (systemClipboard.getFiles() != null) {
+            copyFromFile(model, systemClipboard.getFiles());
+        }
+        if (imageSelected != null) {
+            getArea().setFill(new ImagePattern(imageSelected));
+        }
+    }
 
-	public final void copyToClipboard(WritableImage image) {
-		if (imageSelected == null) {
+    public final void copyToClipboard(WritableImage image) {
+        if (imageSelected == null) {
             double width = Math.max(1, getArea().getWidth());
             double height = Math.max(1, getArea().getHeight());
-			imageSelected = new WritableImage((int) width, (int) height);
-			RectBuilder.copyImagePart(image, imageSelected, getArea());
-		}
-		PaintToolHelper.setClipboardContent(imageSelected);
-	}
+            imageSelected = new WritableImage((int) width, (int) height);
+            RectBuilder.copyImagePart(image, imageSelected, getArea());
+        }
+        PaintToolHelper.setClipboardContent(imageSelected);
+    }
 
-	public WritableImage createSelectedImage(PaintModel model) {
-		WritableImage srcImage = model.getImage();
-		return createSelectedImage(model, srcImage);
-	}
+    public WritableImage createSelectedImage(PaintModel model) {
+        WritableImage srcImage = model.getImage();
+        return createSelectedImage(model, srcImage);
+    }
 
-	public Rectangle getArea() {
-		if (area == null) {
-			area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).cursor(Cursor.MOVE)
-					.managed(false).strokeDashArray(1, 2, 1, 2).build();
-		}
-		return area;
-	}
+    public void cutImage(PaintModel model) {
+        copyToClipboard(model.getImage());
+        if (model.getImageStack().getChildren().contains(getArea())) {
+            model.getImageStack().getChildren().remove(getArea());
+        }
+        imageSelected = null;
+        model.createImageVersion();
+    }
 
-	@Override
-	public void handleEvent(MouseEvent e, PaintModel model) {
-		simpleHandleEvent(e, model);
-	}
+    public Rectangle getArea() {
+        if (area == null) {
+            area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).cursor(Cursor.MOVE)
+                .managed(false).strokeDashArray(1, 2, 1, 2).build();
+        }
+        return area;
+    }
 
-	@Override
-	public void handleKeyEvent(KeyEvent e, PaintModel model) {
-		KeyCode code = e.getCode();
-		switch (code) {
-			case DELETE:
-				if (e.getEventType() == KeyEvent.KEY_RELEASED) {
-					deleteImage(model, getArea().getBoundsInParent());
-				}
-				break;
-			case RIGHT:
-			case LEFT:
-			case DOWN:
-			case UP:
-				PaintTool.moveArea(code, getArea());
-				break;
-			case ESCAPE:
-				escapeArea(model);
-				break;
-			default:
-				break;
-		}
-		if (e.isControlDown()) {
-			handleControlDown(model, code);
-		}
-	}
+    @Override
+    public void handleEvent(MouseEvent e, PaintModel model) {
+        simpleHandleEvent(e, model);
+    }
 
-	@Override
-	public void onDeselected(PaintModel model) {
-		escapeArea(model);
-	}
+    @Override
+    public void handleKeyEvent(KeyEvent e, PaintModel model) {
+        KeyCode code = e.getCode();
+        if (PaintTool.moveArea(code, getArea())) {
+            e.consume();
+            return;
+        }
+        if (e.getEventType() != KeyEvent.KEY_PRESSED && e.getEventType() != KeyEvent.KEY_TYPED) {
+            return;
+        }
+        if (handleDeleteEscape(e, model)) {
+            e.consume();
+            return;
+        }
+        if (e.isControlDown() && handleControlDown(model, code)) {
+            e.consume();
+        }
+    }
 
-	@Override
-	public void onSelected(PaintModel model) {
-		model.getToolOptions().getChildren().clear();
+    @Override
+    public void onDeselected(PaintModel model) {
+        escapeArea(model);
+    }
 
-		model.getToolOptions().getChildren()
-				.addAll(SelectOption.createSelectOptions((ob, old, newV) -> onChangeOption(newV, model), option));
+    @Override
+    public void onSelected(PaintModel model) {
+        model.getToolOptions().getChildren().clear();
 
-	}
+        model.getToolOptions().getChildren()
+            .addAll(SelectOption.createSelectOptions((ob, old, newV) -> onChangeOption(newV, model), option));
 
-	public void selectArea(int x, int y, int endX, int endY, PaintModel model) {
-		initialX = x;
-		initialY = y;
-		addRect(model);
-		dragTo(endX, endY);
-		onMouseReleased(model);
-	}
+    }
 
-	public void setImageSelected(WritableImage imageSelected) {
-		this.imageSelected = imageSelected;
-	}
+    public void selectArea(int x, int y, int endX, int endY, PaintModel model) {
+        initialX = x;
+        initialY = y;
+        addRect(model);
+        dragTo(endX, endY);
+        onMouseReleased(model);
+    }
 
-	protected void addRect(PaintModel model) {
-		if (!model.getImageStack().getChildren().contains(getArea())) {
-			model.getImageStack().getChildren().add(getArea());
-		}
-		area.setStroke(Color.BLACK);
-		getArea().setManaged(false);
-		getArea().setFill(Color.TRANSPARENT);
-		getArea().setLayoutX(initialX);
-		getArea().setLayoutY(initialY);
-		getArea().setWidth(1);
-		getArea().setHeight(1);
-	}
+    public void setImageSelected(WritableImage imageSelected) {
+        this.imageSelected = imageSelected;
+    }
 
-	protected final void copyImage(PaintModel model, Image srcImage, WritableImage destImage) {
-		Color backColor = model.getBackColor();
-		double width = srcImage.getWidth();
-		double height = srcImage.getHeight();
-		if (destImage == null) {
-			imageSelected = new WritableImage((int) width, (int) height);
-		}
-		WritableImage writableImage = destImage != null ? destImage : imageSelected;
-		RectBuilder.build().width(width).height(height).copyImagePart(srcImage, writableImage, backColor);
-		if (option == SelectOption.TRANSPARENT) {
-			replaceColor(writableImage, backColor, Color.TRANSPARENT);
-		}
+    protected void addRect(PaintModel model) {
+        if (!model.getImageStack().getChildren().contains(getArea())) {
+            model.getImageStack().getChildren().add(getArea());
+        }
+        area.setStroke(Color.BLACK);
+        getArea().setManaged(false);
+        getArea().setFill(Color.TRANSPARENT);
+        getArea().setLayoutX(initialX);
+        getArea().setLayoutY(initialY);
+        getArea().setWidth(1);
+        getArea().setHeight(1);
+    }
 
-		selectArea(0, 0, (int) srcImage.getWidth(), (int) srcImage.getHeight(), model);
-	}
+    protected final void copyImage(PaintModel model, Image srcImage, WritableImage destImage) {
+        Color backColor = model.getBackColor();
+        double width = srcImage.getWidth();
+        double height = srcImage.getHeight();
+        if (destImage == null) {
+            imageSelected = new WritableImage((int) width, (int) height);
+        }
+        WritableImage writableImage = destImage != null ? destImage : imageSelected;
+        RectBuilder.build().width(width).height(height).copyImagePart(srcImage, writableImage, backColor);
+        if (option == SelectOption.TRANSPARENT) {
+            replaceColor(writableImage, backColor, Color.TRANSPARENT);
+        }
 
-	protected void dragTo(double x, double y) {
-		getArea().setLayoutX(Math.min(x, initialX));
-		getArea().setLayoutY(Math.min(y, initialY));
-		getArea().setWidth(Math.abs(x - initialX));
-		getArea().setHeight(Math.abs(y - initialY));
-	}
+        selectArea(0, 0, (int) srcImage.getWidth(), (int) srcImage.getHeight(), model);
+    }
 
-	protected void escapeArea(PaintModel model) {
-		double hvalue = model.getScrollPane().getHvalue();
-		double vvalue = model.getScrollPane().getVvalue();
-		if (imageSelected != null) {
-			setIntoImage(model);
-		}
-		if (model.getImageStack().getChildren().contains(getArea())) {
-			model.getImageStack().getChildren().remove(getArea());
-		}
-		model.getScrollPane().setHvalue(hvalue);
-		model.getScrollPane().setVvalue(vvalue);
-	}
+    protected void dragTo(double x, double y) {
+        getArea().setLayoutX(Math.min(x, initialX));
+        getArea().setLayoutY(Math.min(y, initialY));
+        getArea().setWidth(Math.abs(x - initialX));
+        getArea().setHeight(Math.abs(y - initialY));
+    }
 
-	@Override
-	protected void onMouseDragged(MouseEvent e, PaintModel model) {
-		double x = e.getX();
-		double y = e.getY();
-		double width = model.getImage().getWidth();
-		double height = model.getImage().getHeight();
-		if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-			getArea().setLayoutX(Math.max(x - dragX, -width / 4));
-			getArea().setLayoutY(Math.max(y - dragY, -height / 4));
-			return;
-		}
-		dragTo(getWithinRange(x, 0, width), getWithinRange(y, 0, height));
-	}
+    protected void escapeArea(PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        if (imageSelected != null) {
+            setIntoImage(model);
+        }
+        if (model.getImageStack().getChildren().contains(getArea())) {
+            model.getImageStack().getChildren().remove(getArea());
+        }
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
+    }
 
-	@Override
-	protected void onMousePressed(MouseEvent e, PaintModel model) {
-		double hvalue = model.getScrollPane().getHvalue();
-		double vvalue = model.getScrollPane().getVvalue();
-		if (model.getImageStack().getChildren().contains(getArea())) {
+    @Override
+    protected void onMouseDragged(MouseEvent e, PaintModel model) {
+        double x = e.getX();
+        double y = e.getY();
+        double width = model.getImage().getWidth();
+        double height = model.getImage().getHeight();
+        if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
+            getArea().setLayoutX(Math.max(x - dragX, -width / 4));
+            getArea().setLayoutY(Math.max(y - dragY, -height / 4));
+            return;
+        }
+        dragTo(getWithinRange(x, 0, width), getWithinRange(y, 0, height));
+    }
+
+    @Override
+    protected void onMousePressed(MouseEvent e, PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        if (model.getImageStack().getChildren().contains(getArea())) {
             if (CommonsFX.containsMouse(area, e)) {
-				createSelectedImage(model);
-				dragX = e.getX() - getArea().getLayoutX();
-				dragY = e.getY() - getArea().getLayoutY();
-				return;
-			}
-			if (imageSelected != null) {
-				setIntoImage(model);
-			}
-		}
-		initialX = e.getX();
-		initialY = e.getY();
-		addRect(model);
-		model.getScrollPane().setHvalue(hvalue);
-		model.getScrollPane().setVvalue(vvalue);
-	}
+                createSelectedImage(model);
+                dragX = e.getX() - getArea().getLayoutX();
+                dragY = e.getY() - getArea().getLayoutY();
+                return;
+            }
+            if (imageSelected != null) {
+                setIntoImage(model);
+            }
+        }
+        initialX = e.getX();
+        initialY = e.getY();
+        addRect(model);
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
+    }
 
-	@Override
-	protected void onMouseReleased(PaintModel model) {
-		double hvalue = model.getScrollPane().getHvalue();
-		double vvalue = model.getScrollPane().getVvalue();
-		if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
-				&& imageSelected != null) {
-			model.getImageStack().getChildren().remove(getArea());
-		}
-		getArea().setStroke(Color.BLUE);
-		model.getScrollPane().setHvalue(hvalue);
-		model.getScrollPane().setVvalue(vvalue);
-	}
+    @Override
+    protected void onMouseReleased(PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
+            && imageSelected != null) {
+            model.getImageStack().getChildren().remove(getArea());
+        } else {
+            createSelectedImage(model);
+        }
+        getArea().setStroke(Color.BLUE);
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
+    }
 
-	protected void setIntoImage(PaintModel model) {
-		double hvalue = model.getScrollPane().getHvalue();
-		double vvalue = model.getScrollPane().getVvalue();
-		int x = (int) getArea().getLayoutX();
-		int y = (int) getArea().getLayoutY();
-		double width = getArea().getWidth();
-		double height = getArea().getHeight();
-		RectBuilder.build().width(width).height(height).endX(x).endY(y).copyImagePart(imageSelected, model.getImage(),
-				Color.TRANSPARENT);
-		imageSelected = null;
-		model.getImageStack().getChildren().remove(getArea());
-		model.createImageVersion();
-		model.getScrollPane().setHvalue(hvalue);
-		model.getScrollPane().setVvalue(vvalue);
-	}
+    protected void setIntoImage(PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        int x = (int) getArea().getLayoutX();
+        int y = (int) getArea().getLayoutY();
+        double width = getArea().getWidth();
+        double height = getArea().getHeight();
+        RectBuilder.build().width(width).height(height).endX(x).endY(y).copyImagePart(imageSelected, model.getImage(),
+            Color.TRANSPARENT);
+        imageSelected = null;
+        model.getImageStack().getChildren().remove(getArea());
+        model.createImageVersion();
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
+    }
 
-	private void copyFromFile(PaintModel model, List<File> files) {
-		if (!files.isEmpty()) {
-			RunnableEx
-					.run(() -> copyImage(model, new Image(convertToURL(files.get(0)).toExternalForm()), imageSelected));
-		}
-	}
+    private void copyFromFile(PaintModel model, List<File> files) {
+        if (!files.isEmpty()) {
+            RunnableEx
+                .run(() -> copyImage(model, new Image(convertToURL(files.get(0)).toExternalForm()), imageSelected));
+        }
+    }
 
-	private WritableImage createSelectedImage(PaintModel model, WritableImage srcImage) {
-		if (imageSelected == null) {
+    private WritableImage createSelectedImage(PaintModel model, WritableImage srcImage) {
+        if (imageSelected == null) {
             int width = Math.max(1, (int) getArea().getWidth());
             int height = Math.max(1, (int) getArea().getHeight());
-			imageSelected = new WritableImage(width, height);
-			int layoutX = (int) getArea().getLayoutX();
-			int layoutY = (int) getArea().getLayoutY();
-			RectBuilder.copyImagePart(srcImage, imageSelected, getArea());
-			if (option == SelectOption.TRANSPARENT) {
-				replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
-			}
+            imageSelected = new WritableImage(width, height);
+            int layoutX = (int) getArea().getLayoutX();
+            int layoutY = (int) getArea().getLayoutY();
+            RectBuilder.copyImagePart(srcImage, imageSelected, getArea());
+            if (option == SelectOption.TRANSPARENT) {
+                replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
+            }
 
-			getArea().setFill(new ImagePattern(imageSelected));
-			RectBuilder.build().startX(layoutX).startY(layoutY).width(width).height(height).drawRect(model.getImage(),
-					model.getBackColor());
+            getArea().setFill(new ImagePattern(imageSelected));
+            RectBuilder.build().startX(layoutX).startY(layoutY).width(width).height(height).drawRect(model.getImage(),
+                model.getBackColor());
             model.createImageVersion();
-		}
-		return imageSelected;
-	}
+        }
+        return imageSelected;
+    }
 
-	private void cutImage(PaintModel model, Bounds bounds) {
-		copyToClipboard(model.getImage());
-		RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
-				.height(bounds.getHeight() - 1).drawRect(model.getImage(), model.getBackColor());
-		model.createImageVersion();
-	}
+    private void deleteImage(PaintModel model, Bounds bounds) {
+        if (imageSelected == null) {
+            final PaintModel model1 = model;
+            RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
+                .height(bounds.getHeight() - 1).drawRect(model1.getImage(), model.getBackColor());
+        }
+        imageSelected = null;
+        if (model.getImageStack().getChildren().contains(getArea())) {
+            model.getImageStack().getChildren().remove(getArea());
+        }
+        model.createImageVersion();
+    }
 
-	private void deleteImage(PaintModel model, Bounds bounds) {
-		if (imageSelected == null) {
-			final PaintModel model1 = model;
-			RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
-					.height(bounds.getHeight() - 1).drawRect(model1.getImage(), model.getBackColor());
-		}
-		imageSelected = null;
-		if (model.getImageStack().getChildren().contains(getArea())) {
-			model.getImageStack().getChildren().remove(getArea());
-		}
-		model.createImageVersion();
-	}
-
-	private void handleControlDown(PaintModel model, KeyCode code) {
-		switch (code) {
+    private boolean handleControlDown(PaintModel model, KeyCode code) {
+        switch (code) {
             case C:
                 copyToClipboard(model.getImage());
-                break;
-			case V:
-				copyFromClipboard(model);
-				break;
-			case X:
-				cutImage(model, getArea().getBoundsInParent());
-				break;
-			case A:
-				selectArea(0, 0, (int) model.getImage().getWidth(), (int) model.getImage().getHeight(), model);
-				break;
-			default:
-				break;
-		}
-	}
+                return true;
+            case V:
+                onDeselected(model);
+                copyFromClipboard(model);
+                return true;
+            case X:
+                cutImage(model);
+                return true;
+            case A:
+                onDeselected(model);
+                selectArea(0, 0, (int) model.getImage().getWidth(), (int) model.getImage().getHeight(), model);
+                return true;
+            default:
+                return false;
+        }
+    }
 
-	private void onChangeOption(Toggle newV, PaintModel model) {
-		SelectOption oldOption = option;
-		option = newV == null ? SelectOption.OPAQUE : (SelectOption) newV.getUserData();
-		if (oldOption != option && imageSelected != null) {
-			if (option == SelectOption.OPAQUE) {
-				replaceColor(imageSelected, Color.TRANSPARENT, model.getBackColor());
-			} else {
-				replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
-			}
-		}
-	}
+    private boolean handleDeleteEscape(KeyEvent e, PaintModel model) {
+        KeyCode code = e.getCode();
+        if (code == KeyCode.DELETE) {
+
+                deleteImage(model, getArea().getBoundsInParent());
+
+            return true;
+        }
+        if (code == KeyCode.ESCAPE) {
+            escapeArea(model);
+            return true;
+        }
+        return false;
+
+    }
+
+    private void onChangeOption(Toggle newV, PaintModel model) {
+        SelectOption oldOption = option;
+        option = newV == null ? SelectOption.OPAQUE : (SelectOption) newV.getUserData();
+        if (oldOption != option && imageSelected != null) {
+            if (option == SelectOption.OPAQUE) {
+                replaceColor(imageSelected, Color.TRANSPARENT, model.getBackColor());
+            } else {
+                replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
+            }
+        }
+    }
 
 }
