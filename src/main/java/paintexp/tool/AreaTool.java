@@ -307,7 +307,7 @@ public abstract class AreaTool extends PaintTool {
         KeyCode code = e.getCode();
         if (code == KeyCode.DELETE) {
 
-                deleteImage(model, getArea().getBoundsInParent());
+            deleteImage(model, getArea().getBoundsInParent());
 
             return true;
         }
