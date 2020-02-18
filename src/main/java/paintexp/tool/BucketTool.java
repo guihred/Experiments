@@ -28,6 +28,9 @@ public class BucketTool extends PaintTool {
         if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
 			onMouseClicked(e, model);
 		}
+        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+            onMouseClicked(e, model);
+        }
 	}
 
     public void setColor(final int initX, final int initY, final int originalColor, final int frontColor,
