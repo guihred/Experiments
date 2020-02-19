@@ -1,10 +1,8 @@
 package paintexp.tool;
 
 import java.io.File;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -16,10 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import utils.DrawOnPoint;
-import utils.PixelatedImageView;
-import utils.ResourceFXUtils;
-import utils.ZoomableScrollPane;
+import utils.*;
 
 public class PaintModel {
     private static final int MAX_VERSIONS = 50;
@@ -31,7 +26,8 @@ public class PaintModel {
     private Text toolSize = new Text();
     private Text mousePosition = new Text();
     private VBox toolOptions;
-    private File currentFile;
+    private final ObjectProperty<File> currentFile = new SimpleObjectProperty<>();
+    private final StringProperty filename = filenameProperty();
     private final ObservableList<WritableImage> imageVersions = FXCollections.observableArrayList();
     private final IntegerProperty currentVersion = new SimpleIntegerProperty(0);
     private PixelatedImageView rectangleBorder;
@@ -67,6 +63,16 @@ public class PaintModel {
         return currentVersion.get();
     }
 
+    public StringProperty filenameProperty() {
+        return SupplierEx.orElse(filename, () -> {
+            StringProperty file = new SimpleStringProperty();
+
+            file.bind(Bindings.createStringBinding(() -> currentFile.isNull().get() ? String.format("Paint")
+                : String.format("Paint (%s)", currentFile.get().getName()), currentFile));
+            return file;
+        });
+    }
+
     public ObjectProperty<Color> frontColorProperty() {
         return frontColor;
     }
@@ -76,7 +82,7 @@ public class PaintModel {
     }
 
     public File getCurrentFile() {
-        return currentFile;
+        return currentFile.get();
     }
 
     public WritableImage getCurrentImage() {
@@ -181,7 +187,7 @@ public class PaintModel {
     }
 
     public void setCurrentFile(final File currentFile) {
-        this.currentFile = currentFile;
+        this.currentFile.set(currentFile);
     }
 
     public void setFrontColor(final Color frontColor) {

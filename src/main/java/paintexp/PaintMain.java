@@ -53,8 +53,8 @@ public class PaintMain extends Application {
         root.setBottom(PaintHelper.buildColorGrid(paintModel, controller));
         root.setLeft(PaintHelper.buildToolBar(paintModel, controller));
         root.setRight(PaintHelper.displayImageVersions(paintModel));
+        stage.titleProperty().bind(paintModel.filenameProperty());
         stage.setX(0);
-        stage.setTitle("Paint");
         final int width = 900;
 
         Scene scene = new Scene(root, width, width);
