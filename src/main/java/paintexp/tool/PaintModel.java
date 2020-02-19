@@ -1,7 +1,9 @@
 package paintexp.tool;
 
 import java.io.File;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +18,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import utils.DrawOnPoint;
 import utils.PixelatedImageView;
+import utils.ResourceFXUtils;
 import utils.ZoomableScrollPane;
 
 public class PaintModel {
@@ -30,6 +33,7 @@ public class PaintModel {
     private VBox toolOptions;
     private File currentFile;
     private final ObservableList<WritableImage> imageVersions = FXCollections.observableArrayList();
+    private final IntegerProperty currentVersion = new SimpleIntegerProperty(0);
     private PixelatedImageView rectangleBorder;
     private ZoomableScrollPane scrollPane;
 
@@ -40,13 +44,27 @@ public class PaintModel {
     public void createImageVersion() {
 
         WritableImage e = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
-        if (imageVersions.isEmpty() || !PaintToolHelper.isEqualImage(e, imageVersions.get(imageVersions.size() - 1))) {
-            imageVersions.add(e);
+        if (imageVersions.isEmpty() || !PaintToolHelper.isEqualImage(e, getCurrentImage())) {
+            int clamp = ResourceFXUtils.clamp(getCurrentVersion() + 1, 0, Math.max(imageVersions.size(), 0));
+            if (imageVersions.size() > clamp) {
+                for (int i = clamp; i < imageVersions.size();) {
+                    imageVersions.remove(i);
+                }
+            }
+
+            imageVersions.add(clamp, e);
+            currentVersion.set(imageVersions.size() - 1);
         }
         if (imageVersions.size() > MAX_VERSIONS) {
             imageVersions.remove(0);
+            currentVersion.set(currentVersion.get() - 1);
         }
 
+    }
+
+    public int decrementCurrentVersion() {
+        currentVersion.set(ResourceFXUtils.clamp(getCurrentVersion() - 1, 0, Math.max(imageVersions.size() - 1, 0)));
+        return currentVersion.get();
     }
 
     public ObjectProperty<Color> frontColorProperty() {
@@ -59,6 +77,14 @@ public class PaintModel {
 
     public File getCurrentFile() {
         return currentFile;
+    }
+
+    public WritableImage getCurrentImage() {
+        return imageVersions.get(ResourceFXUtils.clamp(getCurrentVersion(), 0, Math.max(imageVersions.size() - 1, 0)));
+    }
+
+    public int getCurrentVersion() {
+        return currentVersion.get();
     }
 
     public Color getFrontColor() {
@@ -134,6 +160,11 @@ public class PaintModel {
         return toolSize;
     }
 
+    public int incrementCurrentVersion() {
+        currentVersion.set(ResourceFXUtils.clamp(getCurrentVersion() + 1, 0, Math.max(imageVersions.size() - 1, 0)));
+        return currentVersion.get();
+    }
+
     public Rectangle resetToolOptions() {
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.GRAY);
@@ -177,7 +208,7 @@ public class PaintModel {
         ImageView imageView = new PixelatedImageView(image);
         createImageVersion();
         RectBuilder.takeSnapshot(line2, image, getImageStack(), imageView, getRectangleBorder(imageView),
-            getImageVersions());
+            getCurrentImage());
     }
 
     public void takeSnapshotFill(Node line2) {

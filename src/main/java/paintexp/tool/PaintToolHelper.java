@@ -74,11 +74,11 @@ public final class PaintToolHelper {
         }
     }
 
+
     public static void drawPointTransparency(int x2, int y2, Color frontColor, double opacity, WritableImage image,
-        ObservableList<WritableImage> imageVersions) {
+        WritableImage currentImage) {
         if (withinImage(x2, y2, image)) {
-            int index = Math.max(imageVersions.size() - 1, 0);
-            Color color = imageVersions.get(index).getPixelReader().getColor(x2, y2);
+            Color color = currentImage.getPixelReader().getColor(x2, y2);
             Color color2 = color.interpolate(frontColor, opacity);
             image.getPixelWriter().setColor(x2, y2, color2);
         }
@@ -102,21 +102,20 @@ public final class PaintToolHelper {
         }
     }
 
-    public static void drawSquareLine(WritableImage image, ObservableList<WritableImage> imageVersions, int startX,
-        int startY, int w, Color color, double opacity) {
+    public static void drawSquareLine(WritableImage image, WritableImage currentImage, int startX, int startY, int w,
+        Color color, double opacity) {
         for (int x = 0; x < w; x++) {
-            drawPointTransparency(startX + x, startY, color, opacity, image, imageVersions);
-            drawPointTransparency(startX, startY + x, color, opacity, image, imageVersions);
-            drawPointTransparency(startX + x, startY + w, color, opacity, image, imageVersions);
-            drawPointTransparency(startX + w, startY + x, color, opacity, image, imageVersions);
+            drawPointTransparency(startX + x, startY, color, opacity, image, currentImage);
+            drawPointTransparency(startX, startY + x, color, opacity, image, currentImage);
+            drawPointTransparency(startX + x, startY + w, color, opacity, image, currentImage);
+            drawPointTransparency(startX + w, startY + x, color, opacity, image, currentImage);
         }
     }
 
     public static boolean isEqualImage(WritableImage image, WritableImage image2) {
-        if(image.getWidth()!=image2.getWidth()||image.getHeight()!=image2.getHeight()) {
+        if (image.getWidth() != image2.getWidth() || image.getHeight() != image2.getHeight()) {
             return false;
         }
-        
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 if (image.getPixelReader().getArgb(i, j) != image2.getPixelReader().getArgb(i, j)) {

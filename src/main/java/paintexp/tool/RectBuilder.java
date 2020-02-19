@@ -4,7 +4,6 @@ package paintexp.tool;
 import static utils.DrawOnPoint.within;
 import static utils.DrawOnPoint.withinImage;
 
-import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -82,7 +81,7 @@ public final class RectBuilder {
     }
 
     public void copyImagePartTransparency(Image srcImage, WritableImage destImage,
-        ObservableList<WritableImage> imageVersions) {
+        WritableImage currentImage) {
         PixelReader pixelReader = srcImage.getPixelReader();
         double srcWidth = srcImage.getWidth();
         double srcHeight = srcImage.getHeight();
@@ -95,25 +94,25 @@ public final class RectBuilder {
                     Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
                     Color color = PixelHelper.asColor(PixelHelper.toArgb(color2) | 0xFF000000);
                     PaintToolHelper.drawPointTransparency(i + (int) endX, j + (int) endY, color, color2.getOpacity(),
-                        destImage, imageVersions);
+                        destImage, currentImage);
                 }
 
             }
         }
     }
 
-    public void drawCircle(WritableImage image, ObservableList<WritableImage> imageVersions, Color color,
+    public void drawCircle(WritableImage image, WritableImage currentImage, Color color,
         double opacity) {
         double nPoints = Math.max(width, height) * PaintToolHelper.N_POINTS_MULTIPLIER;
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(width * Math.cos(t));
             int y = (int) Math.round(height * Math.sin(t));
             PaintToolHelper.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
-                imageVersions);
+                currentImage);
         }
     }
 
-    public void drawCircle(WritableImage image, ObservableList<WritableImage> imageVersions, double opacity) {
+    public void drawCircle(WritableImage image, WritableImage currentImage, double opacity) {
         for (double w = 0; w <= width; w++) {
             for (double h = 0; h <= height; h++) {
                 double nPoints = Math.max(w, h) * PaintToolHelper.N_POINTS_MULTIPLIER;
@@ -126,7 +125,7 @@ public final class RectBuilder {
                     if (withinImage(x + (int) endX, y + (int) endY, image)) {
                         Color color = image.getPixelReader().getColor(x + (int) endX, y + (int) endY);
                         PaintToolHelper.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
-                            imageVersions);
+                            currentImage);
                     }
                 }
             }
@@ -160,20 +159,20 @@ public final class RectBuilder {
         drawYAxis(image, onPoint, a, b);
     }
 
-    public void drawLine(WritableImage image, ObservableList<WritableImage> imageVersions, Color color,
-        double opacity) {
-        drawLine(image, (x, y) -> PaintToolHelper.drawPointTransparency(x, y, color, opacity, image, imageVersions));
+
+    public void drawLine(WritableImage image, WritableImage currentImage, Color color, double opacity) {
+        drawLine(image, (x, y) -> PaintToolHelper.drawPointTransparency(x, y, color, opacity, image, currentImage));
     }
 
-    public void drawRect(final Color backColor, final double opacity, WritableImage image,
-        ObservableList<WritableImage> imageVersions) {
+
+    public void drawRect(final Color backColor, final double opacity, WritableImage image, WritableImage currentImage) {
         int startX2 = (int) startX;
         int startY2 = (int) startY;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (withinImage(startX2 + i, startY2 + j, image)) {
                     PaintToolHelper.drawPointTransparency(startX2 + i, startY2 + j, backColor, opacity, image,
-                        imageVersions);
+                        currentImage);
                 }
             }
         }
@@ -297,16 +296,6 @@ public final class RectBuilder {
         centerX2 = Math.max(endX - radiusX, endX - width / 2);
     }
 
-    public static void setPixels(WritableImage newImage, Color color, int x, int y, double xRatio, double yRatio) {
-        for (int l = 0; l < xRatio; l++) {
-            for (int k = 0; k < yRatio; k++) {
-                if (withinImage(x + l, y + k, newImage)) {
-                    newImage.getPixelWriter().setColor(x + l, y + k, color);
-                }
-            }
-        }
-    }
-
     public static RectBuilder build() {
         return new RectBuilder();
     }
@@ -350,8 +339,18 @@ public final class RectBuilder {
         return newImage;
     }
 
+    public static void setPixels(WritableImage newImage, Color color, int x, int y, double xRatio, double yRatio) {
+        for (int l = 0; l < xRatio; l++) {
+            for (int k = 0; k < yRatio; k++) {
+                if (withinImage(x + l, y + k, newImage)) {
+                    newImage.getPixelWriter().setColor(x + l, y + k, color);
+                }
+            }
+        }
+    }
+
     public static void takeSnapshot(Node line2, WritableImage image, Group imageStack, ImageView imageView,
-        Node rectangleBorder, ObservableList<WritableImage> imageVersions) {
+        Node rectangleBorder, WritableImage currentImage) {
         Bounds bounds = line2.getBoundsInParent();
         int width = (int) bounds.getWidth() + 2;
         int height = (int) bounds.getHeight() + 2;
@@ -361,7 +360,7 @@ public final class RectBuilder {
         int x = (int) bounds.getMinX();
         int y = (int) bounds.getMinY();
         build().startX(0).startY(0).width(width).height(height).endX(x).endY(y).copyImagePartTransparency(textImage,
-            image, imageVersions);
+            image, currentImage);
         imageStack.getChildren().clear();
         imageStack.getChildren().add(rectangleBorder);
         imageStack.getChildren().add(imageView);

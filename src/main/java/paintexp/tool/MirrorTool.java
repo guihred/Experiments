@@ -67,7 +67,7 @@ public class MirrorTool extends PaintTool {
             int r = length.get();
             RectBuilder.build().startX(circle1.getCenterX()).startY(circle1.getCenterY()).endX(circle0.getCenterX())
                 .endY(circle0.getCenterY()).width(r).height(r)
-                .drawCircle(model.getImage(), model.getImageVersions(), opacity.get());
+                .drawCircle(model.getImage(), model.getCurrentImage(), opacity.get());
             circle0.setCenterX(x2 - dx);
             circle0.setCenterY(y2 - dy);
         }

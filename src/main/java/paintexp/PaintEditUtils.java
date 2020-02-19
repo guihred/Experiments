@@ -35,8 +35,35 @@ public final class PaintEditUtils {
             return;
         }
         paintController.changeTool(PaintTools.SELECT_RECT.getTool());
-
         paintController.getCurrentSelectTool().copyFromClipboard(paintModel);
+    }
+
+    public static void redo(PaintModel paintModel) {
+        List<WritableImage> imageVersions = paintModel.getImageVersions();
+        if (imageVersions.isEmpty()) {
+            return;
+        }
+        if (paintModel.getCurrentVersion() + 1 >= paintModel.getImageVersions().size()) {
+            return;
+        }
+        ZoomableScrollPane scrollPane = paintModel.getScrollPane();
+        double hvalue = scrollPane.getHvalue();
+        double vvalue = scrollPane.getVvalue();
+        WritableImage writableImage = paintModel.getCurrentImage();
+        if (!imageVersions.isEmpty() && PaintToolHelper.isEqualImage(paintModel.getImage(), writableImage)) {
+            paintModel.incrementCurrentVersion();
+            writableImage = imageVersions.get(paintModel.getCurrentVersion());
+        }
+        WritableImage e = new WritableImage(writableImage.getPixelReader(), (int) writableImage.getWidth(),
+            (int) writableImage.getHeight());
+        
+        paintModel.getImageStack().getChildren().clear();
+        ImageView imageView = new PixelatedImageView(e);
+        paintModel.setImage(e);
+        paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
+        paintModel.getImageStack().getChildren().add(imageView);
+        scrollPane.setHvalue(hvalue);
+        scrollPane.setVvalue(vvalue);
     }
 
     public static void selectAll(PaintModel paintModel, PaintController paintController) {
@@ -56,13 +83,17 @@ public final class PaintEditUtils {
         ZoomableScrollPane scrollPane = paintModel.getScrollPane();
         double hvalue = scrollPane.getHvalue();
         double vvalue = scrollPane.getVvalue();
-        WritableImage writableImage = imageVersions.remove(imageVersions.size() - 1);
+        WritableImage writableImage = paintModel.getCurrentImage();
         if (!imageVersions.isEmpty() && PaintToolHelper.isEqualImage(paintModel.getImage(), writableImage)) {
-            writableImage = imageVersions.remove(imageVersions.size() - 1);
+            paintModel.decrementCurrentVersion();
+            writableImage = imageVersions.get(paintModel.getCurrentVersion());
         }
+        WritableImage e = new WritableImage(writableImage.getPixelReader(), (int) writableImage.getWidth(),
+            (int) writableImage.getHeight());
+
         paintModel.getImageStack().getChildren().clear();
-        ImageView imageView = new PixelatedImageView(writableImage);
-        paintModel.setImage(writableImage);
+        ImageView imageView = new PixelatedImageView(e);
+        paintModel.setImage(e);
         paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
         paintModel.getImageStack().getChildren().add(imageView);
         scrollPane.setHvalue(hvalue);
