@@ -93,6 +93,6 @@ public final class SimplePixelReader implements PixelReader {
 
 	public static void paintColor(WritableImage image, Color backColor) {
 		PixelReader reader = new SimplePixelReader(backColor);
-		image.getPixelWriter().setPixels(0, 0, (int) image.getWidth(), (int) image.getHeight(), reader, 0, 0);
+        image.getPixelWriter().setPixels(0, 0, (int) image.getWidth(), (int) image.getHeight(), reader, 0, 0);
 	}
 }

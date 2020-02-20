@@ -1,5 +1,7 @@
 package paintexp.tool;
 
+import static utils.DrawOnPoint.getWithinRange;
+
 import java.io.File;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -14,7 +16,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import utils.*;
+import utils.DrawOnPoint;
+import utils.PixelatedImageView;
+import utils.SupplierEx;
+import utils.ZoomableScrollPane;
 
 public class PaintModel {
     private static final int MAX_VERSIONS = 50;
@@ -38,6 +43,7 @@ public class PaintModel {
     }
 
     public void bindTitle(StringProperty o) {
+        o.set("Paint");
         filename.addListener((ob, old, val) -> o.setValue(val));
     }
 
@@ -45,7 +51,7 @@ public class PaintModel {
 
         WritableImage e = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
         if (imageVersions.isEmpty() || !PaintToolHelper.isEqualImage(e, getCurrentImage())) {
-            int clamp = ResourceFXUtils.clamp(getCurrentVersion() + 1, 0, Math.max(imageVersions.size(), 0));
+            int clamp = getWithinRange(getCurrentVersion() + 1, 0, Math.max(imageVersions.size(), 0));
             if (imageVersions.size() > clamp) {
                 for (int i = clamp; i < imageVersions.size();) {
                     imageVersions.remove(i);
@@ -63,13 +69,13 @@ public class PaintModel {
     }
 
     public int decrementCurrentVersion() {
-        currentVersion.set(ResourceFXUtils.clamp(getCurrentVersion() - 1, 0, Math.max(imageVersions.size() - 1, 0)));
+        currentVersion.set(getWithinRange(getCurrentVersion() - 1, 0, Math.max(imageVersions.size() - 1, 0)));
         return currentVersion.get();
     }
 
     public StringProperty filenameProperty() {
         return SupplierEx.orElse(filename, () -> {
-            StringProperty file = new SimpleStringProperty();
+            StringProperty file = new SimpleStringProperty("Paint");
             file.bind(Bindings.createStringBinding(
                 () -> currentFile.isNull().get() ? "Paint"
                 : String.format("Paint (%s)", currentFile.get().getName()), currentFile));
@@ -90,7 +96,7 @@ public class PaintModel {
     }
 
     public WritableImage getCurrentImage() {
-        return imageVersions.get(ResourceFXUtils.clamp(getCurrentVersion(), 0, Math.max(imageVersions.size() - 1, 0)));
+        return imageVersions.get(getWithinRange(getCurrentVersion(), 0, Math.max(imageVersions.size() - 1, 0)));
     }
 
     public int getCurrentVersion() {
@@ -171,7 +177,7 @@ public class PaintModel {
     }
 
     public int incrementCurrentVersion() {
-        currentVersion.set(ResourceFXUtils.clamp(getCurrentVersion() + 1, 0, Math.max(imageVersions.size() - 1, 0)));
+        currentVersion.set(getWithinRange(getCurrentVersion() + 1, 0, Math.max(imageVersions.size() - 1, 0)));
         return currentVersion.get();
     }
 

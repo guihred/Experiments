@@ -112,7 +112,7 @@ public final class RectBuilder {
         }
     }
 
-    public void drawCircle(WritableImage image, WritableImage currentImage, double opacity) {
+    public void drawCirclePattern(WritableImage image, WritableImage currentImage, Color backcolor, double opacity) {
         for (double w = 0; w <= width; w++) {
             for (double h = 0; h <= height; h++) {
                 double nPoints = Math.max(w, h) * PaintToolHelper.N_POINTS_MULTIPLIER;
@@ -122,11 +122,12 @@ public final class RectBuilder {
                 for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
                     int x = (int) Math.round(w * Math.cos(t));
                     int y = (int) Math.round(h * Math.sin(t));
+                    Color color = backcolor;
                     if (withinImage(x + (int) endX, y + (int) endY, image)) {
-                        Color color = image.getPixelReader().getColor(x + (int) endX, y + (int) endY);
-                        PaintToolHelper.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
-                            currentImage);
+                        color = image.getPixelReader().getColor(x + (int) endX, y + (int) endY);
                     }
+                    PaintToolHelper.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
+                        currentImage);
                 }
             }
         }

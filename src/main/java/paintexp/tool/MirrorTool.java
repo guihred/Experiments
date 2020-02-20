@@ -1,5 +1,6 @@
 package paintexp.tool;
 
+import static utils.DrawOnPoint.getWithinRange;
 import static utils.DrawOnPoint.withinImage;
 
 import javafx.beans.property.DoubleProperty;
@@ -65,11 +66,12 @@ public class MirrorTool extends PaintTool {
         onMouseMoved(e, model);
         if (withinImage(x2, y2, model.getImage()) && circle0 != null && circle1 != null) {
             int r = length.get();
+            Color backColor = model.getBackColor();
             RectBuilder.build().startX(circle1.getCenterX()).startY(circle1.getCenterY()).endX(circle0.getCenterX())
                 .endY(circle0.getCenterY()).width(r).height(r)
-                .drawCircle(model.getImage(), model.getCurrentImage(), opacity.get());
-            circle0.setCenterX(x2 - dx);
-            circle0.setCenterY(y2 - dy);
+                .drawCirclePattern(model.getImage(), model.getCurrentImage(), backColor, opacity.get());
+            circle0.setCenterX(x2 + dx);
+            circle0.setCenterY(y2 + dy);
         }
     }
 
@@ -81,8 +83,8 @@ public class MirrorTool extends PaintTool {
             if (circle1 == null) {
                 circle1 = newCircle(x2, y2, model);
             } else if (dx == 0) {
-                dx = circle1.getCenterX() - circle0.getCenterX();
-                dy = circle1.getCenterY() - circle0.getCenterY();
+                dx = -circle1.getCenterX() + circle0.getCenterX();
+                dy = -circle1.getCenterY() + circle0.getCenterY();
             }
         }
     }
@@ -130,8 +132,8 @@ public class MirrorTool extends PaintTool {
     }
 
     private void onMouseMoved(MouseEvent e, PaintModel model) {
-        double x = e.getX();
-        double y = e.getY();
+        double x = getWithinRange(e.getX(), -length.get(), model.getImage().getWidth() + length.get());
+        double y = getWithinRange(e.getY(), -length.get(), model.getImage().getHeight() + length.get());
         if (circle0 == null) {
             circle0 = newCircle(x, y, model);
         }
@@ -139,9 +141,8 @@ public class MirrorTool extends PaintTool {
             circle1.setCenterX(x);
             circle1.setCenterY(y);
             if (dx != 0) {
-                circle0.setCenterX(x - dx);
-                circle0.setCenterY(y - dy);
-
+                circle0.setCenterX(x + dx);
+                circle0.setCenterY(y + dy);
                 addIfNotContains(model);
             }
             return;
