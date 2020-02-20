@@ -108,7 +108,6 @@ public class WandTool extends AreaTool {
         }
         PaintTool.handleSlider(e, threshold, thresholdSlider);
     }
-
     @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
@@ -139,6 +138,19 @@ public class WandTool extends AreaTool {
     @Override
     protected void addRect(final PaintModel model) {
         getArea().setManaged(false);
+    }
+
+    @Override
+    protected void onMouseReleased(PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
+            && imageSelected != null) {
+            model.getImageStack().getChildren().remove(getArea());
+        }
+        getArea().setStroke(Color.BLUE);
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
     }
 
     private void addIfNotIn(final List<Integer> toGo, final int e) {

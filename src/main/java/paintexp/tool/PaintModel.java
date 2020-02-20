@@ -38,7 +38,7 @@ public class PaintModel {
     }
 
     public void bindTitle(StringProperty o) {
-filename.addListener((ob,old,val)->o.setValue(val));
+        filename.addListener((ob, old, val) -> o.setValue(val));
     }
 
     public void createImageVersion() {
@@ -70,8 +70,8 @@ filename.addListener((ob,old,val)->o.setValue(val));
     public StringProperty filenameProperty() {
         return SupplierEx.orElse(filename, () -> {
             StringProperty file = new SimpleStringProperty();
-
-            file.bind(Bindings.createStringBinding(() -> currentFile.isNull().get() ? String.format("Paint")
+            file.bind(Bindings.createStringBinding(
+                () -> currentFile.isNull().get() ? "Paint"
                 : String.format("Paint (%s)", currentFile.get().getName()), currentFile));
             return file;
         });
