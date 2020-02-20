@@ -210,7 +210,7 @@ public final class RectBuilder {
         // RIGHT
         RectBuilder.build().startX(endX).startY(centerY1).endX(endX).endY(centerY2).drawLine(image, frontColor);
         // TOP
-        RectBuilder.build().startX(centerX1).startY(startY - 1).endX(centerX2).endY(startY - 1).drawLine(image,
+        RectBuilder.build().startX(centerX1).startY(startY).endX(centerX2).endY(startY).drawLine(image,
             frontColor);
         // BOTTOM
         RectBuilder.build().startX(centerX1).startY(endY).endX(centerX2).endY(endY).drawLine(image, frontColor);
