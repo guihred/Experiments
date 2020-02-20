@@ -306,13 +306,19 @@ public abstract class AreaTool extends PaintTool {
     private boolean handleDeleteEscape(KeyEvent e, PaintModel model) {
         KeyCode code = e.getCode();
         if (code == KeyCode.DELETE) {
-
             deleteImage(model, getArea().getBoundsInParent());
-
             return true;
         }
         if (code == KeyCode.ESCAPE) {
             escapeArea(model);
+            return true;
+        }
+        if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
+            resize(1.05);
+            return true;
+        }
+        if (e.getCode() == KeyCode.MINUS || e.getCode() == KeyCode.SUBTRACT) {
+            resize(0.95);
             return true;
         }
         return false;
@@ -329,6 +335,20 @@ public abstract class AreaTool extends PaintTool {
                 replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
             }
         }
+    }
+
+    private void resize(double scale) {
+        long newWidth = Math.round(imageSelected.getWidth() * scale);
+        long newHeight = Math.round(imageSelected.getHeight() * scale);
+        if (newWidth == 0 || newHeight == 0) {
+            return;
+        }
+
+        WritableImage newImage = RectBuilder.resizeImage(imageSelected, newWidth, newHeight);
+        getArea().setWidth(newWidth);
+        getArea().setHeight(newHeight);
+        getArea().setFill(new ImagePattern(newImage));
+        imageSelected = newImage;
     }
 
 }

@@ -329,8 +329,8 @@ public final class RectBuilder {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 Color color = image.getPixelReader().getColor(i, j);
-                int y = (int) (j * yRatio);
-                int x = (int) (i * xRatio);
+                int x = (int) Math.round(i * xRatio);
+                int y = (int) Math.round(j * yRatio);
                 if (withinImage(x, y, newImage)) {
                     newImage.getPixelWriter().setColor(x, y, color);
                 }
