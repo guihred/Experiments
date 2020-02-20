@@ -1,5 +1,6 @@
 package audio.mp3;
 
+import static java.util.stream.Collectors.toCollection;
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
 import static utils.ResourceFXUtils.toExternalForm;
 
@@ -7,7 +8,6 @@ import extract.Music;
 import extract.MusicReader;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
@@ -153,10 +153,10 @@ public class MusicOrganizer extends Application {
 
     private static Button loadVideos(final TableView<Music> musicasTable, TextField filterField) {
         return StageHelper.selectDirectory("Carregar _Vídeos", "Carregar Pasta de Músicas", selectedFile -> {
-            List<Music> videos = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4", ".wma", ".webm")
+            ObservableList<Music> videos = ResourceFXUtils.getPathByExtension(selectedFile, ".mp4", ".wma", ".webm")
                 .parallelStream()
-                .map(v -> new Music(v.toFile())).collect(Collectors.toList());
-            configurarFiltroRapido(filterField, musicasTable, FXCollections.observableArrayList(videos));
+                .map(v -> new Music(v.toFile())).collect(toCollection(FXCollections::observableArrayList));
+            configurarFiltroRapido(filterField, musicasTable, videos);
         });
     }
 

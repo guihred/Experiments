@@ -123,7 +123,7 @@ public final class RectBuilder {
                     int x = (int) Math.round(w * Math.cos(t));
                     int y = (int) Math.round(h * Math.sin(t));
                     Color color = backcolor;
-                    if (withinImage(x + (int) endX, y + (int) endY, image)) {
+                    if (withinImage(x + endX, y + endY, image)) {
                         color = image.getPixelReader().getColor(x + (int) endX, y + (int) endY);
                     }
                     PaintToolHelper.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
@@ -225,37 +225,37 @@ public final class RectBuilder {
     }
 
     public RectBuilder endX(double value) {
-        endX = value;
+        endX = Math.round(value);
         update();
         return this;
     }
 
     public RectBuilder endY(double value) {
-        endY = value;
+        endY = Math.round(value);
         update();
         return this;
     }
 
     public RectBuilder height(double value) {
-        height = value;
+        height = Math.round(value);
         update();
         return this;
     }
 
     public RectBuilder startX(double value) {
-        startX = value;
+        startX = Math.round(value);
         update();
         return this;
     }
 
     public RectBuilder startY(double value) {
-        startY = value;
+        startY = Math.round(value);
         update();
         return this;
     }
 
     public RectBuilder width(double value) {
-        width = value;
+        width = Math.round(value);
         update();
         return this;
     }
@@ -289,12 +289,12 @@ public final class RectBuilder {
     }
 
     private void update() {
-        radiusX = Math.min(arc, width / 2);
-        radiusY = Math.min(arc, height / 2);
-        centerY1 = Math.min(startY + radiusY, startY + height / 2);
-        centerY2 = Math.max(endY - radiusY, startY - height / 2);
-        centerX1 = Math.min(startX + radiusX, startX + width / 2);
-        centerX2 = Math.max(endX - radiusX, endX - width / 2);
+        radiusX = Math.round(Math.min(arc, width / 2));
+        radiusY = Math.round(Math.min(arc, height / 2));
+        centerY1 = Math.round(Math.min(startY + radiusY, startY + height / 2));
+        centerY2 = Math.round(Math.max(endY - radiusY, startY - height / 2));
+        centerX1 = Math.round(Math.min(startX + radiusX, startX + width / 2));
+        centerX2 = Math.round(Math.max(endX - radiusX, endX - width / 2));
     }
 
     public static RectBuilder build() {

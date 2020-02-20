@@ -1,5 +1,7 @@
 package paintexp.tool;
 
+import static utils.DrawOnPoint.getWithinRange;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
@@ -7,12 +9,14 @@ import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import simplebuilder.SimpleSliderBuilder;
+import utils.DrawOnPoint;
 import utils.PixelHelper;
 
 public class EraserTool extends PaintTool {
@@ -60,7 +64,7 @@ public class EraserTool extends PaintTool {
             model.createImageVersion();
         }
         if (MouseEvent.MOUSE_EXITED.equals(eventType)) {
-            getArea().setVisible(false);
+            onMouseExited(e, model);
         }
         if (MouseEvent.MOUSE_ENTERED.equals(eventType)) {
             getArea().setVisible(true);
@@ -83,35 +87,38 @@ public class EraserTool extends PaintTool {
     @Override
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
         int w = (int) getArea().getWidth();
-        RectBuilder.build().startX(lastX).startY(lastY).endX(e.getX() - w).endY(e.getY() - w).drawLine(model.getImage(),
-            (x, y) -> {
-                if (e.getButton() == MouseButton.PRIMARY) {
-                    PaintToolHelper.drawSquareLine(model.getImage(), x, y, w, model.getBackColor());
-                } else {
-                    PaintToolHelper.drawSquareLine(model.getImage(), model.getBackColor(), x, y, w,
-                        PixelHelper.toArgb(model.getFrontColor()));
-                }
-            });
+        WritableImage image = model.getImage();
+        int x = (int) getWithinRange(e.getX(), -w, image.getWidth() + w);
+        int y = (int) getWithinRange(e.getY(), -w, image.getHeight() + w);
+        RectBuilder.build().startX(lastX).startY(lastY).endX(x - w).endY(y - w).drawLine(model.getImage(), (x0, y0) -> {
+            if (e.getButton() == MouseButton.PRIMARY) {
+                PaintToolHelper.drawSquareLine(model.getImage(), x0, y0, w, model.getBackColor());
+            } else {
+                PaintToolHelper.drawSquareLine(model.getImage(), model.getBackColor(), x0, y0, w,
+                    PixelHelper.toArgb(model.getFrontColor()));
+            }
+        });
 
-        getArea().setLayoutX(e.getX() - w);
-        getArea().setLayoutY(e.getY() - w);
-        lastX = (int) e.getX() - w;
-        lastY = (int) e.getY() - w;
+        getArea().setLayoutX(x - w);
+        getArea().setLayoutY(y - w);
+        lastX = x - w;
+        lastY = y - w;
     }
 
     @Override
     protected void onMousePressed(final MouseEvent e, final PaintModel model) {
-        int y = (int) e.getY();
-        int x = (int) e.getX();
         double w = getArea().getWidth();
+        WritableImage image = model.getImage();
+        int x = (int) getWithinRange(e.getX(), -w, image.getWidth() + w);
+        int y = (int) getWithinRange(e.getY(), -w, image.getHeight() + w);
         RectBuilder builder = RectBuilder.build().startX(x - w).startY(y - w).width(w).height(w);
         if (e.getButton() == MouseButton.PRIMARY) {
             builder.drawRect(model.getImage(), model.getBackColor());
         } else {
             builder.drawRect(PixelHelper.toArgb(model.getFrontColor()), model.getImage(), model.getBackColor());
         }
-        getArea().setLayoutX(e.getX() - w);
-        getArea().setLayoutY(e.getY() - w);
+        getArea().setLayoutX(x - w);
+        getArea().setLayoutY(y - w);
         lastX = (int) (x - w);
         lastY = (int) (y - w);
     }
@@ -124,6 +131,18 @@ public class EraserTool extends PaintTool {
         return lengthSlider;
     }
 
+    private void onMouseExited(final MouseEvent e, final PaintModel model) {
+        int w = (int) getArea().getWidth();
+        WritableImage image = model.getImage();
+        int x = (int) e.getX();
+        int y = (int) e.getY();
+        if (DrawOnPoint.within(x, -w, image.getWidth() + w) && DrawOnPoint.within(y, -w, image.getHeight() + w)) {
+            onMouseMoved(e, model);
+            return;
+        }
+        getArea().setVisible(false);
+    }
+
     private void onMouseMoved(final MouseEvent e, final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getArea())) {
@@ -134,8 +153,11 @@ public class EraserTool extends PaintTool {
         Color invert = model.getBackColor().invert();
         Color color = new Color(invert.getRed(), invert.getGreen(), invert.getBlue(), 1);
         getArea().setStroke(color);
-        getArea().setLayoutX(e.getX() - w);
-        getArea().setLayoutY(e.getY() - w);
+        WritableImage image = model.getImage();
+        int x = (int) getWithinRange(e.getX(), -w, image.getWidth() + w);
+        int y = (int) getWithinRange(e.getY(), -w, image.getHeight() + w);
+        getArea().setLayoutX(x - w);
+        getArea().setLayoutY(y - w);
     }
 
 }

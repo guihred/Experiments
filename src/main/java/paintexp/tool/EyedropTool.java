@@ -37,10 +37,10 @@ public class EyedropTool extends PaintTool {
     @Override
     public synchronized void handleEvent(final MouseEvent e, final PaintModel model) {
         EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_MOVED.equals(eventType)) {
+        if (MouseEvent.MOUSE_MOVED.equals(eventType) || MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
             onMouseMoved(e, model);
         }
-        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
+        if (MouseEvent.MOUSE_PRESSED.equals(eventType) || MouseEvent.MOUSE_RELEASED.equals(eventType)) {
             onMousePressed(e, model);
         }
     }

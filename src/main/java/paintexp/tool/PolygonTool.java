@@ -11,6 +11,8 @@ import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -76,6 +78,12 @@ public class PolygonTool extends PaintTool {
         }
     }
 
+    @Override
+    public void handleKeyEvent(KeyEvent e, PaintModel model) {
+        if (e.getCode() == KeyCode.ESCAPE) {
+            onMouseExited(model);
+        }
+    }
     @Override
     public void onSelected(final PaintModel model) {
         Shape icon2 = createIcon();
