@@ -5,7 +5,6 @@ import static utils.DrawOnPoint.withinImage;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.image.PixelReader;
@@ -33,20 +32,6 @@ public class BucketTool extends PaintTool {
     }
 
     @Override
-    public void handleEvent(final MouseEvent e, final PaintModel model) {
-        EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-            onMouseClicked(e, model);
-        }
-        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            onMouseClicked(e, model);
-        }
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            model.createImageVersion();
-        }
-    }
-
-    @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
 
@@ -59,7 +44,7 @@ public class BucketTool extends PaintTool {
 
     public void setColor(final int initX, final int initY, final int originalColor, final int frontColor,
         final PixelReader pixelReader, final PaintModel model) {
-        final IntList toGo = new IntList();
+        final IntList toGo = new IntList(2000);
         toGo.add(index(initX, initY));
         PixelHelper pixel = new PixelHelper();
         RunnableEx.ignore(() -> {
@@ -82,6 +67,16 @@ public class BucketTool extends PaintTool {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onMouseDragged(MouseEvent e, PaintModel model) {
+        onMouseClicked(e, model);
+    }
+
+    @Override
+    protected void onMousePressed(MouseEvent e, PaintModel model) {
+        onMouseClicked(e, model);
     }
 
     private void addIfNotIn(final IntList toGo, final int e) {
