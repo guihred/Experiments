@@ -56,11 +56,4 @@ public final class ContestHelper {
             .collect(Collectors.groupingBy(ContestText::getContest));
     }
 
-    enum ReaderState {
-        IGNORE,
-        OPTION,
-        QUESTION,
-        TEXT;
-    }
-
 }

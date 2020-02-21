@@ -28,8 +28,8 @@ public class ContestDTO implements HasLogging {
     protected int pageNumber;
     protected final List<QuestionPosition> questionPosition = new ArrayList<>();
 
-    protected final SimpleObjectProperty<ContestHelper.ReaderState> state = new SimpleObjectProperty<>(
-        ContestHelper.ReaderState.IGNORE);
+    protected final SimpleObjectProperty<ContestDTO.ReaderState> state = new SimpleObjectProperty<>(
+        ContestDTO.ReaderState.IGNORE);
 
     protected String subject;
     protected ContestText text = new ContestText();
@@ -51,7 +51,7 @@ public class ContestDTO implements HasLogging {
         return listQuestions;
     }
 
-    public ContestHelper.ReaderState getState() {
+    public ContestDTO.ReaderState getState() {
         return state.get();
     }
 
@@ -63,8 +63,15 @@ public class ContestDTO implements HasLogging {
         this.contest = contest;
     }
 
-    public void setState(ContestHelper.ReaderState state) {
+    public void setState(ContestDTO.ReaderState state) {
         this.state.set(state);
+    }
+
+    enum ReaderState {
+        IGNORE,
+        OPTION,
+        QUESTION,
+        TEXT;
     }
 
 }

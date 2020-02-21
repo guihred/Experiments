@@ -24,12 +24,12 @@ public class CheckersLauncher extends Application {
     public void onMouseClickedCheckersSquare0(MouseEvent e0) {
         Object target = e0.getSource();
         if (target instanceof CheckersSquare) {
-            boolean onClick = CheckersHelper.onClick(currentPlayer, squares, (CheckersSquare) target);
+            boolean onClick = CheckersAI.onClick(currentPlayer, squares, (CheckersSquare) target);
             if (onClick) {
                 currentPlayer.incrementAndGet();
             }
         }
-        CheckersHelper.runIfAI(squares, currentPlayer);
+        CheckersAI.runIfAI(squares, currentPlayer);
     }
 
     @Override

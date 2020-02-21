@@ -76,7 +76,7 @@ public class ContestReader extends ContestDTO {
             contestQuestion.addOption(answer);
         }
         addQuestion();
-        setState(ContestHelper.ReaderState.IGNORE);
+        setState(ContestDTO.ReaderState.IGNORE);
         getLogger().info(s);
     }
 
@@ -89,28 +89,28 @@ public class ContestReader extends ContestDTO {
             }
             if (Stream.of(linhas).skip(i + 1L).allMatch(str -> str.matches(LINE_PATTERN))) {
                 addQuestion();
-                setState(ContestHelper.ReaderState.IGNORE);
+                setState(ContestDTO.ReaderState.IGNORE);
                 return;
             }
             String string = linhas[i + 1];
             if (string.matches(TEXTS_PATTERN)) {
                 addQuestion();
-                setState(ContestHelper.ReaderState.TEXT);
+                setState(ContestDTO.ReaderState.TEXT);
                 return;
             }
             if (string.matches(SUBJECT_2_PATTERN)) {
                 addQuestion();
-                setState(ContestHelper.ReaderState.IGNORE);
+                setState(ContestDTO.ReaderState.IGNORE);
                 return;
             }
             if (isQuestionPattern(string)) {
                 addQuestion();
-                setState(ContestHelper.ReaderState.QUESTION);
+                setState(ContestDTO.ReaderState.QUESTION);
                 return;
             }
             if (StringUtils.containsIgnoreCase(string, "Questões") && s.matches(".+\\.\\s*")) {
                 addQuestion();
-                setState(ContestHelper.ReaderState.IGNORE);
+                setState(ContestDTO.ReaderState.IGNORE);
             }
         }
     }
@@ -131,7 +131,7 @@ public class ContestReader extends ContestDTO {
     }
 
     private void addOptionIfStateOption() {
-        if (getState() == ContestHelper.ReaderState.OPTION) {
+        if (getState() == ContestDTO.ReaderState.OPTION) {
             contestQuestion.addOption(answer);
             answer = new ContestQuestionAnswer();
             answer.setExercise(contestQuestion);
@@ -174,7 +174,7 @@ public class ContestReader extends ContestDTO {
     private void addTextIfEnded(String s) {
         if (isTextToBeAdded(s)) {
             addNewText();
-            setState(ContestHelper.ReaderState.IGNORE);
+            setState(ContestDTO.ReaderState.IGNORE);
         }
     }
 
@@ -182,7 +182,7 @@ public class ContestReader extends ContestDTO {
         if (isTextPattern(linhas, i, s)) {
             String[] split = linhas[i + 1].split("\\D+");
             if (split.length > 1 && Stream.of(split).allMatch(StringUtils::isNumeric)) {
-                setState(ContestHelper.ReaderState.TEXT);
+                setState(ContestDTO.ReaderState.TEXT);
                 text.setMin(intValue(split[0]));
                 text.setMax(intValue(split[1]));
             }
@@ -190,27 +190,27 @@ public class ContestReader extends ContestDTO {
     }
 
     private void addTextIfNeeded() {
-        if (getState() == ContestHelper.ReaderState.TEXT) {
+        if (getState() == ContestDTO.ReaderState.TEXT) {
             addNewText();
         }
     }
 
     private void addTextIfQuestion() {
-        if (getState() == ContestHelper.ReaderState.QUESTION) {
+        if (getState() == ContestDTO.ReaderState.QUESTION) {
             addQuestion();
             addNewText();
         }
     }
 
     private void changeTypeOfQuestions(String s) {
-        if (getState() == ContestHelper.ReaderState.IGNORE && s.matches(".*CERTO.+ERRADO.*")
+        if (getState() == ContestDTO.ReaderState.IGNORE && s.matches(".*CERTO.+ERRADO.*")
             && getContest().getOrganization() == Organization.QUADRIX) {
             questionType = QuestionType.TRUE_FALSE;
         }
     }
 
     private void executeAppending(String str, String[] linhas, int i) {
-        if (getState() == ContestHelper.ReaderState.IGNORE) {
+        if (getState() == ContestDTO.ReaderState.IGNORE) {
             contestQuestion.setContest(getContest());
             contestQuestion.setSubject(subject);
             return;
@@ -235,12 +235,12 @@ public class ContestReader extends ContestDTO {
 
     private int getIndicative(int i) {
 
-        if (getState() == ContestHelper.ReaderState.OPTION) {
+        if (getState() == ContestDTO.ReaderState.OPTION) {
             return contestQuestion != null && contestQuestion.getOptions() != null
                 ? contestQuestion.getOptions().size() + 1
                 : 1;
         }
-        if (getState() == ContestHelper.ReaderState.QUESTION) {
+        if (getState() == ContestDTO.ReaderState.QUESTION) {
             Integer number = contestQuestion.getNumber();
             int j = listQuestions.size() + 1;
             if (number != null && j != number) {
@@ -248,7 +248,7 @@ public class ContestReader extends ContestDTO {
             }
             return j;
         }
-        if (getState() == ContestHelper.ReaderState.TEXT) {
+        if (getState() == ContestDTO.ReaderState.TEXT) {
             return texts.size();
         }
         return i;
@@ -270,12 +270,12 @@ public class ContestReader extends ContestDTO {
     }
 
     private void insertOptionIfNeeded(String s) {
-        if (getState() == ContestHelper.ReaderState.OPTION && StringUtils.isBlank(s)) {
+        if (getState() == ContestDTO.ReaderState.OPTION && StringUtils.isBlank(s)) {
             contestQuestion.addOption(answer);
             if (option == OPTIONS_PER_QUESTION) {
                 addQuestion();
             }
-            setState(ContestHelper.ReaderState.IGNORE);
+            setState(ContestDTO.ReaderState.IGNORE);
         }
     }
 
@@ -289,7 +289,7 @@ public class ContestReader extends ContestDTO {
     }
 
     private boolean isSubject(String s) {
-        return s.matches(CONHECIMENTO) && getState() == ContestHelper.ReaderState.IGNORE;
+        return s.matches(CONHECIMENTO) && getState() == ContestDTO.ReaderState.IGNORE;
     }
 
     private boolean isTextMultiLine() {
@@ -297,12 +297,12 @@ public class ContestReader extends ContestDTO {
     }
 
     private boolean isTextPattern(String[] linhas, int i, String s) {
-        return containsIgnoreCase(s, "Questões") && getState() == ContestHelper.ReaderState.IGNORE
+        return containsIgnoreCase(s, "Questões") && getState() == ContestDTO.ReaderState.IGNORE
             && i < linhas.length - 1;
     }
 
     private boolean isTextToBeAdded(String s) {
-        return StringUtils.isBlank(s) && getState() == ContestHelper.ReaderState.TEXT && !listQuestions.isEmpty()
+        return StringUtils.isBlank(s) && getState() == ContestDTO.ReaderState.TEXT && !listQuestions.isEmpty()
             && isTextMultiLine() && !isBetween();
     }
 
@@ -339,12 +339,12 @@ public class ContestReader extends ContestDTO {
         if (isSubject(s)) {
             subject = s.trim();
             getLogger().info("SUBJECT={}", subject);
-            setState(ContestHelper.ReaderState.TEXT);
+            setState(ContestDTO.ReaderState.TEXT);
             return;
         }
         changeTypeOfQuestions(s);
         if (hasTexto(s)) {
-            setState(ContestHelper.ReaderState.TEXT);
+            setState(ContestDTO.ReaderState.TEXT);
             String[] split = s.split("\\D+");
             IntSummaryStatistics stats = Stream.of(split).filter(StringUtils::isNotBlank)
                 .mapToInt(StringSigaUtils::intValue).summaryStatistics();
@@ -364,14 +364,14 @@ public class ContestReader extends ContestDTO {
         }
         if (isEndOfQuestion(s)) {
             addTextIfQuestion();
-            setState(ContestHelper.ReaderState.TEXT);
+            setState(ContestDTO.ReaderState.TEXT);
             return;
         }
         verifyTrueFalseQuestion(s);
         if (isQuestionPattern(s)) {
             addTextIfNeeded();
             contestQuestion.setNumber(intValue(s));
-            setState(ContestHelper.ReaderState.QUESTION);
+            setState(ContestDTO.ReaderState.QUESTION);
             getLogger().info(s);
             return;
         }
@@ -390,7 +390,7 @@ public class ContestReader extends ContestDTO {
 
     private void tryReadQuestionFromLines(String[] lines) {
         try {
-            setState(ContestHelper.ReaderState.IGNORE);
+            setState(ContestDTO.ReaderState.IGNORE);
             option = 0;
             text = new ContestText(getContest());
             texts.add(text);
@@ -408,7 +408,7 @@ public class ContestReader extends ContestDTO {
             addOptionIfStateOption();
             answer.setNumber(option);
             option++;
-            setState(ContestHelper.ReaderState.OPTION);
+            setState(ContestDTO.ReaderState.OPTION);
         }
     }
 
@@ -416,7 +416,7 @@ public class ContestReader extends ContestDTO {
         if (isTrueFalseQuestion(s)) {
             addQuestionIfDifferentNumber(s);
             contestQuestion.setNumber(intValue(s.split("\\D+")[0]));
-            setState(ContestHelper.ReaderState.QUESTION);
+            setState(ContestDTO.ReaderState.QUESTION);
         }
     }
 
