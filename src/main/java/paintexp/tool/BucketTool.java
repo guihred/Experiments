@@ -2,8 +2,6 @@ package paintexp.tool;
 
 import static utils.DrawOnPoint.withinImage;
 
-import java.util.ArrayList;
-import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,9 +12,11 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+import org.apache.poi.util.IntList;
 import simplebuilder.SimpleSliderBuilder;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
+import utils.RunnableEx;
 
 public class BucketTool extends PaintTool {
 
@@ -56,33 +56,33 @@ public class BucketTool extends PaintTool {
 
     public void setColor(final int initX, final int initY, final int originalColor, final int frontColor,
         final PixelReader pixelReader, final PaintModel model) {
-        List<Integer> toGo = new ArrayList<>();
+        final IntList toGo = new IntList();
         toGo.add(index(initX, initY));
         PixelHelper pixel = new PixelHelper();
-
-        while (!toGo.isEmpty()) {
-            Integer next = toGo.remove(0);
-            int x = x(next);
-            int y = y(next);
-            if (withinImage(x, y, model.getImage())) {
-                pixel.reset(originalColor);
-                int color = pixelReader.getArgb(x, y);
-                if (color != frontColor && (color == originalColor || closeColor(pixel, color))) {
-                    if (y != 0 && y != height - 1) {
-                        addIfNotIn(toGo, next + 1);
-                        addIfNotIn(toGo, next - 1);
-                        addIfNotIn(toGo, next + width);
-                        addIfNotIn(toGo, next - width);
+        RunnableEx.ignore(() -> {
+            while (!toGo.isEmpty()) {
+                int next = toGo.remove(0);
+                int x = x(next);
+                int y = y(next);
+                if (withinImage(x, y, model.getImage())) {
+                    pixel.reset(originalColor);
+                    int color = pixelReader.getArgb(x, y);
+                    if (color != frontColor && (color == originalColor || closeColor(pixel, color))) {
+                        if (y != 0 && y != height - 1) {
+                            addIfNotIn(toGo, next + 1);
+                            addIfNotIn(toGo, next - 1);
+                            addIfNotIn(toGo, next + width);
+                            addIfNotIn(toGo, next - width);
+                        }
+                        model.getImage().getPixelWriter().setArgb(x, y, frontColor);
                     }
-                    model.getImage().getPixelWriter().setArgb(x, y, frontColor);
                 }
             }
-
-        }
+        });
         model.createImageVersion();
     }
 
-    private void addIfNotIn(final List<Integer> toGo, final Integer e) {
+    private void addIfNotIn(final IntList toGo, final int e) {
         if (!toGo.contains(e) && e < width * height && e >= 0) {
             toGo.add(e);
         }
