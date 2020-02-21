@@ -98,8 +98,8 @@ public class PictureTool extends PaintTool {
     protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
         double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
         double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
-        double intendedW = Math.abs(initialX - x);
-        double intendedH = Math.abs(initialY - y);
+        double intendedW = Math.max(1, Math.abs(initialX - x));
+        double intendedH = Math.max(1, Math.abs(initialY - y));
         double min = Math.min(x, initialX);
         double min2 = Math.min(y, initialY);
         Bounds bounds = area.getBoundsInParent();
@@ -133,8 +133,8 @@ public class PictureTool extends PaintTool {
         }
         initialX = (int) e.getX();
         getArea().setLayoutX(initialX);
-        getArea().setScaleX(1);
-        getArea().setScaleY(1);
+        getArea().setScaleX(0.1);
+        getArea().setScaleY(0.1);
         initialY = (int) e.getY();
         getArea().setLayoutY(initialY);
         getArea().setStroke(option.isStroke() ? model.getFrontColor() : Color.TRANSPARENT);
