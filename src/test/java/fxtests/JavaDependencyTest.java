@@ -84,9 +84,11 @@ public class JavaDependencyTest {
     @Test
     public void testHTestUncoveredApps() {
         measureTime("JavaFileDependency.testUncoveredApps", () -> {
+            HibernateUtil.setShutdownEnabled(false);
             List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
             AbstractTestExecution
                 .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), NUMBER_TESTS)));
+            HibernateUtil.setShutdownEnabled(true);
         });
     }
 
@@ -119,8 +121,8 @@ public class JavaDependencyTest {
     }
 
     private void runTest(Class<?> testClass, Object test, List<String> failedTests, List<String> methods) {
-        HibernateUtil.setShutdownEnabled(false);
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
+            HibernateUtil.setShutdownEnabled(false);
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));
@@ -136,8 +138,8 @@ public class JavaDependencyTest {
                 }));
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));
+            HibernateUtil.setShutdownEnabled(true);
         });
-        HibernateUtil.setShutdownEnabled(true);
 
     }
 
