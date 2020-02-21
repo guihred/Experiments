@@ -19,11 +19,13 @@ public class PaintMain extends Application {
         PaintController controller = new PaintController();
         PaintModel paintModel = controller.getPaintModel();
         BorderPane root = new BorderPane();
-        MenuBar menuBar = new SimpleMenuBarBuilder().addMenu("_File")
+        MenuBar menuBar = new SimpleMenuBarBuilder()
+            .addMenu("_File")
             .addMenuItem("_New File", "Ctrl+N", e -> PaintFileUtils.newFile(paintModel))
             .addMenuItem("_Open", "Ctrl+O", e -> PaintFileUtils.openFile(stage, paintModel))
             .addMenuItem("_Save", "Ctrl+S", e -> PaintFileUtils.saveFile(stage, paintModel))
-            .addMenuItem("Save _As", "Ctrl+Shift+S", e -> PaintFileUtils.saveAsFile(stage, paintModel)).addMenu("_Edit")
+            .addMenuItem("Save _As", "Ctrl+Shift+S", e -> PaintFileUtils.saveAsFile(stage, paintModel))
+            .addMenu("_Edit")
             .addMenuItem("Select _All", "Ctrl+A", e -> PaintEditUtils.selectAll(paintModel, controller))
             .addMenuItem("C_opy", "Ctrl+C", e -> PaintEditUtils.copy(controller),
                 controller.containsSelectedArea().not())
