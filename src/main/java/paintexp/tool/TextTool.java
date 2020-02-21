@@ -126,7 +126,6 @@ public class TextTool extends PaintTool {
     @Override
     protected void onMouseReleased(final PaintModel model) {
         if (area.getWidth() < 2 && model.getImageStack().getChildren().contains(area)) {
-
             model.getImageStack().getChildren().remove(area);
         }
         pressed = false;
