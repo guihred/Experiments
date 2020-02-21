@@ -35,11 +35,14 @@ public class BucketTool extends PaintTool {
     @Override
     public void handleEvent(final MouseEvent e, final PaintModel model) {
         EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_CLICKED.equals(eventType)) {
+        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
             onMouseClicked(e, model);
         }
         if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
             onMouseClicked(e, model);
+        }
+        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            model.createImageVersion();
         }
     }
 
@@ -79,7 +82,6 @@ public class BucketTool extends PaintTool {
                 }
             }
         });
-        model.createImageVersion();
     }
 
     private void addIfNotIn(final IntList toGo, final int e) {
