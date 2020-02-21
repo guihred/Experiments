@@ -25,6 +25,7 @@ public class JavaDependencyTest {
     public void testGTestUncovered() {
 
         List<String> failedTests = new ArrayList<>();
+
         measureTime("JavaFileDependency.testUncovered", () -> {
             List<String> paths = new ArrayList<>();
             List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getJavaFileDependencies("fxtests");
@@ -118,6 +119,7 @@ public class JavaDependencyTest {
     }
 
     private void runTest(Class<?> testClass, Object test, List<String> failedTests, List<String> methods) {
+        HibernateUtil.setShutdownEnabled(false);
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
@@ -135,6 +137,7 @@ public class JavaDependencyTest {
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));
         });
+        HibernateUtil.setShutdownEnabled(true);
 
     }
 

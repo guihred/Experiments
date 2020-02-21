@@ -193,7 +193,7 @@ public final class ConsoleUtils {
     private static Process makeProcessAndWait(final String cmd, String regex) throws IOException {
         List<String> response = Collections.synchronizedList(new ArrayList<>(Arrays.asList(regex)));
         Process exec = Runtime.getRuntime().exec(cmd);
-        Thread mainThread = new Thread(RunnableEx.make(() -> {
+        RunnableEx.runNewThread(() -> {
             try (BufferedReader in = new BufferedReader(
                 new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
@@ -204,11 +204,9 @@ public final class ConsoleUtils {
                         response.clear();
                         return;
                     }
-
                 }
             }
-        }), "Unmapped Thread " + cmd);
-        mainThread.start();
+        });
         long currentTimeMillis = System.currentTimeMillis();
         while (!response.isEmpty()) {
             if (System.currentTimeMillis() - currentTimeMillis > ConsoleUtils.PROCESS_MAX_TIME_LIMIT) {

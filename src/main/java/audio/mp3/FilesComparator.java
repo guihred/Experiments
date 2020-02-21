@@ -130,7 +130,7 @@ public class FilesComparator extends Application {
     private void copy(ObjectProperty<File> dir, TableView<File> table1, ObservableList<File> items2) {
         progress.setProgress(0);
         List<File> selectedItems = new ArrayList<>(table1.getSelectionModel().getSelectedItems());
-        new Thread(() -> copySelectedFiles(dir, table1, items2, selectedItems), "Copy Thread").start();
+        RunnableEx.runNewThread(() -> copySelectedFiles(dir, table1, items2, selectedItems));
     }
 
     private void copySelectedFiles(ObjectProperty<File> dir, TableView<File> table1, ObservableList<File> items2,

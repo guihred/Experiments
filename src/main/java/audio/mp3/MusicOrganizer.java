@@ -29,6 +29,7 @@ import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.StageHelper;
 import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 import utils.SupplierEx;
 
 public class MusicOrganizer extends Application {
@@ -73,11 +74,11 @@ public class MusicOrganizer extends Application {
 
     private Button loadMusic(TableView<Music> musicasTable, TextField filterField) {
         return StageHelper.selectDirectory("Carregar _Musicas", "Carregar Pasta de Músicas",
-            selectedFile -> new Thread(() -> {
+            selectedFile -> RunnableEx.runNewThread(() -> {
                 ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
                 musicasTable.setItems(musicas);
                 configurarFiltroRapido(filterField, musicasTable, musicas);
-            }, "Carregando Musicas").start());
+            }));
     }
 
     private TableView<Music> tabelaMusicas() {
