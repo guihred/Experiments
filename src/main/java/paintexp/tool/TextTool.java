@@ -24,6 +24,7 @@ public class TextTool extends PaintTool {
     private double initialX;
     private double initialY;
     private boolean pressed;
+    private boolean moving;
     @FXML
     private Text text;
     @FXML
@@ -47,6 +48,8 @@ public class TextTool extends PaintTool {
 
     @FXML
     private Map<Object, Double> maxMap;
+    private double dragX;
+    private double dragY;
 
     @Override
     public Node createIcon() {
@@ -94,12 +97,20 @@ public class TextTool extends PaintTool {
         if (pressed) {
             dragTo(getWithinRange(x, 0, width), getWithinRange(y, 0, height));
         }
+        if (moving) {
+            area.setLayoutX(Math.max(x - dragX, -width / 4));
+            area.setLayoutY(Math.max(y - dragY, -height / 4));
+        }
+
     }
 
     @Override
     protected void onMousePressed(final MouseEvent e, final PaintModel model) {
         if (model.getImageStack().getChildren().contains(area)) {
             if (CommonsFX.containsMouse(area, e)) {
+                moving = true;
+                dragX = e.getX() - area.getLayoutX();
+                dragY = e.getY() - area.getLayoutY();
                 return;
             }
             takeSnapshot(model);
@@ -119,6 +130,7 @@ public class TextTool extends PaintTool {
             model.getImageStack().getChildren().remove(area);
         }
         pressed = false;
+        moving = false;
         textArea.requestFocus();
         area.setStroke(Color.BLUE);
     }
