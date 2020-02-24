@@ -84,7 +84,7 @@ public class BorderTool extends PaintTool {
 
     @Override
     protected void onMouseDragged(MouseEvent e, PaintModel model) {
-        super.onMousePressed(e, model);
+        onMousePressed(e, model);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class BorderTool extends PaintTool {
             }
             int x0 = x(next0, height);
             int y0 = y(next0, height);
-            pixelWriter.setColor(x0, y0, newColor.toColor());
+            pixelWriter.setArgb(x0, y0, newColor.toArgb());
         }
     }
 

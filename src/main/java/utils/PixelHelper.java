@@ -45,7 +45,16 @@ public class PixelHelper {
         i = 1;
     }
 
-    public int toArgb(final int round) {
+    public int toArgb() {
+	        int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE);
+	        int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE);
+	        int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE);
+	        int trans = getWithinRange(i == 0 ? a : a / i, 0, MAX_BYTE) ;
+	        
+	        return trans << 8 * 3 | red << 8 * 2 | green << 8 | blue;
+	    }
+
+	public int toArgb(final int round) {
         int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE) / round * round;
         int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE) / round * round;
         int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE) / round * round;
@@ -53,14 +62,13 @@ public class PixelHelper {
         return transp << 8 * 3 | red << 8 * 2 | green << 8 | blue;
 	}
 
-	public Color toColor() {
+    public Color toColor() {
         int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE);
         int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE);
         int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE);
         double transp = getWithinRange(i == 0 ? MAX_BYTE : a / (double) i, 0.0, MAX_BYTE) / MAX_BYTE;
 		return Color.rgb(red, green, blue, transp);
 	}
-
 
 	public static Color asColor(final int argb) {
         int a = getByte(argb, 3);
