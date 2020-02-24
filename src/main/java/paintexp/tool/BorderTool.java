@@ -56,6 +56,11 @@ public class BorderTool extends PaintTool {
                         addIfNotIn(toGo, next - 1, width, height);
                         addIfNotIn(toGo, next + height, width, height);
                         addIfNotIn(toGo, next - height, width, height);
+
+                        addIfNotIn(toGo, next + 1 + height, width, height);
+                        addIfNotIn(toGo, next + 1 - height, width, height);
+                        addIfNotIn(toGo, next - 1 + height, width, height);
+                        addIfNotIn(toGo, next - 1 - height, width, height);
                     }
                     nextGo.add(next);
                 }
