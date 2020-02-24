@@ -122,7 +122,7 @@ public class JavaDependencyTest {
 
     private void runTest(Class<?> testClass, Object test, List<String> failedTests, List<String> methods) {
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
-            HibernateUtil.setShutdownEnabled(false);
+            RunnableEx.run(() -> HibernateUtil.setShutdownEnabled(false));
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
                 .forEach(e -> ClassReflectionUtils.invoke(test, e));

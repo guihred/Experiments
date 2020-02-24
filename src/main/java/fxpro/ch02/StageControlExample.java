@@ -96,7 +96,8 @@ public class StageControlExample extends Application {
             (ov, oldValue, newValue) -> stageRef.setFullScreen(checkBoxFullScreen.selectedProperty().getValue()));
         title.bind(titleTextField.textProperty());
         stage.setScene(scene);
-        stage.titleProperty().bind(title);
+        title.addListener((ob, old, val) -> stage.setTitle(val));
+
         Boolean fieldValue = (Boolean) ClassReflectionUtils.getFieldValue(stage, "hasBeenVisible");
         if (!fieldValue) {
             stage.initStyle(stageStyle);
