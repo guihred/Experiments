@@ -51,8 +51,12 @@ public interface DrawOnPoint {
         return within(y, image.getHeight()) && within(x, image.getWidth());
     }
 
+    static boolean withinImage(final int x, final int y, final int width, final int height) {
+        return within(x, width) && within(y, height);
+    }
+
     static boolean withinImage(final int x, final int y, final WritableImage image) {
-        return within(y, image.getHeight()) && within(x, image.getWidth());
+        return within(x, image.getWidth()) && within(y, image.getHeight());
     }
 
 }
