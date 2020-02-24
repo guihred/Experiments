@@ -94,8 +94,8 @@ public class BorderTool extends PaintTool {
 
     @Override
     protected void onMousePressed(MouseEvent e, PaintModel model) {
-        double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
-        double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
+        double x = getWithinRange(e.getX(), 0, model.getImage().getWidth() - 1);
+        double y = getWithinRange(e.getY(), 0, model.getImage().getHeight() - 1);
         createSelectedImage((int) x, (int) y, model);
     }
 
