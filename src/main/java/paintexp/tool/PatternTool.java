@@ -2,7 +2,7 @@ package paintexp.tool;
 
 import static utils.DrawOnPoint.withinImage;
 
-import java.util.ArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -26,7 +26,7 @@ public class PatternTool extends WandTool {
 
     @Override
     public Node createIcon() {
-        return PaintTool.getIconByURL("wand.png");
+        return PaintTool.getIconByURL("pattern.png");
     }
 
     @Override
@@ -45,7 +45,7 @@ public class PatternTool extends WandTool {
         int originalColor = pixelReader.getArgb((int) initialX, (int) initialY);
         WritableImage selectedImage = new WritableImage(width, height);
 
-        List<Integer> toGo = new ArrayList<>();
+        List<Integer> toGo = new IntArrayList();
         toGo.add(index((int) initialX, (int) initialY));
         int maxTries = width * height;
         int tries = 0;

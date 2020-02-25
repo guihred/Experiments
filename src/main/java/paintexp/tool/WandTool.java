@@ -3,7 +3,7 @@ package paintexp.tool;
 import static utils.DrawOnPoint.within;
 import static utils.DrawOnPoint.withinImage;
 
-import java.util.ArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javafx.application.Platform;
@@ -49,7 +49,7 @@ public class WandTool extends AreaTool {
 
         backColor = backColor == 0 ? PixelHelper.toArgb(model.getBackColor().invert())
             : PixelHelper.toArgb(model.getBackColor());
-        List<Integer> toGo = new ArrayList<>();
+        List<Integer> toGo = new IntArrayList();
         toGo.add(index((int) initialX, (int) initialY));
         int maxTries = width * height;
         int tries = 0;
