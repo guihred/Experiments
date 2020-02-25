@@ -1,7 +1,10 @@
 package paintexp.tool;
 
 import static utils.DrawOnPoint.withinImage;
+import static utils.ResourceFXUtils.convertToURL;
 
+import java.io.File;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javafx.beans.binding.Bindings;
@@ -12,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
+import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
@@ -21,6 +25,7 @@ import simplebuilder.SimpleConverter;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ClassReflectionUtils;
 import utils.StringSigaUtils;
+import utils.SupplierEx;
 
 public final class PaintToolHelper {
     public static final int N_POINTS_MULTIPLIER = 16;
@@ -74,7 +79,6 @@ public final class PaintToolHelper {
         }
     }
 
-
     public static void drawPointTransparency(int x2, int y2, Color frontColor, double opacity, WritableImage image,
         WritableImage currentImage) {
         if (withinImage(x2, y2, image)) {
@@ -110,6 +114,15 @@ public final class PaintToolHelper {
             drawPointTransparency(startX + x, startY + w, color, opacity, image, currentImage);
             drawPointTransparency(startX + w, startY + x, color, opacity, image, currentImage);
         }
+    }
+
+    public static Image getClipboardImage() {
+        Clipboard systemClipboard = Clipboard.getSystemClipboard();
+        List<File> files = systemClipboard.getFiles();
+        if (!files.isEmpty()) {
+            return SupplierEx.get(() -> new Image(convertToURL(files.get(0)).toExternalForm()));
+        }
+        return systemClipboard.getImage();
     }
 
     public static boolean isEqualImage(WritableImage image, WritableImage image2) {

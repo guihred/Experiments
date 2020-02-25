@@ -31,7 +31,7 @@ public abstract class AreaTool extends PaintTool {
     protected SelectOption option = SelectOption.OPAQUE;
     private Rectangle area;
 
-    public final void copyFromClipboard(PaintModel model) {
+    public final void pasteFromClipboard(PaintModel model) {
         Clipboard systemClipboard = Clipboard.getSystemClipboard();
         Image image = systemClipboard.getImage();
         if (image != null) {
@@ -289,7 +289,7 @@ public abstract class AreaTool extends PaintTool {
                 return true;
             case V:
                 onDeselected(model);
-                copyFromClipboard(model);
+                pasteFromClipboard(model);
                 return true;
             case X:
                 cutImage(model);

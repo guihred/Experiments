@@ -26,11 +26,11 @@ import utils.PixelHelper;
 
 public class WandTool extends AreaTool {
 
-    private int width;
-    private int height;
+    protected int width;
+    protected int height;
     private IntegerProperty threshold = new SimpleIntegerProperty(PixelHelper.MAX_BYTE / 20);
     private Slider thresholdSlider;
-	private List<KeyCode> exceptionKeys = Arrays.asList(KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN, KeyCode.UP);
+    private List<KeyCode> exceptionKeys = Arrays.asList(KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN, KeyCode.UP);
 
     @Override
     public Node createIcon() {
@@ -108,6 +108,7 @@ public class WandTool extends AreaTool {
         }
         PaintTool.handleSlider(e, threshold, thresholdSlider);
     }
+
     @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
@@ -126,6 +127,10 @@ public class WandTool extends AreaTool {
 
     public void setImage(final PaintModel model) {
         WritableImage writableImage = createSelectedImage(model);
+        if (writableImage == null) {
+            return;
+        }
+
         int width3 = Math.max(1, (int) getArea().getWidth());
         int height3 = Math.max(1, (int) getArea().getHeight());
         int x2 = (int) getArea().getLayoutX();
@@ -135,49 +140,27 @@ public class WandTool extends AreaTool {
         getArea().setFill(new ImagePattern(writableImage));
     }
 
-    @Override
-    protected void addRect(final PaintModel model) {
-        getArea().setManaged(false);
-    }
-
-    @Override
-    protected void onMouseReleased(PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
-        if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
-            && imageSelected != null) {
-            model.getImageStack().getChildren().remove(getArea());
-        }
-        getArea().setStroke(Color.BLUE);
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
-    }
-
-    private void addIfNotIn(final List<Integer> toGo, final int e) {
+    protected void addIfNotIn(final List<Integer> toGo, final int e) {
         if (!toGo.contains(e) && within(e, (double) width * height)) {
             toGo.add(e);
         }
     }
 
-    private boolean closeColor(final PixelHelper pixel, final int color) {
+    @Override
+    protected void addRect(final PaintModel model) {
+        getArea().setManaged(false);
+    }
+
+    protected boolean closeColor(final PixelHelper pixel, final int color) {
         pixel.add(color, -1);
         return pixel.modulus() < threshold.get();
     }
 
-    private Slider getThresholdSlider() {
-        if (thresholdSlider == null) {
-            thresholdSlider = new SimpleSliderBuilder(0, PixelHelper.MAX_BYTE, 0).bindBidirectional(threshold)
-                .maxWidth(60).build();
-
-        }
-        return thresholdSlider;
-    }
-
-    private int index(final int initialX2, final int initialY2) {
+    protected int index(final int initialX2, final int initialY2) {
         return initialX2 * height + initialY2;
     }
 
-    private void onChangeSlider(final PaintModel model) {
+    protected void onChangeSlider(final PaintModel model) {
         if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
             Platform.runLater(() -> {
                 if (imageSelected != null) {
@@ -194,6 +177,37 @@ public class WandTool extends AreaTool {
                 }
             });
         }
+    }
+
+    @Override
+    protected void onMouseReleased(PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
+            && imageSelected != null) {
+            model.getImageStack().getChildren().remove(getArea());
+        }
+        getArea().setStroke(Color.BLUE);
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
+    }
+
+    protected int x(final int m) {
+        return m / height;
+    }
+
+    protected int y(final int m) {
+
+        return m % height;
+    }
+
+    private Slider getThresholdSlider() {
+        if (thresholdSlider == null) {
+            thresholdSlider = new SimpleSliderBuilder(0, PixelHelper.MAX_BYTE, 0).bindBidirectional(threshold)
+                .maxWidth(60).build();
+
+        }
+        return thresholdSlider;
     }
 
     private void onMouseClicked(final MouseEvent e, final PaintModel model) {
@@ -217,19 +231,8 @@ public class WandTool extends AreaTool {
                     initialX = clickedX;
                     initialY = clickedY;
                 }
-
             });
         }
-
-    }
-
-    private int x(final int m) {
-        return m / height;
-    }
-
-    private int y(final int m) {
-
-        return m % height;
     }
 
 }

@@ -24,6 +24,7 @@ public enum PaintTools {
 	PICTURE(new PictureTool()),
 	BLUR(new BlurTool()),
     MIRROR(new MirrorTool()),
+    PATTERN(new PatternTool()),
     BORDER(new BorderTool());
 
     private PaintTool tool = new DummyTool();

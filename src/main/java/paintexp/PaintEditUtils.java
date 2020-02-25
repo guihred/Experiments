@@ -35,7 +35,7 @@ public final class PaintEditUtils {
             return;
         }
         paintController.changeTool(PaintTools.SELECT_RECT.getTool());
-        paintController.getCurrentSelectTool().copyFromClipboard(paintModel);
+        paintController.getCurrentSelectTool().pasteFromClipboard(paintModel);
     }
 
     public static void redo(PaintModel paintModel) {
