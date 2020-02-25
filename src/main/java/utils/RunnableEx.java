@@ -1,5 +1,6 @@
 package utils;
 
+import javafx.application.Platform;
 import org.assertj.core.api.exception.RuntimeIOException;
 
 @FunctionalInterface
@@ -62,6 +63,10 @@ public interface RunnableEx {
         if (length != null) {
             ConsumerEx.makeConsumer(func).accept(length);
         }
+    }
+
+    static void runInPlatform(RunnableEx run) {
+        Platform.runLater(make(run));
     }
 
     static void runNewThread(RunnableEx run) {

@@ -8,7 +8,6 @@ import extract.Music;
 import extract.MusicReader;
 import extract.SongUtils;
 import java.io.File;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
@@ -35,6 +34,7 @@ import simplebuilder.StageHelper;
 import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 public final class EditSongHelper {
     private static final Logger LOG = HasLogging.log();
@@ -80,7 +80,7 @@ public final class EditSongHelper {
         progressIndicator.setVisible(true);
         progress.addListener((v, o, n) -> {
             if (n.intValue() == 1) {
-                Platform.runLater(() -> {
+                RunnableEx.runInPlatform(() -> {
                     SongUtils.stopAndDispose(mediaPlayer.get());
                     run(() -> {
                         MusicReader.saveMetadata(selectedItem, outFile);
@@ -131,7 +131,7 @@ public final class EditSongHelper {
         splitAudio.addListener((ob, old, n) -> {
             progressIndicator.setVisible(true);
             if (n.intValue() == 1) {
-                Platform.runLater(() -> {
+                RunnableEx.runInPlatform(() -> {
                     mediaPlayer.set(new MediaPlayer(new Media(file.toURI().toString())));
                     mediaPlayer.get().totalDurationProperty().addListener(b -> {
                         SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer.get());

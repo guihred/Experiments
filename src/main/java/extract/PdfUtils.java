@@ -1,5 +1,6 @@
 package extract;
 
+import static utils.RunnableEx.runInPlatform;
 import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.removeMathematicalOperators;
 
@@ -13,8 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
-import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -47,7 +47,7 @@ public final class PdfUtils {
     }
 
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
-        DoubleProperty progress) {
+        Property<Number> progress) {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
         runNewThread(() -> RunnableEx.remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
@@ -60,11 +60,11 @@ public final class PdfUtils {
                     images.put(i, pageImages);
                     double current = i;
                     if (progress != null) {
-                        Platform.runLater(() -> progress.set(current / (nPag - start)));
+                        runInPlatform(() -> progress.setValue(current / (nPag - start)));
                     }
                 }
                 if (progress != null) {
-                    Platform.runLater(() -> progress.set(1));
+                    runInPlatform(() -> progress.setValue(1));
                 }
             }
         }, ERROR_IN_FILE + file));

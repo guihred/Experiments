@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -165,7 +164,7 @@ public class FilesComparator extends Application {
     }
 
     private void updateProgress(double a) {
-        Platform.runLater(() -> progress.setProgress(a));
+        RunnableEx.runInPlatform(() -> progress.setProgress(a));
     }
 
     public static void main(String[] args) {
