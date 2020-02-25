@@ -1,5 +1,7 @@
 package paintexp.tool;
 
+import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.IntStream.range;
 import static simplebuilder.SimpleComboBoxBuilder.cellStyle;
 import static utils.DrawOnPoint.getWithinRange;
 
@@ -164,6 +166,7 @@ public class TextTool extends PaintTool {
         fontFamily.setItems(FXCollections.observableArrayList(Font.getFamilies()));
         fontFamily.setCellFactory(cellStyle(fontFamily, t -> "-fx-font-family:\"" + t + "\";"));
         fontFamily.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
+        fontSize.setItems(range(7, 500).boxed().collect(toCollection(FXCollections::observableArrayList)));
         fontSize.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
         effects.getItems().add(0, null);
         effects.getSelectionModel().selectedIndexProperty().addListener(e -> onOptionsChanged());

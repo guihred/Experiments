@@ -1,4 +1,5 @@
 package utils;
+
 import static utils.DrawOnPoint.getWithinRange;
 
 import javafx.scene.image.WritableImage;
@@ -13,31 +14,31 @@ public class PixelHelper {
     private int g;
     private int b;
 
-	public void add(final int argb) {
+    public void add(final int argb) {
         a += getByte(argb, 3);
         r += getByte(argb, 2);
         g += getByte(argb, 1);
         b += getByte(argb, 0);
-		i++;
-	}
+        i++;
+    }
 
     public void add(final int argb, final int mul) {
         a += getByte(argb, 3) * mul;
         r += getByte(argb, 2) * mul;
         g += getByte(argb, 1) * mul;
         b += getByte(argb, 0) * mul;
-		i += mul;
-	}
+        i += mul;
+    }
 
-	public int modulus() {
+    public int modulus() {
         return Math.abs(r) + Math.abs(g) + Math.abs(b) + Math.abs(a);
     }
 
-	public void reset() {
+    public void reset() {
         a = b = r = g = i = 0;
-	}
+    }
 
-	public void reset(int argb) {
+    public void reset(int argb) {
         a = getByte(argb, 3);
         r = getByte(argb, 2);
         g = getByte(argb, 1);
@@ -46,31 +47,24 @@ public class PixelHelper {
     }
 
     public int toArgb() {
-	        int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE);
-	        int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE);
-	        int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE);
-	        int trans = getWithinRange(i == 0 ? a : a / i, 0, MAX_BYTE) ;
-	        
-	        return trans << 8 * 3 | red << 8 * 2 | green << 8 | blue;
-	    }
+        int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE);
+        int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE);
+        int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE);
+        int trans = getWithinRange(i == 0 ? a : a / i, 0, MAX_BYTE);
 
-	public int toArgb(final int round) {
-        int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE) / round * round;
-        int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE) / round * round;
-        int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE) / round * round;
-        int transp = getWithinRange(i == 0 ? MAX_BYTE : a / i, 0, MAX_BYTE);
-        return transp << 8 * 3 | red << 8 * 2 | green << 8 | blue;
-	}
+        return trans << 8 * 3 | red << 8 * 2 | green << 8 | blue;
+    }
+
 
     public Color toColor() {
         int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE);
         int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE);
         int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE);
         double transp = getWithinRange(i == 0 ? MAX_BYTE : a / (double) i, 0.0, MAX_BYTE) / MAX_BYTE;
-		return Color.rgb(red, green, blue, transp);
-	}
+        return Color.rgb(red, green, blue, transp);
+    }
 
-	public static Color asColor(final int argb) {
+    public static Color asColor(final int argb) {
         int a = getByte(argb, 3);
         int r = getByte(argb, 2);
         int g = getByte(argb, 1);
@@ -78,11 +72,11 @@ public class PixelHelper {
         return Color.rgb(r, g, b, a / (double) MAX_BYTE);
     }
 
-    public static int getByte(final int argb,int i) {
-        return argb >> 8*i & 0xFF;
+    public static int getByte(final int argb, int i) {
+        return argb >> 8 * i & 0xFF;
     }
 
-    public  static void replaceColor(WritableImage writableImage, Color backColor, Color transparent) {
+    public static void replaceColor(WritableImage writableImage, Color backColor, Color transparent) {
         int colorToBe = PixelHelper.toArgb(transparent);
         int colorReplace = PixelHelper.toArgb(backColor);
         for (int i = 0; i < writableImage.getWidth(); i++) {

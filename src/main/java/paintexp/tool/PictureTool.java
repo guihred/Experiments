@@ -133,8 +133,8 @@ public class PictureTool extends PaintTool {
         }
         initialX = (int) e.getX();
         getArea().setLayoutX(initialX);
-        getArea().setScaleX(0.1);
-        getArea().setScaleY(0.1);
+        getArea().setScaleX(1. / 10);
+        getArea().setScaleY(1. / 10);
         initialY = (int) e.getY();
         getArea().setLayoutY(initialY);
         getArea().setStroke(option.isStroke() ? model.getFrontColor() : Color.TRANSPARENT);

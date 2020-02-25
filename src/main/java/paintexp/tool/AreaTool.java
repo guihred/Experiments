@@ -314,11 +314,11 @@ public abstract class AreaTool extends PaintTool {
             return true;
         }
         if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
-            resize(1.05);
+            resize(1. + 1. / 20);
             return true;
         }
         if (e.getCode() == KeyCode.MINUS || e.getCode() == KeyCode.SUBTRACT) {
-            resize(0.95);
+            resize(1. - 1. / 20);
             return true;
         }
         return false;
