@@ -1,8 +1,12 @@
 package extract;
 
+import static utils.RunnableEx.ignore;
+import static utils.RunnableEx.remap;
 import static utils.RunnableEx.runInPlatform;
 import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.removeMathematicalOperators;
+import static utils.SupplierEx.get;
+import static utils.SupplierEx.remap;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,18 +26,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
-import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.RunnableEx;
-import utils.SupplierEx;
 
 public final class PdfUtils {
 
     private static final String ERROR_IN_FILE = "ERROR IN FILE ";
 
     public static final String SPLIT_WORDS_REGEX = "[\\s]+";
-
-    private static final Logger LOG = HasLogging.log();
 
     private PdfUtils() {
     }
@@ -49,7 +47,7 @@ public final class PdfUtils {
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
         Property<Number> progress) {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
-        runNewThread(() -> RunnableEx.remap(() -> {
+        runNewThread(() -> remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -72,7 +70,7 @@ public final class PdfUtils {
     }
 
     public static String[] getAllLines(File file) {
-        return SupplierEx.remap(() -> {
+        return remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = PdfUtils.parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -85,7 +83,7 @@ public final class PdfUtils {
     }
 
     public static COSDocument parseAndGet(RandomAccessFile source) {
-        return SupplierEx.remap(() -> {
+        return remap(() -> {
             PDFParser parser = new PDFParser(source);
             parser.parse();
             return parser.getDocument();
@@ -121,18 +119,18 @@ public final class PdfUtils {
         pdfInfo.setFile(file1);
         pdfInfo.setPageIndex(0);
         pdfInfo.getPages().clear();
-        RunnableEx.ignore(() -> read(pdfInfo, file1, out));
+        ignore(() -> read(pdfInfo, file1, out));
         return pdfInfo;
     }
 
     public static void runOnFile(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
         IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
         PdfUtils.extractImages(file);
-        RunnableEx.ignore(() -> runOnLines(init, file, onTextPosition, onPage, onLines, onImages));
+        ignore(() -> runOnLines(init, file, onTextPosition, onPage, onLines, onImages));
     }
 
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
-        return SupplierEx.get(() -> printImageLocations.processPage(page, i), new ArrayList<>());
+        return get(() -> printImageLocations.processPage(page, i), new ArrayList<>());
     }
 
     private static void read(PdfInfo pdfInfo, File file1, PrintStream out) throws IOException {
@@ -159,7 +157,6 @@ public final class PdfUtils {
                     lines1.forEach(out::println);
                 }
 
-                LOG.trace("READING PAGE {}", i);
             }
             pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages());
             pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages(), pdfInfo.getProgress()));
@@ -177,7 +174,7 @@ public final class PdfUtils {
             PDFTextStripper pdfStripper = new PDFTextStripper() {
                 @Override
                 protected void writeString(String text1, List<TextPosition> textPositions) {
-                    RunnableEx.remap(() -> super.writeString(text1, textPositions), "ERRO WRITING");
+                    remap(() -> super.writeString(text1, textPositions), "ERRO WRITING");
                     onTextPosition.accept(text1, textPositions);
                 }
             };
