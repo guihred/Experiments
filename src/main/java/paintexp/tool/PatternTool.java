@@ -5,16 +5,25 @@ import static utils.DrawOnPoint.withinImage;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.text.Text;
+import simplebuilder.SimpleSliderBuilder;
 import utils.PixelHelper;
 
 public class PatternTool extends WandTool {
     private Image patternImage;
+    private Slider scaleSlider;
+    private DoubleProperty scale = new SimpleDoubleProperty(1);
+
     @Override
     public Node createIcon() {
         return PaintTool.getIconByURL("wand.png");
@@ -25,11 +34,12 @@ public class PatternTool extends WandTool {
         if (imageSelected != null) {
             return imageSelected;
         }
+        Image clipboardImage = PaintToolHelper.getClipboardImage();
+        if (clipboardImage != null) {
+            patternImage = clipboardImage;
+        }
         if (patternImage == null) {
-            patternImage = PaintToolHelper.getClipboardImage();
-            if (patternImage == null) {
-                return null;
-            }
+            return null;
         }
         PixelReader pixelReader = model.getImage().getPixelReader();
         int originalColor = pixelReader.getArgb((int) initialX, (int) initialY);
@@ -57,7 +67,9 @@ public class PatternTool extends WandTool {
                         addIfNotIn(toGo, next + height);
                         addIfNotIn(toGo, next - height);
                     }
-                    int argb = patternImage.getPixelReader().getArgb(x % selectedWidth, y % selectedHeight);
+                    int patternX = (int) Math.round(x / scale.get()) % selectedWidth;
+                    int patternY = (int) Math.round(y / scale.get()) % selectedHeight;
+                    int argb = patternImage.getPixelReader().getArgb(patternX, patternY);
                     selectedImage.getPixelWriter().setArgb(x, y, argb);
 
                     double x2 = getArea().getLayoutX();
@@ -81,6 +93,30 @@ public class PatternTool extends WandTool {
     }
 
     @Override
+    public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
+        if (scaleSlider.isFocused() && exceptionKeys.contains(e.getCode())) {
+            PaintTool.handleSlider(e, scale, scaleSlider);
+            return;
+        }
+        super.handleKeyEvent(e, model);
+    }
+
+    @Override
+    public void onSelected(PaintModel model) {
+        super.onSelected(model);
+        if (scaleSlider == null) {
+            SimpleSliderBuilder.onChange(getScaleSlider(), (observable, oldValue, newValue) -> onChangeSlider(model));
+        }
+
+        Slider slider = getScaleSlider();
+        Text text = new Text();
+        text.textProperty().bind(scale.multiply(100).asString("Scale %.0f%%"));
+        model.getToolOptions().getChildren().add(text);
+        model.getToolOptions().getChildren().add(slider);
+
+    }
+
+    @Override
     protected void onChangeSlider(final PaintModel model) {
         if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
             Platform.runLater(() -> {
@@ -98,6 +134,13 @@ public class PatternTool extends WandTool {
                 }
             });
         }
+    }
+
+    private Slider getScaleSlider() {
+        if (scaleSlider == null) {
+            scaleSlider = new SimpleSliderBuilder(0.1, 10, 1).bindBidirectional(scale).maxWidth(60).build();
+        }
+        return scaleSlider;
     }
 
 }

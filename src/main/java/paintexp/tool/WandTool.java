@@ -30,7 +30,7 @@ public class WandTool extends AreaTool {
     protected int height;
     private IntegerProperty threshold = new SimpleIntegerProperty(PixelHelper.MAX_BYTE / 20);
     private Slider thresholdSlider;
-    private List<KeyCode> exceptionKeys = Arrays.asList(KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN, KeyCode.UP);
+    protected List<KeyCode> exceptionKeys = Arrays.asList(KeyCode.RIGHT, KeyCode.LEFT, KeyCode.DOWN, KeyCode.UP);
 
     @Override
     public Node createIcon() {
@@ -105,6 +105,7 @@ public class WandTool extends AreaTool {
     public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
         if (!thresholdSlider.isFocused() || !exceptionKeys.contains(e.getCode())) {
             super.handleKeyEvent(e, model);
+            return;
         }
         PaintTool.handleSlider(e, threshold, thresholdSlider);
     }
@@ -118,10 +119,10 @@ public class WandTool extends AreaTool {
         }
 
         Slider slider = getThresholdSlider();
-        model.getToolOptions().getChildren().add(slider);
         Text text = new Text();
-        text.textProperty().bind(threshold.divide(slider.getMax()).multiply(100).asString("%.0f%%"));
+        text.textProperty().bind(threshold.divide(slider.getMax()).multiply(100).asString("Threshold %.0f%%"));
         model.getToolOptions().getChildren().add(text);
+        model.getToolOptions().getChildren().add(slider);
 
     }
 
