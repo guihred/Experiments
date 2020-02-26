@@ -157,6 +157,9 @@ public class WandTool extends AreaTool {
         return pixel.modulus() < threshold.get();
     }
 
+    protected int index(final double initialX2, final double initialY2) {
+        return (int) initialX2 * height + (int) initialY2;
+    }
     protected int index(final int initialX2, final int initialY2) {
         return initialX2 * height + initialY2;
     }
@@ -167,6 +170,8 @@ public class WandTool extends AreaTool {
                 if (imageSelected != null) {
                     setIntoImage(model);
                 }
+                getArea().setWidth(1);
+                getArea().setHeight(1);
                 WritableImage writableImage = createSelectedImage(model);
                 addRect(model);
 

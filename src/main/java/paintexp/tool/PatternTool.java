@@ -105,7 +105,7 @@ public class PatternTool extends WandTool {
     public void onSelected(PaintModel model) {
         super.onSelected(model);
         if (scaleSlider == null) {
-            SimpleSliderBuilder.onChange(getScaleSlider(), (observable, oldValue, newValue) -> onChangeSlider(model));
+            SimpleSliderBuilder.onChange(getScaleSlider(), (ob, old, val) -> onChangeSlider(model));
         }
 
         Slider slider = getScaleSlider();
