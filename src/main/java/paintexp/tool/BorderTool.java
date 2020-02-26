@@ -29,8 +29,8 @@ public class BorderTool extends WandTool {
         toGo.add(index(initialX, initialY));
         int tries = 0;
         WritableImage selectedImage = new WritableImage(width, height);
-        PixelHelper pixel = new PixelHelper(originalColor);
         PixelHelper newColor = new PixelHelper();
+        PixelHelper pixel = new PixelHelper(originalColor);
         while (!toGo.isEmpty()) {
             int next = toGo.remove(0);
             int x = x(next);
