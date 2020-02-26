@@ -197,7 +197,7 @@ public class BrushTool extends PaintTool {
         getMouseCursorMap().values().forEach(n -> n.setVisible(false));
         getMouseCursorMap().get(option).setVisible(true);
         getMouseCursorMap().get(option).setFill(model.getFrontColor());
-        getMouseCursorMap().get(option).setStroke(model.getFrontColor());
+        getMouseCursorMap().get(option).setStroke(model.getFrontColor().invert());
         getMouseCursorMap().get(option).setOpacity(opacitySlider.valueProperty().get());
     }
 

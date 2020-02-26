@@ -20,7 +20,7 @@ import utils.PixelHelper;
 
 public class BorderTool extends PaintTool {
 
-    private IntegerProperty length = new SimpleIntegerProperty(PixelHelper.MAX_BYTE / 20);
+    private IntegerProperty length = new SimpleIntegerProperty(PixelHelper.MAX_BYTE / 10);
     private Slider lengthSlider;
 
     @Override
@@ -56,11 +56,6 @@ public class BorderTool extends PaintTool {
                         addIfNotIn(toGo, next - 1, width, height);
                         addIfNotIn(toGo, next + height, width, height);
                         addIfNotIn(toGo, next - height, width, height);
-
-                        addIfNotIn(toGo, next + 1 + height, width, height);
-                        addIfNotIn(toGo, next + 1 - height, width, height);
-                        addIfNotIn(toGo, next - 1 + height, width, height);
-                        addIfNotIn(toGo, next - 1 - height, width, height);
                     }
                     nextGo.add(next);
                 }

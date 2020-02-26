@@ -42,7 +42,7 @@ public final class PaintFileUtils {
             fileChooser2.setInitialDirectory(defaultFile);
         }
         fileChooser2.setTitle("Open File");
-        fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
+        fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg", "*.jpeg"));
         paintModel.setCurrentFile(fileChooser2.showOpenDialog(ownerWindow));
         if (paintModel.getCurrentFile() == null) {
             return;
@@ -74,7 +74,7 @@ public final class PaintFileUtils {
                 if (defaultFile != null) {
                     fileChooser2.setInitialDirectory(defaultFile);
                 }
-                fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg"));
+                fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png"));
                 paintModel.setCurrentFile(fileChooser2.showSaveDialog(primaryStage));
             }
             if (paintModel.getCurrentFile() != null) {
