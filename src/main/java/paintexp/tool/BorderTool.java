@@ -9,7 +9,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import utils.PixelHelper;
 
@@ -28,10 +27,9 @@ public class BorderTool extends WandTool {
         List<Integer> toGo = new IntArrayList();
         List<Integer> nextGo = new IntArrayList();
         toGo.add(index(initialX, initialY));
-        int maxTries = width * height;
         int tries = 0;
         WritableImage selectedImage = new WritableImage(width, height);
-        PixelHelper pixel = new PixelHelper();
+        PixelHelper pixel = new PixelHelper(originalColor);
         PixelHelper newColor = new PixelHelper();
         while (!toGo.isEmpty()) {
             int next = toGo.remove(0);
@@ -39,39 +37,21 @@ public class BorderTool extends WandTool {
             int y = y(next);
             if (withinImage(x, y, width, height)) {
                 int color = pixelReader.getArgb(x, y);
-                pixel.reset(originalColor);
-                if (selectedImage.getPixelReader().getArgb(x, y) == 0 && closeColor(pixel, color)
-                    && tries++ < maxTries) {
+                if (isCloseColor(selectedImage, pixel, x, y, color, tries++)) {
                     newColor.add(color);
-                    if (y != 0 && y != height - 1) {
-                        addIfNotIn(toGo, next + 1);
-                        addIfNotIn(toGo, next - 1);
-                        addIfNotIn(toGo, next + height);
-                        addIfNotIn(toGo, next - height);
-                    }
+                    addNeighbors(toGo, next, y);
                     nextGo.add(next);
-                    double x2 = getArea().getLayoutX();
-                    double y2 = getArea().getLayoutY();
-                    getArea().setLayoutX(Math.min(x, x2));
-                    getArea().setLayoutY(Math.min(y, y2));
-                    getArea().setWidth(Math.abs(Math.max(x, x2 + getArea().getWidth()) - getArea().getLayoutX()));
-                    getArea().setHeight(Math.abs(Math.max(y, y2 + getArea().getHeight()) - getArea().getLayoutY()));
+                    adjustArea(x, y);
                 }
             }
             if (nextGo.size() % 50 == 0) {
                 paintInParallel(selectedImage.getPixelWriter(), nextGo, newColor);
-
             }
         }
         paintInParallel(selectedImage.getPixelWriter(), nextGo, newColor);
-        int width2 = Math.max(1, (int) getArea().getWidth() + 1);
-        int height2 = Math.max(1, (int) getArea().getHeight() + 1);
-        WritableImage writableImage = new WritableImage(width2, height2);
-        int x = (int) getArea().getLayoutX();
-        int y = (int) getArea().getLayoutY();
-        RectBuilder.build().startX(x).startY(y).width(width2).height(height2).copyImagePart(selectedImage,
-            writableImage, Color.TRANSPARENT);
-        return writableImage;
+
+        return cutArea(selectedImage);
+
     }
 
 

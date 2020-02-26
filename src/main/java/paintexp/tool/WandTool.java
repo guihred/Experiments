@@ -50,44 +50,24 @@ public class WandTool extends AreaTool {
         backColor = backColor == 0 ? PixelHelper.toArgb(model.getBackColor().invert())
             : PixelHelper.toArgb(model.getBackColor());
         List<Integer> toGo = new IntArrayList();
-        toGo.add(index((int) initialX, (int) initialY));
-        int maxTries = width * height;
+        toGo.add(index(initialX, initialY));
         int tries = 0;
-        PixelHelper pixel = new PixelHelper();
+        PixelHelper pixel = new PixelHelper(originalColor);
         while (!toGo.isEmpty()) {
             Integer next = toGo.remove(0);
             int x = x(next);
             int y = y(next);
             if (withinImage(x, y, model.getImage())) {
                 int color = pixelReader.getArgb(x, y);
-                pixel.reset(originalColor);
-                if (closeColor(pixel, color) && selectedImage.getPixelReader().getArgb(x, y) == 0
-                    && tries++ < maxTries) {
-                    if (y != 0 && y != height - 1) {
-                        addIfNotIn(toGo, next + 1);
-                        addIfNotIn(toGo, next - 1);
-                        addIfNotIn(toGo, next + height);
-                        addIfNotIn(toGo, next - height);
-                    }
+                if (isCloseColor(selectedImage, pixel, x, y, color, tries++)) {
+                    addNeighbors(toGo, next, y);
                     selectedImage.getPixelWriter().setArgb(x, y, color);
                     model.getImage().getPixelWriter().setArgb(x, y, backColor);
-                    double x2 = getArea().getLayoutX();
-                    double y2 = getArea().getLayoutY();
-                    getArea().setLayoutX(Math.min(x, x2));
-                    getArea().setLayoutY(Math.min(y, y2));
-                    getArea().setWidth(Math.abs(Math.max(x, x2 + getArea().getWidth()) - getArea().getLayoutX()));
-                    getArea().setHeight(Math.abs(Math.max(y, y2 + getArea().getHeight()) - getArea().getLayoutY()));
+                    adjustArea(x, y);
                 }
             }
         }
-        int width2 = Math.max(1, (int) getArea().getWidth() + 1);
-        int height2 = Math.max(1, (int) getArea().getHeight() + 1);
-        WritableImage writableImage = new WritableImage(width2, height2);
-        int x = (int) getArea().getLayoutX();
-        int y = (int) getArea().getLayoutY();
-        RectBuilder.build().startX(x).startY(y).width(width2).height(height2).copyImagePart(selectedImage,
-            writableImage, Color.TRANSPARENT);
-        return writableImage;
+        return cutArea(selectedImage);
     }
 
     @Override
@@ -147,21 +127,51 @@ public class WandTool extends AreaTool {
         }
     }
 
+    protected void addNeighbors(List<Integer> toGo, Integer next, int y) {
+        if (y != 0 && y != height - 1) {
+            addIfNotIn(toGo, next + 1);
+            addIfNotIn(toGo, next - 1);
+            addIfNotIn(toGo, next + height);
+            addIfNotIn(toGo, next - height);
+        }
+    }
+
     @Override
     protected void addRect(final PaintModel model) {
         getArea().setManaged(false);
     }
 
+    protected void adjustArea(int x, int y) {
+        double x2 = getArea().getLayoutX();
+        double y2 = getArea().getLayoutY();
+        getArea().setLayoutX(Math.min(x, x2));
+        getArea().setLayoutY(Math.min(y, y2));
+        getArea().setWidth(Math.abs(Math.max(x, x2 + getArea().getWidth()) - getArea().getLayoutX()));
+        getArea().setHeight(Math.abs(Math.max(y, y2 + getArea().getHeight()) - getArea().getLayoutY()));
+    }
+
     protected boolean closeColor(final PixelHelper pixel, final int color) {
-        pixel.add(color, -1);
-        return pixel.modulus() < threshold.get();
+        return pixel.diff(color) < threshold.get();
+    }
+
+    protected WritableImage cutArea(WritableImage selectedImage) {
+        int width2 = Math.max(1, (int) getArea().getWidth() + 1);
+        int height2 = Math.max(1, (int) getArea().getHeight() + 1);
+        WritableImage writableImage = new WritableImage(width2, height2);
+        int x = (int) getArea().getLayoutX();
+        int y = (int) getArea().getLayoutY();
+        RectBuilder.build().startX(x).startY(y).width(width2).height(height2).copyImagePart(selectedImage,
+            writableImage, Color.TRANSPARENT);
+        return writableImage;
     }
 
     protected int index(final double initialX2, final double initialY2) {
         return (int) initialX2 * height + (int) initialY2;
     }
-    protected int index(final int initialX2, final int initialY2) {
-        return initialX2 * height + initialY2;
+
+    protected boolean isCloseColor(WritableImage selectedImage, PixelHelper pixel, int x, int y, int color, int i) {
+        return closeColor(pixel, color) && selectedImage.getPixelReader().getArgb(x, y) == 0
+            && i < width * height;
     }
 
     protected void onChangeSlider(final PaintModel model) {

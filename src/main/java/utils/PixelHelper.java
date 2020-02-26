@@ -14,6 +14,13 @@ public class PixelHelper {
     private int g;
     private int b;
 
+    public PixelHelper() {
+    }
+
+    public PixelHelper(int argb) {
+        reset(argb);
+    }
+
     public void add(final int argb) {
         a += getByte(argb, 3);
         r += getByte(argb, 2);
@@ -30,6 +37,13 @@ public class PixelHelper {
         i += mul;
     }
 
+    public int diff(final int argb) {
+        int trans = a - getByte(argb, 3);
+        int red = r - getByte(argb, 2);
+        int green = g - getByte(argb, 1);
+        int blue = b - getByte(argb, 0);
+        return Math.abs(red) + Math.abs(green) + Math.abs(blue) + Math.abs(trans);
+    }
     public int modulus() {
         return Math.abs(r) + Math.abs(g) + Math.abs(b) + Math.abs(a);
     }

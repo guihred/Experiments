@@ -13,7 +13,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
@@ -46,49 +45,28 @@ public class PatternTool extends WandTool {
         WritableImage selectedImage = new WritableImage(width, height);
 
         List<Integer> toGo = new IntArrayList();
-        toGo.add(index((int) initialX, (int) initialY));
-        int maxTries = width * height;
+        toGo.add(index(initialX, initialY));
         int tries = 0;
         int selectedWidth = (int) patternImage.getWidth();
         int selectedHeight = (int) patternImage.getHeight();
-        PixelHelper pixel = new PixelHelper();
+        PixelHelper pixel = new PixelHelper(originalColor);
         while (!toGo.isEmpty()) {
             Integer next = toGo.remove(0);
             int x = x(next);
             int y = y(next);
             if (withinImage(x, y, model.getImage())) {
                 int color = pixelReader.getArgb(x, y);
-                pixel.reset(originalColor);
-                if (closeColor(pixel, color) && selectedImage.getPixelReader().getArgb(x, y) == 0
-                    && tries++ < maxTries) {
-                    if (y != 0 && y != height - 1) {
-                        addIfNotIn(toGo, next + 1);
-                        addIfNotIn(toGo, next - 1);
-                        addIfNotIn(toGo, next + height);
-                        addIfNotIn(toGo, next - height);
-                    }
+                if (isCloseColor(selectedImage, pixel, x, y, color, tries++)) {
+                    addNeighbors(toGo, next, y);
                     int patternX = (int) Math.round(x / scale.get()) % selectedWidth;
                     int patternY = (int) Math.round(y / scale.get()) % selectedHeight;
                     int argb = patternImage.getPixelReader().getArgb(patternX, patternY);
                     selectedImage.getPixelWriter().setArgb(x, y, argb);
-
-                    double x2 = getArea().getLayoutX();
-                    double y2 = getArea().getLayoutY();
-                    getArea().setLayoutX(Math.min(x, x2));
-                    getArea().setLayoutY(Math.min(y, y2));
-                    getArea().setWidth(Math.abs(Math.max(x, x2 + getArea().getWidth()) - getArea().getLayoutX()));
-                    getArea().setHeight(Math.abs(Math.max(y, y2 + getArea().getHeight()) - getArea().getLayoutY()));
+                    adjustArea(x, y);
                 }
             }
         }
-        int width2 = Math.max(1, (int) getArea().getWidth() + 1);
-        int height2 = Math.max(1, (int) getArea().getHeight() + 1);
-        WritableImage writableImage = new WritableImage(width2, height2);
-        int x = (int) getArea().getLayoutX();
-        int y = (int) getArea().getLayoutY();
-        RectBuilder.build().startX(x).startY(y).width(width2).height(height2).copyImagePart(selectedImage,
-            writableImage, Color.TRANSPARENT);
-        return writableImage;
+        return cutArea(selectedImage);
 
     }
 
@@ -115,6 +93,7 @@ public class PatternTool extends WandTool {
         model.getToolOptions().getChildren().add(slider);
 
     }
+
 
     @Override
     protected void onChangeSlider(final PaintModel model) {
