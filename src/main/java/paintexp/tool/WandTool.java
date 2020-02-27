@@ -177,9 +177,7 @@ public class WandTool extends AreaTool {
     protected void onChangeSlider(final PaintModel model) {
         if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
             Platform.runLater(() -> {
-                if (imageSelected != null) {
-                    setIntoImage(model);
-                }
+                repositionImage(model);
                 getArea().setWidth(1);
                 getArea().setHeight(1);
                 WritableImage writableImage = createSelectedImage(model);
@@ -206,6 +204,12 @@ public class WandTool extends AreaTool {
         getArea().setStroke(Color.BLUE);
         model.getScrollPane().setHvalue(hvalue);
         model.getScrollPane().setVvalue(vvalue);
+    }
+
+    protected void repositionImage(final PaintModel model) {
+        if (imageSelected != null) {
+            setIntoImage(model);
+        }
     }
 
     protected int x(final int m) {

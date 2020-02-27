@@ -4,16 +4,13 @@ import static utils.DrawOnPoint.withinImage;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.List;
-import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.ImagePattern;
 import utils.PixelHelper;
 
 public class BorderTool extends WandTool {
-
 
     @Override
     public ImageView createIcon() {
@@ -54,28 +51,12 @@ public class BorderTool extends WandTool {
 
     }
 
-
     @Override
-    protected void onChangeSlider(final PaintModel model) {
-        if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-            Platform.runLater(() -> {
-                imageSelected = null;
-                getArea().setWidth(1);
-                getArea().setHeight(1);
-                WritableImage writableImage = createSelectedImage(model);
-                addRect(model);
-
-                onMouseReleased(model);
-                setImageSelected(writableImage);
-                getArea().setFill(new ImagePattern(writableImage));
-                if (!model.getImageStack().getChildren().contains(getArea())) {
-                    model.getImageStack().getChildren().add(getArea());
-                }
-            });
-        }
+    protected void repositionImage(final PaintModel model) {
+        imageSelected = null;
     }
-    private void paintInParallel(PixelWriter pixelWriter, List<Integer> nextGo,
-        PixelHelper newColor) {
+
+    private void paintInParallel(PixelWriter pixelWriter, List<Integer> nextGo, PixelHelper newColor) {
         while (!nextGo.isEmpty()) {
             Integer next0 = nextGo.remove(0);
             if (next0 == null) {
@@ -86,7 +67,5 @@ public class BorderTool extends WandTool {
             pixelWriter.setArgb(x0, y0, newColor.toArgb());
         }
     }
-
-
 
 }

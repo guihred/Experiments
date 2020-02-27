@@ -4,7 +4,6 @@ import static utils.DrawOnPoint.withinImage;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.List;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
@@ -13,7 +12,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
 import utils.PixelHelper;
@@ -96,28 +94,13 @@ public class PatternTool extends WandTool {
 
 
     @Override
-    protected void onChangeSlider(final PaintModel model) {
-        if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-            Platform.runLater(() -> {
-                imageSelected = null;
-                getArea().setWidth(1);
-                getArea().setHeight(1);
-                WritableImage writableImage = createSelectedImage(model);
-                addRect(model);
-
-                onMouseReleased(model);
-                setImageSelected(writableImage);
-                getArea().setFill(new ImagePattern(writableImage));
-                if (!model.getImageStack().getChildren().contains(getArea())) {
-                    model.getImageStack().getChildren().add(getArea());
-                }
-            });
-        }
+    protected void repositionImage(final PaintModel model) {
+        imageSelected = null;
     }
 
     private Slider getScaleSlider() {
         if (scaleSlider == null) {
-            scaleSlider = new SimpleSliderBuilder(0.1, 10, 1).bindBidirectional(scale).maxWidth(60).build();
+            scaleSlider = new SimpleSliderBuilder(1. / 10, 10, 1).bindBidirectional(scale).maxWidth(60).build();
         }
         return scaleSlider;
     }
