@@ -2,8 +2,10 @@ package paintexp;
 
 import java.util.List;
 import javafx.geometry.Bounds;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.shape.Rectangle;
 import paintexp.tool.*;
 import utils.PixelatedImageView;
 import utils.ZoomableScrollPane;
@@ -19,23 +21,35 @@ public final class PaintEditUtils {
     }
 
     public static void cut(PaintModel paintModel, PaintController paintController) {
-        if (paintController.getTool() instanceof AreaTool) {
-            return;
+        if (!(paintController.getTool() instanceof AreaTool)) {
+            paintController.changeTool(PaintTools.SELECT_RECT.getTool());
         }
-        paintController.changeTool(PaintTools.SELECT_RECT.getTool());
         AreaTool a = paintController.getCurrentSelectTool();
         a.copyToClipboard(paintModel.getImage());
         Bounds bounds = a.getArea().getBoundsInParent();
-		RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth())
-		.height(bounds.getHeight()).drawRect(paintModel.getImage(), paintModel.getBackColor());
+        RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth())
+            .height(bounds.getHeight()).drawRect(paintModel.getImage(), paintModel.getBackColor());
     }
 
     public static void paste(PaintModel paintModel, PaintController paintController) {
-        if (paintController.getTool() instanceof AreaTool) {
-            return;
+        if (!(paintController.getTool() instanceof AreaTool)) {
+            paintController.changeTool(PaintTools.SELECT_RECT.getTool());
         }
-        paintController.changeTool(PaintTools.SELECT_RECT.getTool());
+        Image pastedImg = PaintToolHelper.getClipboardImage();
+        if (pastedImg != null) {
+            WritableImage image = paintModel.getImage();
+            double width = image.getWidth();
+            double height = image.getHeight();
+            if (pastedImg.getWidth() > width || pastedImg.getHeight() > height) {
+                WritableImage writableImage = new WritableImage(new SimplePixelReader(paintModel.getBackColor()),
+                    (int) Math.max(pastedImg.getWidth(), width),
+                    (int) Math.max(pastedImg.getHeight(), height));
+                RectBuilder.copyImagePart(image, writableImage, new Rectangle(width, height));
+                changeCurrentImage(paintModel, writableImage);
+            }
+        }
         paintController.getCurrentSelectTool().pasteFromClipboard(paintModel);
+
     }
 
     public static void redo(PaintModel paintModel) {
@@ -46,9 +60,6 @@ public final class PaintEditUtils {
         if (paintModel.getCurrentVersion() + 1 >= paintModel.getImageVersions().size()) {
             return;
         }
-        ZoomableScrollPane scrollPane = paintModel.getScrollPane();
-        double hvalue = scrollPane.getHvalue();
-        double vvalue = scrollPane.getVvalue();
         WritableImage writableImage = paintModel.getCurrentImage();
         if (!imageVersions.isEmpty() && PaintToolHelper.isEqualImage(paintModel.getImage(), writableImage)) {
             paintModel.incrementCurrentVersion();
@@ -56,14 +67,8 @@ public final class PaintEditUtils {
         }
         WritableImage e = new WritableImage(writableImage.getPixelReader(), (int) writableImage.getWidth(),
             (int) writableImage.getHeight());
-        
-        paintModel.getImageStack().getChildren().clear();
-        ImageView imageView = new PixelatedImageView(e);
-        paintModel.setImage(e);
-        paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
-        paintModel.getImageStack().getChildren().add(imageView);
-        scrollPane.setHvalue(hvalue);
-        scrollPane.setVvalue(vvalue);
+
+        changeCurrentImage(paintModel, e);
     }
 
     public static void selectAll(PaintModel paintModel, PaintController paintController) {
@@ -80,9 +85,6 @@ public final class PaintEditUtils {
         if (imageVersions.isEmpty()) {
             return;
         }
-        ZoomableScrollPane scrollPane = paintModel.getScrollPane();
-        double hvalue = scrollPane.getHvalue();
-        double vvalue = scrollPane.getVvalue();
         WritableImage writableImage = paintModel.getCurrentImage();
         if (!imageVersions.isEmpty() && PaintToolHelper.isEqualImage(paintModel.getImage(), writableImage)) {
             paintModel.decrementCurrentVersion();
@@ -91,6 +93,13 @@ public final class PaintEditUtils {
         WritableImage e = new WritableImage(writableImage.getPixelReader(), (int) writableImage.getWidth(),
             (int) writableImage.getHeight());
 
+        changeCurrentImage(paintModel, e);
+    }
+
+    private static void changeCurrentImage(PaintModel paintModel, WritableImage e) {
+        ZoomableScrollPane scrollPane = paintModel.getScrollPane();
+        double hvalue = scrollPane.getHvalue();
+        double vvalue = scrollPane.getVvalue();
         paintModel.getImageStack().getChildren().clear();
         ImageView imageView = new PixelatedImageView(e);
         paintModel.setImage(e);

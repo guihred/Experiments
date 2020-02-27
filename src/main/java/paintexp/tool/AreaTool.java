@@ -2,16 +2,12 @@ package paintexp.tool;
 
 import static utils.DrawOnPoint.getWithinRange;
 import static utils.PixelHelper.replaceColor;
-import static utils.ResourceFXUtils.convertToURL;
 
-import java.io.File;
-import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.control.Toggle;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -20,7 +16,6 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import simplebuilder.SimpleRectangleBuilder;
 import utils.CommonsFX;
-import utils.RunnableEx;
 
 public abstract class AreaTool extends PaintTool {
     protected WritableImage imageSelected;
@@ -30,19 +25,6 @@ public abstract class AreaTool extends PaintTool {
     protected double initialY;
     protected SelectOption option = SelectOption.OPAQUE;
     private Rectangle area;
-
-    public final void pasteFromClipboard(PaintModel model) {
-        Clipboard systemClipboard = Clipboard.getSystemClipboard();
-        Image image = systemClipboard.getImage();
-        if (image != null) {
-            copyImage(model, image, imageSelected);
-        } else if (systemClipboard.getFiles() != null) {
-            copyFromFile(model, systemClipboard.getFiles());
-        }
-        if (imageSelected != null) {
-            getArea().setFill(new ImagePattern(imageSelected));
-        }
-    }
 
     public final void copyToClipboard(WritableImage image) {
         if (imageSelected == null) {
@@ -114,6 +96,17 @@ public abstract class AreaTool extends PaintTool {
 
     }
 
+    public final WritableImage pasteFromClipboard(PaintModel model) {
+        Image image = PaintToolHelper.getClipboardImage();
+        if (image != null) {
+            copyImage(model, image, imageSelected);
+        }
+        if (imageSelected != null) {
+            getArea().setFill(new ImagePattern(imageSelected));
+        }
+        return imageSelected;
+    }
+
     public void selectArea(int x, int y, int endX, int endY, PaintModel model) {
         initialX = x;
         initialY = y;
@@ -136,6 +129,8 @@ public abstract class AreaTool extends PaintTool {
         getArea().setLayoutX(initialX);
         getArea().setLayoutY(initialY);
         getArea().setWidth(1);
+        getArea().setScaleX(1);
+        getArea().setScaleY(1);
         getArea().setHeight(1);
     }
 
@@ -233,20 +228,20 @@ public abstract class AreaTool extends PaintTool {
         int y = (int) getArea().getLayoutY();
         double width = getArea().getWidth();
         double height = getArea().getHeight();
-        RectBuilder.build().width(width).height(height).endX(x).endY(y).copyImagePart(imageSelected, model.getImage(),
+        double newWidth = width * getArea().getScaleX();
+        double newHeight = height * getArea().getScaleY();
+        double offX = (newWidth - width) / 2;
+        double offY = (newHeight - height) / 2;
+
+        WritableImage newImage = RectBuilder.resizeImage(imageSelected, newWidth, newHeight);
+        RectBuilder.build().width(newWidth).height(newHeight).endX(x - offX).endY(y - offY).copyImagePart(newImage,
+            model.getImage(),
             Color.TRANSPARENT);
         imageSelected = null;
         model.getImageStack().getChildren().remove(getArea());
         model.createImageVersion();
         model.getScrollPane().setHvalue(hvalue);
         model.getScrollPane().setVvalue(vvalue);
-    }
-
-    private void copyFromFile(PaintModel model, List<File> files) {
-        if (!files.isEmpty()) {
-            RunnableEx
-                .run(() -> copyImage(model, new Image(convertToURL(files.get(0)).toExternalForm()), imageSelected));
-        }
     }
 
     private WritableImage createSelectedImage(PaintModel model, WritableImage srcImage) {
@@ -286,13 +281,6 @@ public abstract class AreaTool extends PaintTool {
         switch (code) {
             case C:
                 copyToClipboard(model.getImage());
-                return true;
-            case V:
-                onDeselected(model);
-                pasteFromClipboard(model);
-                return true;
-            case X:
-                cutImage(model);
                 return true;
             case A:
                 onDeselected(model);
@@ -338,17 +326,19 @@ public abstract class AreaTool extends PaintTool {
     }
 
     private void resize(double scale) {
+        if (imageSelected == null) {
+            return;
+        }
+
         long newWidth = Math.round(imageSelected.getWidth() * scale);
         long newHeight = Math.round(imageSelected.getHeight() * scale);
         if (newWidth == 0 || newHeight == 0) {
             return;
         }
 
-        WritableImage newImage = RectBuilder.resizeImage(imageSelected, newWidth, newHeight);
-        getArea().setWidth(newWidth);
-        getArea().setHeight(newHeight);
-        getArea().setFill(new ImagePattern(newImage));
-        imageSelected = newImage;
+        getArea().setScaleX(getArea().getScaleX() * scale);
+        getArea().setScaleY(getArea().getScaleY() * scale);
+        getArea().setFill(new ImagePattern(imageSelected));
     }
 
 }

@@ -113,7 +113,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         List<Node> colors = lookup("#colorGrid").queryAllAs(GridPane.class).stream()
             .flatMap(e -> e.getChildren().stream()).collect(Collectors.toList());
         int bound = (int) (stack.getBoundsInParent().getWidth() / 3);
-        List<KeyCode> testCodes = Arrays.asList(DELETE, V, C, X, A, RIGHT, LEFT, DOWN, UP);
+        List<KeyCode> testCodes = Arrays.asList(DELETE, V, C, X, A, RIGHT, LEFT, DOWN, UP, ADD, SUBTRACT);
         if (!colors.isEmpty()) {
             RunnableEx.ignore(() -> doubleClickOn(colors.remove(random.nextInt(colors.size())), MouseButton.PRIMARY));
             tryClickButtons();

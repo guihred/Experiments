@@ -321,7 +321,10 @@ public final class RectBuilder {
     }
 
     public static WritableImage resizeImage(final WritableImage image, double newWidth, double newHeight) {
-        WritableImage newImage = new WritableImage((int) newWidth, (int) newHeight);
+
+        int newWidth2 = Math.max((int) newWidth, 1);
+        int newHeight2 = Math.max((int) newHeight, 1);
+        WritableImage newImage = new WritableImage(newWidth2, newHeight2);
         double width = image.getWidth();
         double height = image.getHeight();
         double yRatio = newHeight / height;

@@ -118,11 +118,15 @@ public final class PaintToolHelper {
 
     public static Image getClipboardImage() {
         Clipboard systemClipboard = Clipboard.getSystemClipboard();
+        Image image = systemClipboard.getImage();
+        if (image != null) {
+            return image;
+        }
         List<File> files = systemClipboard.getFiles();
         if (!files.isEmpty()) {
             return SupplierEx.get(() -> new Image(convertToURL(files.get(0)).toExternalForm()));
         }
-        return systemClipboard.getImage();
+        return null;
     }
 
     public static boolean isEqualImage(WritableImage image, WritableImage image2) {
