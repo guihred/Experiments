@@ -41,7 +41,7 @@ public class BorderTool extends WandTool {
                     adjustArea(x, y);
                 }
             }
-            if (nextGo.size() % 50 == 0) {
+            if (nextGo.size() % 200 == 0) {
                 paintInParallel(selectedImage.getPixelWriter(), nextGo, newColor);
             }
         }

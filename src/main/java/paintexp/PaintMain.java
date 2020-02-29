@@ -32,8 +32,8 @@ public class PaintMain extends Application {
             .addMenuItem("_Paste", "Ctrl+V", e -> PaintEditUtils.paste(paintModel, controller))
             .addMenuItem("_Cut", "Ctrl+X", e -> PaintEditUtils.cut(paintModel, controller),
                 controller.containsSelectedArea().not())
-            .addMenuItem("Undo", "Ctrl+Z", e -> PaintEditUtils.undo(paintModel))
-            .addMenuItem("Redo", "Ctrl+Y", e -> PaintEditUtils.redo(paintModel))
+            .addMenuItem("Undo", "Ctrl+Z", e -> PaintEditUtils.undo(paintModel, controller))
+            .addMenuItem("Redo", "Ctrl+Y", e -> PaintEditUtils.redo(paintModel, controller))
             .addMenu("_View")
             .addMenuItem("Resize/Ske_w", "Ctrl+W", e -> PaintViewUtils.resize(paintModel, controller))
             .addMenuItem("_Flip/Rotate", "Ctrl+R", e -> PaintViewUtils.flipRotate(paintModel, controller))

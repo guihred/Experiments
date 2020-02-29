@@ -26,7 +26,7 @@ public abstract class AreaTool extends PaintTool {
     protected SelectOption option = SelectOption.OPAQUE;
     private Rectangle area;
 
-    public final void copyToClipboard(WritableImage image) {
+    public final WritableImage copyToClipboard(WritableImage image) {
         if (imageSelected == null) {
             double width = Math.max(1, getArea().getWidth());
             double height = Math.max(1, getArea().getHeight());
@@ -34,6 +34,7 @@ public abstract class AreaTool extends PaintTool {
             RectBuilder.copyImagePart(image, imageSelected, getArea());
         }
         PaintToolHelper.setClipboardContent(imageSelected);
+        return imageSelected;
     }
 
     public WritableImage createSelectedImage(PaintModel model) {
@@ -47,6 +48,19 @@ public abstract class AreaTool extends PaintTool {
             model.getImageStack().getChildren().remove(getArea());
         }
         imageSelected = null;
+        model.createImageVersion();
+    }
+
+    public void deleteImage(PaintModel model, Bounds bounds) {
+        if (imageSelected == null) {
+            final PaintModel model1 = model;
+            RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
+                .height(bounds.getHeight() - 1).drawRect(model1.getImage(), model.getBackColor());
+        }
+        imageSelected = null;
+        if (model.getImageStack().getChildren().contains(getArea())) {
+            model.getImageStack().getChildren().remove(getArea());
+        }
         model.createImageVersion();
     }
 
@@ -226,11 +240,11 @@ public abstract class AreaTool extends PaintTool {
         double vvalue = model.getScrollPane().getVvalue();
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
-        double width = getArea().getWidth();
-        double height = getArea().getHeight();
+        double width = imageSelected.getWidth();
+        double height = imageSelected.getHeight();
         double newWidth = width * getArea().getScaleX();
         double newHeight = height * getArea().getScaleY();
-        double offX = (newWidth - width) / 2;
+        double offX = (newWidth - width) / 2;   
         double offY = (newHeight - height) / 2;
 
         WritableImage newImage = RectBuilder.resizeImage(imageSelected, newWidth, newHeight);
@@ -258,33 +272,16 @@ public abstract class AreaTool extends PaintTool {
 
             getArea().setFill(new ImagePattern(imageSelected));
             RectBuilder.build().startX(layoutX).startY(layoutY).width(width).height(height).drawRect(model.getImage(),
+                imageSelected,
                 model.getBackColor());
-            model.createImageVersion();
         }
         return imageSelected;
-    }
-
-    private void deleteImage(PaintModel model, Bounds bounds) {
-        if (imageSelected == null) {
-            final PaintModel model1 = model;
-            RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
-                .height(bounds.getHeight() - 1).drawRect(model1.getImage(), model.getBackColor());
-        }
-        imageSelected = null;
-        if (model.getImageStack().getChildren().contains(getArea())) {
-            model.getImageStack().getChildren().remove(getArea());
-        }
-        model.createImageVersion();
     }
 
     private boolean handleControlDown(PaintModel model, KeyCode code) {
         switch (code) {
             case C:
                 copyToClipboard(model.getImage());
-                return true;
-            case A:
-                onDeselected(model);
-                selectArea(0, 0, (int) model.getImage().getWidth(), (int) model.getImage().getHeight(), model);
                 return true;
             default:
                 return false;
@@ -302,11 +299,11 @@ public abstract class AreaTool extends PaintTool {
             return true;
         }
         if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
-            resize(1. + 1. / 20);
+            resize(1. / 20);
             return true;
         }
         if (e.getCode() == KeyCode.MINUS || e.getCode() == KeyCode.SUBTRACT) {
-            resize(1. - 1. / 20);
+            resize(-1. / 20);
             return true;
         }
         return false;
@@ -329,15 +326,15 @@ public abstract class AreaTool extends PaintTool {
         if (imageSelected == null) {
             return;
         }
-
-        long newWidth = Math.round(imageSelected.getWidth() * scale);
-        long newHeight = Math.round(imageSelected.getHeight() * scale);
+        double newScale = getArea().getScaleX() + scale;
+        long newWidth = Math.round(imageSelected.getWidth() * newScale);
+        long newHeight = Math.round(imageSelected.getHeight() * newScale);
         if (newWidth == 0 || newHeight == 0) {
             return;
         }
 
-        getArea().setScaleX(getArea().getScaleX() * scale);
-        getArea().setScaleY(getArea().getScaleY() * scale);
+        getArea().setScaleX(newScale);
+        getArea().setScaleY(newScale);
         getArea().setFill(new ImagePattern(imageSelected));
     }
 

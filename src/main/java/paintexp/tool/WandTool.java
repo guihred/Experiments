@@ -178,6 +178,10 @@ public class WandTool extends AreaTool {
         if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
             Platform.runLater(() -> {
                 repositionImage(model);
+                getArea().setLayoutX(initialX);
+                getArea().setLayoutY(initialY);
+                getArea().setScaleX(1);
+                getArea().setScaleY(1);
                 getArea().setWidth(1);
                 getArea().setHeight(1);
                 WritableImage writableImage = createSelectedImage(model);

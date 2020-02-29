@@ -62,8 +62,8 @@ public final class RectBuilder {
         Type type = pixelReader.getPixelFormat().getType();
         double destWidth = destImage.getWidth();
         double destHeight = destImage.getHeight();
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i <= width; i++) {
+            for (int j = 0; j <= height; j++) {
                 if (within(i + endX, destWidth) && within(j + endY, destHeight) && within(i + startX, srcWidth)
                     && within(j + startY, srcHeight)) {
                     int color = pixelReader.getArgb(i + (int) startX, j + (int) startY);
@@ -80,8 +80,7 @@ public final class RectBuilder {
         }
     }
 
-    public void copyImagePartTransparency(Image srcImage, WritableImage destImage,
-        WritableImage currentImage) {
+    public void copyImagePartTransparency(Image srcImage, WritableImage destImage, WritableImage currentImage) {
         PixelReader pixelReader = srcImage.getPixelReader();
         double srcWidth = srcImage.getWidth();
         double srcHeight = srcImage.getHeight();
@@ -101,8 +100,7 @@ public final class RectBuilder {
         }
     }
 
-    public void drawCircle(WritableImage image, WritableImage currentImage, Color color,
-        double opacity) {
+    public void drawCircle(WritableImage image, WritableImage currentImage, Color color, double opacity) {
         double nPoints = Math.max(width, height) * PaintToolHelper.N_POINTS_MULTIPLIER;
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(width * Math.cos(t));
@@ -160,11 +158,9 @@ public final class RectBuilder {
         drawYAxis(image, onPoint, a, b);
     }
 
-
     public void drawLine(WritableImage image, WritableImage currentImage, Color color, double opacity) {
         drawLine(image, (x, y) -> PaintToolHelper.drawPointTransparency(x, y, color, opacity, image, currentImage));
     }
-
 
     public void drawRect(final Color backColor, final double opacity, WritableImage image, WritableImage currentImage) {
         int startX2 = (int) startX;
@@ -195,10 +191,25 @@ public final class RectBuilder {
     public void drawRect(WritableImage image, final Color backColor) {
         int startX2 = (int) startX;
         int startY2 = (int) startY;
-        for (int i = 0; i < width; i++) {
+        for (int i = 0; i <= width; i++) {
             for (int j = 0; j <= height; j++) {
                 if (withinImage(startX2 + i, startY2 + j, image)) {
                     image.getPixelWriter().setColor(startX2 + i, startY2 + j, backColor);
+                }
+            }
+        }
+    }
+
+    public void drawRect(WritableImage image, WritableImage exception, final Color backColor) {
+        int startX2 = (int) startX;
+        int startY2 = (int) startY;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j <= height; j++) {
+                if (withinImage(i, j, exception)) {
+                    int argb = exception.getPixelReader().getArgb(i, j);
+                    if (argb != 0 && withinImage(startX2 + i, startY2 + j, image)) {
+                        image.getPixelWriter().setColor(startX2 + i, startY2 + j, backColor);
+                    }
                 }
             }
         }
@@ -210,8 +221,7 @@ public final class RectBuilder {
         // RIGHT
         RectBuilder.build().startX(endX).startY(centerY1).endX(endX).endY(centerY2).drawLine(image, frontColor);
         // TOP
-        RectBuilder.build().startX(centerX1).startY(startY).endX(centerX2).endY(startY).drawLine(image,
-            frontColor);
+        RectBuilder.build().startX(centerX1).startY(startY).endX(centerX2).endY(startY).drawLine(image, frontColor);
         // BOTTOM
         RectBuilder.build().startX(centerX1).startY(endY).endX(centerX2).endY(endY).drawLine(image, frontColor);
         // TOP-LEFT

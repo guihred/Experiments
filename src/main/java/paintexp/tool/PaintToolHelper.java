@@ -3,8 +3,6 @@ package paintexp.tool;
 import static utils.DrawOnPoint.withinImage;
 import static utils.ResourceFXUtils.convertToURL;
 
-import java.io.File;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javafx.beans.binding.Bindings;
@@ -24,6 +22,7 @@ import javafx.scene.text.Text;
 import simplebuilder.SimpleConverter;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ClassReflectionUtils;
+import utils.FunctionEx;
 import utils.StringSigaUtils;
 import utils.SupplierEx;
 
@@ -118,15 +117,8 @@ public final class PaintToolHelper {
 
     public static Image getClipboardImage() {
         Clipboard systemClipboard = Clipboard.getSystemClipboard();
-        Image image = systemClipboard.getImage();
-        if (image != null) {
-            return image;
-        }
-        List<File> files = systemClipboard.getFiles();
-        if (!files.isEmpty()) {
-            return SupplierEx.get(() -> new Image(convertToURL(files.get(0)).toExternalForm()));
-        }
-        return null;
+        return SupplierEx.orElse(systemClipboard.getImage(), () -> systemClipboard.getFiles().stream().findFirst()
+            .map(FunctionEx.makeFunction(f -> new Image(convertToURL(f).toExternalForm()))).orElse(null));
     }
 
     public static boolean isEqualImage(WritableImage image, WritableImage image2) {

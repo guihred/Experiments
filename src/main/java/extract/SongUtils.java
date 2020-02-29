@@ -55,7 +55,7 @@ public final class SongUtils {
     public static DoubleProperty convertToAudio(File mp4File) {
         StringBuilder cmd = new StringBuilder();
         cmd.append(FFMPEG);
-        cmd.append(" -i \"");
+        cmd.append(" -y -i \"");
         cmd.append(mp4File);
         cmd.append("\" \"");
         File obj = new File(mp4File.getParent(), mp4File.getName().replaceAll("\\..+", ".mp3"));
@@ -109,7 +109,7 @@ public final class SongUtils {
 
         StringBuilder cmd = new StringBuilder();
         cmd.append(FFMPEG);
-        cmd.append(" -i \"");
+        cmd.append(" -y -i \"");
         cmd.append(inFile);
         cmd.append("\" -ss ");
         cmd.append(formatFullDuration(start));
