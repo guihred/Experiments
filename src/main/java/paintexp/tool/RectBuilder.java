@@ -31,6 +31,7 @@ public final class RectBuilder {
     private double centerY2 = Math.max(endY - radiusY, startY - height / 2);
     private double centerX1 = Math.min(startX + radiusX, startX + width / 2);
     private double centerX2 = Math.max(endX - radiusX, endX - width / 2);
+    public static final int N_POINTS_MULTIPLIER = 16;
 
     private RectBuilder() {
     }
@@ -101,7 +102,7 @@ public final class RectBuilder {
     }
 
     public void drawCircle(WritableImage image, WritableImage currentImage, Color color, double opacity) {
-        double nPoints = Math.max(width, height) * PaintToolHelper.N_POINTS_MULTIPLIER;
+        double nPoints = Math.max(width, height) * RectBuilder.N_POINTS_MULTIPLIER;
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(width * Math.cos(t));
             int y = (int) Math.round(height * Math.sin(t));
@@ -113,7 +114,7 @@ public final class RectBuilder {
     public void drawCirclePattern(WritableImage image, WritableImage currentImage, Color backcolor, double opacity) {
         for (double w = 0; w <= width; w++) {
             for (double h = 0; h <= height; h++) {
-                double nPoints = Math.max(w, h) * PaintToolHelper.N_POINTS_MULTIPLIER;
+                double nPoints = Math.max(w, h) * RectBuilder.N_POINTS_MULTIPLIER;
                 if (nPoints == 0) {
                     continue;
                 }
@@ -361,7 +362,7 @@ public final class RectBuilder {
 
     public static void drawCircle(WritableImage image, int centerX, int centerY, double radiusX, double radiusY,
         Color color) {
-        double nPoints = Math.max(radiusX, radiusY) * PaintToolHelper.N_POINTS_MULTIPLIER;
+        double nPoints = Math.max(radiusX, radiusY) * RectBuilder.N_POINTS_MULTIPLIER;
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(radiusX * Math.cos(t));
             int y = (int) Math.round(radiusY * Math.sin(t));
@@ -371,7 +372,7 @@ public final class RectBuilder {
 
     public static void drawCirclePart(WritableImage image, double centerX, double centerY, double radiusX,
         double radiusY, double startAngle, Color frontColor) {
-        double nPoints2 = Math.max(radiusX, radiusY) * PaintToolHelper.N_POINTS_MULTIPLIER;
+        double nPoints2 = Math.max(radiusX, radiusY) * RectBuilder.N_POINTS_MULTIPLIER;
         double angle = Math.PI / 2;
         for (double t = 0; t < angle; t += 2 * Math.PI / nPoints2) {
             int x = (int) Math.round(radiusX * Math.cos(t + startAngle));

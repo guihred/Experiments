@@ -26,8 +26,6 @@ import utils.StringSigaUtils;
 import utils.SupplierEx;
 
 public final class PaintToolHelper {
-    public static final int N_POINTS_MULTIPLIER = 16;
-
     private PaintToolHelper() {
     }
 
