@@ -92,7 +92,7 @@ public final class RectBuilder {
                     && within(j + startY, srcHeight)) {
                     Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
                     Color color = PixelHelper.asColor(PixelHelper.toArgb(color2) | 0xFF000000);
-                    PaintToolHelper.drawPointTransparency(i + (int) endX, j + (int) endY, color, color2.getOpacity(),
+                    RectBuilder.drawPointTransparency(i + (int) endX, j + (int) endY, color, color2.getOpacity(),
                         destImage, currentImage);
                 }
 
@@ -105,7 +105,7 @@ public final class RectBuilder {
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(width * Math.cos(t));
             int y = (int) Math.round(height * Math.sin(t));
-            PaintToolHelper.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
+            RectBuilder.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
                 currentImage);
         }
     }
@@ -124,7 +124,7 @@ public final class RectBuilder {
                     if (withinImage(x + endX, y + endY, image)) {
                         color = image.getPixelReader().getColor(x + (int) endX, y + (int) endY);
                     }
-                    PaintToolHelper.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
+                    RectBuilder.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
                         currentImage);
                 }
             }
@@ -137,10 +137,10 @@ public final class RectBuilder {
         RectBuilder.build().startX(startX).startY(centerY1).width(endX - startX).height(centerY2 - centerY1)
             .drawRect(image, backColor);
         for (int i = 0; i < radiusX; i++) {
-            PaintToolHelper.drawCirclePart(image, centerX1, centerY1, i, radiusY, Math.PI, backColor);
-            PaintToolHelper.drawCirclePart(image, centerX2, centerY1, i, radiusY, Math.PI * 3 / 2, backColor);
-            PaintToolHelper.drawCirclePart(image, centerX1, centerY2, i, radiusY, Math.PI / 2, backColor);
-            PaintToolHelper.drawCirclePart(image, centerX2, centerY2, i, radiusY, 0, backColor);
+            RectBuilder.drawCirclePart(image, centerX1, centerY1, i, radiusY, Math.PI, backColor);
+            RectBuilder.drawCirclePart(image, centerX2, centerY1, i, radiusY, Math.PI * 3 / 2, backColor);
+            RectBuilder.drawCirclePart(image, centerX1, centerY2, i, radiusY, Math.PI / 2, backColor);
+            RectBuilder.drawCirclePart(image, centerX2, centerY2, i, radiusY, 0, backColor);
         }
     }
 
@@ -159,7 +159,7 @@ public final class RectBuilder {
     }
 
     public void drawLine(WritableImage image, WritableImage currentImage, Color color, double opacity) {
-        drawLine(image, (x, y) -> PaintToolHelper.drawPointTransparency(x, y, color, opacity, image, currentImage));
+        drawLine(image, (x, y) -> RectBuilder.drawPointTransparency(x, y, color, opacity, image, currentImage));
     }
 
     public void drawRect(final Color backColor, final double opacity, WritableImage image, WritableImage currentImage) {
@@ -168,7 +168,7 @@ public final class RectBuilder {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (withinImage(startX2 + i, startY2 + j, image)) {
-                    PaintToolHelper.drawPointTransparency(startX2 + i, startY2 + j, backColor, opacity, image,
+                    RectBuilder.drawPointTransparency(startX2 + i, startY2 + j, backColor, opacity, image,
                         currentImage);
                 }
             }
@@ -225,13 +225,13 @@ public final class RectBuilder {
         // BOTTOM
         RectBuilder.build().startX(centerX1).startY(endY).endX(centerX2).endY(endY).drawLine(image, frontColor);
         // TOP-LEFT
-        PaintToolHelper.drawCirclePart(image, centerX1, centerY1, radiusX, radiusY, Math.PI, frontColor);
+        RectBuilder.drawCirclePart(image, centerX1, centerY1, radiusX, radiusY, Math.PI, frontColor);
         // BOTTOM-LEFT
-        PaintToolHelper.drawCirclePart(image, centerX2, centerY1, radiusX, radiusY, Math.PI * 3 / 2, frontColor);
+        RectBuilder.drawCirclePart(image, centerX2, centerY1, radiusX, radiusY, Math.PI * 3 / 2, frontColor);
         // BOTTOM-RIGHT
-        PaintToolHelper.drawCirclePart(image, centerX1, centerY2, radiusX, radiusY, Math.PI / 2, frontColor);
+        RectBuilder.drawCirclePart(image, centerX1, centerY2, radiusX, radiusY, Math.PI / 2, frontColor);
         // TOP-RIGHT
-        PaintToolHelper.drawCirclePart(image, centerX2, centerY2, radiusX, radiusY, 0, frontColor);
+        RectBuilder.drawCirclePart(image, centerX2, centerY2, radiusX, radiusY, 0, frontColor);
     }
 
     public RectBuilder endX(double value) {
@@ -305,6 +305,79 @@ public final class RectBuilder {
         centerY2 = Math.round(Math.max(endY - radiusY, startY - height / 2));
         centerX1 = Math.round(Math.min(startX + radiusX, startX + width / 2));
         centerX2 = Math.round(Math.max(endX - radiusX, endX - width / 2));
+    }
+
+    public static void drawSquareLine(WritableImage image, WritableImage currentImage, int startX, int startY, int w,
+        Color color, double opacity) {
+        for (int x = 0; x < w; x++) {
+            drawPointTransparency(startX + x, startY, color, opacity, image, currentImage);
+            drawPointTransparency(startX, startY + x, color, opacity, image, currentImage);
+            drawPointTransparency(startX + x, startY + w, color, opacity, image, currentImage);
+            drawPointTransparency(startX + w, startY + x, color, opacity, image, currentImage);
+        }
+    }
+
+    public static void drawSquareLine(WritableImage image, int startX, int startY, int w, Color color) {
+        for (int x = 0; x <= w; x++) {
+            drawPoint(image, startX + x, startY, color);
+            drawPoint(image, startX, startY + x, color);
+            drawPoint(image, startX + x, startY + w, color);
+            drawPoint(image, startX + w, startY + x, color);
+        }
+    }
+
+    public static void drawSquareLine(WritableImage image, Color backColor, int x, int y, int w, int color) {
+        for (int i = 0; i < w; i++) {
+            drawPointIf(image, x + i, y, color, backColor);
+            drawPointIf(image, x, y + i, color, backColor);
+            drawPointIf(image, x + w, y + i, color, backColor);
+            drawPointIf(image, x + i, y + w, color, backColor);
+        }
+    }
+
+    public static void drawPointTransparency(int x2, int y2, Color frontColor, double opacity, WritableImage image,
+        WritableImage currentImage) {
+        if (withinImage(x2, y2, image)) {
+            Color color = currentImage.getPixelReader().getColor(x2, y2);
+            Color color2 = color.interpolate(frontColor, opacity);
+            image.getPixelWriter().setColor(x2, y2, color2);
+        }
+    }
+
+    public static void drawPointIf(WritableImage image, int x2, int y2, int color, Color backColor) {
+        if (withinImage(x2, y2, image)) {
+            int argb = image.getPixelReader().getArgb(x2, y2);
+            if (argb == color) {
+                image.getPixelWriter().setColor(x2, y2, backColor);
+            }
+        }
+    }
+
+    public static void drawPoint(WritableImage image, int x2, int y2, Color frontColor) {
+        if (withinImage(x2, y2, image)) {
+            image.getPixelWriter().setColor(x2, y2, frontColor);
+        }
+    }
+
+    public static void drawCircle(WritableImage image, int centerX, int centerY, double radiusX, double radiusY,
+        Color color) {
+        double nPoints = Math.max(radiusX, radiusY) * PaintToolHelper.N_POINTS_MULTIPLIER;
+        for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
+            int x = (int) Math.round(radiusX * Math.cos(t));
+            int y = (int) Math.round(radiusY * Math.sin(t));
+            RectBuilder.drawPoint(image, x + centerX, y + centerY, color);
+        }
+    }
+
+    public static void drawCirclePart(WritableImage image, double centerX, double centerY, double radiusX,
+        double radiusY, double startAngle, Color frontColor) {
+        double nPoints2 = Math.max(radiusX, radiusY) * PaintToolHelper.N_POINTS_MULTIPLIER;
+        double angle = Math.PI / 2;
+        for (double t = 0; t < angle; t += 2 * Math.PI / nPoints2) {
+            int x = (int) Math.round(radiusX * Math.cos(t + startAngle));
+            int y = (int) Math.round(radiusY * Math.sin(t + startAngle));
+            RectBuilder.drawPoint(image, x + (int) centerX, y + (int) centerY, frontColor);
+        }
     }
 
     public static RectBuilder build() {

@@ -27,7 +27,7 @@ public class PaintMain extends Application {
             .addMenuItem("Save _As", "Ctrl+Shift+S", e -> PaintFileUtils.saveAsFile(stage, paintModel))
             .addMenu("_Edit")
             .addMenuItem("Select _All", "Ctrl+A", e -> PaintEditUtils.selectAll(paintModel, controller))
-            .addMenuItem("C_opy", "Ctrl+C", e -> PaintEditUtils.copy(controller),
+            .addMenuItem("C_opy", "Ctrl+C", e -> PaintEditUtils.copy(paintModel, controller),
                 controller.containsSelectedArea().not())
             .addMenuItem("_Paste", "Ctrl+V", e -> PaintEditUtils.paste(paintModel, controller))
             .addMenuItem("_Cut", "Ctrl+X", e -> PaintEditUtils.cut(paintModel, controller),

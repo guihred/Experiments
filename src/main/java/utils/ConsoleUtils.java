@@ -31,17 +31,17 @@ public final class ConsoleUtils {
     }
 
     public static DoubleProperty defineProgress(final double n) {
-        SimpleDoubleProperty simpleDoubleProperty = new SimpleDoubleProperty(0);
-        new Thread(() -> {
+        SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
+        RunnableEx.runNewThread(() -> {
             while (PROCESSES.values().stream().anyMatch(e -> !e)) {
                 long count = PROCESSES.values().stream().filter(e -> !e).count();
                 double newValue = (n - count) / n;
-                Platform.runLater(() -> simpleDoubleProperty.set(newValue));
+                Platform.runLater(() -> progress.set(newValue));
                 RunnableEx.ignore(() -> Thread.sleep(500));
             }
-            Platform.runLater(() -> simpleDoubleProperty.set(1));
-        }).start();
-        return simpleDoubleProperty;
+            Platform.runLater(() -> progress.set(1));
+        });
+        return progress;
     }
 
     public static DoubleProperty defineProgress(final String totalRegex, final String progressRegex,
@@ -75,13 +75,13 @@ public final class ConsoleUtils {
 
     public static Map<String, String> executeInConsole(final String cmd, final Map<String, String> responses) {
         Map<String, String> result = new HashMap<>();
-        LOGGER.trace(EXECUTING, cmd);
+        LOGGER.debug(EXECUTING, cmd);
         Process exec = newProcess(cmd);
         try (BufferedReader in = new BufferedReader(
             new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in.readLine()) != null) {
-                LOGGER.trace(line);
+                LOGGER.debug(line);
                 String line1 = line;
                 result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey())).collect(
                     Collectors.toMap(Entry<String, String>::getKey, e -> line1.replaceAll(e.getKey(), e.getValue()))));
@@ -118,7 +118,7 @@ public final class ConsoleUtils {
             while ((line = in2.readLine()) != null) {
                 String fixEncoding = StringSigaUtils.fixEncoding(line, StandardCharsets.ISO_8859_1,
                     Charset.forName("IBM00858"));
-                LOGGER.trace("{}", fixEncoding);
+                LOGGER.debug("{}", fixEncoding);
                 execution.add(fixEncoding);
             }
 
@@ -143,7 +143,7 @@ public final class ConsoleUtils {
                 new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in2.readLine()) != null) {
-					LOGGER.trace("{}", line);
+                    LOGGER.debug("{}", line);
                     execution.add(line);
                 }
                 p.waitFor();
@@ -172,7 +172,7 @@ public final class ConsoleUtils {
                 List<String> processes = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
                     .map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
                 String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
-                LOGGER.trace("Running {} processes {}", processes.size(), formated);
+                LOGGER.debug("Running {} processes {}", processes.size(), formated);
                 Thread.sleep(WAIT_INTERVAL_MILLIS);
                 if (System.currentTimeMillis() - currentTimeMillis > PROCESS_MAX_TIME_LIMIT) {
                     PROCESSES.keySet().stream().forEach(k -> PROCESSES.put(k, true));
@@ -180,7 +180,7 @@ public final class ConsoleUtils {
                     break;
                 }
             } catch (Exception e1) {
-                LOGGER.trace("", e1);
+                LOGGER.debug("", e1);
             }
         }
     }
@@ -198,7 +198,7 @@ public final class ConsoleUtils {
                 new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in.readLine()) != null) {
-                    LOGGER.trace(line);
+                    LOGGER.debug(line);
                     String line0 = line;
                     if (response.stream().anyMatch(line0::matches)) {
                         response.clear();
@@ -232,7 +232,7 @@ public final class ConsoleUtils {
             new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in.readLine()) != null) {
-                LOGGER.trace(line);
+                LOGGER.debug(line);
                 String line1 = line;
                 Map<String, String> regMap = responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
                     .collect(Collectors.toMap(Entry<String, String>::getKey,

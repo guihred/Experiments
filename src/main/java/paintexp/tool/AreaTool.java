@@ -23,7 +23,7 @@ public abstract class AreaTool extends PaintTool {
     private double dragX;
     private double dragY;
     protected double initialY;
-    protected SelectOption option = SelectOption.OPAQUE;
+    protected SelectOption option = SelectOption.TRANSPARENT;
     private Rectangle area;
 
     public final WritableImage copyToClipboard(WritableImage image) {
@@ -90,9 +90,6 @@ public abstract class AreaTool extends PaintTool {
         if (handleDeleteEscape(e, model)) {
             e.consume();
             return;
-        }
-        if (e.isControlDown() && handleControlDown(model, code)) {
-            e.consume();
         }
     }
 
@@ -278,15 +275,6 @@ public abstract class AreaTool extends PaintTool {
         return imageSelected;
     }
 
-    private boolean handleControlDown(PaintModel model, KeyCode code) {
-        switch (code) {
-            case C:
-                copyToClipboard(model.getImage());
-                return true;
-            default:
-                return false;
-        }
-    }
 
     private boolean handleDeleteEscape(KeyEvent e, PaintModel model) {
         KeyCode code = e.getCode();
@@ -312,7 +300,7 @@ public abstract class AreaTool extends PaintTool {
 
     private void onChangeOption(Toggle newV, PaintModel model) {
         SelectOption oldOption = option;
-        option = newV == null ? SelectOption.OPAQUE : (SelectOption) newV.getUserData();
+        option = newV == null ? SelectOption.TRANSPARENT : (SelectOption) newV.getUserData();
         if (oldOption != option && imageSelected != null) {
             if (option == SelectOption.OPAQUE) {
                 replaceColor(imageSelected, Color.TRANSPARENT, model.getBackColor());

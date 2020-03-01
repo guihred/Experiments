@@ -14,9 +14,10 @@ public final class PaintEditUtils {
     private PaintEditUtils() {
     }
 
-    public static void copy(PaintController paintController) {
-        WritableImage selectedImage = paintController.getSelectedImage();
-        AreaTool a = paintController.getCurrentSelectTool();
+    public static void copy(PaintModel paintModel, PaintController controller) {
+        controller.getTool().onDeselected(paintModel);
+        WritableImage selectedImage = controller.getSelectedImage();
+        AreaTool a = controller.getCurrentSelectTool();
         a.copyToClipboard(selectedImage);
     }
 

@@ -92,9 +92,9 @@ public class EraserTool extends PaintTool {
         double y = getWithinRange(e.getY(), -w, image.getHeight() + w);
         RectBuilder.build().startX(lastX).startY(lastY).endX(x - w).endY(y - w).drawLine(model.getImage(), (x0, y0) -> {
             if (e.getButton() == MouseButton.PRIMARY) {
-                PaintToolHelper.drawSquareLine(model.getImage(), x0, y0, w, model.getBackColor());
+                RectBuilder.drawSquareLine(model.getImage(), x0, y0, w, model.getBackColor());
             } else {
-                PaintToolHelper.drawSquareLine(model.getImage(), model.getBackColor(), x0, y0, w,
+                RectBuilder.drawSquareLine(model.getImage(), model.getBackColor(), x0, y0, w,
                     PixelHelper.toArgb(model.getFrontColor()));
             }
         });

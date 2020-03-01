@@ -66,7 +66,7 @@ public class SprayTool extends PaintTool {
                 argb = pixelReader.getArgb(x + centerX, y + centerY);
             }
             try {
-                PaintToolHelper.drawPoint(paintModel.getImage(), x + centerX, y + centerY, paintModel.getFrontColor());
+                RectBuilder.drawPoint(paintModel.getImage(), x + centerX, y + centerY, paintModel.getFrontColor());
             } catch (Exception e) {
                 LOG.trace("", e);
             }

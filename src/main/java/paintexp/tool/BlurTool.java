@@ -94,7 +94,7 @@ public class BlurTool extends PaintTool {
 		}
 		for (int i = 0; i < colors.length; i++) {
 			if (colors[i] != null) {
-				PaintToolHelper.drawPoint(model.getImage(), i / diameter - radius + centerX,
+				RectBuilder.drawPoint(model.getImage(), i / diameter - radius + centerX,
 						i % diameter - radius + centerY, colors[i]);
 			}
 		}

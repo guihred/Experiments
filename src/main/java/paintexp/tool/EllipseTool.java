@@ -103,11 +103,11 @@ public class EllipseTool extends PaintTool {
             double yRad = getArea().getRadiusY();
             if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
                 for (int i = 0; i < xRad; i++) {
-                    PaintToolHelper.drawCircle(model.getImage(), initialX, initialY, i, yRad, model.getBackColor());
+                    RectBuilder.drawCircle(model.getImage(), initialX, initialY, i, yRad, model.getBackColor());
                 }
             }
             if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
-                PaintToolHelper.drawCircle(model.getImage(), initialX, initialY, xRad, yRad, model.getFrontColor());
+                RectBuilder.drawCircle(model.getImage(), initialX, initialY, xRad, yRad, model.getFrontColor());
             }
         }
         children.remove(getArea());

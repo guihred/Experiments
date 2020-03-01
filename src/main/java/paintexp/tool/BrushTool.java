@@ -153,7 +153,7 @@ public class BrushTool extends PaintTool {
         RectBuilder.build().startX(x2).startY(y2).width(r).height(r - 1).drawCircle(model.getImage(),
             model.getCurrentImage(), color, opacitySlider.valueProperty().get());
         if (fill) {
-            PaintToolHelper.drawPointTransparency(x2, y2, color, opacitySlider.valueProperty().get(), model.getImage(),
+            RectBuilder.drawPointTransparency(x2, y2, color, opacitySlider.valueProperty().get(), model.getImage(),
                 model.getCurrentImage());
             for (double i = 1; i < r; i++) {
                 RectBuilder.build().startX(x2).startY(y2).width(i).height(i).drawCircle(model.getImage(),
@@ -203,7 +203,7 @@ public class BrushTool extends PaintTool {
 
     private static void drawSquare(final PaintModel model, final int x2, final int y2, final boolean fill, double r,
         Color color, double op) {
-        PaintToolHelper.drawSquareLine(model.getImage(), model.getCurrentImage(), x2, y2, (int) r, color, op);
+        RectBuilder.drawSquareLine(model.getImage(), model.getCurrentImage(), x2, y2, (int) r, color, op);
         if (fill) {
             RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawRect(color, op, model.getImage(),
                 model.getCurrentImage());
