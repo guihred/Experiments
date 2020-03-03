@@ -233,11 +233,11 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                     write("" + (random.nextInt(120) + 20));
                 });
                 lookup("Resize").queryAll().forEach(this::clickOn);
-                lookup(".slider").queryAll().forEach(m -> {
+                lookup(".slider").queryAll().forEach(ConsumerEx.ignore(m -> {
                     drag(m, MouseButton.PRIMARY);
                     moveBy(randomNumber(50), 0);
                     drop();
-                });
+                }));
                 lookup("Adjust").queryAll().forEach(t -> {
                     clickOn(t);
                     clickOn(randomItem(areaTools));

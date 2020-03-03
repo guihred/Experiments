@@ -63,7 +63,7 @@ public final class PaintEditUtils {
             return;
         }
         WritableImage writableImage = paintModel.getCurrentImage();
-        if (!imageVersions.isEmpty() && PaintToolHelper.isEqualImage(paintModel.getImage(), writableImage)) {
+        if (!imageVersions.isEmpty() && RectBuilder.isEqualImage(paintModel.getImage(), writableImage)) {
             paintModel.incrementCurrentVersion();
             writableImage = imageVersions.get(paintModel.getCurrentVersion());
         }
@@ -85,7 +85,7 @@ public final class PaintEditUtils {
             return;
         }
         WritableImage writableImage = paintModel.getCurrentImage();
-        if (!imageVersions.isEmpty() && PaintToolHelper.isEqualImage(paintModel.getImage(), writableImage)) {
+        if (!imageVersions.isEmpty() && RectBuilder.isEqualImage(paintModel.getImage(), writableImage)) {
             paintModel.decrementCurrentVersion();
             writableImage = imageVersions.get(paintModel.getCurrentVersion());
         }

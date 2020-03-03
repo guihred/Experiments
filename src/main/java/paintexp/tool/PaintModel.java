@@ -27,9 +27,9 @@ public class PaintModel {
     private final ObjectProperty<Color> frontColor = new SimpleObjectProperty<>(Color.BLACK);
     private WritableImage image = new WritableImage(500, 500);
     private Group imageStack;
-    private Text imageSize = new Text();
-    private Text toolSize = new Text();
-    private Text mousePosition = new Text();
+    private final Text imageSize = new Text();
+    private final Text toolSize = new Text();
+    private final Text mousePosition = new Text();
     private VBox toolOptions;
     private final ObjectProperty<File> currentFile = new SimpleObjectProperty<>();
     private final StringProperty filename = filenameProperty();
@@ -50,7 +50,7 @@ public class PaintModel {
     public void createImageVersion() {
 
         WritableImage e = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
-        if (imageVersions.isEmpty() || !PaintToolHelper.isEqualImage(e, getCurrentImage())) {
+        if (imageVersions.isEmpty() || !RectBuilder.isEqualImage(e, getCurrentImage())) {
             int clamp = getWithinRange(getCurrentVersion() + 1, 0, Math.max(imageVersions.size(), 0));
             if (imageVersions.size() > clamp) {
                 for (int i = clamp; i < imageVersions.size();) {
@@ -77,8 +77,8 @@ public class PaintModel {
         return SupplierEx.orElse(filename, () -> {
             StringProperty file = new SimpleStringProperty("Paint");
             file.bind(Bindings.createStringBinding(
-                () -> currentFile.isNull().get() ? "Paint"
-                : String.format("Paint (%s)", currentFile.get().getName()), currentFile));
+                () -> currentFile.isNull().get() ? "Paint" : String.format("Paint (%s)", currentFile.get().getName()),
+                currentFile));
             return file;
         });
     }
@@ -206,18 +206,6 @@ public class PaintModel {
 
     public void setImage(final WritableImage image) {
         this.image = image;
-    }
-
-    public void setImageSize(final Text imageSize) {
-        this.imageSize = imageSize;
-    }
-
-    public void setMousePosition(final Text mousePosition) {
-        this.mousePosition = mousePosition;
-    }
-
-    public void setToolSize(final Text toolSize) {
-        this.toolSize = toolSize;
     }
 
     public void takeSnapshot(Node line2) {

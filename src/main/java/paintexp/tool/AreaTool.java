@@ -89,7 +89,6 @@ public abstract class AreaTool extends PaintTool {
         }
         if (handleDeleteEscape(e, model)) {
             e.consume();
-            return;
         }
     }
 
@@ -266,7 +265,6 @@ public abstract class AreaTool extends PaintTool {
             if (option == SelectOption.TRANSPARENT) {
                 replaceColor(imageSelected, model.getBackColor(), Color.TRANSPARENT.invert());
             }
-
             getArea().setFill(new ImagePattern(imageSelected));
             RectBuilder.build().startX(layoutX).startY(layoutY).width(width).height(height).drawRect(model.getImage(),
                 imageSelected,

@@ -106,8 +106,19 @@ public final class RectBuilder {
         for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
             int x = (int) Math.round(width * Math.cos(t));
             int y = (int) Math.round(height * Math.sin(t));
-            RectBuilder.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
-                currentImage);
+            RectBuilder.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image, currentImage);
+        }
+    }
+
+    public void drawCircleFill(WritableImage image, WritableImage currentImage, Color color, double opacity) {
+        for (int width2 = 0; width2 < width; width2++) {
+            double nPoints = Math.max(width2, height) * RectBuilder.N_POINTS_MULTIPLIER;
+            for (double t = 0; nPoints > 0 && t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
+                int x = (int) Math.round(width2 * Math.cos(t));
+                int y = (int) Math.round(height * Math.sin(t));
+                RectBuilder.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
+                    currentImage);
+            }
         }
     }
 
@@ -321,16 +332,6 @@ public final class RectBuilder {
             Color.TRANSPARENT);
     }
 
-    public static void drawCircle(WritableImage image, int centerX, int centerY, double radiusX, double radiusY,
-        Color color) {
-        double nPoints = Math.max(radiusX, radiusY) * RectBuilder.N_POINTS_MULTIPLIER;
-        for (double t = 0; t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
-            int x = (int) Math.round(radiusX * Math.cos(t));
-            int y = (int) Math.round(radiusY * Math.sin(t));
-            RectBuilder.drawPoint(image, x + centerX, y + centerY, color);
-        }
-    }
-
     public static void drawPoint(WritableImage image, int x2, int y2, Color frontColor) {
         if (withinImage(x2, y2, image)) {
             image.getPixelWriter().setColor(x2, y2, frontColor);
@@ -372,6 +373,20 @@ public final class RectBuilder {
             drawPointTransparency(startX + x, startY + w, color, opacity, image, currentImage);
             drawPointTransparency(startX + w, startY + x, color, opacity, image, currentImage);
         }
+    }
+
+    public static boolean isEqualImage(WritableImage image, WritableImage image2) {
+        if (image.getWidth() != image2.getWidth() || image.getHeight() != image2.getHeight()) {
+            return false;
+        }
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                if (image.getPixelReader().getArgb(i, j) != image2.getPixelReader().getArgb(i, j)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public static WritableImage printNodeToImage(Node line2, WritableImage image) {
