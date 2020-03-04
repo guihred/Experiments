@@ -8,14 +8,18 @@ import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;
 import contest.db.ContestText;
 import contest.db.QuestionType;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
@@ -53,6 +57,7 @@ public class ContestApplicationController {
     @FXML
     private ListView<ContestDTO> allContests;
     private ContestDTO contestQuestions;
+    private final ObservableMap<Integer, String> answersCorrect = FXCollections.observableHashMap();
     @FXML
     private IntegerProperty current;
 
@@ -72,14 +77,22 @@ public class ContestApplicationController {
 
         questions.getSelectionModel().selectedIndexProperty().addListener((o, old, n) -> current.set(n.intValue()));
 
-        questions.setCellFactory(
-            newCellFactory((c, v) -> v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())))));
+        questions.setCellFactory(newCellFactory((c, v) -> {
+            v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())));
+            answersCorrect.addListener((Observable o) -> {
+                v.getStyleClass().removeAll(CERTO0, ERRADO0);
+                if (c != null && answersCorrect.containsKey(c.getNumber())) {
+                    v.getStyleClass().add(answersCorrect.get(c.getNumber()));
+                }
+            });
+
+        }));
         options.getSelectionModel().selectedItemProperty().addListener((observable, old, value) -> {
             if (value == null) {
                 return;
             }
-            ObservableList<ContestQuestion> contestTexts = contestQuestions.getListQuestions();
-            questions.setItems(contestTexts);
+            answersCorrect.put(value.getExercise().getNumber(), value.getCorrect() ? CERTO0 : ERRADO0);
+            questions.setItems(contestQuestions.getListQuestions());
             splitPane.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
                 if (e.contains(CERTO0)) {
                     e.add("certo");
@@ -105,6 +118,7 @@ public class ContestApplicationController {
             ContestDTO c = allContests.getSelectionModel().getSelectedItem();
             contestQuestions = c;
             current.set(-1);
+            answersCorrect.clear();
             questions.setItems(c.getListQuestions());
             current.set(0);
         }
@@ -145,6 +159,7 @@ public class ContestApplicationController {
         }
         updateCellFactory();
     }
+
 
     private void onCurrentChange(Number value) {
         int cur = value.intValue();
@@ -188,12 +203,8 @@ public class ContestApplicationController {
     }
 
     static String getText(ContestDTO contestQuestions2, int cur) {
-        List<String> map = getContextTexts(contestQuestions2, cur).map(ContestText::getText)
-            .filter(StringUtils::isNotBlank).flatMap(s -> Stream.of(s.split("\n"))).map(String::trim)
-            .collect(Collectors.toList());
-
+        List<String> map = getLinesOfText(contestQuestions2, cur);
         int orElse = map.stream().mapToInt(String::length).max().orElse(0);
-
         return IntStream.range(0, map.size()).mapToObj(i -> ContestApplicationController.mapLines(map, orElse, i))
             .collect(Collectors.joining("\n"));
     }
@@ -224,7 +235,28 @@ public class ContestApplicationController {
     }
 
     private static Stream<ContestText> getContextTexts(ContestDTO contestQuestions2, int cur) {
-        return contestQuestions2.getContestTexts().stream().filter(t -> ContestApplicationController.isBetween(t, cur));
+        return contestQuestions2.getContestTexts().stream().filter(t -> isBetween(t, cur));
+    }
+
+    private static List<String> getLinesOfText(ContestDTO contestQuestions2, int cur) {
+        if (contestQuestions2.getContestTexts().stream().noneMatch(t -> isBetween(t, cur))) {
+            ContestQuestion contestQuestion = contestQuestions2.getListQuestions().get(cur);
+            String subject = contestQuestion.getSubject();
+            Optional<ContestText> distinct = contestQuestions2.getListQuestions().stream()
+                .filter(e -> Objects.equals(e.getSubject(), subject))
+                .flatMap(e -> getContextTexts(contestQuestions2, e.getNumber())).distinct()
+                .min(Comparator.comparing(e -> Math.abs(e.getMax() + e.getMin() - cur * 2)));
+            if (distinct.isPresent()) {
+                return Stream.of(Objects.toString(distinct.get().getText(), "").split("\n"))
+                    .filter(StringUtils::isNotBlank).map(String::trim).collect(Collectors.toList());
+            }
+        }
+
+        Stream<ContestText> contextTexts = getContextTexts(contestQuestions2, cur);
+
+        List<String> map = contextTexts.map(ContestText::getText).filter(StringUtils::isNotBlank)
+            .flatMap(s -> Stream.of(s.split("\n"))).map(String::trim).collect(Collectors.toList());
+        return map;
     }
 
 }

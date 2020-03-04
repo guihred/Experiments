@@ -14,12 +14,12 @@ public class ContestQuestionDAO extends BaseDAO {
     public List<Contest> hasEqual(Contest c) {
         return execute(session -> {
             StringBuilder hql = new StringBuilder();
-            hql.append("SELECT l ");
-            hql.append("FROM Contest l ");
-            hql.append("WHERE l.name=:name ");
-            hql.append("AND l.job=:job ");
+            hql.append("SELECT c ");
+            hql.append("FROM Contest c ");
+            hql.append("WHERE c.name=:name ");
+            hql.append("AND c.job=:job ");
             if (c.getKey() != null) {
-                hql.append("AND l.key<:key ");
+                hql.append("AND c.key<:key ");
             }
             Query<Contest> query = session.createQuery(hql.toString(), Contest.class);
             query.setParameter("name", c.getName());

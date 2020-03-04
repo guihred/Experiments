@@ -44,7 +44,7 @@ public class ContestReader extends ContestDTO {
             getLogger().error("Invalid Questions {} {}/{}", invalid, invalid.size(), listQuestions.size());
             return false;
         }
-        if (StringUtils.isBlank(contest.getJob()) || StringUtils.isBlank(contest.getName())) {
+        if (isInvalidName()) {
             getLogger().error("Invalid Name or Job");
             return false;
         }
@@ -290,6 +290,10 @@ public class ContestReader extends ContestDTO {
 
     private boolean isEndOfQuestion(String s) {
         return questionType == QuestionType.TRUE_FALSE && s.matches("^\\s*_____+\\s*$");
+    }
+
+    private boolean isInvalidName() {
+        return StringUtils.isBlank(contest.getJob()) || StringUtils.isBlank(contest.getName());
     }
 
     private boolean isSubject(String s) {
