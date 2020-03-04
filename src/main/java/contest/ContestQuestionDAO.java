@@ -6,10 +6,30 @@ import contest.db.Contest;
 import contest.db.ContestQuestion;
 import contest.db.ContestText;
 import java.util.List;
+import org.hibernate.query.Query;
 import utils.BaseDAO;
-import utils.BaseEntity;
 
 public class ContestQuestionDAO extends BaseDAO {
+
+    public List<Contest> hasEqual(Contest c) {
+        return execute(session -> {
+            StringBuilder hql = new StringBuilder();
+            hql.append("SELECT l ");
+            hql.append("FROM Contest l ");
+            hql.append("WHERE l.name=:name ");
+            hql.append("AND l.job=:job ");
+            if (c.getKey() != null) {
+                hql.append("AND l.key<:key ");
+            }
+            Query<Contest> query = session.createQuery(hql.toString(), Contest.class);
+            query.setParameter("name", c.getName());
+            query.setParameter("job", c.getJob());
+            if (c.getKey() != null) {
+                query.setParameter("key", c.getKey());
+            }
+            return query.list().stream().map(BaseDAO::initialize).collect(toList());
+        });
+    }
 
     public List<ContestQuestion> list(Contest c) {
         return execute(session -> {
@@ -38,17 +58,20 @@ public class ContestQuestionDAO extends BaseDAO {
             StringBuilder hql = new StringBuilder();
             hql.append("SELECT c ");
             hql.append("FROM ContestText c ");
-            return session.createQuery(hql.toString(), ContestText.class).list().stream()
-                .map(BaseDAO::initialize).collect(toList());
+            return session.createQuery(hql.toString(), ContestText.class).list().stream().map(BaseDAO::initialize)
+                .collect(toList());
         });
     }
 
-    public void saveOrUpdate(BaseEntity jap) {
-        executeRun(session -> session.saveOrUpdate(jap));
-    }
-
-    public void saveOrUpdate(List<? extends BaseEntity> jap) {
-        executeRun(session -> jap.forEach(session::saveOrUpdate));
+    public List<ContestText> listTexts(Contest c) {
+        return execute(session -> {
+            StringBuilder hql = new StringBuilder();
+            hql.append("SELECT l ");
+            hql.append("FROM ContestText l ");
+            hql.append("WHERE l.contest=:c ");
+            return session.createQuery(hql.toString(), ContestText.class).setParameter("c", c).list().stream()
+                .map(BaseDAO::initialize).collect(toList());
+        });
     }
 
 }

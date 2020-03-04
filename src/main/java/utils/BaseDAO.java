@@ -3,6 +3,7 @@ package utils;
 import static utils.ClassReflectionUtils.getters;
 import static utils.ClassReflectionUtils.invoke;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.hibernate.Session;
@@ -10,6 +11,21 @@ import org.hibernate.Transaction;
 
 @SuppressWarnings("static-method")
 public class BaseDAO implements HasLogging {
+
+    public void delete(BaseEntity jap) {
+        executeRun(session -> session.delete(jap));
+    }
+
+    public void delete(List<? extends BaseEntity> jap) {
+        executeRun(session -> jap.forEach(session::delete));
+    }
+    public void saveOrUpdate(BaseEntity jap) {
+        executeRun(session -> session.saveOrUpdate(jap));
+    }
+
+    public void saveOrUpdate(List<? extends BaseEntity> jap) {
+        executeRun(session -> jap.forEach(session::saveOrUpdate));
+    }
 
     protected <T> T execute(Function<Session, T> run) {
         return SupplierEx.get(() -> {

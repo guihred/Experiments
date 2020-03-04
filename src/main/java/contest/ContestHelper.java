@@ -18,6 +18,15 @@ public final class ContestHelper {
     private ContestHelper() {
     }
 
+    public static void deleteContest(Contest hasEqual) {
+        CONTEST_DAO.delete(CONTEST_DAO.listTexts(hasEqual));
+        List<ContestQuestion> listQuestions2 = listByContest(hasEqual);
+        CONTEST_DAO.delete(listQuestions2.stream().filter(e -> e.getOptions() != null)
+            .flatMap(e -> e.getOptions().stream()).collect(Collectors.toList()));
+        CONTEST_DAO.delete(listQuestions2);
+        CONTEST_DAO.delete(hasEqual);
+    }
+
     public static ObservableList<ContestDTO> getAllContests() {
         Map<Contest, List<ContestText>> textsByContest = textsByContest();
         return listContests().stream().map(c -> {
@@ -29,31 +38,41 @@ public final class ContestHelper {
         }).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
+    public static List<Contest> hasEqual(Contest contest) {
+        return CONTEST_DAO.hasEqual(contest);
+    }
+
     public static List<ContestQuestion> listByContest(Contest c) {
-        return ContestHelper.CONTEST_DAO.list(c);
+        return CONTEST_DAO.list(c);
     }
 
     public static List<Contest> listContests() {
-        return ContestHelper.CONTEST_DAO.listContests();
+        return CONTEST_DAO.listContests();
     }
 
     public static void saveAll(Contest contest, ObservableList<ContestQuestion> listQuestions,
         ObservableList<ContestText> texts) {
-        ContestHelper.CONTEST_DAO.saveOrUpdate(contest);
-        ContestHelper.CONTEST_DAO.saveOrUpdate(listQuestions);
-        ContestHelper.CONTEST_DAO.saveOrUpdate(listQuestions.stream().filter(e -> e.getOptions() != null)
+        List<Contest> equals = CONTEST_DAO.hasEqual(contest);
+        if (equals != null && !equals.isEmpty()) {
+            for (Contest hasEqual : equals) {
+                deleteContest(hasEqual);
+            }
+        }
+
+        CONTEST_DAO.saveOrUpdate(contest);
+        CONTEST_DAO.saveOrUpdate(listQuestions);
+        CONTEST_DAO.saveOrUpdate(listQuestions.stream().filter(e -> e.getOptions() != null)
             .flatMap(e -> e.getOptions().stream().peek(o -> o.setExercise(e))).collect(Collectors.toList()));
 
         List<ContestText> nonNullTexts = texts.stream().filter(e -> StringUtils.isNotBlank(e.getText()))
             .collect(Collectors.groupingBy(ContestText::getText)).entrySet().stream().map(e -> e.getValue().get(0))
             .collect(Collectors.toList());
-        ContestHelper.CONTEST_DAO.saveOrUpdate(nonNullTexts);
+        CONTEST_DAO.saveOrUpdate(nonNullTexts);
     }
 
     public static Map<Contest, List<ContestText>> textsByContest() {
-        List<ContestText> listTexts = ContestHelper.CONTEST_DAO.listTexts();
-        return listTexts.stream()
-            .collect(Collectors.groupingBy(ContestText::getContest));
+        List<ContestText> listTexts = CONTEST_DAO.listTexts();
+        return listTexts.stream().collect(Collectors.groupingBy(ContestText::getContest));
     }
 
 }

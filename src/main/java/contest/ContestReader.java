@@ -44,6 +44,10 @@ public class ContestReader extends ContestDTO {
             getLogger().error("Invalid Questions {} {}/{}", invalid, invalid.size(), listQuestions.size());
             return false;
         }
+        if (StringUtils.isBlank(contest.getJob()) || StringUtils.isBlank(contest.getName())) {
+            getLogger().error("Invalid Name or Job");
+            return false;
+        }
         if (listQuestions.size() % 10 != 0) {
             if (StringUtils.isNotBlank(contestQuestion.getExercise())
                 && listQuestions.stream().noneMatch(e -> e == contestQuestion)) {

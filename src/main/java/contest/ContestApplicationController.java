@@ -18,7 +18,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
@@ -60,12 +59,13 @@ public class ContestApplicationController {
     public void initialize() {
         current.set(-1);
         ObservableList<ContestDTO> allContests2 = ContestHelper.getAllContests();
-        allContests.setCellFactory(newCellFactory(ContestApplicationController::setText));
+        allContests.setCellFactory(newCellFactory((t, u) -> u.setText(ContestApplicationController.formatDTO(t))));
         allContests.setItems(allContests2);
         if (!allContests2.isEmpty()) {
             contestQuestions = allContests2.get(0);
             questions.setItems(contestQuestions.getListQuestions());
             splitPane.setDividerPositions(1. / 6, 2. / 6, 4. / 6);
+            fixContests(allContests2);
         } else {
             splitPane.getItems().remove(0);
         }
@@ -211,13 +211,20 @@ public class ContestApplicationController {
         return String.format("(%02d)    %s", i + 1, object);
     }
 
-    private static Stream<ContestText> getContextTexts(ContestDTO contestQuestions2, int cur) {
-        return contestQuestions2.getContestTexts().stream().filter(t -> ContestApplicationController.isBetween(t, cur));
+    private static void fixContests(List<ContestDTO> allContests2) {
+        allContests2.stream().filter(e -> StringUtils.isBlank(formatDTO(e)))
+            .forEach(e -> ContestHelper.deleteContest(e.getContest()));
+        allContests2.stream().map(e -> ContestHelper.hasEqual(e.getContest()))
+            .forEach(e -> e.forEach(ContestHelper::deleteContest));
     }
 
-    private static void setText(ContestDTO item, ListCell<ContestDTO> cell) {
-        cell.setText(
-            mapIf(item, it -> Objects.toString(it.getContest().getJob(), "") + "\n" + it.getContest().getName()));
+    private static String formatDTO(ContestDTO item) {
+        return mapIf(item, it -> Objects.toString(it.getContest().getJob(), "") + "\n"
+            + Objects.toString(it.getContest().getName(), ""));
+    }
+
+    private static Stream<ContestText> getContextTexts(ContestDTO contestQuestions2, int cur) {
+        return contestQuestions2.getContestTexts().stream().filter(t -> ContestApplicationController.isBetween(t, cur));
     }
 
 }
