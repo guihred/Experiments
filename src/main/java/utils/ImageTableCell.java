@@ -3,6 +3,8 @@ package utils;
 import static utils.FunctionEx.makeFunction;
 
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.control.TableCell;
@@ -36,6 +38,11 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
 
     private ImageView getImageView(String image) {
         return newImage(image, super.widthProperty());
+    }
+
+    public static List<ImageView> createImages(String item, ReadOnlyDoubleProperty widthProperty) {
+        return Stream.of(item.split(";")).map(e -> ImageTableCell.newImage(e, widthProperty))
+            .collect(Collectors.toList());
     }
 
     public static ImageView newImage(String image, ReadOnlyDoubleProperty widthProperty) {

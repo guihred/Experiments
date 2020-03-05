@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.swing.text.MaskFormatter;
 import org.apache.commons.lang3.StringUtils;
@@ -43,13 +44,6 @@ public class StringSigaUtils extends StringUtils {
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
     }
 
-    public static String corrigirProblemaEncoding(String nomeEncoding) {
-        if (nomeEncoding == null) {
-            return null;
-        }
-        byte[] bytes = nomeEncoding.getBytes(StandardCharsets.ISO_8859_1);
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
 
     public static String decodificar(String nome) {
         return getIgnore(() -> URLDecoder.decode(Objects.toString(nome, ""), "UTF-8"), nome);
@@ -105,9 +99,6 @@ public class StringSigaUtils extends StringUtils {
         return SupplierEx.getIgnore(() -> Integer.parseInt(getApenasNumeros(texto)));
     }
 
-    public static String getCEPFormatado(Long cep) {
-        return getCEPFormatado(Objects.toString(cep, ""));
-    }
 
     public static String getCEPFormatado(String cep) {
         if (StringUtils.isNotBlank(cep)) {
@@ -117,12 +108,6 @@ public class StringSigaUtils extends StringUtils {
         return cep;
     }
 
-    public static String getCnpjFormatado(Long cnpj) {
-        if (cnpj != null) {
-            return getCnpjFormatado(cnpj.toString());
-        }
-        return null;
-    }
 
     public static String getCnpjFormatado(String cnpj) {
         if (StringUtils.isNotBlank(cnpj)) {
@@ -133,18 +118,9 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static Long getCpfDesformatado(String cpf) {
-        return SupplierEx.getIgnore(() -> {
-            String valor = retirarMascara(cpf);
-            return Long.valueOf(valor);
-        });
+        return SupplierEx.getIgnore(() -> Long.valueOf(retirarMascara(cpf)));
     }
 
-    public static String getCpfFormatado(Long cpf) {
-        if (cpf != null) {
-            return getCpfFormatado(cpf.toString());
-        }
-        return null;
-    }
 
     public static String getCpfFormatado(String cpf) {
         if (StringUtils.isNotBlank(cpf)) {
@@ -178,17 +154,10 @@ public class StringSigaUtils extends StringUtils {
         }
     }
 
-    public static String justified(List<String> map, int maxLetters, int i) {
-        String str = map.get(i);
-        int diff = maxLetters - str.length();
-        if (i == 0 || paragraphEnd(map.get(i - 1))) {
-            return leftPad(addSpaces(str, Math.max(diff - 8, 0)), maxLetters, "");
-        }
-        if (diff >= maxLetters / 2 || paragraphEnd(str)) {
-            return rightPad(str, maxLetters, "");
-        }
-        String sb = addSpaces(str, diff);
-        return rightPad(sb, maxLetters, "");
+    public static String putNumbers(List<String> map) {
+        int orElse = map.stream().mapToInt(String::length).max().orElse(0);
+        return IntStream.range(0, map.size()).mapToObj(i -> numberLines(map, orElse, i))
+            .collect(Collectors.joining("\n"));
     }
 
     public static String removeMathematicalOperators(String s) {
@@ -295,6 +264,24 @@ public class StringSigaUtils extends StringUtils {
 
     private static boolean hasBom(byte[] input) {
         return input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB && (input[2] & 0xFF) == 0xBF;
+    }
+
+    private static String justified(List<String> map, int maxLetters, int i) {
+        String str = map.get(i);
+        int diff = maxLetters - str.length();
+        if (i == 0 || paragraphEnd(map.get(i - 1))) {
+            return leftPad(addSpaces(str, Math.max(diff - 8, 0)), maxLetters, "");
+        }
+        if (diff >= maxLetters / 2 || paragraphEnd(str)) {
+            return rightPad(str, maxLetters, "");
+        }
+        String sb = addSpaces(str, diff);
+        return rightPad(sb, maxLetters, "");
+    }
+
+    private static String numberLines(List<String> map, int maxLetters, int lineNumber) {
+        String object = justified(map, maxLetters, lineNumber);
+        return String.format("(%02d)    %s", lineNumber + 1, object);
     }
 
     private static boolean paragraphEnd(String str) {

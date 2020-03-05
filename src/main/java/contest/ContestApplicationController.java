@@ -1,5 +1,6 @@
 package contest;
 
+import static contest.ContestHelper.*;
 import static java.lang.String.format;
 import static simplebuilder.SimpleListViewBuilder.newCellFactory;
 import static utils.FunctionEx.mapIf;
@@ -8,16 +9,11 @@ import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;
 import contest.db.ContestText;
 import contest.db.QuestionType;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener.Change;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -26,15 +22,14 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.apache.commons.lang3.StringUtils;
 import utils.ImageTableCell;
-import utils.StringSigaUtils;
 
 public class ContestApplicationController {
+    private static final String ERRADO = "errado";
+    private static final String CERTO = "certo";
     private static final String ERRADO0 = "errado0";
     private static final String CERTO0 = "certo0";
     @FXML
@@ -65,8 +60,8 @@ public class ContestApplicationController {
 
     public void initialize() {
         current.set(-1);
-        ObservableList<ContestDTO> allContests2 = ContestHelper.getAllContests();
-        allContests.setCellFactory(newCellFactory((t, u) -> u.setText(ContestApplicationController.formatDTO(t))));
+        ObservableList<ContestDTO> allContests2 = getAllContests();
+        allContests.setCellFactory(newCellFactory((t, u) -> u.setText(formatDTO(t))));
         allContests.setItems(allContests2);
         if (!allContests2.isEmpty()) {
             contestQuestions = allContests2.get(0);
@@ -78,11 +73,12 @@ public class ContestApplicationController {
         }
 
         questions.getSelectionModel().selectedIndexProperty().addListener((o, old, n) -> current.set(n.intValue()));
-        answersCorrect.addListener((Change<? extends Integer, ? extends String> change) -> cellMap.entrySet().stream()
-            .filter(e -> e.getValue().equals(change.getKey())).findFirst().map(e -> e.getKey()).ifPresent(cel -> {
-                cel.getStyleClass().removeAll("", "certo", "errado", CERTO0, ERRADO0);
-                if (change.wasAdded()) {
-                    cel.getStyleClass().add(change.getValueAdded());
+        answersCorrect.addListener((MapChangeListener<Integer, String>) change -> cellMap.entrySet().stream()
+            .filter(e -> Objects.equals(e.getValue(), change.getKey())).findFirst()
+            .ifPresent(cel -> {
+                cel.getKey().getStyleClass().removeAll("", CERTO, ERRADO, CERTO0, ERRADO0);
+                if (change.wasAdded() && cel.getKey().getItem().getNumber() == cel.getValue()) {
+                    cel.getKey().getStyleClass().add(change.getValueAdded());
                 }
             }));
 
@@ -99,14 +95,14 @@ public class ContestApplicationController {
             if (value == null) {
                 return;
             }
-            answersCorrect.put(value.getExercise().getNumber(), value.getCorrect() ? "certo" : "errado");
+            answersCorrect.put(value.getExercise().getNumber(), value.getCorrect() ? CERTO : ERRADO);
             questions.setItems(contestQuestions.getListQuestions());
             splitPane.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
                 if (e.contains(CERTO0)) {
-                    e.add("certo");
+                    e.add(CERTO);
                 }
                 if (e.contains(ERRADO0)) {
-                    e.add("errado");
+                    e.add(ERRADO);
                 }
             });
         });
@@ -122,7 +118,6 @@ public class ContestApplicationController {
 
     public void onMouseClickedListView1(MouseEvent e) {
         if (e.getClickCount() > 1) {
-
             ContestDTO c = allContests.getSelectionModel().getSelectedItem();
             contestQuestions = c;
             current.set(-1);
@@ -132,7 +127,7 @@ public class ContestApplicationController {
         }
     }
 
-    public void setContestQuestions(ContestReader contestQuestions) {
+    public void setContestQuestions(ContestDTO contestQuestions) {
         this.contestQuestions = contestQuestions;
         current.set(-1);
         questions.setItems(contestQuestions.getListQuestions());
@@ -140,9 +135,7 @@ public class ContestApplicationController {
     }
 
     private void addImages(String item) {
-        ImageView[] imageViews = Stream.of(item.split(";"))
-            .map(e -> ImageTableCell.newImage(e, scrollPane2.widthProperty())).toArray(ImageView[]::new);
-        images.getChildren().addAll(imageViews);
+        images.getChildren().addAll(ImageTableCell.createImages(item, scrollPane2.widthProperty()));
     }
 
     private void changeOptions(ContestQuestion contestQuestion) {
@@ -157,7 +150,7 @@ public class ContestApplicationController {
             return;
         }
         options.getSelectionModel().clearSelection();
-        ObservableList<ContestQuestionAnswer> items = options.getItems();
+        List<ContestQuestionAnswer> items = options.getItems();
         for (int i = 0; i < contestQuestion.getOptions().size(); i++) {
             if (i < 0 || i >= items.size()) {
                 items.add(contestQuestion.getOptions().get(i));
@@ -181,7 +174,7 @@ public class ContestApplicationController {
         question.setText(contestQuestion.getExercise());
         changeOptions(contestQuestion);
         images.getChildren().clear();
-        getContextTexts(contestQuestions, cur).map(ContestText::getImage).filter(Objects::nonNull)
+        getContestTexts(contestQuestions.getContestTexts(), cur).map(ContestText::getImage).filter(Objects::nonNull)
             .forEach(this::addImages);
         if (contestQuestion.getImage() != null) {
             addImages(contestQuestion.getImage());
@@ -190,7 +183,7 @@ public class ContestApplicationController {
     }
 
     private void setText(int cur) {
-        String text2 = ContestApplicationController.getText(contestQuestions, cur);
+        String text2 = getText(contestQuestions, cur);
         text.setText(text2);
         double[] dividerPositions = splitPane.getDividerPositions();
         dividerPositions[dividerPositions.length - 1] = text2.isEmpty() ? dividerPositions[dividerPositions.length - 2]
@@ -204,66 +197,11 @@ public class ContestApplicationController {
             Text text1 = new Text(el != null ? el.getAnswer() : "");
             text1.wrappingWidthProperty().bind(options.widthProperty().add(-10));
             cell.setGraphic(text1);
-            cell.getStyleClass().removeAll("", "certo", "errado", CERTO0, ERRADO0);
+            cell.getStyleClass().removeAll("", CERTO, ERRADO, CERTO0, ERRADO0);
             cell.getStyleClass().add(mapIf(el, e -> e.getCorrect() ? CERTO0 : ERRADO0, ""));
         }));
     }
 
-    static String getText(ContestDTO contestQuestions2, int cur) {
-        List<String> map = getLinesOfText(contestQuestions2, cur);
-        int orElse = map.stream().mapToInt(String::length).max().orElse(0);
-        return IntStream.range(0, map.size()).mapToObj(i -> ContestApplicationController.mapLines(map, orElse, i))
-            .collect(Collectors.joining("\n"));
-    }
 
-    static boolean isBetween(ContestText tex, int j) {
-        if (tex.getMin() == null || tex.getMax() == null) {
-            return false;
-        }
-        int i = j + 1;
-        return tex.getMin() <= i && tex.getMax() >= i;
-    }
-
-    static String mapLines(List<String> map, int orElse, int i) {
-        String object = StringSigaUtils.justified(map, orElse, i);
-        return String.format("(%02d)    %s", i + 1, object);
-    }
-
-    private static void fixContests(List<ContestDTO> allContests2) {
-        allContests2.stream().filter(e -> StringUtils.isBlank(formatDTO(e)))
-            .forEach(e -> ContestHelper.deleteContest(e.getContest()));
-        allContests2.stream().map(e -> ContestHelper.hasEqual(e.getContest()))
-            .forEach(e -> e.forEach(ContestHelper::deleteContest));
-    }
-
-    private static String formatDTO(ContestDTO item) {
-        return mapIf(item, it -> Objects.toString(it.getContest().getJob(), "") + "\n"
-            + Objects.toString(it.getContest().getName(), ""));
-    }
-
-    private static Stream<ContestText> getContextTexts(ContestDTO contestQuestions2, int cur) {
-        return contestQuestions2.getContestTexts().stream().filter(t -> isBetween(t, cur));
-    }
-
-    private static List<String> getLinesOfText(ContestDTO contestQuestions2, int cur) {
-        if (contestQuestions2.getContestTexts().stream().noneMatch(t -> isBetween(t, cur))) {
-            ContestQuestion contestQuestion = contestQuestions2.getListQuestions().get(cur);
-            String subject = contestQuestion.getSubject();
-            Optional<ContestText> distinct = contestQuestions2.getListQuestions().stream()
-                .filter(e -> Objects.equals(e.getSubject(), subject))
-                .flatMap(e -> getContextTexts(contestQuestions2, e.getNumber())).distinct()
-                .min(Comparator.comparing(e -> Math.abs(e.getMax() + e.getMin() - cur * 2)));
-            if (distinct.isPresent()) {
-                return Stream.of(Objects.toString(distinct.get().getText(), "").split("\n"))
-                    .filter(StringUtils::isNotBlank).map(String::trim).collect(Collectors.toList());
-            }
-        }
-
-        Stream<ContestText> contextTexts = getContextTexts(contestQuestions2, cur);
-
-        List<String> map = contextTexts.map(ContestText::getText).filter(StringUtils::isNotBlank)
-            .flatMap(s -> Stream.of(s.split("\n"))).map(String::trim).collect(Collectors.toList());
-        return map;
-    }
 
 }

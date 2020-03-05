@@ -50,6 +50,16 @@ public final class CandidatoHelper {
             .filter(e -> !e.getValue().isEmpty()).map(Objects::toString).collect(Collectors.joining(",")), fieldMap));
     }
 
+    public static void configTable(TableColumn<Candidato, String> fotoUrl, TableColumn<Candidato, Cidade> cidade,
+        TableColumn<Candidato, Boolean> eleito, TableColumn<Candidato, LocalDate> nascimento,
+        TableView<Candidato> tableView2) {
+        fotoUrl.setCellFactory(ImageTableCell::new);
+        cidade.setCellFactory(setFormat(Cidade::getCity));
+        eleito.setCellFactory(setFormat(StringSigaUtils::simNao));
+        nascimento.setCellFactory(setFormat(DateFormatUtils::formatDate));
+        equalColumns(tableView2);
+    }
+
     public static List<String> distinct(String field) {
         return candidatoDAO.distinct(field);
     }
@@ -80,15 +90,5 @@ public final class CandidatoHelper {
         observableArrayList.setAll(list);
         Map<String, Long> histogram = candidatoDAO.histogram(column, fieldMap);
         pieGraph.setHistogram(histogram);
-    }
-
-    static void configTable(TableColumn<Candidato, String> fotoUrl, TableColumn<Candidato, Cidade> cidade,
-        TableColumn<Candidato, Boolean> eleito, TableColumn<Candidato, LocalDate> nascimento,
-        TableView<Candidato> tableView2) {
-        fotoUrl.setCellFactory(ImageTableCell::new);
-        cidade.setCellFactory(setFormat(Cidade::getCity));
-        eleito.setCellFactory(setFormat(StringSigaUtils::simNao));
-        nascimento.setCellFactory(setFormat(DateFormatUtils::formatDate));
-        equalColumns(tableView2);
     }
 }

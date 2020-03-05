@@ -1,12 +1,15 @@
 package contest;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static utils.FunctionEx.mapIf;
+import static utils.StringSigaUtils.putNumbers;
+
 import contest.db.Contest;
 import contest.db.ContestQuestion;
 import contest.db.ContestText;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
@@ -18,36 +21,35 @@ public final class ContestHelper {
     private ContestHelper() {
     }
 
-    public static void deleteContest(Contest hasEqual) {
-        CONTEST_DAO.delete(CONTEST_DAO.listTexts(hasEqual));
-        List<ContestQuestion> listQuestions2 = listByContest(hasEqual);
-        CONTEST_DAO.delete(listQuestions2.stream().filter(e -> e.getOptions() != null)
-            .flatMap(e -> e.getOptions().stream()).collect(Collectors.toList()));
-        CONTEST_DAO.delete(listQuestions2);
-        CONTEST_DAO.delete(hasEqual);
+    public static void fixContests(Collection<ContestDTO> allContests2) {
+        allContests2.stream().filter(e -> isBlank(formatDTO(e)))
+            .forEach(e -> CONTEST_DAO.deleteContest(e.getContest()));
+        allContests2.stream().map(e -> CONTEST_DAO.hasEqual(e.getContest()))
+            .forEach(e -> e.forEach(CONTEST_DAO::deleteContest));
+    }
+
+    public static String formatDTO(ContestDTO item) {
+        return mapIf(item, it -> Stream.of(it.getContest().getJob(), it.getContest().getName()).filter(Objects::nonNull)
+            .collect(Collectors.joining("\n")));
     }
 
     public static ObservableList<ContestDTO> getAllContests() {
         Map<Contest, List<ContestText>> textsByContest = textsByContest();
-        return listContests().stream().map(c -> {
+        return CONTEST_DAO.listContests().stream().map(c -> {
             ContestDTO contestReader = new ContestDTO();
             contestReader.setContest(c);
-            contestReader.getListQuestions().setAll(listByContest(c));
+            contestReader.getListQuestions().setAll(CONTEST_DAO.list(c));
             contestReader.getTexts().setAll(textsByContest.getOrDefault(c, Collections.emptyList()));
             return contestReader;
         }).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
-    public static List<Contest> hasEqual(Contest contest) {
-        return CONTEST_DAO.hasEqual(contest);
+    public static Stream<ContestText> getContestTexts(Collection<ContestText> contestTexts, int cur) {
+        return contestTexts.stream().filter(t -> isBetween(t, cur));
     }
 
-    public static List<ContestQuestion> listByContest(Contest c) {
-        return CONTEST_DAO.list(c);
-    }
-
-    public static List<Contest> listContests() {
-        return CONTEST_DAO.listContests();
+    public static String getText(ContestDTO contestQuestions2, int cur) {
+        return putNumbers(getLinesOfText(contestQuestions2, cur));
     }
 
     public static void saveAll(Contest contest, ObservableList<ContestQuestion> listQuestions,
@@ -55,7 +57,7 @@ public final class ContestHelper {
         List<Contest> equals = CONTEST_DAO.hasEqual(contest);
         if (equals != null && !equals.isEmpty()) {
             for (Contest hasEqual : equals) {
-                deleteContest(hasEqual);
+                CONTEST_DAO.deleteContest(hasEqual);
             }
         }
 
@@ -70,9 +72,35 @@ public final class ContestHelper {
         CONTEST_DAO.saveOrUpdate(nonNullTexts);
     }
 
-    public static Map<Contest, List<ContestText>> textsByContest() {
-        List<ContestText> listTexts = CONTEST_DAO.listTexts();
-        return listTexts.stream().collect(Collectors.groupingBy(ContestText::getContest));
+    private static List<String> getLinesOfText(ContestDTO contestQuestions2, int cur) {
+        List<ContestText> contestTexts = contestQuestions2.getContestTexts();
+        if (contestTexts.stream().noneMatch(t -> isBetween(t, cur))) {
+            ContestQuestion contestQuestion = contestQuestions2.getListQuestions().get(cur);
+            String subject = contestQuestion.getSubject();
+            ContestText distinct = contestQuestions2.getListQuestions().stream()
+                .filter(e -> Objects.equals(e.getSubject(), subject))
+                .flatMap(e -> getContestTexts(contestTexts, e.getNumber())).distinct()
+                .min(Comparator.comparing(e -> Math.abs(e.getMax() + e.getMin() - cur * 2))).orElse(null);
+            if (distinct != null && distinct.getText() != null) {
+                return Stream.of(distinct.getText().split("\n")).filter(StringUtils::isNotBlank).map(String::trim)
+                    .collect(Collectors.toList());
+            }
+        }
+
+        return getContestTexts(contestTexts, cur).map(ContestText::getText).filter(StringUtils::isNotBlank)
+            .flatMap(s -> Stream.of(s.split("\n"))).map(String::trim).collect(Collectors.toList());
+    }
+
+    private static boolean isBetween(ContestText tex, int j) {
+        if (tex.getMin() == null || tex.getMax() == null) {
+            return false;
+        }
+        int i = j + 1;
+        return tex.getMin() <= i && tex.getMax() >= i;
+    }
+
+    private static Map<Contest, List<ContestText>> textsByContest() {
+        return CONTEST_DAO.listTexts().stream().collect(Collectors.groupingBy(ContestText::getContest));
     }
 
 }

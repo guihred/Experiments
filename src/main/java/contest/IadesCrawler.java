@@ -46,6 +46,7 @@ public class IadesCrawler extends Application {
         Parent node = createSplitTreeListDemoNode();
         primaryStage.setScene(new Scene(node));
         onCloseWindow(primaryStage, HibernateUtil::shutdown);
+        primaryStage.getScene().getStylesheets().add(ResourceFXUtils.toExternalForm("filesComparator.css"));
         primaryStage.show();
     }
 
@@ -60,7 +61,7 @@ public class IadesCrawler extends Application {
         listBuilder.items(FXCollections.observableArrayList()).onSelect(
             (old, value) -> RunnableEx.runNewThread(() -> saveContestValues(concurso, value, listBuilder.build())));
         SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
-            .addColumns("nome").onSelect((old, value) -> {
+            .addColumn("nome", QuadrixHelper::addClasses).onSelect((old, value) -> {
                 concurso.setValue(value);
                 listBuilder.items(value.getVagas());
             }).prefWidthColumns(1).minWidth(200);

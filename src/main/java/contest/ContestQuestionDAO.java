@@ -6,10 +6,20 @@ import contest.db.Contest;
 import contest.db.ContestQuestion;
 import contest.db.ContestText;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.hibernate.query.Query;
 import utils.BaseDAO;
 
 public class ContestQuestionDAO extends BaseDAO {
+
+    public void deleteContest(Contest hasEqual) {
+        this.delete(this.listTexts(hasEqual));
+        List<ContestQuestion> listQuestions2 = list(hasEqual);
+        this.delete(listQuestions2.stream().filter(e -> e.getOptions() != null).flatMap(e -> e.getOptions().stream())
+            .collect(Collectors.toList()));
+        this.delete(listQuestions2);
+        this.delete(hasEqual);
+    }
 
     public List<Contest> hasEqual(Contest c) {
         return execute(session -> {

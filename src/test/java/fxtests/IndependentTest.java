@@ -219,8 +219,6 @@ public class IndependentTest {
         List<String> asList = Arrays.asList("32154", null, "私は寿司が好きです。", "");
         for (String nome : asList) {
             measureTime("StringSigaUtils.codificar", () -> StringSigaUtils.codificar(nome));
-            measureTime("StringSigaUtils.corrigirProblemaEncoding",
-                () -> StringSigaUtils.corrigirProblemaEncoding(nome));
             measureTime("StringSigaUtils.decodificar", () -> StringSigaUtils.decodificar(nome));
             measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
             measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
