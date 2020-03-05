@@ -15,13 +15,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
@@ -58,6 +59,7 @@ public class ContestApplicationController {
     private ListView<ContestDTO> allContests;
     private ContestDTO contestQuestions;
     private final ObservableMap<Integer, String> answersCorrect = FXCollections.observableHashMap();
+    private final ObservableMap<ListCell<ContestQuestion>, Integer> cellMap = FXCollections.observableHashMap();
     @FXML
     private IntegerProperty current;
 
@@ -76,22 +78,28 @@ public class ContestApplicationController {
         }
 
         questions.getSelectionModel().selectedIndexProperty().addListener((o, old, n) -> current.set(n.intValue()));
-
-        questions.setCellFactory(newCellFactory((c, v) -> {
-            v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())));
-            answersCorrect.addListener((Observable o) -> {
-                v.getStyleClass().removeAll(CERTO0, ERRADO0);
-                if (c != null && answersCorrect.containsKey(c.getNumber())) {
-                    v.getStyleClass().add(answersCorrect.get(c.getNumber()));
+        answersCorrect.addListener((Change<? extends Integer, ? extends String> change) -> cellMap.entrySet().stream()
+            .filter(e -> e.getValue().equals(change.getKey())).findFirst().map(e -> e.getKey()).ifPresent(cel -> {
+                cel.getStyleClass().removeAll("", "certo", "errado", CERTO0, ERRADO0);
+                if (change.wasAdded()) {
+                    cel.getStyleClass().add(change.getValueAdded());
                 }
-            });
+            }));
 
+        questions.setCellFactory(newCellFactory((ContestQuestion c, ListCell<ContestQuestion> v) -> {
+            v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())));
+            if (c != null) {
+                cellMap.put(v, c.getNumber());
+                v.getStyleClass().addAll(answersCorrect.getOrDefault(c.getNumber(), ""));
+            } else {
+                cellMap.remove(v);
+            }
         }));
         options.getSelectionModel().selectedItemProperty().addListener((observable, old, value) -> {
             if (value == null) {
                 return;
             }
-            answersCorrect.put(value.getExercise().getNumber(), value.getCorrect() ? CERTO0 : ERRADO0);
+            answersCorrect.put(value.getExercise().getNumber(), value.getCorrect() ? "certo" : "errado");
             questions.setItems(contestQuestions.getListQuestions());
             splitPane.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
                 if (e.contains(CERTO0)) {
@@ -148,7 +156,7 @@ public class ContestApplicationController {
             updateCellFactory();
             return;
         }
-
+        options.getSelectionModel().clearSelection();
         ObservableList<ContestQuestionAnswer> items = options.getItems();
         for (int i = 0; i < contestQuestion.getOptions().size(); i++) {
             if (i < 0 || i >= items.size()) {
@@ -159,7 +167,6 @@ public class ContestApplicationController {
         }
         updateCellFactory();
     }
-
 
     private void onCurrentChange(Number value) {
         int cur = value.intValue();
@@ -192,6 +199,7 @@ public class ContestApplicationController {
     }
 
     private void updateCellFactory() {
+        options.getSelectionModel().clearSelection();
         options.setCellFactory(newCellFactory((el, cell) -> {
             Text text1 = new Text(el != null ? el.getAnswer() : "");
             text1.wrappingWidthProperty().bind(options.widthProperty().add(-10));
@@ -199,7 +207,6 @@ public class ContestApplicationController {
             cell.getStyleClass().removeAll("", "certo", "errado", CERTO0, ERRADO0);
             cell.getStyleClass().add(mapIf(el, e -> e.getCorrect() ? CERTO0 : ERRADO0, ""));
         }));
-        options.getSelectionModel().clearSelection();
     }
 
     static String getText(ContestDTO contestQuestions2, int cur) {
