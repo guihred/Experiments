@@ -61,7 +61,7 @@ public class IadesCrawler extends Application {
         listBuilder.items(FXCollections.observableArrayList()).onSelect(
             (old, value) -> RunnableEx.runNewThread(() -> saveContestValues(concurso, value, listBuilder.build())));
         SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)
-            .addColumn("nome", QuadrixHelper::addClasses).onSelect((old, value) -> {
+            .addColumn("nome", IadesHelper::addClasses).onSelect((old, value) -> {
                 concurso.setValue(value);
                 listBuilder.items(value.getVagas());
             }).prefWidthColumns(1).minWidth(200);
@@ -116,7 +116,8 @@ public class IadesCrawler extends Application {
         })).thenApply(doc -> getLinks(doc, entry, domain, links, level)).thenAccept(l -> {
             LOG.info("Links {}", l);
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
-            l.forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
+            l.stream().sorted(Comparator.comparing(Entry<String, String>::getKey))
+                .forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
         });
         ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
     }

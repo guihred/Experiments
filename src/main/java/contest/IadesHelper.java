@@ -3,6 +3,7 @@ package contest;
 import static java.util.stream.Stream.of;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
+import static utils.StringSigaUtils.removerDiacritico;
 
 import contest.db.ContestQuestion;
 import contest.db.Organization;
@@ -17,9 +18,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.TableCell;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,8 +33,28 @@ import utils.SupplierEx;
 
 public final class IadesHelper {
     public static final Logger LOG = HasLogging.log();
+    public static final List<String> IT_KEYWORDS = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
 
     private IadesHelper() {
+    }
+
+    public static void addClasses(Concurso con, TableCell<Concurso, Object> cell) {
+        cell.setText(con.getNome());
+        cell.getStyleClass().removeAll("amarelo", "vermelho");
+        if (con.getVagas().isEmpty()) {
+            cell.getStyleClass().add("vermelho");
+            con.getVagas().addListener((Observable c) -> {
+                ObservableList<?> observableList = (ObservableList<?>) c;
+                if (con.getNome().equals(cell.getText()) && !observableList.isEmpty()) {
+                    cell.getStyleClass().remove("vermelho");
+                    if (IadesHelper.hasTI(observableList)) {
+                        cell.getStyleClass().add("amarelo");
+                    }
+                }
+            });
+        } else if (IadesHelper.hasTI(con.getVagas())) {
+            cell.getStyleClass().add("amarelo");
+        }
     }
 
     public static String addDomain(Property<String> domain, String l) {
@@ -70,8 +93,6 @@ public final class IadesHelper {
         return instance;
     }
 
-
-
     public static File getPDF(String number, File file) {
         if (file.getName().endsWith(".pdf")) {
             return file;
@@ -83,6 +104,11 @@ public final class IadesHelper {
 
     public static boolean hasFileExtension(String key) {
         return key.endsWith(".pdf") || key.endsWith(".zip") || key.endsWith(".rar");
+    }
+
+    public static boolean hasTI(ObservableList<?> observableList) {
+        return observableList.stream().map(Objects::toString).anyMatch(e -> IadesHelper.IT_KEYWORDS.stream()
+            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
     public static void saveAnswers(ContestReader entities, List<String> linesRead, String findFirst) {

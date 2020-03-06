@@ -7,7 +7,6 @@ import static simplebuilder.SimpleDialogBuilder.bindWindow;
 import static utils.RunnableEx.run;
 import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.decodificar;
-import static utils.StringSigaUtils.removerDiacritico;
 import static utils.SupplierEx.getIgnore;
 import static utils.SupplierEx.orElse;
 
@@ -23,11 +22,9 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TableCell;
 import javafx.stage.Stage;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -40,28 +37,7 @@ public final class QuadrixHelper {
     private static final Map<String, String> COOKIES = new HashMap<>();
     private static final List<String> LINK_KEYWORDS = Arrays.asList("aplicada", "Gabarito Definitivo", "Caderno");
 
-    private static final List<String> IT_KEYWORDS = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
-
     private QuadrixHelper() {
-    }
-
-    public static void addClasses(Concurso con, TableCell<Concurso, Object> cell) {
-        cell.setText(con.getNome());
-        cell.getStyleClass().removeAll("amarelo", "vermelho");
-        if (con.getVagas().isEmpty()) {
-            cell.getStyleClass().add("vermelho");
-            con.getVagas().addListener((Observable c) -> {
-                ObservableList<?> observableList = (ObservableList<?>) c;
-                if (con.getNome().equals(cell.getText()) && !observableList.isEmpty()) {
-                    cell.getStyleClass().remove("vermelho");
-                    if (hasTI(observableList)) {
-                        cell.getStyleClass().add("amarelo");
-                    }
-                }
-            });
-        } else if (hasTI(con.getVagas())) {
-            cell.getStyleClass().add("amarelo");
-        }
     }
 
     public static String addQuadrixDomain(String url) {
@@ -147,11 +123,6 @@ public final class QuadrixHelper {
             concursos.add(e2);
         }
         return linksFound;
-    }
-
-    public static boolean hasTI(ObservableList<?> observableList) {
-        return observableList.stream().map(Objects::toString).anyMatch(e -> IT_KEYWORDS.stream()
-            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
     }
 
     public static boolean isValidLink(int level, Map.Entry<String, String> t) {

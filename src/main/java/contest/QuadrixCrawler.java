@@ -53,7 +53,7 @@ public class QuadrixCrawler extends Application {
         SimpleTreeViewBuilder.onSelect(treeBuilder, t -> getNewLinks(t, treeBuilder));
         vagasList.setItems(FXCollections.observableArrayList());
 
-        tableColumn4.setCellFactory(SimpleTableViewBuilder.newCellFactory(QuadrixHelper::addClasses));
+        tableColumn4.setCellFactory(SimpleTableViewBuilder.newCellFactory(IadesHelper::addClasses));
         SimpleListViewBuilder.onSelect(vagasList,
             (old, value) -> runNewThread(() -> QuadrixHelper.saveConcurso(concurso, vagasList, value)));
         concursosTable.setItems(concursos);
