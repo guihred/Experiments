@@ -84,6 +84,7 @@ public class ContestApplicationController {
 
         questions.setCellFactory(newCellFactory((ContestQuestion c, ListCell<ContestQuestion> v) -> {
             v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())));
+            v.getStyleClass().removeAll("", CERTO, ERRADO, CERTO0, ERRADO0);
             if (c != null) {
                 cellMap.put(v, c.getNumber());
                 v.getStyleClass().addAll(answersCorrect.getOrDefault(c.getNumber(), ""));
