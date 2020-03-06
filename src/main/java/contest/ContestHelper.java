@@ -88,7 +88,7 @@ public final class ContestHelper {
         }
 
         return getContestTexts(contestTexts, cur).map(ContestText::getText).filter(StringUtils::isNotBlank)
-            .flatMap(s -> Stream.of(s.split("\n"))).map(String::trim).collect(Collectors.toList());
+            .flatMap(s -> Stream.of(s.split("\n"))).distinct().map(String::trim).collect(Collectors.toList());
     }
 
     private static boolean isBetween(ContestText tex, int j) {

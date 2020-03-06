@@ -2,6 +2,7 @@ package contest.db;
 
 import java.util.Objects;
 import javax.persistence.*;
+import org.apache.commons.lang3.StringUtils;
 import utils.BaseEntity;
 import utils.HasImage;
 
@@ -72,7 +73,11 @@ public class ContestText extends BaseEntity implements HasImage {
 
     @Override
     public boolean matches(String s0) {
-        return s0.matches(ContestText.TEXTS_PATTERN);
+        if (StringUtils.isNotBlank(s0) && StringUtils.isNotBlank(text) && text.contains(s0)) {
+            return true;
+        }
+
+        return hasTexto(s0);
     }
 
     public void setContest(Contest contest) {
@@ -103,6 +108,10 @@ public class ContestText extends BaseEntity implements HasImage {
     @Override
     public String toString() {
         return String.format("ContestText [contest=%s, key=%d, max=%d, min=%d]", contest, key, max, min);
+    }
+
+    public static boolean hasTexto(String s) {
+        return s.matches(TEXTS_PATTERN) || s.startsWith("Texto");
     }
 
 }

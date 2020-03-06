@@ -49,10 +49,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
 		clickOn(lookupFirst(TreeView.class));
         type(KeyCode.SPACE);
         type(KeyCode.RIGHT);
-        type(KeyCode.DOWN, 10);
-        type(KeyCode.RIGHT);
-
-        type(KeyCode.DOWN, 11);
+        type(KeyCode.DOWN, 20);
         type(KeyCode.TAB);
 
         type(KeyCode.DOWN, 9);

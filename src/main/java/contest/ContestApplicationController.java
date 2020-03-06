@@ -187,7 +187,8 @@ public class ContestApplicationController {
         String text2 = getText(contestQuestions, cur);
         text.setText(text2);
         double[] dividerPositions = splitPane.getDividerPositions();
-        dividerPositions[dividerPositions.length - 1] = text2.isEmpty() ? dividerPositions[dividerPositions.length - 2]
+        dividerPositions[dividerPositions.length - 1] = text2.isEmpty() && images.getChildren().isEmpty()
+            ? dividerPositions[dividerPositions.length - 2]
             : 4. / 6;
         splitPane.setDividerPositions(dividerPositions);
     }

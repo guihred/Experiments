@@ -3,7 +3,6 @@ package extract;
 import static utils.RunnableEx.ignore;
 import static utils.RunnableEx.remap;
 import static utils.RunnableEx.runInPlatform;
-import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.removeMathematicalOperators;
 import static utils.SupplierEx.get;
 import static utils.SupplierEx.remap;
@@ -26,6 +25,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import utils.RunnableEx;
 
 public final class PdfUtils {
 
@@ -36,8 +36,8 @@ public final class PdfUtils {
     private PdfUtils() {
     }
 
-    public static void extractImages(File file) {
-        PdfUtils.extractImages(file, 0, 0);
+    public static Map<Integer, List<PdfImage>> extractImages(File file) {
+        return PdfUtils.extractImages(file, 0, 0);
     }
 
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages) {
@@ -47,7 +47,7 @@ public final class PdfUtils {
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
         Property<Number> progress) {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
-        runNewThread(() -> remap(() -> {
+        RunnableEx.run(() -> remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
                 COSDocument cosDoc = parseAndGet(source);
                 PDDocument pdDoc = new PDDocument(cosDoc)) {

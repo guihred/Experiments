@@ -5,20 +5,24 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.persistence.*;
+import org.apache.commons.lang3.StringUtils;
 import utils.BaseEntity;
 import utils.HasImage;
+import utils.StringSigaUtils;
 
 @Entity
 @Table
 public class ContestQuestion extends BaseEntity implements HasImage {
     public static final String QUESTION_PATTERN = " *QUESTÃO +(\\d+)\\s*___+\\s+";
 
+    public static final String QUESTAO = "QUESTÃO";
+
     @ManyToOne
     @JoinColumn
     private Contest contest;
-
     @Column(length = 5000)
     private String exercise;
+
     @Column(length = 5000)
     private String subject;
 
@@ -56,7 +60,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     public void appendImage(String image1) {
         if (image == null) {
             image = image1;
-        } else {
+        } else if (!image.endsWith(image1)) {
             image += ";" + image1;
         }
 
@@ -117,12 +121,16 @@ public class ContestQuestion extends BaseEntity implements HasImage {
 
     @Override
     public boolean matches(String s0) {
-        boolean matches = s0.matches(ContestQuestion.QUESTION_PATTERN);
+        if (StringUtils.isNotBlank(s0) && StringUtils.isNotBlank(exercise) && exercise.contains(s0)) {
+            return true;
+        }
+
+        boolean matches = isQuestionPattern(s0);
         if (!matches) {
             return false;
         }
-        String split = s0.replaceAll(ContestQuestion.QUESTION_PATTERN, "$1");
-        return split.equals(number + "");
+        Integer split = StringSigaUtils.getApenasNumerosInt(s0);
+        return Objects.equals(split, number);
     }
 
     public void setAnswer(char charAt) {
@@ -174,6 +182,10 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     @Override
     public String toString() {
         return String.format("Question(subject=%s, key=%s, number=%s, type=%s)", subject, key, number, type);
+    }
+
+    public static boolean isQuestionPattern(String s) {
+        return s.matches(QUESTION_PATTERN) || s.startsWith(QUESTAO);
     }
 
 }

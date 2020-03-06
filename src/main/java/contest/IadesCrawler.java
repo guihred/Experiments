@@ -25,8 +25,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
-import org.slf4j.Logger;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
@@ -34,7 +34,6 @@ import utils.*;
 
 public class IadesCrawler extends Application {
 
-    private static final Logger LOG = HasLogging.log();
     private static final String DOMAIN = "http://www.iades.com.br";
 
     private ObservableList<Concurso> concursos = FXCollections.observableArrayList();
@@ -52,7 +51,7 @@ public class IadesCrawler extends Application {
 
     private Parent createSplitTreeListDemoNode() {
         SimpleTreeViewBuilder<Map.Entry<String, String>> root = new SimpleTreeViewBuilder<Map.Entry<String, String>>()
-            .root(new AbstractMap.SimpleEntry<>("", DOMAIN + "/inscricao"));
+            .root(new AbstractMap.SimpleEntry<>("", DOMAIN + "/inscricao/?v=encerrado"));
         TreeView<Map.Entry<String, String>> treeBuilder = root.build();
         Set<String> links = new HashSet<>();
         Property<Concurso> concurso = new SimpleObjectProperty<>();
@@ -74,9 +73,10 @@ public class IadesCrawler extends Application {
         List<Map.Entry<String, String>> linksFound = doc.select("a").stream()
             .map(l -> new AbstractMap.SimpleEntry<>(l.text(), addDomain(domain, l.attr("href"))))
             .filter(t -> !"#".equals(t.getValue()))
-            .filter(t -> level < 2 || t.getKey().contains("Provas") || t.getKey().contains("Gabarito"))
+            .filter(t -> StringUtils.isNotBlank(t.getKey()) && !t.getKey().matches("\\d+\\..*"))
+            .filter(t -> level < 1 || t.getKey().contains("Provas") || t.getKey().contains("Gabarito"))
             .filter(t -> links.add(t.getValue())).distinct().collect(Collectors.toList());
-        if (level == 2 && !linksFound.isEmpty()) {
+        if (level == 1 && !linksFound.isEmpty()) {
             Concurso e2 = new Concurso();
             e2.setUrl(url.getValue());
             String key = url.getKey();
@@ -111,10 +111,8 @@ public class IadesCrawler extends Application {
         CompletableFuture.supplyAsync(SupplierEx.makeSupplier(() -> {
             URL url2 = new URL(url);
             domain.set(url2.getProtocol() + "://" + url2.getHost());
-            LOG.info("GETTING {} level {}", url, level);
             return ExtractUtils.getDocument(url, CrawlerTask.getEncodedAuthorization());
         })).thenApply(doc -> getLinks(doc, entry, domain, links, level)).thenAccept(l -> {
-            LOG.info("Links {}", l);
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
             l.stream().sorted(Comparator.comparing(Entry<String, String>::getKey))
                 .forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));

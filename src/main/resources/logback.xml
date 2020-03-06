@@ -24,7 +24,7 @@
 		<appender-ref ref="STDOUT" />
 	</root>
 	<logger name="ch.qos.logback.classic" level="OFF" />
-	<logger name="contest" level="OFF" />
+	<logger name="contest.ContestReader" level="OFF" />
 	<logger name="utils.ConsoleUtils" level="INFO" />
  	<logger name="schema.sngpc.FXMLCreator" level="OFF" /> 
  	<logger name="com.github.junrar" level="OFF" /> 

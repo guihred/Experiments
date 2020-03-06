@@ -1,7 +1,5 @@
 package contest;
 
-import static contest.db.ContestQuestion.QUESTION_PATTERN;
-import static contest.db.ContestText.TEXTS_PATTERN;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static utils.StringSigaUtils.intValue;
 import static utils.StringSigaUtils.removeNotPrintable;
@@ -13,6 +11,7 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +33,6 @@ public class ContestReader extends ContestDTO {
         }
         ContestHelper.saveAll(contest, listQuestions, texts);
     }
-
 
     public boolean validate() {
         if (questionType == QuestionType.OPTIONS
@@ -97,7 +95,7 @@ public class ContestReader extends ContestDTO {
                 return;
             }
             String string = linhas[i + 1];
-            if (string.matches(TEXTS_PATTERN)) {
+            if (ContestText.hasTexto(string)) {
                 addQuestion();
                 setState(ContestDTO.ReaderState.TEXT);
                 return;
@@ -107,7 +105,7 @@ public class ContestReader extends ContestDTO {
                 setState(ContestDTO.ReaderState.IGNORE);
                 return;
             }
-            if (isQuestionPattern(string)) {
+            if (ContestQuestion.isQuestionPattern(string)) {
                 addQuestion();
                 setState(ContestDTO.ReaderState.QUESTION);
                 return;
@@ -259,7 +257,7 @@ public class ContestReader extends ContestDTO {
     }
 
     private void getQuestionPositions(String text1, List<TextPosition> textPositions) {
-        if (matchesQuestionPattern(text1, textPositions)) {
+        if ((ContestQuestion.isQuestionPattern(text1) || ContestText.hasTexto(text1)) && !textPositions.isEmpty()) {
             TextPosition textPosition = textPositions.get(0);
             float x = textPosition.getXDirAdj();
             float y = textPosition.getYDirAdj();
@@ -330,10 +328,13 @@ public class ContestReader extends ContestDTO {
         List<HasImage> imageElements = Stream.concat(texts.stream(), listQuestions.stream())
             .collect(Collectors.toList());
         for (PdfImage pdfImage : images) {
-            questionPosition.stream().filter(e -> e.getPage() == currentPage)
-                .min(Comparator.comparing(position -> position.distance(pdfImage.getX(), pdfImage.getY())))
-                .ifPresent(position -> imageElements.stream().filter(p -> p.matches(position.getLine())).forEach(p -> p
-                    .appendImage(pdfImage.getFile().getParentFile().getName() + "/" + pdfImage.getFile().getName())));
+            Optional<QuestionPosition> min = questionPosition.stream().filter(e -> e.getPage() == currentPage)
+                .min(Comparator.comparing(position -> position.distance(pdfImage.getX(), pdfImage.getY())));
+            if (min.isPresent()) {
+                QuestionPosition position = min.get();
+                imageElements.stream().filter(p -> p.matches(position.getLine())).findFirst().ifPresent(p -> p
+                    .appendImage(pdfImage.getFile().getParentFile().getName() + "/" + pdfImage.getFile().getName()));
+            }
         }
     }
 
@@ -351,7 +352,7 @@ public class ContestReader extends ContestDTO {
             return;
         }
         changeTypeOfQuestions(s);
-        if (hasTexto(s)) {
+        if (ContestText.hasTexto(s)) {
             setState(ContestDTO.ReaderState.TEXT);
             String[] split = s.split("\\D+");
             IntSummaryStatistics stats = Stream.of(split).filter(StringUtils::isNotBlank)
@@ -376,7 +377,7 @@ public class ContestReader extends ContestDTO {
             return;
         }
         verifyTrueFalseQuestion(s);
-        if (isQuestionPattern(s)) {
+        if (ContestQuestion.isQuestionPattern(s)) {
             addTextIfNeeded();
             contestQuestion.setNumber(intValue(s));
             setState(ContestDTO.ReaderState.QUESTION);
@@ -430,18 +431,6 @@ public class ContestReader extends ContestDTO {
 
     private static boolean containsAllOptions(String s) {
         return s.contains("(A)") && s.contains("(B)") && s.contains("(C)") && s.contains("(D)") && s.contains("(E)");
-    }
-
-    private static boolean hasTexto(String s) {
-        return s.matches(TEXTS_PATTERN) || s.startsWith("Texto");
-    }
-
-    private static boolean isQuestionPattern(String s) {
-        return s.matches(QUESTION_PATTERN) || s.startsWith(QUESTAO);
-    }
-
-    private static boolean matchesQuestionPattern(String text1, List<TextPosition> textPositions) {
-        return text1 != null && text1.matches(QUESTION_PATTERN + "|" + TEXTS_PATTERN) && !textPositions.isEmpty();
     }
 
 }

@@ -145,7 +145,10 @@ public final class IadesHelper {
         }
         File file2 = getPDF(number, file);
         getContestQuestions(file2, Organization.IADES,
-            entities -> saveQuestions(concurso, vaga, linksFound, number, entities, vagasView));
+            entities -> {
+                saveQuestions(concurso, vaga, linksFound, number, entities);
+                Platform.runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
+            });
     }
 
     private static String getAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
@@ -195,7 +198,7 @@ public final class IadesHelper {
     }
 
     private static void saveQuestions(Property<Concurso> concurso, String vaga,
-        ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities, Node vagasView) {
+        ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities) {
         entities.getContest().setName(concurso.getValue().getNome());
         entities.getContest().setJob(vaga);
         entities.saveAll();
@@ -217,7 +220,7 @@ public final class IadesHelper {
             return;
         }
         saveAnswers(entities, linesRead, findFirst.get());
-        Platform.runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
+
     }
 
 }
