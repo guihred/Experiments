@@ -74,7 +74,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
             progress.addListener((v, o, n) -> {
                 if (n.intValue() == 1) {
                     Platform.runLater(stage::close);
-                    RunnableEx.run(() -> {
+                    RunnableEx.ignore(() -> {
                         final int millis = 3000;
                         Thread.sleep(millis);
                         run.run();

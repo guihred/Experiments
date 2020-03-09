@@ -33,7 +33,8 @@ import utils.SupplierEx;
 
 public final class IadesHelper {
     public static final Logger LOG = HasLogging.log();
-    public static final List<String> IT_KEYWORDS = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
+    protected static final List<String> IT_KEYWORDS = Arrays.asList("Informação", "Sistema", "Tecnologia",
+        "Informática");
 
     private IadesHelper() {
     }

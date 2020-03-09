@@ -8,8 +8,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.Node;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import org.junit.Test;
 import org.slf4j.Logger;
 import utils.HasLogging;
@@ -52,7 +56,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
         type(KeyCode.DOWN, 20);
         type(KeyCode.TAB);
 
-        type(KeyCode.DOWN, 9);
+        type(KeyCode.DOWN, nextInt(20));
 
         type(KeyCode.TAB);
         type(KeyCode.SPACE);
@@ -81,6 +85,10 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
     @Test
     public void verifyContestApplication() {
         show(ContestApplication.class);
+        for (ListView<?> listView : lookup(ListView.class)) {
+            Node randomItem = randomItem(from(listView).lookup(ListCell.class::isInstance).queryAll());
+            tryClickOn(randomItem, MouseButton.PRIMARY);
+        }
     }
 
     @Test
