@@ -1,5 +1,6 @@
 package utils;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 @FunctionalInterface
@@ -43,7 +44,7 @@ public interface FunctionEx<T, R> {
 
     static <T, F> F mapIf(T length, Function<T, F> func, F f) {
         T t = length;
-        if (t != null) {
+        if (t != null && !Objects.toString(t, "").isEmpty()) {
             return func.apply(t);
         }
         return f;

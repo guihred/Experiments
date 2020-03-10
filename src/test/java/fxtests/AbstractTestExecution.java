@@ -44,14 +44,19 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     @Override
+    public FxRobotInterface doubleClickOn(Node node, MouseButton... buttons) {
+        return SupplierEx.getIgnore(() ->super.doubleClickOn(node, buttons));
+    }
+
+    @Override
     public Logger getLogger() {
         return logger;
     }
-
     @Override
     public FxRobotInterface moveTo(Node bounds) {
         return SupplierEx.get(()->super.moveTo(bounds));
     }
+
     @Override
     public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();

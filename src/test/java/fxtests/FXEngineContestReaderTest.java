@@ -8,9 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -24,6 +23,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
     private Logger log = HasLogging.log();
 
     private List<String> invalidFiles = new ArrayList<>();
+
     @Test
     public void testAllFiles() {
         List<File> listFiles = Arrays
@@ -37,9 +37,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
     }
 
     public void testErrorFiles() {
-        List<File> listFiles = invalidFiles
-            .stream()
-            .map(ResourceFXUtils::getOutFile).collect(Collectors.toList());
+        List<File> listFiles = invalidFiles.stream().map(ResourceFXUtils::getOutFile).collect(Collectors.toList());
         List<String> invalidFiles2 = new ArrayList<>();
         for (File file : listFiles) {
             IadesHelper.getContestQuestions(file, Organization.IADES,
@@ -47,10 +45,11 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
         }
         displayResults(listFiles, invalidFiles2);
     }
+
     @Test
     public void testIades() {
         show(IadesCrawler.class);
-		clickOn(lookupFirst(TreeView.class));
+        clickOn(lookupFirst(TreeView.class));
         type(KeyCode.SPACE);
         type(KeyCode.RIGHT);
         type(KeyCode.DOWN, 20);
@@ -85,10 +84,15 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
     @Test
     public void verifyContestApplication() {
         show(ContestApplication.class);
-        for (ListView<?> listView : lookup(ListView.class)) {
-            Node randomItem = randomItem(from(listView).lookup(ListCell.class::isInstance).queryAll());
-            tryClickOn(randomItem, MouseButton.PRIMARY);
-        }
+        lookup(ListCell.class).stream().filter(e -> e.getItem() != null)
+            .collect(Collectors.groupingBy(e -> e.getListView().getId())).values().forEach(cells -> {
+                for (Pos pos : Arrays.asList(Pos.CENTER_RIGHT, Pos.BASELINE_LEFT, Pos.TOP_LEFT, Pos.CENTER,
+                    Pos.CENTER_LEFT)) {
+                    targetPos(pos);
+                    doubleClickOn(randomItem(cells), MouseButton.PRIMARY);
+                }
+            });
+        tryClickButtons();
     }
 
     @Test

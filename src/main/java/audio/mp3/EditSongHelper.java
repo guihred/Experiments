@@ -31,10 +31,7 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.StageHelper;
-import utils.ExtractUtils;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 public final class EditSongHelper {
     private static final Logger LOG = HasLogging.log();
@@ -69,7 +66,7 @@ public final class EditSongHelper {
     public static void splitAndSave(Music selectedItem, Slider initialSlider, Slider finalSlider, File outFile,
         ProgressIndicator progressIndicator, ObjectProperty<MediaPlayer> mediaPlayer) {
         MediaPlayer mediaPlayer2 = mediaPlayer.get();
-        if (mediaPlayer2 == null || mediaPlayer2.getStatus() == Status.UNKNOWN) {
+        if (!isAbleToChange(mediaPlayer2)) {
             LOG.error("Cannot Split And Save Audio {}", selectedItem);
             return;
         }
@@ -96,7 +93,7 @@ public final class EditSongHelper {
     public static void splitAudio(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
         ObjectProperty<Duration> startTime) {
         MediaPlayer mediaPlayer2 = mediaPlayer.get();
-        if (mediaPlayer2 == null || mediaPlayer2.getStatus() == Status.UNKNOWN) {
+        if (!isAbleToChange(mediaPlayer2)) {
             LOG.error("CAN'T Split Audio {}", file);
             return;
         }
@@ -120,9 +117,8 @@ public final class EditSongHelper {
     public static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
         Duration currentTime, Music music, ProgressIndicator progressIndicator, ObjectProperty<Duration> startTime) {
         SongUtils.stopAndDispose(mediaPlayer.get());
-        String format = music.getArtista().isEmpty()
-            ? String.format("%s.mp3", music.getTitulo().replaceAll("\\..+", ""))
-            : String.format("%s-%s.mp3", music.getTitulo().replaceAll("\\..+", ""), music.getArtista());
+        String format = FunctionEx.mapIf(music.getArtista(), a -> String.format("%s-%s.mp3", music.getTitulo(), a),
+            music.getTitulo().replaceAll("\\..+", ".mp3"));
 
         File newFile = ResourceFXUtils.getOutFile(format);
         DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime.get(), currentTime);
@@ -130,20 +126,21 @@ public final class EditSongHelper {
         progressIndicator.setVisible(true);
         splitAudio.addListener((ob, old, n) -> {
             progressIndicator.setVisible(true);
-            if (n.intValue() == 1) {
-                RunnableEx.runInPlatform(() -> {
-                    mediaPlayer.set(new MediaPlayer(new Media(file.toURI().toString())));
-                    mediaPlayer.get().totalDurationProperty().addListener(b -> {
-                        SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer.get());
-                        currentSlider.valueChangingProperty().addListener(
-                            (o, oldValue, newValue) -> updateMediaPlayer(mediaPlayer.get(), currentSlider, newValue));
-                        mediaPlayer.get().currentTimeProperty()
-                            .addListener(c -> updateCurrentSlider(mediaPlayer.get(), currentSlider));
-                        mediaPlayer.get().play();
-                    });
-                    StageHelper.closeStage(progressIndicator);
-                });
+            if (n.intValue() != 1) {
+                return;
             }
+            RunnableEx.runInPlatform(() -> {
+                mediaPlayer.set(new MediaPlayer(new Media(file.toURI().toString())));
+                mediaPlayer.get().totalDurationProperty().addListener(b -> {
+                    SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer.get());
+                    currentSlider.valueChangingProperty().addListener(
+                        (o, oldValue, newValue) -> updateMediaPlayer(mediaPlayer.get(), currentSlider, newValue));
+                    mediaPlayer.get().currentTimeProperty()
+                        .addListener(c -> updateCurrentSlider(mediaPlayer.get(), currentSlider));
+                    mediaPlayer.get().play();
+                });
+                StageHelper.closeStage(progressIndicator);
+            });
         });
         startTime.set(currentTime);
     }
@@ -158,10 +155,14 @@ public final class EditSongHelper {
     }
 
     public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, boolean valueChanging) {
-        if (!valueChanging && mediaPlayer2 != null && mediaPlayer2.getStatus() != Status.UNKNOWN) {
+        if (!valueChanging && isAbleToChange(mediaPlayer2)) {
             double pos = currentSlider.getValue();
             final Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
             SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer2);
         }
+    }
+
+    private static boolean isAbleToChange(MediaPlayer mediaPlayer2) {
+        return mediaPlayer2 != null && mediaPlayer2.getStatus() != Status.UNKNOWN;
     }
 }
