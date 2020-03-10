@@ -35,7 +35,9 @@ public class ContestApplication extends Application {
         }
         primaryStage.setTitle("Contest Questions");
         primaryStage.setScene(scene);
-        onCloseWindow(primaryStage, HibernateUtil::shutdown);
+        if (contestQuestions == null) {
+            onCloseWindow(primaryStage, HibernateUtil::shutdown);
+        }
         primaryStage.show();
     }
 

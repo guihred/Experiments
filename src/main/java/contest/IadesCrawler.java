@@ -57,6 +57,7 @@ public class IadesCrawler extends Application {
         Property<Concurso> concurso = new SimpleObjectProperty<>();
         root.onSelect(t -> getNewLinks(t, links, treeBuilder));
         SimpleListViewBuilder<String> listBuilder = new SimpleListViewBuilder<>();
+        listBuilder.cellFactory(SimpleListViewBuilder.newCellFactory(IadesHelper::addClasses));
         listBuilder.items(FXCollections.observableArrayList()).onSelect(
             (old, value) -> RunnableEx.runNewThread(() -> saveContestValues(concurso, value, listBuilder.build())));
         SimpleTableViewBuilder<Concurso> tableBuilder = new SimpleTableViewBuilder<Concurso>().items(concursos)

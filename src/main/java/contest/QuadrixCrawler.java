@@ -52,6 +52,7 @@ public class QuadrixCrawler extends Application {
 
         SimpleTreeViewBuilder.onSelect(treeBuilder, t -> getNewLinks(t, treeBuilder));
         vagasList.setItems(FXCollections.observableArrayList());
+        vagasList.setCellFactory(SimpleListViewBuilder.newCellFactory(IadesHelper::addClasses));
 
         tableColumn4.setCellFactory(SimpleTableViewBuilder.newCellFactory(IadesHelper::addClasses));
         SimpleListViewBuilder.onSelect(vagasList,

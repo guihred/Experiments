@@ -6,9 +6,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
@@ -48,18 +50,17 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
 
     @Test
     public void testIades() {
+        IadesHelper.addDomain(new SimpleStringProperty(""), "");
         show(IadesCrawler.class);
         clickOn(lookupFirst(TreeView.class));
         type(KeyCode.SPACE);
         type(KeyCode.RIGHT);
         type(KeyCode.DOWN, 20);
         type(KeyCode.TAB);
-
-        type(KeyCode.DOWN, nextInt(20));
+        queryYellow();
 
         type(KeyCode.TAB);
         type(KeyCode.SPACE);
-        IadesHelper.addDomain(new SimpleStringProperty(""), "");
     }
 
     @Test
@@ -72,9 +73,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
 
         type(KeyCode.DOWN, 10);
         type(KeyCode.TAB);
-
-        type(KeyCode.DOWN, 9);
-
+        queryYellow();
         type(KeyCode.TAB);
         type(KeyCode.SPACE);
         type(KeyCode.DOWN, 1);
@@ -86,8 +85,8 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
         show(ContestApplication.class);
         lookup(ListCell.class).stream().filter(e -> e.getItem() != null)
             .collect(Collectors.groupingBy(e -> e.getListView().getId())).values().forEach(cells -> {
-                for (Pos pos : Arrays.asList(Pos.CENTER_RIGHT, Pos.BASELINE_LEFT, Pos.TOP_LEFT, Pos.CENTER,
-                    Pos.CENTER_LEFT)) {
+                for (Pos pos : Arrays.asList(Pos.CENTER_RIGHT, Pos.BASELINE_LEFT, Pos.TOP_LEFT, Pos.CENTER_LEFT,
+                    Pos.CENTER)) {
                     targetPos(pos);
                     doubleClickOn(randomItem(cells), MouseButton.PRIMARY);
                 }
@@ -115,6 +114,19 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
         String invalidStr = invalidFiles1.stream().map(e -> e.replace("\\", "\\\\"))
             .collect(Collectors.joining("\",\"", "\"", "\""));
         log.info("INVALID {}/{}  {}", invalidFiles1.size(), listFiles.size(), invalidStr);
+    }
+
+    private void queryYellow() {
+        Set<Node> queryAll = lookup(".amarelo").queryAll();
+        if (queryAll.isEmpty()) {
+            type(KeyCode.DOWN, nextInt(20));
+            return;
+        }
+        for (Node node : queryAll) {
+            tryClickOn(node);
+            lookup(".amarelo").match(ListCell.class::isInstance).queryAllAs(ListCell.class)
+                .forEach(ode -> tryClickOn(ode));
+        }
     }
 
 }

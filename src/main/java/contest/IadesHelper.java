@@ -22,6 +22,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TableCell;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
@@ -54,6 +55,14 @@ public final class IadesHelper {
                 }
             });
         } else if (IadesHelper.hasTI(con.getVagas())) {
+            cell.getStyleClass().add("amarelo");
+        }
+    }
+
+    public static void addClasses(String con, ListCell<String> cell) {
+        cell.setText(con);
+        cell.getStyleClass().removeAll("amarelo");
+        if (con != null && hasItKeyword(con)) {
             cell.getStyleClass().add("amarelo");
         }
     }
@@ -108,8 +117,7 @@ public final class IadesHelper {
     }
 
     public static boolean hasTI(ObservableList<?> observableList) {
-        return observableList.stream().map(Objects::toString).anyMatch(e -> IadesHelper.IT_KEYWORDS.stream()
-            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m))));
+        return observableList.stream().map(Objects::toString).anyMatch(IadesHelper::hasItKeyword);
     }
 
     public static void saveAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
@@ -187,6 +195,11 @@ public final class IadesHelper {
             LOG.info("NO PDF found {} {}- {}", file, Arrays.asList(file.list()), number);
             return null;
         }
+    }
+
+    private static boolean hasItKeyword(String e) {
+        return IadesHelper.IT_KEYWORDS.stream()
+            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m)));
     }
 
     private static boolean nameMatches(String number, Path path) {
