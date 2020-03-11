@@ -2,19 +2,24 @@ package paintexp.tool;
 
 import static utils.DrawOnPoint.getWithinRange;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
+import utils.SupplierEx;
 
 public class PictureTool extends PaintTool {
 
@@ -23,7 +28,6 @@ public class PictureTool extends PaintTool {
     private SVGPath area;
     private int initialX;
     private int initialY;
-    private PictureOption pic = PictureOption.TRIANGLE;
     private FillOption option = FillOption.STROKE;
 
     @Override
@@ -32,8 +36,8 @@ public class PictureTool extends PaintTool {
         SVGPath icon = star5.toSVG();
         icon.setContent(star5.getPath());
         icon.setFill(Color.TRANSPARENT);
-		icon.setScaleX(3. / 4);
-		icon.setScaleY(3. / 4);
+        icon.setScaleX(3. / 4);
+        icon.setScaleY(3. / 4);
         icon.setStroke(Color.BLACK);
         return icon;
     }
@@ -46,13 +50,28 @@ public class PictureTool extends PaintTool {
             area.setStroke(Color.BLACK);
             area.setManaged(false);
         }
-        area.setContent(pic.getPath());
+        if (area.getContent() == null) {
+            getArea().setContent(PictureOption.TRIANGLE.getPath());
+        }
         return area;
     }
 
     @Override
     public Cursor getMouseCursor() {
         return Cursor.DISAPPEAR;
+    }
+
+    @Override
+    public void handleKeyEvent(KeyEvent e, PaintModel paintModel) {
+        if (e.isControlDown()) {
+            if (e.getCode() == KeyCode.PLUS || e.getCode() == KeyCode.ADD) {
+                TextField button = new TextField();
+                new SimpleDialogBuilder().button(button).button("Take", () -> {
+                    String text = button.getText();
+                    area.setContent(text);
+                }).bindWindow(paintModel.getImageStack()).displayDialog();
+            }
+        }
     }
 
     @Override
@@ -68,23 +87,25 @@ public class PictureTool extends PaintTool {
         icon4.strokeProperty().bind(model.frontColorProperty());
         icon4.fillProperty().bind(model.backColorProperty());
         List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
-            .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
-            .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
-            .select(option).getTogglesAs(Node.class);
+                .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
+                .onChange((o, old, newV) -> option =
+                        SupplierEx.nonNull((FillOption) newV.getUserData(), FillOption.STROKE))
+                .select(option).getTogglesAs(Node.class);
         model.getToolOptions().getChildren().addAll(togglesAs);
         SimpleToggleGroupBuilder picOptions = new SimpleToggleGroupBuilder();
-        List<PictureOption> validOptions = Stream.of(PictureOption.values()).filter(e -> e.getPath() != null)
-            .collect(Collectors.toList());
+        List<PictureOption> validOptions = Arrays.asList(PictureOption.values());
         validOptions.forEach(e -> picOptions.addToggle(e.toSVG(), e));
 
         VBox value = new VBox();
-        List<Node> allOptions = picOptions
-            .onChange(
-                (o, old, newV) -> pic = newV == null ? PictureOption.TRIANGLE : (PictureOption) newV.getUserData())
-            .select(pic).getTogglesAs(Node.class);
+        value.setAlignment(Pos.CENTER);
+        List<Node> allOptions = picOptions.onChange(
+                (o, old, newV) -> getArea().setContent(
+                        SupplierEx.nonNull((PictureOption) newV.getUserData(), PictureOption.TRIANGLE).getPath()))
+                .select(PictureOption.TRIANGLE).getTogglesAs(Node.class);
 
         value.getChildren().addAll(allOptions);
 
+        value.prefWidth(PREF_WIDTH);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(value);
         scrollPane.setFitToWidth(true);
@@ -131,6 +152,7 @@ public class PictureTool extends PaintTool {
             getArea().setManaged(false);
             getArea().setFill(Color.TRANSPARENT);
         }
+
         initialX = (int) e.getX();
         getArea().setLayoutX(initialX);
         getArea().setScaleX(1. / 10);
@@ -148,7 +170,7 @@ public class PictureTool extends PaintTool {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (children.contains(getArea())) {
-			model.takeSnapshotFill(area);
+            model.takeSnapshotFill(area);
         }
         children.remove(getArea());
         model.getScrollPane().setHvalue(hvalue);
