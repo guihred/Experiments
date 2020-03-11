@@ -66,10 +66,9 @@ public class PictureTool extends PaintTool {
         if (e.isControlDown()) {
             if (e.getCode() == KeyCode.PLUS || e.getCode() == KeyCode.ADD) {
                 TextField button = new TextField();
-                new SimpleDialogBuilder().button(button).button("Take", () -> {
-                    String text = button.getText();
-                    area.setContent(text);
-                }).bindWindow(paintModel.getImageStack()).displayDialog();
+                new SimpleDialogBuilder().button(button)
+                        .button("New Pic", () -> area.setContent("M0,0" + button.getText()))
+                        .bindWindow(paintModel.getImageStack()).displayDialog();
             }
         }
     }
@@ -102,7 +101,6 @@ public class PictureTool extends PaintTool {
                 (o, old, newV) -> getArea().setContent(
                         SupplierEx.nonNull((PictureOption) newV.getUserData(), PictureOption.TRIANGLE).getPath()))
                 .select(PictureOption.TRIANGLE).getTogglesAs(Node.class);
-
         value.getChildren().addAll(allOptions);
 
         value.prefWidth(PREF_WIDTH);
