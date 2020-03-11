@@ -37,8 +37,7 @@ public final class ExtractUtils {
     }
 
     public static void copy(String url, File outFile) throws IOException {
-        InputStream input = new URL(url).openConnection().getInputStream();
-        copy(input, outFile);
+        copy(new URL(url).openConnection().getInputStream(), outFile);
     }
 
     public static void copy(String src, String dest) throws IOException {
@@ -48,8 +47,7 @@ public final class ExtractUtils {
     public static Response executeRequest(String url, Map<String, String> cookies) throws IOException {
         Connection connect = HttpConnection.connect(url);
         if (!CrawlerTask.isNotProxied()) {
-            connect.header("Proxy-Authorization",
-                "Basic " + CrawlerTask.getEncodedAuthorization());
+            addProxyAuthorization(connect);
         }
         connect.timeout(HUNDRED_SECONDS);
         connect.cookies(cookies);
@@ -82,8 +80,14 @@ public final class ExtractUtils {
         });
     }
 
+
     public static Document getDocument(final String url) throws IOException {
-        return getDocument(url, CrawlerTask.getEncodedAuthorization());
+        Connection connect = Jsoup.connect(url);
+        if (!CrawlerTask.isNotProxied()) {
+            addProxyAuthorization(connect);
+        }
+        return connect
+            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0").get();
     }
 
     public static Document getDocument(String url, Map<String, String> cookies) throws IOException {
@@ -93,21 +97,12 @@ public final class ExtractUtils {
         return execute.parse();
     }
 
-    public static Document getDocument(final String url, String encoded) throws IOException {
-        Connection connect = Jsoup.connect(url);
-        if (!CrawlerTask.isNotProxied()) {
-            connect.header("Proxy-Authorization", "Basic " + encoded);
-        }
-        return connect
-            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0").get();
-    }
-
     public static File getFile(String key, String url1) throws IOException {
         File outFile = ResourceFXUtils.getOutFile(key);
         URL url2 = new URL(url1);
         HttpURLConnection con = (HttpURLConnection) url2.openConnection();
         if (!CrawlerTask.isNotProxied()) {
-            con.addRequestProperty("Proxy-Authorization", "Basic " + CrawlerTask.getEncodedAuthorization());
+            addBasicAuthorization(con);
         }
 
         con.setRequestMethod("GET");
@@ -120,8 +115,7 @@ public final class ExtractUtils {
         con.setRequestProperty("Connection", "keep-alive");
         con.setConnectTimeout(HUNDRED_SECONDS);
         con.setReadTimeout(HUNDRED_SECONDS);
-        InputStream input = con.getInputStream();
-        copy(input, outFile);
+        copy(con.getInputStream(), outFile);
         if (url1.endsWith(".zip") || key.endsWith(".zip")) {
             UnZip.extractZippedFiles(outFile);
         }
@@ -130,6 +124,15 @@ public final class ExtractUtils {
         }
         LOG.info("FILE {} SAVED", key);
         return outFile;
+    }
+
+    private static void addBasicAuthorization(HttpURLConnection con) {
+        con.addRequestProperty("Proxy-Authorization", "Basic " + CrawlerTask.getEncodedAuthorization());
+    }
+
+    private static void addProxyAuthorization(Connection connect) {
+        connect.header("Proxy-Authorization",
+            "Basic " + CrawlerTask.getEncodedAuthorization());
     }
 
 }

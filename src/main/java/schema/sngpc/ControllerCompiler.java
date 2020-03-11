@@ -65,10 +65,9 @@ public final class ControllerCompiler {
                 diagnosticMsg.add(message);
             };
 
-            StandardJavaFileManager standardFileManager = ToolProvider.getSystemJavaCompiler()
-                .getStandardFileManager(diagnosticListener, pt, Charset.defaultCharset());
             final JavaFileManager javaFileManager = new ForwardingJavaFileManager<StandardJavaFileManager>(
-                standardFileManager) {
+                ToolProvider.getSystemJavaCompiler()
+                    .getStandardFileManager(diagnosticListener, pt, Charset.defaultCharset())) {
 
                 @Override
                 public JavaFileObject getJavaFileForOutput(Location location, String className1,

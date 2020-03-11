@@ -8,7 +8,6 @@ import extract.ExcelService;
 import extract.WordService;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.*;
@@ -102,10 +101,8 @@ public class FXFileReadersTest extends AbstractTestExecution {
         map.put(2.0, 3.0);
         map.put(3.0, "3");
         map.put(4.0, new BigDecimal(3));
-        measureTime("ExcelService.getExcel", () -> {
-            OutputStream outStream = new FileOutputStream(ResourceFXUtils.getOutFile("result.xlsx"));
-            ExcelService.getExcel(arquivo, map, outStream);
-        });
+        measureTime("ExcelService.getExcel", () -> ExcelService.getExcel(arquivo, map,
+                new FileOutputStream(ResourceFXUtils.getOutFile("result.xlsx"))));
 
     }
 
@@ -120,10 +117,8 @@ public class FXFileReadersTest extends AbstractTestExecution {
         map.put(2.0, 3.0);
         map.put(3.0, "3");
         map.put(4.0, new BigDecimal(3));
-        measureTime("ExcelService.getExcel", () -> {
-            OutputStream outStream = new FileOutputStream(ResourceFXUtils.getOutFile("result.xlsx"));
-            ExcelService.getExcel(arquivo, map, abas, 0, outStream);
-        });
+        measureTime("ExcelService.getExcel", () -> ExcelService.getExcel(arquivo, map, abas, 0,
+                new FileOutputStream(ResourceFXUtils.getOutFile("result.xlsx"))));
 
     }
 

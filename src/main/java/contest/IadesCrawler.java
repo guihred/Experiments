@@ -112,7 +112,7 @@ public class IadesCrawler extends Application {
         CompletableFuture.supplyAsync(SupplierEx.makeSupplier(() -> {
             URL url2 = new URL(url);
             domain.set(url2.getProtocol() + "://" + url2.getHost());
-            return ExtractUtils.getDocument(url, CrawlerTask.getEncodedAuthorization());
+            return ExtractUtils.getDocument(url);
         })).thenApply(doc -> getLinks(doc, entry, domain, links, level)).thenAccept(l -> {
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
             l.stream().sorted(Comparator.comparing(Entry<String, String>::getKey))
@@ -122,7 +122,6 @@ public class IadesCrawler extends Application {
     }
 
     public static void main(String[] args) {
-
         launch(args);
     }
 
