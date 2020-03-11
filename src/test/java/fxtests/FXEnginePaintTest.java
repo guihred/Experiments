@@ -184,7 +184,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     }
 
     private void testMenus(final Node stack) {
-        File defaultFile = ResourceFXUtils.toFile("out");
+        File defaultFile = ResourceFXUtils.getOutFile();
         PaintFileUtils.setDefaultFile(defaultFile);
         File file = new File(defaultFile, TEST_FILE);
         if (file.exists()) {
@@ -225,7 +225,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                     });
                     interact(menu::fire);
                 }
-                interactNoWait(menu::fire);
+                interactNoWait(RunnableEx.make(menu::fire));
 
                 lookup(".text-field").queryAll().forEach(e -> {
                     clickOn(e);

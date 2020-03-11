@@ -19,7 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
-import utils.SupplierEx;
+import utils.FunctionEx;
 
 public class PictureTool extends PaintTool {
 
@@ -63,13 +63,10 @@ public class PictureTool extends PaintTool {
 
     @Override
     public void handleKeyEvent(KeyEvent e, PaintModel paintModel) {
-        if (e.isControlDown()) {
-            if (e.getCode() == KeyCode.PLUS || e.getCode() == KeyCode.ADD) {
-                TextField button = new TextField();
-                new SimpleDialogBuilder().button(button)
-                        .button("New Pic", () -> area.setContent("M0,0" + button.getText()))
-                        .bindWindow(paintModel.getImageStack()).displayDialog();
-            }
+        if (e.isControlDown() && (e.getCode() == KeyCode.PLUS || e.getCode() == KeyCode.ADD)) {
+            TextField button = new TextField();
+            new SimpleDialogBuilder().button(button).button("New Pic", () -> area.setContent("M0,0" + button.getText()))
+                    .bindWindow(paintModel.getImageStack()).displayDialog();
         }
     }
 
@@ -88,7 +85,7 @@ public class PictureTool extends PaintTool {
         List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
                 .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
                 .onChange((o, old, newV) -> option =
-                        SupplierEx.nonNull((FillOption) newV.getUserData(), FillOption.STROKE))
+                        FunctionEx.mapIf(newV, n -> (FillOption) n.getUserData(), FillOption.STROKE))
                 .select(option).getTogglesAs(Node.class);
         model.getToolOptions().getChildren().addAll(togglesAs);
         SimpleToggleGroupBuilder picOptions = new SimpleToggleGroupBuilder();
@@ -99,7 +96,7 @@ public class PictureTool extends PaintTool {
         value.setAlignment(Pos.CENTER);
         List<Node> allOptions = picOptions.onChange(
                 (o, old, newV) -> getArea().setContent(
-                        SupplierEx.nonNull((PictureOption) newV.getUserData(), PictureOption.TRIANGLE).getPath()))
+                        FunctionEx.mapIf(newV, n -> (PictureOption) n.getUserData(), PictureOption.TRIANGLE).getPath()))
                 .select(PictureOption.TRIANGLE).getTogglesAs(Node.class);
         value.getChildren().addAll(allOptions);
 
