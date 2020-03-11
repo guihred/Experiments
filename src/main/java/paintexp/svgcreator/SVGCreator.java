@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
+import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
 
 public class SVGCreator extends Application {
@@ -120,6 +121,10 @@ public class SVGCreator extends Application {
         lastScale = scale;
         // M108 40 L 150.0 140.0 H 130.0 L 115.0 110.0 H 85.0 L 70.0 140.0 H 60.0 Z M
         // 100.0 75.0 L 112.0 103.0 H 87.0 Z
+    }
+
+    public void onActionTake() {
+        ImageFXUtils.take(path);
     }
 
     @SuppressWarnings("unused")

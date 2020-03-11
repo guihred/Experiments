@@ -31,6 +31,12 @@ public final class ImageFXUtils {
 
     }
 
+    public static String take(final Node canvas) {
+        return ImageFXUtils.take(canvas, canvas.getBoundsInParent().getWidth(), canvas.getBoundsInParent().getHeight(),
+                canvas.getScaleX());
+
+    }
+
     public static String take(final Node canvas, final double w, final double h) {
         return take(canvas, w, h, 1);
     }

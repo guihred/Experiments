@@ -165,7 +165,7 @@
 				</ComboBox>
 				<Button GridPane.columnIndex="0" GridPane.columnSpan="2"
 					GridPane.rowIndex="13" GridPane.rowSpan="1" alignment="CENTER"
-					fx:id="relative" id="Relative" onAction="#onActionRelative" text="Relative"
+					fx:id="take" id="Relative" onAction="#onActionTake" text="Take"
 					textFill="0x333333ff">
 					<padding>
 						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
@@ -173,6 +173,14 @@
 				</Button>
 				<Button GridPane.columnIndex="0" GridPane.columnSpan="2"
 					GridPane.rowIndex="14" GridPane.rowSpan="1" alignment="CENTER"
+					fx:id="relative" id="Relative" onAction="#onActionRelative" text="Relative"
+					textFill="0x333333ff">
+					<padding>
+						<Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+					</padding>
+				</Button>
+				<Button GridPane.columnIndex="0" GridPane.columnSpan="2"
+					GridPane.rowIndex="15" GridPane.rowSpan="1" alignment="CENTER"
 					fx:id="imageBackground" id="Relative" onAction="#onActionBackground" text="Background"
 					textFill="0x333333ff">
 					<padding>
@@ -180,7 +188,7 @@
 					</padding>
 				</Button>
 				<VBox GridPane.columnIndex="0" GridPane.columnSpan="2"
-					GridPane.rowIndex="15" GridPane.rowSpan="1">
+					GridPane.rowIndex="16" GridPane.rowSpan="1">
 					<children>
 						<Text fx:id="scaleText" text="Scale" />
 						<Slider blockIncrement="0.05" fx:id="slider" max="2.0"
@@ -191,8 +199,8 @@
 					</children>
 				</VBox>
 				<Text GridPane.columnIndex="0" GridPane.columnSpan="2"
-					GridPane.rowIndex="16" GridPane.rowSpan="1" fx:id="width" />
-				<Text GridPane.columnIndex="0" GridPane.columnSpan="2"
+					GridPane.rowIndex="17" GridPane.rowSpan="1" fx:id="width" />
+				<Text GridPane.columnIndex="1" GridPane.columnSpan="2"
 					GridPane.rowIndex="17" GridPane.rowSpan="1" fx:id="height" />
 			</children>
 		</GridPane>
