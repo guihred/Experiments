@@ -3,6 +3,7 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 
 import graphs.app.JavaFileDependency;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -19,7 +20,7 @@ import utils.*;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JavaDependencyTest {
     private static final Logger LOG = HasLogging.log();
-    private static final int NUMBER_TESTS = 10;
+    private static int NUMBER_TESTS = 10;
 
     @Test
     public void testGTestUncovered() {
@@ -33,6 +34,10 @@ public class JavaDependencyTest {
             List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
                 .collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
+            if (tests.size() > 30) {
+                NUMBER_TESTS = 2;
+            }
+
             int min = Math.min(tests.size() / 2, NUMBER_TESTS / 2);
             List<String> subList = tests.subList(0, min);
             List<String> subList2 = tests.subList(min, tests.size());
@@ -86,10 +91,18 @@ public class JavaDependencyTest {
         measureTime("JavaFileDependency.testUncoveredApps", () -> {
             HibernateUtil.setShutdownEnabled(false);
             List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
+            int b = uncoveredApplications.size() > 100 ? uncoveredApplications.size() / 2 : 20;
             AbstractTestExecution
-                .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), NUMBER_TESTS)));
+                .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), b)));
             HibernateUtil.setShutdownEnabled(true);
         });
+    }
+
+    private <T extends Annotation> void invoke(List<Method> declaredMethods, Object test, Class<T> annotationClass) {
+
+        declaredMethods.stream().filter(e -> {
+            return e.getAnnotationsByType(annotationClass).length > 0;
+        }).forEach(e -> ClassReflectionUtils.invoke(test, e));
     }
 
     private boolean isNotSame(Throwable e, Class<? extends Throwable> expected) {
@@ -103,42 +116,38 @@ public class JavaDependencyTest {
     private void runTest(Class<?> testClass, Object test, List<String> failedTests) {
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
-            declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
-                .forEach(e -> ClassReflectionUtils.invoke(test, e));
+            invoke(declaredMethods, test, Before.class);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
                 .sorted(Comparator.comparing(Method::getName))
-                .forEach(ConsumerEx.make(e -> e.invoke(test), (Method o, Throwable e) -> {
+                .forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
                     Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
                     if (expected == null || isNotSame(e, expected)) {
                         failedTests.add(o + "");
                         LOG.error("ERROR invoking " + o, e);
                     }
                 }));
-            declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
-                .forEach(e -> ClassReflectionUtils.invoke(test, e));
+            invoke(declaredMethods, test, After.class);
         });
 
     }
 
     private void runTest(Class<?> testClass, Object test, List<String> failedTests, List<String> methods) {
         FXTesting.measureTime(testClass.getSimpleName(), () -> {
-            RunnableEx.run(() -> HibernateUtil.setShutdownEnabled(false));
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
-            declaredMethods.stream().filter(e -> e.getAnnotationsByType(Before.class).length > 0)
-                .forEach(e -> ClassReflectionUtils.invoke(test, e));
+
+            invoke(declaredMethods, test, Before.class);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
                 .sorted(Comparator.comparing(Method::getName))
                 .filter(e -> methods.isEmpty() || methods.contains(e.getName()))
-                .forEach(ConsumerEx.make(e -> e.invoke(test), (Method o, Throwable e) -> {
+                .forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
                     Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
                     if (expected == null || isNotSame(e, expected)) {
                         failedTests.add(o + "");
                         LOG.error("ERROR invoking " + o, e);
                     }
                 }));
-            declaredMethods.stream().filter(e -> e.getAnnotationsByType(After.class).length > 0)
-                .forEach(e -> ClassReflectionUtils.invoke(test, e));
-            HibernateUtil.setShutdownEnabled(true);
+
+            invoke(declaredMethods, test, After.class);
         });
 
     }

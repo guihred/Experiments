@@ -75,15 +75,17 @@ public final class CoverageUtils {
         List<Class<? extends Application>> classes = CoverageUtils.getClasses(Application.class);
         List<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, m -> contains(classes, m),
             path);
-        if (!displayTestsToBeRun.isEmpty()) {
-            LOG.error("{} APPS FOUND= {}", displayTestsToBeRun.size(), displayTestsToBeRun);
-        }
 
         Map<String, Long> count = displayTestsToBeRun.stream()
             .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
-        return displayTestsToBeRun.stream().distinct().sorted(Comparator.comparing(count::get).reversed())
+        List<Class<? extends Application>> collect = displayTestsToBeRun.stream().distinct().sorted(Comparator.comparing(count::get).reversed())
             .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e))).collect(Collectors.toList());
+        if (!collect.isEmpty()) {
+            LOG.error("{} APPS FOUND= {}", collect.size(),
+                collect.stream().map(e -> e.getName()).collect(Collectors.joining(", ", "[", "]")));
+        }
+        return collect;
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications2(Collection<String> uncovered) {

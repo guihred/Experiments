@@ -15,17 +15,33 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 
+@SuppressWarnings("static-method")
 public class FXEngineContestReaderTest extends AbstractTestExecution {
 
     private Logger log = HasLogging.log();
 
     private List<String> invalidFiles = new ArrayList<>();
 
+    @After
+    public void cleanUp() {
+        HibernateUtil.setShutdownEnabled(true);
+        HibernateUtil.shutdown();
+    }
+
+    @Before
+    public void start() {
+        ResourceFXUtils.initializeFX();
+        HibernateUtil.getSessionFactory();
+        HibernateUtil.setShutdownEnabled(false);
+    }
     @Test
     public void testAllFiles() {
         List<File> listFiles = Arrays

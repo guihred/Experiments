@@ -173,8 +173,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
     public void testRar() {
         measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
         File userFolder = ResourceFXUtils.getOutFile().getParentFile();
-        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(userFolder, "rar");
-        pathByExtension.stream().map(FunctionEx.makeFunction(e -> {
+        ResourceFXUtils.getPathByExtension(userFolder, "rar").stream().map(FunctionEx.makeFunction(e -> {
             Path name = e.getName(e.getNameCount() - 1);
             File outFile = ResourceFXUtils.getOutFile(name.toString());
             ExtractUtils.copy(e, outFile);
