@@ -67,7 +67,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     @Override
     public void stop() {
-        currentStage.close();
+        interact(() -> currentStage.close());
     }
 
     public FxRobotInterface tryClickOn(Node node, MouseButton... buttons) {

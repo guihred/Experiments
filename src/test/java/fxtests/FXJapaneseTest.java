@@ -22,6 +22,7 @@ import utils.ResourceFXUtils;
 public class FXJapaneseTest extends AbstractTestExecution {
     @After
     public void cleanUp() {
+        stop();
         HibernateUtil.setShutdownEnabled(true);
         HibernateUtil.shutdown();
     }

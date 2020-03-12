@@ -17,6 +17,7 @@ public class FXHibernateTest extends AbstractTestExecution {
 
     @After
     public void cleanUp() {
+        stop();
         HibernateUtil.setShutdownEnabled(true);
         HibernateUtil.shutdown();
     }

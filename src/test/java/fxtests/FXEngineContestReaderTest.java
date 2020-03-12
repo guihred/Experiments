@@ -32,6 +32,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
 
     @After
     public void cleanUp() {
+        stop();
         HibernateUtil.setShutdownEnabled(true);
         HibernateUtil.shutdown();
     }
