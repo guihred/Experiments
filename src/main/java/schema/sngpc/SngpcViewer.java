@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -61,11 +62,15 @@ public class SngpcViewer extends Application {
         Map<Node, TreeItem<Map<String, String>>> allItems = new HashMap<>();
 
         File file = ResourceFXUtils.toFile("FL94_REL758_20181031061530.xml");
+        SimpleObjectProperty<File> fileProp = new SimpleObjectProperty<>(file);
         readXMLFile(tree, allItems, file);
 
         Button importXMLButton = StageHelper.chooseFile("Import XML", "Import XML",
-            newFile -> readXMLFile(tree, allItems, newFile), "Xml", "*.xml");
-        Button exportExcel = newButton("Export excel", e -> exportToExcel(tree, file));
+            newFile -> {
+                readXMLFile(tree, allItems, newFile);
+                fileProp.set(newFile);
+            }, "Xml", "*.xml");
+        Button exportExcel = newButton("Export excel", e -> exportToExcel(tree, fileProp.get()));
         return new VBox(new HBox(importXMLButton, exportExcel), new SplitPane(tree, sideTable));
     }
 

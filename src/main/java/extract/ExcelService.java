@@ -127,12 +127,7 @@ public final class ExcelService {
             for (int i = 0; i < keySet.size(); i++) {
                 row2.createCell(i, CellType.STRING).setCellValue(keySet.get(i));
             }
-            CreationHelper createHelper = xssfWorkbook.getCreationHelper();
-            CellStyle formatoDate = xssfWorkbook.createCellStyle();
-            formatoDate.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
-            CellStyle formatoBigDecimal = xssfWorkbook.createCellStyle();
-            formatoBigDecimal.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.00"));
-
+            Map<Class<?>, CellStyle> styleMap = styleMap(xssfWorkbook);
             final int step = 100;
             int i = 0;
             for (List<T> apply = lista.apply(0, step); !apply.isEmpty(); i += step, apply = lista.apply(i, step)) {
@@ -142,7 +137,7 @@ public final class ExcelService {
                     int k = 0;
                     for (FunctionEx<T, Object> campoFunction : fields.values()) {
                         Object campo = FunctionEx.makeFunction(campoFunction).apply(entidade);
-                        setValorPorClasse(formatoDate, formatoBigDecimal, row, k, campo);
+                        setValorPorClasse(styleMap, row, k, campo);
                         k++;
                     }
                 }
@@ -166,11 +161,7 @@ public final class ExcelService {
                 row2.createCell(j, CellType.STRING).setCellValue(titulo);
                 j++;
             }
-            CreationHelper createHelper = workbook.getCreationHelper();
-            CellStyle formatoData = workbook.createCellStyle();
-            formatoData.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
-            CellStyle formatoBigDecimal = workbook.createCellStyle();
-            formatoBigDecimal.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.00"));
+            Map<Class<?>, CellStyle> formatMap = styleMap(workbook);
 
             for (int i = 0; i < lista.size(); i++) {
                 T entidade = lista.get(i);
@@ -178,7 +169,7 @@ public final class ExcelService {
                 int k = 0;
                 for (FunctionEx<T, Object> campoFunction : mapa.values()) {
                     Object campo = FunctionEx.makeFunction(campoFunction).apply(entidade);
-                    setValorPorClasse(formatoData, formatoBigDecimal, row, k, campo);
+                    setValorPorClasse(formatMap, row, k, campo);
                     k++;
                 }
 
@@ -250,29 +241,49 @@ public final class ExcelService {
         LOG.trace("{}", value);
     }
 
-    private static void setValorPorClasse(CellStyle dateFormat, CellStyle formatoBigDecimal, Row row, int k,
-        Object campo) {
-        if (campo instanceof Date) {
-            Cell createCell = row.createCell(k, CellType.NUMERIC);
-            createCell.setCellValue((Date) campo);
-            createCell.setCellStyle(dateFormat);
-        } else if (campo instanceof BigDecimal) {
-            Cell createCell = row.createCell(k, CellType.NUMERIC);
-            createCell.setCellValue(((BigDecimal) campo).doubleValue());
-            createCell.setCellStyle(formatoBigDecimal);
-        } else if (campo instanceof Number) {
-            Cell createCell = row.createCell(k, CellType.NUMERIC);
-            createCell.setCellValue(((Number) campo).doubleValue());
-        } else if (campo instanceof String) {
-            Cell createCell = row.createCell(k, CellType.STRING);
-            createCell.setCellValue(Objects.toString(campo, ""));
-        } else if (campo instanceof Boolean) {
-            Cell createCell = row.createCell(k, CellType.STRING);
-            Boolean campo2 = (Boolean) campo;
+    private static void setValorPorClasse(Map<Class<?>, CellStyle> formatMap, Row row, int colIndex, Object content) {
+        if (content instanceof Date) {
+            Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
+            createCell.setCellValue((Date) content);
+            createCell.setCellStyle(formatMap.get(Date.class));
+        } else if (content instanceof BigDecimal) {
+            Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
+            createCell.setCellValue(((BigDecimal) content).doubleValue());
+            createCell.setCellStyle(formatMap.get(BigDecimal.class));
+        } else if (content instanceof Number) {
+            Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
+            createCell.setCellValue(((Number) content).doubleValue());
+        } else if (content instanceof String) {
+            Cell createCell = row.createCell(colIndex, CellType.STRING);
+            String string = Objects.toString(content, "");
+            createCell.setCellValue(string.replaceAll("\n", "\r\n").replaceAll("\t", ""));
+            createCell.setCellStyle(formatMap.get(String.class));
+            row.setHeightInPoints(Math.max(row.getHeightInPoints(),
+                row.getSheet().getDefaultRowHeightInPoints() * string.replaceAll("[^\n]", "").length()));
+        } else if (content instanceof Boolean) {
+            Cell createCell = row.createCell(colIndex, CellType.STRING);
+            Boolean campo2 = (Boolean) content;
             createCell.setCellValue(campo2 ? "Sim" : "Não");
         } else {
-            row.createCell(k, CellType.BLANK);
+            row.createCell(colIndex, CellType.BLANK);
         }
+    }
+
+    private static Map<Class<?>, CellStyle> styleMap(Workbook workbook) {
+        CreationHelper createHelper = workbook.getCreationHelper();
+        CellStyle formatoData = workbook.createCellStyle();
+        formatoData.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
+        CellStyle formatoBigDecimal = workbook.createCellStyle();
+        formatoBigDecimal.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.00"));
+        CellStyle defaultStyle = workbook.createCellStyle();
+        defaultStyle.setAlignment(HorizontalAlignment.LEFT);
+        defaultStyle.setVerticalAlignment(VerticalAlignment.TOP);
+        defaultStyle.setWrapText(true);
+        Map<Class<?>, CellStyle> formatMap = new HashMap<>();
+        formatMap.put(Date.class, formatoData);
+        formatMap.put(BigDecimal.class, formatoBigDecimal);
+        formatMap.put(String.class, defaultStyle);
+        return formatMap;
     }
 
 }
