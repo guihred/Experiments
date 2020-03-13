@@ -34,9 +34,6 @@ public class JavaDependencyTest {
             List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
                 .collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
-            if (tests.size() > 30) {
-                NUMBER_TESTS = 2;
-            }
 
             int min = Math.min(tests.size() / 2, NUMBER_TESTS / 2);
             List<String> subList = tests.subList(0, min);
@@ -91,7 +88,7 @@ public class JavaDependencyTest {
         measureTime("JavaFileDependency.testUncoveredApps", () -> {
             HibernateUtil.setShutdownEnabled(false);
             List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
-            int b = uncoveredApplications.size() > 100 ? uncoveredApplications.size() / 2 : 20;
+            int b = uncoveredApplications.size() > 50 ? uncoveredApplications.size() / 2 : 20;
             AbstractTestExecution
                 .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), b)));
             HibernateUtil.setShutdownEnabled(true);

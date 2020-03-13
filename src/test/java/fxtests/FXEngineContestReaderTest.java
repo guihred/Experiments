@@ -136,14 +136,14 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
     private void queryYellow() {
         Set<Node> queryAll = lookup(".amarelo").queryAll();
         if (queryAll.isEmpty()) {
-            type(KeyCode.DOWN, nextInt(20));
+            type(KeyCode.DOWN, nextInt(10));
             return;
         }
-        for (Node node : queryAll) {
+        queryAll.stream().limit(2).forEach(node -> {
             tryClickOn(node);
             lookup(".amarelo").match(ListCell.class::isInstance).queryAllAs(ListCell.class)
                 .forEach(ode -> tryClickOn(ode));
-        }
+        });
     }
 
 }
