@@ -295,7 +295,8 @@ public class ContestReader extends ContestDTO {
     }
 
     private boolean isSubject(String s) {
-        return s.matches(CONHECIMENTO) && getState() == ContestDTO.ReaderState.IGNORE;
+        return s.matches(CONHECIMENTO)
+            && (getState() == ContestDTO.ReaderState.IGNORE || getState() == ContestDTO.ReaderState.TEXT);
     }
 
     private boolean isTextMultiLine() {

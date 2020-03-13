@@ -79,11 +79,12 @@ public final class CoverageUtils {
         Map<String, Long> count = displayTestsToBeRun.stream()
             .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
-        List<Class<? extends Application>> collect = displayTestsToBeRun.stream().distinct().sorted(Comparator.comparing(count::get).reversed())
+        List<Class<? extends Application>> collect = displayTestsToBeRun.stream().distinct()
+            .sorted(Comparator.comparing(count::get).reversed())
             .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e))).collect(Collectors.toList());
         if (!collect.isEmpty()) {
-            LOG.error("{} APPS FOUND= {}", collect.size(),
-                collect.stream().map(e -> e.getName()).collect(Collectors.joining(", ", "[", "]")));
+            LOG.error("{} APPS FOUND= {}", collect.size(), collect.stream().map(Class<? extends Application>::getName)
+                .collect(Collectors.joining(", ", "[", "]")));
         }
         return collect;
     }
@@ -136,8 +137,8 @@ public final class CoverageUtils {
         List<String> coveredAttr = cols.stream().filter(e -> e.endsWith(COVERED)).map(e -> e.replaceFirst(COVERED, ""))
             .collect(Collectors.toList());
         for (String colName : coveredAttr) {
-            DataframeUtils.crossFeature(b, PERCENTAGE + "_" + colName, CoverageUtils::getPercentage,
-                colName + MISSED, colName + COVERED);
+            DataframeUtils.crossFeature(b, PERCENTAGE + "_" + colName, CoverageUtils::getPercentage, colName + MISSED,
+                colName + COVERED);
         }
         Map<String, DataframeStatisticAccumulator> makeStats = DataframeUtils.makeStats(b);
         for (String colName : coveredAttr) {
@@ -179,8 +180,8 @@ public final class CoverageUtils {
     }
 
     private static File getCoverageFile() {
-        return ResourceFXUtils.getPathByExtension(new File("target/site/"), ".csv").stream()
-            .map(Path::toFile).filter(e -> ResourceFXUtils.computeAttributes(e).size() > 0L)
+        return ResourceFXUtils.getPathByExtension(new File("target/site/"), ".csv").stream().map(Path::toFile)
+            .filter(e -> ResourceFXUtils.computeAttributes(e).size() > 0L)
             .max(Comparator.comparing(e -> ResourceFXUtils.computeAttributes(e).size())).orElse(null);
     }
 
@@ -203,8 +204,7 @@ public final class CoverageUtils {
         Map<String, Long> count = displayTestsToBeRun.stream()
             .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
-        return displayTestsToBeRun.stream().distinct().sorted()
-            .sorted(Comparator.comparing(count::get).reversed())
+        return displayTestsToBeRun.stream().distinct().sorted().sorted(Comparator.comparing(count::get).reversed())
             .collect(Collectors.toList());
     }
 }

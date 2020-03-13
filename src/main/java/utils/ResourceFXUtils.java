@@ -93,6 +93,19 @@ public final class ResourceFXUtils {
         return wr;
     }
 
+    public static List<Path> getFirstFileMatch(File dir, PredicateEx<Path> other) {
+        return SupplierEx.get(() -> {
+            if (!dir.exists()) {
+                return Collections.emptyList();
+            }
+            try (Stream<Path> walk = Files.walk(dir.toPath(), 20)) {
+                return walk
+                    .filter(PredicateEx.makeTest(other))
+                    .collect(Collectors.toList());
+            }
+        }, Collections.emptyList());
+    }
+
     public static Path getFirstPathByExtension(File dir, String... other) {
         return getPathByExtension(dir, other).stream().findFirst().orElse(null);
     }
@@ -110,6 +123,7 @@ public final class ResourceFXUtils {
         return file;
     }
 
+
     public static File getOutFile(String out) {
         File parentFile = toFile("alice.txt").getParentFile();
         File file = new File(parentFile, "out");
@@ -121,11 +135,9 @@ public final class ResourceFXUtils {
 
     public static List<Path> getPathByExtension(File dir, String... other) {
         return SupplierEx.get(() -> {
-
             if (!dir.exists()) {
                 return Collections.emptyList();
             }
-
             try (Stream<Path> walk = Files.walk(dir.toPath(), 20)) {
                 return walk
                     .filter(PredicateEx.makeTest(e -> Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex))))

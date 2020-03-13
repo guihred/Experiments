@@ -9,61 +9,54 @@ import contest.db.ContestQuestion;
 import contest.db.Organization;
 import extract.PdfUtils;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.Property;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.TableCell;
+import javafx.scene.control.Labeled;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
-import utils.HasLogging;
-import utils.StringSigaUtils;
-import utils.SupplierEx;
+import utils.*;
 
 public final class IadesHelper {
+    private static final String AMARELO = "amarelo";
     public static final Logger LOG = HasLogging.log();
-    private static final List<String> IT_KEYWORDS = Arrays.asList("Informação", "Sistema", "Tecnologia",
-        "Informática");
+    private static final List<String> IT_KEYWORDS = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
 
     private IadesHelper() {
     }
 
-    public static void addClasses(Concurso con, TableCell<Concurso, Object> cell) {
+    public static void addClasses(Concurso con, Labeled cell) {
         cell.setText(con.getNome());
-        cell.getStyleClass().removeAll("amarelo", "vermelho");
+        cell.getStyleClass().removeAll(AMARELO, "vermelho");
+        if (IadesHelper.hasTI(con.getVagas())) {
+            cell.getStyleClass().add(AMARELO);
+            return;
+        }
         if (con.getVagas().isEmpty()) {
             cell.getStyleClass().add("vermelho");
             con.getVagas().addListener((Observable c) -> {
-                ObservableList<?> observableList = (ObservableList<?>) c;
-                if (con.getNome().equals(cell.getText()) && !observableList.isEmpty()) {
+                List<?> vagasList = (List<?>) c;
+                if (con.getNome().equals(cell.getText()) && !vagasList.isEmpty()) {
                     cell.getStyleClass().remove("vermelho");
-                    if (IadesHelper.hasTI(observableList)) {
-                        cell.getStyleClass().add("amarelo");
+                    if (IadesHelper.hasTI(vagasList)) {
+                        cell.getStyleClass().add(AMARELO);
                     }
                 }
             });
-        } else if (IadesHelper.hasTI(con.getVagas())) {
-            cell.getStyleClass().add("amarelo");
         }
     }
 
-    public static void addClasses(String con, ListCell<String> cell) {
+    public static void addClasses(String con, Labeled cell) {
         cell.setText(con);
-        cell.getStyleClass().removeAll("amarelo");
+        cell.getStyleClass().removeAll(AMARELO);
         if (con != null && hasItKeyword(con)) {
-            cell.getStyleClass().add("amarelo");
+            cell.getStyleClass().add(AMARELO);
         }
     }
 
@@ -116,22 +109,23 @@ public final class IadesHelper {
         return key.endsWith(".pdf") || key.endsWith(".zip") || key.endsWith(".rar");
     }
 
-    public static boolean hasTI(ObservableList<?> observableList) {
+    public static boolean hasTI(List<?> observableList) {
         return observableList.stream().map(Objects::toString).anyMatch(IadesHelper::hasItKeyword);
     }
 
-    public static void saveAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
+    public static boolean saveAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
         String answers = getAnswers(entities, linesRead, findFirst);
         if (answers.length() != entities.getListQuestions().size()) {
             LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(), entities.getListQuestions().size());
-            return;
+            return false;
         }
-        ObservableList<ContestQuestion> listQuestions = entities.getListQuestions();
+        List<ContestQuestion> listQuestions = entities.getListQuestions();
         for (int i = 0; i < listQuestions.size(); i++) {
             ContestQuestion contestQuestion = listQuestions.get(i);
             contestQuestion.setAnswer(answers.charAt(i));
         }
         entities.saveAll();
+        return true;
     }
 
     public static void saveContestValues(Property<Concurso> concurso, String vaga, Node vagasView) {
@@ -139,7 +133,7 @@ public final class IadesHelper {
             return;
         }
         Concurso value = concurso.getValue();
-        ObservableList<Entry<String, String>> linksFound = value.getLinksFound();
+        List<Entry<String, String>> linksFound = value.getLinksFound();
         String number = Objects.toString(vaga).replaceAll("\\D", "");
         Entry<String, String> orElse = linksFound.stream().filter(e -> e.getKey().contains("Provas"))
             .sorted(Comparator.comparing(e -> containsNumber(number, e))).findFirst().orElse(null);
@@ -153,11 +147,10 @@ public final class IadesHelper {
             return;
         }
         File file2 = getPDF(number, file);
-        getContestQuestions(file2, Organization.IADES,
-            entities -> {
-                saveQuestions(concurso, vaga, linksFound, number, entities);
-                Platform.runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
-            });
+        getContestQuestions(file2, Organization.IADES, entities -> {
+            saveQuestions(concurso, vaga, linksFound, number, entities);
+            RunnableEx.runInPlatform(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
+        });
     }
 
     private static String getAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
@@ -176,25 +169,12 @@ public final class IadesHelper {
         return answers.toString();
     }
 
-    private static Path getFirstPDF(File file, String number) throws IOException {
-        try (Stream<Path> find = Files.find(file.toPath(), 3, (path, info) -> nameMatches(number, path))) {
-            Optional<Path> findFirst = find.findFirst();
-            if (findFirst.isPresent()) {
-                return findFirst.get();
-
-            }
+    private static Path getFirstPDF(File file, String number) {
+        List<Path> firstFileMatch = ResourceFXUtils.getFirstFileMatch(file, (path) -> nameMatches(number, path));
+        if (!firstFileMatch.isEmpty()) {
+            return firstFileMatch.get(0);
         }
-
-        try (Stream<Path> find = Files.find(file.toPath(), 3,
-            (path, info) -> path.toFile().getName().endsWith(".pdf"))) {
-            Optional<Path> findFirst = find.findFirst();
-            if (findFirst.isPresent()) {
-                return findFirst.get();
-
-            }
-            LOG.info("NO PDF found {} {}- {}", file, Arrays.asList(file.list()), number);
-            return null;
-        }
+        return ResourceFXUtils.getFirstPathByExtension(file, ".pdf");
     }
 
     private static boolean hasItKeyword(String e) {
@@ -211,29 +191,35 @@ public final class IadesHelper {
             && fileName.endsWith(".pdf");
     }
 
-    private static void saveQuestions(Property<Concurso> concurso, String vaga,
-        ObservableList<Entry<String, String>> linksFound, String number, ContestReader entities) {
+    private static void saveQuestions(Property<Concurso> concurso, String vaga, List<Entry<String, String>> linksFound,
+        String number, ContestReader entities) {
         entities.getContest().setName(concurso.getValue().getNome());
         entities.getContest().setJob(vaga);
         entities.saveAll();
-        Entry<String, String> gabarito = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
-            .sorted(Comparator.comparing(e -> containsNumber(number, e))).findFirst().orElse(null);
-        if (gabarito == null) {
+
+        List<Entry<String, String>> gabaritos = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
+            .sorted(Comparator.comparing(e -> containsNumber(number, e))).collect(Collectors.toList());
+        if (gabaritos.isEmpty()) {
             LOG.info("SEM gabarito {}", linksFound);
             return;
         }
-        File gabaritoFile = ExtractUtils.extractURL(gabarito.getValue());
-        List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
-            .collect(Collectors.toList());
-        String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");
-        String cargo = split[split.length - 1].trim();
-        Optional<String> findFirst = linesRead.stream()
-            .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
-        if (!findFirst.isPresent()) {
-            LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabarito.getKey(), linesRead);
-            return;
+
+        for (Entry<String, String> gabarito : gabaritos) {
+            File gabaritoFile = ExtractUtils.extractURL(gabarito.getValue());
+            List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
+                .collect(Collectors.toList());
+            String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");
+            String cargo = split[split.length - 1].trim();
+            Optional<String> findFirst = linesRead.stream()
+                .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
+            if (!findFirst.isPresent()) {
+                LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabarito.getKey(), linesRead);
+                continue;
+            }
+            if (saveAnswers(entities, linesRead, findFirst.get())) {
+                return;
+            }
         }
-        saveAnswers(entities, linesRead, findFirst.get());
 
     }
 

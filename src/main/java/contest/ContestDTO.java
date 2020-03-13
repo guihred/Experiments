@@ -9,7 +9,7 @@ import javafx.collections.ObservableList;
 import utils.HasLogging;
 
 public class ContestDTO implements HasLogging {
-    protected static final String CONHECIMENTO = "C(?i)ONHECIMENTO.*";
+    protected static final String CONHECIMENTO = "C(?i)ONHECIMENTO.*|L[íi]ngua.*";
     protected static final String DISCURSIVA_PATTERN = " *P *R *O *V *A *D *I *S *C *U *R *S *I *V *A *";
     protected static final int OPTIONS_PER_QUESTION = 5;
     protected static final String LINE_PATTERN = "^\\s*\\d+\\s*$";
