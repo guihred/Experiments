@@ -10,10 +10,11 @@ import org.slf4j.Logger;
 import utils.ClassReflectionUtils;
 import utils.FunctionEx;
 import utils.HasLogging;
+import utils.SupplierEx;
 
 public final class NetworkInformationScanner {
 
-	private static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
     private NetworkInformationScanner() {
     }
@@ -25,7 +26,7 @@ public final class NetworkInformationScanner {
         while (e.hasMoreElements()) {
             NetworkInterface n = e.nextElement();
             if (n.getInterfaceAddresses().isEmpty() || !n.isUp() || n.isLoopback()
-                    || !isLocallyAdministered(n.getHardwareAddress())) {
+                || !isLocallyAdministered(n.getHardwareAddress())) {
                 continue;
             }
             String description = ClassReflectionUtils.getDescription(n, toStringMAp);
@@ -36,7 +37,7 @@ public final class NetworkInformationScanner {
     }
 
     public static List<Map<String, String>> getNetworkInformation() {
-        try {
+        return SupplierEx.get(() -> {
             Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
             Map<Class<?>, FunctionEx<Object, String>> toStringMAp = new HashMap<>();
             toStringMAp.put(byte[].class, o -> convertToString((byte[]) o));
@@ -46,7 +47,7 @@ public final class NetworkInformationScanner {
             while (e.hasMoreElements()) {
                 NetworkInterface n = e.nextElement();
                 if (n.getInterfaceAddresses().isEmpty() || !n.isUp() || n.isLoopback()
-                        || !isLocallyAdministered(n.getHardwareAddress())) {
+                    || !isLocallyAdministered(n.getHardwareAddress())) {
                     continue;
                 }
                 Map<String, String> description = ClassReflectionUtils.getDescriptionMap(n, toStringMAp);
@@ -56,10 +57,7 @@ public final class NetworkInformationScanner {
                 }
             }
             return arrayList;
-        } catch (SocketException e) {
-            LOG.error("", e);
-            return Collections.emptyList();
-        }
+        }, Collections.emptyList());
     }
 
     private static Stream<String> convertStream(byte[] ipOrMacAddress) {
@@ -67,7 +65,7 @@ public final class NetworkInformationScanner {
             String[] a = new String[ipOrMacAddress.length / 2];
             for (int j = 0; j < ipOrMacAddress.length; j += 2) {
                 a[j / 2] = Integer.toHexString(
-                        Byte.toUnsignedInt(ipOrMacAddress[j]) * 256 + Byte.toUnsignedInt(ipOrMacAddress[j + 1]));
+                    Byte.toUnsignedInt(ipOrMacAddress[j]) * 256 + Byte.toUnsignedInt(ipOrMacAddress[j + 1]));
             }
             return Stream.of(a);
         }
@@ -82,7 +80,7 @@ public final class NetworkInformationScanner {
     private static String convertToString(byte[] invoke) {
         String delimiter = delimiter(invoke);
         return Stream.of(invoke).flatMap(NetworkInformationScanner::convertStream)
-                .collect(Collectors.joining(delimiter));
+            .collect(Collectors.joining(delimiter));
     }
 
     private static String convertToString(InetAddress o) {

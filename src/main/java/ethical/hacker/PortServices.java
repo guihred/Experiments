@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 public final class PortServices {
 
@@ -65,16 +66,16 @@ public final class PortServices {
     }
 
     public static void loadServiceNames() {
-        try (InputStream inStr = ResourceFXUtils.toStream("nmap-services");
+        RunnableEx.run(() -> {
+            try (InputStream inStr = ResourceFXUtils.toStream("nmap-services");
                 InputStreamReader inStrReader = new InputStreamReader(inStr, Charset.defaultCharset());
                 BufferedReader bRead = new BufferedReader(inStrReader)) {
-            for (String line = bRead.readLine(); line != null; line = bRead.readLine()) {
-                classifyService(line.trim());
-            }
+                for (String line = bRead.readLine(); line != null; line = bRead.readLine()) {
+                    classifyService(line.trim());
+                }
 
-        } catch (Exception e) {
-            LOG.error("", e);
-        }
+            }
+        });
     }
 
     public static void main(String[] args) {
