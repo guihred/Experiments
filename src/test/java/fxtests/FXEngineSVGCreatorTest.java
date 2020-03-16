@@ -9,11 +9,13 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import org.junit.Test;
 import paintexp.svgcreator.SVGCreator;
+import utils.ImageFXUtils;
 
 public class FXEngineSVGCreatorTest extends AbstractTestExecution {
     @Test
 	public void testSVGCreator() {
         show(SVGCreator.class);
+        ImageFXUtils.setShowImage(false);
         Node stack = lookupFirst(StackPane.class);
         List<ToggleButton> queryAll = lookupList(ToggleButton.class);
 		Collections.shuffle(queryAll);

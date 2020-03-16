@@ -8,9 +8,6 @@ import static utils.CommonsFX.onCloseWindow;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.property.Property;
@@ -100,7 +97,7 @@ public class IadesCrawler extends Application {
         Entry<String, String> entry = newValue.getValue();
         String url = entry.getValue();
 
-        if (url.endsWith(".pdf") || url.endsWith(".zip") || url.endsWith(".rar")) {
+        if (IadesHelper.hasFileExtension(url)) {
             ExtractUtils.extractURL(url);
             return;
         }
@@ -109,16 +106,15 @@ public class IadesCrawler extends Application {
         }
         int level = build.getTreeItemLevel(newValue);
         SimpleStringProperty domain = new SimpleStringProperty(DOMAIN);
-        CompletableFuture.supplyAsync(SupplierEx.makeSupplier(() -> {
+        RunnableEx.runInPlatform(() -> {
             URL url2 = new URL(url);
             domain.set(url2.getProtocol() + "://" + url2.getHost());
-            return ExtractUtils.getDocument(url);
-        })).thenApply(doc -> getLinks(doc, entry, domain, links, level)).thenAccept(l -> {
+            Document doc = ExtractUtils.getDocument(url);
+            List<Entry<String, String>> l = getLinks(doc, entry, domain, links, level);
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
             l.stream().sorted(Comparator.comparing(Entry<String, String>::getKey))
                 .forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
         });
-        ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
     }
 
     public static void main(String[] args) {

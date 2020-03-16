@@ -48,15 +48,13 @@ public final class EditSongHelper {
         SimpleListViewBuilder<Node> listBuilder = new SimpleListViewBuilder<>();
         ListView<Node> builder = listBuilder.items(children).prefWidth(prefWidth).build();
         listBuilder.onDoubleClick(n -> {
-            if (n instanceof ImageView) {
-                ImageView view = (ImageView) n;
-                Image image = view.getImage();
-                selectedItem.setImage(image);
-                SongUtils.stopAndDispose(mediaPlayer.get());
-                MusicReader.saveMetadata(selectedItem);
-            }
             StageHelper.closeStage(builder);
             stage.close();
+            ImageView view = (ImageView) n;
+            Image image = view.getImage();
+            selectedItem.setImage(image);
+            SongUtils.stopAndDispose(mediaPlayer.get());
+            MusicReader.saveMetadata(selectedItem);
         });
         new SimpleDialogBuilder().text(value).button(builder).bindWindow(stage).displayDialog();
         ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),

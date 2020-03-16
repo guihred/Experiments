@@ -83,7 +83,8 @@ public final class CoverageUtils {
             .sorted(Comparator.comparing(count::get).reversed())
             .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e))).collect(Collectors.toList());
         if (!collect.isEmpty()) {
-            LOG.error("{} APPS FOUND= {}", collect.size(), collect.stream().map(Class<? extends Application>::getName)
+            LOG.error("{} APPS FOUND= {}", collect.size(),
+                collect.stream().map(Class::getName)
                 .collect(Collectors.joining(", ", "[", "]")));
         }
         return collect;

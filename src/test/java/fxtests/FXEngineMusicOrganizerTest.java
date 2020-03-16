@@ -100,10 +100,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
                 Node node = queryAll.get(i);
                 clickOn(node);
             }
-            lookup(ImageView.class).stream().anyMatch(PredicateEx.makeTest(e -> {
-                doubleClickOn(e);
-                return true;
-            }));
+            lookup(ImageView.class).stream().allMatch(PredicateEx.makeTest(e -> doubleClickOn(e) != null));
         });
         FXTesting.measureTime("new EditSongController", () -> {
             show(EditSongController.class);

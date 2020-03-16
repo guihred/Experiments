@@ -8,12 +8,10 @@ import static utils.SupplierEx.orElse;
 import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.property.Property;
@@ -24,6 +22,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.jsoup.nodes.Document;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
@@ -91,18 +90,17 @@ public class QuadrixCrawler extends Application {
         if (!newValue.getChildren().isEmpty()) {
             return;
         }
-        HasLogging.log();
         int level = tree.getTreeItemLevel(newValue);
         SimpleStringProperty domain = new SimpleStringProperty(QuadrixHelper.QUADRIX_DOMAIN);
-        CompletableFuture.supplyAsync(SupplierEx.makeSupplier(() -> {
+        RunnableEx.runInPlatform(() -> {
             URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
             domain.set(url2.getProtocol() + "://" + url2.getHost());
-            return QuadrixHelper.getDocumentCookies(url2);
-        })).thenApply(doc -> QuadrixHelper.getLinks(doc, entry, domain, level, concursos, links)).thenAccept(l -> {
+            Document doc = QuadrixHelper.getDocumentCookies(url2);
+            List<Entry<String, String>> l = QuadrixHelper.getLinks(doc, entry, domain, level, concursos, links);
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
             l.forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
         });
-        ForkJoinPool.commonPool().awaitQuiescence(500, TimeUnit.SECONDS);
+
     }
 
     public static void main(String[] args) {

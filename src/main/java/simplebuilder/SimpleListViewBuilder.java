@@ -1,11 +1,11 @@
 package simplebuilder;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
+import utils.ConsumerEx;
 
 public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, SimpleListViewBuilder<T>> {
 
@@ -31,11 +31,11 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return this;
     }
 
-    public SimpleListViewBuilder<T> onDoubleClick(final Consumer<T> object) {
+    public SimpleListViewBuilder<T> onDoubleClick(final ConsumerEx<T> object) {
         node.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
                 T selectedItem = table.getSelectionModel().getSelectedItem();
-                object.accept(selectedItem);
+                ConsumerEx.ignore(object).accept(selectedItem);
             }
         });
         return this;

@@ -109,7 +109,7 @@ public final class IadesHelper {
         return key.endsWith(".pdf") || key.endsWith(".zip") || key.endsWith(".rar");
     }
 
-    public static boolean hasTI(List<?> observableList) {
+    public static boolean hasTI(Collection<?> observableList) {
         return observableList.stream().map(Objects::toString).anyMatch(IadesHelper::hasItKeyword);
     }
 
@@ -170,11 +170,8 @@ public final class IadesHelper {
     }
 
     private static Path getFirstPDF(File file, String number) {
-        List<Path> firstFileMatch = ResourceFXUtils.getFirstFileMatch(file, (path) -> nameMatches(number, path));
-        if (!firstFileMatch.isEmpty()) {
-            return firstFileMatch.get(0);
-        }
-        return ResourceFXUtils.getFirstPathByExtension(file, ".pdf");
+        return ResourceFXUtils.getFirstFileMatch(file, path -> nameMatches(number, path)).stream().findFirst()
+            .orElseGet(() -> ResourceFXUtils.getFirstPathByExtension(file, ".pdf"));
     }
 
     private static boolean hasItKeyword(String e) {
