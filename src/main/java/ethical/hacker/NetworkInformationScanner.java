@@ -6,11 +6,9 @@ import java.net.SocketException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.ClassReflectionUtils;
-import utils.FunctionEx;
-import utils.HasLogging;
-import utils.SupplierEx;
+import utils.*;
 
 public final class NetworkInformationScanner {
 
@@ -36,6 +34,28 @@ public final class NetworkInformationScanner {
         }
     }
 
+    public static List<Map<String, String>> getIpConfigInformation() {
+        return SupplierEx.get(() -> {
+            List<String> executeInConsoleInfo = ConsoleUtils.executeInConsoleInfo("ipconfig /all");
+            executeInConsoleInfo.forEach(System.out::println);
+            List<Map<String, String>> elements = new ArrayList<>();
+            for (String line : executeInConsoleInfo) {
+                if (StringUtils.isBlank(line)) {
+                    continue;
+                }
+                Map<String, String> e = new LinkedHashMap<>();
+                elements.add(e);
+                if (line.matches("\\S+.*")) {
+                    e.put("Group", line.trim());
+                } else if (line.matches("(.+):(.+)")) {
+                    e.put("Property", line.replaceAll("([^\\.]+)\\..+", "$1").trim());
+                    e.put("Value", line.replaceAll(".+:(.+)", "$1").trim());
+                }
+            }
+            return elements;
+        }, Collections.emptyList());
+    }
+
     public static List<Map<String, String>> getNetworkInformation() {
         return SupplierEx.get(() -> {
             Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
@@ -59,6 +79,7 @@ public final class NetworkInformationScanner {
             return arrayList;
         }, Collections.emptyList());
     }
+
 
     private static Stream<String> convertStream(byte[] ipOrMacAddress) {
         if (ipOrMacAddress.length == 16) {

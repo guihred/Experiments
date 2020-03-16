@@ -35,7 +35,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         node.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
                 T selectedItem = table.getSelectionModel().getSelectedItem();
-                ConsumerEx.ignore(object).accept(selectedItem);
+                ConsumerEx.makeConsumer(object).accept(selectedItem);
             }
         });
         return this;

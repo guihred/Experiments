@@ -107,7 +107,7 @@ public class EthicalHackController {
 
     public void onActionNetworkInformation() {
         items.clear();
-        List<Map<String, String>> nsInformation = NetworkInformationScanner.getNetworkInformation();
+        List<Map<String, String>> nsInformation = NetworkInformationScanner.getIpConfigInformation();
         items.addAll(nsInformation);
         Set<String> keySet = nsInformation.stream().flatMap(m -> m.keySet().stream()).collect(Collectors.toSet());
         addColumns(commonTable, keySet);
