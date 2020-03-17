@@ -37,7 +37,6 @@ public final class NetworkInformationScanner {
     public static List<Map<String, String>> getIpConfigInformation() {
         return SupplierEx.get(() -> {
             List<String> executeInConsoleInfo = ConsoleUtils.executeInConsoleInfo("ipconfig /all");
-            executeInConsoleInfo.forEach(System.out::println);
             List<Map<String, String>> elements = new ArrayList<>();
             for (String line : executeInConsoleInfo) {
                 if (StringUtils.isBlank(line)) {
@@ -50,6 +49,8 @@ public final class NetworkInformationScanner {
                 } else if (line.matches("(.+):(.+)")) {
                     e.put("Property", line.replaceAll("([^\\.]+)\\..+", "$1").trim());
                     e.put("Value", line.replaceAll(".+:(.+)", "$1").trim());
+                } else {
+                    e.put("Value", line.trim());
                 }
             }
             return elements;
