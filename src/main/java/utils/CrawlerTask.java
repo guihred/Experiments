@@ -50,7 +50,7 @@ public abstract class CrawlerTask extends Task<String> {
 
     protected void updateAll(final long i, final long total) {
         updateTitle("Processed " + i + " of " + total + " items.");
-        if (i > 0) {
+        if (i > 0 && total > i) {
 
             long between = ChronoUnit.MILLIS.between(start, Instant.now());
             String formatDuration = DurationFormatUtils.formatDuration(between * (total - i) / i, "H:mm:ss", true);

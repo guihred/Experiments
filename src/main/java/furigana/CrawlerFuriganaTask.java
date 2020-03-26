@@ -9,13 +9,15 @@ import java.lang.Character.UnicodeBlock;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
@@ -33,17 +35,21 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     private static final int NUMBER_THREADS = 20;
 
     protected static final List<UnicodeBlock> KANJI_BLOCK = Arrays.asList(UnicodeBlock.CJK_COMPATIBILITY,
-        UnicodeBlock.CJK_COMPATIBILITY_FORMS, UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
-        UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS,
-        UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
-        UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D);
+            UnicodeBlock.CJK_COMPATIBILITY_FORMS, UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
+            UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS,
+            UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
+            UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D);
     private static final Pattern NUMBERS = Pattern.compile("^[\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b"
-        + "\u4e5d\u5341\u5341\u4e00\u5341\u4e8c\u4e8c\u5341\u4e94\u5341\u767e\u5343\u4e07\u5104\u5146]+");
+            + "\u4e5d\u5341\u5341\u4e00\u5341\u4e8c\u4e8c\u5341\u4e94\u5341\u767e\u5343\u4e07\u5104\u5146]+");
     private static final int STEP = 10;
 
-    private Map<String, String> mapReading = Collections.synchronizedMap(new HashMap<>());
+    private static final String URL_BASE = "http://jisho.org/search/";
 
-    private List<Character> skipCharacters = Arrays.asList('、', 'を', '？', '}', '　', '』', '！', '…', '。');
+    private ObservableMap<String, String> mapReading =
+            FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());
+    private List<Character> skipCharacters = Arrays.asList('、', 'を', '？', '}', '　', '』', '！', '…', '。', '）', '（');
+
+    private List<Character> repeatCharacters = Arrays.asList('々');
 
     private BufferedWriter output;
 
@@ -53,22 +59,15 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     public String getReading(String currentWord, char currentLetter) {
         String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
-        boolean notContains = !mapReading.containsKey(key);
         String reading = getReading(currentWord, currentLetter, 0);
-        if (notContains) {
-            log(key, reading);
-        }
-        return reading;
+        return FunctionEx.mapIf(reading, s -> s, key);
     }
 
     public String getReading(String currentWord, char currentLetter, int recursive) {
         final String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
-        if (mapReading.containsKey(key)) {
-            return mapReading.get(key);
-        }
         try {
             return mapReading.computeIfAbsent(key,
-                k -> SupplierEx.remap(() -> computeReading(currentWord, currentLetter), "ERRO " + currentWord));
+                    k -> SupplierEx.remap(() -> computeReading(currentWord, currentLetter), "ERRO " + currentWord));
         } catch (Exception e) {
             LOG.error("ERRO " + currentWord, e);
             if (recursive < 2) {
@@ -124,26 +123,26 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     private String computeReading(String key) {
-        return mapReading.computeIfAbsent(key,
-            s -> FunctionEx.apply(k -> computeReading(k.substring(0, k.length() - 1), k.charAt(k.length() - 1)), s));
+        return mapReading.computeIfAbsent(key, s -> FunctionEx
+                .apply(k -> computeReading(k.substring(0, k.length() - 1), k.charAt(k.length() - 1)), s));
     }
 
     private String computeReading(String currentWord, char currentLetter) throws IOException {
-        String url = "http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8");
-        Document parse = ExtractUtils.getDocument(url);
+        Document parse = createDocument(currentWord, currentLetter);
         Elements kun = parse.select(".readings .japanese_gothic a");
+
         if (existsKunReading(currentWord, kun)) {
             if (kun.size() == 1) {
                 return kun.text().split("\\.")[0];
             }
             List<String> kunReadings = kun.stream().map(Element::text).collect(Collectors.toList());
-            List<String> kunWithOfurigana = kunReadings.stream().map(e -> e.split("\\.")[0]).distinct()
-                .collect(Collectors.toList());
+            List<String> kunWithOfurigana =
+                    kunReadings.stream().map(e -> e.split("\\.")[0]).distinct().collect(Collectors.toList());
             if (kunWithOfurigana.size() == 1) {
                 return kunWithOfurigana.get(0);
             }
             Optional<String> ofuriganaMatches = kunReadings.stream().filter(e -> e.contains(".") && !e.contains("-"))
-                .filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
+                    .filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
             if (ofuriganaMatches.isPresent()) {
                 return ofuriganaMatches.get().split("\\.")[0];
             }
@@ -153,8 +152,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             }
         }
         Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
-            .filter(element -> matchesCurrentWord(currentWord, currentLetter, element.select(".text").first()))
-            .findFirst();
+                .filter(element -> matchesCurrentWord(currentWord, currentLetter, element.select(".text").first()))
+                .findFirst();
         if (firstRepresentation.isPresent()) {
             return firstRepresentation.get().select(".furigana").text();
         }
@@ -174,18 +173,29 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             String[] split = e.split("\\.");
             mapReading.putIfAbsent(currentWord + split[1].charAt(0), split[0]);
         }).filter(JapaneseVerbConjugate::isVerb).flatMap(e -> JapaneseVerbConjugate.conjugateVerb(e).stream())
-            .peek(e -> {
-                String[] split = e.split("\\.");
-                mapReading.putIfAbsent(currentWord + split[1].charAt(0), split[0]);
-            }).filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
+                .peek(e -> {
+                    String[] split = e.split("\\.");
+                    mapReading.putIfAbsent(currentWord + split[1].charAt(0), split[0]);
+                }).filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
     }
 
-    private void log(Object a, Object b) {
+    private Document createDocument(String currentWord, char currentLetter) throws IOException {
+        if (repeatCharacters.contains(currentLetter)) {
+            return ExtractUtils.getDocument(
+                    URL_BASE + StringSigaUtils.codificar(currentWord + currentWord.charAt(currentWord.length() - 1)));
+        }
+        return ExtractUtils.getDocument(URL_BASE + StringSigaUtils.codificar(currentWord));
+    }
+
+    private void log(String a, String b) {
+        if (StringUtils.isBlank(a) || StringUtils.isBlank(b)) {
+            return;
+        }
         LOG.info("{}={}", a, b);
         RunnableEx.run(() -> {
             if (output == null) {
                 output = new BufferedWriter(
-                    new FileWriterWithEncoding(ResourceFXUtils.getOutFile(FURIGANA_READING), "UTF-8", true));
+                        new FileWriterWithEncoding(ResourceFXUtils.getOutFile(FURIGANA_READING), "UTF-8", true));
             }
             synchronized (output) {
                 output.append(a + "=" + b + "\n");
@@ -196,8 +206,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     private String onReading(String str) {
-        return Objects
-            .toString(mapReading.computeIfAbsent(str, makeFunction(CrawlerFuriganaTask::getOnReadings)), "");
+        return Objects.toString(mapReading.computeIfAbsent(str, makeFunction(CrawlerFuriganaTask::getOnReadings)), "");
     }
 
     private StringBuilder placeFurigana(String line) {
@@ -232,11 +241,16 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         RunnableEx.run(() -> {
             File outFile = ResourceFXUtils.getOutFile(FURIGANA_READING);
             if (outFile.exists()) {
-                Files.lines(outFile.toPath(), StandardCharsets.UTF_8).forEach(l -> {
+                Files.lines(outFile.toPath(), StandardCharsets.UTF_8).forEach(ConsumerEx.makeConsumer(l -> {
                     String[] split = l.split("=");
                     mapReading.put(split[0], split[1]);
-                });
+                }));
             }
+            mapReading.addListener((MapChangeListener<String, String>) change -> {
+                String key = change.getKey();
+                String valueAdded = change.getValueAdded();
+                log(key, valueAdded);
+            });
         });
     }
 
@@ -260,21 +274,9 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         return computeReading(firstPart + secondPart.charAt(0)) + computeReading(secondPart + currentLetter);
     }
 
-    public static void main(String[] args) {
-        File userFolder = ResourceFXUtils.getOutFile().getParentFile();
-        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(userFolder, "rar");
-        pathByExtension.stream().map(makeFunction(e -> {
-            Path name = e.getName(e.getNameCount() - 1);
-            File outFile = ResourceFXUtils.getOutFile(name.toString());
-            ExtractUtils.copy(e, outFile);
-            return outFile.toPath();
-        })).forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile())));
-
-    }
-
     private static void endTask(List<String> lines) {
         RunnableEx.run(() -> Files.write(ResourceFXUtils.getOutFile("hp1Tex2Converted.tex").toPath(), lines,
-            StandardCharsets.UTF_8));
+                StandardCharsets.UTF_8));
     }
 
     private static boolean existsKunReading(String currentWord, Elements kun) {
@@ -295,14 +297,14 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         String url = "http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8");
         Document parse = ExtractUtils.getDocument(url);
         Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
-            .filter(element -> element.select(".text").first().text().equals(currentWord)).findFirst();
+                .filter(element -> element.select(".text").first().text().equals(currentWord)).findFirst();
         if (firstRepresentation.isPresent() && currentWord.length() > 1) {
             return firstRepresentation.get().select(".furigana").text();
         }
         Elements kun = parse.select(".readings .japanese_gothic a");
         List<String> kunReadings = kun.stream().map(Element::text).collect(Collectors.toList());
         return kunReadings.stream().sorted(Comparator.comparing(CrawlerFuriganaTask::isNotKatakana)).findFirst()
-            .orElse(null);
+                .orElse(null);
     }
 
     private static boolean isNotKatakana(String e) {
