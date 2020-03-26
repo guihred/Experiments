@@ -1,6 +1,6 @@
 package fxtests;
 
-import cubesystem.SphereSystemApp;
+import contest.IadesCrawler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +27,7 @@ public final class FXMLCreatorTest {
 
     @Test
 	public  void testClassesNotClose() {
-        List<Class<? extends Application>> classes = Arrays.asList(SphereSystemApp.class);
+        List<Class<? extends Application>> classes = Arrays.asList(IadesCrawler.class);
         FXMLCreatorHelper.testApplications(classes, true);
     }
 

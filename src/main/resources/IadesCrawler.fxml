@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import java.util.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" 
+	styleClass="root" stylesheets="@/filesComparator.css">
+	<children>
+		<SplitPane fx:id="splitPane0">
+			<items>
+				<TreeView fx:id="treeView1">
+				</TreeView>
+				<TableView fx:id="tableView2" minWidth="200.0">
+					<columns>
+						<TableColumn fx:id="tableColumn4" prefWidth="200.0"
+							text="nome" />
+					</columns>
+				</TableView>
+				<ListView fx:id="listView3" />
+			</items>
+		</SplitPane>
+	</children>
+</VBox>
