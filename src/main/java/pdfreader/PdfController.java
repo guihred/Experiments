@@ -18,22 +18,23 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
 import simplebuilder.StageHelper;
-import utils.*;
+import utils.CommonsFX;
+import utils.HasImage;
+import utils.ImageTableCell;
+import utils.ResourceFXUtils;
 
 public class PdfController extends Application {
 
     private static final int WORD_DISPLAY_PERIOD = 200;
     private static final String PDF_FILE = ResourceFXUtils.toFullPath("sngpc2808.pdf");
 
-    @FXML
-    private TableView<HasImage> imageTable;
     @FXML
     private ProgressIndicator progress;
     @FXML
@@ -45,14 +46,14 @@ public class PdfController extends Application {
     @FXML
     private Text currentPage;
     @FXML
-    private TableColumn<HasImage, String> tableColumn;
+    private Pane imageBox;
     private PdfInfo pdfInfo = new PdfInfo(PDF_FILE);
-    private final ObservableList<HasImage> currentImages = FXCollections
-        .synchronizedObservableList(FXCollections.observableArrayList());
+    private final ObservableList<HasImage> currentImages =
+            FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
-    private Timeline timeline = new SimpleTimelineBuilder()
-        .addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), time -> displayNextWord()).cycleCount(Animation.INDEFINITE)
-        .build();
+    private Timeline timeline =
+            new SimpleTimelineBuilder().addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), time -> displayNextWord())
+                    .cycleCount(Animation.INDEFINITE).build();
 
     public void displayNextLine() {
         if (pdfInfo.getLineIndex() < pdfInfo.getLines().size()) {
@@ -70,7 +71,10 @@ public class PdfController extends Application {
     public void displayNextPage() {
         if (pdfInfo.getPageIndex() < pdfInfo.getNumberOfPages() - 1) {
             pdfInfo.setPageIndex(pdfInfo.getPageIndex() + 1);
+            pdfInfo.setIndex(0);
+            pdfInfo.setLineIndex(0);
             pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
+            displayNextWord();
         }
     }
 
@@ -81,7 +85,7 @@ public class PdfController extends Application {
                 List<String> linesNextPage = pdfInfo.getPages().get(pdfInfo.getPageIndex());
                 if (!pdfInfo.getLines().isEmpty()) {
                     List<String> repeated = linesNextPage.stream().filter(l -> pdfInfo.getLines().contains(l))
-                        .collect(Collectors.toList());
+                            .collect(Collectors.toList());
                     pdfInfo.getSkipLines().addAll(repeated);
 
                 }
@@ -89,8 +93,6 @@ public class PdfController extends Application {
                 if (pdfInfo.getImages().containsKey(pdfInfo.getPageIndex())) {
                     List<PdfImage> col = pdfInfo.getImages().get(pdfInfo.getPageIndex());
                     currentImages.setAll(col);
-                    imageTable.scrollTo(imageTable.getItems().size() - 1);
-                    imageTable.scrollTo(0);
                 } else {
                     currentImages.clear();
                 }
@@ -101,7 +103,7 @@ public class PdfController extends Application {
                 }
             }
             String value = pdfInfo.getLines().isEmpty() ? ""
-                : pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd() % pdfInfo.getLines().size());
+                    : pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd() % pdfInfo.getLines().size());
             if (pdfInfo.getSkipLines().contains(value) && pdfInfo.getLineIndex() < pdfInfo.getLines().size() - 1) {
                 value = pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd());
             }
@@ -114,22 +116,32 @@ public class PdfController extends Application {
         }
     }
 
+    public void displayPreviousPage() {
+        if (pdfInfo.getPageIndex() > 0) {
+            pdfInfo.setPageIndex(pdfInfo.getPageIndex() - 1);
+            pdfInfo.setIndex(0);
+            pdfInfo.setLineIndex(0);
+            pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
+            displayNextWord();
+
+        }
+    }
+
     public void initialize() {
         Property<Number> rate = timeline.rateProperty();
         slider.valueProperty().bindBidirectional(rate);
         progress.progressProperty().bind(pdfInfo.getProgress());
         currentPage.textProperty()
-            .bind(pdfInfo.pageIndexProperty().asString().concat("/").concat(pdfInfo.numberOfPagesProperty()));
-        imageTable.setItems(currentImages);
-        currentImages.addListener((Change<? extends HasImage> e) -> imageTable.setVisible(!currentImages.isEmpty()));
-
-        tableColumn.setCellFactory(s -> new ImageTableCell<>());
+                .bind(pdfInfo.pageIndexProperty().asString().concat("/").concat(pdfInfo.numberOfPagesProperty()));
+        currentImages.addListener((Change<? extends HasImage> e) -> onImageChange());
+        imageBox.managedProperty().bind(imageBox.visibleProperty());
+        imageBox.setVisible(false);
         PdfUtils.readFile(pdfInfo);
     }
 
     public void openNewPDF(ActionEvent event) {
         StageHelper.fileAction("Selecione Arquivo PDF", file -> PdfUtils.readFile(pdfInfo, file), "File", "*.pdf")
-            .handle(event);
+                .handle(event);
     }
 
     @Override
@@ -145,6 +157,14 @@ public class PdfController extends Application {
         } else {
             timeline.play();
         }
+    }
+
+    private void onImageChange() {
+        List<ImageView> createImages = currentImages.stream()
+                .flatMap(im -> ImageTableCell.createImages(im.getImage(), slider.widthProperty()).stream())
+                .collect(Collectors.toList());
+        imageBox.getChildren().setAll(createImages);
+        imageBox.setVisible(!createImages.isEmpty());
     }
 
     public static void main(String[] args) {

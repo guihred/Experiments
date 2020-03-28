@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.scene.text.*?><?import javafx.geometry.*?><?import javafx.scene.control.cell.*?>
-
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.control.ScrollPane?>
 <HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER"
 	fx:controller="pdfreader.PdfController">
 	<children>
@@ -12,20 +16,20 @@
 					</font>
 				</Text>
 				<Text fx:id="currentLine" textAlignment="CENTER" />
-				<Text fx:id="currentPage" text="0/26" />
-				<Button alignment="CENTER" text="_Start/Stop"
-					onAction="#toggleTimelineStatus" />
-				<Button alignment="CENTER" text="_Next Line"
-					onAction="#displayNextLine" />
-				<Button alignment="CENTER" text="_Next Page"
-					onAction="#displayNextPage" />
-				<Button alignment="CENTER" text="New _PDF"
-					onAction="#openNewPDF" />
-                <ProgressIndicator fx:id="progress">
-	                <padding>
-		                <Insets topRightBottomLeft="10" />
-		            </padding>
-                </ProgressIndicator>
+				<ScrollPane visible="${imageBox.visible}" managed="${imageBox.visible}">
+					<HBox fx:id="imageBox"/>
+				</ScrollPane>
+				<Text fx:id="currentPage" text="0" />
+				<Button alignment="CENTER" text="_Start/Stop" onAction="#toggleTimelineStatus" />
+				<Button alignment="CENTER" text="_Next Line" onAction="#displayNextLine" />
+				<Button alignment="CENTER" text="P_revious Page" onAction="#displayPreviousPage" />
+				<Button alignment="CENTER" text="_Next Page" onAction="#displayNextPage" />
+				<Button alignment="CENTER" text="New _PDF" onAction="#openNewPDF" />
+				<ProgressIndicator fx:id="progress">
+					<padding>
+						<Insets topRightBottomLeft="10" />
+					</padding>
+				</ProgressIndicator>
 				<VBox>
 					<children>
 						<Text text="Rate" />
@@ -33,21 +37,8 @@
 							min="0.01" value="1.0" />
 					</children>
 				</VBox>
+
 			</children>
 		</VBox>
-		<TableView prefWidth="250.0" scaleShape="false"
-			fx:id="imageTable">
-			<columns>
-				<TableColumn prefWidth="250.0" text="Image" fx:id="tableColumn">
-					<cellValueFactory>
-						<PropertyValueFactory property="image" />
-					</cellValueFactory>
-				</TableColumn>
-			</columns>
-			<visibleLeafColumns />
-			<padding>
-				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
-			</padding>
-		</TableView>
 	</children>
 </HBox>
