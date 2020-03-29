@@ -1,9 +1,12 @@
 package graphs.app;
 
-import graphs.entities.*;
+import graphs.entities.Cell;
+import graphs.entities.Edge;
+import graphs.entities.Graph;
+import graphs.entities.GraphModel;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.NamedArg;
 
 public class CircleLayout extends Layout {
@@ -39,8 +42,11 @@ public class CircleLayout extends Layout {
     public static void generateCircle(List<Cell> cells, List<Edge> allEdges, double centerX, double centerY, int mul) {
         int bound = radius(cells.size(), mul,
             cells.stream().mapToDouble(value -> value.getBoundsInLocal().getWidth()).max().orElse(20));
-        cells.sort(Comparator.comparing(e -> GraphModelAlgorithms.edgesNumber(e, allEdges, cells)));
-        generateCircle(cells, centerX, centerY, 0, bound);
+
+        List<Cell> collect =
+                LayerSplitter.getLayers(cells, allEdges).stream().flatMap(List<Cell>::stream)
+                        .collect(Collectors.toList());
+        generateCircle(collect, centerX, centerY, 0, bound);
     }
 
     public static int radius(int size2, int mul, double cellBound) {

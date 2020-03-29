@@ -41,7 +41,7 @@ public class ConcentricLayout extends Layout {
         double minLength = cellsGroups.stream().flatMap(List<Cell>::stream).map(Cell::getBoundsInParent)
             .mapToDouble(value -> Math.max(value.getWidth(), value.getHeight()) / 2).max().orElse(20);
         int mul1 = Math.max(getMul(cellsGroups, invert, index) - 1, 1);
-        double maxHeight = Math.max(getRadius(minLength, size, mul1) / mul1, minLength);
+        double maxHeight = Math.min(getRadius(minLength, size, mul1) / mul1, minLength);
         for (int i = 0; i < cellsGroups.size(); i++) {
             List<Cell> list = cellsGroups.get(i);
             final double d = 180 * (1 - 1. / cells.size());

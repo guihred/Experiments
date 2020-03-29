@@ -8,6 +8,7 @@ import graphs.entities.Graph;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.Observable;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
@@ -35,6 +36,8 @@ public class GraphMain extends Application {
 
     @FXML
     private TextField networkField;
+    @FXML
+    private TextField websiteField;
 
     @FXML
     private ComboBox<String> packageSelect;
@@ -49,6 +52,8 @@ public class GraphMain extends Application {
 
     @FXML
     private NetworkTopology networkTopology;
+    @FXML
+    private WebsiteTopology websiteTopology;
 
     @FXML
     private MethodsTopology methodsTopology;
@@ -62,16 +67,13 @@ public class GraphMain extends Application {
 
         convergeLayout.addEventHandler(timeline);
         borderPane.setCenter(graph.getScrollPane());
-        networkField.setText(networkTopology.getNetworkAddress());
-        networkField.visibleProperty()
-            .bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(networkTopology));
-        networkField.managedProperty().bind(networkField.visibleProperty());
+        bindTopology(networkField, networkTopology, networkTopology.networkAddressProperty());
+        bindTopology(websiteField, websiteTopology, websiteTopology.websiteProperty());
         packageSelect.managedProperty().bind(packageSelect.visibleProperty());
         packageSelect.setItems(packageTopology.getPackages());
         packageSelect.visibleProperty()
-            .bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(packageTopology)
-                .or(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(methodsTopology)));
-        networkTopology.networkAddressProperty().bind(networkField.textProperty());
+                .bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(packageTopology)
+                        .or(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(methodsTopology)));
         ObservableList<String> cells = graph.getModel().getCellIds();
         c1.setItems(cells);
         c2.setItems(cells);
@@ -198,6 +200,15 @@ public class GraphMain extends Application {
         graph.getModel().addBiEdge("F", "G", 1);
         graph.endUpdate();
 
+    }
+
+    private void bindTopology(TextField networkField2, BaseTopology networkTopology2,
+            StringProperty networkAddressProperty) {
+        networkField2.setText(networkAddressProperty.get());
+        networkField2.visibleProperty()
+                .bind(topologySelect.getSelectionModel().selectedItemProperty().isEqualTo(networkTopology2));
+        networkField2.managedProperty().bind(networkField2.visibleProperty());
+        networkAddressProperty.bind(networkField2.textProperty());
     }
 
     public static void main(String[] args) {

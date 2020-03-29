@@ -69,9 +69,6 @@ public class NetworkTopology extends BaseTopology {
 
     }
 
-    public String getNetworkAddress() {
-        return networkAddress.get();
-    }
 
     public StringProperty networkAddressProperty() {
         return networkAddress;

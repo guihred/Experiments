@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Map;
+import javafx.beans.property.Property;
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
@@ -18,6 +19,16 @@ public final class ExtractUtils {
     private static final Logger LOG = HasLogging.log();
 
     private ExtractUtils() {
+    }
+
+    public static String addDomain(Property<String> domain, String l) {
+        if (l.startsWith("http")) {
+            return l;
+        }
+        if (l.startsWith("//") && domain.getValue().contains("://")) {
+            return domain.getValue().split(":")[0] + l;
+        }
+        return domain.getValue() + (!l.startsWith("/") ? "/" + l : l);
     }
 
     public static void copy(File input, File outFile) throws IOException {

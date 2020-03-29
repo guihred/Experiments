@@ -116,13 +116,13 @@
 						<VBox>
 							<children>
 								<Text text="Source" />
-								<ComboBox fx:id="c1" id="c1" value="A" />
+								<ComboBox fx:id="c1" id="c1" value="A" maxWidth="200"/>
 							</children>
 						</VBox>
 						<VBox>
 							<children>
 								<Text text="Target" />
-								<ComboBox fx:id="c2" id="c2" value="G" />
+								<ComboBox fx:id="c2" id="c2" value="G" maxWidth="200"/>
 							</children>
 						</VBox>
 						<VBox>
@@ -167,6 +167,8 @@
 												fx:id="randomTopology" size="30" />
 											<TreeTopology graph="$graph"
 												fx:id="treeTopology" size="30" />
+											<WebsiteTopology graph="$graph"
+												fx:id="websiteTopology" size="20"/>
 											<WordTopology graph="$graph"
 												fx:id="wordTopology" size="90" />
 										</FXCollections>
@@ -187,6 +189,12 @@
 							</tooltip>
 						</ComboBox>
 						<TextField fx:id="networkField" managed="false"
+							visible="false">
+							<padding>
+								<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
+							</padding>
+						</TextField>
+						<TextField fx:id="websiteField" managed="false"
 							visible="false">
 							<padding>
 								<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />

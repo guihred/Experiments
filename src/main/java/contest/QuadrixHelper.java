@@ -96,7 +96,7 @@ public final class QuadrixHelper {
     public static List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
         Property<String> domain, int level, ObservableList<Concurso> concursos, Set<String> links) {
         List<SimpleEntry<String, String>> allLinks = doc.select("a").stream()
-            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), IadesHelper.addDomain(domain, l.attr("href"))))
+            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), ExtractUtils.addDomain(domain, l.attr("href"))))
             .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
             .collect(toList());
         List<Map.Entry<String, String>> linksFound = allLinks.stream().filter(t -> isValidLink(level, t)).distinct()

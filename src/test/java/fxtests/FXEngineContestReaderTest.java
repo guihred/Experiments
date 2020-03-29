@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.HibernateUtil;
 import utils.ResourceFXUtils;
@@ -67,7 +68,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
 
     @Test
     public void testIades() {
-        IadesHelper.addDomain(new SimpleStringProperty(""), "");
+        ExtractUtils.addDomain(new SimpleStringProperty(""), "");
         show(IadesCrawler.class);
         clickOn(lookupFirst(TreeView.class));
         type(KeyCode.SPACE);
@@ -94,7 +95,6 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
         type(KeyCode.TAB);
         type(KeyCode.SPACE);
         type(KeyCode.DOWN, 1);
-        IadesHelper.addDomain(new SimpleStringProperty(""), "");
     }
 
     @Test

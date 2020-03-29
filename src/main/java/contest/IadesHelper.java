@@ -60,13 +60,6 @@ public final class IadesHelper {
         }
     }
 
-    public static String addDomain(Property<String> domain, String l) {
-        if (l.startsWith("http")) {
-            return l;
-        }
-        return domain.getValue() + (!l.startsWith("/") ? "/" + l : l);
-    }
-
     public static int containsNumber(String number, Entry<String, String> e) {
         if (containsIgnoreCase(e.getKey(), number)) {
             return 0;
