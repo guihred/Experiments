@@ -104,7 +104,7 @@ public class WebsiteTopology extends BaseTopology {
         return ExtractUtils.getDocument(url, cookies).select("a").stream().map(e -> e.attr("href"))
                 .filter(StringUtils::isNotBlank).filter(s -> !s.contains("#"))
                 .map(e -> ExtractUtils.addDomain(currentDomain, e)).filter(s -> !Objects.equals(s, url))
-                .filter(s -> s.contains(url2.getHost())).distinct().limit(5).collect(Collectors.toList());
+                .distinct().limit(5).collect(Collectors.toList());
     }
 
     private void scanWebSites(final Change<? extends String, ? extends List<String>> change, RunnableEx run) {
