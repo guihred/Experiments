@@ -46,6 +46,7 @@ public class CircleLayout extends Layout {
         List<Cell> collect =
                 LayerSplitter.getLayers(cells, allEdges).stream().flatMap(List<Cell>::stream)
                         .collect(Collectors.toList());
+        allEdges.forEach(e -> e.setSelected(false));
         generateCircle(collect, centerX, centerY, 0, bound);
     }
 
