@@ -165,9 +165,18 @@ public final class GraphModelAlgorithms {
 			}
 			pageRank = pageRank2;
 		}
+        Map<String, Double> hashMap = new HashMap<>();
 		for (int i = 0; i < pageRank.length; i++) {
-			allCells.get(i).addText(String.format(Locale.US, "%.9f", pageRank[i]));
+			Cell cell = allCells.get(i);
+            hashMap.put(cell.getCellId(), pageRank[i]);
+
+            cell.addText(String.format(Locale.US, "%.9f", pageRank[i]));
 		}
+
+        List<String> collect = hashMap.entrySet().stream().sorted(Comparator.comparing(e -> -e.getValue()))
+                .map(Entry<String, Double>::getKey).collect(Collectors.toList());
+
+        LOG.info("ORDERED PAGE RANK = {}", collect);
 
 		return pageRank;
 	}
