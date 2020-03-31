@@ -24,7 +24,17 @@ public class WebsiteScanner {
     private final Map<String, String> cookies = new HashMap<>();
     private final Map<String, Integer> depth = new HashMap<>();
 
-    private int size = 50;
+    private int maxSize = 50;
+
+    private long linkMax = 5;
+
+    public WebsiteScanner() {
+    }
+
+    public WebsiteScanner(int size, long maxLink) {
+        maxSize = size;
+        linkMax = maxLink;
+    }
 
     public synchronized List<String> allHosts() {
         return websiteRoutes.entrySet().stream()
@@ -35,7 +45,6 @@ public class WebsiteScanner {
     public List<Entry<String, List<String>>> entrySet() {
         return websiteRoutes.entrySet().stream().collect(Collectors.toList());
     }
-
     public ObservableMap<String, List<String>> getLinkNetwork(String url, BiConsumer<String, List<String>> run) {
         if (websiteRoutes.isEmpty()) {
             websiteRoutes.addListener(
@@ -47,6 +56,7 @@ public class WebsiteScanner {
         websiteRoutes.put(url, new ArrayList<String>());
         return websiteRoutes;
     }
+
     public ObservableMap<String, List<String>> getLinkNetwork(String url, ConsumerEx<String> run) {
         return getLinkNetwork(url, (page,links)->ConsumerEx.makeConsumer(run).accept(page));
     }
@@ -56,7 +66,7 @@ public class WebsiteScanner {
     }
 
     public void setSize(int size) {
-        this.size = size;
+        maxSize = size;
     }
 
     private synchronized void addToMap(String ip2) {
@@ -64,7 +74,6 @@ public class WebsiteScanner {
             websiteRoutes.putIfAbsent(ip2, new ArrayList<>());
         }
     }
-
     private List<String> getLinks(String url) throws IOException {
         SimpleStringProperty currentDomain = new SimpleStringProperty("");
         URL url2 = new URL(url);
@@ -73,11 +82,11 @@ public class WebsiteScanner {
         return ExtractUtils.getDocument(url, cookies).select("a").stream().map(e -> e.attr("href"))
                 .filter(StringUtils::isNotBlank).filter(s -> !s.contains("#"))
                 .map(e -> ExtractUtils.addDomain(currentDomain, e)).filter(s -> !Objects.equals(s, url)).distinct()
-                .limit(5).collect(Collectors.toList());
+                .limit(linkMax).collect(Collectors.toList());
     }
 
     private int getSize() {
-        return size;
+        return maxSize;
     }
 
     private void scanWebSites(final Change<? extends String, ? extends List<String>> change,

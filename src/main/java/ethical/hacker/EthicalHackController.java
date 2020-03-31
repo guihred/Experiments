@@ -150,8 +150,7 @@ public class EthicalHackController {
         if (!text.contains("http")) {
             text = "https://" + text;
         }
-
-        new WebsiteScanner().getLinkNetwork(text,
+        new WebsiteScanner(100, 20).getLinkNetwork(text,
                 ip -> items.add(ClassReflectionUtils.getDescriptionMap(new URL(ip), new HashMap<>())));
         List<String> fields = Arrays.asList("Protocol", "Host", "Path", "Query", "File");
         addColumns(commonTable, fields);
