@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.concurrent.Task;
@@ -19,7 +18,8 @@ public abstract class CrawlerTask extends Task<String> {
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PASS = "15-juuGO";
     private static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
-    private static final boolean IS_PROXIED = isProxied().test(5000);
+    private static final String PROXY_CONFIG_2 = Stream.of("10", "31", "220", "23").collect(Collectors.joining("."));
+    private static final boolean IS_PROXIED = isProxied();
 
     private Instant start;
     private boolean cancelled;
@@ -63,7 +63,7 @@ public abstract class CrawlerTask extends Task<String> {
 
     public static String getEncodedAuthorization() {
         return Base64.getEncoder()
-            .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes(StandardCharsets.UTF_8));
+                .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes(StandardCharsets.UTF_8));
     }
 
     public static String getHTTPPassword() {
@@ -79,9 +79,10 @@ public abstract class CrawlerTask extends Task<String> {
             return;
         }
 
-        System.setProperty("http.proxyHost", PROXY_CONFIG);
+        String proxyAddress = getProxyAddress();
+        System.setProperty("http.proxyHost", proxyAddress);
         System.setProperty("http.proxyPort", "3128");
-        System.setProperty("https.proxyHost", PROXY_CONFIG);
+        System.setProperty("https.proxyHost", proxyAddress);
         System.setProperty("https.proxyPort", "3128");
         System.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
         System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
@@ -101,8 +102,15 @@ public abstract class CrawlerTask extends Task<String> {
         return !IS_PROXIED;
     }
 
-    public static Predicate<Integer> isProxied() {
-        return PredicateEx.makeTest(timeout -> InetAddress.getByName(PROXY_CONFIG).isReachable(timeout));
+    private static String getProxyAddress() {
+        final int timeout = 5000;
+        return Stream.of(PROXY_CONFIG, PROXY_CONFIG_2)
+                .filter(PredicateEx.makeTest(s -> InetAddress.getByName(s).isReachable(timeout))).findFirst()
+                .orElse(null);
+    }
+
+    private static boolean isProxied() {
+        return getProxyAddress() != null;
     }
 
 }

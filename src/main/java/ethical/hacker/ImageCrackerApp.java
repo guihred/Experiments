@@ -1,11 +1,10 @@
 package ethical.hacker;
 
-import static utils.RunnableEx.make;
 import static utils.StringSigaUtils.toInteger;
 
 import java.util.function.Supplier;
 import javafx.application.Application;
-import javafx.application.Platform;
+//import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -43,11 +42,7 @@ public class ImageCrackerApp extends Application {
 
     public BooleanProperty loadURL() {
         successfull.set(false);
-        try {
-            engine.load(URL);
-        } catch (Exception ex) {
-            LOG.info("", ex);
-        }
+        RunnableEx.make(() -> engine.load(URL), ex -> LOG.info("", ex)).run();
         return successfull;
     }
 
@@ -65,7 +60,7 @@ public class ImageCrackerApp extends Application {
         engine.getLoadWorker().stateProperty().addListener((ob, oldValue, newState) -> {
             stage.setTitle(engine.getLocation() + " " + newState);
             if (newState == State.SUCCEEDED) {
-                new Thread(RunnableEx.make(() -> tryToLog(browser, imageView))).start();
+                RunnableEx.runNewThread(() -> tryToLog(browser, imageView));
             }
         });
 
@@ -81,9 +76,7 @@ public class ImageCrackerApp extends Application {
     }
 
     private void runInPlatform(String setValue) {
-        Platform.runLater(make(() -> engine.executeScript(setValue), e -> {
-//            DOES NOTHING
-        }));
+        RunnableEx.runInPlatform(() -> engine.executeScript(setValue));
     }
 
     private Object runInPlatformAndWait(String setValue) {
@@ -140,7 +133,7 @@ public class ImageCrackerApp extends Application {
 
     private static <T> T runInPlatformAndWait(Supplier<T> expression) {
         ObjectProperty<T> obj = new SimpleObjectProperty<>();
-        Platform.runLater(make(() -> obj.set(expression.get())));
+        RunnableEx.runInPlatform(() -> obj.set(expression.get()));
         while (obj.get() == null) {
             // DO NOTHING
         }

@@ -5,7 +5,6 @@ import static utils.StringSigaUtils.codificar;
 import com.twelvemonkeys.imageio.stream.ByteArrayImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -25,15 +24,10 @@ import javafx.scene.image.ImageView;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.CrawlerTask;
-import utils.HasLogging;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.*;
 
 public final class WikiImagesUtils {
 
@@ -96,18 +90,10 @@ public final class WikiImagesUtils {
         });
     }
 
-    private static Document getDocument(final String url) throws IOException {
-        Connection connect = Jsoup.connect(url);
-        if (!CrawlerTask.isNotProxied()) {
-            connect.header("Proxy-Authorization", "Basic " + CrawlerTask.getEncodedAuthorization());
-        }
-        return connect
-            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0").get();
-    }
 
     private static List<String> readPage(String urlString) {
         return SupplierEx.remap(() -> {
-            Document parse = getDocument(urlString);
+            Document parse = ExtractUtils.getDocument(urlString);
             LOG.info("READING PAGE {}", urlString);
             Elements kun = parse.select("img");
             return kun.stream().map(e -> e.attr("src")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
