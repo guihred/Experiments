@@ -7,6 +7,7 @@ import static javafx.collections.FXCollections.observableHashMap;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
 
+import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import simplebuilder.StageHelper;
+import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.ConsoleUtils;
 import utils.RunnableEx;
@@ -56,8 +58,8 @@ public class EthicalHackController {
         final int columnWidth = 120;
         HBox parent = (HBox) commonTable.getParent();
         commonTable.prefWidthProperty().bind(parent.widthProperty().add(-columnWidth));
-        ports.textProperty()
-            .bind(Bindings.createStringBinding(() -> String.format("Port Services %s", portsSelected), portsSelected));
+        ports.textProperty().bind(
+                Bindings.createStringBinding(() -> String.format("Port Services %s", portsSelected), portsSelected));
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
 
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
@@ -65,8 +67,8 @@ public class EthicalHackController {
                 tcpServices.entrySet().stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toSet())));
 
         servicesTable.setItems(CommonsFX.newFastFilter(filterField, tcpItems.filtered(e -> true)));
-		address.setText(TracerouteScanner.IP_TO_SCAN);
-		networkAddress.setText(TracerouteScanner.NETWORK_ADDRESS);
+        address.setText(TracerouteScanner.IP_TO_SCAN);
+        networkAddress.setText(TracerouteScanner.NETWORK_ADDRESS);
         Map<Integer, CheckBox> portChecks = new HashMap<>();
         portColumn.setCellFactory(newCellFactory((item, cell) -> {
             cell.setGraphic(getCheckBox(portsSelected, portChecks, item));
@@ -78,8 +80,8 @@ public class EthicalHackController {
         items.clear();
         List<Map<String, String>> currentTasks = ProcessScan.scanCurrentTasks();
         items.addAll(currentTasks);
-        Set<String> keySet = items.stream().flatMap(m -> m.keySet().stream())
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<String> keySet =
+                items.stream().flatMap(m -> m.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new));
         addColumns(commonTable, keySet);
     }
 
@@ -93,15 +95,15 @@ public class EthicalHackController {
 
     public void onActionIps(ActionEvent event) {
         StageHelper.fileAction("Select IP File", file -> networkAddress.setText(String.format("-iL \"%s\"", file)),
-            "Any", "*.*").handle(event);
+                "Any", "*.*").handle(event);
     }
 
     public void onActionNetstats() {
         items.clear();
         List<Map<String, String>> currentTasks = ProcessScan.scanNetstats();
         items.addAll(currentTasks);
-        Set<String> keySet = items.stream().flatMap(m -> m.keySet().stream())
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<String> keySet =
+                items.stream().flatMap(m -> m.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new));
         addColumns(commonTable, keySet);
     }
 
@@ -110,7 +112,7 @@ public class EthicalHackController {
         List<Map<String, String>> nsInformation = NetworkInformationScanner.getIpConfigInformation();
         items.addAll(nsInformation);
         Set<String> keySet = nsInformation.stream().flatMap(m -> m.keySet().stream())
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         addColumns(commonTable, keySet);
     }
 
@@ -127,19 +129,32 @@ public class EthicalHackController {
         addColumns(commonTable, Arrays.asList("Host", "Ports", "Route", "OS"));
         RunnableEx.runNewThread(() -> {
             progressIndicator.setVisible(true);
-            ObservableMap<String, List<String>> scanNetworkOpenPorts = PortScanner
-                .scanNetworkOpenPorts(networkAddress.getText(), portsSelected);
+            ObservableMap<String, List<String>> scanNetworkOpenPorts =
+                    PortScanner.scanNetworkOpenPorts(networkAddress.getText(), portsSelected);
             scanNetworkOpenPorts.addListener(EthicalHackApp.updateItemOnChange("Host", "Ports", count, items));
             ObservableMap<String, List<String>> oses = PortScanner.scanPossibleOSes(networkAddress.getText());
             oses.addListener(EthicalHackApp.updateItemOnChange("Host", "OS", count, items));
-            ObservableMap<String, List<String>> networkRoutes = TracerouteScanner
-                .scanNetworkRoutes(networkAddress.getText());
+            ObservableMap<String, List<String>> networkRoutes =
+                    TracerouteScanner.scanNetworkRoutes(networkAddress.getText());
             networkRoutes.addListener(EthicalHackApp.updateItemOnChange("Host", "Route", count, items));
             DoubleProperty defineProgress = ConsoleUtils.defineProgress(3);
             progressIndicator.progressProperty().unbind();
             progressIndicator.progressProperty().bind(defineProgress);
             ConsoleUtils.waitAllProcesses();
         });
+    }
+
+    public void onActionWebsiteScan() {
+        items.clear();
+        String text = dns.getText();
+        if (!text.contains("http")) {
+            text = "https://" + text;
+        }
+
+        new WebsiteScanner().getLinkNetwork(text,
+                ip -> items.add(ClassReflectionUtils.getDescriptionMap(new URL(ip), new HashMap<>())));
+        List<String> fields = Arrays.asList("Protocol", "Host", "Path", "Query", "File");
+        addColumns(commonTable, fields);
     }
 
 }

@@ -293,12 +293,12 @@ public final class ClassReflectionUtils {
         }
         invokedObjects.add(obj);
         List<Method> infoMethod = getGetterMethods(objClass, getterMethods);
-        infoMethod.forEach(ConsumerEx.makeConsumer((Method o) -> {
-            Object invoke = o.invoke(obj);
+        infoMethod.forEach(ConsumerEx.make(method -> {
+            Object invoke = method.invoke(obj);
             if (isSameEnumerationClass(objClass, invoke)) {
                 return;
             }
-            String fieldName = getFieldName(o);
+            String fieldName = getFieldName(method);
             StringBuilder description = new StringBuilder("\n");
             if (invoke != null && toStringMap.containsKey(invoke.getClass())) {
                 description.append(FunctionEx.makeFunction(toStringMap.get(invoke.getClass())).apply(invoke));
@@ -309,7 +309,7 @@ public final class ClassReflectionUtils {
                 description.append(invoke);
             }
             descriptionMap.put(fieldName, description.toString());
-        }));
+        }, (m, e) -> HasLogging.log(1).info("Method {} threw {}", m, e.getMessage())));
         return descriptionMap;
     }
 

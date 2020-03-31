@@ -26,7 +26,7 @@ public final class ExtractUtils {
             return l;
         }
         if (l.startsWith("//") && domain.getValue().contains("://")) {
-            return domain.getValue().split(":")[0] + l;
+            return domain.getValue().split("//")[0] + l;
         }
         return domain.getValue() + (!l.startsWith("/") ? "/" + l : l);
     }

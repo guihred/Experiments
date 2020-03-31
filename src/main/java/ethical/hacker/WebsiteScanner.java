@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,10 +13,7 @@ import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
-import utils.FunctionEx;
-import utils.HasLogging;
-import utils.RunnableEx;
+import utils.*;
 
 public class WebsiteScanner {
     private static final Logger LOG = HasLogging.log();
@@ -38,7 +36,7 @@ public class WebsiteScanner {
         return websiteRoutes.entrySet().stream().collect(Collectors.toList());
     }
 
-    public ObservableMap<String, List<String>> getLinkNetwork(String url, RunnableEx run) {
+    public ObservableMap<String, List<String>> getLinkNetwork(String url, BiConsumer<String, List<String>> run) {
         if (websiteRoutes.isEmpty()) {
             websiteRoutes.addListener(
                     (Change<? extends String, ? extends List<String>> change) -> scanWebSites(change, run));
@@ -48,6 +46,13 @@ public class WebsiteScanner {
         cookies.clear();
         websiteRoutes.put(url, new ArrayList<String>());
         return websiteRoutes;
+    }
+    public ObservableMap<String, List<String>> getLinkNetwork(String url, ConsumerEx<String> run) {
+        return getLinkNetwork(url, (page,links)->ConsumerEx.makeConsumer(run).accept(page));
+    }
+
+    public ObservableMap<String, List<String>> getLinkNetwork(String url, RunnableEx run) {
+        return getLinkNetwork(url, (a, b) -> RunnableEx.run(run));
     }
 
     public void setSize(int size) {
@@ -75,7 +80,8 @@ public class WebsiteScanner {
         return size;
     }
 
-    private void scanWebSites(final Change<? extends String, ? extends List<String>> change, RunnableEx run) {
+    private void scanWebSites(final Change<? extends String, ? extends List<String>> change,
+            BiConsumer<String, List<String>> run) {
         if (change.wasAdded() && depth.getOrDefault(change.getKey(), 0) < 3 && change.getValueAdded().isEmpty()) {
             RunnableEx.runNewThread(() -> RunnableEx.make(() -> {
                 String ip = change.getKey();
@@ -85,7 +91,7 @@ public class WebsiteScanner {
                 List<String> links = getLinks(ip);
                 LOG.info("{} Found {} ", ip, links);
                 websiteRoutes.get(ip).addAll(links);
-                RunnableEx.runInPlatform(run);
+                RunnableEx.runInPlatform(() -> run.accept(ip, links));
                 if (allHosts().size() < getSize()) {
                     for (int i = 0; i < links.size(); i++) {
                         String ip2 = links.get(i);
