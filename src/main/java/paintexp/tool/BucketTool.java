@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.image.PixelReader;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
@@ -32,18 +33,23 @@ public class BucketTool extends PaintTool {
     }
 
     @Override
+    public void handleKeyEvent(KeyEvent e, PaintModel paintModel) {
+        PaintTool.handleSlider(e, threshold, thresholdSlider);
+    }
+
+    @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
 
         Slider slider = getThresholdSlider();
-        model.getToolOptions().getChildren().add(slider);
         Text text = new Text();
-        text.textProperty().bind(threshold.divide(slider.getMax()).multiply(100).asString("%.0f%%"));
         model.getToolOptions().getChildren().add(text);
+        text.textProperty().bind(threshold.divide(slider.getMax()).multiply(100).asString("Threshold %.0f%%"));
+        model.getToolOptions().getChildren().add(slider);
     }
 
     public void setColor(final int initX, final int initY, final int originalColor, final int frontColor,
-        final PixelReader pixelReader, final PaintModel model) {
+            final PixelReader pixelReader, final PaintModel model) {
         final IntList toGo = new IntList(2000);
         toGo.add(index(initX, initY));
         PixelHelper pixel = new PixelHelper();
@@ -93,7 +99,7 @@ public class BucketTool extends PaintTool {
     private Slider getThresholdSlider() {
         if (thresholdSlider == null) {
             thresholdSlider = new SimpleSliderBuilder(0, PixelHelper.MAX_BYTE, 0).bindBidirectional(threshold)
-                .maxWidth(60).build();
+                    .maxWidth(60).build();
 
         }
         return thresholdSlider;
@@ -110,8 +116,8 @@ public class BucketTool extends PaintTool {
         height = (int) model.getImage().getHeight();
         PixelReader pixelReader = model.getImage().getPixelReader();
         int originalColor = pixelReader.getArgb(initialX, initialY);
-        int frontColor = PixelHelper
-            .toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
+        int frontColor =
+                PixelHelper.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
         if (originalColor != frontColor) {
             Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
         }

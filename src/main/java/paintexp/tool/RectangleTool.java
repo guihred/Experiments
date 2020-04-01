@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
@@ -49,7 +50,11 @@ public class RectangleTool extends PaintTool {
 	@Override
 	public void onSelected(final PaintModel model) {
 		model.getToolOptions().getChildren().clear();
-		model.getToolOptions().getChildren().add(getArcWidthSlider());
+        Text text = new Text();
+        model.getToolOptions().getChildren().add(text);
+        Slider arcWidthSlider2 = getArcWidthSlider();
+        text.textProperty().bind(arcWidthSlider2.valueProperty().asString("Border %.0f"));
+        model.getToolOptions().getChildren().add(arcWidthSlider2);
 		getArea().arcHeightProperty().bind(getArea().arcWidthProperty());
 		Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
 		rectangle.setStroke(Color.GRAY);

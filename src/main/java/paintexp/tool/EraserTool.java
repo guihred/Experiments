@@ -15,6 +15,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
@@ -80,8 +81,11 @@ public class EraserTool extends PaintTool {
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().setSpacing(5);
-
-        model.getToolOptions().getChildren().add(getLengthSlider(model));
+        Text text = new Text();
+        Slider lengthSlider2 = getLengthSlider(model);
+        text.textProperty().bind(lengthSlider2.valueProperty().asString("Length %.0f"));
+        model.getToolOptions().getChildren().add(text);
+        model.getToolOptions().getChildren().add(lengthSlider2);
     }
 
     @Override

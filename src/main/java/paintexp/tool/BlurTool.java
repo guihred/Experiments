@@ -11,6 +11,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
 import utils.PixelHelper;
@@ -38,6 +39,9 @@ public class BlurTool extends PaintTool {
 	public void onSelected(final PaintModel model) {
 		model.getToolOptions().getChildren().clear();
 		model.getToolOptions().setSpacing(5);
+        Text text = new Text();
+        text.textProperty().bind(length.asString("Length %d"));
+        model.getToolOptions().getChildren().add(text);
 		model.getToolOptions().getChildren().add(getLengthSlider());
 		length.addListener((o, old, value) -> colors = new Color[value.intValue() * value.intValue() * 4]);
 

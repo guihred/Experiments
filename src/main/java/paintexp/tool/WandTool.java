@@ -83,7 +83,7 @@ public class WandTool extends AreaTool {
 
     @Override
     public void handleKeyEvent(final KeyEvent e, final PaintModel model) {
-        if (!thresholdSlider.isFocused() || !exceptionKeys.contains(e.getCode())) {
+        if (!thresholdSlider.isFocused() || exceptionKeys.contains(e.getCode())) {
             super.handleKeyEvent(e, model);
             return;
         }
@@ -247,6 +247,8 @@ public class WandTool extends AreaTool {
             getArea().setLayoutX(clickedX);
             getArea().setLayoutY(clickedY);
             getArea().setManaged(false);
+            getArea().setScaleX(1);
+            getArea().setScaleY(1);
             getArea().setWidth(0);
             getArea().setHeight(0);
             Platform.runLater(() -> {

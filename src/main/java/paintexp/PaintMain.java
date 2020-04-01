@@ -1,11 +1,14 @@
 package paintexp;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
 import simplebuilder.SimpleMenuBarBuilder;
@@ -53,8 +56,10 @@ public class PaintMain extends Application {
         root.setTop(menuBar);
         root.setCenter(paintModel.getScrollPane());
         root.setBottom(PaintHelper.buildColorGrid(paintModel, controller));
-        root.setLeft(PaintHelper.buildToolBar(paintModel, controller));
-        root.setRight(PaintHelper.displayImageVersions(paintModel));
+        root.setLeft(PaintHelper.buildToolBar(controller));
+        StackPane child = new StackPane(paintModel.getToolOptions());
+        child.setPadding(new Insets(10));
+        root.setRight(new HBox(child, PaintHelper.displayImageVersions(paintModel)));
         paintModel.bindTitle(stage.titleProperty());
         stage.setX(0);
         final int width = 900;

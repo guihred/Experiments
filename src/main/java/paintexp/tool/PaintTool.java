@@ -1,5 +1,6 @@
 package paintexp.tool;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
@@ -107,13 +108,20 @@ public abstract class PaintTool extends Group {
     }
 
     public static void handleSlider(KeyEvent e, Property<Number> property, Slider slider) {
-        if (e.getCode() == KeyCode.ADD || e.getCode() == KeyCode.PLUS) {
-            property
-                .setValue(Math.min(slider.getMax(), slider.getBlockIncrement() + property.getValue().doubleValue()));
+        if (e.getEventType() != KeyEvent.KEY_PRESSED) {
+            return;
         }
-        if (e.getCode() == KeyCode.SUBTRACT || e.getCode() == KeyCode.MINUS) {
+
+        KeyCode code = e.getCode();
+        double blockIncrement = property instanceof IntegerProperty ? Math.ceil(slider.getBlockIncrement())
+                : slider.getBlockIncrement();
+        if (code == KeyCode.ADD || code == KeyCode.EQUALS || code == KeyCode.PLUS) {
             property
-                .setValue(Math.max(slider.getMin(), property.getValue().doubleValue() - slider.getBlockIncrement()));
+                .setValue(Math.min(slider.getMax(), blockIncrement + property.getValue().doubleValue()));
+        }
+        if (code == KeyCode.SUBTRACT || code == KeyCode.MINUS) {
+            property
+                .setValue(Math.max(slider.getMin(), property.getValue().doubleValue() - blockIncrement));
         }
     }
 
