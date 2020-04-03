@@ -1,7 +1,5 @@
 package ethical.hacker;
 
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,32 +11,24 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
+import utils.ExtractUtils;
 import utils.HasLogging;
 
 public class PortScanner {
 
     private static final String OS_REGEX = "Aggressive OS guesses: (.+)" + "|Running: (.+)"
-        + "|Running \\(JUST GUESSING\\): (.+)" + "|MAC Address: [A-F:0-9]+ \\((.+)\\)\\s*" + "|OS details: (.+)";
+            + "|Running \\(JUST GUESSING\\): (.+)" + "|MAC Address: [A-F:0-9]+ \\((.+)\\)\\s*" + "|OS details: (.+)";
     private static final String NMAP_FILES = "\"C:\\Program Files (x86)\\Nmap\\nmap.exe\"";
     private static final int STEP = 100;
     private static final Logger LOG = HasLogging.log();
     private static final String PORT_REGEX = "\\d+/.+";
 
-    public static boolean isPortOpen(String ip, int porta, int timeout) {
-        try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(ip, porta), timeout);
-            return true;
-        } catch (Exception ex) {
-            LOG.trace("", ex);
-            return false;
-        }
-    }
-
     public static void main(String[] args) {
+
         String ip = "localhost";
         List<PortServices> services = scanPortsHost(ip);
-        services.forEach(
-            p -> LOG.info("Host {} service = {} ports = {}", ip, p.getDescription(), Arrays.toString(p.getPorts())));
+        services.forEach(p -> LOG.info("Host {} service = {} ports = {}", ip, p.getDescription(),
+                Arrays.toString(p.getPorts())));
     }
 
     public static ObservableMap<String, List<String>> scanNetworkOpenPorts(String networkAddress) {
@@ -46,14 +36,14 @@ public class PortScanner {
     }
 
     public static ObservableMap<String, List<String>> scanNetworkOpenPorts(String networkAddress,
-        List<Integer> portsSelected) {
+            List<Integer> portsSelected) {
         Locale.setDefault(Locale.ENGLISH);
         int nPorts = 5;
         String s = portsSelected.isEmpty() ? "--top-ports " + nPorts
-            : "-p" + portsSelected.stream().map(Object::toString).collect(Collectors.joining(","));
+                : "-p" + portsSelected.stream().map(Object::toString).collect(Collectors.joining(","));
 
-        ObservableList<String> executeInConsole = ConsoleUtils
-            .executeInConsoleInfoAsync(String.format("%s -sV %s %s", NMAP_FILES, s, networkAddress));
+        ObservableList<String> executeInConsole =
+                ConsoleUtils.executeInConsoleInfoAsync(String.format("%s -sV %s %s", NMAP_FILES, s, networkAddress));
         ObservableMap<String, List<String>> hostsPorts = FXCollections.observableHashMap();
         StringProperty host = new SimpleStringProperty("");
         executeInConsole.addListener((Change<? extends String> c) -> addPort(hostsPorts, host, c));
@@ -68,7 +58,7 @@ public class PortScanner {
             int j = i;
             Thread thread = new Thread(() -> {
                 for (int porta = j; porta <= j + STEP; porta++) {
-                    if (isPortOpen(ip, porta, timeout)) {
+                    if (ExtractUtils.isPortOpen(ip, porta, timeout)) {
                         synchronizedList.add(PortServices.getServiceByPort(porta));
                     }
                 }
@@ -86,7 +76,7 @@ public class PortScanner {
     public static ObservableMap<String, List<String>> scanPossibleOSes(String networkAddress) {
 
         ObservableList<String> executeInConsole = ConsoleUtils
-            .executeInConsoleInfoAsync(NMAP_FILES + " -p 22,80,445,65123,56123 --traceroute -O " + networkAddress);
+                .executeInConsoleInfoAsync(NMAP_FILES + " -p 22,80,445,65123,56123 --traceroute -O " + networkAddress);
         ObservableMap<String, List<String>> hostsPorts = FXCollections.observableHashMap();
         StringProperty host = new SimpleStringProperty("");
         executeInConsole.addListener((Change<? extends String> c) -> addPortOnChange(hostsPorts, host, c));
@@ -94,7 +84,7 @@ public class PortScanner {
     }
 
     private static void addPort(ObservableMap<String, List<String>> hostsPorts, StringProperty host,
-        Change<? extends String> c) {
+            Change<? extends String> c) {
         while (c.next()) {
             c.getAddedSubList().forEach(line -> {
                 if (line.matches(TracerouteScanner.NMAP_SCAN_REGEX)) {
@@ -116,7 +106,7 @@ public class PortScanner {
     }
 
     private static void addPortOnChange(ObservableMap<String, List<String>> hostsPorts, StringProperty host,
-        Change<? extends String> change) {
+            Change<? extends String> change) {
         while (change.next()) {
             for (String line : change.getAddedSubList()) {
                 if (line.matches(TracerouteScanner.NMAP_SCAN_REGEX)) {

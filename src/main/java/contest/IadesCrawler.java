@@ -43,7 +43,7 @@ public class IadesCrawler extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         CommonsFX.loadFXML("IADES Crawler", "IadesCrawler.fxml", this, primaryStage);
         createSplitTreeListDemoNode();
         primaryStage.getScene().getStylesheets().add(ResourceFXUtils.toExternalForm("filesComparator.css"));

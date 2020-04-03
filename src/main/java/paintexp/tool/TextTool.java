@@ -14,6 +14,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.effect.Effect;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -41,9 +42,8 @@ public class TextTool extends PaintTool {
     private Pane effectsOptions;
     @FXML
     private ComboBox<Integer> fontSize;
-    @SuppressWarnings("rawtypes")
     @FXML
-    private ComboBox effects;
+    private ComboBox<Effect> effects;
     @FXML
     private ComboBox<String> fontFamily;
     private Node options;
@@ -67,7 +67,6 @@ public class TextTool extends PaintTool {
     @SuppressWarnings("unused")
     public void onAlignmentChange(ObservableValue<? extends Toggle> ob, Toggle old, Toggle newV) {
         text.setTextAlignment(newV == null ? TextAlignment.LEFT : (TextAlignment) newV.getUserData());
-
     }
 
     @Override
@@ -160,7 +159,7 @@ public class TextTool extends PaintTool {
         area.setHeight(Math.abs(y - initialY));
     }
 
-    @SuppressWarnings("unchecked")
+    // @SuppressWarnings("unchecked")
     private void loadParent() {
         options = CommonsFX.loadParent("TextTool.fxml", this);
         fontFamily.setItems(FXCollections.observableArrayList(Font.getFamilies()));

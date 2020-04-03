@@ -79,7 +79,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     @Override
     protected String task() {
-        insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         List<String> lines = getLines();
         updateTitle("Example Task");
         updateMessage("Starting...");

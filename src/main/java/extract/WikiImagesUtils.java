@@ -68,7 +68,7 @@ public final class WikiImagesUtils {
 
 
     public static ObservableList<String> getImagensForked(String artista, ObservableList<String> images) {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         LOG.info("SEARCHING FOR {}", artista);
         String encode = codificar(artista.replace(' ', '_'));
         String url = "https://en.wikipedia.org/wiki/" + encode;

@@ -14,7 +14,7 @@ import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 
 public final class UnRar {
-    private static final String UNRAR_FILE = "\"C:\\Program Files\\WinRAR\\UnRAR.exe\"";
+    private static final String UNRAR_FILE = "\"C:\\Program Files (x86)\\WinRAR\\UnRAR.exe\"";
     private static final Logger LOGGER = HasLogging.log();
     public static final String SRC_DIRECTORY = new File("").getAbsolutePath();
 

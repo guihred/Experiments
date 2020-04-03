@@ -12,13 +12,13 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
 import simplebuilder.SimpleMenuBarBuilder;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 
 public class PaintMain extends Application {
 
     @Override
     public void start(final Stage stage) {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         PaintController controller = new PaintController();
         PaintModel paintModel = controller.getPaintModel();
         BorderPane root = new BorderPane();

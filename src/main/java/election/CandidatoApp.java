@@ -8,13 +8,13 @@ import javafx.beans.Observable;
 import javafx.stage.Stage;
 import simplebuilder.SimpleTreeViewBuilder;
 import utils.CommonsFX;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 import utils.HibernateUtil;
 
 public class CandidatoApp extends CandidatoAppVariables {
 
     public void initialize() {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         List<String> relevantFields = getRelevantFields();
         for (String field : relevantFields) {
             SimpleTreeViewBuilder.addToRoot(treeView0, field, distinct(field));

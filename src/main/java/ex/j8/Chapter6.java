@@ -72,7 +72,7 @@ public final class Chapter6 {
      * ForkJoinPool.commonPool().awaitQuiescence(10, TimeUnit.SECONDS);
      */
     public static void ex10() {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         String url = "http://www.google.com";
         CompletableFuture.supplyAsync(() -> readPage(url)).thenApply(StringSigaUtils::getLinks)
             .thenAccept(l -> l.forEach(LOGGER::info));

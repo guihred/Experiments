@@ -27,14 +27,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleListViewBuilder;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 
 public class AllApps extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Text right = new Text("");
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         primaryStage.setTitle("All Apps");
         ObservableList<Class<?>> items = getAllFileDependencies().stream().map(JavaFileDependency::getFullName)
             .map(a -> apply(Class::forName, a)).filter(Objects::nonNull)

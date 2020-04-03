@@ -6,14 +6,44 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.collections.ObservableList;
 
 public enum DevelopmentType {
-    KNIGHT("knight.png", 14),
-    ROAD_BUILDING("roadbuilding.png", 2),
-    YEAR_OF_PLENTY("yearofplenty.png", 2),
-    MONOPOLY("monopoly.png", 2),
-    UNIVERSITY("university.png", 5),;
+    KNIGHT("knight.png", 14) {
+        @Override
+        public void onSelect(Collection<Terrain> terrains, Thief thief, List<CatanResource> elements,
+                PlayerColor player, Consumer<SelectResourceType> onSelect) {
+            Terrain.replaceThief(terrains, thief, elements, player);
+        }
+    },
+    ROAD_BUILDING("roadbuilding.png", 2) {
+        @Override
+        public void onSelect(Collection<Terrain> terrains, Thief thief, List<CatanResource> elements,
+                PlayerColor player, Consumer<SelectResourceType> onSelect) {
+            elements.add(new Road(player));
+            elements.add(new Road(player));
+        }
+    },
+    YEAR_OF_PLENTY("yearofplenty.png", 2) {
+        @Override
+        public void onSelect(Collection<Terrain> terrains, Thief thief, List<CatanResource> elements,
+                PlayerColor player, Consumer<SelectResourceType> onSelect) {
+            onSelect.accept(SelectResourceType.YEAR_OF_PLENTY);
+        }
+    },
+    MONOPOLY("monopoly.png", 2) {
+        @Override
+        public void onSelect(Collection<Terrain> terrains, Thief thief, List<CatanResource> elements,
+                PlayerColor player, Consumer<SelectResourceType> onSelect) {
+            onSelect.accept(SelectResourceType.MONOPOLY);
+        }
+    },
+    UNIVERSITY("university.png", 5) {
+        @Override
+        public void onSelect(Collection<Terrain> terrains, Thief thief, List<CatanResource> elements,
+                PlayerColor player, Consumer<SelectResourceType> onSelect) {
+            // Does Nothing
+        }
+    };
 
 	private final String image;
     private final int amount;
@@ -27,28 +57,8 @@ public enum DevelopmentType {
 		return image;
 	}
 
-    public void onSelect(Collection<Terrain> terrains, Thief thief, ObservableList<CatanResource> elements,
-        PlayerColor player, Consumer<SelectResourceType> onSelect) {
-        switch (this) {
-            case KNIGHT:
-                Terrain.replaceThief(terrains, thief, elements, player);
-                break;
-            case MONOPOLY:
-                onSelect.accept(SelectResourceType.MONOPOLY);
-                break;
-            case ROAD_BUILDING:
-                elements.add(new Road(player));
-                elements.add(new Road(player));
-                break;
-            case UNIVERSITY:
-                break;
-            case YEAR_OF_PLENTY:
-                onSelect.accept(SelectResourceType.YEAR_OF_PLENTY);
-                break;
-            default:
-                break;
-        }
-    }
+    public abstract void onSelect(Collection<Terrain> terrains, Thief thief, List<CatanResource> elements,
+            PlayerColor player, Consumer<SelectResourceType> onSelect);
 
 	public static List<DevelopmentType> getDevelopmentCards() {
         List<DevelopmentType> developments = Stream.of(DevelopmentType.values())

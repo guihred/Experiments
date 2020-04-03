@@ -15,14 +15,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.testfx.util.WaitForAsyncUtils;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 
 public class FXSSHTest extends AbstractTestExecution {
     private SshServer sshd;
 
     @Before
     public void setUp() throws Exception {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         sshd = BaseTestSupport.setupTestServer();
         sshd.start();
     }

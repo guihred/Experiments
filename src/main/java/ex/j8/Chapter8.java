@@ -103,7 +103,7 @@ public final class Chapter8 {
      */
     public static void ex11() {
         RunnableEx.run(() -> {
-            CrawlerTask.insertProxyConfig();
+            ExtractUtils.insertProxyConfig();
             URL url = new URL("https://www.google.com/");
             URLConnection connection = url.openConnection();
             String str = "username:password";

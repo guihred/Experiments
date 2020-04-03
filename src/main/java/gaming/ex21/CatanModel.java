@@ -81,6 +81,15 @@ public class CatanModel extends CatanVariables {
         invalidateDice();
     }
 
+    public void onSelectDevelopment(CatanCard catanCard, DevelopmentType development) {
+        cards.get(getCurrentPlayer()).remove(catanCard);
+        usedCards.get(getCurrentPlayer()).add(development);
+
+        development.onSelect(terrains, thief, elements, getCurrentPlayer(), this::setResourceSelect);
+        onChangePlayer(getCurrentPlayer());
+        invalidateDice();
+    }
+
     public void onSelectResource(ResourceType selectedType) {
         if (resourcesToSelect == SelectResourceType.MAKE_DEAL) {
             makeDealButton(selectedType);
@@ -103,6 +112,8 @@ public class CatanModel extends CatanVariables {
         makeDeal.setDisable(true);
         CatanLogger.log(row(), selectedType);
     }
+
+
 
     public void onSkipTurn() {
         PlayerColor value = getCurrentPlayer();
@@ -129,8 +140,6 @@ public class CatanModel extends CatanVariables {
         deals.removeIf(d -> d.getProposer() == playerColor);
         CatanLogger.log(row(), CatanAction.SKIP_TURN);
     }
-
-
 
     public Map<String, Object> row() {
         return new CatanLogBuilder().playerColor(getCurrentPlayer()).allCards(cards).userChart(userChart)
@@ -269,15 +278,6 @@ public class CatanModel extends CatanVariables {
         }
         makeDeal.setDisable(
             distinctCount == 0 || deals.stream().filter(e -> e.getProposer() == getCurrentPlayer()).count() > 4);
-    }
-
-    private void onSelectDevelopment(CatanCard catanCard, DevelopmentType development) {
-        cards.get(getCurrentPlayer()).remove(catanCard);
-        usedCards.get(getCurrentPlayer()).add(development);
-
-        development.onSelect(terrains, thief, elements, getCurrentPlayer(), this::setResourceSelect);
-        onChangePlayer(getCurrentPlayer());
-        invalidateDice();
     }
 
     private void stealResource(Terrain terrain) {

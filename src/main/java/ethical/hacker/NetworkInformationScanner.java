@@ -17,10 +17,11 @@ public final class NetworkInformationScanner {
     private NetworkInformationScanner() {
     }
 
-    public static void displayNetworkInformation() throws SocketException {
+    public static List<String> displayNetworkInformation() throws SocketException {
         Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
         Map<Class<?>, FunctionEx<Object, String>> toStringMAp = new HashMap<>();
         toStringMAp.put(byte[].class, o -> convertToString((byte[]) o));
+        List<String> arrayList = new ArrayList<>();
         while (e.hasMoreElements()) {
             NetworkInterface n = e.nextElement();
             if (n.getInterfaceAddresses().isEmpty() || !n.isUp() || n.isLoopback()
@@ -30,8 +31,10 @@ public final class NetworkInformationScanner {
             String description = ClassReflectionUtils.getDescription(n, toStringMAp);
             if (!description.isEmpty()) {
                 LOG.trace("{}", description);
+                arrayList.add(description);
             }
         }
+        return arrayList;
     }
 
     public static List<Map<String, String>> getIpConfigInformation() {
@@ -80,6 +83,7 @@ public final class NetworkInformationScanner {
             return arrayList;
         }, Collections.emptyList());
     }
+
 
 
     private static Stream<String> convertStream(byte[] ipOrMacAddress) {

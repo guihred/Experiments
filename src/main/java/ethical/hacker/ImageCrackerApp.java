@@ -24,10 +24,7 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
-import utils.CrawlerTask;
-import utils.HasLogging;
-import utils.ImageFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 public class ImageCrackerApp extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -53,7 +50,7 @@ public class ImageCrackerApp extends Application {
     @Override
 	public void start(Stage stage) {
         WebView browser = new WebView();
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         ImageView imageView = new ImageView();
         engine = browser.getEngine();
         Button loadButton = SimpleButtonBuilder.newButton("Go", e -> loadURL());
@@ -86,8 +83,8 @@ public class ImageCrackerApp extends Application {
 
 
     private void tryToLog(WebView browser, ImageView imageView) {
-        runInPlatform(setValue("j_username", CrawlerTask.getHTTPUsername()));
-        runInPlatform(setValue("j_password", CrawlerTask.getHTTPPassword()));
+        runInPlatform(setValue("j_username", ExtractUtils.getHTTPUsername()));
+        runInPlatform(setValue("j_password", ExtractUtils.getHTTPPassword()));
 
         for (int i = 0; i < 5 && !successfull.get(); i++) {
             waitABit();

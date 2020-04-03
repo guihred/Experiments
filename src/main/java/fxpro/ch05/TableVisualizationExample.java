@@ -14,7 +14,7 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import simplebuilder.SimpleButtonBuilder;
 import utils.CommonsFX;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 import utils.ResourceFXUtils;
 
 public class TableVisualizationExample extends TableVisualizationVar {
@@ -22,7 +22,7 @@ public class TableVisualizationExample extends TableVisualizationVar {
     protected ContextMenu contextMenu;
 
     public void initialize() {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         listView25.setItems(LIST_VIEW_ITEMS);
         tableView4.setItems(getTeamMembers());
         tableView4.getSelectionModel().selectedItemProperty()

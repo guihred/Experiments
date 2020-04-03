@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static javafx.scene.input.KeyCode.*;
 
 import cubesystem.DeathStar;
+import cubesystem.GolfBall;
 import gaming.ex01.SnakeLauncher;
 import gaming.ex01.SnakeSquare;
 import gaming.ex01.SnakeState;
@@ -69,8 +70,19 @@ public class FXEngineGamingTest extends AbstractTestExecution {
     }
 
     @Test
+    public void verifyDeathStar() {
+        for (Class<? extends Application> class1 : Arrays.asList(DeathStar.class,
+                GolfBall.class)) {
+            show(class1);
+            for (KeyCode keyCode : Arrays.asList(W, S, A, D, DOWN, UP, LEFT, RIGHT, SPACE)) {
+                type(keyCode, nextInt(10));
+            }
+        }
+    }
+
+    @Test
     public void verifyDirections() {
-        for (Class<? extends Application> class1 : Arrays.asList(RoundMazeLauncher.class, DeathStar.class,
+        for (Class<? extends Application> class1 : Arrays.asList(RoundMazeLauncher.class, 
             MazeLauncher.class, TronLauncher.class, TetrisLauncher.class)) {
             show(class1);
             for (KeyCode keyCode : Arrays.asList(W, S, A, D, DOWN, UP, LEFT, RIGHT, SPACE)) {

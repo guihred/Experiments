@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import simplebuilder.SimplePerspectiveTransformBuilder;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 
 /**
  * 
@@ -91,7 +91,7 @@ public class CubeFace extends Parent {
 	}
 
     private 	final Node createMapTiles(int face) {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
 		if (face == FRONT_FACE || face == RIGHT_FACE || face == REAR_FACE
 				|| face == LEFT_FACE) {
 			return createSideMapTiles(face);

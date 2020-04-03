@@ -5,6 +5,7 @@ import static fxtests.FXTesting.measureTime;
 import contest.db.Contest;
 import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;
+import election.Cidade;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.PointCh4;
 import ex.j9.ch4.PrimaryColor;
@@ -40,7 +41,7 @@ import utils.ResourceFXUtils;
 public class EqualsTest extends AbstractTestExecution {
     @Test
     public void testInvokeClass() {
-        List<Class<?>> classes = Arrays.asList(Linha.class, MadCell.class, MadEdge.class, MadPonto.class);
+        List<Class<?>> classes = Arrays.asList(Linha.class, MadCell.class, MadEdge.class, MadPonto.class, Cidade.class);
         List<?> entities = classes.stream().map(ClassReflectionUtils::getInstanceNull).collect(Collectors.toList());
         Map<Class<?>, Object> of = ClassReflectionUtils.PRIMITIVE_OBJ;
         for (Object e : entities) {

@@ -9,7 +9,6 @@ import javafx.animation.FillTransition;
 import javafx.beans.NamedArg;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.ObservableList;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -127,8 +126,15 @@ public class Terrain extends Group {
         return polygon;
     }
 
+    public static List<Integer> getNumbers() {
+        List<Integer> numbers = IntStream.rangeClosed(2, 12)
+            .flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e))).boxed().collect(Collectors.toList());
+        Collections.shuffle(numbers);
+        return numbers;
+    }
+
     public static void replaceThief(Collection<Terrain> terrains2, Thief thief2,
-        ObservableList<CatanResource> elements2, PlayerColor currentPlayer2) {
+        List<CatanResource> elements2, PlayerColor currentPlayer2) {
         terrains2.stream().filter(t -> t.getThief() != null).forEach(Terrain::fadeOut);
         Parent parent = thief2.getParent();
         if (parent instanceof Group) {
@@ -138,13 +144,6 @@ public class Terrain extends Group {
         if (!elements2.contains(thief2)) {
             elements2.add(thief2);
         }
-    }
-
-    public static List<Integer> getNumbers() {
-        List<Integer> numbers = IntStream.rangeClosed(2, 12)
-            .flatMap(e -> IntStream.generate(() -> e).limit(getLimit(e))).boxed().collect(Collectors.toList());
-        Collections.shuffle(numbers);
-        return numbers;
     }
 
     private static int getLimit(final int e) {

@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.collections.MapChangeListener.Change;
@@ -13,25 +12,17 @@ import javafx.collections.ObservableMap;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
-import utils.CommonsFX;
 import utils.HasLogging;
 
-public class EthicalHackApp extends Application {
+public final class EthicalHackApp {
 
     private static final Logger LOG = HasLogging.log();
-    private static final int WIDTH = 500;
-    @Override
-	public void start(final Stage primaryStage) {
-        CommonsFX.loadFXML("Ethical Hack App", "EthicalHackApp.fxml", primaryStage, WIDTH, WIDTH);
+
+    private EthicalHackApp() {
     }
 
-    public static void main(final String[] args) {
-        launch(args);
-    }
-
-    static void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder,
+    public static void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder,
         final Collection<String> keySet) {
         simpleTableViewBuilder.getColumns().clear();
         keySet.forEach(key -> {
@@ -43,11 +34,12 @@ public class EthicalHackApp extends Application {
         });
     }
 
-    static CheckBox getCheckBox(List<Integer> checkedPorts, Map<Integer, CheckBox> checkbox, Entry<Integer, String> e) {
+    public static CheckBox getCheckBox(List<Integer> checkedPorts, Map<Integer, CheckBox> checkbox,
+            Entry<Integer, String> e) {
         return checkbox.computeIfAbsent(e.getKey(), i -> newCheck(checkedPorts, e));
     }
 
-    static synchronized void updateItem(ObservableList<Map<String, String>> items,
+    public static synchronized void updateItem(ObservableList<Map<String, String>> items,
         ObservableMap<String, Set<String>> count1, String primaryKey, String targetKey,
         Change<? extends String, ? extends List<String>> change) {
         if (!change.wasAdded()) {
@@ -70,7 +62,7 @@ public class EthicalHackApp extends Application {
 
     }
 
-    static MapChangeListener<String, List<String>> updateItemOnChange(String primaryKey, String targetKey,
+    public static MapChangeListener<String, List<String>> updateItemOnChange(String primaryKey, String targetKey,
         ObservableMap<String, Set<String>> count1, ObservableList<Map<String, String>> items) {
         count1.clear();
         return change -> updateItem(items, count1, primaryKey, targetKey, change);

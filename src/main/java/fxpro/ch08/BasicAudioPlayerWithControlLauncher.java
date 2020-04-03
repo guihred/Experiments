@@ -12,7 +12,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 import utils.RotateUtils;
 
 /**
@@ -30,7 +30,7 @@ public class BasicAudioPlayerWithControlLauncher extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         songModel.setURL(Chapter8Resource.TEEN_TITANS.getURL().toString());
         MetadataView metaDataView = new MetadataView(songModel);
         PlayerControlView playerControlsView = new PlayerControlView(songModel);

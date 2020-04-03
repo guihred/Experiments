@@ -19,7 +19,7 @@ import javafx.collections.ObservableMap;
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
-import utils.CrawlerTask;
+import utils.ExtractUtils;
 import utils.HasLogging;
 
 public class TracerouteScanner {
@@ -76,7 +76,7 @@ public class TracerouteScanner {
     }
 
     private static String getIPtoScan() {
-        if (CrawlerTask.isNotProxied()) {
+        if (ExtractUtils.isNotProxied()) {
 			return Stream.of("192", "168", "0", "1").collect(joining("."));
         }
 
@@ -84,7 +84,7 @@ public class TracerouteScanner {
     }
 
     private static String getNetworkAddress() {
-        if (CrawlerTask.isNotProxied()) {
+        if (ExtractUtils.isNotProxied()) {
             return IP_TO_SCAN + "/30";
         }
 

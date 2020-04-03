@@ -1,3 +1,4 @@
+
 package fxtests;
 
 import gaming.ex21.*;
@@ -16,11 +17,11 @@ import org.junit.Test;
 
 public class FXEngineCatanTest extends AbstractTestExecution {
 
-	private static final int MAX_TRIES = 100;
+    private static final int MAX_TRIES = 100;
 
     @Test
-	public void testAllOptions() {
-		show(CatanAppMain.class);
+    public void testAllOptions() {
+        show(CatanAppMain.class);
         List<EdgeCatan> allEdge = lookupList(EdgeCatan.class);
         Collections.shuffle(allEdge);
         List<Village> allVillages = new ArrayList<>();
@@ -28,8 +29,8 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         List<SettlePoint> settlePoints = lookupList(SettlePoint.class);
         List<Road> allRoads = new ArrayList<>();
         Collections.shuffle(settlePoints);
-        List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
-            .collect(Collectors.toList());
+        List<ButtonBase> allButtons =
+                lookup(".button").queryAllAs(ButtonBase.class).stream().collect(Collectors.toList());
         allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
         Set<ButtonBase> clickedButtons = new HashSet<>();
         List<Terrain> allTerrains = lookupList(Terrain.class);
@@ -48,8 +49,8 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     }
 
     @Test
-	public void testDecisionTree() {
-		CatanAppMain newInstance = show(CatanAppMain.class);
+    public void testDecisionTree() {
+        CatanAppMain newInstance = show(CatanAppMain.class);
         DataframeML build = DataframeBuilder.builder("out/catan_log.txt").build();
         build.removeCol("WINNER", "PLAYER");
         List<Object> list = build.list("ACTION");
@@ -63,8 +64,8 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         List<SettlePoint> settlePoints = lookupList(SettlePoint.class);
         List<Road> allRoads = new ArrayList<>();
         Collections.shuffle(settlePoints);
-        List<ButtonBase> allButtons = lookup(".button").queryAllAs(ButtonBase.class).stream()
-            .collect(Collectors.toList());
+        List<ButtonBase> allButtons =
+                lookup(".button").queryAllAs(ButtonBase.class).stream().collect(Collectors.toList());
         allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
         Set<ButtonBase> clickedButtons = new HashSet<>();
         List<Terrain> allTerrains = lookupList(Terrain.class);
@@ -81,7 +82,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 
             CatanAction action = chooseAction(decisionTree, model);
             boolean makeDecision = makeDecision(action, allEdge, allVillages, cities, settlePoints, allRoads,
-                allTerrains, allButtons, clickedButtons);
+                    allTerrains, allButtons, clickedButtons);
             if (makeDecision) {
                 if (i % 10 == 0) {
                     getLogger().info("{}/{}", i + 1, j);
@@ -89,7 +90,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             } else {
                 CatanAction randomAction = getRandomAction();
                 boolean decision = makeDecision(randomAction, allEdge, allVillages, cities, settlePoints, allRoads,
-                    allTerrains, allButtons, clickedButtons);
+                        allTerrains, allButtons, clickedButtons);
                 if (decision) {
                     getLogger().info("{}/{} {}", i + 1, j, randomAction);
                 } else {
@@ -97,20 +98,64 @@ public class FXEngineCatanTest extends AbstractTestExecution {
                 }
             }
         }
+        
         PlayerColor playerWinner = model.getPlayerWinner();
-		CatanLogger.winner(playerWinner);
-		getLogger().info("{}", decisionTree);
+        CatanLogger.winner(playerWinner);
+        getLogger().info("{}", decisionTree);
 
     }
 
-	@Test
+    @Test
+    public void testDevelopment() {
+        CatanAppMain show = show(CatanAppMain.class);
+        List<EdgeCatan> allEdge = lookupList(EdgeCatan.class);
+        Collections.shuffle(allEdge);
+        List<Village> allVillages = new ArrayList<>();
+        List<City> cities = new ArrayList<>();
+        List<SettlePoint> settlePoints = lookupList(SettlePoint.class);
+        List<Road> allRoads = new ArrayList<>();
+        Collections.shuffle(settlePoints);
+        List<ButtonBase> allButtons =
+                lookup(".button").queryAllAs(ButtonBase.class).stream().collect(Collectors.toList());
+        allButtons.addAll(lookup(".toggle-button").queryAllAs(ToggleButton.class));
+        Set<ButtonBase> clickedButtons = new HashSet<>();
+        List<Terrain> allTerrains = lookupList(Terrain.class);
+        Collections.shuffle(allTerrains);
+        List<DevelopmentType> developments = new ArrayList<>(Arrays.asList(DevelopmentType.values()));
+        for (int i = 0; i < MAX_TRIES && allButtons.stream().anyMatch(b -> !clickedButtons.contains(b)); i++) {
+            clickVillages(allVillages, settlePoints);
+            clickCities(cities);
+            clickRoads(allEdge, allRoads);
+            clickThiefs(allTerrains);
+            clickCards();
+            clickButton(allButtons, clickedButtons);
+            if (developments.isEmpty()) {
+                break;
+            }
+            chooseDevelopment(show, developments);
+            
+            if (i % 10 == 0) {
+                getLogger().info("{}/{}-{}/{}", i + 1, MAX_TRIES, clickedButtons.size(), allButtons.size());
+            }
+        }
+    }
+
+    @Test
     @SuppressWarnings("static-method")
-	public void testExtraPoint() {
-	    ExtraPoint extraPoint = new ExtraPoint("largestarmy.png");
-	    extraPoint.getUrl();
-	    extraPoint.setRecord(5);
-	    extraPoint.getRecord();
-	}
+    public void testExtraPoint() {
+        ExtraPoint extraPoint = new ExtraPoint("largestarmy.png");
+        extraPoint.getUrl();
+        extraPoint.setRecord(5);
+        extraPoint.getRecord();
+    }
+
+    private void chooseDevelopment(CatanAppMain show, List<DevelopmentType> asList) {
+        Set<CatanCard> allCards = lookup(CatanCard.class);
+        if(!allCards.isEmpty()) {
+            DevelopmentType randomItem = randomRemoveItem(asList);
+            interact(() -> show.getModel().onSelectDevelopment(randomItem(allCards), randomItem));
+        }
+    }
 
     private void clickButton(List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {
         clickButton(null, allButtons, clickedButtons);
@@ -119,11 +164,11 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     private boolean clickButton(String btn, List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {
         Collections.shuffle(allButtons);
         allButtons.addAll(lookup(".button").queryAllAs(ButtonBase.class).stream().filter(t -> !allButtons.contains(t))
-            .collect(Collectors.toList()));
+                .collect(Collectors.toList()));
         Optional<ButtonBase> buttonToPress = allButtons.stream().filter(e -> !e.isDisabled())
-            .filter(e -> e.getParent() != null).filter(ButtonBase::isVisible).filter(e -> e.getParent().isVisible())
-            .sorted(Comparator.comparing((ButtonBase c) -> matches(btn, c)).thenComparing(clickedButtons::contains))
-            .findFirst();
+                .filter(e -> e.getParent() != null).filter(ButtonBase::isVisible).filter(e -> e.getParent().isVisible())
+                .sorted(Comparator.comparing((ButtonBase c) -> matches(btn, c)).thenComparing(clickedButtons::contains))
+                .findFirst();
         buttonToPress.ifPresent(t -> {
             clickedButtons.add(t);
             tryToClick(t);
@@ -146,13 +191,13 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         List<CatanCard> cardsToSelect = new ArrayList<>(allCards);
         Collections.shuffle(cardsToSelect);
         cardsToSelect.sort(Comparator.comparing((CatanCard c) -> matches(btn, c))
-            .thenComparing(c -> orderByResources(cardsToSelect, c)));
+                .thenComparing(c -> orderByResources(cardsToSelect, c)));
         cardsToSelect.removeIf(CatanCard::isSelected);
         if ((random.nextBoolean() || btn != null) && !cardsToSelect.isEmpty()) {
             targetPos(Pos.TOP_CENTER);
             clickOn(cardsToSelect.remove(0));
             if (random.nextBoolean() && !cardsToSelect.isEmpty()
-                && allCards.stream().filter(CatanCard::isSelected).count() < 4) {
+                    && allCards.stream().filter(CatanCard::isSelected).count() < 4) {
                 clickOn(cardsToSelect.remove(0));
             }
             targetPos(Pos.CENTER);
@@ -170,7 +215,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         City next = notClickedVillages.remove(0);
         drag(next, MouseButton.PRIMARY);
         SettlePoint remove = settlePoints.parallelStream().filter(e -> e.isSuitableForCity(next)).findAny()
-            .orElse(settlePoints.get(0));
+                .orElse(settlePoints.get(0));
         moveTo(remove);
         drop();
         cities.add(next);
@@ -214,7 +259,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         drag(next, MouseButton.PRIMARY);
         Collections.shuffle(settlePoints);
         SettlePoint remove = settlePoints.parallelStream().filter(e -> e.pointAcceptVillage(next)).findAny()
-            .orElse(settlePoints.get(0));
+                .orElse(settlePoints.get(0));
         moveTo(remove);
         drop();
         if (next.getParent() instanceof StackPane) {
@@ -232,8 +277,8 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     }
 
     private boolean makeDecision(CatanAction predict, List<EdgeCatan> allEdge, List<Village> allVillages,
-        List<City> cities, List<SettlePoint> settlePoints, List<Road> allRoads, List<Terrain> allTerrains,
-        List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {
+            List<City> cities, List<SettlePoint> settlePoints, List<Road> allRoads, List<Terrain> allTerrains,
+            List<ButtonBase> allButtons, Set<ButtonBase> clickedButtons) {
 
         switch (predict) {
             case PLACE_CITY:
@@ -259,7 +304,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             case RESOURCE_WHEAT:
             case RESOURCE_WOOD:
                 return clickButton(predict.toString().replaceAll("BUY_", "").replaceAll("RESOURCE_", "")
-                    .replaceAll("_", " ").toLowerCase(), allButtons, clickedButtons);
+                        .replaceAll("_", " ").toLowerCase(), allButtons, clickedButtons);
             case SELECT_BRICK:
             case SELECT_ROCK:
             case SELECT_SHEEP:
@@ -316,9 +361,9 @@ public class FXEngineCatanTest extends AbstractTestExecution {
             return false;
         }
         return !Objects.toString(c.getStyleClass()).toLowerCase().contains(btn)
-            && !Objects.toString(c.getStyleClass()).toLowerCase().contains(btn.replaceAll(" ", "-"))
-            && !Objects.toString(c.getId()).toLowerCase().contains(btn)
-            && !Objects.toString(c.getText(), "").toLowerCase().contains(btn);
+                && !Objects.toString(c.getStyleClass()).toLowerCase().contains(btn.replaceAll(" ", "-"))
+                && !Objects.toString(c.getId()).toLowerCase().contains(btn)
+                && !Objects.toString(c.getText(), "").toLowerCase().contains(btn);
     }
 
     private static boolean matches(String btn, CatanCard c) {
@@ -331,6 +376,6 @@ public class FXEngineCatanTest extends AbstractTestExecution {
 
     private static Long orderByResources(List<CatanCard> cardsToSelect, final CatanCard c) {
         return -cardsToSelect.stream().filter(e -> e.getResource() == c.getResource()).filter(CatanCard::isSelected)
-            .count();
+                .count();
     }
 }

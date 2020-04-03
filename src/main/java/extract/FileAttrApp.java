@@ -30,7 +30,7 @@ public class FileAttrApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         primaryStage.setTitle("File Attributes Application");
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();

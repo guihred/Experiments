@@ -82,7 +82,7 @@ public final class FXMLCreatorHelper {
 
     private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close,
         Collection<Class<? extends Application>> differentTree) {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         LOG.info("INITIALIZING {}", appClass.getSimpleName());
         AtomicReference<Throwable> thrownEx = Atomics.newReference();
         AtomicReference<Stage> reference = Atomics.newReference();

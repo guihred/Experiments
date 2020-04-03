@@ -6,8 +6,8 @@
 <?import javafx.scene.text.*?>
 <?import javafx.event.*?>
 <?import javafx.scene.input.*?>
-<HBox xmlns:fx="http://javafx.com/fxml" fx:controller="ethical.hacker.EthicalHackController"
-	styleClass="root" stylesheets="@filesComparator.css">
+<HBox xmlns:fx="http://javafx.com/fxml" 
+	stylesheets="@filesComparator.css">
 	<children>
 		<VBox>
 			<children>
@@ -15,14 +15,14 @@
 				<TextField fx:id="resultsFilter" />
 				<Button id="_Network Information" onAction="#onActionNetworkInformation"
 					text="_Network Information" />
-				<Button id="NetStats" onAction="#onActionNetstats"
-					text="Net _Stats" />
+				<Button id="NetStats" onAction="#onActionNetstats" text="Net _Stats" />
 				<Button id="CurrentTasks" onAction="#onActionCurrentTasks"
 					text="_Current Tasks" />
 				<Text text="DNS" />
 				<TextField fx:id="dns" text="google.com" />
 				<Button id="DNS _Lookup" onAction="#onActionDNSLookup" text="DNS _Lookup" />
-				<Button id="Website Scan" onAction="#onActionWebsiteScan" text="Website Scan" />
+				<Button id="Website Scan" onAction="#onActionWebsiteScan"
+					text="Website Scan" />
 				<Text text="Ping Adress" />
 				<TextField fx:id="address" text="10.69.64.31" />
 				<Button id="Ping _Trace" onAction="#onActionPingTrace" text="Ping _Trace" />
@@ -44,15 +44,14 @@
 					<children>
 						<Text fx:id="ports" text="Port Services []" />
 						<TextField fx:id="filterField" />
-						<TableView fx:id="servicesTable">
+						<TableView fx:id="servicesTable" minWidth="270">
 							<columns>
-								<TableColumn prefWidth="122.66666666666666" text="Service">
+								<TableColumn prefWidth="160" text="Service">
 									<cellValueFactory>
 										<PropertyValueFactory property="value" />
 									</cellValueFactory>
 								</TableColumn>
-								<TableColumn fx:id="portColumn" prefWidth="61.33333333333333"
-									text="Port" />
+								<TableColumn fx:id="portColumn" prefWidth="80" text="Port" />
 							</columns>
 						</TableView>
 					</children>

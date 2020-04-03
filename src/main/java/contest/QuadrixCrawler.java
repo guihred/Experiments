@@ -68,7 +68,7 @@ public class QuadrixCrawler extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        CrawlerTask.insertProxyConfig();
+        ExtractUtils.insertProxyConfig();
         CommonsFX.loadFXML("Quadrix Crawler", "QuadrixCrawler.fxml", this, primaryStage);
         onCloseWindow(primaryStage, HibernateUtil::shutdown);
     }
