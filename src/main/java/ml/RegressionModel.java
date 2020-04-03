@@ -179,13 +179,11 @@ public class RegressionModel {
     public static DoubleUnaryOperator polynomialRegression(double[] x, double[] y, int d) {
 
         int n = x.length;
-        RealMatrix matrixX = new Array2DRowRealMatrix();
-        QRDecomposition qr = null;
+        QRDecomposition qr;
         int degree = d;
         // in case Vandermonde matrix does not have full rank, reduce degree until it
         // does
         while (true) {
-
             // build Vandermonde matrix
             double[][] vandermonde = new double[n][degree + 1];
             for (int j = 0; j < n; j++) {
@@ -193,19 +191,15 @@ public class RegressionModel {
                     vandermonde[j][k] = Math.pow(x[j], k);
                 }
             }
-            matrixX = new Array2DRowRealMatrix(vandermonde);
+            RealMatrix matrixX = new Array2DRowRealMatrix(vandermonde);
 
             // find least squares solution
             qr = new QRDecomposition(matrixX);
             if (qr.getSolver().isNonSingular()) {
                 break;
             }
-
             // decrease degree and try again
             degree--;
-        }
-        if (qr == null) {
-            return null;
         }
 
         // create matrix from vector

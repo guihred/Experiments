@@ -23,7 +23,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -42,7 +41,6 @@ public final class EditSongHelper {
     public static void findImage(Music selectedItem, Stage stage, ObjectProperty<MediaPlayer> mediaPlayer) {
         String value = MusicReader.getDescription(selectedItem);
         ObservableList<Node> children = FXCollections.observableArrayList();
-        children.add(new Text(value));
 
         final int prefWidth = 300;
         SimpleListViewBuilder<Node> listBuilder = new SimpleListViewBuilder<>();
