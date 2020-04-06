@@ -43,7 +43,6 @@ public class PaintModel {
     }
 
     public void bindTitle(StringProperty o) {
-        o.set("Paint");
         filename.addListener((ob, old, val) -> o.setValue(val));
     }
 

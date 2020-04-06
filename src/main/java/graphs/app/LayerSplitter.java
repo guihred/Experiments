@@ -77,7 +77,7 @@ public final class LayerSplitter {
         return edges;
     }
 
-    public static List<List<Cell>> getLayers(List<Cell> cells, List<Edge> edges) {
+    public static List<List<Cell>> getLayers(List<Cell> cells, Collection<Edge> edges) {
         LayerSplitter cycleRemover = new LayerSplitter(cells,
                 edges.stream().sorted(Comparator.comparing(Edge::getValor)).collect(Collectors.toList()));
         cycleRemover.removeCycles();

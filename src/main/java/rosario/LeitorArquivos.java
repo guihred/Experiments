@@ -110,7 +110,7 @@ public final class LeitorArquivos {
                 }
                 return medicamentos;
             }
-        }, "ERROR READING FILE");
+        }, "ERROR READING ANVISA FILE " + selectedFile);
 
     }
 

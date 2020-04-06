@@ -117,7 +117,7 @@ public class CheckersSquare extends StackPane {
         this.selected.set(selected);
     }
 
-    public void setState(CheckersPlayer state) {
+    public final void setState(CheckersPlayer state) {
         this.state.set(state);
     }
 

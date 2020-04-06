@@ -153,13 +153,13 @@ public class ContestReader extends ContestDTO {
             text.setMax(contestQuestion.getNumber());
         }
         if (StringUtils.isBlank(contestQuestion.getSubject())) {
-            contestQuestion.setSubject(subject);
+            contestQuestion.setSubject(getSubject());
         }
         contestQuestion.setType(questionType);
         listQuestions.add(contestQuestion);
         contestQuestion = new ContestQuestion();
         contestQuestion.setContest(getContest());
-        contestQuestion.setSubject(subject);
+        contestQuestion.setSubject(getSubject());
         contestQuestion.setType(questionType);
         if (questionType == QuestionType.OPTIONS) {
             answer.setExercise(contestQuestion);
@@ -214,7 +214,7 @@ public class ContestReader extends ContestDTO {
     private void executeAppending(String str, String[] linhas, int i) {
         if (getState() == ContestDTO.ReaderState.IGNORE) {
             contestQuestion.setContest(getContest());
-            contestQuestion.setSubject(subject);
+            contestQuestion.setSubject(getSubject());
             return;
         }
         if (StringUtils.isNotBlank(str)) {
@@ -342,13 +342,12 @@ public class ContestReader extends ContestDTO {
     private void processQuestion(String[] linhas, int i) {
         String s = removeNotPrintable(linhas[i]);
         if (s.matches(SUBJECT_PATTERN) && i > 0) {
-            subject = linhas[i - 1];
-            getLogger().info("SUBJECT={}", subject);
+            setSubject(linhas[i - 1]);
+
             return;
         }
         if (isSubject(s)) {
-            subject = s.trim();
-            getLogger().info("SUBJECT={}", subject);
+            setSubject(s.trim());
             setState(ContestDTO.ReaderState.TEXT);
             return;
         }
@@ -363,8 +362,7 @@ public class ContestReader extends ContestDTO {
             return;
         }
         if (s.matches(SUBJECT_2_PATTERN)) {
-            subject = linhas[i].split("[-–\\(]")[0].toUpperCase();
-            getLogger().info("SUBJECT={}", subject);
+            setSubject(linhas[i].split("[-–\\(]")[0].toUpperCase());
             return;
         }
 

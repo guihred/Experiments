@@ -139,10 +139,7 @@ public class MusicOrganizer extends Application {
         }
         Image imageData = music.getImage();
         if (imageData != null) {
-            ImageView imageView = new ImageView(imageData);
-            imageView.setFitWidth(50);
-            imageView.setPreserveRatio(true);
-            vBox.getChildren().addAll(imageView);
+            vBox.getChildren().addAll(view(imageData));
         }
         vBox.getChildren().add(SimpleButtonBuilder.newButton("_Fix", f -> {
             MusicReader.saveMetadata(music);
@@ -163,7 +160,8 @@ public class MusicOrganizer extends Application {
 
     private static ImageView view(Image music) {
         ImageView imageView = new ImageView(music);
-        imageView.setFitWidth(50);
+        final int prefWidth = 50;
+        imageView.setFitWidth(prefWidth);
         imageView.setPreserveRatio(true);
         return imageView;
     }

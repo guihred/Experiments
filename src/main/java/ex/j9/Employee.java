@@ -31,11 +31,11 @@ public class Employee implements Measurable {
         return salary;
     }
 
-    public void setName(String name) {
+    public final void setName(String name) {
         this.name = name;
     }
 
-    public void setSalary(double salary) {
+    public final void setSalary(double salary) {
         this.salary = salary;
     }
 

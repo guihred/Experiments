@@ -48,7 +48,7 @@ public class PixelHelper {
         return Math.abs(r) + Math.abs(g) + Math.abs(b) + Math.abs(a);
     }
 
-    public void reset() {
+    public final void reset() {
         a = b = r = g = i = 0;
     }
 

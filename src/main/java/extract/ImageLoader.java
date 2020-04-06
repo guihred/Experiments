@@ -26,9 +26,7 @@ public class ImageLoader {
         ObservableList<String> images = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
         images.addListener((Change<? extends String> c) -> Platform.runLater(() -> addImages(children, text1, c)));
         Platform.runLater(() -> {
-            Node node = children.get(0);
             children.clear();
-            children.add(node);
             LOG.trace("CLEARING IMAGES");
         });
         WikiImagesUtils.getImagensForked(text1, images);
@@ -88,7 +86,7 @@ public class ImageLoader {
     }
 
     private static int getIndex(ObservableList<Node> children, ImageView imageView) {
-        int i = 1;
+        int i = 0;
         for (; i < children.size(); i++) {
             if (byArea(children.get(i)) < byArea(imageView)) {
                 return i;

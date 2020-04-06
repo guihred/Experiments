@@ -294,7 +294,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     private static String getOnReadings(String currentWord) throws IOException {
-        String url = "http://jisho.org/search/" + URLEncoder.encode(currentWord, "UTF-8");
+        String url = URL_BASE + URLEncoder.encode(currentWord, "UTF-8");
         Document parse = ExtractUtils.getDocument(url);
         Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
                 .filter(element -> element.select(".text").first().text().equals(currentWord)).findFirst();

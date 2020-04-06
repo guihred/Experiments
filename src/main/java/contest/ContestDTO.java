@@ -30,7 +30,7 @@ public class ContestDTO implements HasLogging {
     protected final SimpleObjectProperty<ContestDTO.ReaderState> state = new SimpleObjectProperty<>(
         ContestDTO.ReaderState.IGNORE);
 
-    protected String subject;
+    private String subject;
     protected ContestText text = new ContestText();
     protected final ObservableList<ContestText> texts = FXCollections.observableArrayList();
 
@@ -54,6 +54,10 @@ public class ContestDTO implements HasLogging {
         return state.get();
     }
 
+    public String getSubject() {
+        return subject;
+    }
+
     public ObservableList<ContestText> getTexts() {
         return texts;
     }
@@ -64,6 +68,11 @@ public class ContestDTO implements HasLogging {
 
     public void setState(ContestDTO.ReaderState state) {
         this.state.set(state);
+    }
+
+    public void setSubject(String subject) {
+        getLogger().info("SUBJECT={}", subject);
+        this.subject = subject;
     }
 
     enum ReaderState {

@@ -7,20 +7,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class PageImage extends Application {
     @Override
 	public void start(Stage primaryStage) {
         FlowPane root = new FlowPane();
-        root.setPrefWidth(200);
-        root.setAlignment(Pos.TOP_LEFT);
+        root.setAlignment(Pos.CENTER);
         ScrollPane scrollPane = new ScrollPane(root);
+        root.prefWidthProperty().bind(scrollPane.widthProperty());
         TextField textField = new TextField();
         textField.textProperty().addListener((ob, t, value) -> ImageLoader.loadImages(root.getChildren(), value));
-        root.getChildren().add(textField);
         textField.setText("Dog");
-        Scene scene = new Scene(scrollPane);
+        Scene scene = new Scene(new VBox(textField, scrollPane));
         textField.prefWidthProperty().bind(scene.widthProperty().multiply(9. / 10));
         primaryStage.setScene(scene);
         primaryStage.show();

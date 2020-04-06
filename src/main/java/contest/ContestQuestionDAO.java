@@ -44,9 +44,9 @@ public class ContestQuestionDAO extends BaseDAO {
     public List<ContestQuestion> list(Contest c) {
         return execute(session -> {
             StringBuilder hql = new StringBuilder();
-            hql.append("SELECT l ");
-            hql.append("FROM ContestQuestion l ");
-            hql.append("WHERE l.contest=:c ");
+            hql.append("SELECT q ");
+            hql.append("FROM ContestQuestion q ");
+            hql.append("WHERE q.contest=:c ");
             hql.append("ORDER BY number");
             return session.createQuery(hql.toString(), ContestQuestion.class).setParameter("c", c).list().stream()
                 .map(BaseDAO::initialize).collect(toList());
