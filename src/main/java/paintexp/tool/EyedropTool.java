@@ -15,6 +15,7 @@ public class EyedropTool extends PaintTool {
 
 
     private Rectangle area;
+    private PaintTool old;
 
     @Override
     public Node createIcon() {
@@ -46,7 +47,8 @@ public class EyedropTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(PaintModel model) {
+    public void onSelected(PaintTool oldTool, PaintModel model) {
+        old = oldTool;
         model.getToolOptions().getChildren().add(getArea());
     }
 
@@ -62,6 +64,7 @@ public class EyedropTool extends PaintTool {
             } else {
                 model.setFrontColor(color);
             }
+            model.toolProperty().set(old);
         }
     }
 

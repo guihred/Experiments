@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -27,7 +26,7 @@ public class PaintController {
 
     private final PaintModel paintModel = new PaintModel();
 
-    private final ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
+    private final ObjectProperty<PaintTool> tool = paintModel.toolProperty();
 
     public void changeTool(final PaintTool newValue) {
         paintModel.resetToolOptions();
@@ -47,10 +46,10 @@ public class PaintController {
             }
             setTool(newValue);
             PaintTool paintTool = getTool();
-            paintTool.onSelected(paintModel);
-            paintModel.getToolOptions().setVisible(!paintModel.getToolOptions().getChildren().isEmpty());
-            paintModel.getToolOptions().setManaged(!paintModel.getToolOptions().getChildren().isEmpty());
+            paintTool.onSelected(oldTool, paintModel);
         }
+        paintModel.getToolOptions().setVisible(!paintModel.getToolOptions().getChildren().isEmpty());
+        paintModel.getToolOptions().setManaged(!paintModel.getToolOptions().getChildren().isEmpty());
     }
 
     public BooleanBinding containsSelectedArea() {

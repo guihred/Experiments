@@ -81,6 +81,10 @@ public abstract class PaintTool extends Group {
         // DOES NOTHING
     }
 
+    public void onSelected(PaintTool old, PaintModel model) {
+        onSelected(model);
+    }
+
     public void setIcon(Node icon) {
         this.icon = icon;
     }
