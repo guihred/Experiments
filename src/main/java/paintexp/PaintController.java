@@ -48,6 +48,8 @@ public class PaintController {
             setTool(newValue);
             PaintTool paintTool = getTool();
             paintTool.onSelected(paintModel);
+            paintModel.getToolOptions().setVisible(!paintModel.getToolOptions().getChildren().isEmpty());
+            paintModel.getToolOptions().setManaged(!paintModel.getToolOptions().getChildren().isEmpty());
         }
     }
 

@@ -28,6 +28,9 @@ public final class PaintImageUtils {
     private PaintImageUtils() {
     }
 
+    public static void addEffect(PaintModel paintModel, PaintController paintController) {
+
+    }
 	public static void adjustColors(PaintModel paintModel, PaintController paintController) {
         VBox root = new VBox();
 		WritableImage original = paintController.getSelectedImage();

@@ -9,12 +9,11 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import simplebuilder.SimpleDialogBuilder;
@@ -92,7 +91,7 @@ public class PictureTool extends PaintTool {
         List<PictureOption> validOptions = Arrays.asList(PictureOption.values());
         validOptions.forEach(e -> picOptions.addToggle(e.toSVG(), e));
 
-        VBox value = new VBox();
+        HBox value = new HBox();
         value.setAlignment(Pos.CENTER);
         List<Node> allOptions = picOptions.onChange(
                 (o, old, newV) -> getArea().setContent(
@@ -100,14 +99,8 @@ public class PictureTool extends PaintTool {
                 .select(PictureOption.TRIANGLE).getTogglesAs(Node.class);
         value.getChildren().addAll(allOptions);
 
-        value.prefWidth(PREF_WIDTH);
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(value);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setPrefWidth(PREF_WIDTH);
-        final int maxSize = 200;
-        scrollPane.setMaxSize(maxSize, maxSize);
-        model.getToolOptions().getChildren().addAll(scrollPane);
+        value.prefHeight(PREF_WIDTH);
+        model.getToolOptions().getChildren().addAll(value);
     }
 
     @Override

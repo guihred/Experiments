@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
@@ -24,6 +25,13 @@ public class BlurTool extends PaintTool {
 	private Color[] colors = new Color[length.get() * length.get() * 4];
 	private Slider lengthSlider;
 
+	public void addSlider(final PaintModel model, String string, Slider lengthSlider2) {
+        Text text = new Text();
+        text.textProperty().bind(length.asString(string
+                + " %d"));
+        model.getToolOptions().getChildren().add(new VBox(text, lengthSlider2));
+    }
+
 	@Override
 	public Node createIcon() {
 		return new SimpleSvgPathBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK)
@@ -35,17 +43,15 @@ public class BlurTool extends PaintTool {
 		PaintTool.handleSlider(e, length, lengthSlider);
 	}
 
-	@Override
-	public void onSelected(final PaintModel model) {
-		model.getToolOptions().getChildren().clear();
-		model.getToolOptions().setSpacing(5);
-        Text text = new Text();
-        text.textProperty().bind(length.asString("Length %d"));
-        model.getToolOptions().getChildren().add(text);
-		model.getToolOptions().getChildren().add(getLengthSlider());
-		length.addListener((o, old, value) -> colors = new Color[value.intValue() * value.intValue() * 4]);
+    @Override
+    public void onSelected(final PaintModel model) {
+        model.getToolOptions().setSpacing(5);
+        String string = "Length";
+        Slider lengthSlider2 = getLengthSlider();
+        addSlider(model, string, lengthSlider2);
+        length.addListener((o, old, value) -> colors = new Color[value.intValue() * value.intValue() * 4]);
 
-	}
+    }
 
 	@Override
 	protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
@@ -106,7 +112,7 @@ public class BlurTool extends PaintTool {
 
 	private Slider getLengthSlider() {
 		if (lengthSlider == null) {
-			lengthSlider = new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(50).build();
+            lengthSlider = new SimpleSliderBuilder(1, 50, 10).bindBidirectional(length).prefWidth(150).build();
 		}
 		return lengthSlider;
 	}

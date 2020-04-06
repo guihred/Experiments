@@ -11,6 +11,7 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.poi.util.IntList;
 import simplebuilder.SimpleSliderBuilder;
@@ -43,9 +44,8 @@ public class BucketTool extends PaintTool {
 
         Slider slider = getThresholdSlider();
         Text text = new Text();
-        model.getToolOptions().getChildren().add(text);
         text.textProperty().bind(threshold.divide(slider.getMax()).multiply(100).asString("Threshold %.0f%%"));
-        model.getToolOptions().getChildren().add(slider);
+        model.getToolOptions().getChildren().add(new VBox(text, slider));
     }
 
     public void setColor(final int initX, final int initY, final int originalColor, final int frontColor,
@@ -99,7 +99,7 @@ public class BucketTool extends PaintTool {
     private Slider getThresholdSlider() {
         if (thresholdSlider == null) {
             thresholdSlider = new SimpleSliderBuilder(0, PixelHelper.MAX_BYTE, 0).bindBidirectional(threshold)
-                    .maxWidth(60).build();
+                .prefWidth(150).build();
 
         }
         return thresholdSlider;

@@ -47,7 +47,6 @@ public class EyedropTool extends PaintTool {
 
     @Override
     public void onSelected(PaintModel model) {
-        model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren().add(getArea());
     }
 

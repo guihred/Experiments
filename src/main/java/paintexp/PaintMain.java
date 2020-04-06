@@ -1,14 +1,12 @@
 package paintexp;
 
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
 import simplebuilder.SimpleMenuBarBuilder;
@@ -44,6 +42,7 @@ public class PaintMain extends Application {
                 controller.containsSelectedArea().not())
             .addMenu("_Image")
             .addMenuItem("_Adjust", "Ctrl+J", e -> PaintImageUtils.adjustColors(paintModel, controller))
+                .addMenuItem("E_ffect", "Ctrl+F", e -> PaintImageUtils.addEffect(paintModel, controller))
             .addMenuItem("Mirror _Horizontally", "Ctrl+H",
                 e -> PaintImageUtils.mirrorHorizontally(paintModel, controller))
             .addMenuItem("Mirror _Vertically", "Ctrl+M", e -> PaintImageUtils.mirrorVertically(paintModel, controller))
@@ -53,13 +52,11 @@ public class PaintMain extends Application {
         SimplePixelReader.paintColor(paintModel.getImage(), paintModel.getBackColor());
         paintModel.getImageStack().addEventHandler(MouseEvent.ANY, controller::handleMouse);
         paintModel.createImageVersion();
-        root.setTop(menuBar);
+        root.setTop(new VBox(menuBar, paintModel.getToolOptions()));
         root.setCenter(paintModel.getScrollPane());
         root.setBottom(PaintHelper.buildColorGrid(paintModel, controller));
         root.setLeft(PaintHelper.buildToolBar(controller));
-        StackPane child = new StackPane(paintModel.getToolOptions());
-        child.setPadding(new Insets(10));
-        root.setRight(new HBox(child, PaintHelper.displayImageVersions(paintModel)));
+        root.setRight(PaintHelper.displayImageVersions(paintModel));
         paintModel.bindTitle(stage.titleProperty());
         stage.setX(0);
         final int width = 900;

@@ -12,7 +12,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
 import utils.PixelHelper;
 
@@ -83,13 +82,7 @@ public class PatternTool extends WandTool {
         if (scaleSlider == null) {
             SimpleSliderBuilder.onChange(getScaleSlider(), (ob, old, val) -> onChangeSlider(model));
         }
-
-        Slider slider = getScaleSlider();
-        Text text = new Text();
-        text.textProperty().bind(scale.multiply(100).asString("Scale %.0f%%"));
-        model.getToolOptions().getChildren().add(text);
-        model.getToolOptions().getChildren().add(slider);
-
+        addSlider(model, "Scale", getScaleSlider(), scale.multiply(10));
     }
 
 

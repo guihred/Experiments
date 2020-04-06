@@ -13,7 +13,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
 import simplebuilder.SimpleRectangleBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
@@ -49,12 +48,8 @@ public class RectangleTool extends PaintTool {
 
 	@Override
 	public void onSelected(final PaintModel model) {
-		model.getToolOptions().getChildren().clear();
-        Text text = new Text();
-        model.getToolOptions().getChildren().add(text);
-        Slider arcWidthSlider2 = getArcWidthSlider();
-        text.textProperty().bind(arcWidthSlider2.valueProperty().asString("Border %.0f"));
-        model.getToolOptions().getChildren().add(arcWidthSlider2);
+        addSlider(model, "Border", getArcWidthSlider());
+
 		getArea().arcHeightProperty().bind(getArea().arcWidthProperty());
 		Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
 		rectangle.setStroke(Color.GRAY);
@@ -148,7 +143,7 @@ public class RectangleTool extends PaintTool {
 
 	private Slider getArcWidthSlider() {
         return orElse(arcWidthSlider, () -> arcWidthSlider = new SimpleSliderBuilder(0, 100, 0)
-            .bindBidirectional(getArea().arcWidthProperty()).maxWidth(60).build());
+                .bindBidirectional(getArea().arcWidthProperty()).prefWidth(150).build());
 	}
 
 }

@@ -20,7 +20,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
 import utils.PixelHelper;
 
@@ -92,18 +91,11 @@ public class WandTool extends AreaTool {
 
     @Override
     public void onSelected(final PaintModel model) {
-        model.getToolOptions().getChildren().clear();
         if (thresholdSlider == null) {
             SimpleSliderBuilder.onChange(getThresholdSlider(),
                 (observable, oldValue, newValue) -> onChangeSlider(model));
         }
-
-        Slider slider = getThresholdSlider();
-        Text text = new Text();
-        text.textProperty().bind(threshold.divide(slider.getMax()).multiply(100).asString("Threshold %.0f%%"));
-        model.getToolOptions().getChildren().add(text);
-        model.getToolOptions().getChildren().add(slider);
-
+        addSlider(model, "Threshold", getThresholdSlider(), threshold.divide(1.));
     }
 
     public void setImage(final PaintModel model) {
@@ -228,7 +220,8 @@ public class WandTool extends AreaTool {
     private Slider getThresholdSlider() {
         if (thresholdSlider == null) {
             thresholdSlider = new SimpleSliderBuilder(0, PixelHelper.MAX_BYTE, 0).bindBidirectional(threshold)
-                .maxWidth(60).build();
+                    .prefWidth(150).build();
+
 
         }
         return thresholdSlider;

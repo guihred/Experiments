@@ -15,6 +15,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleConverter;
@@ -51,12 +52,15 @@ public final class PaintToolHelper {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static void addOptions(Object selectedItem, ObservableList<Node> effectsOptions, Map<Object, Double> maxMap,
+    private static void addOptions(Object selectedItem, ObservableList<Node> options, Map<Object, Double> maxMap,
         ObservableList<?> effects, String fieldName, Property property) {
         String changeCase = StringSigaUtils.changeCase(fieldName);
         Text text2 = new Text(changeCase);
         text2.textProperty().bind(Bindings.createStringBinding(() -> propValue(property, changeCase), property));
-        effectsOptions.add(text2);
+
+        VBox vBox = new VBox(text2);
+        options.add(vBox);
+        ObservableList<Node> effectsOptions = vBox.getChildren();
         Object value = property.getValue();
         if (value instanceof Number) {
             double value3 = ((Number) value).doubleValue();

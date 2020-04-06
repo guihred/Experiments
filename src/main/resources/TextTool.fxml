@@ -10,8 +10,9 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.effect.*?>
 <?import java.lang.Double?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml">
+<HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER_LEFT" spacing="10">
 	<fx:define>
 		<ToggleGroup fx:id="alignments" onSelectedToggleChange="#onAlignmentChange" />
 		<Rectangle fill="#00000000" fx:id="area" stroke="#000000"
@@ -24,13 +25,13 @@
 	<children>
 		<VBox>
 			<children>
-				<Text fx:id="text0" text="Font" />
-				<ComboBox fx:id="fontFamily" id="fontFamily" value="Times New Roman">
-				</ComboBox>
-			</children>
-		</VBox>
-		<HBox>
-			<children>
+				<VBox>
+					<children>
+						<Text fx:id="text0" text="Font" />
+						<ComboBox fx:id="fontFamily" id="fontFamily" value="Times New Roman">
+						</ComboBox>
+					</children>
+				</VBox>
 				<VBox>
 					<children>
 						<Text text="Size" />
@@ -43,151 +44,133 @@
 									<Integer fx:value="11" />
 									<Integer fx:value="12" />
 									<Integer fx:value="14" />
-									<Integer fx:value="16" />
-									<Integer fx:value="18" />
-									<Integer fx:value="20" />
-									<Integer fx:value="22" />
-									<Integer fx:value="24" />
-									<Integer fx:value="26" />
-									<Integer fx:value="28" />
-									<Integer fx:value="36" />
-									<Integer fx:value="48" />
-									<Integer fx:value="72" />
-									<Integer fx:value="80" />
-									<Integer fx:value="90" />
-									<Integer fx:value="100" />
-									<Integer fx:value="110" />
-									<Integer fx:value="120" />
-									<Integer fx:value="130" />
-									<Integer fx:value="140" />
 								</FXCollections>
 							</items>
 							<value>
 								<Integer fx:value="12" />
 							</value>
 						</ComboBox>
-
-						<HBox>
-							<children>
-								<ToggleButton fx:id="bold" id="bold" onAction="#onOptionsChanged">
-									<graphic>
-										<Text style="-fx-font-weight: bold;" text="B" />
-									</graphic>
-									<tooltip>
-										<Tooltip text="Bold" />
-									</tooltip>
-								</ToggleButton>
-								<ToggleButton fx:id="italic" id="italic" onAction="#onOptionsChanged">
-									<graphic>
-										<Text style="-fx-font-style: italic;" text="I">
-											<font>
-												<Font name="Times New Roman Italic" size="11.0" />
-											</font>
-										</Text>
-									</graphic>
-								</ToggleButton>
-								<ToggleButton fx:id="underline" id="underline"
-									onAction="#onOptionsChanged">
-									<graphic>
-										<Text text="U" underline="true" />
-									</graphic>
-								</ToggleButton>
-								<ToggleButton fx:id="strikeThrough" id="strikeThrough"
-									onAction="#onOptionsChanged">
-									<graphic>
-										<Text strikethrough="true" text="S" />
-									</graphic>
-								</ToggleButton>
-							</children>
-						</HBox>
 					</children>
 				</VBox>
+				<HBox>
+					<children>
+						<ToggleButton fx:id="bold" id="bold" onAction="#onOptionsChanged">
+							<graphic>
+								<Text style="-fx-font-weight: bold;" text="B" />
+							</graphic>
+							<tooltip>
+								<Tooltip text="Bold" />
+							</tooltip>
+						</ToggleButton>
+						<ToggleButton fx:id="italic" id="italic" onAction="#onOptionsChanged">
+							<graphic>
+								<Text style="-fx-font-style: italic;" text="I">
+									<font>
+										<Font name="Times New Roman Italic" size="11.0" />
+									</font>
+								</Text>
+							</graphic>
+						</ToggleButton>
+						<ToggleButton fx:id="underline" id="underline"
+							onAction="#onOptionsChanged">
+							<graphic>
+								<Text text="U" underline="true" />
+							</graphic>
+						</ToggleButton>
+						<ToggleButton fx:id="strikeThrough" id="strikeThrough"
+							onAction="#onOptionsChanged">
+							<graphic>
+								<Text strikethrough="true" text="S" />
+							</graphic>
+						</ToggleButton>
+					</children>
+				</HBox>
+				<HBox>
+					<children>
+						<ToggleButton fx:id="toggleButton9" styleClass="toggle-button left"
+							toggleGroup="$alignments">
+							<graphic>
+								<Group>
+									<children>
+										<Line endX="8.0" />
+										<Line endX="7.0" endY="3.0" startY="3.0" />
+										<Line endX="6.0" endY="6.0" startY="6.0" />
+										<Line endX="8.0" endY="9.0" startY="9.0" />
+									</children>
+								</Group>
+							</graphic>
+							<tooltip>
+								<Tooltip text="LEFT" />
+							</tooltip>
+							<userData>
+								<TextAlignment fx:value="LEFT" />
+							</userData>
+						</ToggleButton>
+						<ToggleButton fx:id="toggleButton10" styleClass="toggle-button right"
+							toggleGroup="$alignments">
+							<graphic>
+								<Group>
+									<children>
+										<Line endX="8.0" />
+										<Line endX="8.0" endY="3.0" startX="1.0" startY="3.0" />
+										<Line endX="8.0" endY="6.0" startX="2.0" startY="6.0" />
+										<Line endX="8.0" endY="9.0" startY="9.0" />
+									</children>
+								</Group>
+							</graphic>
+							<tooltip>
+								<Tooltip text="RIGHT" />
+							</tooltip>
+							<userData>
+								<TextAlignment fx:value="RIGHT" />
+							</userData>
+						</ToggleButton>
+						<ToggleButton fx:id="toggleButton11" styleClass="toggle-button justify"
+							toggleGroup="$alignments">
+							<graphic>
+								<Group>
+									<children>
+										<Line endX="8.0" />
+										<Line endX="8.0" endY="3.0" startY="3.0" />
+										<Line endX="8.0" endY="6.0" startY="6.0" />
+										<Line endX="8.0" endY="9.0" startY="9.0" />
+									</children>
+								</Group>
+							</graphic>
+							<tooltip>
+								<Tooltip text="JUSTIFY" />
+							</tooltip>
+							<userData>
+								<TextAlignment fx:value="JUSTIFY" />
+							</userData>
+						</ToggleButton>
+						<ToggleButton fx:id="toggleButton12" styleClass="toggle-button center"
+							toggleGroup="$alignments">
+							<graphic>
+								<Group>
+									<children>
+										<Line endX="8.0" />
+										<Line endX="7.0" endY="3.0" startX="1.0" startY="3.0" />
+										<Line endX="6.0" endY="6.0" startX="2.0" startY="6.0" />
+										<Line endX="8.0" endY="9.0" startY="9.0" />
+									</children>
+								</Group>
+							</graphic>
+							<tooltip>
+								<Tooltip text="CENTER" />
+							</tooltip>
+							<userData>
+								<TextAlignment fx:value="CENTER" />
+							</userData>
+						</ToggleButton>
+					</children>
+				</HBox>
 			</children>
-		</HBox>
-		<HBox>
-			<children>
-				<ToggleButton fx:id="toggleButton9" styleClass="toggle-button left"
-					toggleGroup="$alignments">
-					<graphic>
-						<Group>
-							<children>
-								<Line endX="8.0" />
-								<Line endX="7.0" endY="3.0" startY="3.0" />
-								<Line endX="6.0" endY="6.0" startY="6.0" />
-								<Line endX="8.0" endY="9.0" startY="9.0" />
-							</children>
-						</Group>
-					</graphic>
-					<tooltip>
-						<Tooltip text="LEFT" />
-					</tooltip>
-					<userData>
-						<TextAlignment fx:value="LEFT" />
-					</userData>
-				</ToggleButton>
-				<ToggleButton fx:id="toggleButton10" styleClass="toggle-button right"
-					toggleGroup="$alignments">
-					<graphic>
-						<Group>
-							<children>
-								<Line endX="8.0" />
-								<Line endX="8.0" endY="3.0" startX="1.0" startY="3.0" />
-								<Line endX="8.0" endY="6.0" startX="2.0" startY="6.0" />
-								<Line endX="8.0" endY="9.0" startY="9.0" />
-							</children>
-						</Group>
-					</graphic>
-					<tooltip>
-						<Tooltip text="RIGHT" />
-					</tooltip>
-					<userData>
-						<TextAlignment fx:value="RIGHT" />
-					</userData>
-				</ToggleButton>
-				<ToggleButton fx:id="toggleButton11" styleClass="toggle-button justify"
-					toggleGroup="$alignments">
-					<graphic>
-						<Group>
-							<children>
-								<Line endX="8.0" />
-								<Line endX="8.0" endY="3.0" startY="3.0" />
-								<Line endX="8.0" endY="6.0" startY="6.0" />
-								<Line endX="8.0" endY="9.0" startY="9.0" />
-							</children>
-						</Group>
-					</graphic>
-					<tooltip>
-						<Tooltip text="JUSTIFY" />
-					</tooltip>
-					<userData>
-						<TextAlignment fx:value="JUSTIFY" />
-					</userData>
-				</ToggleButton>
-				<ToggleButton fx:id="toggleButton12" styleClass="toggle-button center"
-					toggleGroup="$alignments">
-					<graphic>
-						<Group>
-							<children>
-								<Line endX="8.0" />
-								<Line endX="7.0" endY="3.0" startX="1.0" startY="3.0" />
-								<Line endX="6.0" endY="6.0" startX="2.0" startY="6.0" />
-								<Line endX="8.0" endY="9.0" startY="9.0" />
-							</children>
-						</Group>
-					</graphic>
-					<tooltip>
-						<Tooltip text="CENTER" />
-					</tooltip>
-					<userData>
-						<TextAlignment fx:value="CENTER" />
-					</userData>
-				</ToggleButton>
-			</children>
-		</HBox>
+		</VBox>
 		<VBox>
 			<children>
 				<Text text="Text" />
-				<TextArea fx:id="textArea" />
+				<TextArea fx:id="textArea" minWidth="200" prefHeight="150"/>
 			</children>
 		</VBox>
 		<VBox>
@@ -223,8 +206,12 @@
 						</FXCollections>
 					</items>
 				</ComboBox>
-				<ScrollPane vbarPolicy="NEVER">
-					<VBox fx:id="effectsOptions" />
+				<ScrollPane hbarPolicy="NEVER" minWidth="400"  >
+					<FlowPane fx:id="effectsOptions" minWidth="300" hgap="10" >
+					  <padding>
+					   <Insets topRightBottomLeft="10"/>
+					  </padding>
+					</FlowPane>
 				</ScrollPane>
 			</children>
 		</VBox>
@@ -237,5 +224,5 @@
 				wrappingWidth="${area.width}" effect="${effects.selectionModel.selectedItem}" />
 		</fx:define>
 	</children>
-</VBox>
+</HBox>
 

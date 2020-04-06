@@ -7,14 +7,14 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import utils.DrawOnPoint;
 import utils.PixelatedImageView;
@@ -30,7 +30,7 @@ public class PaintModel {
     private final Text imageSize = new Text();
     private final Text toolSize = new Text();
     private final Text mousePosition = new Text();
-    private VBox toolOptions;
+    private HBox toolOptions;
     private final ObjectProperty<File> currentFile = new SimpleObjectProperty<>();
     private final StringProperty filename = filenameProperty();
     private final ObservableList<WritableImage> imageVersions = FXCollections.observableArrayList();
@@ -44,6 +44,7 @@ public class PaintModel {
 
     public void bindTitle(StringProperty o) {
         filename.addListener((ob, old, val) -> o.setValue(val));
+        o.set(filename.get());
     }
 
     public void createImageVersion() {
@@ -161,10 +162,11 @@ public class PaintModel {
         return scrollPane;
     }
 
-    public VBox getToolOptions() {
+    public HBox getToolOptions() {
         if (toolOptions == null) {
-            toolOptions = new VBox(10);
+            toolOptions = new HBox(10);
             toolOptions.setAlignment(Pos.CENTER);
+            toolOptions.setPadding(new Insets(10));
             toolOptions.setId("tools");
             resetToolOptions();
         }
@@ -180,15 +182,13 @@ public class PaintModel {
         return currentVersion.get();
     }
 
-    public Rectangle resetToolOptions() {
-        Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
-        rectangle.setStroke(Color.GRAY);
+    public void resetToolOptions() {
         final int maxWidth = 150;
         toolOptions.setMaxWidth(maxWidth);
         toolOptions.setSpacing(10);
         toolOptions.getChildren().clear();
-        toolOptions.getChildren().add(rectangle);
-        return rectangle;
+        toolOptions.setVisible(false);
+        toolOptions.setManaged(false);
     }
 
     public void setBackColor(final Color backColor) {
