@@ -190,7 +190,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         if (file.exists()) {
             file.delete();
         }
-        List<PaintTool> areaTools = Stream.of(PaintTools.values()).map(e -> e.getTool()).collect(Collectors.toList());
+        List<PaintTool> areaTools =
+                Stream.of(PaintTools.values()).map(PaintTools::getTool).collect(Collectors.toList());
 
         List<MenuButton> node = lookupList(MenuButton.class);
         for (int i = 0; i < node.size(); i++) {
@@ -239,8 +240,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                     drop();
                 }));
                 lookup("Adjust").queryAll().forEach(t -> {
-                    clickOn(t);
-                    clickOn(randomItem(areaTools));
+                    tryClickOn(t);
+                    tryClickOn(randomItem(areaTools));
                 });
                 type(KeyCode.ESCAPE);
             }

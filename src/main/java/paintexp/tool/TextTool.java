@@ -159,7 +159,6 @@ public class TextTool extends PaintTool {
         area.setHeight(Math.abs(y - initialY));
     }
 
-    // @SuppressWarnings("unchecked")
     private void loadParent() {
         options = CommonsFX.loadParent("TextTool.fxml", this);
         fontFamily.setItems(FXCollections.observableArrayList(Font.getFamilies()));

@@ -52,7 +52,7 @@ public class PixelHelper {
         a = b = r = g = i = 0;
     }
 
-    public void reset(int argb) {
+    public final void reset(int argb) {
         a = getByte(argb, 3);
         r = getByte(argb, 2);
         g = getByte(argb, 1);
