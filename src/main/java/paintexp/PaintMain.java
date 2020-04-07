@@ -69,7 +69,6 @@ public class PaintMain extends Application {
     }
 
     public static void main(final String[] args) {
-
         System.setProperty("prism.lcdtext", "false");
         launch(args);
     }

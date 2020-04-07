@@ -109,7 +109,7 @@ public final class PaintToolHelper {
     }
 
     private static double getMax(double value3) {
-        return value3 == 1 ? 1 : Math.max(50., value3);
+        return value3 <= 1 ? 1 : Math.max(50., value3);
     }
 
     private static String propValue(Property<?> value2, String changeCase) {

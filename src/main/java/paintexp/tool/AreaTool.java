@@ -244,9 +244,10 @@ public abstract class AreaTool extends PaintTool {
         double offY = (newHeight - height) / 2;
 
         WritableImage newImage = RectBuilder.resizeImage(imageSelected, newWidth, newHeight);
-        RectBuilder.build().width(newWidth).height(newHeight).endX(x - offX).endY(y - offY).copyImagePart(newImage,
+        RectBuilder.build().width(newWidth).height(newHeight).endX(x - offX).endY(y - offY).copyImagePartTransparency(
+                newImage,
             model.getImage(),
-            Color.TRANSPARENT);
+                model.getImage());
         imageSelected = null;
         model.getImageStack().getChildren().remove(getArea());
         model.createImageVersion();

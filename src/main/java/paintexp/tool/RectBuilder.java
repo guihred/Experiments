@@ -90,11 +90,11 @@ public final class RectBuilder {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (within(i + endX, destWidth) && within(j + endY, destHeight) && within(i + startX, srcWidth)
-                    && within(j + startY, srcHeight)) {
+                        && within(j + startY, srcHeight)) {
                     Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
                     Color color = PixelHelper.asColor(PixelHelper.toArgb(color2) | 0xFF000000);
                     RectBuilder.drawPointTransparency(i + (int) endX, j + (int) endY, color, color2.getOpacity(),
-                        destImage, currentImage);
+                            destImage, currentImage);
                 }
 
             }
@@ -117,7 +117,7 @@ public final class RectBuilder {
                 int x = (int) Math.round(width2 * Math.cos(t));
                 int y = (int) Math.round(height * Math.sin(t));
                 RectBuilder.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
-                    currentImage);
+                        currentImage);
             }
         }
     }
@@ -137,7 +137,7 @@ public final class RectBuilder {
                         color = image.getPixelReader().getColor(x + (int) endX, y + (int) endY);
                     }
                     RectBuilder.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
-                        currentImage);
+                            currentImage);
                 }
             }
         }
@@ -145,9 +145,9 @@ public final class RectBuilder {
 
     public void drawFill(WritableImage image, Color backColor) {
         RectBuilder.build().startX(centerX1).startY(startY).width(centerX2 - centerX1).height(endY - startY)
-            .drawRect(image, backColor);
+                .drawRect(image, backColor);
         RectBuilder.build().startX(startX).startY(centerY1).width(endX - startX).height(centerY2 - centerY1)
-            .drawRect(image, backColor);
+                .drawRect(image, backColor);
         for (int i = 0; i < radiusX; i++) {
             RectBuilder.drawCirclePart(image, centerX1, centerY1, i, radiusY, Math.PI, backColor);
             RectBuilder.drawCirclePart(image, centerX2, centerY1, i, radiusY, Math.PI * 3 / 2, backColor);
@@ -181,7 +181,7 @@ public final class RectBuilder {
             for (int j = 0; j < height; j++) {
                 if (withinImage(startX2 + i, startY2 + j, image)) {
                     RectBuilder.drawPointTransparency(startX2 + i, startY2 + j, backColor, opacity, image,
-                        currentImage);
+                            currentImage);
                 }
             }
         }
@@ -329,7 +329,7 @@ public final class RectBuilder {
         double width = bounds.getWidth();
         double height = bounds.getHeight();
         RectBuilder.build().startX(x).startY(y).width(width).height(height).copyImagePart(srcImage, destImage,
-            Color.TRANSPARENT);
+                Color.TRANSPARENT);
     }
 
     public static void drawPoint(WritableImage image, int x2, int y2, Color frontColor) {
@@ -339,7 +339,7 @@ public final class RectBuilder {
     }
 
     public static void drawPointTransparency(int x2, int y2, Color frontColor, double opacity, WritableImage image,
-        WritableImage currentImage) {
+            WritableImage currentImage) {
         if (withinImage(x2, y2, image)) {
             Color color = currentImage.getPixelReader().getColor(x2, y2);
             Color color2 = color.interpolate(frontColor, opacity);
@@ -366,7 +366,7 @@ public final class RectBuilder {
     }
 
     public static void drawSquareLine(WritableImage image, WritableImage currentImage, int startX, int startY, int w,
-        Color color, double opacity) {
+            Color color, double opacity) {
         for (int x = 0; x < w; x++) {
             drawPointTransparency(startX + x, startY, color, opacity, image, currentImage);
             drawPointTransparency(startX, startY + x, color, opacity, image, currentImage);
@@ -423,7 +423,7 @@ public final class RectBuilder {
     }
 
     public static void takeSnapshot(Node line2, WritableImage image, Group imageStack, ImageView imageView,
-        Node rectangleBorder, WritableImage currentImage) {
+            Node rectangleBorder, WritableImage currentImage) {
         Bounds bounds = line2.getBoundsInParent();
         int width = (int) bounds.getWidth() + 2;
         int height = (int) bounds.getHeight() + 2;
@@ -433,14 +433,14 @@ public final class RectBuilder {
         int x = (int) bounds.getMinX();
         int y = (int) bounds.getMinY();
         build().startX(0).startY(0).width(width).height(height).endX(x).endY(y).copyImagePartTransparency(textImage,
-            image, currentImage);
+                image, currentImage);
         imageStack.getChildren().clear();
         imageStack.getChildren().add(rectangleBorder);
         imageStack.getChildren().add(imageView);
     }
 
     public static void takeSnapshotFill(Node line2, WritableImage image, Group imageStack, ImageView imageView,
-        Node rectangleBorder) {
+            Node rectangleBorder) {
         Bounds bounds = line2.getBoundsInParent();
         int width = (int) bounds.getWidth() + 2;
         int height = (int) bounds.getHeight() + 2;
@@ -450,14 +450,14 @@ public final class RectBuilder {
         int x = (int) bounds.getMinX();
         int y = (int) bounds.getMinY();
         build().startX(0).startY(0).width(width).height(height).endX(x).endY(y).copyImagePart(textImage, image,
-            Color.TRANSPARENT);
+                Color.TRANSPARENT);
         imageStack.getChildren().clear();
         imageStack.getChildren().add(rectangleBorder);
         imageStack.getChildren().add(imageView);
     }
 
     private static void drawCirclePart(WritableImage image, double centerX, double centerY, double radiusX,
-        double radiusY, double startAngle, Color frontColor) {
+            double radiusY, double startAngle, Color frontColor) {
         double nPoints2 = Math.max(radiusX, radiusY) * RectBuilder.N_POINTS_MULTIPLIER;
         double angle = Math.PI / 2;
         for (double t = 0; t < angle; t += 2 * Math.PI / nPoints2) {

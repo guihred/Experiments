@@ -1,3 +1,4 @@
+
 package ml.data;
 
 import static utils.PredicateEx.makeTest;
@@ -39,15 +40,19 @@ public final class CoverageUtils {
     private CoverageUtils() {
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> List<Class<? extends T>> getClasses(Class<T> cl) {
-        List<Class<? extends T>> appClass = new ArrayList<>();
         List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
+        return getClasses(cl, excludePackages);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<Class<? extends T>> getClasses(Class<T> cl,List<String> excludePackages) {
+        List<Class<? extends T>> appClass = new ArrayList<>();
         return SupplierEx.get(() -> ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClasses()
-            .stream().filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
-            .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
-            .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
-            .collect(Collectors.toCollection(() -> appClass)), appClass);
+                .stream().filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
+                .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
+                .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
+                .collect(Collectors.toCollection(() -> appClass)), appClass);
     }
 
     public static double getPercentage(double[] arr) {
