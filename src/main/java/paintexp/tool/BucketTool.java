@@ -2,6 +2,8 @@ package paintexp.tool;
 
 import static utils.DrawOnPoint.withinImage;
 
+import java.util.Collection;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -13,8 +15,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.apache.poi.util.IntList;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CustomList;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
 import utils.RunnableEx;
@@ -50,12 +52,12 @@ public class BucketTool extends PaintTool {
 
     public void setColor(final int initX, final int initY, final int originalColor, final int frontColor,
             final PixelReader pixelReader, final PaintModel model) {
-        final IntList toGo = new IntList(2000);
+        final List<Integer> toGo = new CustomList<>();
         toGo.add(index(initX, initY));
         PixelHelper pixel = new PixelHelper();
         RunnableEx.ignore(() -> {
             while (!toGo.isEmpty()) {
-                int next = toGo.remove(0);
+                int next = toGo.get(0);
                 int x = x(next);
                 int y = y(next);
                 if (withinImage(x, y, model.getImage())) {
@@ -71,6 +73,7 @@ public class BucketTool extends PaintTool {
                         model.getImage().getPixelWriter().setArgb(x, y, frontColor);
                     }
                 }
+                toGo.remove(0);
             }
         });
     }
@@ -85,7 +88,7 @@ public class BucketTool extends PaintTool {
         onMouseClicked(e, model);
     }
 
-    private void addIfNotIn(final IntList toGo, final int e) {
+    private void addIfNotIn(final Collection<Integer> toGo, final int e) {
         if (!toGo.contains(e) && e < width * height && e >= 0) {
             toGo.add(e);
         }

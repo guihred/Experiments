@@ -3,7 +3,6 @@ package paintexp.tool;
 import static utils.DrawOnPoint.within;
 import static utils.DrawOnPoint.withinImage;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javafx.application.Platform;
@@ -21,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CustomList;
 import utils.PixelHelper;
 
 public class WandTool extends AreaTool {
@@ -48,12 +48,12 @@ public class WandTool extends AreaTool {
 
         backColor = backColor == 0 ? PixelHelper.toArgb(model.getBackColor().invert())
             : PixelHelper.toArgb(model.getBackColor());
-        List<Integer> toGo = new IntArrayList();
+        List<Integer> toGo = new CustomList<>();
         toGo.add(index(initialX, initialY));
         int tries = 0;
         PixelHelper pixel = new PixelHelper(originalColor);
         while (!toGo.isEmpty()) {
-            Integer next = toGo.remove(0);
+            Integer next = toGo.get(0);
             int x = x(next);
             int y = y(next);
             if (withinImage(x, y, model.getImage())) {
@@ -65,6 +65,7 @@ public class WandTool extends AreaTool {
                     adjustArea(x, y);
                 }
             }
+            toGo.remove(0);
         }
         return cutArea(selectedImage);
     }
@@ -162,7 +163,7 @@ public class WandTool extends AreaTool {
     }
 
     protected boolean isCloseColor(WritableImage selectedImage, PixelHelper pixel, int x, int y, int color, int i) {
-        return closeColor(pixel, color) && selectedImage.getPixelReader().getArgb(x, y) == 0
+        return closeColor(pixel, color) && selectedImage.getPixelReader().getArgb(x, y) == 0 
             && i < width * height;
     }
 

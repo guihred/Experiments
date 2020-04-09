@@ -2,7 +2,6 @@ package paintexp.tool;
 
 import static utils.DrawOnPoint.withinImage;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -13,6 +12,7 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CustomList;
 import utils.PixelHelper;
 
 public class PatternTool extends WandTool {
@@ -41,14 +41,14 @@ public class PatternTool extends WandTool {
         int originalColor = pixelReader.getArgb((int) initialX, (int) initialY);
         WritableImage selectedImage = new WritableImage(width, height);
 
-        List<Integer> toGo = new IntArrayList();
+        List<Integer> toGo = new CustomList<>();
         toGo.add(index(initialX, initialY));
         int tries = 0;
         int selectedWidth = (int) patternImage.getWidth();
         int selectedHeight = (int) patternImage.getHeight();
         PixelHelper pixel = new PixelHelper(originalColor);
         while (!toGo.isEmpty()) {
-            Integer next = toGo.remove(0);
+            Integer next = toGo.get(0);
             int x = x(next);
             int y = y(next);
             if (withinImage(x, y, model.getImage())) {
@@ -62,6 +62,7 @@ public class PatternTool extends WandTool {
                     adjustArea(x, y);
                 }
             }
+            toGo.remove(0);
         }
         return cutArea(selectedImage);
 
