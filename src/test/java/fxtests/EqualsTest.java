@@ -44,13 +44,12 @@ import utils.ResourceFXUtils;
 public class EqualsTest extends AbstractTestExecution {
     @Test
     public void testHuffman() {
-        String string = measureTime("HuffmanTree.buildTree", () ->
-        IntStream.range(0, 10).mapToObj(i->
-        getRandomString()).collect(Collectors.joining()));
-        HuffmanTree buildTree = 
-        measureTime("HuffmanTree.buildTree", () -> HuffmanTree.buildTree(string));
-        String encode = measureTime("HuffmanTree.encode", () ->buildTree.encode(string));
-        String decoded = measureTime("HuffmanTree.decode", () ->buildTree.decode(encode));
+        String string = measureTime("HuffmanTree.input",
+                () -> IntStream.range(0, 10).mapToObj(i -> getRandomString()).collect(Collectors.joining()));
+        measureTime("HuffmanTree.entropy", () -> HuffmanTree.entropy(string));
+        HuffmanTree buildTree = measureTime("HuffmanTree.buildTree", () -> HuffmanTree.buildTree(string));
+        String encode = measureTime("HuffmanTree.encode", () -> buildTree.encode(string));
+        String decoded = measureTime("HuffmanTree.decode", () -> buildTree.decode(encode));
         Assert.assertEquals(string, decoded);
     }
 
@@ -103,12 +102,12 @@ public class EqualsTest extends AbstractTestExecution {
     private static List<Object> getList() {
         Vertex v = new Vertex(5);
         List<Object> asList = Arrays.asList(null, new PointCh4(2, 4), new LabeledPoint("Oi", 3, 5), PrimaryColor.RED,
-            new ContestQuestion(), new SlidingPuzzleSquare(2), new TronSquare(), new MadPonto(0, 0, null),
-            new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5), new MadCell(2),
-            new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(v, null, 2), new EdgeElement(v, v, 5),
-            new Contest(), new LessonPK(), new MadEdge(null, null), new MadEdgeDistance(null, 2F), new SnakeSquare(),
-            new JapaneseLesson(), new ContestQuestionAnswer(), new SolitaireCard(null, null),
-            new City(PlayerColor.BLUE));
+                new ContestQuestion(), new SlidingPuzzleSquare(2), new TronSquare(), new MadPonto(0, 0, null),
+                new EdgeDistancePack(new Linha(new Ponto(2, 4, null), new Ponto(2, 4, null)), 5), new MadCell(2),
+                new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(v, null, 2), new EdgeElement(v, v, 5),
+                new Contest(), new LessonPK(), new MadEdge(null, null), new MadEdgeDistance(null, 2F),
+                new SnakeSquare(), new JapaneseLesson(), new ContestQuestionAnswer(), new SolitaireCard(null, null),
+                new City(PlayerColor.BLUE));
         Collections.shuffle(asList);
         return asList;
     }

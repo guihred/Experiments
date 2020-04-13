@@ -2,6 +2,7 @@ package others;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -89,19 +90,27 @@ public class HuffmanTree {
 
     public static HuffmanTree buildTree(String text) {
 
-        List<HuffmanTree> collect = text.codePoints().boxed()
-                .collect(Collectors.groupingBy(e -> e, Collectors.counting())).entrySet().stream().map(HuffmanTree::new)
+        List<HuffmanTree> huffmanCollection = getHistogram(text).entrySet().stream().map(HuffmanTree::new)
                 .sorted(Comparator.comparing(HuffmanTree::getValue)).collect(Collectors.toList());
-        while (collect.size() > 1) {
-            HuffmanTree entry = collect.remove(0);
-            HuffmanTree entry2 = collect.remove(0);
+        while (huffmanCollection.size() > 1) {
+            HuffmanTree entry = huffmanCollection.remove(0);
+            HuffmanTree entry2 = huffmanCollection.remove(0);
             HuffmanTree huffmanTree = new HuffmanTree(entry2, entry);
-            collect.add(huffmanTree);
-            collect.sort(Comparator.comparing(HuffmanTree::getValue));
+            huffmanCollection.add(huffmanTree);
+            huffmanCollection.sort(Comparator.comparing(HuffmanTree::getValue));
         }
-        HuffmanTree huffmanTree = collect.get(0);
+        HuffmanTree huffmanTree = huffmanCollection.get(0);
         huffmanTree.setCode("");
         return huffmanTree;
+    }
+
+    public static double entropy(String text) {
+        return getHistogram(text).values().stream().mapToDouble(e -> e.doubleValue() / text.length())
+                .map(e -> -e * Math.log10(e) / Math.log(2)).sum();
+    }
+
+    private static Map<Integer, Long> getHistogram(String text) {
+        return text.codePoints().boxed().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
     }
 
 }
