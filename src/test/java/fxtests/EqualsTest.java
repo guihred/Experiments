@@ -33,12 +33,27 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import org.junit.Assert;
 import org.junit.Test;
+import others.HuffmanTree;
 import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
 public class EqualsTest extends AbstractTestExecution {
+    @Test
+    public void testHuffman() {
+        String string = measureTime("HuffmanTree.buildTree", () ->
+        IntStream.range(0, 10).mapToObj(i->
+        getRandomString()).collect(Collectors.joining()));
+        HuffmanTree buildTree = 
+        measureTime("HuffmanTree.buildTree", () -> HuffmanTree.buildTree(string));
+        String encode = measureTime("HuffmanTree.encode", () ->buildTree.encode(string));
+        String decoded = measureTime("HuffmanTree.decode", () ->buildTree.decode(encode));
+        Assert.assertEquals(string, decoded);
+    }
+
     @Test
     public void testInvokeClass() {
         List<Class<?>> classes = Arrays.asList(Linha.class, MadCell.class, MadEdge.class, MadPonto.class, Cidade.class);
