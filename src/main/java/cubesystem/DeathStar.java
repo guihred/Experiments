@@ -21,8 +21,7 @@ public class DeathStar extends Application {
 
     @Override
 	public void start(Stage primaryStage) {
-        final TriangleMesh triangleMesh = createMesh(DIVISION, RADIUS, sphere);
-        MeshView mesh = new MeshView(triangleMesh);
+        MeshView mesh = new MeshView(createMesh(DIVISION, RADIUS, sphere));
 
         mesh.setTranslateY(RADIUS);
         mesh.setTranslateX(RADIUS);

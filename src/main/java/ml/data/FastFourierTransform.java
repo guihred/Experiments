@@ -1,10 +1,6 @@
 package ml.data;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.cos;
-import static java.lang.Math.floor;
-import static java.lang.Math.log;
-import static java.lang.Math.sin;
+import static java.lang.Math.*;
 
 import java.util.List;
 import java.util.stream.DoubleStream;
@@ -47,10 +43,8 @@ public class FastFourierTransform {
                     int oddIndex = i + k + N / 2;
                     Complex even = buffer[evenIndex];
                     Complex odd = buffer[oddIndex];
-
                     double term = -2 * PI * k / N;
                     Complex exp = new Complex(cos(term), sin(term)).multiply(odd);
-
                     buffer[evenIndex] = even.add(exp);
                     buffer[oddIndex] = even.subtract(exp);
                 }
@@ -63,7 +57,6 @@ public class FastFourierTransform {
         for (int i = 0; i < input.length; i++) {
             cinput[i] = new Complex(input[i], 0.0);
         }
-
         fft(cinput);
         return cinput;
     }
@@ -78,9 +71,7 @@ public class FastFourierTransform {
 
     public static void main(String[] args) {
         double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
-
         Complex[] cinput = fft(input);
-
         LOGGER.info("Results:");
         for (Complex c : cinput) {
             LOGGER.info("{}", c);

@@ -110,7 +110,7 @@ public final class PaintImageUtils {
         addAdjustOption(root, image, original, 1, opacity, "Opacity",
                 color -> changeColor(saturate, bright, hue, opacity, color));
         root.getChildren().add(SimpleButtonBuilder.newButton("Adjust", e -> {
-            final WritableImage writableImage = RectBuilder.printNodeToImage(view, image);
+            WritableImage writableImage = RectBuilder.printNodeToImage(view, image);
             view.setFitWidth(width);
             view.setFitHeight(height);
             paintController.setFinalImage(writableImage);
@@ -129,8 +129,7 @@ public final class PaintImageUtils {
         int width = (int) image.getWidth();
         WritableImage writableImage = new WritableImage(width, height);
         updateImage(writableImage, image, Color::invert);
-        final WritableImage writableImage1 = writableImage;
-        paintController.setFinalImage(writableImage1);
+        paintController.setFinalImage(writableImage);
         paintModel.createImageVersion();
     }
 
@@ -146,8 +145,7 @@ public final class PaintImageUtils {
                 pixelWriter.setColor(width - i - 1, j, pixelReader.getColor(i, j));
             }
         }
-        final WritableImage writableImage1 = writableImage;
-        paintController.setFinalImage(writableImage1);
+        paintController.setFinalImage(writableImage);
         paintModel.createImageVersion();
     }
 

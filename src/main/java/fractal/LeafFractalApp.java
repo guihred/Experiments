@@ -25,7 +25,7 @@ public class LeafFractalApp extends Application {
         SimpleToggleGroupBuilder coefs = toggleBuilder(treeFractal);
         VBox limitSlider = SimpleSliderBuilder.newSlider("Limit", 100, 100_000, treeFractal.limitProperty());
         VBox xScaleSlider = SimpleSliderBuilder.newSlider("xScale", 100, 500, treeFractal.scaleProperty());
-        final VBox coefSlider = SimpleSliderBuilder.newSlider("Coef", -1., 1., 200, treeFractal.coefProperty());
+        VBox coefSlider = SimpleSliderBuilder.newSlider("Coef", -1., 1., 200, treeFractal.coefProperty());
         primaryStage.setTitle("Tree Fractal");
 
         List<Node> togglesAs = coefs.getTogglesAs(Node.class);

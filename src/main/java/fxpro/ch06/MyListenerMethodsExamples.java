@@ -66,7 +66,7 @@ class MyListenerMethodsExamples implements ListChangeListener<String> {
         int i = 0;
         while (change.next()) {
             sb.append("\t\tcursor = ").append(i++).append("\n");
-            final String kind = getChangeType(change);
+            String kind = getChangeType(change);
             appendKindOfChange(change, sb, kind);
         }
         return sb.toString();

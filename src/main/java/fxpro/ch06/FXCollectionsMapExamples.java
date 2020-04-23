@@ -36,17 +36,17 @@ public final class FXCollectionsMapExamples {
         anotherMap.put("Third", 3);
         LOGGER.trace("Calling putAll(anotherMap): ");
         map.putAll(anotherMap);
-        final Iterator<Map.Entry<String, Integer>> entryIterator = map.entrySet().iterator();
+        Iterator<Map.Entry<String, Integer>> entryIterator = map.entrySet().iterator();
         while (entryIterator.hasNext()) {
-            final Map.Entry<String, Integer> next = entryIterator.next();
+            Map.Entry<String, Integer> next = entryIterator.next();
 			if ("Second".equals(next.getKey())) {
                 LOGGER.trace("Calling remove on entryIterator: ");
                 entryIterator.remove();
             }
         }
-        final Iterator<Integer> valueIterator = map.values().iterator();
+        Iterator<Integer> valueIterator = map.values().iterator();
         while (valueIterator.hasNext()) {
-            final Integer next = valueIterator.next();
+            Integer next = valueIterator.next();
             if (next == 3) {
                 LOGGER.trace("Calling remove on valueIterator: ");
                 valueIterator.remove();

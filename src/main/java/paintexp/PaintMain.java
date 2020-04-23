@@ -38,6 +38,8 @@ public class PaintMain extends Application {
             .addMenu("_View")
             .addMenuItem("Resize/Ske_w", "Ctrl+W", e -> PaintViewUtils.resize(paintModel, controller))
             .addMenuItem("_Flip/Rotate", "Ctrl+R", e -> PaintViewUtils.flipRotate(paintModel, controller))
+            .addMenuItem("Invert S_election", "Ctrl+E", e -> PaintViewUtils.invertSelection(paintModel, controller),
+                        controller.containsSelectedArea().not())
             .addMenuItem("_Crop", e -> PaintViewUtils.crop(paintModel, controller),
                 controller.containsSelectedArea().not())
             .addMenu("_Image")

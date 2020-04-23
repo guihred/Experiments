@@ -17,7 +17,7 @@ class ThreadInformationView {
     public ThreadInformationView(ThreadInformationModel model) {
         threadNames = new ListView<>(model.getThreadNames());
         updateButton = new Button("Update");
-        final VBox vbox = new VBox(10, threadNames, stackTrace, updateButton);
+        VBox vbox = new VBox(10, threadNames, stackTrace, updateButton);
         vbox.setPadding(new Insets(10, 10, 10, 10));
         scene = new Scene(vbox);
         hookupEvents(model);

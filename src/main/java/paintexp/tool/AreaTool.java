@@ -53,9 +53,8 @@ public abstract class AreaTool extends PaintTool {
 
     public void deleteImage(PaintModel model, Bounds bounds) {
         if (imageSelected == null) {
-            final PaintModel model1 = model;
             RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() - 1)
-                .height(bounds.getHeight() - 1).drawRect(model1.getImage(), model.getBackColor());
+                .height(bounds.getHeight() - 1).drawRect(model.getImage(), model.getBackColor());
         }
         imageSelected = null;
         if (model.getImageStack().getChildren().contains(getArea())) {
@@ -70,6 +69,10 @@ public abstract class AreaTool extends PaintTool {
                 .managed(false).strokeDashArray(1, 2, 1, 2).build();
         }
         return area;
+    }
+
+    public WritableImage getImageSelected() {
+        return imageSelected;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package paintexp;
 
 import java.util.List;
+import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
@@ -12,6 +13,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +44,7 @@ public final class PaintViewUtils {
         paintModel.createImageVersion();
     }
 
-	public static void flipRotate(PaintModel paintModel, PaintController paintController) {
+    public static void flipRotate(PaintModel paintModel, PaintController paintController) {
 		WritableImage selectedImage = paintController.getSelectedImage();
 		int height = (int) selectedImage.getHeight();
 		int width = (int) selectedImage.getWidth();
@@ -54,10 +56,22 @@ public final class PaintViewUtils {
                 pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
             }
         }
-        final WritableImage writableImage1 = writableImage;
-		paintController.setFinalImage(writableImage1);
+        paintController.setFinalImage(writableImage);
         paintModel.createImageVersion();
     }
+
+	public static void invertSelection(PaintModel paintModel, PaintController controller) {
+	    WritableImage image = controller.getSelectedImage();
+	    AreaTool tool = controller.getCurrentSelectTool();
+        WritableImage image2 = paintModel.getImage();
+        Bounds bounds = tool.getArea().getBoundsInParent();
+        WritableImage invertSelection =
+                RectBuilder.build().startX(bounds.getMinX()).startY(bounds.getMinY()).width(bounds.getWidth() + 1)
+                        .height(bounds.getHeight() + 1).invertSelection(image2, image, Color.TRANSPARENT);
+        tool.getArea().setLayoutX(0);
+        tool.getArea().setLayoutY(0);
+        controller.setFinalImage(invertSelection);
+	}
 
 	public static void resize(PaintModel paintModel, PaintController controller) {
 		WritableImage image = controller.getSelectedImage();

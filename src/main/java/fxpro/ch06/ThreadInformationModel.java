@@ -26,7 +26,7 @@ class ThreadInformationModel {
     public final void update() {
         threadNames.clear();
         stackTraces.clear();
-        final Map<Thread, StackTraceElement[]> map = Thread.getAllStackTraces();
+        Map<Thread, StackTraceElement[]> map = Thread.getAllStackTraces();
         map.forEach((k, v) -> {
             threadNames.add("\"" + k.getName() + "\"");
             stackTraces.add(formatStackTrace(v));

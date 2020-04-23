@@ -264,6 +264,24 @@ public final class RectBuilder {
         return this;
     }
 
+    public WritableImage invertSelection(WritableImage image, WritableImage exception, final Color backColor) {
+        WritableImage writableImage =
+                new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
+        int startX2 = (int) startX;
+        int startY2 = (int) startY;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j <= height; j++) {
+                if (withinImage(i, j, exception)) {
+                    int argb = exception.getPixelReader().getArgb(i, j);
+                    if (argb != 0 && withinImage(startX2 + i, startY2 + j, writableImage)) {
+                        writableImage.getPixelWriter().setColor(startX2 + i, startY2 + j, backColor);
+                    }
+                }
+            }
+        }
+        return writableImage ;
+    }
+
     public RectBuilder startX(double value) {
         startX = Math.round(value);
         update();

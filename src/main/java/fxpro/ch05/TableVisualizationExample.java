@@ -62,7 +62,7 @@ public class TableVisualizationExample extends TableVisualizationVar {
                 getLogger().info("{} selected", rb.getText());
             }
         });
-        final MenuItem menuItemA = new MenuItem(MENU_ITEM_A);
+        MenuItem menuItemA = new MenuItem(MENU_ITEM_A);
         menuItemA.setOnAction(e -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
         contextMenu = new ContextMenu(menuItemA, new MenuItem(MENU_ITEM_B));
     }
@@ -143,7 +143,7 @@ public class TableVisualizationExample extends TableVisualizationVar {
         Popup alertPopup = new Popup();
 
         Button okButton = SimpleButtonBuilder.newButton("OK", e -> alertPopup.hide());
-        final Label htmlLabel = new Label(text);
+        Label htmlLabel = new Label(text);
         htmlLabel.setWrapText(true);
         final int MAX_WIDTH = 280;
         htmlLabel.setMaxWidth(MAX_WIDTH);

@@ -47,7 +47,7 @@ public class PendulumAnimationLauncher extends Application {
                 .layoutY(WIDTH + 20)
 				.spacing(10)
 				.build();
-		final Group root = new Group(line, hbox);
+        Group root = new Group(line, hbox);
         Scene scene = new Scene(root, WIDTH, 500);
 		line.startXProperty().bind(startXVal);
 		startButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.STOPPED));

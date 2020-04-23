@@ -42,9 +42,9 @@ public class PathTransitionExample extends Application {
         Button resumeButton = SimpleButtonBuilder.newButton("Resume", e -> anim.play());
         Button pauseButton = SimpleButtonBuilder.newButton("Pause", e -> anim.pause());
         Button startButton = SimpleButtonBuilder.newButton("Start", e -> anim.playFromStart());
-        final HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10)
+        HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10)
                 .children(startButton, pauseButton, resumeButton, stopButton).build();
-        final Scene scene = new Scene(new Group(ellipse, hbox), 400, 500);
+        Scene scene = new Scene(new Group(ellipse, hbox), 400, 500);
 
         startButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.STOPPED));
         pauseButton.disableProperty().bind(anim.statusProperty().isNotEqualTo(Animation.Status.RUNNING));

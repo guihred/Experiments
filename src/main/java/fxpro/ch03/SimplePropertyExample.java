@@ -42,7 +42,7 @@ public final class SimplePropertyExample {
 	private static void addAndRemoveChangeListener() {
 		int nextInt = random.nextInt(1000);
         LOG.trace("\n");
-		final ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> LOG
+        ChangeListener<Number> changeListener = (observableValue, oldValue, newValue) -> LOG
             .trace("The observableValue has changed: oldValue = {}, newValue = {}", oldValue, newValue);
 		intProperty.addListener(changeListener);
         LOG.trace("Added change listener.");
@@ -58,7 +58,7 @@ public final class SimplePropertyExample {
 	private static void addAndRemoveInvalidationListener() {
 		int nextInt = random.nextInt(1000);
         LOG.trace("\n");
-		final InvalidationListener invalidationListener
+        InvalidationListener invalidationListener
             = (Observable observable) -> LOG.trace("The observable has been invalidated: {}.", observable);
 		intProperty.addListener(invalidationListener);
         LOG.trace("Added invalidation listener.");

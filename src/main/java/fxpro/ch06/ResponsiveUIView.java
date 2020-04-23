@@ -32,7 +32,7 @@ public final class ResponsiveUIView {
         buttonHBox = new HBox(10, changeFillButton, changeStrokeButton);
         buttonHBox.setPadding(new Insets(10, 10, 10, 10));
         buttonHBox.setAlignment(Pos.CENTER);
-        final BorderPane borderPane = new BorderPane(rectangle, null, null, buttonHBox, null);
+        BorderPane borderPane = new BorderPane(rectangle, null, null, buttonHBox, null);
         borderPane.setPadding(new Insets(10, 10, 10, 10));
 
         scene = new Scene(borderPane);
@@ -45,12 +45,12 @@ public final class ResponsiveUIView {
 
     private void hookupEvents(ResponsiveUIModel model) {
         changeFillButton.setOnAction(actionEvent -> {
-            final Paint fillPaint = model.getFillPaint().get();
+            Paint fillPaint = model.getFillPaint().get();
             model.getFillPaint().set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
             new Thread(RunnableEx.make(() -> {
                 Thread.sleep(WAIT_TIME_MILLIS);
                 Platform.runLater(() -> {
-                    final Rectangle rect = rectangle;
+                    Rectangle rect = rectangle;
                     double newArcSize = rect.getArcHeight() < 20 ? 30 : 0;
                     rect.setArcWidth(newArcSize);
                     rect.setArcHeight(newArcSize);

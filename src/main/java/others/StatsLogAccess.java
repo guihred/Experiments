@@ -112,7 +112,6 @@ public class StatsLogAccess {
                     if (linha == null || linha.isEmpty()) {
                         return 0L;
                     }
-
                     final String[] a = linha.split(" ");
                     return Long.parseLong(a[a.length - 1]);
                 })));

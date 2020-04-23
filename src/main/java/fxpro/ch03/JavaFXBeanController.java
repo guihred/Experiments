@@ -24,7 +24,7 @@ public class JavaFXBeanController {
     }
 
     public void changeStrPropertyOnModel() {
-        final String str = model.getStr();
+        String str = model.getStr();
 		if ("Hello".equals(str)) {
             model.setStr("World");
         } else {
@@ -36,7 +36,7 @@ public class JavaFXBeanController {
         model.setI(model.getI() + 1);
     }
     public void switchColorPropertyOnModel() {
-        final Color color = model.getColor();
+        Color color = model.getColor();
         if (Color.BLACK.equals(color)) {
             model.setColor(Color.WHITE);
         } else {
@@ -54,7 +54,7 @@ public class JavaFXBeanController {
         javaFXBeanController.changeStrPropertyOnModel();
 
         ObjectProperty<Lighting> root = new SimpleObjectProperty<>();
-        final ObjectBinding<Color> selectBinding = Bindings.select(root, "light", "color");
+        ObjectBinding<Color> selectBinding = Bindings.select(root, "light", "color");
 		selectBinding.addListener((observableValue, oldValue, newValue) -> LOG
             .trace("The color changed:\n\t\told color = {},\n\t\tnew color = {}", oldValue, newValue));
         LOG.trace("firstLight is black.");

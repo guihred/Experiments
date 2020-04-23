@@ -38,14 +38,14 @@ public final class FXCollectionsChangeExamples {
         strings.addAll("Second", "Third");
         LOGGER.trace("Calling set(1, \"New First\"): ");
         strings.set(1, "New First");
-        final List<String> list = Arrays.asList("Second_1", "Second_2");
+        List<String> list = Arrays.asList("Second_1", "Second_2");
         LOGGER.trace("Calling addAll(3, list): ");
         strings.addAll(3, list);
         LOGGER.trace("Calling remove(2, 4): ");
         strings.remove(2, 4);
-        final Iterator<String> iterator = strings.iterator();
+        Iterator<String> iterator = strings.iterator();
         while (iterator.hasNext()) {
-            final String next = iterator.next();
+            String next = iterator.next();
             if (next.contains("t")) {
                 LOGGER.trace("Calling remove() on iterator: ");
                 iterator.remove();

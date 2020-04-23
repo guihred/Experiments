@@ -153,7 +153,7 @@ public final class EditSongHelper {
     public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, boolean valueChanging) {
         if (!valueChanging && isAbleToChange(mediaPlayer2)) {
             double pos = currentSlider.getValue();
-            final Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
+            Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
             SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer2);
         }
     }

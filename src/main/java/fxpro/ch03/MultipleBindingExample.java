@@ -15,9 +15,9 @@ public final class MultipleBindingExample {
 
     public static void main(String[] args) {
         LOG.trace("Constructing x with initial value of 2.0.");
-        final DoubleProperty x = new SimpleDoubleProperty(null, "x", 2.0);
+        DoubleProperty x = new SimpleDoubleProperty(null, "x", 2.0);
         LOG.trace("Constructing y with initial value of 3.0.");
-        final DoubleProperty y = new SimpleDoubleProperty(null, "y", 3.0);
+        DoubleProperty y = new SimpleDoubleProperty(null, "y", 3.0);
         LOG.trace("Creating binding area with dependencies x and y.");
         DoubleBinding area = Bindings.createDoubleBinding(() -> {
             LOG.trace("computeValue() is called.");
