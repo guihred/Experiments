@@ -27,10 +27,7 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.StageHelper;
-import utils.ClassReflectionUtils;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.*;
 
 public class MusicOrganizer extends Application {
 
@@ -131,7 +128,7 @@ public class MusicOrganizer extends Application {
                 StringProperty a = (StringProperty) fieldValue;
                 TextField textField = new TextField();
                 textField.textProperty().bindBidirectional(a);
-                vBox.getChildren().add(newVBox(name, textField));
+                vBox.getChildren().add(newVBox(StringSigaUtils.changeCase(name), textField));
             }
         }
         if (StringUtils.isBlank(music.getAlbum())) {

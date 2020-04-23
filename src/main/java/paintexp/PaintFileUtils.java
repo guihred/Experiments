@@ -38,9 +38,7 @@ public final class PaintFileUtils {
 
     public static void openFile(final Window ownerWindow, PaintModel paintModel) {
         FileChooser fileChooser2 = new FileChooser();
-        if (defaultFile != null) {
-            fileChooser2.setInitialDirectory(defaultFile);
-        }
+        setInitialDirectory(paintModel, fileChooser2);
         fileChooser2.setTitle("Open File");
         fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg", "*.jpeg"));
         paintModel.setCurrentFile(fileChooser2.showOpenDialog(ownerWindow));
@@ -71,9 +69,7 @@ public final class PaintFileUtils {
             if (paintModel.getCurrentFile() == null) {
                 FileChooser fileChooser2 = new FileChooser();
                 fileChooser2.setTitle("Save File");
-                if (defaultFile != null) {
-                    fileChooser2.setInitialDirectory(defaultFile);
-                }
+                setInitialDirectory(paintModel, fileChooser2);
                 fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png"));
                 paintModel.setCurrentFile(fileChooser2.showSaveDialog(primaryStage));
             }
@@ -88,6 +84,15 @@ public final class PaintFileUtils {
     public static void setDefaultFile(File defaultFile) {
         PaintFileUtils.defaultFile = defaultFile;
         LOG.info("DEFAULT FILE SET TO {}", defaultFile);
+    }
+
+    private static void setInitialDirectory(PaintModel paintModel, FileChooser fileChooser2) {
+        if (paintModel.getCurrentFile() != null) {
+            fileChooser2.setInitialDirectory(paintModel.getCurrentFile().getParentFile());
+        }
+        if (defaultFile != null) {
+            fileChooser2.setInitialDirectory(defaultFile);
+        }
     }
 
 }

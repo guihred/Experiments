@@ -3,6 +3,7 @@ package audio.mp3;
 import extract.Music;
 import extract.SongUtils;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import javafx.beans.NamedArg;
@@ -38,17 +39,24 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
 
         if (selectedItem.isNotMP3()) {
             new SimpleDialogBuilder().text(String.format("Convert%n%s", selectedItem.getArquivo().getName()))
-                .button("_Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()),
-                    () -> {
-                        Path path = selectedItem.getArquivo().toPath();
-                        File outFile = ResourceFXUtils.getOutFile(path.toFile().getName());
-                        ExtractUtils.copy(path, outFile);
-                        Files.deleteIfExists(path);
-                    })
-                .displayDialog();
+                    .button("_Convert to Mp3", () -> SongUtils.convertToAudio(selectedItem.getArquivo()),
+                            () -> onConvertionEnded(selectedItem.getArquivo()))
+                    .displayDialog();
             return;
         }
         new EditSongController(selectedItem).show();
+    }
+
+    private static void onConvertionEnded(File arquivo) throws IOException {
+        File file = new File(arquivo.getParentFile(),
+                arquivo.getName().replaceAll("\\..+", ".mp3"));
+        if (!file.exists()) {
+            return;
+        }
+        Path path = arquivo.toPath();
+        File outFile = ResourceFXUtils.getOutFile(path.toFile().getName());
+        ExtractUtils.copy(path, outFile);
+        Files.deleteIfExists(path);
     }
 
 }

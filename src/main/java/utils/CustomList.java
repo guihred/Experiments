@@ -1,3 +1,4 @@
+
 package utils;
 
 import java.util.*;
@@ -59,6 +60,19 @@ public class CustomList<T> extends LinkedHashSet<T> implements List<T> {
             }
         }
         return null;
+    }
+
+    @Override
+    public int hashCode() {
+        int h = 0;
+        Iterator<T> i = iterator();
+        while (i.hasNext()) {
+            T obj = i.next();
+            if (obj != null) {
+                h += obj.hashCode();
+            }
+        }
+        return h;
     }
 
     @Override
@@ -162,6 +176,10 @@ public class CustomList<T> extends LinkedHashSet<T> implements List<T> {
 
         @Override
         public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException(cursor + " reached " + size());
+            }
+
             checkForComodification();
             return SupplierEx.get(() -> {
                 int i = cursor;

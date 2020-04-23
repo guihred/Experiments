@@ -26,7 +26,7 @@
 	<logger name="ch.qos.logback.classic" level="OFF" />
 	<logger name="contest.ContestReader" level="OFF" />
 	<logger name="utils.ExtractUtils" level="OFF" />
-	<logger name="utils.ConsoleUtils" level="INFO" />
+	<logger name="utils.ConsoleUtils" level="DEBUG" />
  	<logger name="schema.sngpc.FXMLCreator" level="OFF" /> 
  	<logger name="com.github.junrar" level="OFF" /> 
  	<logger name="rosario.LeitorArquivos" level="OFF" /> 
