@@ -46,7 +46,9 @@ public class PdfInfo {
     }
 
     public int getIndexAndAdd() {
-        return index++;
+        index = index + 1;
+
+        return index - 1;
     }
 
     public int getLineIndex() {

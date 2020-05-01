@@ -3,6 +3,7 @@ package utils;
 import static utils.FunctionEx.makeFunction;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import java.util.stream.Stream;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -48,6 +50,19 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
         return Stream.of(item.split(";")).map(e -> ImageTableCell.newImage(e, widthProperty))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
+    }
+
+    public static List<ImageView> createImagesMaxWidth(String item, ReadOnlyDoubleProperty maxProperty) {
+        List<Image> collect = Stream.of(item.split(";")).map(ImageTableCell::getImageLink).filter(Objects::nonNull)
+                .map(Image::new).filter(Objects::nonNull)
+                .sorted(Comparator.comparing(e -> -e.getWidth() * e.getHeight())).collect(Collectors.toList());
+        double maxWidth = collect.stream().mapToDouble(Image::getWidth).max().orElse(1);
+        return collect.stream().map(image -> {
+            ImageView imageView = new ImageView(image);
+            imageView.fitWidthProperty().bind(maxProperty.multiply(image.getWidth() / maxWidth));
+            imageView.setPreserveRatio(true);
+            return imageView;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public static ImageView newImage(String image, ReadOnlyDoubleProperty widthProperty) {

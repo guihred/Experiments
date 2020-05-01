@@ -5,9 +5,10 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.control.ScrollPane?>
-<HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER"
-	fx:controller="pdfreader.PdfController">
-	<children>
+<?import javafx.scene.layout.HBox?>
+
+<SplitPane xmlns:fx="http://javafx.com/fxml" fx:controller="pdfreader.PdfController">
+	<items>
 		<VBox alignment="CENTER" prefWidth="250.0">
 			<children>
 				<Text fx:id="currentWord">
@@ -15,30 +16,29 @@
 						<Font size="60.0" />
 					</font>
 				</Text>
-				<Text fx:id="currentLine" textAlignment="CENTER" />
-				<ScrollPane visible="${imageBox.visible}" managed="${imageBox.visible}">
-					<HBox fx:id="imageBox"/>
-				</ScrollPane>
+				<Text fx:id="currentLine" textAlignment="CENTER" wrappingWidth="250" />
 				<Text fx:id="currentPage" text="0" />
-				<Button alignment="CENTER" text="_Start/Stop" onAction="#toggleTimelineStatus" />
-				<Button alignment="CENTER" text="_Next Line" onAction="#displayNextLine" />
-				<Button alignment="CENTER" text="P_revious Page" onAction="#displayPreviousPage" />
-				<Button alignment="CENTER" text="_Next Page" onAction="#displayNextPage" />
-				<Button alignment="CENTER" text="New _PDF" onAction="#openNewPDF" />
+				<FlowPane alignment="CENTER" maxWidth="250">
+					<Button alignment="CENTER" text="_Start/Stop" onAction="#toggleTimelineStatus" />
+					<Button alignment="CENTER" text="_Next Line" onAction="#displayNextLine" />
+					<Button alignment="CENTER" text="P_revious Page" onAction="#displayPreviousPage" />
+					<Button alignment="CENTER" text="_Next Page" onAction="#displayNextPage" />
+					<Button alignment="CENTER" text="New _PDF" onAction="#openNewPDF" />
+				</FlowPane>
+				<Text text="Rate" />
+				<Slider fx:id="slider" blockIncrement="0.05" max="5.0"
+					prefWidth="250" maxWidth="250" min="0.01" value="1.0" />
 				<ProgressIndicator fx:id="progress">
 					<padding>
 						<Insets topRightBottomLeft="10" />
 					</padding>
 				</ProgressIndicator>
-				<VBox>
-					<children>
-						<Text text="Rate" />
-						<Slider fx:id="slider" blockIncrement="0.0499" max="5.0"
-							min="0.01" value="1.0" />
-					</children>
-				</VBox>
 
 			</children>
 		</VBox>
-	</children>
-</HBox>
+		<ScrollPane visible="${imageBox.visible}" managed="${imageBox.visible}">
+			<VBox fx:id="imageBox" />
+		</ScrollPane>
+
+	</items>
+</SplitPane>

@@ -1,6 +1,5 @@
 package pdfreader;
 
-import extract.PdfImage;
 import extract.PdfInfo;
 import extract.PdfUtils;
 import java.util.Arrays;
@@ -10,7 +9,7 @@ import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -25,14 +24,11 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
 import simplebuilder.StageHelper;
-import utils.CommonsFX;
-import utils.HasImage;
-import utils.ImageTableCell;
-import utils.ResourceFXUtils;
+import utils.*;
 
 public class PdfController extends Application {
 
-    private static final int WORD_DISPLAY_PERIOD = 200;
+    private static final int WORD_DISPLAY_PERIOD = 250;
     private static final String PDF_FILE = ResourceFXUtils.toFullPath("sngpc2808.pdf");
 
     @FXML
@@ -65,6 +61,7 @@ public class PdfController extends Application {
             if (pdfInfo.getLineIndex() >= pdfInfo.getLines().size()) {
                 timeline.stop();
             }
+            updateAll();
         }
     }
 
@@ -75,6 +72,7 @@ public class PdfController extends Application {
             pdfInfo.setLineIndex(0);
             pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
             displayNextWord();
+            updateAll();
         }
     }
 
@@ -90,30 +88,17 @@ public class PdfController extends Application {
 
                 }
                 pdfInfo.getLines().setAll(linesNextPage);
-                if (pdfInfo.getImages().containsKey(pdfInfo.getPageIndex())) {
-                    List<PdfImage> col = pdfInfo.getImages().get(pdfInfo.getPageIndex());
-                    currentImages.setAll(col);
-                } else {
-                    currentImages.clear();
-                }
+                updateImages();
                 pdfInfo.setPageIndex(pdfInfo.getPageIndex() + 1);
                 pdfInfo.setLineIndex(0);
                 if (pdfInfo.getPageIndex() >= pdfInfo.getPages().size()) {
                     timeline.stop();
                 }
             }
-            String value = pdfInfo.getLines().isEmpty() ? ""
-                    : pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd() % pdfInfo.getLines().size());
-            if (pdfInfo.getSkipLines().contains(value) && pdfInfo.getLineIndex() < pdfInfo.getLines().size() - 1) {
-                value = pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd());
-            }
-            currentLine.setText(value);
-            pdfInfo.getWords().setAll(Arrays.asList(value.split(PdfUtils.SPLIT_WORDS_REGEX)));
+            updateCurrentLine();
             pdfInfo.setIndex(0);
         }
-        if (!pdfInfo.getWords().isEmpty()) {
-            currentWord.setText(pdfInfo.getWords().get(pdfInfo.getIndexAndAdd()));
-        }
+        updateWords();
     }
 
     public void displayPreviousPage() {
@@ -122,14 +107,12 @@ public class PdfController extends Application {
             pdfInfo.setIndex(0);
             pdfInfo.setLineIndex(0);
             pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
-            displayNextWord();
-
+            updateAll();
         }
     }
 
     public void initialize() {
-        Property<Number> rate = timeline.rateProperty();
-        slider.valueProperty().bindBidirectional(rate);
+        slider.valueProperty().bindBidirectional(timeline.rateProperty());
         progress.progressProperty().bind(pdfInfo.getProgress());
         currentPage.textProperty()
                 .bind(pdfInfo.pageIndexProperty().asString().concat("/").concat(pdfInfo.numberOfPagesProperty()));
@@ -140,8 +123,11 @@ public class PdfController extends Application {
     }
 
     public void openNewPDF(ActionEvent event) {
-        StageHelper.fileAction("Selecione Arquivo PDF", file -> PdfUtils.readFile(pdfInfo, file), "File", "*.pdf")
+        StageHelper
+                .fileAction("Selecione Arquivo PDF",
+                        file -> RunnableEx.runNewThread(() -> PdfUtils.readFile(pdfInfo, file)), "File", "*.pdf")
                 .handle(event);
+        updateAll();
     }
 
     @Override
@@ -159,12 +145,47 @@ public class PdfController extends Application {
         }
     }
 
+    private String getCurrentLine() {
+        String value = pdfInfo.getLines().isEmpty() ? ""
+                : pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd() % pdfInfo.getLines().size());
+        if (!pdfInfo.getSkipLines().contains(value) || pdfInfo.getLineIndex() >= pdfInfo.getLines().size() - 1) {
+            return value;
+        }
+        return pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd());
+    }
+
     private void onImageChange() {
+        ReadOnlyDoubleProperty widthProperty = imageBox.widthProperty();
         List<ImageView> createImages = currentImages.stream()
-                .flatMap(im -> ImageTableCell.createImages(im.getImage(), slider.widthProperty()).stream())
-                .collect(Collectors.toList());
+                .flatMap(im -> ImageTableCell.createImagesMaxWidth(im.getImage(), widthProperty).stream())
+            .collect(Collectors.toList());
         imageBox.getChildren().setAll(createImages);
         imageBox.setVisible(!createImages.isEmpty());
+    }
+
+    private void updateAll() {
+        updateImages();
+        updateCurrentLine();
+        updateWords();
+    }
+
+    private void updateCurrentLine() {
+        String value = getCurrentLine();
+        currentLine.setText(value);
+        pdfInfo.getWords().setAll(Arrays.asList(value.split(PdfUtils.SPLIT_WORDS_REGEX)));
+    }
+
+    private void updateImages() {
+        currentImages.clear();
+        if (pdfInfo.getImages().containsKey(pdfInfo.getPageIndex() - 1)) {
+            currentImages.setAll(pdfInfo.getImages().get(pdfInfo.getPageIndex() - 1));
+        }
+    }
+
+    private void updateWords() {
+        if (!pdfInfo.getWords().isEmpty()) {
+            currentWord.setText(pdfInfo.getWords().get(pdfInfo.getIndexAndAdd()));
+        }
     }
 
     public static void main(String[] args) {

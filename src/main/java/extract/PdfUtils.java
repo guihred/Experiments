@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -139,6 +140,7 @@ public final class PdfUtils {
             PDDocument pdDoc = new PDDocument(cosDoc)) {
             pdfInfo.setNumberOfPages(pdDoc.getNumberOfPages());
             PDFTextStripper pdfStripper = new PDFTextStripper();
+            DoubleProperty progress = pdfInfo.getProgress();
             for (int i = 0; i < pdfInfo.getNumberOfPages(); i++) {
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
@@ -157,6 +159,13 @@ public final class PdfUtils {
                     lines1.forEach(out::println);
                 }
 
+                if (progress != null) {
+                    int j = i;
+                    runInPlatform(() -> progress.setValue(j / pdfInfo.getNumberOfPages()));
+                }
+            }
+            if (progress != null) {
+                runInPlatform(() -> progress.setValue(1));
             }
             pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages());
             pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages(), pdfInfo.getProgress()));

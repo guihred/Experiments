@@ -67,7 +67,7 @@ public class PrintImageLocations extends PDFStreamEngine {
         if (!outFile.exists()) {
             outFile.mkdir();
         }
-        String extension = "jpx".equals(ext) ? "jpg" : Objects.toString(ext, "png");
+        String extension = "jpx".equals(ext) || "tiff".equals(ext) ? "jpg" : Objects.toString(ext, "png");
         File file = new File(outFile,
             pdfFile.getName().replace(".pdf", "") + pageNumber + "-" + number + "." + extension);
         return SupplierEx.get(() -> {
