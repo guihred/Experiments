@@ -5,6 +5,8 @@ import static javafx.collections.FXCollections.observableHashMap;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
 
+import extract.ExcelService;
+import java.io.File;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
@@ -21,10 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.StageHelper;
-import utils.ClassReflectionUtils;
-import utils.CommonsFX;
-import utils.ConsoleUtils;
-import utils.RunnableEx;
+import utils.*;
 
 public class EthicalHackController extends Application {
     private static final int WIDTH = 500;
@@ -153,6 +152,20 @@ public class EthicalHackController extends Application {
                 ip -> items.add(ClassReflectionUtils.getDescriptionMap(new URL(ip), new HashMap<>())));
         List<String> fields = Arrays.asList("Protocol", "Host", "Path", "Query", "File");
         EthicalHackApp.addColumns(commonTable, fields);
+    }
+
+    public void onExportExcel() {
+        
+        Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
+        ObservableList<TableColumn<Map<String, String>, ?>> columns = commonTable.getColumns();
+        for (TableColumn<Map<String, String>, ?> tableColumn : columns) {
+            String text = tableColumn.getText();
+            mapa.put(text, t -> t.getOrDefault(text, ""));
+        }
+        File outFile = ResourceFXUtils.getOutFile("hackResult.xlsx");
+        ExcelService.getExcel(items, mapa, outFile);
+        ImageFXUtils.openInDesktop(outFile);
+
     }
 
     @Override

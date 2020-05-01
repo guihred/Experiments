@@ -11,6 +11,8 @@
 	<children>
 		<VBox>
 			<children>
+				<Button  onAction="#onExportExcel"
+					text="Export Excel" />
 				<Text text="Filter Results" />
 				<TextField fx:id="resultsFilter" />
 				<Button id="_Network Information" onAction="#onActionNetworkInformation"
@@ -21,8 +23,8 @@
 				<Text text="DNS" />
 				<TextField fx:id="dns" text="google.com" />
 				<Button id="DNS _Lookup" onAction="#onActionDNSLookup" text="DNS _Lookup" />
-				<Button id="Website Scan" onAction="#onActionWebsiteScan"
-					text="Website Scan" />
+				<Button onAction="#onActionWebsiteScan"
+					text="Website _Scan" />
 				<Text text="Ping Adress" />
 				<TextField fx:id="address" text="10.69.64.31" />
 				<Button id="Ping _Trace" onAction="#onActionPingTrace" text="Ping _Trace" />

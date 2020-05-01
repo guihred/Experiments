@@ -22,6 +22,14 @@ public final class ImageFXUtils {
         return new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
     }
 
+    public static void openInDesktop(File destination) {
+        RunnableEx.run(() -> {
+            if (showImage) {
+                Desktop.getDesktop().open(destination);
+            }
+        });
+    }
+
     public static void setShowImage(boolean showImage) {
         ImageFXUtils.showImage = showImage;
     }
@@ -49,9 +57,7 @@ public final class ImageFXUtils {
             final WritableImage snapshot = canvas.snapshot(params, writableImage);
             File destination = File.createTempFile("snapshot", ".png");
             ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "PNG", destination);
-            if (showImage) {
-                Desktop.getDesktop().open(destination);
-            }
+            openInDesktop(destination);
             return destination.getAbsolutePath();
         }).get();
     }

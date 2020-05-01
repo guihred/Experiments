@@ -23,13 +23,14 @@
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>
-	<logger name="ch.qos.logback.classic" level="OFF" />
 	<logger name="contest.ContestReader" level="OFF" />
 	<logger name="utils.ExtractUtils" level="OFF" />
-	<logger name="utils.ConsoleUtils" level="DEBUG" />
+	<logger name="utils.ConsoleUtils" level="INFO" />
  	<logger name="schema.sngpc.FXMLCreator" level="OFF" /> 
- 	<logger name="com.github.junrar" level="OFF" /> 
  	<logger name="rosario.LeitorArquivos" level="OFF" /> 
+
+	<logger name="ch.qos.logback.classic" level="OFF" />
+ 	<logger name="com.github.junrar" level="OFF" /> 
 	<logger name="org.apache.pdfbox" level="OFF" />
 	<logger name="org.deeplearning4j.models" level="OFF" />
 	<logger name="org.nd4j" level="OFF" />
