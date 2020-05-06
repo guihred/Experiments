@@ -126,10 +126,4 @@ public class XmlViewer extends Application {
             }
         }
     }
-
-
-
-
-
-
 }
