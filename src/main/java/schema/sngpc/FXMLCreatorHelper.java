@@ -37,7 +37,7 @@ public final class FXMLCreatorHelper {
     }
 
     public static void main(String[] argv) {
-        List<Class<? extends Application>> classes = Arrays.asList(SngpcViewer.class);
+        List<Class<? extends Application>> classes = Arrays.asList(XmlViewer.class);
         testApplications(classes, false);
     }
 

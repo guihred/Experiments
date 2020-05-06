@@ -23,7 +23,7 @@ import ml.*;
 import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
-import schema.sngpc.SngpcViewer;
+import schema.sngpc.XmlViewer;
 import utils.ImageFXUtils;
 import utils.RunnableEx;
 
@@ -125,12 +125,13 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifySngpcViewer() {
-        show(SngpcViewer.class);
+        show(XmlViewer.class);
         sleep(500);
         targetPos(Pos.TOP_CENTER);
         clickOn(lookupFirst(TreeView.class));
         targetPos(Pos.CENTER);
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
+        ImageFXUtils.setShowImage(false);
 
         List<Button> lookupList = lookupList(Button.class);
         runReversed(lookupList, this::tryClickOn);

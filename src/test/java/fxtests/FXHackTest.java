@@ -12,6 +12,7 @@ import javafx.scene.control.CheckBox;
 import org.junit.Test;
 import utils.ConsoleUtils;
 import utils.ExtractUtils;
+import utils.ImageFXUtils;
 
 public class FXHackTest extends AbstractTestExecution {
 
@@ -42,6 +43,7 @@ public class FXHackTest extends AbstractTestExecution {
     @Test
     public void verifyEthicalHack() {
         // EthicalHackController
+        ImageFXUtils.setShowImage(false);
         show(EthicalHackController.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
             .forEach(this::tryClickOn);

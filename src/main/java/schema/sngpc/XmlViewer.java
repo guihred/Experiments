@@ -25,14 +25,15 @@ import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
 import simplebuilder.StageHelper;
 import utils.FunctionEx;
+import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
 
-public class SngpcViewer extends Application {
+public class XmlViewer extends Application {
 
 
     @Override
 	public void start(Stage primaryStage) {
-        primaryStage.setTitle("SNGPC Viewer");
+        primaryStage.setTitle("XML Viewer");
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();
     }
@@ -88,7 +89,9 @@ public class SngpcViewer extends Application {
             mapa.put("" + j, t -> getValue(t, k));
         }
 
-        ExcelService.getExcel(lista, mapa, ResourceFXUtils.getOutFile(file.getName().replaceAll(".xml", ".xlsx")));
+        File outFile = ResourceFXUtils.getOutFile(file.getName().replaceAll(".xml", ".xlsx"));
+        ExcelService.getExcel(lista, mapa, outFile);
+        ImageFXUtils.openInDesktop(outFile);
     }
 
     private static Object getValue(TreeItem<Map<String, String>> i, int j) {
