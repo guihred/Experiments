@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
@@ -53,6 +54,7 @@ public class EthicalHackController extends Application {
     private ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
 
     private ObservableMap<String, Set<String>> count = observableHashMap();
+
     public void initialize() {
         final int columnWidth = 120;
         HBox parent = (HBox) commonTable.getParent();
@@ -74,6 +76,7 @@ public class EthicalHackController extends Application {
             cell.setText(Objects.toString(item.getKey()));
         }));
     }
+
     public void onActionCurrentTasks() {
         items.clear();
         List<Map<String, String>> currentTasks = ProcessScan.scanCurrentTasks();
@@ -154,8 +157,27 @@ public class EthicalHackController extends Application {
         EthicalHackApp.addColumns(commonTable, fields);
     }
 
+    public void onActionWhoIs() {
+        items.clear();
+        ObservableList<Map<String, String>> scanIps = new WhoIsScanner().scanIps(address.getText());
+        items.addAll(scanIps);
+        List<String> asList =
+                Arrays.asList("as", "assize", "ascountry", "asname", "asabusecontact", "network", "number");
+        scanIps.addListener((Change<? extends Map<String, String>> m) -> {
+            while (m.next()) {
+                List<? extends Map<String, String>> addedSubList = m.getAddedSubList();
+                List<String> keySet = addedSubList.stream().flatMap(e -> e.keySet().stream()).distinct()
+                        .sorted(Comparator.comparing(e -> -asList.indexOf(e))).collect(Collectors.toList());
+                if (items.isEmpty()) {
+                    RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(commonTable, keySet));
+                }
+                items.addAll(addedSubList);
+            }
+        });
+    }
+
     public void onExportExcel() {
-        
+
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
         ObservableList<TableColumn<Map<String, String>, ?>> columns = commonTable.getColumns();
         for (TableColumn<Map<String, String>, ?> tableColumn : columns) {
@@ -170,7 +192,7 @@ public class EthicalHackController extends Application {
 
     @Override
     public void start(final Stage primaryStage) {
-        CommonsFX.loadFXML("Ethical Hack App", "EthicalHackApp.fxml", this,primaryStage, WIDTH, WIDTH);
+        CommonsFX.loadFXML("Ethical Hack App", "EthicalHackApp.fxml", this, primaryStage, WIDTH, WIDTH);
     }
 
     public static void main(final String[] args) {

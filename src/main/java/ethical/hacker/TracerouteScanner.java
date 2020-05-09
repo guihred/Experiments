@@ -76,11 +76,7 @@ public class TracerouteScanner {
     }
 
     private static String getIPtoScan() {
-        if (ExtractUtils.isNotProxied()) {
-			return Stream.of("192", "168", "0", "1").collect(joining("."));
-        }
-
-        return Stream.of("10", "69", "64", "31").collect(joining("."));
+        return Stream.of("66", "102", "8", "1").collect(joining("."));
     }
 
     private static String getNetworkAddress() {
