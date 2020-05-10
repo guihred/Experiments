@@ -16,6 +16,7 @@ import simplebuilder.SimpleButtonBuilder;
 import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 public class TableVisualizationExample extends TableVisualizationVar {
 
@@ -32,12 +33,8 @@ public class TableVisualizationExample extends TableVisualizationVar {
                 updateList(value.getValue());
             }
         });
-        toggleGroup14.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            Node tb = (Node) newValue;
-            if (tb != null) {
-                getLogger().info("{} selected", tb.getId());
-            }
-        });
+        toggleGroup14.selectedToggleProperty().addListener((observable, oldValue, newValue) -> RunnableEx
+                .runIf((Node) newValue, tb -> getLogger().info("{} selected", tb.getId())));
         choiceBox36.getSelectionModel().selectedItemProperty()
             .addListener((ob, oldValue, newValue) -> getLogger().info("{} chosen in ChoiceBox", newValue));
         textField39.textProperty()
@@ -56,12 +53,8 @@ public class TableVisualizationExample extends TableVisualizationVar {
         progressIndicator41.progressProperty().bind(RPM.divide(MAX_RPM));
         progressBar43.progressProperty().bind(KPH.divide(MAX_KPH));
         scrollBar44.valueProperty().bindBidirectional(KPH);
-        toggleGroup46.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
-            Labeled rb = (Labeled) newValue;
-            if (rb != null) {
-                getLogger().info("{} selected", rb.getText());
-            }
-        });
+        toggleGroup46.selectedToggleProperty().addListener((ov, oldValue, newValue) -> RunnableEx
+                .runIf((Labeled) newValue, rb -> getLogger().info("{} selected", rb.getText())));
         MenuItem menuItemA = new MenuItem(MENU_ITEM_A);
         menuItemA.setOnAction(e -> getLogger().info("{} occurred on Menu Item A", e.getEventType()));
         contextMenu = new ContextMenu(menuItemA, new MenuItem(MENU_ITEM_B));

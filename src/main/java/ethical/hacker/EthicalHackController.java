@@ -177,7 +177,6 @@ public class EthicalHackController extends Application {
     }
 
     public void onExportExcel() {
-
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
         ObservableList<TableColumn<Map<String, String>, ?>> columns = commonTable.getColumns();
         for (TableColumn<Map<String, String>, ?> tableColumn : columns) {
@@ -187,7 +186,6 @@ public class EthicalHackController extends Application {
         File outFile = ResourceFXUtils.getOutFile("hackResult.xlsx");
         ExcelService.getExcel(items, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
-
     }
 
     @Override
