@@ -7,14 +7,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
@@ -27,7 +21,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ExtractUtils;
+import utils.HasLogging;
+import utils.RunnableEx;
+import utils.SupplierEx;
 
 public final class WikiImagesUtils {
 
@@ -73,10 +70,8 @@ public final class WikiImagesUtils {
         String encode = codificar(artista.replace(' ', '_'));
         String url = "https://en.wikipedia.org/wiki/" + encode;
         String url2 = "https://pt.wikipedia.org/wiki/" + encode;
-
-        CompletableFuture.supplyAsync(() -> readPage(url)).thenAccept(images::addAll);
-        CompletableFuture.supplyAsync(() -> readPage(url2)).thenAccept(images::addAll);
-        ForkJoinPool.commonPool().awaitQuiescence(90, TimeUnit.SECONDS);
+        images.addAll(SupplierEx.getIgnore(() -> readPage(url), Collections.emptyList()));
+        images.addAll(SupplierEx.getIgnore(() -> readPage(url2), Collections.emptyList()));
         return images;
     }
 
