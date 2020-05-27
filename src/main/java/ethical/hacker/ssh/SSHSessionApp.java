@@ -54,7 +54,7 @@ public class SSHSessionApp extends Application {
         Button clientButton = SimpleButtonBuilder.newButton("Start Client", e -> RunnableEx.run(() -> {
             try (FileOutputStream fileOutputStream = new FileOutputStream(ResourceFXUtils.getOutFile("log.txt"));
                 PrintStream out = new PrintTextStream(fileOutputStream, true, StandardCharsets.UTF_8.displayName(),
-                    text2)) {
+                            text2.textProperty())) {
                 String testLocalhost = hostField.getText();
                 SSHClientUtils.sendMessage(commandField.getText(), testLocalhost,
                     StringSigaUtils.toInteger(portField.getText()), userField.getText(), passwordField.getText(), out);

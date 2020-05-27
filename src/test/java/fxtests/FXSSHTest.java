@@ -5,10 +5,10 @@ import static fxtests.FXTesting.measureTime;
 import ethical.hacker.ssh.*;
 import java.io.PrintStream;
 import java.util.List;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 import org.apache.sshd.server.SshServer;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.junit.After;
@@ -45,7 +45,7 @@ public class FXSSHTest extends AbstractTestExecution {
     public void testMessages() throws Exception {
         String name = BaseTestSupport.getCurrentTestName();
         SSHClientUtils.sendMessage("ipconfig", BaseTestSupport.TEST_LOCALHOST, sshd.getPort(), name, name,
-            new PrintTextStream(System.out, true, "UTF-8", new Text()));
+                new PrintTextStream(System.out, true, "UTF-8", new SimpleStringProperty()));
     }
 
     @Test

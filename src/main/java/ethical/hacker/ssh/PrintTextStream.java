@@ -5,13 +5,13 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import javafx.application.Platform;
-import javafx.scene.text.Text;
+import javafx.beans.property.StringProperty;
 
 public final class PrintTextStream extends PrintStream {
-    private final Text text2;
+    private final StringProperty text2;
 
-    public PrintTextStream(OutputStream out, boolean autoFlush, String encoding, Text text2)
-        throws UnsupportedEncodingException {
+    public PrintTextStream(OutputStream out, boolean autoFlush, String encoding, StringProperty text2)
+            throws UnsupportedEncodingException {
         super(out, autoFlush, encoding);
         this.text2 = text2;
     }
@@ -20,7 +20,7 @@ public final class PrintTextStream extends PrintStream {
     public void write(byte[] b, int off, int len) {
         super.write(b, off, len);
         if (Platform.isFxApplicationThread()) {
-            text2.setText(text2.getText() + new String(b, off, len, StandardCharsets.UTF_8));
+            text2.setValue(text2.getValue() + new String(b, off, len, StandardCharsets.UTF_8));
         }
     }
 }
