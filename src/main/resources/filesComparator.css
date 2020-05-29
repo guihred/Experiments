@@ -26,7 +26,7 @@
 }
 
 .percentage {
-	-fx-scale-y: 0;
+	-fx-scale-y: 0.0;
 }
 
 .progress-indicator:determinate {
@@ -35,5 +35,18 @@
 
 .progress-indicator:indeterminate {
 	-fx-progress-color: red;
-	-fx-scale-x: 0;
+	-fx-scale-x: 0.0;
+}
+
+.table-row-cell:empty {
+    -fx-background-color: white;
+}
+ 
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0.0px;
+}
+
+.list-cell:empty {
+    -fx-background-color: white;
+    -fx-visible:false;
 }

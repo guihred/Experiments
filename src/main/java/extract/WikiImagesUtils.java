@@ -12,9 +12,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import org.apache.commons.lang3.StringUtils;
@@ -32,23 +29,6 @@ public final class WikiImagesUtils {
 
     private WikiImagesUtils() {
 
-    }
-
-    public static ImageView convertToImage(String url) {
-        if (url.startsWith("data:image/")) {
-            BufferedImage image = decodeToImage(url);
-            Image image2 = SwingFXUtils.toFXImage(image, null);
-            ImageView imageView = new ImageView(image2);
-            imageView.setPreserveRatio(true);
-            imageView.getStyleClass().add("wiki");
-            return imageView;
-        }
-
-        String host = url.startsWith("//") ? "https:" : "https://en.wikipedia.org";
-        ImageView imageView = new ImageView(host + url);
-        imageView.getStyleClass().add("wiki");
-        imageView.setPreserveRatio(true);
-        return imageView;
     }
 
     public static void displayCountByExtension() {
@@ -75,11 +55,12 @@ public final class WikiImagesUtils {
         return images;
     }
 
-    private static BufferedImage decodeToImage(String imageString) {
+    static BufferedImage decodeToImage(String imageString) {
         return SupplierEx.get(() -> {
-            String replaceAll = imageString.replaceAll("data:image/gif;base64,", "");
+            String formatName = imageString.replaceAll("data:image/(\\w+);.*", "$1");
+            String replaceAll = imageString.replaceAll("data:image/" + formatName + ";base64,", "");
             byte[] imageByte = Base64.getDecoder().decode(replaceAll);
-            ImageReader next = ImageIO.getImageReadersByFormatName("gif").next();
+            ImageReader next = ImageIO.getImageReadersByFormatName(formatName).next();
             next.setInput(new ByteArrayImageInputStream(imageByte));
             return next.read(0);
         });

@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.NamedArg;
+import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import org.junit.Ignore;
 
@@ -17,8 +18,8 @@ public final class ClassReflectionUtils {
     private static final String METHOD_REGEX = "is(\\w+)|get(\\w+)";
     private static final String METHOD_REGEX_SETTER = "set(\\w+)";
 
-    public static final Map<Class<?>, Object> PRIMITIVE_OBJ = ImmutableMap.of(int.class, 0, float.class, 0F,
-        double.class, 0., boolean.class, true);
+    public static final Map<Class<?>, Object> PRIMITIVE_OBJ =
+            ImmutableMap.of(int.class, 0, float.class, 0F, double.class, 0., boolean.class, true);
 
     private ClassReflectionUtils() {
     }
@@ -35,6 +36,22 @@ public final class ClassReflectionUtils {
         }
 
         return classes.parallelStream().distinct().collect(Collectors.toList());
+    }
+
+    public static Map<String, Observable> allProperties(Object o, Class<?> c) {
+        String regex = "(\\w+)Property";
+        List<Method> allMethodsRecursive = getAllMethodsRecursive(c);
+        Object[] args = {};
+        return allMethodsRecursive.stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
+                .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
+                .filter(m -> m.getParameterCount() == 0)
+                .filter(e -> Observable.class.isAssignableFrom(e.getReturnType()))
+                .filter(m -> m.getAnnotationsByType(Deprecated.class).length == 0)
+                .filter(t -> (Observable) SupplierEx.getIgnore(() -> t.invoke(o, args)) != null)
+                .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
+                .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"),
+                        FunctionEx.makeFunction(t -> (Observable) invoke(o, t)),
+                        (u, v) -> u, LinkedHashMap::new));
     }
 
     public static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
@@ -67,16 +84,17 @@ public final class ClassReflectionUtils {
     }
 
     public static Map<String, String> getDescriptionMap(Object obj,
-        Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
+            Map<Class<?>, FunctionEx<Object, String>> toStringMap) {
         return getDescriptionMap(obj, obj.getClass(), toStringMap, new HashSet<>(), new HashMap<>(), new HashMap<>());
 
     }
 
     public static Map<String, Object> getFieldMap(Object ob, Class<?> cl) {
         return ClassReflectionUtils.getGetterMethodsRecursive(cl).stream()
-            .filter(e -> ClassReflectionUtils.invoke(ob, e) != null)
-            .filter(f -> ClassReflectionUtils.hasSetterMethods(cl, ClassReflectionUtils.getFieldNameCase(f)))
-            .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase, e -> ClassReflectionUtils.invoke(ob, e)));
+                .filter(e -> ClassReflectionUtils.invoke(ob, e) != null)
+                .filter(f -> ClassReflectionUtils.hasSetterMethods(cl, ClassReflectionUtils.getFieldNameCase(f)))
+                .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase,
+                        e -> ClassReflectionUtils.invoke(ob, e)));
     }
 
     public static String getFieldNameCase(Member t) {
@@ -85,13 +103,13 @@ public final class ClassReflectionUtils {
 
     public static List<String> getFields(Class<?> class1) {
         return Stream.of(class1.getDeclaredFields()).filter(m -> !Modifier.isStatic(m.getModifiers()))
-            .map(Field::getName).collect(Collectors.toList());
+                .map(Field::getName).collect(Collectors.toList());
     }
 
     public static Object getFieldValue(Object ob, String name) {
         return getFieldsRecursive(ob.getClass()).stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
-            .filter(e -> e.getName().equals(name)).findFirst().map(field -> BaseEntity.getFieldValue(ob, field))
-            .orElse(null);
+                .filter(e -> e.getName().equals(name)).findFirst().map(field -> BaseEntity.getFieldValue(ob, field))
+                .orElse(null);
     }
 
     public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
@@ -124,9 +142,9 @@ public final class ClassReflectionUtils {
                 return t;
             }
             return Stream.of(cl.getConstructors())
-                .map(FunctionEx.makeFunction(constructor -> constructor.newInstance(
-                    Stream.of(constructor.getParameterTypes()).map(ClassReflectionUtils::getInstanceNull).toArray())))
-                .filter(Objects::nonNull).findFirst().orElse(null);
+                    .map(FunctionEx.makeFunction(constructor -> constructor.newInstance(Stream
+                            .of(constructor.getParameterTypes()).map(ClassReflectionUtils::getInstanceNull).toArray())))
+                    .filter(Objects::nonNull).findFirst().orElse(null);
         });
     }
 
@@ -136,7 +154,7 @@ public final class ClassReflectionUtils {
 
     public static Method getSetter(Class<?> cl, String f) {
         return ClassReflectionUtils.getAllMethodsRecursive(cl).stream().filter(m -> m.getParameterCount() == 1)
-            .filter(m -> getFieldNameCase(m).equals(f)).findFirst().orElse(null);
+                .filter(m -> getFieldNameCase(m).equals(f)).findFirst().orElse(null);
     }
 
     public static Class<?> getSetterType(Class<?> cl, String f) {
@@ -175,15 +193,16 @@ public final class ClassReflectionUtils {
 
     public static List<Method> getters(Class<?> c) {
         return Stream.of(c.getDeclaredMethods()).filter(m -> !Modifier.isStatic(m.getModifiers()))
-            .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(METHOD_REGEX))
-            .filter(m -> m.getParameterCount() == 0)
-            .filter(m -> m.getReturnType() != Serializable.class && m.getAnnotationsByType(Ignore.class).length == 0)
-            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
+                .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(METHOD_REGEX))
+                .filter(m -> m.getParameterCount() == 0)
+                .filter(m -> m.getReturnType() != Serializable.class
+                        && m.getAnnotationsByType(Ignore.class).length == 0)
+                .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
     }
 
     public static boolean hasClass(Collection<Class<?>> newTagClasses, Class<? extends Object> class1) {
         return Modifier.isPublic(class1.getModifiers())
-            && newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
+                && newTagClasses.stream().anyMatch(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c));
     }
 
     public static boolean hasField(Class<?> targetClass, String field) {
@@ -192,7 +211,7 @@ public final class ClassReflectionUtils {
 
     public static boolean hasPublicConstructor(Class<? extends Object> class1) {
         return Modifier.isPublic(class1.getModifiers())
-            && Stream.of(class1.getConstructors()).anyMatch(e1 -> Modifier.isPublic(e1.getModifiers()));
+                && Stream.of(class1.getConstructors()).anyMatch(e1 -> Modifier.isPublic(e1.getModifiers()));
     }
 
     public static boolean hasSetterMethods(Class<?> targetClass, String field) {
@@ -215,13 +234,13 @@ public final class ClassReflectionUtils {
             return null;
         }
         return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
-            .filter(m -> m.getParameterCount() == args.length).map(FunctionEx.makeFunction(m -> m.invoke(ob, args)))
-            .filter(Objects::nonNull).findFirst().orElse(null);
+                .filter(m -> m.getParameterCount() == args.length).map(FunctionEx.makeFunction(m -> m.invoke(ob, args)))
+                .filter(Objects::nonNull).findFirst().orElse(null);
     }
 
     public static boolean isClassPublic(Class<? extends Object> class1) {
         return Modifier.isPublic(class1.getModifiers()) && Stream.of(class1.getConstructors())
-            .anyMatch(e -> e.getParameterCount() == 0 && Modifier.isPublic(e.getModifiers()));
+                .anyMatch(e -> e.getParameterCount() == 0 && Modifier.isPublic(e.getModifiers()));
     }
 
     public static boolean isSetterMatches(String fieldName, Object fieldValue, Object parent) {
@@ -229,32 +248,35 @@ public final class ClassReflectionUtils {
         if (namedArgsMap.containsKey(fieldName)) {
             return typesFit(fieldValue, namedArgsMap.get(fieldName));
         }
-        return PredicateEx.makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass())
-            .stream().filter(m -> m.getParameterCount() == 1)
-            .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m))).test(fieldName);
+        return PredicateEx
+                .makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass()).stream()
+                        .filter(m -> m.getParameterCount() == 1)
+                        .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m)))
+                .test(fieldName);
     }
 
     @SuppressWarnings("rawtypes")
     public static Map<String, Property> properties(Object o, Class<?> c) {
         String regex = "(\\w+)Property";
-        return getAllMethodsRecursive(c).stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
-            .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
-            .filter(m -> m.getParameterCount() == 0).filter(e -> Property.class.isAssignableFrom(e.getReturnType()))
-            .filter(m -> m.getAnnotationsByType(Deprecated.class).length == 0)
-            .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
-            .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property) invoke(o, t),
-                (u, v) -> u, LinkedHashMap::new));
+        List<Method> allMethodsRecursive = getAllMethodsRecursive(c);
+        return allMethodsRecursive.stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
+                .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
+                .filter(m -> m.getParameterCount() == 0).filter(e -> Property.class.isAssignableFrom(e.getReturnType()))
+                .filter(m -> m.getAnnotationsByType(Deprecated.class).length == 0)
+                .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
+                .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property) invoke(o, t),
+                        (u, v) -> u, LinkedHashMap::new));
     }
 
     public static List<Method> setters(Class<?> c) {
         return Stream.of(c.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
-            .filter(m -> m.getName().matches(METHOD_REGEX_SETTER)).filter(m -> m.getParameterCount() == 1)
-            .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
+                .filter(m -> m.getName().matches(METHOD_REGEX_SETTER)).filter(m -> m.getParameterCount() == 1)
+                .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
     }
 
     private static <T> String getDescription(T obj, Class<?> class1,
-        Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
-        Map<Class<?>, List<Method>> getterMethods) {
+            Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
+            Map<Class<?>, List<Method>> getterMethods) {
         if (invokedObjects.contains(obj)) {
             return "";
         }
@@ -275,8 +297,8 @@ public final class ClassReflectionUtils {
                 description.append(FunctionEx.makeFunction(toStringMap.get(invoke.getClass())).apply(invoke));
             } else if (invoke instanceof Enumeration) {
                 Enumeration<?> invoke2 = (Enumeration<?>) invoke;
-                description
-                    .append(getEnumerationDescription(fieldName, invoke2, toStringMap, invokedObjects, getterMethods));
+                description.append(
+                        getEnumerationDescription(fieldName, invoke2, toStringMap, invokedObjects, getterMethods));
             } else {
                 description.append(invoke);
             }
@@ -286,8 +308,8 @@ public final class ClassReflectionUtils {
     }
 
     private static <T> Map<String, String> getDescriptionMap(T obj, Class<?> objClass,
-        Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
-        Map<Class<?>, List<Method>> getterMethods, Map<String, String> descriptionMap) {
+            Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invokedObjects,
+            Map<Class<?>, List<Method>> getterMethods, Map<String, String> descriptionMap) {
         if (invokedObjects.contains(obj)) {
             return descriptionMap;
         }
@@ -304,7 +326,7 @@ public final class ClassReflectionUtils {
                 description.append(FunctionEx.makeFunction(toStringMap.get(invoke.getClass())).apply(invoke));
             } else if (invoke instanceof Enumeration) {
                 description.append(getEnumerationDescription(fieldName, (Enumeration<?>) invoke, toStringMap,
-                    invokedObjects, getterMethods));
+                        invokedObjects, getterMethods));
             } else {
                 description.append(invoke);
             }
@@ -314,16 +336,16 @@ public final class ClassReflectionUtils {
     }
 
     private static <T> String getEnumerationDescription(String fieldName, Enumeration<T> enumeration,
-        Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invoked,
-        Map<Class<?>, List<Method>> getterMethods) {
+            Map<Class<?>, FunctionEx<Object, String>> toStringMap, Set<Object> invoked,
+            Map<Class<?>, List<Method>> getterMethods) {
         StringBuilder descriptionBuilder = new StringBuilder("{\n");
         int i = 0;
         while (enumeration.hasMoreElements()) {
             T element = enumeration.nextElement();
             if (toStringMap.containsKey(element.getClass())
-                || toStringMap.keySet().stream().anyMatch(e -> e.isAssignableFrom(element.getClass()))) {
+                    || toStringMap.keySet().stream().anyMatch(e -> e.isAssignableFrom(element.getClass()))) {
                 Class<?> orElse = toStringMap.keySet().stream().filter(e -> e.isAssignableFrom(element.getClass()))
-                    .findAny().orElse(element.getClass());
+                        .findAny().orElse(element.getClass());
 
                 String apply = FunctionEx.makeFunction(toStringMap.get(orElse)).apply(element);
                 descriptionBuilder.append(apply);
@@ -372,9 +394,10 @@ public final class ClassReflectionUtils {
 
     private static Map<String, Class<?>> getNamedArgsMap(Class<?> targetClass) {
         Map<String, Class<?>> args = new HashMap<>();
-        Stream.of(targetClass.getConstructors()).flatMap(c -> Stream.of(c.getParameters())).forEach(
-            parameter -> Stream.of(parameter.getAnnotations()).filter(annotation -> annotation instanceof NamedArg)
-                .map(a -> (NamedArg) a).forEach(a -> args.put(a.value(), parameter.getType())));
+        Stream.of(targetClass.getConstructors()).flatMap(c -> Stream.of(c.getParameters()))
+                .forEach(parameter -> Stream.of(parameter.getAnnotations())
+                        .filter(annotation -> annotation instanceof NamedArg).map(a -> (NamedArg) a)
+                        .forEach(a -> args.put(a.value(), parameter.getType())));
         return args;
     }
 
@@ -384,12 +407,12 @@ public final class ClassReflectionUtils {
 
     private static boolean isRecursiveCall(Class<?> class1, Object invoke) {
         return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
-            && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(class1.getName());
+                && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(class1.getName());
     }
 
     private static boolean isSameEnumerationClass(Class<?> objClass, Object invoke) {
         return invoke instanceof Enumeration && invoke.getClass().getGenericInterfaces().length > 0
-            && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(objClass.getName());
+                && invoke.getClass().getGenericInterfaces()[0].getTypeName().contains(objClass.getName());
     }
 
     private static boolean parameterTypesMatch(Object fieldValue, Executable m) {
@@ -402,7 +425,7 @@ public final class ClassReflectionUtils {
 
     private static boolean typesFit(Object fieldValue, Class<?> type) {
         return type.isAssignableFrom(fieldValue.getClass())
-            || type.getSimpleName().equalsIgnoreCase(fieldValue.getClass().getSimpleName())
-            || type == int.class && fieldValue.getClass() == Integer.class;
+                || type.getSimpleName().equalsIgnoreCase(fieldValue.getClass().getSimpleName())
+                || type == int.class && fieldValue.getClass() == Integer.class;
     }
 }

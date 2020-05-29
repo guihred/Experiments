@@ -2,6 +2,7 @@ package extract;
 
 import static utils.RunnableEx.ignore;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,7 +11,9 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -63,6 +66,32 @@ public class ImageLoader {
         thread.start();
     }
 
+    public static double byArea(Node e) {
+        return e.getBoundsInLocal().getWidth() * e.getBoundsInLocal().getHeight();
+    }
+
+
+    public static ImageView convertToImage(String url) {
+        return convertToImage("en.wikipedia.org", url);
+    }
+
+    public static ImageView convertToImage(String domain, String url) {
+        if (url.startsWith("data:image/")) {
+            BufferedImage image = WikiImagesUtils.decodeToImage(url);
+            Image image2 = SwingFXUtils.toFXImage(image, null);
+            ImageView imageView = new ImageView(image2);
+            imageView.setPreserveRatio(true);
+            imageView.getStyleClass().add("wiki");
+            return imageView;
+        }
+    
+        String host = url.startsWith("//") ? "https:" : "https://" + domain;
+        ImageView imageView = new ImageView(host + url);
+        imageView.getStyleClass().add("wiki");
+        imageView.setPreserveRatio(true);
+        return imageView;
+    }
+
     public static void loadImages(ObservableList<Node> root, String... value) {
         Set<String> keywords = Stream.of(value).filter(StringUtils::isNotBlank).map(String::trim)
             .flatMap(e -> Stream.of(e.split("\\s+-\\s+"))).collect(Collectors.toSet());
@@ -75,14 +104,10 @@ public class ImageLoader {
         ignore(() -> {
             String url = addedSubList.get(j);
             LOG.trace("NEW IMAGE {}", url);
-            ImageView imageView = WikiImagesUtils.convertToImage(url);
+            ImageView imageView = ImageLoader.convertToImage(url);
             int i = getIndex(children, imageView);
             children.add(i, imageView);
         });
-    }
-
-    private static double byArea(Node e) {
-        return e.getBoundsInLocal().getWidth() * e.getBoundsInLocal().getHeight();
     }
 
     private static int getIndex(ObservableList<Node> children, ImageView imageView) {

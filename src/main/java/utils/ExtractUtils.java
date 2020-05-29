@@ -33,7 +33,7 @@ public final class ExtractUtils {
     }
 
     public static String addDomain(Property<String> domain, String l) {
-        if (l.startsWith("http")) {
+        if (l.startsWith("http") || l.startsWith("data:image") || l.startsWith(domain.getValue())) {
             return l;
         }
         if (l.startsWith("//") && domain.getValue().contains("://")) {
