@@ -46,7 +46,7 @@ public final class PaintImageUtils {
     }
 
     public static void addEffect(PaintModel paintModel, PaintController paintController) {
-        Map<Object, Double> maxMap = new HashMap<>();
+        Map<String, Double> maxMap = new HashMap<>();
         ComboBox<Effect> effects = new ComboBox<>();
         effects.setConverter(new SimpleConverter<>("class.simpleName"));
         effects.setItems(getEffects());

@@ -26,6 +26,7 @@ public class PaintMain extends Application {
             .addMenuItem("_Open", "Ctrl+O", e -> PaintFileUtils.openFile(stage, paintModel))
             .addMenuItem("_Save", "Ctrl+S", e -> PaintFileUtils.saveFile(stage, paintModel))
             .addMenuItem("Save _As", "Ctrl+Shift+S", e -> PaintFileUtils.saveAsFile(stage, paintModel))
+            .addMenuItem("_Print", "Ctrl+P", e -> PaintFileUtils.print(stage, paintModel))
             .addMenu("_Edit")
             .addMenuItem("Select _All", "Ctrl+A", e -> PaintEditUtils.selectAll(paintModel, controller))
             .addMenuItem("C_opy", "Ctrl+C", e -> PaintEditUtils.copy(paintModel, controller),

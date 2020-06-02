@@ -3,14 +3,22 @@ package paintexp;
 import java.io.File;
 import java.io.FileInputStream;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Pos;
+import javafx.print.JobSettings;
+import javafx.print.PrinterJob;
+import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import paintexp.tool.PaintModel;
+import simplebuilder.SimpleDialogBuilder;
 import utils.HasLogging;
 import utils.PixelatedImageView;
 import utils.RunnableEx;
@@ -28,7 +36,7 @@ public final class PaintFileUtils {
         int w = (int) paintModel.getImage().getWidth();
         int h = (int) paintModel.getImage().getHeight();
         paintModel.getImage().getPixelWriter().setPixels(0, 0, w, h, new SimplePixelReader(paintModel.getBackColor()),
-            0, 0);
+                0, 0);
         paintModel.getImageStack().getChildren().clear();
         ImageView imageView = new PixelatedImageView(paintModel.getImage());
         paintModel.getImageStack().getChildren().add(paintModel.getRectangleBorder(imageView));
@@ -57,6 +65,31 @@ public final class PaintFileUtils {
             paintModel.getImageStack().getChildren().add(imageView);
             paintModel.createImageVersion();
         });
+    }
+
+    public static void print(Stage stage, PaintModel paintModel) {
+        PrinterJob job = PrinterJob.createPrinterJob();
+        if (job != null) {
+            JobSettings jobSettings = job.getJobSettings();
+            VBox button = new VBox(5);
+            button.setAlignment(Pos.CENTER);
+            if (paintModel.getCurrentFile() != null) {
+                jobSettings.setJobName(paintModel.getCurrentFile().getName());
+            }
+
+            GridPane gridPane = new GridPane();
+            PixelatedImageView a = new PixelatedImageView(paintModel.getImage());
+
+
+            new SimpleDialogBuilder().bindWindow(stage).button(button).button("Print", () -> {
+                if (job.showPrintDialog(stage)) {
+                    Group node = paintModel.getImageStack();
+                    job.printPage(node);
+                    job.endJob();
+                }
+            }).displayDialog();
+        }
+
     }
 
     public static void saveAsFile(final Window primaryStage, PaintModel paintModel) {

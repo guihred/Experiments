@@ -129,11 +129,10 @@ class BrowserView extends Region {
         cmItem1.setOnAction((ActionEvent e) -> {
             PrinterJob job = PrinterJob.createPrinterJob();
             if (job != null) {
-                boolean showPrintDialog = job.showPrintDialog(stage);
-                if (showPrintDialog) {
-                    System.out.println("WHAT??");
+                if (job.showPrintDialog(stage)) {
                     webEngine.print(job);
                     job.endJob();
+
                 }
             }
         });

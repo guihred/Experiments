@@ -49,7 +49,7 @@ public class TextTool extends PaintTool {
     private Node options;
 
     @FXML
-    private Map<Object, Double> maxMap;
+    private Map<String, Double> maxMap;
     private double dragX;
     private double dragY;
 

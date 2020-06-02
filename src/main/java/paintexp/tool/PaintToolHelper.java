@@ -2,6 +2,8 @@ package paintexp.tool;
 
 import static utils.ResourceFXUtils.convertToURL;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javafx.beans.binding.Bindings;
@@ -12,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
@@ -30,13 +33,25 @@ public final class PaintToolHelper {
     }
 
     public static void addOptionsAccordingly(Object selectedItem, ObservableList<Node> children,
-        Map<Object, Double> maxMap, ObservableList<?> effects) {
+            Map<String, Double> maxMap, Map<Class<?>, List<?>> classMap ) {
         children.clear();
         if (selectedItem == null) {
             return;
         }
         ClassReflectionUtils.properties(selectedItem, selectedItem.getClass())
-            .forEach((k, v) -> addOptions(selectedItem, children, maxMap, effects, k, v));
+        .forEach((k, v) -> addOptions(selectedItem, children, maxMap, classMap, k, v));
+    }
+
+    public static void addOptionsAccordingly(Object selectedItem, ObservableList<Node> children,
+            Map<String, Double> maxMap, ObservableList<?> effects) {
+        children.clear();
+        if (selectedItem == null) {
+            return;
+        }
+        Map<Class<?>, List<?>> classMap = new HashMap<>();
+        classMap.put(selectedItem.getClass(), effects);
+        ClassReflectionUtils.properties(selectedItem, selectedItem.getClass())
+                .forEach((k, v) -> addOptions(selectedItem, children, maxMap, classMap, k, v));
     }
 
     public static Image getClipboardImage() {
@@ -52,8 +67,8 @@ public final class PaintToolHelper {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static void addOptions(Object selectedItem, ObservableList<Node> options, Map<Object, Double> maxMap,
-        ObservableList<?> effects, String fieldName, Property property) {
+    private static void addOptions(Object selectedItem, ObservableList<Node> options, Map<String, Double> maxMap,
+            Map<Class<?>, List<?>> effects, String fieldName, Property property) {
         String changeCase = StringSigaUtils.changeCase(fieldName);
         Text text2 = new Text(changeCase);
         text2.textProperty().bind(Bindings.createStringBinding(() -> propValue(property, changeCase), property));
@@ -64,7 +79,7 @@ public final class PaintToolHelper {
         Object value = property.getValue();
         if (value instanceof Number) {
             double value3 = ((Number) value).doubleValue();
-            Double max = maxMap.computeIfAbsent(property, v -> getMax(value3));
+            Double max = maxMap.computeIfAbsent(fieldName, v -> getMax(value3));
             SimpleSliderBuilder builder = new SimpleSliderBuilder(0, max, value3);
             builder.build().valueProperty().bindBidirectional(property);
             effectsOptions.add(builder.build());
@@ -73,6 +88,12 @@ public final class PaintToolHelper {
         if (value instanceof Boolean) {
             CheckBox e = new CheckBox();
             e.selectedProperty().bindBidirectional(property);
+            effectsOptions.add(e);
+            return;
+        }
+        if (value instanceof String) {
+            TextField e = new TextField();
+            e.textProperty().bindBidirectional(property);
             effectsOptions.add(e);
             return;
         }
@@ -85,7 +106,7 @@ public final class PaintToolHelper {
         if (value instanceof Enum<?>) {
             Enum<?> value3 = (Enum<?>) value;
             ComboBox comboBox = new ComboBox<>(FXCollections.observableArrayList(value3.getClass().getEnumConstants()));
-            property.bind(comboBox.getSelectionModel().selectedItemProperty());
+            comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, val) -> property.setValue(val));
             comboBox.setValue(value3);
             effectsOptions.add(comboBox);
             return;
@@ -99,9 +120,10 @@ public final class PaintToolHelper {
             effectsOptions.add(colorPicker);
             return;
         }
+
         Class<?> setterType = ClassReflectionUtils.getSetterType(selectedItem.getClass(), fieldName);
-        if (setterType.isAssignableFrom(selectedItem.getClass())) {
-            ComboBox comboBox = new ComboBox<>(effects.filtered(v -> selectedItem != v));
+        if (effects.containsKey(setterType)) {
+            ComboBox comboBox = new ComboBox<>(FXCollections.observableArrayList(effects.get(setterType)));
             comboBox.setConverter(new SimpleConverter("class.simpleName"));
             property.bind(comboBox.getSelectionModel().selectedItemProperty());
             effectsOptions.add(comboBox);
