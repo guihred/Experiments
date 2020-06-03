@@ -7,6 +7,7 @@ import static utils.StringSigaUtils.removeMathematicalOperators;
 import static utils.SupplierEx.get;
 import static utils.SupplierEx.remap;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -24,6 +25,11 @@ import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import utils.RunnableEx;
@@ -37,6 +43,22 @@ public final class PdfUtils {
     private PdfUtils() {
     }
 
+    public static void createPDFFromImage(BufferedImage bimg, File outputFile) throws IOException {
+        try (PDDocument doc = new PDDocument()) {
+            float width = bimg.getWidth();
+            float height = bimg.getHeight();
+            PDPage page = new PDPage(new PDRectangle(width, height));
+            PDImageXObject pdImage = LosslessFactory.createFromImage(doc, bimg);
+            try (PDPageContentStream contentStream =
+                    new PDPageContentStream(doc, page, AppendMode.APPEND, true, true)) {
+                float scale = 1f;
+                contentStream.drawImage(pdImage, 0, 0, pdImage.getWidth() * scale, pdImage.getHeight() * scale);
+            }
+            doc.addPage(page);
+            doc.save(outputFile);
+        }
+    }
+
     public static Map<Integer, List<PdfImage>> extractImages(File file) {
         return PdfUtils.extractImages(file, 0, 0);
     }
@@ -46,12 +68,12 @@ public final class PdfUtils {
     }
 
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
-        Property<Number> progress) {
+            Property<Number> progress) {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
         RunnableEx.run(() -> remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
-                COSDocument cosDoc = parseAndGet(source);
-                PDDocument pdDoc = new PDDocument(cosDoc)) {
+                    COSDocument cosDoc = parseAndGet(source);
+                    PDDocument pdDoc = new PDDocument(cosDoc)) {
                 int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
                 for (int i = start; i < nPag; i++) {
                     PrintImageLocations printImageLocations = new PrintImageLocations(file);
@@ -73,8 +95,8 @@ public final class PdfUtils {
     public static String[] getAllLines(File file) {
         return remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
-                COSDocument cosDoc = PdfUtils.parseAndGet(source);
-                PDDocument pdDoc = new PDDocument(cosDoc)) {
+                    COSDocument cosDoc = PdfUtils.parseAndGet(source);
+                    PDDocument pdDoc = new PDDocument(cosDoc)) {
                 PDFTextStripper pdfStripper = new PDFTextStripper();
                 pdfStripper.setStartPage(1);
                 String parsedText = pdfStripper.getText(pdDoc);
@@ -125,7 +147,7 @@ public final class PdfUtils {
     }
 
     public static void runOnFile(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
-        IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
+            IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
         PdfUtils.extractImages(file);
         ignore(() -> runOnLines(init, file, onTextPosition, onPage, onLines, onImages));
     }
@@ -136,8 +158,8 @@ public final class PdfUtils {
 
     private static void read(PdfInfo pdfInfo, File file1, PrintStream out) throws IOException {
         try (RandomAccessFile source = new RandomAccessFile(file1, "r");
-            COSDocument cosDoc = PdfUtils.parseAndGet(source);
-            PDDocument pdDoc = new PDDocument(cosDoc)) {
+                COSDocument cosDoc = PdfUtils.parseAndGet(source);
+                PDDocument pdDoc = new PDDocument(cosDoc)) {
             pdfInfo.setNumberOfPages(pdDoc.getNumberOfPages());
             PDFTextStripper pdfStripper = new PDFTextStripper();
             DoubleProperty progress = pdfInfo.getProgress();
@@ -175,11 +197,11 @@ public final class PdfUtils {
     }
 
     private static void runOnLines(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
-        IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages)
-        throws IOException {
+            IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages)
+            throws IOException {
         try (RandomAccessFile source = new RandomAccessFile(file, "r");
-            COSDocument cosDoc = PdfUtils.parseAndGet(source);
-            PDDocument pdDoc = new PDDocument(cosDoc)) {
+                COSDocument cosDoc = PdfUtils.parseAndGet(source);
+                PDDocument pdDoc = new PDDocument(cosDoc)) {
             PDFTextStripper pdfStripper = new PDFTextStripper() {
                 @Override
                 protected void writeString(String text1, List<TextPosition> textPositions) {
@@ -202,5 +224,4 @@ public final class PdfUtils {
             }
         }
     }
-
 }

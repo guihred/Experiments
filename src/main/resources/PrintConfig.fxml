@@ -12,71 +12,82 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.geometry.Insets?>
 <HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" spacing="20">
 
 	<fx:define>
 		<ToggleGroup fx:id="printType" onSelectedToggleChange="#toggleChanged" />
 	</fx:define>
 
+	<padding>
+		<Insets topRightBottomLeft="20" />
+	</padding>
+	<children>
 
-	<VBox>
-		<Text text="Lines per page" />
-		<ComboBox fx:id="linesPerPage" onAction="#changeConfig">
-			<items>
-				<FXCollections fx:factory="observableArrayList">
-					<Integer fx:value="1" />
-					<Integer fx:value="2" />
-					<Integer fx:value="3" />
-					<Integer fx:value="4" />
-					<Integer fx:value="5" />
-					<Integer fx:value="6" />
-					<Integer fx:value="7" />
-					<Integer fx:value="8" />
-					<Integer fx:value="9" />
-					<Integer fx:value="10" />
-				</FXCollections>
-			</items>
-			<value>
-				<Integer fx:value="1" />
-			</value>
-		</ComboBox>
-		<Text text="Columns per page" />
-		<ComboBox fx:id="columnsPerPage" onAction="#changeConfig">
-			<value>
-				<Integer fx:value="1" />
-			</value>
-			<items>
-				<FXCollections fx:factory="observableArrayList">
-					<Integer fx:value="1" />
-					<Integer fx:value="2" />
-					<Integer fx:value="3" />
-					<Integer fx:value="4" />
-					<Integer fx:value="5" />
-					<Integer fx:value="6" />
-					<Integer fx:value="7" />
-					<Integer fx:value="8" />
-					<Integer fx:value="9" />
-					<Integer fx:value="10" />
-				</FXCollections>
-			</items>
-		</ComboBox>
-		<Text text="Horizontal Gap" />
-		<Slider fx:id="hgap" max="0.5" min="0.0" value="0.0"
-			onValueChange="#valueChanged" blockIncrement="0.01" />
-		<Text text="Vertical Gap" />
+		<VBox spacing="10">
+			<padding>
+				<Insets topRightBottomLeft="10" />
+			</padding>
+			<children>
+				<Text text="Lines per page" />
+				<ComboBox fx:id="linesPerPage" onAction="#changeConfig">
+					<items>
+						<FXCollections fx:factory="observableArrayList">
+							<Integer fx:value="1" />
+							<Integer fx:value="2" />
+							<Integer fx:value="3" />
+							<Integer fx:value="4" />
+							<Integer fx:value="5" />
+							<Integer fx:value="6" />
+							<Integer fx:value="7" />
+							<Integer fx:value="8" />
+							<Integer fx:value="9" />
+							<Integer fx:value="10" />
+						</FXCollections>
+					</items>
+					<value>
+						<Integer fx:value="1" />
+					</value>
+				</ComboBox>
+				<Text text="Columns per page" />
+				<ComboBox fx:id="columnsPerPage" onAction="#changeConfig">
+					<value>
+						<Integer fx:value="1" />
+					</value>
+					<items>
+						<FXCollections fx:factory="observableArrayList">
+							<Integer fx:value="1" />
+							<Integer fx:value="2" />
+							<Integer fx:value="3" />
+							<Integer fx:value="4" />
+							<Integer fx:value="5" />
+							<Integer fx:value="6" />
+							<Integer fx:value="7" />
+							<Integer fx:value="8" />
+							<Integer fx:value="9" />
+							<Integer fx:value="10" />
+						</FXCollections>
+					</items>
+				</ComboBox>
+				<Text text="Horizontal Gap" />
+				<Slider fx:id="hgap" max="0.5" min="0.0" value="0.0"
+					onValueChange="#valueChanged" blockIncrement="0.01" />
+				<Text text="Vertical Gap" />
 
-		<Slider fx:id="vgap" max="0.5" min="0.0" value="0.0"
-			onValueChange="#valueChanged" blockIncrement="0.01" />
-		<RadioButton text="Whole Image" selected="true"
-			toggleGroup="$printType"></RadioButton>
-		<RadioButton text="Whole Paper" toggleGroup="$printType"></RadioButton>
-		<RadioButton text="Expand" toggleGroup="$printType" />
-	</VBox>
+				<Slider fx:id="vgap" max="0.5" min="0.0" value="0.0"
+					onValueChange="#valueChanged" blockIncrement="0.01" />
+				<Text text="Print Type" />
+				<RadioButton text="Whole Image" selected="true"
+					toggleGroup="$printType"></RadioButton>
+				<RadioButton text="Whole Paper" toggleGroup="$printType"></RadioButton>
+				<RadioButton text="Expand" toggleGroup="$printType" />
+				<Button text="Print To PDF" onAction="#print"/>
+			</children>
+		</VBox>
 
-	<GridPane fx:id="panel" minWidth="400" minHeight="564"
-		maxWidth="400" maxHeight="564" styleClass="whitePane"
-		gridLinesVisible="true" prefWidth="400" prefHeight="564">
-	</GridPane>
+		<GridPane fx:id="panel" styleClass="whitePane"
+			gridLinesVisible="true" prefWidth="400" prefHeight="565.7">
+		</GridPane>
 
-
+	</children>
 </HBox>

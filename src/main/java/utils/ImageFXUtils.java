@@ -1,6 +1,7 @@
 package utils;
 
 import java.awt.Desktop;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Rectangle2D;
@@ -56,7 +57,8 @@ public final class ImageFXUtils {
             params.setTransform(new Scale(scale, scale));
             final WritableImage snapshot = canvas.snapshot(params, writableImage);
             File destination = File.createTempFile("snapshot", ".png");
-            ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "PNG", destination);
+            BufferedImage fromFXImage = SwingFXUtils.fromFXImage(snapshot, null);
+            ImageIO.write(fromFXImage, "PNG", destination);
             openInDesktop(destination);
             return destination.getAbsolutePath();
         }).get();
@@ -69,5 +71,15 @@ public final class ImageFXUtils {
             params.setViewport(viewport);
             return canvas.snapshot(params, writableImage);
         }).get();
+    }
+
+    public static BufferedImage toBufferedImage(final Node canvas, final double w, final double h, final double scale) {
+        return SupplierEx.get(() -> {
+            final WritableImage writableImage = new WritableImage((int) (w * scale), (int) (h * scale));
+            SnapshotParameters params = new SnapshotParameters();
+            params.setTransform(new Scale(scale, scale));
+            final WritableImage snapshot = canvas.snapshot(params, writableImage);
+            return SwingFXUtils.fromFXImage(snapshot, null);
+        });
     }
 }

@@ -2,10 +2,7 @@ package paintexp.tool;
 
 import static utils.ResourceFXUtils.convertToURL;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
@@ -49,7 +46,10 @@ public final class PaintToolHelper {
             return;
         }
         Map<Class<?>, List<?>> classMap = new HashMap<>();
-        classMap.put(selectedItem.getClass(), effects);
+        List<Class<?>> allClasses = ClassReflectionUtils.allClasses(selectedItem.getClass());
+        for (Class<?> class1 : allClasses) {
+            classMap.put(class1, effects);
+        }
         ClassReflectionUtils.properties(selectedItem, selectedItem.getClass())
                 .forEach((k, v) -> addOptions(selectedItem, children, maxMap, classMap, k, v));
     }
@@ -121,9 +121,14 @@ public final class PaintToolHelper {
             return;
         }
 
-        Class<?> setterType = ClassReflectionUtils.getSetterType(selectedItem.getClass(), fieldName);
-        if (effects.containsKey(setterType)) {
-            ComboBox comboBox = new ComboBox<>(FXCollections.observableArrayList(effects.get(setterType)));
+        Class<? extends Object> class1 = selectedItem.getClass();
+        Class<?> setterType = ClassReflectionUtils.getSetterType(class1, fieldName);
+        if (effects.containsKey(setterType) || ClassReflectionUtils.hasClass(effects.keySet(), class1)) {
+            Optional<Class<?>> findFirst = effects.keySet().stream()
+                    .filter(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c)).findFirst();
+
+            ComboBox comboBox =
+                    new ComboBox<>(FXCollections.observableArrayList(effects.get(findFirst.orElse(setterType))));
             comboBox.setConverter(new SimpleConverter("class.simpleName"));
             property.bind(comboBox.getSelectionModel().selectedItemProperty());
             effectsOptions.add(comboBox);

@@ -31,8 +31,7 @@ public final class ClassReflectionUtils {
         Class<?> a = targetClass;
         for (int i = 0; i < 10 && a != Object.class; i++, a = a.getSuperclass()) {
             classes.add(a);
-            Class<?>[] interfaces = a.getInterfaces();
-            classes.addAll(Arrays.asList(interfaces));
+            classes.addAll(Arrays.asList(a.getInterfaces()));
         }
 
         return classes.parallelStream().distinct().collect(Collectors.toList());
