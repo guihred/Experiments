@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
@@ -59,6 +60,13 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
     public SimpleComboBoxBuilder<T> select(T obj) {
         comboBox.getSelectionModel().select(obj);
         return this;
+    }
+
+    public SimpleComboBoxBuilder<T> selectedItem(Property<T> val) {
+        comboBox.getSelectionModel().select(val.getValue());
+        val.bind(comboBox.getSelectionModel().selectedItemProperty());
+        return this;
+
     }
 
     public SimpleComboBoxBuilder<T> tooltip(String text) {

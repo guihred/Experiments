@@ -4,8 +4,9 @@ import javafx.scene.paint.Color;
 
 public enum ColorPattern {
 	BRIGHTNESS, SATURATION, HUE;
-	public static final double BLUE_HUE = Color.BLUE.getHue();
-	protected static final double RED_HUE = Color.RED.getHue();
+    private static final double BLUE_HUE = Color.BLUE.getHue();
+    private static final double RED_HUE = Color.RED.getHue();
+
 
 	public Color getColorForValue(final double value, final double min,
 			final double max) {

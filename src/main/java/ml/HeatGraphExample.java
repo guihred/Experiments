@@ -1,13 +1,14 @@
 package ml;
 
+import static simplebuilder.SimpleSliderBuilder.newSlider;
+
 import javafx.application.Application;
-import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.cell.ComboBoxListCell;
@@ -16,9 +17,10 @@ import javafx.stage.Stage;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
+import ml.graph.ColorPattern;
 import ml.graph.HeatGraph;
 import simplebuilder.SimpleButtonBuilder;
-import simplebuilder.SimpleSliderBuilder;
+import simplebuilder.SimpleComboBoxBuilder;
 import utils.ImageFXUtils;
 public class HeatGraphExample extends Application {
 
@@ -26,7 +28,6 @@ public class HeatGraphExample extends Application {
     @Override
 	public void start(final Stage theStage) {
         theStage.setTitle("Heat Graph Example");
-
         FlowPane root = new FlowPane();
         int pad = 100;
         Scene theScene = new Scene(root, 1000 + pad, 500 + pad);
@@ -35,27 +36,24 @@ public class HeatGraphExample extends Application {
 		DataframeML x = DataframeBuilder.build("california_housing_train.csv");
 		DataframeUtils.crossFeature(x, "rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         canvas.setTitle("California Housing");
-        root.getChildren().add(SimpleSliderBuilder.newSlider("Radius", 10, 50, canvas.radiusProperty()));
-        root.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
-		root.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
-		root.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
-		root.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
-
+        root.getChildren().add(newSlider("Radius", 10, 50, canvas.radiusProperty()));
+        root.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        root.getChildren()
+                .add(new SimpleComboBoxBuilder<ColorPattern>().items(ColorPattern.values())
+                        .selectedItem(canvas.colorPatternProperty()).build());
         ObservableList<String> itens = FXCollections.observableArrayList();
-		canvas.statsProperty().addListener((InvalidationListener) o -> itens.setAll(canvas.statsProperty().keySet()));
+        canvas.statsProperty().addListener((Observable o) -> itens.setAll(canvas.statsProperty().keySet()));
         canvas.setDatagram(x);
-
 		ListView<String> xSelected = createSelection(itens, canvas.xHeaderProperty());
 		ListView<String> ySelected = createSelection(itens, canvas.yHeaderProperty());
-        final Canvas canvas1 = canvas;
         root.getChildren()
-                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ImageFXUtils.take(canvas1)).build());
-
+                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ImageFXUtils.take(canvas)).build());
         root.getChildren().add(canvas);
         root.getChildren().add(xSelected);
         root.getChildren().add(ySelected);
-
-
 		theStage.show();
 	}
 

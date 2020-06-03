@@ -10,17 +10,17 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
+import utils.SupplierEx;
 
 public class HeatGraph extends Canvas {
     private static final int CANVAS_SIZE = 550;
     private static final double SQR_ROOT_OF_3 = Math.sqrt(3);
-    private static final double RED_HUE = Color.RED.getHue();
-    public static final double BLUE_HUE = Color.BLUE.getHue();
     private static final double MAX_LAYOUT = 480;
-    private final DoubleProperty layout = new SimpleDoubleProperty(30);
+    private final DoubleProperty layout = new SimpleDoubleProperty(90);
     private double xProportion;
     private double yProportion;
-    private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
+    private final DoubleProperty lineSize = new SimpleDoubleProperty(20);
+    private final ObjectProperty<ColorPattern> colorPattern = new SimpleObjectProperty<>(ColorPattern.HUE);
     private final IntegerProperty bins = new SimpleIntegerProperty(20);
     private final IntegerProperty ybins = new SimpleIntegerProperty(20);
     private DoubleProperty radius = new SimpleDoubleProperty(30);
@@ -38,7 +38,6 @@ public class HeatGraph extends Canvas {
     public HeatGraph() {
         super(CANVAS_SIZE, CANVAS_SIZE);
         gc = getGraphicsContext2D();
-        drawGraph();
         InvalidationListener listener = observable -> drawGraph();
         stats.addListener(listener);
         ybins.addListener(listener);
@@ -48,10 +47,16 @@ public class HeatGraph extends Canvas {
         lineSize.addListener(listener);
         radius.addListener(listener);
         layout.addListener(listener);
+        colorPattern.addListener(listener);
+        drawGraph();
     }
 
     public final IntegerProperty binsProperty() {
         return bins;
+    }
+
+    public Property<ColorPattern> colorPatternProperty() {
+        return colorPattern;
     }
 
     public void drawAxis(DoubleSummaryStatistics xStats, DoubleSummaryStatistics yStats) {
@@ -105,7 +110,7 @@ public class HeatGraph extends Canvas {
         gc.setLineWidth(5);
         gc.setFill(Color.GREEN);
         gc.setLineWidth(0.5);
-        Map<double[], Integer> hashMap = new HashMap<>();
+        Map<double[], Integer> pointHistogram = new HashMap<>();
         List<double[]> triangles = triangles();
         for (int k = 0; k < data.getSize(); k++) {
             double finalX = finalX(xStats, entrySetX.get(k));
@@ -115,15 +120,13 @@ public class HeatGraph extends Canvas {
                 double f = d[1] - finalY;
                 return e * e + f * f;
             })).orElse(triangles.get(0));
-
-            hashMap.put(orElse, hashMap.getOrDefault(orElse, 0) + 1);
-
+            pointHistogram.compute(orElse, (key, v) -> SupplierEx.nonNull(v, 0) + 1);
         }
 
-        IntSummaryStatistics stats1 = hashMap.values().stream().mapToInt(e -> e).summaryStatistics();
+        IntSummaryStatistics stats1 = pointHistogram.values().stream().mapToInt(e -> e).summaryStatistics();
 
         for (double[] es : triangles) {
-            gc.setFill(getColorForValue(hashMap.getOrDefault(es, 0), stats1.getMin(), stats1.getMax()));
+            gc.setFill(getColorForValue(pointHistogram.getOrDefault(es, 0), stats1.getMin(), stats1.getMax()));
             gc.fillOval(es[0], es[1], radius.doubleValue(), radius.doubleValue());
         }
 
@@ -193,6 +196,14 @@ public class HeatGraph extends Canvas {
         return y1 - radius.doubleValue() / 2;
     }
 
+    private Color getColorForValue(double value, int min, int max) {
+        if (value < min || value > max) {
+            return Color.TRANSPARENT;
+        }
+        ColorPattern saturation = SupplierEx.nonNull(colorPattern.getValue(), ColorPattern.HUE);
+        return saturation.getColorForValue(value, min, max);
+    }
+
     private List<double[]> triangles() {
         List<double[]> arrayList = new ArrayList<>();
 
@@ -211,18 +222,6 @@ public class HeatGraph extends Canvas {
             arrayList.add(new double[] { x, y });
         }
         return arrayList;
-    }
-
-    private static Color getColorForValue(double value, int min, int max) {
-        if (value < min || value > max) {
-            return Color.TRANSPARENT;
-        }
-        double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - min) / (max - min);
-        return Color.hsb(hue, 0.5, 1);
-        // double brightness = 1 - (value - sum.getMin()) / (sum.getMax() - sum.getMin())
-        // return Color.hsb(RED_HUE, 1.0, brightness)
-        // double saturation = (value - min) / (max - min)
-        // return Color.hsb(RED_HUE, saturation, 1.0)
     }
 
 }

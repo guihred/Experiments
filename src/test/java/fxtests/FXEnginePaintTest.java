@@ -32,10 +32,7 @@ import paintexp.SimplePixelReader;
 import paintexp.tool.AreaTool;
 import paintexp.tool.PaintTool;
 import paintexp.tool.PaintTools;
-import utils.ConsumerEx;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
-import utils.ZoomableScrollPane;
+import utils.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXEnginePaintTest extends AbstractTestExecution {
@@ -82,6 +79,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     public void testMenus() {
         show(PaintMain.class);
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
+        ImageFXUtils.setShowImage(false);
         testMenus(stack);
     }
 
@@ -211,6 +209,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 
                 getLogger().info("FIRING {}", menu.getId());
                 if (i == 0 && items.size() == j + 1 || i == 0 && j > 0 && items.size() != j + 1) {
+                    // OPEN and save as
                     new Thread(this::typeInParallel).start();
                 }
                 if (i == 1 && j == 2) {
@@ -227,6 +226,13 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                     interact(menu::fire);
                 }
                 interactNoWait(RunnableEx.make(menu::fire));
+                if (i == 0 && j == 4) {
+                    // Print
+                    lookup(ComboBox.class).forEach(
+                            ConsumerEx.ignore(m -> interactNoWait(
+                                    () -> m.getSelectionModel().select(nextInt(m.getItems().size())))));
+                    lookup(Button.class).forEach(this::tryClickOn);
+                }
 
                 lookup(".text-field").queryAll().forEach(e -> {
                     clickOn(e);
@@ -239,6 +245,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                     moveBy(randomNumber(50), 0);
                     drop();
                 }));
+
                 lookup("Adjust").queryAll().forEach(t -> {
                     tryClickOn(t);
                     tryClickOn(randomItem(areaTools));
