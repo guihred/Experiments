@@ -5,7 +5,6 @@ import static utils.PredicateEx.makeTest;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
-import graphs.app.JavaFileDependency;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;

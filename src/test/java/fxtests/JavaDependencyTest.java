@@ -2,7 +2,6 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
-import graphs.app.JavaFileDependency;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -10,6 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import ml.data.CoverageUtils;
+import ml.data.JavaFileDependency;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.junit.runners.Parameterized;

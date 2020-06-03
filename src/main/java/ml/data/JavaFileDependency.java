@@ -1,4 +1,4 @@
-package graphs.app;
+package ml.data;
 
 import static utils.SupplierEx.get;
 import static utils.SupplierEx.orElse;

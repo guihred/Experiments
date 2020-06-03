@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.beans.NamedArg;
+import ml.data.JavaFileDependency;
 
 public class MethodsTopology extends BaseTopology {
 

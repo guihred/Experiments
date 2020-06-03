@@ -3,7 +3,6 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 
 import graphs.app.GraphMain;
-import graphs.app.JavaFileDependency;
 import graphs.app.PackageTopology;
 import graphs.app.ProjectTopology;
 import graphs.entities.Cell;
@@ -15,6 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import ml.data.JavaFileDependency;
 import org.junit.Test;
 import utils.ConsoleUtils;
 import utils.ImageFXUtils;

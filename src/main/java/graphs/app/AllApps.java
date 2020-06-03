@@ -1,7 +1,7 @@
 package graphs.app;
 
-import static graphs.app.JavaFileDependency.getAllFileDependencies;
 import static java.util.stream.Collectors.toCollection;
+import static ml.data.JavaFileDependency.getAllFileDependencies;
 import static utils.ClassReflectionUtils.getInstance;
 import static utils.CommonsFX.newFastFilter;
 import static utils.FunctionEx.apply;
@@ -23,6 +23,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import ml.data.JavaFileDependency;
 import simplebuilder.SimpleListViewBuilder;
 import utils.ExtractUtils;
 

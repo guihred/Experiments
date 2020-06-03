@@ -1,6 +1,6 @@
 package graphs.app;
 
-import static graphs.app.JavaFileDependency.getJavaFileDependencies;
+import static ml.data.JavaFileDependency.getJavaFileDependencies;
 
 import graphs.entities.Cell;
 import graphs.entities.CellType;
@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javafx.beans.NamedArg;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import ml.data.JavaFileDependency;
 import org.slf4j.Logger;
 import utils.HasLogging;
 

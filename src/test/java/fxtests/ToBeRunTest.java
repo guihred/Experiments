@@ -2,12 +2,12 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
-import graphs.app.JavaFileDependency;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import ml.data.CoverageUtils;
+import ml.data.JavaFileDependency;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
