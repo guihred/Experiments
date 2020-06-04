@@ -5,6 +5,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
+import utils.StringSigaUtils;
 
 public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSliderBuilder> {
 
@@ -31,6 +32,7 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
         node.setBlockIncrement((slider.getMax() - slider.getMin()) / blocks);
         return this;
     }
+
     @Override
     public Slider build() {
         node.setBlockIncrement((slider.getMax() - slider.getMin()) / blocks);
@@ -47,7 +49,6 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
         return this;
     }
 
-
     public SimpleSliderBuilder orientation(Orientation value) {
         node.setOrientation(value);
         return this;
@@ -59,15 +60,16 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
     }
 
     public static VBox newSlider(final String string, final double min, final double max, int block,
-        final Property<Number> radius) {
+            final Property<Number> radius) {
         return SimpleVBoxBuilder.newVBox(string,
-            new SimpleSliderBuilder().min(min).max(max).blocks(block).bindBidirectional(radius).build());
+                new SimpleSliderBuilder().min(min).max(max).blocks(block).bindBidirectional(radius).build());
     }
 
     public static VBox newSlider(final String string, final double min, final double max,
-        final Property<Number> radius) {
+            final Property<Number> radius) {
         return SimpleVBoxBuilder.newVBox(string,
-            new SimpleSliderBuilder().min(min).bindBidirectional(radius).max(max).build());
+                new SimpleSliderBuilder().id(StringSigaUtils.changeCase(string.replaceAll(" ", ""))).min(min)
+                        .bindBidirectional(radius).max(max).build());
     }
 
     public static void onChange(Slider slider1, ChangeListener<? super Number> listener) {

@@ -25,7 +25,7 @@ public class LookNFeelChooser extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         BorderPane root = new BorderPane();
-        Parent content = FXMLLoader.load(ResourceFXUtils.toURL("lnf_demo.fxml"));
+        Parent content = FXMLLoader.load(ResourceFXUtils.toURL("fxml/lnf_demo.fxml"));
         Scene scene = new Scene(root);
         root.setCenter(content);
         // Menu bar

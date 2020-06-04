@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public final class CommonsFX {
 
+    private static final String FXML_DIR = "fxml/";
+
     private CommonsFX() {
     }
 
@@ -58,16 +60,6 @@ public final class CommonsFX {
         return availableColors;
     }
 
-    public static void loadFXML(String title, File file, Object controller, Stage primaryStage, double... size) {
-        RunnableEx.remap(() -> {
-            Parent content = loadParent(file, controller);
-            Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
-            primaryStage.setTitle(title);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        }, "ERROR in file " + file);
-    }
-
     public static void loadFXML(String title, File file, Stage primaryStage, double... size) {
         RunnableEx.remap(() -> {
             Parent content = FXMLLoader.load(convertToURL(file));
@@ -79,34 +71,26 @@ public final class CommonsFX {
     }
 
     public static void loadFXML(String title, String file, Object controller, Stage primaryStage, double... size) {
-        loadFXML(title, ResourceFXUtils.toFile(file), controller, primaryStage, size);
+        loadFXML(title, ResourceFXUtils.toFile(FXML_DIR + file), controller, primaryStage, size);
     }
 
     public static void loadFXML(String title, String file, Stage primaryStage, double... size) {
-        loadFXML(title, ResourceFXUtils.toFile(file), primaryStage, size);
-    }
-
-    public static Parent loadParent(File file, Object controller) {
-        return SupplierEx.remap(() -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
-            fxmlLoader.setController(controller);
-            return fxmlLoader.load();
-        }, "ERROR IN " + file);
+        loadFXML(title, ResourceFXUtils.toFile(FXML_DIR + file), primaryStage, size);
     }
 
     public static Parent loadParent(String file, Object controller) {
-        return loadParent(ResourceFXUtils.toFile(file), controller);
+        return loadParent(ResourceFXUtils.toFile(FXML_DIR + file), controller);
     }
 
     public static void loadRoot(String arquivo, Object root) {
-        FXMLLoader fxmlLoader = new FXMLLoader(ResourceFXUtils.toURL(arquivo));
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceFXUtils.toURL(FXML_DIR + arquivo));
         fxmlLoader.setRoot(root);
         fxmlLoader.setController(root);
         RunnableEx.remap(fxmlLoader::load, "ERROR LOADING " + arquivo);
     }
 
     public static void loadRoot(String arquivo, Object root, Object controller) {
-        FXMLLoader fxmlLoader = new FXMLLoader(ResourceFXUtils.toURL(arquivo));
+        FXMLLoader fxmlLoader = new FXMLLoader(ResourceFXUtils.toURL(FXML_DIR + arquivo));
         fxmlLoader.setRoot(root);
         fxmlLoader.setController(controller);
         RunnableEx.remap(fxmlLoader::load, "ERROR LOADING " + arquivo);
@@ -144,6 +128,24 @@ public final class CommonsFX {
             }
         });
 
+    }
+
+    private static void loadFXML(String title, File file, Object controller, Stage primaryStage, double... size) {
+        RunnableEx.remap(() -> {
+            Parent content = loadParent(file, controller);
+            Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
+            primaryStage.setTitle(title);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        }, "ERROR in file " + file);
+    }
+
+    private static Parent loadParent(File file, Object controller) {
+        return SupplierEx.remap(() -> {
+            FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
+            fxmlLoader.setController(controller);
+            return fxmlLoader.load();
+        }, "ERROR IN " + file);
     }
 
 }

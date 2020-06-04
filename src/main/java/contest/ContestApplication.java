@@ -27,7 +27,7 @@ public class ContestApplication extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Contest Questions");
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(convertToURL(ResourceFXUtils.toFile("ContestApplication.fxml")));
+        fxmlLoader.setLocation(convertToURL(ResourceFXUtils.toFile("fxml/ContestApplication.fxml")));
         Scene scene = new Scene(get(fxmlLoader::load));
         ContestApplicationController controller = fxmlLoader.getController();
         if (contestQuestions != null) {

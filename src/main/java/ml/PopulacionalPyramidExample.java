@@ -1,6 +1,6 @@
 package ml;
 
-
+import static simplebuilder.SimpleSliderBuilder.newSlider;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -21,7 +21,6 @@ import ml.data.DataframeML;
 import ml.graph.PopulacionalGraph;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
-import simplebuilder.SimpleSliderBuilder;
 import utils.ImageFXUtils;
 import utils.SupplierEx;
 
@@ -37,30 +36,29 @@ public class PopulacionalPyramidExample extends Application {
         Predicate<String> asPredicate = Pattern.compile("MA|FE").asPredicate();
         String countryHeader = "Country";
         DataframeML x = DataframeBuilder.builder("POPULACAO.csv").filter("Unit", "Persons"::equals)
-            .filter("SEX", e -> asPredicate.test(e.toString()))
-            .filter("Subject", e -> e.toString().matches("Population.+\\d+")).addCategory(countryHeader)
-            .addCategory("TIME").addMapping("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))
-            .build();
+                .filter("SEX", e -> asPredicate.test(e.toString()))
+                .filter("Subject", e -> e.toString().matches("Population.+\\d+")).addCategory(countryHeader)
+                .addCategory("TIME").addMapping("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))
+                .build();
 
         PopulacionalGraph canvas = new PopulacionalGraph();
         root.setCenter(canvas);
         VBox left = new VBox();
         root.setLeft(left);
-        left.getChildren().add(SimpleSliderBuilder.newSlider("Prop", 1. / 10, 2, canvas.lineSizeProperty()));
-        left.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        left.getChildren().add(SimpleSliderBuilder.newSlider("MaxPadding", 10, 1000, canvas.maxLayoutProperty()));
-        left.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        left.getChildren().add(newSlider("Prop", 1. / 10, 2, canvas.lineSizeProperty()));
+        left.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        left.getChildren().add(newSlider("MaxPadding", 10, 1000, canvas.maxLayoutProperty()));
+        left.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
         canvas.widthProperty().bind(root.widthProperty().add(-50));
 
         Set<String> categorize = x.categorize(countryHeader);
-        ObservableList<String> sortedCountries = FXCollections
-            .observableArrayList(categorize.stream().sorted().collect(Collectors.toList()));
+        ObservableList<String> sortedCountries =
+                FXCollections.observableArrayList(categorize.stream().sorted().collect(Collectors.toList()));
         ComboBox<String> countryBox = new SimpleComboBoxBuilder<String>().items(sortedCountries).select(0)
-            .tooltip("Country")
-            .onSelect(country -> canvas.countryProperty().set(country)).build();
+                .tooltip("Country").onSelect(country -> canvas.countryProperty().set(country)).build();
         ComboBox<Integer> year = new SimpleComboBoxBuilder<Integer>().items(canvas.yearsOptionsProperty())
-            .tooltip("Year")
-            .onSelect(yearV -> canvas.yearProperty().set(SupplierEx.nonNull(yearV, DEFAULT_YEAR))).select(0).build();
+                .tooltip("Year").onSelect(yearV -> canvas.yearProperty().set(SupplierEx.nonNull(yearV, DEFAULT_YEAR)))
+                .select(0).build();
 
         canvas.setHistogram(x);
 

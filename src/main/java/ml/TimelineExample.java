@@ -1,5 +1,7 @@
 package ml;
 
+import static simplebuilder.SimpleSliderBuilder.newSlider;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -26,7 +28,6 @@ import ml.graph.TimelineGraph;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
-import simplebuilder.SimpleSliderBuilder;
 import utils.HasLogging;
 import utils.ImageFXUtils;
 
@@ -51,13 +52,14 @@ public class TimelineExample extends Application {
                 .setMaxSize(MAX_ROWS)
                 .build();
         LOG.info("Available Columns {}", x.cols());
+        String indicatorName = "Indicator Name";
         canvas.prefWidth(500);
-        canvas.setTitle(x.list("Indicator Name").get(0).toString());
-        left.getChildren().add(SimpleSliderBuilder.newSlider("Radius", 1, 500, canvas.radiusProperty()));
-        left.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
-        left.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        left.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
-        left.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        canvas.setTitle(x.list(indicatorName).get(0).toString());
+        left.getChildren().add(newSlider("Radius", 1, 500, canvas.radiusProperty()));
+        left.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        left.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
+        left.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
+        left.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
         CheckBox e = new CheckBox("Show Labels");
         e.selectedProperty().bindBidirectional(canvas.showLabelsProperty());
         left.getChildren().add(e);
@@ -76,7 +78,7 @@ public class TimelineExample extends Application {
         ComboBox<String> indicators = new SimpleComboBoxBuilder<String>().items(list)
             .select(0).onSelect(s -> {
                 DataframeML x2 = DataframeBuilder.builder("out/" + s).setMaxSize(MAX_ROWS).build();
-                canvas.setTitle(x2.list("Indicator Name").get(0).toString());
+                    canvas.setTitle(x2.list(indicatorName).get(0).toString());
                 canvas.setHistogram(x2, countryNameColumn);
                 itens.setAll(sortedLabels(canvas.colorsProperty()));
             }).build();
@@ -92,7 +94,7 @@ public class TimelineExample extends Application {
         launch(args);
     }
 
-    private static List<Entry<String, Color>> sortedLabels(final ObservableMap<String, Color> colorsProperty) {
+    private static List<Entry<String, Color>> sortedLabels(ObservableMap<String, Color> colorsProperty) {
         return colorsProperty.entrySet().stream().sorted(Comparator.comparing(Entry<String, Color>::getKey))
                 .collect(Collectors.toList());
     }
