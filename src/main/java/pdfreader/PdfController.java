@@ -9,6 +9,7 @@ import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -17,11 +18,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTimelineBuilder;
 import simplebuilder.StageHelper;
 import utils.*;
@@ -50,8 +54,13 @@ public class PdfController extends Application {
     private Timeline timeline =
             new SimpleTimelineBuilder().addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), time -> displayNextWord())
                     .cycleCount(Animation.INDEFINITE).build();
+    @FXML
+    private TextArea currentLines;
+    @FXML
+    private SplitPane splitPane;
 
     public void displayNextLine() {
+
         if (pdfInfo.getLineIndex() < pdfInfo.getLines().size()) {
             String value = pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd());
             pdfInfo.getSkipLines().add(value);
@@ -71,8 +80,8 @@ public class PdfController extends Application {
             pdfInfo.setIndex(0);
             pdfInfo.setLineIndex(0);
             pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
-            displayNextWord();
             updateAll();
+            displayNextWord();
         }
     }
 
@@ -119,15 +128,23 @@ public class PdfController extends Application {
         currentImages.addListener((Change<? extends HasImage> e) -> onImageChange());
         imageBox.managedProperty().bind(imageBox.visibleProperty());
         imageBox.setVisible(false);
+        splitPane.setDividerPosition(1, 1);
+        currentLines.textProperty().bind(Bindings.createStringBinding(
+                () -> pdfInfo.getLines()
+                        .stream().filter(StringUtils::isNotBlank).filter(t -> !pdfInfo.getSkipLines().contains(t))
+                        .collect(Collectors.joining("\n")),
+                pdfInfo.getLines(), pdfInfo.getSkipLines()));
         PdfUtils.readFile(pdfInfo);
     }
 
     public void openNewPDF(ActionEvent event) {
-        StageHelper
-                .fileAction("Selecione Arquivo PDF",
-                        file -> RunnableEx.runNewThread(() -> PdfUtils.readFile(pdfInfo, file)), "File", "*.pdf")
-                .handle(event);
+
+        StageHelper.fileAction("Selecione Arquivo PDF", file -> {
+            timeline.stop();
+            RunnableEx.runNewThread(() -> PdfUtils.readFile(pdfInfo, file));
+        }, "File", "*.pdf").handle(event);
         updateAll();
+
     }
 
     @Override
@@ -158,9 +175,12 @@ public class PdfController extends Application {
         ReadOnlyDoubleProperty widthProperty = imageBox.widthProperty();
         List<ImageView> createImages = currentImages.stream()
                 .flatMap(im -> ImageTableCell.createImagesMaxWidth(im.getImage(), widthProperty).stream())
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
         imageBox.getChildren().setAll(createImages);
         imageBox.setVisible(!createImages.isEmpty());
+
+        splitPane.setDividerPosition(1, createImages.isEmpty() ? 1 : 0.66);
+
     }
 
     private void updateAll() {
@@ -183,7 +203,7 @@ public class PdfController extends Application {
     }
 
     private void updateWords() {
-        if (!pdfInfo.getWords().isEmpty()) {
+        if (!pdfInfo.getWords().isEmpty() && pdfInfo.getIndex() < pdfInfo.getWords().size()) {
             currentWord.setText(pdfInfo.getWords().get(pdfInfo.getIndexAndAdd()));
         }
     }

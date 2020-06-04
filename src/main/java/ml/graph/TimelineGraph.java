@@ -150,7 +150,6 @@ public class TimelineGraph extends Canvas {
                 if (summaryStatistics.getCount() > 0) {
                     colStats.accept(Integer.valueOf(col));
                     stats.combine(summaryStatistics);
-
                 }
             }
         });
