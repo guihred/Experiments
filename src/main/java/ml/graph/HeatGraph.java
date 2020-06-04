@@ -27,6 +27,7 @@ public class HeatGraph extends Canvas {
 
     private final StringProperty xHeader = new SimpleStringProperty();
     private final StringProperty yHeader = new SimpleStringProperty();
+    private final StringProperty zHeader = new SimpleStringProperty();
 
     private GraphicsContext gc;
     private ObservableMap<String, DoubleSummaryStatistics> stats = FXCollections.observableHashMap();
@@ -42,8 +43,9 @@ public class HeatGraph extends Canvas {
         stats.addListener(listener);
         ybins.addListener(listener);
         bins.addListener(listener);
-        yHeader.addListener(listener);
         xHeader.addListener(listener);
+        yHeader.addListener(listener);
+        zHeader.addListener(listener);
         lineSize.addListener(listener);
         radius.addListener(listener);
         layout.addListener(listener);
@@ -105,28 +107,30 @@ public class HeatGraph extends Canvas {
         double max2 = yStats.getMax() + 1. / 10;
         yProportion = (max2 - min2) / ybins.intValue();
 
-        List<Object> entrySetX = data.list(xHeader.get());
-        List<Object> entrySetY = data.list(yHeader.get());
         gc.setLineWidth(5);
         gc.setFill(Color.GREEN);
         gc.setLineWidth(0.5);
-        Map<double[], Integer> pointHistogram = new HashMap<>();
+        List<Object> entrySetX = data.list(xHeader.get());
+        List<Object> entrySetY = data.list(yHeader.get());
+        List<Object> entrySetZ = data.list(zHeader.get());
+        Map<double[], Double> pointHistogram = new HashMap<>();
         List<double[]> triangles = triangles();
         for (int k = 0; k < data.getSize(); k++) {
             double finalX = finalX(xStats, entrySetX.get(k));
             double finalY = finalY(yStats, entrySetY.get(k));
+            double finalZ = finalZ(entrySetZ != null ? entrySetZ.get(k) : 1);
             double[] orElse = triangles.stream().min(Comparator.comparing(d -> {
                 double e = d[0] - finalX;
                 double f = d[1] - finalY;
                 return e * e + f * f;
             })).orElse(triangles.get(0));
-            pointHistogram.compute(orElse, (key, v) -> SupplierEx.nonNull(v, 0) + 1);
+            pointHistogram.compute(orElse, (key, v) -> SupplierEx.nonNull(v, 0.) + finalZ);
         }
 
-        IntSummaryStatistics stats1 = pointHistogram.values().stream().mapToInt(e -> e).summaryStatistics();
+        DoubleSummaryStatistics stats1 = pointHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
 
         for (double[] es : triangles) {
-            gc.setFill(getColorForValue(pointHistogram.getOrDefault(es, 0), stats1.getMin(), stats1.getMax()));
+            gc.setFill(getColorForValue(pointHistogram.getOrDefault(es, 0.), stats1.getMin(), stats1.getMax()));
             gc.fillOval(es[0], es[1], radius.doubleValue(), radius.doubleValue());
         }
 
@@ -147,18 +151,17 @@ public class HeatGraph extends Canvas {
 
     public void setDatagram(DataframeML x) {
         data = x;
-        data.forEach((col, items) -> stats.put(col,
-                items.stream()
-                        .filter(Number.class::isInstance)
-                        .map(Number.class::cast)
-                        .mapToDouble(Number::doubleValue)
-                        .summaryStatistics()));
+        data.forEach((col, items) -> stats.put(col, items.stream().filter(Number.class::isInstance)
+                .map(Number.class::cast).mapToDouble(Number::doubleValue).summaryStatistics()));
         Iterator<String> iterator = data.cols().iterator();
         if (iterator.hasNext()) {
             xHeader.set(iterator.next());
         }
         if (iterator.hasNext()) {
             yHeader.set(iterator.next());
+        }
+        if (iterator.hasNext()) {
+            zHeader.set(iterator.next());
         }
     }
 
@@ -182,6 +185,10 @@ public class HeatGraph extends Canvas {
         return yHeader;
     }
 
+    public final StringProperty zHeaderProperty() {
+        return zHeader;
+    }
+
     private double finalX(DoubleSummaryStatistics xStats, Object object) {
         double j = (MAX_LAYOUT - layout.doubleValue()) / bins.intValue();
         double x = ((Number) object).doubleValue();
@@ -196,7 +203,7 @@ public class HeatGraph extends Canvas {
         return y1 - radius.doubleValue() / 2;
     }
 
-    private Color getColorForValue(double value, int min, int max) {
+    private Color getColorForValue(double value, double min, double max) {
         if (value < min || value > max) {
             return Color.TRANSPARENT;
         }
@@ -222,6 +229,13 @@ public class HeatGraph extends Canvas {
             arrayList.add(new double[] { x, y });
         }
         return arrayList;
+    }
+
+    private static double finalZ(Object object) {
+        if (object == null || !(object instanceof Number)) {
+            return 0;
+        }
+        return ((Number) object).doubleValue();
     }
 
 }

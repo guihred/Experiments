@@ -47,13 +47,16 @@ public class HeatGraphExample extends Application {
         ObservableList<String> itens = FXCollections.observableArrayList();
         canvas.statsProperty().addListener((Observable o) -> itens.setAll(canvas.statsProperty().keySet()));
         canvas.setDatagram(x);
+
 		ListView<String> xSelected = createSelection(itens, canvas.xHeaderProperty());
 		ListView<String> ySelected = createSelection(itens, canvas.yHeaderProperty());
+        ListView<String> zSelected = createSelection(itens, canvas.zHeaderProperty());
         root.getChildren()
-                .add(new SimpleButtonBuilder().text("Export").onAction(e -> ImageFXUtils.take(canvas)).build());
+                .add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas)));
         root.getChildren().add(canvas);
         root.getChildren().add(xSelected);
         root.getChildren().add(ySelected);
+        root.getChildren().add(zSelected);
 		theStage.show();
 	}
 

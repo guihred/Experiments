@@ -24,7 +24,7 @@ import utils.HasLogging;
 public class MultiLineGraph extends Canvas {
     private static final Logger LOG = HasLogging.log();
     private static final int SIZE = 550;
-    private final DoubleProperty layout = new SimpleDoubleProperty(30);
+    private final DoubleProperty layout = new SimpleDoubleProperty(90);
     private final DoubleProperty maxLayout = new SimpleDoubleProperty(480);
     private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
     private final IntegerProperty bins = new SimpleIntegerProperty(20);

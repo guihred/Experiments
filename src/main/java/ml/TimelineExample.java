@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
@@ -57,6 +58,9 @@ public class TimelineExample extends Application {
         left.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
         left.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
         left.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        CheckBox e = new CheckBox("Show Labels");
+        e.selectedProperty().bindBidirectional(canvas.showLabelsProperty());
+        left.getChildren().add(e);
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
         canvas.xProportionProperty()
                 .addListener(o -> itens.setAll(sortedLabels(canvas.colorsProperty())));

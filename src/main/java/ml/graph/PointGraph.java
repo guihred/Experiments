@@ -16,8 +16,8 @@ import ml.data.DataframeML;
 public class PointGraph extends Canvas {
     private static final int CANVAS_SIZE = 500;
     private static final double MAX_LAYOUT = 480;
-    private final DoubleProperty layout = new SimpleDoubleProperty(30);
-    private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
+    private final DoubleProperty layout = new SimpleDoubleProperty(60);
+    private final DoubleProperty lineSize = new SimpleDoubleProperty(20);
     private final IntegerProperty bins = new SimpleIntegerProperty(20);
     private final IntegerProperty ybins = new SimpleIntegerProperty(20);
     private double xProportion;

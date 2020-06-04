@@ -3,6 +3,7 @@ package ml.data;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DataframeML extends BaseDataframe {
     public DataframeML() {
@@ -114,7 +115,13 @@ public class DataframeML extends BaseDataframe {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> list(String header) {
-        return (List<T>) dataframe.get(header);
+        List<T> list = (List<T>) dataframe.get(header);
+        if (list != null) {
+            return list;
+        }
+        return (List<T>) dataframe.keySet().stream()
+                .filter(e -> Stream.of(header.split(" ")).allMatch(m -> e.contains(m))).findFirst()
+                .map(dataframe::get).orElse(null);
     }
 
     public void map(String header, UnaryOperator<Object> mapper) {

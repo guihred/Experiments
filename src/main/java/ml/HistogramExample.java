@@ -3,7 +3,6 @@ package ml;
 import static simplebuilder.SimpleButtonBuilder.newButton;
 
 import java.util.Map.Entry;
-import java.util.Set;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
@@ -48,10 +47,8 @@ public class HistogramExample extends Application {
         left.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
 
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
-        canvas.statsProperty().addListener((InvalidationListener) o -> {
-            Set<Entry<String, Color>> entrySet = canvas.colorsProperty().entrySet();
-            itens.setAll(entrySet);
-        });
+        canvas.statsProperty()
+                .addListener((InvalidationListener) o -> itens.setAll(canvas.colorsProperty().entrySet()));
         canvas.setHistogram(x);
         ListView<Entry<String, Color>> itensList = new ListView<>(itens);
         Callback<Entry<String, Color>, ObservableValue<Boolean>> selectedProperty = new MapCallback<>(

@@ -7,7 +7,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -55,10 +54,8 @@ public class MultilineExample extends Application {
 				canvas.colorsProperty());
         itensList.setCellFactory(
                 list -> new CheckColorItemCell(selectedProperty, new ColorConverter(canvas.colorsProperty())));
-        final Canvas canvas1 = canvas;
-
         left.getChildren()
-            .add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1)));
+            .add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas)));
         root.setCenter(new HBox(canvas, itensList));
 		theStage.show();
 	}

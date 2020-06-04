@@ -17,7 +17,7 @@ import utils.CommonsFX;
 
 public class HistogramGraph extends Canvas {
     private static final int SIZE = 550;
-    private DoubleProperty layout = new SimpleDoubleProperty(30);
+    private DoubleProperty layout = new SimpleDoubleProperty(90);
     private DoubleProperty maxLayout = new SimpleDoubleProperty(SIZE);
     private DoubleProperty lineSize = new SimpleDoubleProperty(5);
     private IntegerProperty bins = new SimpleIntegerProperty(20);
