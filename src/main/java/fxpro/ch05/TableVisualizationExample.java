@@ -15,7 +15,6 @@ import javafx.stage.Stage;
 import simplebuilder.SimpleButtonBuilder;
 import utils.CommonsFX;
 import utils.ExtractUtils;
-import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public class TableVisualizationExample extends TableVisualizationVar {
@@ -124,7 +123,7 @@ public class TableVisualizationExample extends TableVisualizationVar {
         final int width = 800;
         CommonsFX.loadFXML("Table Visualization Example", "TableVisualizationExampleApp.fxml", this, primaryStage,
             width, width);
-        primaryStage.getScene().getStylesheets().add(ResourceFXUtils.toExternalForm("starterApp.css"));
+        CommonsFX.addCSS(primaryStage.getScene(), "starterApp.css");
     }
 
     private void logSelectedProperty(Boolean value) {

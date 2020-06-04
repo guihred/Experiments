@@ -7,7 +7,7 @@
 <?import javafx.event.*?>
 <?import javafx.scene.input.*?>
 <HBox xmlns:fx="http://javafx.com/fxml" 
-	stylesheets="@filesComparator.css">
+	stylesheets="@/css/filesComparator.css">
 	<children>
 		<VBox>
 			<children>

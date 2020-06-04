@@ -30,7 +30,6 @@ import simplebuilder.SimpleVBoxBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public class StageControlExample extends Application {
 
@@ -70,7 +69,7 @@ public class StageControlExample extends Application {
             new SimpleVBoxBuilder().spacing(10).children(textStageX, textStageY, textStageW, textStageH, textStageF,
                 checkBoxResizable, checkBoxFullScreen, hbox, toBackButton, toFrontButton, closeButton).build());
         Scene scene = new Scene(rootGroup, Color.TRANSPARENT);
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("stageControl.css"));
+        CommonsFX.addCSS(scene, "stageControl.css");
         scene.setFill(Color.TRANSPARENT);
         // When mouse button is pressed, save the initial position of screen
         rootGroup.setOnMousePressed((MouseEvent me) -> {

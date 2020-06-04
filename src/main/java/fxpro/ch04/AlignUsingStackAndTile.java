@@ -8,7 +8,7 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import utils.ResourceFXUtils;
+import utils.CommonsFX;
 
 public class AlignUsingStackAndTile extends Application {
 
@@ -28,7 +28,7 @@ public class AlignUsingStackAndTile extends Application {
         left.prefWidthProperty().bind(scene.widthProperty().divide(2));
         left.prefHeightProperty().bind(scene.heightProperty());
         tiles.getStyleClass().add("title");
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("reversi.css"));
+        CommonsFX.addCSS(scene, "reversi.css");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

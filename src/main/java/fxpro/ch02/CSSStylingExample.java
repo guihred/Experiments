@@ -26,8 +26,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.*;
+import utils.CommonsFX;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public class CSSStylingExample extends Application {
     private static final String EMPHASIZED_TEXT_CLASS = "emphasized-text";
@@ -73,7 +73,7 @@ public class CSSStylingExample extends Application {
             .build();
 
         sceneRef = new Scene(sceneRoot);
-        sceneRef.getStylesheets().addAll(ResourceFXUtils.toExternalForm("onTheScene.css"));
+        CommonsFX.addCSS(sceneRef, "onTheScene.css");
         stage.setScene(sceneRef);
         choiceBoxRef.getSelectionModel().selectFirst();
         // Setup various property binding
@@ -103,7 +103,7 @@ public class CSSStylingExample extends Application {
         toggleGrp.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
             String radioButtonText = ((RadioButton) toggleGrp.getSelectedToggle()).getText();
             sceneRef.getStylesheets().clear();
-            sceneRef.getStylesheets().add(ResourceFXUtils.toExternalForm(radioButtonText));
+            CommonsFX.addCSS(sceneRef, radioButtonText);
         });
         stage.setTitle("On the Scene");
         stage.show();

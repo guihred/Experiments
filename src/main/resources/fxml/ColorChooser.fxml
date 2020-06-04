@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <FlowPane xmlns:fx="http://javafx.com/fxml" styleClass="root"
-	stylesheets="@/colorChooser.css">
+	stylesheets="@/css/colorChooser.css">
 	<fx:define>
 		<WritableImage fx:id="transparentImage" height="256"
 			width="256" />

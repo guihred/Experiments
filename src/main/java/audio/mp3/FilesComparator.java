@@ -94,7 +94,8 @@ public class FilesComparator extends Application {
         final int width = 550;
         final int height = 400;
         Scene value = new Scene(root, width, height);
-        value.getStylesheets().add(toExternalForm("filesComparator.css"));
+        String arquivo = "filesComparator.css";
+        value.getStylesheets().add(toExternalForm(arquivo));
         primaryStage.setScene(value);
         primaryStage.setTitle("Files Comparator");
         primaryStage.show();

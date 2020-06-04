@@ -68,7 +68,7 @@ public class SimpleAudioPlayerLauncher extends Application {
         createControls();
         createMedia();
         final Scene scene = new Scene(createGridPane());
-        scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
+        CommonsFX.addCSS(scene, Chapter8Resource.MEDIA.getFile());
         primaryStage.setScene(scene);
         primaryStage.setTitle("Simple Audio Player");
         primaryStage.show();

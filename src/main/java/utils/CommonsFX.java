@@ -1,6 +1,7 @@
 package utils;
 
 import static utils.ResourceFXUtils.convertToURL;
+import static utils.ResourceFXUtils.toExternalForm;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,8 +25,13 @@ import org.apache.commons.lang3.StringUtils;
 public final class CommonsFX {
 
     private static final String FXML_DIR = "fxml/";
+    private static final String CSS_DIR = "css/";
 
     private CommonsFX() {
+    }
+
+    public static void addCSS(Scene value, String css) {
+        value.getStylesheets().add(toExternalForm(CSS_DIR + css));
     }
 
     public static boolean containsMouse(Node node, MouseEvent event) {

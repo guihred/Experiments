@@ -21,7 +21,10 @@ import org.jsoup.nodes.Document;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import utils.*;
+import utils.CommonsFX;
+import utils.ExtractUtils;
+import utils.HibernateUtil;
+import utils.RunnableEx;
 
 public class IadesCrawler extends Application {
     private static final String DOMAIN = "http://www.iades.com.br";
@@ -46,7 +49,7 @@ public class IadesCrawler extends Application {
         ExtractUtils.insertProxyConfig();
         CommonsFX.loadFXML("IADES Crawler", "IadesCrawler.fxml", this, primaryStage);
         createSplitTreeListDemoNode();
-        primaryStage.getScene().getStylesheets().add(ResourceFXUtils.toExternalForm("filesComparator.css"));
+        CommonsFX.addCSS(primaryStage.getScene(), "filesComparator.css");
         onCloseWindow(primaryStage, HibernateUtil::shutdown);
     }
 

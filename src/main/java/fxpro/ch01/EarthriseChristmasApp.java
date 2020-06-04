@@ -15,8 +15,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTextBuilder;
+import utils.CommonsFX;
 import utils.ExtractUtils;
-import utils.ResourceFXUtils;
 
 public class EarthriseChristmasApp extends Application {
     private static final double WRAPPING = 400;
@@ -57,7 +57,7 @@ public class EarthriseChristmasApp extends Application {
         stage.setTitle("Earthrise Christmas");
         stage.show();
         transTransition.play();
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("earthRiseChristmas.css"));
+        CommonsFX.addCSS(scene, "earthRiseChristmas.css");
     }
 
     public static void main(String[] args) {

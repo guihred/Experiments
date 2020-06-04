@@ -1,0 +1,41 @@
+.whitish{
+	-fx-fill: rgba(255,255,255,0.9);
+	-fx-font-size: 30;
+	-fx-font-weight: bold;
+}
+Rectangle.whitish{
+	-fx-fill:  rgba(0,0,0,.55);
+	-fx-stroke: rgba(255,255,255,0.9);
+	-fx-arc-height:15px;
+	-fx-arc-width:15px;
+	-fx-stroke-width:1.5;
+}
+VBox{
+	-fx-spacing:12px;
+	-fx-padding: 12px;
+}
+HBox{
+
+	-fx-spacing:10px;
+}
+.root{
+	-fx-font-family: "sans-serif";
+}
+.password-field{
+	-fx-font-size: 20;
+	-fx-text-fill: black; 
+	-fx-prompt-text-fill: gray; 
+	-fx-highlight-text-fill: black; 
+	-fx-highlight-fill: gray; 
+	-fx-background-color: rgba(255, 255, 255, 0.8); 
+}
+
+#denied{
+	-fx-fill: red;
+	-fx-stroke: white;
+}
+#granted{
+	-fx-fill: green;
+	-fx-stroke: white;
+}
+

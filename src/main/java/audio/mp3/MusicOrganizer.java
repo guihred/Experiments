@@ -2,7 +2,6 @@ package audio.mp3;
 
 import static java.util.stream.Collectors.toCollection;
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
-import static utils.ResourceFXUtils.toExternalForm;
 
 import extract.Music;
 import extract.MusicReader;
@@ -58,7 +57,7 @@ public class MusicOrganizer extends Application {
         root.getChildren().add(new VBox(new Label("Lista Músicas"),
             new HBox(buttonMusic, buttonVideos, fixMusic, filterField, progress), musicasTable));
         Scene scene = new Scene(root, WIDTH, HEIGHT);
-        scene.getStylesheets().add(toExternalForm("filesComparator.css"));
+        CommonsFX.addCSS(scene, "filesComparator.css");
         primaryStage.setTitle("Organizador de Músicas");
         primaryStage.setScene(scene);
         primaryStage.show();

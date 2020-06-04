@@ -4,7 +4,7 @@
 <?import javafx.event.*?>
 <?import java.util.*?>
 <VBox xmlns:fx="http://javafx.com/fxml" 
-	styleClass="root" stylesheets="@/filesComparator.css">
+	styleClass="root" stylesheets="@/css/filesComparator.css">
 	<children>
 		<SplitPane fx:id="splitPane0">
 			<items>

@@ -47,7 +47,7 @@ public final class StageHelper {
     public static Stage displayCSSStyler(Scene scene, String pathname) {
         String str = TreeElement.displayStyleClass(scene.getRoot());
         HasLogging.log(1).info("{}", str);
-        File file = new File("src/main/resources/" + pathname);
+        File file = new File("src/main/resources/css/" + pathname);
         TextArea textArea = new TextArea(getText(file));
         if (file.exists()) {
             RunnableEx.ignore(() -> scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString()));

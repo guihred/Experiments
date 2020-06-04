@@ -15,6 +15,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
+import utils.CommonsFX;
 import utils.HasLogging;
 
 /**
@@ -33,7 +34,7 @@ public class BasicAudioClipExample extends Application {
             stackPane.setPadding(new Insets(10));
             stackPane.getChildren().add(button);
             final Scene scene = new Scene(stackPane, 200, 200);
-			scene.getStylesheets().add(Chapter8Resource.MEDIA.getURL().toString());
+            CommonsFX.addCSS(scene, Chapter8Resource.MEDIA.getFile());
             primaryStage.setTitle("Basic AudioClip Example");
             primaryStage.setScene(scene);
             primaryStage.show();

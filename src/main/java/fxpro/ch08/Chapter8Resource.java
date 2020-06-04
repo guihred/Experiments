@@ -13,11 +13,15 @@ public enum Chapter8Resource {
 		this.file = file;
 	}
 
+	public String getFile() {
+        return file;
+    }
+
 	public InputStream getInputStream() {
         return ResourceFXUtils.toStream(file);
 	}
 
-	public URL getURL() {
+    public URL getURL() {
         return ResourceFXUtils.toURL(file);
 	}
 

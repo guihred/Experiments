@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
 import utils.CommonsFX;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 import utils.RotateUtils;
 
 public class PlayingAudio extends Application {
@@ -174,7 +173,7 @@ public class PlayingAudio extends Application {
         RotateUtils.initSceneDragAndDrop(scene, this::playMedia);
         closeButton.translateXProperty().bind(scene.widthProperty().subtract(15));
         scene.setFill(Color.BLACK);
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("media.css"));
+        CommonsFX.addCSS(scene, "media.css");
     }
 
     private void updatePlayAndPauseButtons(boolean playVisible) {

@@ -21,8 +21,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
+import utils.CommonsFX;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 
 public class FormValidation extends Application {
     private static final int WIDTH = 320;
@@ -83,7 +83,7 @@ public class FormValidation extends Application {
         formLayout.getChildren().addAll(row1, row2);
         root.getChildren().addAll(background, formLayout);
         primaryStage.show();
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("formValidation.css"));
+        CommonsFX.addCSS(scene, "formValidation.css");
     }
 
 	private PasswordField passwordField(Person user, SVGPath deniedIcon) {

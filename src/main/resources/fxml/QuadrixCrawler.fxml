@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.event.*?>
 <VBox xmlns:fx="http://javafx.com/fxml"
-	stylesheets="@/filesComparator.css">
+	stylesheets="@/css/filesComparator.css">
 	<children>
 		<SplitPane fx:id="splitPane0">
 			<items>

@@ -1,0 +1,17 @@
+.root{
+	-fx-hgap: 15px;
+	-fx-vgap: 03px;
+	-fx-row-valignment: top;
+	-fx-column-halignment: center;
+	-fx-padding: 10px;
+
+}
+
+#hueSlider{
+	-fx-orientation: vertical;
+	-fx-base:transparent;
+	-fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );
+}
+#hueSlider .track{
+	-fx-background-color:transparent;
+}

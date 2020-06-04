@@ -1,0 +1,24 @@
+.title StackPane{
+	-fx-background-color: black;
+}
+.title{
+	-fx-pref-tile-height:	40px;
+	-fx-alignment: center;
+	-fx-background-color: white;
+}
+Text{
+	-fx-font-weight:bold;
+	-fx-font-size:18;
+}
+.title>StackPane> Text{
+	-fx-fill:white;
+}
+.scores Text{
+	-fx-font-weight:bold;
+}
+.scores>StackPane>VBox>Text{
+	-fx-font-size:100;
+}
+.scores>StackPane>FlowPane>Text{
+	-fx-font-size:100;
+}

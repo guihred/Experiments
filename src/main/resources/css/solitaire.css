@@ -1,0 +1,21 @@
+StackPane {
+	-fx-padding: 50px;
+}
+
+BorderPane {
+	-fx-background-color: green;
+	-fx-padding: 10px;
+}
+
+CardStack, .cardStack {
+	-fx-border-color: black;
+	-fx-border-width: 1;
+	-fx-border-radius: 5;
+}
+
+SolitaireCard {
+	-fx-padding: 100px;
+	-fx-border-color: black;
+	-fx-border-width: 1;
+	-fx-border-radius: 5;
+}

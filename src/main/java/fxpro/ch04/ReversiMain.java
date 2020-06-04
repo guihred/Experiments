@@ -22,7 +22,7 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleRegionBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
-import utils.ResourceFXUtils;
+import utils.CommonsFX;
 
 /**
  *
@@ -52,7 +52,7 @@ public class ReversiMain extends Application {
         AnchorPane.setRightAnchor(game, 0D);
         AnchorPane.setRightAnchor(restart, 10D);
         AnchorPane.setTopAnchor(restart, 10D);
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("reversi.css"));
+        CommonsFX.addCSS(scene, "reversi.css");
         primaryStage.show();
     }
 

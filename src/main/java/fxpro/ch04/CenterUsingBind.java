@@ -25,7 +25,7 @@ import simplebuilder.SimpleDropShadowBuilder;
 import simplebuilder.SimpleEllipseBuilder;
 import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
-import utils.ResourceFXUtils;
+import utils.CommonsFX;
 
 public class CenterUsingBind extends Application {
 
@@ -38,7 +38,7 @@ public class CenterUsingBind extends Application {
 		primaryStage.setScene(scene);
         tiles.prefTileWidthProperty().bind(scene.widthProperty().divide(2));
         tiles.prefTileHeightProperty().bind(scene.heightProperty());
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("reversi.css"));
+        CommonsFX.addCSS(scene, "reversi.css");
         primaryStage.show();
     }
 

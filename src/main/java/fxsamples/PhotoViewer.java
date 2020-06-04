@@ -54,7 +54,7 @@ public class PhotoViewer extends Application {
             createProgressIndicator(scene, progressIndicator);
             final int rightPadding = 80;
             createTickerControl(scene, rightPadding, tickerArea, tickerRect, clipRegion, tickerContent);
-            scene.getStylesheets().add(ResourceFXUtils.toExternalForm("photo-viewer.css"));
+            CommonsFX.addCSS(scene, "photo-viewer.css");
         });
         addPicturesImageFolder();
     }

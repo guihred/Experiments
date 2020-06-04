@@ -1,6 +1,0 @@
-.root > VBox{
-	-fx-background-color: yellow;
-	-fx-background-radius:10px;
-	-fx-padding:20 20 20 30;
-	-fx-background-insets:10px;
-}

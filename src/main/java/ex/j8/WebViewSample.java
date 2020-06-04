@@ -28,6 +28,7 @@ import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
@@ -38,7 +39,7 @@ public class WebViewSample extends Application {
         stage.setTitle("Web View Sample");
         Scene scene = new Scene(new BrowserView(stage), 900, 600, Color.web("#666970"));
         stage.setScene(scene);
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("BrowserToolbar.css"));
+        CommonsFX.addCSS(scene, "BrowserToolbar.css");
         stage.show();
     }
 

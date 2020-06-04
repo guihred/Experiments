@@ -9,7 +9,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import utils.ResourceFXUtils;
+import utils.CommonsFX;
 
 public class Square2048Launcher extends Application {
 
@@ -21,7 +21,7 @@ public class Square2048Launcher extends Application {
         final Scene scene = new Scene(gridPane);
         stage.setScene(scene);
         scene.setOnKeyPressed(memoryModel::handleKeyPressed);
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("square2048.css"));
+        CommonsFX.addCSS(scene, "square2048.css");
         stage.show();
     }
     public static void main(String[] args) {

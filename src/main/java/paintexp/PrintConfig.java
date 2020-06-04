@@ -130,7 +130,7 @@ public class PrintConfig extends Application {
     @Override
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Print Config", "PrintConfig.fxml", this, primaryStage);
-        primaryStage.getScene().getStylesheets().add(ResourceFXUtils.toExternalForm("starterApp.css"));
+        CommonsFX.addCSS(primaryStage.getScene(), "starterApp.css");
     }
 
     @SuppressWarnings("unused")

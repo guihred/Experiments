@@ -95,8 +95,9 @@ public class WebBrowserApplication extends Application {
                 RunnableEx.run(() -> imageList.setItems(getImgs(doc)));
             }
         });
-        stage.setScene(new Scene(pane));
-        stage.getScene().getStylesheets().add(ResourceFXUtils.toExternalForm("filesComparator.css"));
+        Scene scene = new Scene(pane);
+        stage.setScene(scene);
+        CommonsFX.addCSS(scene, "filesComparator.css");
         stage.setTitle("Web Browser");
         stage.show();
 

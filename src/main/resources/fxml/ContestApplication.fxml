@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 <SplitPane xmlns:fx="http://javafx.com/fxml"
 	fx:controller="contest.ContestApplicationController" fx:id="splitPane"
-	styleClass="root split-pane" stylesheets="@/filesComparator.css">
+	styleClass="root split-pane" stylesheets="@/css/filesComparator.css">
 	<fx:define>
 		<SimpleIntegerProperty fx:id="current" />
 	</fx:define>

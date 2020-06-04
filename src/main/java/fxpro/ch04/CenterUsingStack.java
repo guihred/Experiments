@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import utils.ResourceFXUtils;
+import utils.CommonsFX;
 
 public class CenterUsingStack extends Application {
 
@@ -26,7 +26,7 @@ public class CenterUsingStack extends Application {
         Scene scene = new Scene(stack, 500, 500);
         ellipse.radiusXProperty().bind(scene.widthProperty().divide(2));
         ellipse.radiusYProperty().bind(scene.heightProperty().divide(2));
-        scene.getStylesheets().add(ResourceFXUtils.toExternalForm("reversi.css"));
+        CommonsFX.addCSS(scene, "reversi.css");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
