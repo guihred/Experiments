@@ -36,9 +36,7 @@ public class JavaDependencyTest {
 
     @Test
     public void testTestUncoveredTests() {
-
         List<String> failedTests = new ArrayList<>();
-
         measureTime("JavaFileDependency.testUncovered", () -> {
             List<String> paths = new ArrayList<>();
             List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getJavaFileDependencies("fxtests");

@@ -1,4 +1,4 @@
-package ex.j8;
+package ethical.hacker;
 
 /*
  */

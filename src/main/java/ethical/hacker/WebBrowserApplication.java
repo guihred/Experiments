@@ -1,4 +1,4 @@
-package ex.j8;
+package ethical.hacker;
 
 import extract.ImageLoader;
 import java.net.MalformedURLException;

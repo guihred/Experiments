@@ -1,4 +1,4 @@
-package ex.j8;
+package fxsamples;
 
 import javafx.application.Application;
 import javafx.application.Platform;
