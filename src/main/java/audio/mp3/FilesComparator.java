@@ -3,7 +3,6 @@ package audio.mp3;
 import static extract.FilesComparatorHelper.*;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
-import static utils.ResourceFXUtils.toExternalForm;
 
 import extract.Music;
 import extract.MusicReader;
@@ -94,8 +93,7 @@ public class FilesComparator extends Application {
         final int width = 550;
         final int height = 400;
         Scene value = new Scene(root, width, height);
-        String arquivo = "filesComparator.css";
-        value.getStylesheets().add(toExternalForm(arquivo));
+        CommonsFX.addCSS(value, "filesComparator.css");
         primaryStage.setScene(value);
         primaryStage.setTitle("Files Comparator");
         primaryStage.show();

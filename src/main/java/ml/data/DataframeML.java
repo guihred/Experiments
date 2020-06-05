@@ -116,11 +116,11 @@ public class DataframeML extends BaseDataframe {
     @SuppressWarnings("unchecked")
     public <T> List<T> list(String header) {
         List<T> list = (List<T>) dataframe.get(header);
-        if (list != null) {
+        if (list != null || header == null) {
             return list;
         }
         return (List<T>) dataframe.keySet().stream()
-                .filter(e -> Stream.of(header.split(" ")).allMatch(m -> e.contains(m))).findFirst()
+                .filter(Objects::nonNull).filter(e -> Stream.of(header.split(" ")).allMatch(e::contains)).findFirst()
                 .map(dataframe::get).orElse(null);
     }
 
@@ -129,7 +129,7 @@ public class DataframeML extends BaseDataframe {
     }
 
     public void only(String header, Predicate<String> v, IntConsumer cons) {
-        List<Object> list = dataframe.get(header);
+        List<Object> list = list(header);
         for (int i = 0; i < list.size(); i++) {
             if (v.test(Objects.toString(list.get(i)))) {
                 cons.accept(i);

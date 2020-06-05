@@ -23,7 +23,19 @@ public class JavaDependencyTest {
     private static int NUMBER_TESTS = 10;
 
     @Test
-    public void testGTestUncovered() {
+    public void testTestUncoveredApps() {
+        measureTime("JavaFileDependency.testUncoveredApps", () -> {
+            HibernateUtil.setShutdownEnabled(false);
+            List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
+            int b = uncoveredApplications.size();
+            AbstractTestExecution
+                .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), b)));
+            HibernateUtil.setShutdownEnabled(true);
+        });
+    }
+
+    @Test
+    public void testTestUncoveredTests() {
 
         List<String> failedTests = new ArrayList<>();
 
@@ -81,18 +93,6 @@ public class JavaDependencyTest {
             LOG.error(errorsFound);
             Assert.fail(errorsFound);
         }
-    }
-
-    @Test
-    public void testHTestUncoveredApps() {
-        measureTime("JavaFileDependency.testUncoveredApps", () -> {
-            HibernateUtil.setShutdownEnabled(false);
-            List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
-            int b = uncoveredApplications.size() > 50 ? uncoveredApplications.size() / 2 : 20;
-            AbstractTestExecution
-                .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), b)));
-            HibernateUtil.setShutdownEnabled(true);
-        });
     }
 
     private <T extends Annotation> void invoke(List<Method> declaredMethods, Object test, Class<T> annotationClass) {
