@@ -37,7 +37,6 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
         bindWindow(stage, node1);
         return this;
     }
-
     public SimpleDialogBuilder bindWindow(Window window) {
         window.showingProperty().addListener((ob, old, n) -> {
             if (!n) {
@@ -102,6 +101,11 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
 
     public SimpleDialogBuilder height(double value) {
         stage.setHeight(value);
+        return this;
+    }
+
+    public SimpleDialogBuilder resizable(boolean value) {
+        stage.setResizable(value);
         return this;
     }
 

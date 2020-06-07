@@ -17,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
 import utils.HasLogging;
 
 public class ImageLoader {
@@ -84,9 +85,8 @@ public class ImageLoader {
             imageView.getStyleClass().add("wiki");
             return imageView;
         }
-    
-        String host = url.startsWith("//") ? "https:" : "https://" + domain;
-        ImageView imageView = new ImageView(host + url);
+        String addDomain = ExtractUtils.addDomain(domain, url);
+        ImageView imageView = new ImageView(addDomain);
         imageView.getStyleClass().add("wiki");
         imageView.setPreserveRatio(true);
         return imageView;

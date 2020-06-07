@@ -1,9 +1,11 @@
 package ethical.hacker;
 
 import extract.ImageLoader;
-import java.net.MalformedURLException;
+import java.io.File;
 import java.net.URL;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,15 +25,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Connection.Response;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleDialogBuilder;
 import utils.*;
 
 /**
@@ -44,6 +47,7 @@ public class WebBrowserApplication extends Application {
     private static final Logger LOG = HasLogging.log();
     private WebEngine engine;
     private TextField siteField;
+    private Map<String, String> cookies = new HashMap<>();
 
     @Override
     public void start(Stage stage) {
@@ -51,24 +55,13 @@ public class WebBrowserApplication extends Application {
         siteField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
         WebView browser = new WebView();
         engine = browser.getEngine();
-        siteField.setOnKeyReleased(ev -> {
-            if (ev.getCode() == KeyCode.ENTER) {
-                loadSite(siteField);
-            }
-        });
+        enableDebugger();
         Button backButton = SimpleButtonBuilder.newButton("<-",
                 event -> RunnableEx.ignore(() -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1)));
         Worker<Void> loadWorker = engine.getLoadWorker();
-        loadWorker.stateProperty()
-                .addListener((ob, oldValue, newState) -> stage.setTitle(engine.getLocation() + " " + newState));
-        engine.locationProperty().addListener((ob, old, val) -> siteField.setText(val));
-        loadWorker.exceptionProperty().addListener((ob, oldValue, newException) -> onException(newException));
         ProgressIndicator progressIndicator = new ProgressIndicator();
         progressIndicator.progressProperty().bind(loadWorker.progressProperty());
         HBox top = new HBox();
-        siteField.prefWidthProperty()
-                .bind(browser.widthProperty().add(progressIndicator.widthProperty().add(50).negate()));
-        top.getChildren().addAll(backButton, progressIndicator, siteField);
         BorderPane pane = new BorderPane();
         pane.setTop(top);
         pane.setCenter(browser);
@@ -76,78 +69,136 @@ public class WebBrowserApplication extends Application {
         ListView<String> linksList = new ListView<>();
         ListView<ImageView> imageList = new ListView<>();
         ListView<String> historyList = new ListView<>();
-        final WebHistory history = engine.getHistory();
-        history.getEntries().addListener((Change<? extends Entry> c) -> {
-            c.next();
-            c.getRemoved().stream().forEach(e -> historyList.getItems().remove(e.getUrl()));
-            c.getAddedSubList().stream().forEach(e -> historyList.getItems().add(e.getUrl()));
-        });
         Accordion value = new Accordion(new TitledPane("Links", linksList), new TitledPane("Variables", varList),
                 new TitledPane("Images", imageList), new TitledPane("History", historyList));
         pane.setRight(value);
-
-        addProperties(loadWorker, varList);
-        addProperties(engine, varList);
-        engine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0");
-        engine.documentProperty().addListener((ob, old, doc) -> {
-            if (doc != null) {
-                RunnableEx.run(() -> linksList.setItems(getLinks(doc)));
-                RunnableEx.run(() -> imageList.setItems(getImgs(doc)));
-            }
-        });
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         CommonsFX.addCSS(scene, "filesComparator.css");
         stage.setTitle("Web Browser");
         stage.show();
 
+        siteField.prefWidthProperty()
+                .bind(browser.widthProperty().add(progressIndicator.widthProperty().add(50).negate()));
+        top.getChildren().addAll(backButton, progressIndicator, siteField);
+        loadWorker.stateProperty()
+                .addListener((ob, oldValue, newState) -> stage.setTitle(engine.getLocation() + " " + newState));
+        loadWorker.exceptionProperty().addListener((ob, oldValue, newException) -> onException(newException));
+        siteField.setOnKeyReleased(ev -> {
+            if (ev.getCode() == KeyCode.ENTER) {
+                loadSite(siteField);
+            }
+        });
+        engine.getHistory().getEntries().addListener((Change<? extends Entry> c) -> {
+            c.next();
+            c.getRemoved().stream().forEach(e -> historyList.getItems().remove(e.getUrl()));
+            c.getAddedSubList().stream().forEach(e -> historyList.getItems().add(e.getUrl()));
+        });
+        addProperties(loadWorker, varList);
+        addProperties(engine, varList);
+        engine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0");
+        engine.setConfirmHandler(str -> {
+            LOG.info("CONFIRM {}", str);
+            return true;
+        });
+        engine.setOnAlert(str -> LOG.info("ALERT {}", str.getData()));
+        engine.setOnError(str -> LOG.info("ERROR {}", str.getException()));
+        engine.setOnResized(str -> LOG.info("RESIZED {}", str.getData()));
+        engine.setOnVisibilityChanged(str -> LOG.info("VISIBILITY CHANGED {}", str.getData()));
+        engine.setPromptHandler(str -> {
+            LOG.info("PROMPTED {}", str.getMessage());
+            return str.getDefaultValue();
+        });
+        engine.setCreatePopupHandler(pop -> {
+            WebView button = new WebView();
+            new SimpleDialogBuilder().button(button).resizable(pop.isResizable()).build();
+            return button.getEngine();
+        });
+        engine.locationProperty().addListener((ob, old, val) -> {
+            siteField.setText(val);
+            onDocumentChange(linksList, imageList, engine.getDocument());
+        });
+        engine.documentProperty().addListener((ob, old, doc) -> onDocumentChange(linksList, imageList, doc));
+        File outFile = ResourceFXUtils.getOutFile("cache");
+        outFile.mkdir();
+        engine.setUserDataDirectory(outFile);
+
     }
 
-    private ObservableList<ImageView> getImgs(Document doc) throws MalformedURLException {
-        NodeList linkList = doc.getElementsByTagName("img");
-        Property<String> currentDomain = new SimpleStringProperty(new URL(siteField.getText()).getHost());
-        return IntStream.range(0, linkList.getLength()).mapToObj(linkList::item)
-                .filter(e -> e.getAttributes().getNamedItem("src") != null)
-                .map(FunctionEx.makeFunction(e -> ExtractUtils.addDomain(currentDomain,
-                        e.getAttributes().getNamedItem("src").getTextContent())))
-                .filter(StringUtils::isNotBlank).distinct().map(e -> {
-                    LOG.info("image {}", e);
-                    return e;
-                }).map(FunctionEx.makeFunction(t -> ImageLoader.convertToImage(currentDomain.getValue(), t)))
+    private void enableDebugger() {
+        // DOES NOTHING
+    }
+
+    private ObservableList<String> getByTagAttribute(Document doc, String tagname, String string) {
+        NodeList linkList = doc.getElementsByTagName(tagname);
+        Property<String> currentDomain = getDomain();
+        return IntStream.range(0, linkList.getLength()).mapToObj(linkList::item).map(Node::getAttributes)
+                .flatMap(attributes -> IntStream.range(0, attributes.getLength()).mapToObj(attributes::item))
+                .filter(e -> string.equalsIgnoreCase(e.getNodeName()))
+                .map(FunctionEx.makeFunction(e -> ExtractUtils.addDomain(currentDomain, e.getTextContent()))).distinct()
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+    }
+
+    private Property<String> getDomain() {
+        return new SimpleStringProperty(
+                SupplierEx.getIgnore(() -> new URL(siteField.getText()).getHost(), siteField.getText()));
+    }
+
+    private ObservableList<ImageView> getImgs(Document doc) {
+        Property<String> currentDomain = getDomain();
+        return getByTagAttribute(doc, "img", "src").stream()
+                .map(FunctionEx.makeFunction(t -> ImageLoader.convertToImage(currentDomain.getValue(), t)))
                 .filter(Objects::nonNull).sorted(Comparator.comparing(ImageLoader::byArea))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
-    private ObservableList<String> getLinks(Document doc) throws MalformedURLException {
-        NodeList linkList = doc.getElementsByTagName("a");
-        Property<String> currentDomain = new SimpleStringProperty(new URL(siteField.getText()).getHost());
-        return IntStream.range(0, linkList.getLength()).mapToObj(linkList::item)
-                .filter(e -> e.getAttributes().getNamedItem("href") != null)
-                .map(FunctionEx.makeFunction(e -> ExtractUtils.addDomain(currentDomain,
-                        e.getAttributes().getNamedItem("href").getTextContent())))
-                .distinct().collect(Collectors.toCollection(FXCollections::observableArrayList));
+    private ObservableList<String> getLinks(Document doc) {
+        return getByTagAttribute(doc, "a", "href");
     }
 
     private void loadSite(TextField textField) {
         engine.load(textField.getText());
     }
 
+    private void onDocumentChange(ListView<String> linksList, ListView<ImageView> imageList, Document doc) {
+        if (doc != null) {
+            RunnableEx.runNewThread(() -> {
+                ObservableList<String> links = getLinks(doc);
+                RunnableEx.runInPlatform(() -> linksList.setItems(links));
+            });
+            RunnableEx.runNewThread(() -> {
+                ObservableList<ImageView> imgs = getImgs(doc);
+                RunnableEx.runInPlatform(() -> imageList.setItems(imgs));
+            });
+        }
+    }
+
     private void onException(Throwable newException) {
         if (newException == null) {
             return;
         }
-        if ("SSL handshake failed".equalsIgnoreCase(newException.getMessage())) {
+        String message = newException.getMessage();
+        String url = siteField.getText();
+        LOG.info("ERROR LOADING {} {}", url, message);
+        LOG.trace("ERROR LOADING {}", url, newException);
+        if ("SSL handshake failed".equalsIgnoreCase(message)) {
             // RunnableEx.run(() -> InstallCert.installCertificate(siteField.getText()))
             return;
         }
-        if ("Malformed URL".equalsIgnoreCase(newException.getMessage())) {
-            if (!siteField.getText().contains("://")) {
-                siteField.setText("http://" + siteField.getText());
+        if ("Malformed URL".equalsIgnoreCase(message)) {
+            if (!url.contains("://")) {
+                siteField.setText("http://" + url);
+                loadSite(siteField);
             }
-            loadSite(siteField);
             return;
         }
-        LOG.info("ERROR LOADING {}", siteField.getText(), newException);
+        RunnableEx.run(() -> {
+            Response executeRequest = ExtractUtils.executeRequest(url, cookies);
+            String body = executeRequest.body();
+            String contentType = executeRequest.contentType();
+            engine.loadContent(body, contentType);
+        });
+
     }
 
     public static void main(String[] args) {

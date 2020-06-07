@@ -32,14 +32,25 @@ public final class ExtractUtils {
     private ExtractUtils() {
     }
 
-    public static String addDomain(Property<String> domain, String l) {
-        if (l.startsWith("http") || l.startsWith("data:image") || l.startsWith(domain.getValue())) {
-            return l;
+    public static String addDomain(Property<String> domain, String url) {
+        String value = domain.getValue();
+        return addDomain(value, url);
+    }
+
+    public static String addDomain(String domain, String url) {
+        if (url.startsWith("http") || url.startsWith("data:image")) {
+            return url;
         }
-        if (l.startsWith("//") && domain.getValue().contains("://")) {
-            return domain.getValue().split("//")[0] + l;
+        if (url.startsWith(domain)) {
+            return "http://" + url;
         }
-        return domain.getValue() + (!l.startsWith("/") ? "/" + l : l);
+        if (url.startsWith("//")) {
+            if (domain.contains("://")) {
+                return domain.split("//")[0] + url;
+            }
+            return "http:" + url;
+        }
+        return domain + (!url.startsWith("/") ? "/" + url : url);
     }
 
     public static void copy(File input, File outFile) throws IOException {
