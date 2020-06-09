@@ -8,18 +8,19 @@ import java.util.logging.Level;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.openqa.selenium.Proxy;
-import org.openqa.selenium.Proxy.ProxyType;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class HashVerifier {
     public static final Logger LOG = HasLogging.log();
+
+    private static final String vtApiKey = "397249a87cac6415141dde0a2263710c23166cc759dc89b681e8df70cc536abd";
+    private static final Path PHANTOM_JS =
+            ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
 
     private HashVerifier() {
     }
@@ -42,29 +43,27 @@ public final class HashVerifier {
         }
     }
 
+    public static Document hashLookup(String sha1Hash) {
+        return renderPage("https://hashlookup.org/search.php?q=" + sha1Hash);
+    }
 
     public static Document renderPage(String url) {
-        Path phantomJS =
-                ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
         DesiredCapabilities dcap = DesiredCapabilities.firefox();
-        Proxy extractFrom = Proxy.extractFrom(dcap);
-        extractFrom.setHttpProxy(ExtractUtils.PROXY_CONFIG + ":" + ExtractUtils.PROXY_PORT);
-        extractFrom.setProxyType(ProxyType.MANUAL);
-        extractFrom.setSocksUsername(ExtractUtils.getHTTPUsername());
-        extractFrom.setSocksPassword(ExtractUtils.getHTTPPassword());
-        PhantomJSDriverService createDefaultService = new PhantomJSDriverService.Builder()
-                .usingPhantomJSExecutable(phantomJS.toFile())
-                .usingAnyFreePort()
-                .withProxy(extractFrom)
-                .withLogFile(ResourceFXUtils.getOutFile("phantomjsdriver.log")).build();
+        PhantomJSDriverService createDefaultService =
+                new PhantomJSDriverService.Builder().usingPhantomJSExecutable(PHANTOM_JS.toFile()).usingAnyFreePort()
+                        .withLogFile(ResourceFXUtils.getOutFile("phantomjsdriver.log")).build();
         PhantomJSDriver ghostDriver = new PhantomJSDriver(createDefaultService, dcap);
         try {
-            ghostDriver.setLogLevel(Level.OFF);
+            ghostDriver.setLogLevel(Level.SEVERE);
             ghostDriver.manage().window().maximize();
             ghostDriver.get(url);
             return Jsoup.parse(ghostDriver.getPageSource());
         } finally {
             ghostDriver.quit();
         }
+    }
+
+    public static Document virusTotal(String sha256Hash) {
+        return renderPage("https://www.virustotal.com/old-browsers/file/" + sha256Hash);
     }
 }

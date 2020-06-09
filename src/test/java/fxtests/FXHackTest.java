@@ -59,10 +59,11 @@ public class FXHackTest extends AbstractTestExecution {
         Path firstPathByExtension = measureTime("ResourceFXUtils.getFirstPathByExtension",
                 () -> ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
         measureTime("HashVerifier.getMD5Hash", () -> HashVerifier.getMD5Hash(firstPathByExtension));
-        measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
         String sha1Hash = measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstPathByExtension));
-        String hashLookup = "https://hashlookup.org/search.php?q=" + sha1Hash;
-        measureTime("HashVerifier.renderPage", () -> HashVerifier.renderPage(hashLookup).html());
+        measureTime("HashVerifier.hashLookup", () -> HashVerifier.hashLookup(sha1Hash).html());
+        String sha256Hash =
+                measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
+        measureTime("HashVerifier.virusTotal", () -> HashVerifier.virusTotal(sha256Hash).html());
     }
 
 }
