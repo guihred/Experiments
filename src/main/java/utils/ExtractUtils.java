@@ -19,13 +19,14 @@ import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 
 public final class ExtractUtils {
+    public static final String PROXY_PORT = "3128";
     private static final int HUNDRED_SECONDS = 100000;
     private static final Logger LOG = HasLogging.log();
 
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
+    public static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PASS = "15-juuGO";
-    private static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
     private static final String PROXY_ADDRESS = getProxyAddress();
     private static final boolean IS_PROXIED = PROXY_ADDRESS != null;
 
@@ -178,9 +179,9 @@ public final class ExtractUtils {
             return;
         }
         System.setProperty("http.proxyHost", PROXY_ADDRESS);
-        System.setProperty("http.proxyPort", "3128");
+        System.setProperty("http.proxyPort", PROXY_PORT);
         System.setProperty("https.proxyHost", PROXY_ADDRESS);
-        System.setProperty("https.proxyPort", "3128");
+        System.setProperty("https.proxyPort", PROXY_PORT);
         System.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
         System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
 

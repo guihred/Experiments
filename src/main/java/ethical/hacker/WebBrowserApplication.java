@@ -49,6 +49,10 @@ public class WebBrowserApplication extends Application {
     private TextField siteField;
     private Map<String, String> cookies = new HashMap<>();
 
+    public void loadSite(String textField) {
+        engine.load(textField);
+    }
+
     @Override
     public void start(Stage stage) {
         ExtractUtils.insertProxyConfig();
@@ -86,7 +90,7 @@ public class WebBrowserApplication extends Application {
         loadWorker.exceptionProperty().addListener((ob, oldValue, newException) -> onException(newException));
         siteField.setOnKeyReleased(ev -> {
             if (ev.getCode() == KeyCode.ENTER) {
-                loadSite(siteField);
+                loadSite(siteField.getText());
             }
         });
         engine.getHistory().getEntries().addListener((Change<? extends Entry> c) -> {
@@ -156,10 +160,6 @@ public class WebBrowserApplication extends Application {
         return getByTagAttribute(doc, "a", "href");
     }
 
-    private void loadSite(TextField textField) {
-        engine.load(textField.getText());
-    }
-
     private void onDocumentChange(ListView<String> linksList, ListView<ImageView> imageList, Document doc) {
         if (doc != null) {
             RunnableEx.runNewThread(() -> {
@@ -188,7 +188,7 @@ public class WebBrowserApplication extends Application {
         if ("Malformed URL".equalsIgnoreCase(message)) {
             if (!url.contains("://")) {
                 siteField.setText("http://" + url);
-                loadSite(siteField);
+                loadSite("http://" + url);
             }
             return;
         }

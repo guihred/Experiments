@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
@@ -123,7 +124,6 @@ public final class ResourceFXUtils {
         return file;
     }
 
-
     public static File getOutFile(String out) {
         File parentFile = toFile("alice.txt").getParentFile();
         File file = new File(parentFile, "out");
@@ -132,6 +132,7 @@ public final class ResourceFXUtils {
         }
         return new File(file, out);
     }
+
 
     public static List<Path> getPathByExtension(File dir, String... other) {
         return SupplierEx.get(() -> {
@@ -144,6 +145,15 @@ public final class ResourceFXUtils {
                     .collect(Collectors.toList());
             }
         }, Collections.emptyList());
+    }
+
+    public static Path getRandomPathByExtension(File dir, String... other) {
+        List<Path> pathByExtension = getPathByExtension(dir, other);
+        if(pathByExtension.isEmpty()) {
+            return null;
+        }
+        
+        return pathByExtension.get(new Random().nextInt(pathByExtension.size()));
     }
 
     public static File getUserFolder(String dir) {
