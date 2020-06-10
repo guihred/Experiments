@@ -18,7 +18,6 @@ import utils.ResourceFXUtils;
 public final class HashVerifier {
     public static final Logger LOG = HasLogging.log();
 
-    private static final String vtApiKey = "397249a87cac6415141dde0a2263710c23166cc759dc89b681e8df70cc536abd";
     private static final Path PHANTOM_JS =
             ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
 

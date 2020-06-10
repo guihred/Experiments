@@ -16,6 +16,7 @@ import utils.ExtractUtils;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
 
+@SuppressWarnings("static-method")
 public class FXHackTest extends AbstractTestExecution {
 
     @Test
@@ -54,16 +55,24 @@ public class FXHackTest extends AbstractTestExecution {
     }
 
     @Test
-    @SuppressWarnings("static-method")
     public void verifyHashDigest() {
         Path firstPathByExtension = measureTime("ResourceFXUtils.getFirstPathByExtension",
-                () -> ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
+                () -> ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
         measureTime("HashVerifier.getMD5Hash", () -> HashVerifier.getMD5Hash(firstPathByExtension));
         String sha1Hash = measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstPathByExtension));
         measureTime("HashVerifier.hashLookup", () -> HashVerifier.hashLookup(sha1Hash).html());
         String sha256Hash =
                 measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
         measureTime("HashVerifier.virusTotal", () -> HashVerifier.virusTotal(sha256Hash).html());
+    }
+
+    @Test
+    public void verifyVirusTotalApi() {
+        Path firstPathByExtension = measureTime("ResourceFXUtils.getFirstPathByExtension",
+                () -> ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
+        String sha256Hash =
+                measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
+        measureTime("VirusTotalApi.getFilesInformation", () -> VirusTotalApi.getFilesInformation(sha256Hash));
     }
 
 }
