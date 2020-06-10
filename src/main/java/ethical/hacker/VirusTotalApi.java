@@ -23,9 +23,12 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
-public class VirusTotalApi {
+public final class VirusTotalApi {
     private static final Logger LOG = HasLogging.log();
     private static final String VIRUSTOTAL_APIKEY = "397249a87cac6415141dde0a2263710c23166cc759dc89b681e8df70cc536abd";
+
+    private VirusTotalApi() {
+    }
 
     public static void getFilesInformation(String hash) throws IOException {
         File outFile = ResourceFXUtils.getOutFile(hash + ".json");
@@ -40,6 +43,47 @@ public class VirusTotalApi {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash + "/behaviours", outFile2);
         }
         displayJsonFromFile(outFile2);
+    }
+
+    public static void getHuntingRulesets() throws IOException {
+
+        File outFile = ResourceFXUtils.getOutFile("hunting_rulesets.json");
+        getFromURL("https://www.virustotal.com/api/v3/intelligence/hunting_rulesets", outFile);
+    }
+
+    private static void appendJsonArray(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
+        String repeat = StringUtils.repeat(" ", depth);
+
+        yaml.append("[");
+        for (Iterator<JsonNode> iterator = jsonNode.iterator(); iterator.hasNext();) {
+            JsonNode arrayItem = iterator.next();
+            yaml.append("\n" + repeat + " ");
+            processNode(arrayItem, yaml, depth + 1, filters);
+            if (iterator.hasNext()) {
+                yaml.append(",");
+            }
+        }
+        yaml.append("\n" + repeat + "]");
+    }
+
+    private static void appendJsonObject(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
+        String repeat = StringUtils.repeat(" ", depth);
+        yaml.append("{");
+        for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
+            Entry<String, JsonNode> next = iterator.next();
+            String key = next.getKey();
+            if (filters.length == 0 || Arrays.asList(filters).contains(key)) {
+                yaml.append("\n" + repeat + " " + key + "=");
+                ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(filters));
+                arrayList.remove(key);
+                String[] array = arrayList.toArray(new String[] {});
+                processNode(next.getValue(), yaml, depth + 1, array);
+                if (iterator.hasNext()) {
+                    yaml.append(",");
+                }
+            }
+        }
+        yaml.append("\n" + repeat + "}");
     }
 
     private static JsonNode displayJsonFromFile(File outFile, String... a) throws IOException {
@@ -68,46 +112,20 @@ public class VirusTotalApi {
     private static void processNode(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
         if (jsonNode.isValueNode()) {
             String asText = jsonNode.asText();
-            if (asText.matches("\\d{10}")) {
-                long epochSecond = Long.parseLong(asText);
-                yaml.append(
-                        Instant.ofEpochSecond(epochSecond).atZone(ZoneId.systemDefault()).toLocalDateTime());
+            if (!asText.matches("\\d{10}")) {
+                yaml.append(asText);
                 return;
             }
-            yaml.append(asText);
+            long epochSecond = Long.parseLong(asText);
+            yaml.append(Instant.ofEpochSecond(epochSecond).atZone(ZoneId.systemDefault()).toLocalDateTime());
             return;
         }
-        String repeat = StringUtils.repeat(" ", depth);
         if (jsonNode.isArray()) {
-            yaml.append("[");
-            for (Iterator<JsonNode> iterator = jsonNode.iterator(); iterator.hasNext();) {
-                JsonNode arrayItem = iterator.next();
-                yaml.append("\n" + repeat + " ");
-                processNode(arrayItem, yaml, depth + 1, filters);
-                if (iterator.hasNext()) {
-                    yaml.append(",");
-                }
-            }
-            yaml.append("\n" + repeat + "]");
+            appendJsonArray(jsonNode, yaml, depth, filters);
             return;
         }
         if (jsonNode.isObject()) {
-            yaml.append("{");
-            for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
-                Entry<String, JsonNode> next = iterator.next();
-                String key = next.getKey();
-                if (filters.length == 0 || Arrays.asList(filters).contains(key)) {
-                    yaml.append("\n" + repeat + " " + key + "=");
-                    ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(filters));
-                    arrayList.remove(key);
-                    String[] array = arrayList.toArray(new String[] {});
-                    processNode(next.getValue(), yaml, depth + 1, array);
-                    if (iterator.hasNext()) {
-                        yaml.append(",");
-                    }
-                }
-            }
-            yaml.append("\n" + repeat + "}");
+            appendJsonObject(jsonNode, yaml, depth, filters);
         }
     }
 
@@ -116,19 +134,19 @@ public class VirusTotalApi {
             return jsonNode.asText();
         }
         if (jsonNode.isArray()) {
-            List<Object> arrayList = new ArrayList<>();
+            List<Object> arrayObject = new ArrayList<>();
             for (JsonNode arrayItem : jsonNode) {
-                arrayList.add(toObject(arrayItem, depth + 1));
+                arrayObject.add(toObject(arrayItem, depth + 1));
             }
-            return arrayList;
+            return arrayObject;
         }
         if (jsonNode.isObject()) {
-            Map<String, Object> hashMap = new HashMap<>();
+            Map<String, Object> mapObject = new HashMap<>();
             for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
                 Entry<String, JsonNode> next = iterator.next();
-                hashMap.put(next.getKey(), toObject(next.getValue(), depth + 1));
+                mapObject.put(next.getKey(), toObject(next.getValue(), depth + 1));
             }
-            return hashMap;
+            return mapObject;
         }
         return null;
 
