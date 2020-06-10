@@ -97,7 +97,7 @@ public final class XMLExtractor {
         List<Node> currentNodes = new ArrayList<>();
         currentNodes.add(domNode);
         TreeItem<Map<String, String>> value = new TreeItem<>(newMap(domNode.getNodeName(), domNode.getNodeValue()));
-        value.setGraphic(newBoldText(domNode));
+        value.setGraphic(newBoldText(domNode.getNodeName()));
         build.setRoot(value);
         allItems.put(domNode, value);
         while (!currentNodes.isEmpty()) {
@@ -111,7 +111,7 @@ public final class XMLExtractor {
                         newMap(item.getNodeName(), item.getNodeValue()));
                     allItems.get(domNode).getChildren().add(e);
                     allItems.put(item, e);
-                    e.setGraphic(newBoldText(item));
+                    e.setGraphic(newBoldText(item.getNodeName()));
                     addValue(item, e);
                 }
             }

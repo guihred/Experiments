@@ -45,10 +45,43 @@ public final class VirusTotalApi {
         displayJsonFromFile(outFile2);
     }
 
-    public static void getHuntingRulesets() throws IOException {
+    public static void processNode(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
+        if (jsonNode.isValueNode()) {
+            String asText = jsonNode.asText();
+            if (!asText.matches("\\d{10}")) {
+                yaml.append(asText);
+            } else {
+                long epochSecond = Long.parseLong(asText);
+                yaml.append(Instant.ofEpochSecond(epochSecond).atZone(ZoneId.systemDefault()).toLocalDateTime());
+            }
+        } else if (jsonNode.isArray()) {
+            appendJsonArray(jsonNode, yaml, depth, filters);
+        } else if (jsonNode.isObject()) {
+            appendJsonObject(jsonNode, yaml, depth, filters);
+        }
+    }
 
-        File outFile = ResourceFXUtils.getOutFile("hunting_rulesets.json");
-        getFromURL("https://www.virustotal.com/api/v3/intelligence/hunting_rulesets", outFile);
+    public static Object toObject(JsonNode jsonNode, int depth) {
+        if (jsonNode.isValueNode()) {
+            return jsonNode.asText();
+        }
+        if (jsonNode.isArray()) {
+            List<Object> arrayObject = new ArrayList<>();
+            for (JsonNode arrayItem : jsonNode) {
+                arrayObject.add(toObject(arrayItem, depth + 1));
+            }
+            return arrayObject;
+        }
+        if (jsonNode.isObject()) {
+            Map<String, Object> mapObject = new HashMap<>();
+            for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
+                Entry<String, JsonNode> next = iterator.next();
+                mapObject.put(next.getKey(), toObject(next.getValue(), depth + 1));
+            }
+            return mapObject;
+        }
+        return null;
+
     }
 
     private static void appendJsonArray(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
@@ -107,48 +140,5 @@ public final class VirusTotalApi {
         Stream<String> lines = rd.lines();
         List<String> collect = lines.collect(Collectors.toList());
         Files.write(outFile.toPath(), collect);
-    }
-
-    private static void processNode(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
-        if (jsonNode.isValueNode()) {
-            String asText = jsonNode.asText();
-            if (!asText.matches("\\d{10}")) {
-                yaml.append(asText);
-                return;
-            }
-            long epochSecond = Long.parseLong(asText);
-            yaml.append(Instant.ofEpochSecond(epochSecond).atZone(ZoneId.systemDefault()).toLocalDateTime());
-            return;
-        }
-        if (jsonNode.isArray()) {
-            appendJsonArray(jsonNode, yaml, depth, filters);
-            return;
-        }
-        if (jsonNode.isObject()) {
-            appendJsonObject(jsonNode, yaml, depth, filters);
-        }
-    }
-
-    private static Object toObject(JsonNode jsonNode, int depth) {
-        if (jsonNode.isValueNode()) {
-            return jsonNode.asText();
-        }
-        if (jsonNode.isArray()) {
-            List<Object> arrayObject = new ArrayList<>();
-            for (JsonNode arrayItem : jsonNode) {
-                arrayObject.add(toObject(arrayItem, depth + 1));
-            }
-            return arrayObject;
-        }
-        if (jsonNode.isObject()) {
-            Map<String, Object> mapObject = new HashMap<>();
-            for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
-                Entry<String, JsonNode> next = iterator.next();
-                mapObject.put(next.getKey(), toObject(next.getValue(), depth + 1));
-            }
-            return mapObject;
-        }
-        return null;
-
     }
 }
