@@ -119,10 +119,21 @@ public class EthicalHackController extends Application {
 
     public void onActionPingTrace() {
         items.clear();
-        Map<String, String> nsInformation = PingTraceRoute.getInformation(address.getText());
-        items.add(nsInformation);
-        Set<String> keySet = nsInformation.keySet();
-        EthicalHackApp.addColumns(commonTable, keySet);
+
+        RunnableEx.runNewThread(() -> {
+            String text = address.getText();
+            for (String ip : text.split("[\\s,;]+")) {
+                Map<String, String> nsInformation = PingTraceRoute.getInformation(ip);
+                RunnableEx.runInPlatform(() -> {
+                    if (items.isEmpty()) {
+                        Set<String> keySet = nsInformation.keySet();
+                        EthicalHackApp.addColumns(commonTable, keySet);
+                    }
+                    items.add(nsInformation);
+                });
+            }
+
+        });
     }
 
     public void onActionPortScan() {

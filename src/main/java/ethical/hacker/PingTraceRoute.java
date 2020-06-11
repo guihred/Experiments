@@ -10,10 +10,11 @@ import utils.ConsoleUtils;
 import utils.HasLogging;
 
 public final class PingTraceRoute {
-	private static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
-	private PingTraceRoute() {
-	}
+    private PingTraceRoute() {
+    }
+
     public static Map<String, String> getInformation(String address) {
         Map<String, String> responses = new HashMap<>();
         String ipRegex = ".+\\[(.+)\\].+";
@@ -26,13 +27,12 @@ public final class PingTraceRoute {
         responses.put(ttl, "$1");// RECEIVED
         String lost = ".+Perdidos = (\\d+).+";
         responses.put(lost, "$1");// RECEIVED
-        Map<String, String> executeInConsole = ConsoleUtils
-                .executeInConsole("ping " + address + " -f -n 1 ",
-                responses);
-        //        Pacotes: Enviados = 4, Recebidos = 0, Perdidos = 4
+        Map<String, String> executeInConsole =
+                ConsoleUtils.executeInConsole("ping " + address + " -f -n 1 ", responses);
+        // Pacotes: Enviados = 4, Recebidos = 0, Perdidos = 4
         Map<String, String> info = new HashMap<>();
 
-        LOG.info("IP = {}", executeInConsole.get(ipRegex));
+        LOG.info("IP = {}", executeInConsole.getOrDefault(ipRegex, address));
         LOG.info("SENT = {}", executeInConsole.get(sent));
         String arg = executeInConsole.get(received);
         LOG.info("RECEIVED = {}", arg);
@@ -67,11 +67,11 @@ public final class PingTraceRoute {
         responses.put(route, "$1");// RECEIVED
         String ipRegex = "Disparando ([\\d\\.]+) .+";
         responses.put(ipRegex, "$1");// IP
-        Map<String, String> executeInConsole = ConsoleUtils
-                .executeInConsole("ping " + address + " -i " + i + " -n 1 ", responses);
+        Map<String, String> executeInConsole =
+                ConsoleUtils.executeInConsole("ping " + address + " -i " + i + " -n 1 ", responses);
 
         String string = executeInConsole.get(route);
-		if (string != null && !string.matches("Host de destino inacess.+") && i < 100 && !n.contains(string)) {
+        if (string != null && !string.matches("Host de destino inacess.+") && i < 100 && !n.contains(string)) {
             n.add(string);
             return traceRoute(n, address, i + 1);
         }
