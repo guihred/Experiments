@@ -9,7 +9,9 @@ import extract.ExcelService;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -63,6 +65,7 @@ public class JsonViewer extends Application {
         SimpleObjectProperty<File> fileProp = new SimpleObjectProperty<>();
         Path firstPathByExtension = ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getOutFile(), ".json");
         if (firstPathByExtension != null) {
+            fileProp.set(firstPathByExtension.toFile());
             readJsonFile(tree, firstPathByExtension.toFile());
         }
         Button importJsonButton = StageHelper.chooseFile("Import Json", "Import Json", newFile -> {
@@ -70,7 +73,11 @@ public class JsonViewer extends Application {
             fileProp.set(newFile);
         }, "Json", "*.json");
         Button exportExcel = newButton("Export excel", e -> exportToExcel(tree, fileProp.get()));
-        return new VBox(new HBox(importJsonButton, exportExcel), new SplitPane(tree, sideTable));
+        SplitPane splitPane = new SplitPane(tree, sideTable);
+        VBox vBox = new VBox(new HBox(importJsonButton, exportExcel), splitPane);
+        tree.prefHeightProperty().bind(vBox.heightProperty());
+        sideTable.prefHeightProperty().bind(vBox.heightProperty());
+        return vBox;
     }
 
     private static void exportToExcel(TreeView<Map<String, String>> tree, File file) {
@@ -108,20 +115,58 @@ public class JsonViewer extends Application {
         if (newValue != null && newValue.isLeaf()) {
             addColumns(sideTable, newValue.getValue().keySet());
             list.add(newValue.getValue());
-        } else if (newValue != null
-                && newValue.getChildren().stream().anyMatch(TreeItem<Map<String, String>>::isLeaf)) {
-            addColumns(sideTable, newValue.getValue().keySet());
-            Map<String, String> newItem = new HashMap<>();
-            newItem.putAll(newValue.getValue());
-            list.add(newItem);
-            List<String> keySet = newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue)
-                    .flatMap(m -> m.keySet().stream()).collect(Collectors.toList());
-            if (keySet.size() - 1 == newValue.getChildren().size()) {
-                keySet.addAll(newValue.getValue().keySet());
-                sideTable.getColumns().clear();
-                addColumns(sideTable, keySet);
-                newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue).forEach(newItem::putAll);
-            }
+            splitList(list, newValue.getValue());
+            return;
         }
+
+        if (newValue == null || !newValue.getChildren().stream().anyMatch(TreeItem<Map<String, String>>::isLeaf)) {
+            return;
+        }
+
+        Set<String> valueKeySet = newValue.getValue().keySet();
+        addColumns(sideTable, valueKeySet);
+        Map<String, String> newItem = new HashMap<>();
+        newItem.putAll(newValue.getValue());
+        list.add(newItem);
+        List<String> keySet = newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue)
+                .flatMap(m -> m.keySet().stream()).distinct().collect(Collectors.toList());
+        if (keySet.size() - 1 == newValue.getChildren().size()) {
+            keySet.addAll(newValue.getValue().keySet());
+            sideTable.getColumns().clear();
+            addColumns(sideTable, keySet);
+            newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue).forEach(newItem::putAll);
+        }
+        if (valueKeySet.isEmpty()) {
+            list.clear();
+            addColumns(sideTable, keySet);
+            List<Map<String, String>> collect = newValue.getChildren().stream()
+                    .map(TreeItem<Map<String, String>>::getValue).collect(Collectors.toList());
+            list.addAll(collect);
+        }
+
+
+    }
+
+    private static boolean splitList(ObservableList<Map<String, String>> list, Map<String, String> newItem) {
+        long count =
+                newItem.values().stream().mapToInt(e -> e.split("\n").length).filter(i -> i > 1).distinct().count();
+        if (count != 1) {
+            return false;
+        }
+        Set<Entry<String, String>> entrySet = newItem.entrySet();
+        list.clear();
+        for (Entry<String, String> entry : entrySet) {
+            List<Map<String, String>> collect = Stream.of(entry.getValue().split("\n"))
+                    .map(e -> newMap(entry.getKey(), e)).collect(Collectors.toList());
+            if (!list.isEmpty()) {
+                for (int i = 0; i < list.size(); i++) {
+                    Map<String, String> map = list.get(i);
+                    map.putAll(collect.get(i));
+                }
+                continue;
+            }
+            list.addAll(collect);
+        }
+        return true;
     }
 }

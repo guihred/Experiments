@@ -1,8 +1,8 @@
 package schema.sngpc;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
-public final class SimpleMap extends HashMap<String, String> {
+public final class SimpleMap extends LinkedHashMap<String, String> {
     private String value;
 
     public SimpleMap() {
