@@ -3,6 +3,7 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 
 import ethical.hacker.*;
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.stream.IntStream;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import org.junit.Test;
+import schema.sngpc.JsonViewer;
 import utils.ConsoleUtils;
 import utils.ExtractUtils;
 import utils.ImageFXUtils;
@@ -72,7 +74,10 @@ public class FXHackTest extends AbstractTestExecution {
                 () -> ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
         String sha256Hash =
                 measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
-        measureTime("VirusTotalApi.getFilesInformation", () -> VirusTotalApi.getFilesInformation(sha256Hash));
+        File filesInformation =
+                measureTime("VirusTotalApi.getFilesInformation", () -> VirusTotalApi.getFilesInformation(sha256Hash));
+        JsonViewer show = show(JsonViewer.class);
+        show.setFile(filesInformation);
     }
 
 }

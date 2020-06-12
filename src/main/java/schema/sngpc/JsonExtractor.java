@@ -24,8 +24,7 @@ public final class JsonExtractor {
         if (item.isValueNode()) {
             Set<String> keySet = e.getValue().keySet();
             for (String string : keySet) {
-                String asText = item.asText();
-                e.getValue().merge(string, asText, (old, val) -> StringUtils.isBlank(old) ? val : old + "\n" + val);
+                merge(e, string, item);
             }
             return;
         }
@@ -34,8 +33,11 @@ public final class JsonExtractor {
         while (attributes.hasNext()) {
             String nodeName = attributes.next();
             JsonNode item2 = item.get(nodeName);
-            if (item2.isValueNode()) {
-                e.getValue().merge(nodeName, item2.asText(), (old, val) -> old + "\n" + val);
+            merge(e, nodeName, item2);
+            if (item2.isArray()) {
+                for (JsonNode string : item2) {
+                    merge(e, nodeName, string);
+                }
             }
         }
 
@@ -85,17 +87,23 @@ public final class JsonExtractor {
         }
     }
 
+    private static void merge(TreeItem<Map<String, String>> e, String nodeName, JsonNode item2) {
+        if (item2.isValueNode()) {
+            e.getValue().merge(nodeName, item2.asText(),
+                    (old, val) -> StringUtils.isBlank(old) ? val : old + "\n" + val);
+        }
+    }
+
     private static Map<String, String> newMap(Entry<String, JsonNode> item) {
-        if(item.getValue().isValueNode()) {
+        if (!item.getValue().isObject()) {
             return newMap(item.getKey(), item.getValue().asText());
         }
-        return new LinkedHashMap<>();
+        return newMap(item.getKey(), "");
     }
 
     private static void readArray(Map<JsonNode, TreeItem<Map<String, String>>> allItems, List<JsonNode> currentNodes,
             JsonNode domNode, Entry<String, JsonNode> item) {
-        String asText = item.getValue().asText();
-        Map<String, String> newMap = newMap(item.getKey(), asText);
+        Map<String, String> newMap = newMap(item);
         TreeItem<Map<String, String>> e = new TreeItem<>(newMap);
         e.setGraphic(SimpleTextBuilder.newBoldText(item.getKey()));
         if (!allItems.containsKey(domNode) && allItems.containsKey(item.getValue())) {
@@ -103,11 +111,22 @@ public final class JsonExtractor {
         }
         allItems.get(domNode).getChildren().add(e);
         allItems.putIfAbsent(item.getValue(), e);
+        int i = 0;
         for (JsonNode jsonNode : item.getValue()) {
-            addValue(jsonNode, e);
-            if (jsonNode.isObject()) {
-                currentNodes.add(0, jsonNode);
+            if (!jsonNode.isObject()) {
+                addValue(jsonNode, e);
+                continue;
             }
+            currentNodes.add(0, jsonNode);
+            String key = "" + i;
+            Map<String, String> newMap2 = newMap(key, jsonNode.asText(key));
+            TreeItem<Map<String, String>> e2 = new TreeItem<>(newMap2);
+            e2.setGraphic(SimpleTextBuilder.newBoldText(key));
+            allItems.get(item.getValue()).getChildren().add(e2);
+            allItems.putIfAbsent(jsonNode, e2);
+            addValue(jsonNode, e2);
+            clearEmptyEntries(newMap2);
+            i++;
         }
         clearEmptyEntries(newMap);
     }
@@ -117,6 +136,9 @@ public final class JsonExtractor {
         currentNodes.add(0, item.getValue());
         Map<String, String> newMap = newMap(item);
         TreeItem<Map<String, String>> e = new TreeItem<>(newMap);
+        if (!allItems.containsKey(domNode) && allItems.containsKey(item.getValue())) {
+            allItems.putIfAbsent(domNode, allItems.get(item.getValue()).getParent());
+        }
         allItems.get(domNode).getChildren().add(e);
         allItems.put(item.getValue(), e);
         e.setGraphic(SimpleTextBuilder.newBoldText(item.getKey()));
@@ -147,5 +169,8 @@ public final class JsonExtractor {
                 }
             }
         }
+        allItems.values().stream().map(TreeItem<Map<String, String>>::getValue).filter(Objects::nonNull)
+                .forEach(JsonExtractor::clearEmptyEntries);
+
     }
 }

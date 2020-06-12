@@ -30,7 +30,7 @@ public final class VirusTotalApi {
     private VirusTotalApi() {
     }
 
-    public static void getFilesInformation(String hash) throws IOException {
+    public static File getFilesInformation(String hash) throws IOException {
         File outFile = ResourceFXUtils.getOutFile(hash + ".json");
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
@@ -43,6 +43,7 @@ public final class VirusTotalApi {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash + "/behaviours", outFile2);
         }
         displayJsonFromFile(outFile2);
+        return outFile;
     }
 
     public static void processNode(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
