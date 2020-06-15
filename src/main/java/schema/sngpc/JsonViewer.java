@@ -137,7 +137,7 @@ public class JsonViewer extends Application {
             list.addAll(collect);
             return;
         }
-        if (list.size() == 1) {
+        if (list.size() == 1 && sideTable.getColumns().size() > 6) {
             Map<String, String> map = list.get(0);
             List<Map<String, String>> collect = map.entrySet().stream().map(e -> {
                 Map<String, String> newMap = newMap("Key", e.getKey());
