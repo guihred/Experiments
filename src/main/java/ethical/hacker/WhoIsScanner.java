@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.HasLogging;
@@ -35,8 +36,10 @@ public class WhoIsScanner {
         String scanIP = "http://isc.sans.edu/api/ip/" + ip;
         Map<String, String> map = new LinkedHashMap<>();
         ExtractUtils.getDocument(scanIP, cookies).getElementsByTag("ip")
-                .forEach(e -> e.children().forEach(m -> map.put(m.tagName(), m.text())));
+                .forEach(e -> e.children()
+                        .forEach(m -> map.put(m.tagName(), StringEscapeUtils.unescapeHtml4(m.text()))));
         LOG.info("{}", map);
+
         return map;
     }
 

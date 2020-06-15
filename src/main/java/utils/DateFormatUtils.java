@@ -1,7 +1,9 @@
 package utils;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
@@ -17,6 +19,11 @@ public final class DateFormatUtils {
         .appendValue(ChronoField.MILLI_OF_SECOND, 2, 3, SignStyle.NEVER).toFormatter();
 
     private DateFormatUtils() {
+    }
+
+    public static LocalDate epochSecondToLocalDate(String asText) {
+        long epochSecond = Long.parseLong(asText);
+        return Instant.ofEpochSecond(epochSecond).atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     public static long convertTimeToMillis(String text) {

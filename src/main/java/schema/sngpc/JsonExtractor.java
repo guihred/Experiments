@@ -13,9 +13,14 @@ import javafx.scene.control.TreeView;
 import org.apache.commons.lang3.StringUtils;
 import org.nd4j.shade.jackson.databind.JsonNode;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
 import simplebuilder.SimpleTextBuilder;
+import utils.DateFormatUtils;
+import utils.HasLogging;
 
 public final class JsonExtractor {
+
+    private static final Logger LOG = HasLogging.log();
 
     private JsonExtractor() {
     }
@@ -28,7 +33,6 @@ public final class JsonExtractor {
             }
             return;
         }
-
         Iterator<String> attributes = item.fieldNames();
         while (attributes.hasNext()) {
             String nodeName = attributes.next();
@@ -40,7 +44,24 @@ public final class JsonExtractor {
                 }
             }
         }
+    }
 
+    public static String convertObj(JsonNode jsonNode) {
+        String asText = jsonNode.asText();
+        if (!asText.matches("\\d{10}")) {
+            return asText;
+        }
+        return DateFormatUtils.epochSecondToLocalDate(asText).toString();
+    }
+
+    public static JsonNode displayJsonFromFile(File outFile, String... a) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // read JSON like DOM Parser
+        JsonNode rootNode = objectMapper.readTree(Files.newInputStream(outFile.toPath()));
+        StringBuilder yaml2 = new StringBuilder();
+        processNode(rootNode, yaml2, 0, a);
+        LOG.info("{}", yaml2);
+        return rootNode;
     }
 
     public static Map.Entry<String, String> newEntry(String key, String value) {
@@ -51,6 +72,16 @@ public final class JsonExtractor {
         return new SimpleMap(key, value);
     }
 
+    public static void processNode(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
+        if (jsonNode.isValueNode()) {
+            yaml.append(JsonExtractor.convertObj(jsonNode));
+        } else if (jsonNode.isArray()) {
+            appendJsonArray(jsonNode, yaml, depth, filters);
+        } else if (jsonNode.isObject()) {
+            appendJsonObject(jsonNode, yaml, depth, filters);
+        }
+    }
+
     public static void readJsonFile(TreeView<Map<String, String>> build, File file) {
         Map<JsonNode, TreeItem<Map<String, String>>> allItems = new HashMap<>();
         remap(() -> tryToRead(build, allItems, file), "ERROR READING");
@@ -58,7 +89,7 @@ public final class JsonExtractor {
 
     public static Object toObject(JsonNode jsonNode, int depth) {
         if (jsonNode.isValueNode()) {
-            return jsonNode.asText();
+            return convertObj(jsonNode);
         }
         if (jsonNode.isArray()) {
             List<Object> arrayObject = new ArrayList<>();
@@ -79,6 +110,41 @@ public final class JsonExtractor {
 
     }
 
+    private static void appendJsonArray(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
+        String repeat = StringUtils.repeat(" ", depth);
+
+        yaml.append("[");
+        for (Iterator<JsonNode> iterator = jsonNode.iterator(); iterator.hasNext();) {
+            JsonNode arrayItem = iterator.next();
+            yaml.append("\n" + repeat + " ");
+            processNode(arrayItem, yaml, depth + 1, filters);
+            if (iterator.hasNext()) {
+                yaml.append(",");
+            }
+        }
+        yaml.append("\n" + repeat + "]");
+    }
+
+    private static void appendJsonObject(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
+        String repeat = StringUtils.repeat(" ", depth);
+        yaml.append("{");
+        for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
+            Entry<String, JsonNode> next = iterator.next();
+            String key = next.getKey();
+            if (filters.length == 0 || Arrays.asList(filters).contains(key)) {
+                yaml.append("\n" + repeat + " " + key + "=");
+                ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(filters));
+                arrayList.remove(key);
+                String[] array = arrayList.toArray(new String[] {});
+                processNode(next.getValue(), yaml, depth + 1, array);
+                if (iterator.hasNext()) {
+                    yaml.append(",");
+                }
+            }
+        }
+        yaml.append("\n" + repeat + "}");
+    }
+
     private static void clearEmptyEntries(Map<String, String> newMap) {
         List<String> collect = newMap.entrySet().stream().filter(eb -> StringUtils.isBlank(eb.getValue()))
                 .map(Entry<String, String>::getKey).collect(Collectors.toList());
@@ -89,14 +155,14 @@ public final class JsonExtractor {
 
     private static void merge(TreeItem<Map<String, String>> e, String nodeName, JsonNode item2) {
         if (item2.isValueNode()) {
-            e.getValue().merge(nodeName, item2.asText(),
+            e.getValue().merge(nodeName, convertObj(item2),
                     (old, val) -> StringUtils.isBlank(old) ? val : old + "\n" + val);
         }
     }
 
     private static Map<String, String> newMap(Entry<String, JsonNode> item) {
         if (!item.getValue().isObject()) {
-            return newMap(item.getKey(), item.getValue().asText());
+            return newMap(item.getKey(), convertObj(item.getValue()));
         }
         return newMap(item.getKey(), "");
     }

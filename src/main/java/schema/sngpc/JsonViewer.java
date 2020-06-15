@@ -7,6 +7,7 @@ import static simplebuilder.SimpleButtonBuilder.newButton;
 
 import extract.ExcelService;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -49,6 +50,10 @@ public class JsonViewer extends Application {
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();
         fileProp.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> readJsonFile(tree, val)));
+        Path randomPathByExtension = ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".json");
+        if (randomPathByExtension != null) {
+            setFile(randomPathByExtension.toFile());
+        }
     }
 
     private Parent createSplitTreeListDemoNode() {
@@ -72,7 +77,6 @@ public class JsonViewer extends Application {
     }
 
     private static void addColumns(TableView<Map<String, String>> tableView, Collection<String> keySet) {
-
         keySet.forEach(key -> {
             final TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
             column.setCellValueFactory(
@@ -96,7 +100,6 @@ public class JsonViewer extends Application {
         ExcelService.getExcel(collect, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
     }
-
 
     private static void onSelectTreeItem(ObservableList<Map<String, String>> list,
             TableView<Map<String, String>> sideTable, TreeItem<Map<String, String>> newValue) {
@@ -132,7 +135,6 @@ public class JsonViewer extends Application {
             List<Map<String, String>> collect = newValue.getChildren().stream()
                     .map(TreeItem<Map<String, String>>::getValue).collect(Collectors.toList());
             list.addAll(collect);
-
         }
 
     }
