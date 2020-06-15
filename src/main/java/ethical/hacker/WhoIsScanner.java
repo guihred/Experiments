@@ -28,7 +28,6 @@ public class WhoIsScanner {
                 RunnableEx.run(() -> observableArrayList.add(whoIsScan(string)));
             }
         });
-
         return observableArrayList;
     }
 

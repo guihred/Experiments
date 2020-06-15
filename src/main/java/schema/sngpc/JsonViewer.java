@@ -105,14 +105,13 @@ public class JsonViewer extends Application {
             TableView<Map<String, String>> sideTable, TreeItem<Map<String, String>> newValue) {
         list.clear();
         sideTable.getColumns().clear();
-        if (newValue != null && newValue.isLeaf()) {
+        if (newValue == null) {
+            return;
+        }
+        if (newValue.isLeaf()) {
             addColumns(sideTable, newValue.getValue().keySet());
             list.add(newValue.getValue());
             splitList(list, newValue.getValue());
-            return;
-        }
-
-        if (newValue == null) {
             return;
         }
 
@@ -128,12 +127,26 @@ public class JsonViewer extends Application {
             sideTable.getColumns().clear();
             addColumns(sideTable, keySet);
             newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue).forEach(newItem::putAll);
+            return;
         }
         if (valueKeySet.isEmpty()) {
             list.clear();
             addColumns(sideTable, keySet);
             List<Map<String, String>> collect = newValue.getChildren().stream()
                     .map(TreeItem<Map<String, String>>::getValue).collect(Collectors.toList());
+            list.addAll(collect);
+            return;
+        }
+        if (list.size() == 1) {
+            Map<String, String> map = list.get(0);
+            List<Map<String, String>> collect = map.entrySet().stream().map(e -> {
+                Map<String, String> newMap = newMap("Key", e.getKey());
+                newMap.put("Value", e.getValue());
+                return newMap;
+            }).collect(Collectors.toList());
+            list.clear();
+            sideTable.getColumns().clear();
+            addColumns(sideTable, Arrays.asList("Key", "Value"));
             list.addAll(collect);
         }
 
