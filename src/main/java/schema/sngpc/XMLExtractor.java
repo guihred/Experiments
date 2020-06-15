@@ -9,6 +9,8 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javax.xml.parsers.DocumentBuilder;
@@ -23,37 +25,39 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import utils.HasLogging;
+import utils.RunnableEx;
 
 public final class XMLExtractor {
-    private static final Logger LOG = HasLogging.log();
 
     private XMLExtractor() {
     }
 
     public static void addValue(Node item, TreeItem<Map<String, String>> e) {
-        try {
+        RunnableEx.run(() -> {
             NamedNodeMap attributes = item.getAttributes();
-            for (int i = 0; i < attributes.getLength(); i++) {
+            for (int i = 0; attributes != null && i < attributes.getLength(); i++) {
                 Node item2 = attributes.item(i);
-                if (e.getValue() == null) {
-                    e.setValue(newMap(item.getNodeName(), item.getNodeValue()));
-                }
                 e.getValue().put(item2.getNodeName(), item2.getNodeValue());
             }
-            String nodeValue = item.getFirstChild().getNodeValue();
-            if (StringUtils.isNotBlank(nodeValue)) {
-                e.setValue(newMap(item.getNodeName(), nodeValue));
+            if (!item.hasChildNodes()) {
+                return;
             }
+            NodeList childNodes = item.getChildNodes();
+            List<Node> collect = IntStream.range(0, childNodes.getLength()).mapToObj(i -> childNodes.item(i))
+                    .collect(Collectors.toList());
 
-        } catch (Exception e2) {
-            LOG.trace("", e2);
-        }
+            for (Node item2 : collect) {
+                if (item2.getNodeType() == Node.TEXT_NODE) {
+                    String nodeValue = item2.getNodeValue();
+                    String nodeName = item.getNodeName();
+                    e.getValue().put(nodeName, nodeValue);
+                }
+            }
+        });
     }
 
     public static Document newDocument() throws ParserConfigurationException {
@@ -69,12 +73,14 @@ public final class XMLExtractor {
     }
 
     public static Map<String, String> newMap(String key, String value) {
-        return new SimpleMap(key, value);
+        if (StringUtils.isNotBlank(value)) {
+            return new SimpleMap(key, value);
+        }
+        return new SimpleMap();
     }
 
-
     public static void readXMLFile(TreeView<Map<String, String>> build,
-        Map<Node, TreeItem<Map<String, String>>> allItems, File file) {
+            Map<Node, TreeItem<Map<String, String>>> allItems, File file) {
         remap(() -> tryToRead(build, allItems, file), "ERROR READING");
     }
 
@@ -91,24 +97,23 @@ public final class XMLExtractor {
     }
 
     private static void tryToRead(TreeView<Map<String, String>> build,
-        Map<Node, TreeItem<Map<String, String>>> allItems, File file) throws XmlException, IOException {
+            Map<Node, TreeItem<Map<String, String>>> allItems, File file) throws XmlException, IOException {
         XmlObject parse = XmlObject.Factory.parse(file);
-        Node domNode = parse.getDomNode();
+        Node rootNode = parse.getDomNode();
         List<Node> currentNodes = new ArrayList<>();
-        currentNodes.add(domNode);
-        TreeItem<Map<String, String>> value = new TreeItem<>(newMap(domNode.getNodeName(), domNode.getNodeValue()));
-        value.setGraphic(newBoldText(domNode.getNodeName()));
+        currentNodes.add(rootNode);
+        TreeItem<Map<String, String>> value = new TreeItem<>(newMap(rootNode.getNodeName(), rootNode.getNodeValue()));
+        value.setGraphic(newBoldText(rootNode.getNodeName()));
         build.setRoot(value);
-        allItems.put(domNode, value);
+        allItems.put(rootNode, value);
         while (!currentNodes.isEmpty()) {
-            domNode = currentNodes.remove(0);
+            Node domNode = currentNodes.remove(0);
             NodeList childNodes = domNode.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node item = childNodes.item(i);
                 if (item.getNodeType() != Node.TEXT_NODE) {
                     currentNodes.add(0, item);
-                    TreeItem<Map<String, String>> e = new TreeItem<>(
-                        newMap(item.getNodeName(), item.getNodeValue()));
+                    TreeItem<Map<String, String>> e = new TreeItem<>(newMap(item.getNodeName(), item.getNodeValue()));
                     allItems.get(domNode).getChildren().add(e);
                     allItems.put(item, e);
                     e.setGraphic(newBoldText(item.getNodeName()));

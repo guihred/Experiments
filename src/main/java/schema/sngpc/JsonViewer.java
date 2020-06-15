@@ -139,14 +139,14 @@ public class JsonViewer extends Application {
         }
         if (list.size() == 1 && sideTable.getColumns().size() > 6) {
             Map<String, String> map = list.get(0);
+            list.clear();
+            sideTable.getColumns().clear();
+            addColumns(sideTable, Arrays.asList("Key", "Value"));
             List<Map<String, String>> collect = map.entrySet().stream().map(e -> {
                 Map<String, String> newMap = newMap("Key", e.getKey());
                 newMap.put("Value", e.getValue());
                 return newMap;
             }).collect(Collectors.toList());
-            list.clear();
-            sideTable.getColumns().clear();
-            addColumns(sideTable, Arrays.asList("Key", "Value"));
             list.addAll(collect);
         }
 
