@@ -74,7 +74,7 @@ public class FXHackTest extends AbstractTestExecution {
                 () -> ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
         String sha256Hash =
                 measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
-        File filesInformation =
+        File[] filesInformation =
                 measureTime("VirusTotalApi.getFilesInformation", () -> VirusTotalApi.getFilesInformation(sha256Hash));
         JsonViewer show = show(JsonViewer.class);
         show.setFile(filesInformation);

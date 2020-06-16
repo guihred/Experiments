@@ -25,7 +25,7 @@ public final class VirusTotalApi {
     private VirusTotalApi() {
     }
 
-    public static File getFilesInformation(String hash) throws IOException {
+    public static File[] getFilesInformation(String hash) throws IOException {
         File outFile = ResourceFXUtils.getOutFile(hash + ".json");
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
@@ -38,7 +38,7 @@ public final class VirusTotalApi {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash + "/behaviours", outFile2);
         }
         JsonExtractor.displayJsonFromFile(outFile2);
-        return outFile;
+        return new File[] { outFile, outFile2 };
     }
 
     private static void getFromURL(String url, File outFile) throws IOException {

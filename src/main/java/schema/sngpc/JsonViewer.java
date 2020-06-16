@@ -24,6 +24,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
 import simplebuilder.StageHelper;
@@ -34,14 +35,20 @@ import utils.RunnableEx;
 
 public class JsonViewer extends Application {
     private ObjectProperty<File> fileProp = new SimpleObjectProperty<>();
+    private ObservableList<File> files = FXCollections.observableArrayList();
     private TreeView<Map<String, String>> tree;
 
     public File getFile() {
         return fileProp.get();
     }
 
-    public void setFile(File fileProp) {
-        this.fileProp.set(fileProp);
+    public void setFile(File... fileProp) {
+        for (File file : fileProp) {
+            files.add(file);
+        }
+        if (fileProp.length > 0 && this.fileProp.get() == null) {
+            this.fileProp.set(fileProp[0]);
+        }
     }
 
     @Override
@@ -50,9 +57,10 @@ public class JsonViewer extends Application {
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();
         fileProp.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> readJsonFile(tree, val)));
-        Path randomPathByExtension = ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".json");
+        File[] randomPathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".json")
+                .stream().map(Path::toFile).toArray(File[]::new);
         if (randomPathByExtension != null) {
-            setFile(randomPathByExtension.toFile());
+            setFile(randomPathByExtension);
         }
     }
 
@@ -65,7 +73,16 @@ public class JsonViewer extends Application {
         Button importJsonButton = StageHelper.chooseFile("Import Json", "Import Json", fileProp::set, "Json", "*.json");
         Button exportExcel = newButton("Export excel", e -> exportToExcel(sideTable, fileProp.get()));
         SplitPane splitPane = new SplitPane(tree, sideTable);
-        VBox vBox = new VBox(new HBox(importJsonButton, exportExcel), splitPane);
+        SimpleComboBoxBuilder<File> onChange =
+                new SimpleComboBoxBuilder<File>().items(files).converter(File::getName)
+                        .onChange((old, val) -> fileProp.set(val));
+        fileProp.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> {
+            if (!files.contains(val)) {
+                files.add(val);
+            }
+            onChange.select(val);
+        }));
+        VBox vBox = new VBox(new HBox(importJsonButton, exportExcel, onChange.build()), splitPane);
         vBox.setMinSize(400, 400);
         tree.prefHeightProperty().bind(vBox.heightProperty());
         sideTable.prefHeightProperty().bind(vBox.heightProperty());
