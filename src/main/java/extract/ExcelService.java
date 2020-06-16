@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.formula.BaseFormulaEvaluator;
 import org.apache.poi.ss.usermodel.*;
@@ -155,17 +156,20 @@ public final class ExcelService {
         try (FileOutputStream response = new FileOutputStream(file); Workbook workbook = new XSSFWorkbook()) {
             Sheet sheetAt = workbook.createSheet();
             Row row2 = sheetAt.createRow(0);
-            int j = 0;
             Set<String> keySet = mapa.keySet();
-            for (String titulo : keySet) {
-                row2.createCell(j, CellType.STRING).setCellValue(titulo);
-                j++;
+            boolean addHeader = !keySet.stream().allMatch(StringUtils::isNumeric);
+            if (addHeader) {
+                int j = 0;
+                for (String titulo : keySet) {
+                    row2.createCell(j, CellType.STRING).setCellValue(titulo);
+                    j++;
+                }
             }
             Map<Class<?>, CellStyle> formatMap = styleMap(workbook);
 
             for (int i = 0; i < lista.size(); i++) {
                 T entidade = lista.get(i);
-                Row row = sheetAt.createRow(i + 1);
+                Row row = sheetAt.createRow(i + (addHeader ? 1 : 0));
                 int k = 0;
                 for (FunctionEx<T, Object> campoFunction : mapa.values()) {
                     Object campo = FunctionEx.makeFunction(campoFunction).apply(entidade);

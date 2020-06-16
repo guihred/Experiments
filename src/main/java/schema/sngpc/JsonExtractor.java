@@ -72,16 +72,6 @@ public final class JsonExtractor {
         return new SimpleMap(key, value);
     }
 
-    public static void processNode(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
-        if (jsonNode.isValueNode()) {
-            yaml.append(JsonExtractor.convertObj(jsonNode));
-        } else if (jsonNode.isArray()) {
-            appendJsonArray(jsonNode, yaml, depth, filters);
-        } else if (jsonNode.isObject()) {
-            appendJsonObject(jsonNode, yaml, depth, filters);
-        }
-    }
-
     public static void readJsonFile(TreeView<Map<String, String>> build, File file) {
         Map<JsonNode, TreeItem<Map<String, String>>> allItems = new HashMap<>();
         remap(() -> tryToRead(build, allItems, file), "ERROR READING");
@@ -165,6 +155,16 @@ public final class JsonExtractor {
             return newMap(item.getKey(), convertObj(item.getValue()));
         }
         return newMap(item.getKey(), "");
+    }
+
+    private static void processNode(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
+        if (jsonNode.isValueNode()) {
+            yaml.append(JsonExtractor.convertObj(jsonNode));
+        } else if (jsonNode.isArray()) {
+            appendJsonArray(jsonNode, yaml, depth, filters);
+        } else if (jsonNode.isObject()) {
+            appendJsonObject(jsonNode, yaml, depth, filters);
+        }
     }
 
     private static void readArray(Map<JsonNode, TreeItem<Map<String, String>>> allItems, List<JsonNode> currentNodes,

@@ -41,6 +41,17 @@ public final class VirusTotalApi {
         return new File[] { outFile, outFile2 };
     }
 
+    public static File[] getIpInformation(String ip) throws IOException {
+        File outFile = ResourceFXUtils.getOutFile(ip + ".json");
+        if (!outFile.exists()) {
+            getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
+        }
+        JsonNode rootNode = JsonExtractor.displayJsonFromFile(outFile);
+        LOG.info("{}", JsonExtractor.toObject(rootNode, 0));
+
+        return new File[] { outFile };
+    }
+
     private static void getFromURL(String url, File outFile) throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet post = new HttpGet(url);

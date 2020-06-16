@@ -77,7 +77,7 @@ public class FXHackTest extends AbstractTestExecution {
         File[] filesInformation =
                 measureTime("VirusTotalApi.getFilesInformation", () -> VirusTotalApi.getFilesInformation(sha256Hash));
         JsonViewer show = show(JsonViewer.class);
-        show.setFile(filesInformation);
+        show.addFile(filesInformation);
     }
 
 }

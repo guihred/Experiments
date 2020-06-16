@@ -34,20 +34,27 @@ import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public class JsonViewer extends Application {
+    private static final int MAX_COLUMNS = 6;
     private ObjectProperty<File> fileProp = new SimpleObjectProperty<>();
     private ObservableList<File> files = FXCollections.observableArrayList();
     private TreeView<Map<String, String>> tree;
 
-    public File getFile() {
-        return fileProp.get();
-    }
-
-    public void setFile(File... fileProp) {
-        for (File file : fileProp) {
+    public void addFile(File... filesToAdd) {
+        for (File file : filesToAdd) {
             files.add(file);
         }
-        if (fileProp.length > 0 && this.fileProp.get() == null) {
-            this.fileProp.set(fileProp[0]);
+        if (filesToAdd.length > 0 && fileProp.get() == null) {
+            fileProp.set(filesToAdd[0]);
+        }
+    }
+
+    public void setFile(File filesToAdd) {
+        fileProp.set(filesToAdd);
+    }
+
+    public void setLast() {
+        if (!files.isEmpty()) {
+            fileProp.set(files.get(files.size() - 1));
         }
     }
 
@@ -60,7 +67,7 @@ public class JsonViewer extends Application {
         File[] randomPathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".json")
                 .stream().map(Path::toFile).toArray(File[]::new);
         if (randomPathByExtension != null) {
-            setFile(randomPathByExtension);
+            addFile(randomPathByExtension);
         }
     }
 
@@ -101,6 +108,21 @@ public class JsonViewer extends Application {
             column.prefWidthProperty().bind(tableView.widthProperty().divide(keySet.size()).add(-5));
             tableView.getColumns().add(column);
         });
+    }
+
+    private static void changeDisplayIfTooBig(ObservableList<Map<String, String>> list, TableView<Map<String, String>> sideTable) {
+        if (list.size() == 1 && sideTable.getColumns().size() > MAX_COLUMNS) {
+            Map<String, String> map = list.get(0);
+            list.clear();
+            sideTable.getColumns().clear();
+            addColumns(sideTable, Arrays.asList("Key", "Value"));
+            List<Map<String, String>> collect = map.entrySet().stream().map(e -> {
+                Map<String, String> newMap = newMap("Key", e.getKey());
+                newMap.put("Value", e.getValue());
+                return newMap;
+            }).collect(Collectors.toList());
+            list.addAll(collect);
+        }
     }
 
     private static void exportToExcel(TableView<Map<String, String>> tree, File file) {
@@ -144,6 +166,7 @@ public class JsonViewer extends Application {
             sideTable.getColumns().clear();
             addColumns(sideTable, keySet);
             newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue).forEach(newItem::putAll);
+            changeDisplayIfTooBig(list, sideTable);
             return;
         }
         if (valueKeySet.isEmpty()) {
@@ -154,18 +177,7 @@ public class JsonViewer extends Application {
             list.addAll(collect);
             return;
         }
-        if (list.size() == 1 && sideTable.getColumns().size() > 6) {
-            Map<String, String> map = list.get(0);
-            list.clear();
-            sideTable.getColumns().clear();
-            addColumns(sideTable, Arrays.asList("Key", "Value"));
-            List<Map<String, String>> collect = map.entrySet().stream().map(e -> {
-                Map<String, String> newMap = newMap("Key", e.getKey());
-                newMap.put("Value", e.getValue());
-                return newMap;
-            }).collect(Collectors.toList());
-            list.addAll(collect);
-        }
+        changeDisplayIfTooBig(list, sideTable);
 
     }
 

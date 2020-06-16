@@ -8,7 +8,10 @@ import static simplebuilder.SimpleButtonBuilder.newButton;
 import extract.ExcelService;
 import java.io.File;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -42,18 +45,26 @@ public class XmlViewer extends Application {
     }
 
     private static void addColumns(TableView<Map<String, String>> tableView, Collection<String> keySet) {
-
-        keySet.forEach(key -> {
-            final TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
+        for (String key : keySet) {
+            TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
             column.setCellValueFactory(
                     param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
             column.prefWidthProperty().bind(tableView.widthProperty().divide(keySet.size()).add(-5));
             tableView.getColumns().add(column);
-        });
+        }
+    }
+
+    private static void addHeader(List<Map<String, String>> finalList, Map<String, String> collect) {
+        if (!collect.keySet().stream().allMatch(e -> e.matches("\\w+\\d+"))) {
+            Map<String, String> collect3 = collect.keySet().stream().collect(toLinkedHashMap2());
+            if (!finalList.contains(collect3)) {
+                finalList.add(collect3);
+            }
+        }
     }
 
     private static boolean allChildrenLeaf(TreeItem<Map<String, String>> e) {
-        return e.getChildren().stream().allMatch(b -> b.isLeaf());
+        return e.getChildren().stream().allMatch(TreeItem<Map<String, String>>::isLeaf);
     }
 
     private static Parent createSplitTreeListDemoNode() {
@@ -83,28 +94,37 @@ public class XmlViewer extends Application {
             return;
         }
 
-        ObservableList<TreeItem<Map<String, String>>> lista = FXCollections.observableArrayList();
-        lista.add(selectedItem);
-        while (lista.stream().anyMatch(e -> !allChildrenLeaf(e))) {
-            for (int i = 0; i < lista.size(); i++) {
-                TreeItem<Map<String, String>> treeItem = lista.get(i);
-                if (!allChildrenLeaf(treeItem)) {
-                    lista.addAll(i, lista.remove(i).getChildren());
-                    i--;
-                }
-            }
-        }
-        List<Map<String, String>> collect = lista.stream().map(e -> e.getValue()).collect(Collectors.toList());
-        Map<String, FunctionEx<Map<String, String>, Object>> mapa = new HashMap<>();
-        int orElse = lista.stream().mapToInt(i -> i.getValue().size()).max().orElse(0);
+        List<Map<String, String>> finalList = getFinalList(selectedItem);
+        Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
+        int orElse = finalList.stream().mapToInt(Map<String, String>::size).max().orElse(0);
         for (int j = 0; j < orElse; j++) {
             int k = j;
             mapa.put("" + j, t -> getValue(t, k));
         }
 
         File outFile = ResourceFXUtils.getOutFile(file.getName().replaceAll(".xml", ".xlsx"));
-        ExcelService.getExcel(collect, mapa, outFile);
+        ExcelService.getExcel(finalList, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
+    }
+
+    private static List<Map<String, String>> getFinalList(TreeItem<Map<String, String>> selectedItem) {
+        ObservableList<TreeItem<Map<String, String>>> lista = FXCollections.observableArrayList();
+        lista.add(selectedItem);
+        List<Map<String, String>> finalList = new ArrayList<>();
+        while (lista.stream().anyMatch(e -> !allChildrenLeaf(e))) {
+            for (int i = 0; i < lista.size(); i++) {
+                TreeItem<Map<String, String>> treeItem = lista.get(i);
+                if (allChildrenLeaf(treeItem)) {
+                    Map<String, String> collect = toMap(treeItem);
+                    addHeader(finalList, collect);
+                    finalList.add(collect);
+                    continue;
+                }
+                lista.addAll(i, lista.remove(i).getChildren());
+                i--;
+            }
+        }
+        return finalList;
     }
 
     private static Object getValue(Map<String, String> i, int j) {
@@ -118,6 +138,11 @@ public class XmlViewer extends Application {
         }
 
         return "";
+    }
+
+    private static boolean isArrayType(List<Set<Map.Entry<String, String>>> entryList) {
+        return entryList.stream().flatMap(Set<Entry<String, String>>::stream).map(Entry<String, String>::getKey).distinct()
+                .count() == 1;
     }
 
     private static void onSelectTreeItem(ObservableList<Map<String, String>> list,
@@ -160,5 +185,32 @@ public class XmlViewer extends Application {
             }
             return;
         }
+    }
+
+    private static Collector<Map.Entry<String, String>, ?, Map<String, String>> toLinkedHashMap() {
+        return Collectors.toMap(Map.Entry<String, String>::getKey, Map.Entry<String, String>::getValue,
+                (a, b) -> a + "\n" + b, LinkedHashMap::new);
+    }
+
+    private static Collector<String, ?, Map<String, String>> toLinkedHashMap2() {
+        return Collectors.toMap(e -> e, e -> e, (a, b) -> a + "\n" + b, LinkedHashMap::new);
+    }
+
+    private static Map<String, String> toMap(TreeItem<Map<String, String>> treeItem) {
+        List<Set<Map.Entry<String, String>>> entryList =
+                treeItem.getChildren().stream().map(e -> e.getValue().entrySet()).collect(Collectors.toList());
+        if (isArrayType(entryList)) {
+            // Is a Array type
+
+            return entryList.stream().flatMap(Set<Entry<String, String>>::stream)
+                    .collect(Collectors.groupingBy(Entry<String, String>::getKey,
+                            Collectors.mapping(Entry<String, String>::getValue, Collectors.toList())))
+                    .entrySet().stream()
+                    .flatMap(en -> IntStream.range(0, en.getValue().size())
+                            .mapToObj(j -> XMLExtractor.newEntry(en.getKey() + j, en.getValue().get(j))))
+                    .collect(toLinkedHashMap());
+        }
+        return treeItem.getChildren().stream().flatMap(e -> e.getValue().entrySet().stream())
+                .collect(toLinkedHashMap());
     }
 }
