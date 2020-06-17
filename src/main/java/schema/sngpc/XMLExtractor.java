@@ -22,7 +22,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
@@ -47,14 +46,21 @@ public final class XMLExtractor {
                 return;
             }
             NodeList childNodes = item.getChildNodes();
-            List<Node> collect = IntStream.range(0, childNodes.getLength()).mapToObj(i -> childNodes.item(i))
-                    .collect(Collectors.toList());
-
-            for (Node item2 : collect) {
-                if (item2.getNodeType() == Node.TEXT_NODE) {
-                    String nodeValue = item2.getNodeValue();
+            List<Node> collect =
+                    IntStream.range(0, childNodes.getLength()).mapToObj(childNodes::item).collect(Collectors.toList());
+            if (collect.stream().allMatch(n -> n.getNodeType() == Node.TEXT_NODE)) {
+                if (collect.size() == 1) {
+                    String nodeValue = collect.get(0).getNodeValue();
                     String nodeName = item.getNodeName();
-                    e.getValue().put(nodeName, nodeValue);
+                    e.setValue(newMap(nodeName, nodeValue));
+                    return;
+                }
+                for (Node item2 : collect) {
+                    if (item2.getNodeType() == Node.TEXT_NODE) {
+                        String nodeValue = item2.getNodeValue();
+                        String nodeName = item.getNodeName();
+                        e.getValue().put(nodeName, nodeValue);
+                    }
                 }
             }
         });
@@ -73,10 +79,7 @@ public final class XMLExtractor {
     }
 
     public static Map<String, String> newMap(String key, String value) {
-        if (StringUtils.isNotBlank(value)) {
-            return new SimpleMap(key, value);
-        }
-        return new SimpleMap();
+        return new SimpleMap(key, value);
     }
 
     public static void readXMLFile(TreeView<Map<String, String>> build,
@@ -96,24 +99,37 @@ public final class XMLExtractor {
         transformer.transform(domSource, streamResult);
     }
 
+    private static Map<String, String> newMap(Node item) {
+        if (item.getNodeType() == Node.ELEMENT_NODE) {
+            return new SimpleMap();
+        }
+
+        return newMap(item.getNodeName(), item.getNodeValue());
+    }
+
+    private static boolean notTextNorComment(Node item) {
+        return item.getNodeType() != Node.COMMENT_NODE && item.getNodeType() != Node.TEXT_NODE;
+    }
+
     private static void tryToRead(TreeView<Map<String, String>> build,
             Map<Node, TreeItem<Map<String, String>>> allItems, File file) throws XmlException, IOException {
         XmlObject parse = XmlObject.Factory.parse(file);
         Node rootNode = parse.getDomNode();
         List<Node> currentNodes = new ArrayList<>();
         currentNodes.add(rootNode);
-        TreeItem<Map<String, String>> value = new TreeItem<>(newMap(rootNode.getNodeName(), rootNode.getNodeValue()));
+        TreeItem<Map<String, String>> value = new TreeItem<>(newMap(rootNode));
         value.setGraphic(newBoldText(rootNode.getNodeName()));
         build.setRoot(value);
+        build.setShowRoot(false);
         allItems.put(rootNode, value);
         while (!currentNodes.isEmpty()) {
             Node domNode = currentNodes.remove(0);
             NodeList childNodes = domNode.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 Node item = childNodes.item(i);
-                if (item.getNodeType() != Node.TEXT_NODE) {
+                if (notTextNorComment(item)) {
                     currentNodes.add(0, item);
-                    TreeItem<Map<String, String>> e = new TreeItem<>(newMap(item.getNodeName(), item.getNodeValue()));
+                    TreeItem<Map<String, String>> e = new TreeItem<>(newMap(item));
                     allItems.get(domNode).getChildren().add(e);
                     allItems.put(item, e);
                     e.setGraphic(newBoldText(item.getNodeName()));

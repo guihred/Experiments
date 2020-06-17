@@ -111,7 +111,7 @@ public class XmlViewer extends Application {
         ObservableList<TreeItem<Map<String, String>>> lista = FXCollections.observableArrayList();
         lista.add(selectedItem);
         List<Map<String, String>> finalList = new ArrayList<>();
-        while (lista.stream().anyMatch(e -> !allChildrenLeaf(e))) {
+        do {
             for (int i = 0; i < lista.size(); i++) {
                 TreeItem<Map<String, String>> treeItem = lista.get(i);
                 if (allChildrenLeaf(treeItem)) {
@@ -120,10 +120,15 @@ public class XmlViewer extends Application {
                     finalList.add(collect);
                     continue;
                 }
+                if (treeItem.isLeaf()) {
+                    finalList.add(treeItem.getValue());
+                    continue;
+                }
                 lista.addAll(i, lista.remove(i).getChildren());
                 i--;
             }
-        }
+        } while (lista.stream().anyMatch(e -> !allChildrenLeaf(e)));
+        finalList.removeIf(Map<String, String>::isEmpty);
         return finalList;
     }
 
@@ -141,8 +146,8 @@ public class XmlViewer extends Application {
     }
 
     private static boolean isArrayType(List<Set<Map.Entry<String, String>>> entryList) {
-        return entryList.stream().flatMap(Set<Entry<String, String>>::stream).map(Entry<String, String>::getKey).distinct()
-                .count() == 1;
+        return entryList.stream().flatMap(Set<Entry<String, String>>::stream).map(Entry<String, String>::getKey)
+                .distinct().count() < entryList.size();
     }
 
     private static void onSelectTreeItem(ObservableList<Map<String, String>> list,
@@ -201,7 +206,6 @@ public class XmlViewer extends Application {
                 treeItem.getChildren().stream().map(e -> e.getValue().entrySet()).collect(Collectors.toList());
         if (isArrayType(entryList)) {
             // Is a Array type
-
             return entryList.stream().flatMap(Set<Entry<String, String>>::stream)
                     .collect(Collectors.groupingBy(Entry<String, String>::getKey,
                             Collectors.mapping(Entry<String, String>::getValue, Collectors.toList())))
