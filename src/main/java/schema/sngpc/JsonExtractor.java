@@ -13,14 +13,11 @@ import javafx.scene.control.TreeView;
 import org.apache.commons.lang3.StringUtils;
 import org.nd4j.shade.jackson.databind.JsonNode;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
 import simplebuilder.SimpleTextBuilder;
 import utils.DateFormatUtils;
-import utils.HasLogging;
 
 public final class JsonExtractor {
 
-    private static final Logger LOG = HasLogging.log();
 
     private JsonExtractor() {
     }
@@ -54,14 +51,14 @@ public final class JsonExtractor {
         return DateFormatUtils.epochSecondToLocalDate(asText).toString();
     }
 
-    public static JsonNode displayJsonFromFile(File outFile, String... a) throws IOException {
+    public static String displayJsonFromFile(File outFile, String... a) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         // read JSON like DOM Parser
         JsonNode rootNode = objectMapper.readTree(Files.newInputStream(outFile.toPath()));
         StringBuilder yaml2 = new StringBuilder();
         processNode(rootNode, yaml2, 0, a);
-        LOG.info("{}", yaml2);
-        return rootNode;
+
+        return yaml2.toString();
     }
 
     public static Map.Entry<String, String> newEntry(String key, String value) {

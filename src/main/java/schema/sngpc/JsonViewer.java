@@ -20,6 +20,10 @@ import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -38,7 +42,7 @@ public class JsonViewer extends Application {
     private ObjectProperty<File> fileProp = new SimpleObjectProperty<>();
     private ObservableList<File> files = FXCollections.observableArrayList();
     private TreeView<Map<String, String>> tree;
-
+    private 
     List<String> lastSelected = new ArrayList<>();
 
     public void addFile(File... filesToAdd) {
@@ -67,20 +71,17 @@ public class JsonViewer extends Application {
         primaryStage.setTitle("Json Viewer");
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();
-        // File[] randomPathByExtension =
-        // ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".json")
-        // .stream().map(Path::toFile).toArray(File[]::new);
-        // if (randomPathByExtension != null) {
-        // addFile(randomPathByExtension);
-        // }
     }
 
     private Parent createSplitTreeListDemoNode() {
         ObservableList<Map<String, String>> list = FXCollections.observableArrayList();
         TableView<Map<String, String>> sideTable =
-                new SimpleTableViewBuilder<Map<String, String>>().items(list).build();
+                new SimpleTableViewBuilder<Map<String, String>>().items(list)
+                        .selectionMode(SelectionMode.MULTIPLE).build();
         tree = new SimpleTreeViewBuilder<Map<String, String>>().root(newMap("Root", null))
                 .onSelect(newValue -> onSelectTreeItem(list, sideTable, newValue)).build();
+        sideTable.setOnKeyPressed(ev -> copyContent(sideTable, ev));
+
         Button importJsonButton = StageHelper.chooseFile("Import Json", "Import Json", fileProp::set, "Json", "*.json");
         Button exportExcel = newButton("Export excel", e -> exportToExcel(sideTable, fileProp.get()));
         SplitPane splitPane = new SplitPane(tree, sideTable);
@@ -174,6 +175,17 @@ public class JsonViewer extends Application {
                 return newMap;
             }).collect(Collectors.toList());
             list.addAll(collect);
+        }
+    }
+
+    private static void copyContent(TableView<Map<String, String>> sideTable, KeyEvent ev) {
+        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
+            ObservableList<Map<String, String>> selectedItems = sideTable.getSelectionModel().getSelectedItems();
+            String collect = selectedItems.stream().map(Map<String, String>::values)
+                    .map(l -> l.stream().collect(Collectors.joining("\t"))).collect(Collectors.joining("\n"));
+            Map<DataFormat, Object> content = FXCollections.observableHashMap();
+            content.put(DataFormat.PLAIN_TEXT, collect);
+            Clipboard.getSystemClipboard().setContent(content);
         }
     }
 

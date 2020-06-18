@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -31,34 +33,40 @@ public final class VirusTotalApi {
     }
 
     public static File[] getFilesInformation(Path path, String hash) throws IOException {
-        File outFile = ResourceFXUtils.getOutFile(hash + ".json");
-        File outFile2 = ResourceFXUtils.getOutFile(hash + "behaviours.json");
-        if (path != null) {
-            String string = path.getName(path.getNameCount() - 1).toString();
-            outFile = rename(outFile, string);
-            outFile2 = rename(outFile2, string + "behaviours");
-        }
+        String string = path.getName(path.getNameCount() - 1).toString();
+        File outFile = rename(newJsonFile(hash), string);
 
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
         }
-        JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES, "last_analysis_stats", "malicious",
+        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES,
+                "last_analysis_stats", "malicious",
                 "type_description", "tags", "type", "trid", "magic", "meaningful_name", "file_type", "probability");
-        if (!outFile2.exists()) {
-            getFromURL("https://www.virustotal.com/api/v3/files/" + hash + "/behaviours", outFile2);
+        Matcher matcher = Pattern.compile("malicious=([^0]\\d*)").matcher(displayJsonFromFile);
+        if (matcher.find()) {
+            String group = matcher.group(1);
+            LOG.info("Malicious FILE {} {}", path, group);
+            return new File[] { outFile };
         }
-        JsonExtractor.displayJsonFromFile(outFile2, "data", ATTRIBUTES, "meaningful_name", "tags", "type");
-        return new File[] { outFile, outFile2 };
+
+        return new File[] {};
     }
 
-
-    public static File getIpInformation(String ip) throws IOException {
-        File outFile = ResourceFXUtils.getOutFile(ip + ".json");
+    public static File[] getIpInformation(String ip) throws IOException {
+        File outFile = newJsonFile(ip);
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
         }
-        JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES, "id", "last_analysis_stats", "malicious");
-        return outFile;
+        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES, "id",
+                "last_analysis_stats", "malicious");
+
+        Matcher matcher = Pattern.compile("malicious=([^0]\\d*)").matcher(displayJsonFromFile);
+        if (matcher.find()) {
+            String group = matcher.group(1);
+            LOG.info("Malicious IP {} {}", ip, group);
+            return new File[] { outFile };
+        }
+        return new File[] {};
     }
 
     private static void getFromURL(String url, File outFile) throws IOException {
@@ -73,10 +81,17 @@ public final class VirusTotalApi {
 
     }
 
+    private static File newJsonFile(String string) {
+        return ResourceFXUtils.getOutFile(string + ".json");
+    }
+
     private static File rename(File outFile, String string) {
-        File outFile3 = ResourceFXUtils.getOutFile(string + ".json");
+        File outFile3 = newJsonFile(string);
         if (outFile.exists()) {
             boolean renameTo = outFile.renameTo(outFile3);
+            if (!renameTo) {
+                return outFile;
+            }
             LOG.info("{} renamed to {} {}", outFile, outFile3, renameTo);
         }
         return outFile3;

@@ -7,16 +7,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
@@ -131,16 +130,37 @@ public final class ResourceFXUtils {
         return new File(file, out);
     }
 
-    public static List<Path> getPathByExtension(File dir, String... other) {
+    public static List<Path> getPathByExtension(File start, String... other) {
         return SupplierEx.get(() -> {
-            if (!dir.exists()) {
+            if (!start.exists()) {
                 return Collections.emptyList();
             }
-            try (Stream<Path> walk = walkDepth(walkReadable(dir.toPath()))) {
-                return walk
-                        .filter(PredicateEx.makeTest(e -> Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex))))
-                        .collect(Collectors.toList());
-            }
+            List<Path> pathList = new ArrayList<>();
+            Files.walkFileTree(start.toPath(), new FileVisitor<Path>() {
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    return exc != null ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    return !Files.isReadable(dir) ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (hasExtension(file, other)) {
+                        pathList.add(file);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+            return pathList;
         }, Collections.emptyList());
     }
 
@@ -238,31 +258,13 @@ public final class ResourceFXUtils {
         return Thread.currentThread().getContextClassLoader();
     }
 
+    private static boolean hasExtension(Path e, String... other) {
+        return Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex));
+    }
+
     private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
         return (value - min) * (newMax - newMin) / (max - min) + newMin;
     }
 
-    private static Stream<Path> walkDepth(Stream<Path> walk) {
-        return walkDepth(walk, 5);
-    }
-
-    private static Stream<Path> walkDepth(Stream<Path> walk, int depth) {
-        Stream<Path> walk0 = walk;
-        for (int i = 0; i < depth; i++) {
-            walk0 = walk0.flatMap(ResourceFXUtils::walkReadable);
-        }
-        return walk0.distinct();
-    }
-
-    private static Stream<Path> walkReadable(Path p) {
-        if (!Files.isReadable(p)) {
-            return Stream.empty();
-        }
-        Stream<Path> of = Stream.of(p);
-        if (!p.toFile().isDirectory()) {
-            return of;
-        }
-        return SupplierEx.get(() -> Files.list(p), of);
-    }
 
 }
