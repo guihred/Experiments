@@ -6,6 +6,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
 import utils.ConsumerEx;
+import utils.FunctionEx;
 
 public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, SimpleListViewBuilder<T>> {
 
@@ -19,6 +20,10 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     public SimpleListViewBuilder<T> cellFactory(Callback<ListView<T>, ListCell<T>> value) {
         table.setCellFactory(value);
         return this;
+    }
+
+    public SimpleListViewBuilder<T> cellFactory(FunctionEx<T, String> func) {
+        return cellFactory(newCellFactory((t, cell) -> cell.setText(FunctionEx.apply(func, t))));
     }
 
     public SimpleListViewBuilder<T> fixedCellSize(double value) {

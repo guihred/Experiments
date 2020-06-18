@@ -21,12 +21,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
 public class WordSearchApp extends Application {
@@ -45,8 +47,12 @@ public class WordSearchApp extends Application {
         ListView<String> listView = new ListView<>();
 
         VBox filters = new VBox();
+
         List<String> allLines = getLines(ResourceFXUtils.toURI("pt_PT.dic")).collect(Collectors.toList());
         FilteredList<String> lines = FXCollections.observableArrayList(allLines).filtered(e -> true);
+        TextField filterField = new TextField();
+        CommonsFX.newFastFilter(filterField, lines);
+        filters.getChildren().add(filterField);
         listView.setItems(lines);
 
         root.setCenter(filters);

@@ -7,7 +7,6 @@ import static simplebuilder.SimpleButtonBuilder.newButton;
 
 import extract.ExcelService;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -23,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTableViewBuilder;
@@ -39,9 +39,13 @@ public class JsonViewer extends Application {
     private ObservableList<File> files = FXCollections.observableArrayList();
     private TreeView<Map<String, String>> tree;
 
+    List<String> lastSelected = new ArrayList<>();
+
     public void addFile(File... filesToAdd) {
         for (File file : filesToAdd) {
-            files.add(file);
+            if (!files.contains(file)) {
+                files.add(file);
+            }
         }
         if (filesToAdd.length > 0 && fileProp.get() == null) {
             fileProp.set(filesToAdd[0]);
@@ -63,12 +67,12 @@ public class JsonViewer extends Application {
         primaryStage.setTitle("Json Viewer");
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();
-        fileProp.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> readJsonFile(tree, val)));
-        File[] randomPathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".json")
-                .stream().map(Path::toFile).toArray(File[]::new);
-        if (randomPathByExtension != null) {
-            addFile(randomPathByExtension);
-        }
+        // File[] randomPathByExtension =
+        // ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".json")
+        // .stream().map(Path::toFile).toArray(File[]::new);
+        // if (randomPathByExtension != null) {
+        // addFile(randomPathByExtension);
+        // }
     }
 
     private Parent createSplitTreeListDemoNode() {
@@ -80,10 +84,14 @@ public class JsonViewer extends Application {
         Button importJsonButton = StageHelper.chooseFile("Import Json", "Import Json", fileProp::set, "Json", "*.json");
         Button exportExcel = newButton("Export excel", e -> exportToExcel(sideTable, fileProp.get()));
         SplitPane splitPane = new SplitPane(tree, sideTable);
-        SimpleComboBoxBuilder<File> onChange =
-                new SimpleComboBoxBuilder<File>().items(files).converter(File::getName)
-                        .onChange((old, val) -> fileProp.set(val));
+        SimpleComboBoxBuilder<File> onChange = new SimpleComboBoxBuilder<File>().items(files).converter(File::getName)
+                .onChange((old, val) -> fileProp.set(val));
         fileProp.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> {
+            List<Integer> arrayList = getSelectionOrder();
+            readJsonFile(tree, val);
+
+            selectSame(arrayList);
+
             if (!files.contains(val)) {
                 files.add(val);
             }
@@ -94,6 +102,49 @@ public class JsonViewer extends Application {
         tree.prefHeightProperty().bind(vBox.heightProperty());
         sideTable.prefHeightProperty().bind(vBox.heightProperty());
         return vBox;
+    }
+
+    private List<Integer> getSelectionOrder() {
+        List<Integer> arrayList = new ArrayList<>();
+        RunnableEx.run(() -> {
+            TreeItem<Map<String, String>> selectedItem = tree.getSelectionModel().getSelectedItem();
+            lastSelected.clear();
+            if (selectedItem != null) {
+                while (selectedItem.getParent() != null) {
+                    int indexOf = selectedItem.getParent().getChildren().indexOf(selectedItem);
+                    arrayList.add(0, indexOf);
+                    Text graphic = (Text) selectedItem.getGraphic();
+                    lastSelected.add(0, graphic.getText());
+                    selectedItem = selectedItem.getParent();
+                }
+            }
+        });
+        return arrayList;
+    }
+
+    private void selectSame(List<Integer> arrayList) {
+        RunnableEx.run(() -> {
+
+            TreeItem<Map<String, String>> root = tree.getRoot();
+            for (int i = 0; i < lastSelected.size(); i++) {
+                Integer integer = arrayList.get(i % arrayList.size());
+                String string = lastSelected.get(i);
+                if (!root.getChildren().isEmpty()) {
+                    root = root.getChildren().stream().filter(e -> ((Text) e.getGraphic()).getText().equals(string))
+                            .findFirst().orElse(root.getChildren().get(integer % root.getChildren().size()));
+                }
+            }
+            tree.getSelectionModel().clearSelection();
+            tree.getSelectionModel().select(root);
+            for (int i = 0; tree.getTreeItem(i) != null; i++) {
+                TreeItem<Map<String, String>> treeItem = tree.getTreeItem(i);
+                if (treeItem.equals(root)) {
+                    tree.getFocusModel().focus(i);
+                    break;
+                }
+            }
+
+        });
     }
 
     public static void main(String[] args) {
@@ -110,7 +161,8 @@ public class JsonViewer extends Application {
         });
     }
 
-    private static void changeDisplayIfTooBig(ObservableList<Map<String, String>> list, TableView<Map<String, String>> sideTable) {
+    private static void changeDisplayIfTooBig(ObservableList<Map<String, String>> list,
+            TableView<Map<String, String>> sideTable) {
         if (list.size() == 1 && sideTable.getColumns().size() > MAX_COLUMNS) {
             Map<String, String> map = list.get(0);
             list.clear();

@@ -39,11 +39,11 @@ public final class ResourceFXUtils {
 
     private static final Logger LOGGER = HasLogging.log();
     private static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
-        "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
-        "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
-        "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final",
-        "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native",
-        "super", "while");
+            "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
+            "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
+            "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char",
+            "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
+            "float", "native", "super", "while");
 
     private ResourceFXUtils() {
     }
@@ -100,9 +100,7 @@ public final class ResourceFXUtils {
                 return Collections.emptyList();
             }
             try (Stream<Path> walk = Files.walk(dir.toPath(), 20)) {
-                return walk
-                    .filter(PredicateEx.makeTest(other))
-                    .collect(Collectors.toList());
+                return walk.filter(PredicateEx.makeTest(other)).collect(Collectors.toList());
             }
         }, Collections.emptyList());
     }
@@ -133,26 +131,25 @@ public final class ResourceFXUtils {
         return new File(file, out);
     }
 
-
     public static List<Path> getPathByExtension(File dir, String... other) {
         return SupplierEx.get(() -> {
             if (!dir.exists()) {
                 return Collections.emptyList();
             }
-            try (Stream<Path> walk = Files.walk(dir.toPath(), 20)) {
+            try (Stream<Path> walk = walkDepth(walkReadable(dir.toPath()))) {
                 return walk
-                    .filter(PredicateEx.makeTest(e -> Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex))))
-                    .collect(Collectors.toList());
+                        .filter(PredicateEx.makeTest(e -> Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex))))
+                        .collect(Collectors.toList());
             }
         }, Collections.emptyList());
     }
 
     public static Path getRandomPathByExtension(File dir, String... other) {
         List<Path> pathByExtension = getPathByExtension(dir, other);
-        if(pathByExtension.isEmpty()) {
+        if (pathByExtension.isEmpty()) {
             return null;
         }
-        
+
         return pathByExtension.get(new Random().nextInt(pathByExtension.size()));
     }
 
@@ -205,7 +202,7 @@ public final class ResourceFXUtils {
 
     public static String toExternalForm(String arquivo) {
         return SupplierEx.remap(() -> getClassLoader().getResource(arquivo).toExternalForm(),
-            "ERRO FILE \"" + arquivo + "\"");
+                "ERRO FILE \"" + arquivo + "\"");
     }
 
     public static File toFile(String arquivo) {
@@ -243,6 +240,29 @@ public final class ResourceFXUtils {
 
     private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
         return (value - min) * (newMax - newMin) / (max - min) + newMin;
+    }
+
+    private static Stream<Path> walkDepth(Stream<Path> walk) {
+        return walkDepth(walk, 5);
+    }
+
+    private static Stream<Path> walkDepth(Stream<Path> walk, int depth) {
+        Stream<Path> walk0 = walk;
+        for (int i = 0; i < depth; i++) {
+            walk0 = walk0.flatMap(ResourceFXUtils::walkReadable);
+        }
+        return walk0.distinct();
+    }
+
+    private static Stream<Path> walkReadable(Path p) {
+        if (!Files.isReadable(p)) {
+            return Stream.empty();
+        }
+        Stream<Path> of = Stream.of(p);
+        if (!p.toFile().isDirectory()) {
+            return of;
+        }
+        return SupplierEx.get(() -> Files.list(p), of);
     }
 
 }
