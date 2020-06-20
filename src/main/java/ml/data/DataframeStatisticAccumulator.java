@@ -211,7 +211,8 @@ public class DataframeStatisticAccumulator {
 
 	public static Map<Double, Long> histogram(Map<String, List<Object>> dataframe, String header, int bins) {
 		List<Object> list = dataframe.get(header);
-        List<Double> columnList = list.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).boxed()
+        List<Double> columnList = list.stream().filter(Objects::nonNull).map(Number.class::cast)
+                .mapToDouble(Number::doubleValue).boxed()
             .collect(Collectors.toList());
         DoubleSummaryStatistics summaryStatistics = columnList.stream().mapToDouble(e -> e).summaryStatistics();
         double min = summaryStatistics.getMin();

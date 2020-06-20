@@ -154,6 +154,9 @@ public class PieGraph extends Canvas {
         if (dataframe == null) {
             return histogram;
         }
+        if (column == null) {
+            column = dataframe.cols().stream().findFirst().orElse(null);
+        }
 
         if (dataframe.getFormat(column) != String.class) {
             Map<Double, Long> dataframeHistogram = DataframeUtils.histogram(dataframe, column, bins.get());
