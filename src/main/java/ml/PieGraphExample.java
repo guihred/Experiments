@@ -48,20 +48,21 @@ public class PieGraphExample extends Application {
         });
         DataframeML dataframe = DataframeBuilder.builder("WDICountry.csv").build();
         dataframeObj.set(dataframe);
-        onSelect.select("Region");
         ComboBox<String> build = onSelect.build();
         Button exportButton = newButton("Export", e -> ImageFXUtils.take(canvas));
         VBox radiusSlider = newSlider("Radius", 1, 500, canvas.radiusProperty());
         VBox binsSlider = newSlider("Bins", 1, 50, canvas.binsProperty());
         VBox xSlider = newSlider("X", -SIZE, SIZE, canvas.xOffsetProperty());
+        VBox start = newSlider("Start", -180, 180, canvas.startProperty());
         VBox propSlider = newSlider("Legend Distance", 0, 1., canvas.legendsRadiusProperty());
         Button chooseFile = StageHelper.chooseFile("Choose CSV", "CSV",
                 f -> dataframeObj.set(DataframeBuilder.build(f)), "CSV", "*.csv");
 
-        root.getChildren().add(new HBox(canvas));
         root.getChildren()
-                .add(new VBox(radiusSlider, binsSlider, xSlider, propSlider, build, chooseFile, exportButton));
+                .add(new VBox(radiusSlider, binsSlider, start, xSlider, propSlider, build, chooseFile, exportButton));
+        root.getChildren().add(new HBox(canvas));
 		theStage.show();
+        onSelect.select("Region");
 	}
 
     public static void main(final String[] args) {
