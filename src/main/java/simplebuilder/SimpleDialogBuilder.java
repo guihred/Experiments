@@ -2,7 +2,7 @@ package simplebuilder;
 
 import java.util.function.Supplier;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.binding.DoubleExpression;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
@@ -65,10 +65,10 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
         return this;
     }
 
-    public SimpleDialogBuilder button(String buttonMsg, Supplier<DoubleProperty> c, RunnableEx run) {
+    public SimpleDialogBuilder button(String buttonMsg, Supplier<DoubleExpression> c, RunnableEx run) {
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
         Button button = newButton(buttonMsg, a -> {
-            DoubleProperty progress = c.get();
+            DoubleExpression progress = c.get();
             progressIndicator.progressProperty().bind(progress);
             progress.addListener((v, o, n) -> {
                 if (n.intValue() == 1) {

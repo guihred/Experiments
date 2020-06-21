@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 public final class MusicReader {
     private static final Logger LOG = HasLogging.log();
@@ -55,9 +56,10 @@ public final class MusicReader {
 
     public static String getDescription(Music selectedItem) {
         return Stream
-            .of(selectedItem.getTitulo(), selectedItem.getArtista(), selectedItem.getAlbum(), selectedItem.getPasta())
-            .filter(StringUtils::isNotBlank).distinct().map(e -> e.replaceAll("[ /:]", "_"))
-            .collect(Collectors.joining(" - "));
+                .of(selectedItem.getTitulo(), selectedItem.getArtista(), selectedItem.getAlbum(),
+                        selectedItem.getPasta())
+                .filter(StringUtils::isNotBlank).distinct().map(e -> e.replaceAll("[ /:]", "_"))
+                .collect(Collectors.joining(" - "));
     }
 
     public static ObservableList<Music> getMusicas(File file) {
@@ -74,21 +76,22 @@ public final class MusicReader {
 
     public static ObservableList<Music> getMusicas(File file, DoubleProperty progress) {
         ObservableList<Music> musicas = FXCollections.observableArrayList();
-        Path start = file.toPath();
-        try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
-            List<Path> allSongs = find.collect(Collectors.toList());
-            double size = allSongs.size();
-            Platform.runLater(() -> progress.set(0));
-            for (int i = 0; i < allSongs.size(); i++) {
-                Path path = allSongs.get(i);
-                int j = i;
-                Platform.runLater(() -> progress.set(j / size));
-                musicas.add(readTags(path.toFile()));
+        RunnableEx.runNewThread(() -> {
+            try (Stream<Path> find =
+                    Files.find(file.toPath(), 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
+                List<Path> allSongs = find.collect(Collectors.toList());
+                double size = allSongs.size();
+                Platform.runLater(() -> progress.set(0));
+                for (int i = 0; i < allSongs.size(); i++) {
+                    Path path = allSongs.get(i);
+                    int j = i;
+                    Platform.runLater(() -> progress.set(j / size));
+                    Music readTags = readTags(path.toFile());
+                    Platform.runLater(() -> musicas.add(readTags));
+                }
+                Platform.runLater(() -> progress.set(1));
             }
-            Platform.runLater(() -> progress.set(1));
-        } catch (Exception e) {
-            LOG.trace("", e);
-        }
+        });
         return musicas;
     }
 

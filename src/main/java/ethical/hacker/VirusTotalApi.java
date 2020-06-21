@@ -53,6 +53,10 @@ public final class VirusTotalApi {
     }
 
     public static File[] getIpInformation(String ip) throws IOException {
+        return getIpInformation(ip, true);
+    }
+
+    public static File[] getIpInformation(String ip, boolean onlyMalicious) throws IOException {
         File outFile = newJsonFile(ip);
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
@@ -66,7 +70,7 @@ public final class VirusTotalApi {
             LOG.info("Malicious IP {} {}", ip, group);
             return new File[] { outFile };
         }
-        return new File[] {};
+        return onlyMalicious ? new File[] {} : new File[] { outFile };
     }
 
     private static void getFromURL(String url, File outFile) throws IOException {

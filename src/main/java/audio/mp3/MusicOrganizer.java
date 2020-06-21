@@ -1,6 +1,5 @@
 package audio.mp3;
 
-import static java.util.stream.Collectors.toCollection;
 import static simplebuilder.SimpleVBoxBuilder.newVBox;
 
 import extract.Music;
@@ -47,6 +46,7 @@ public class MusicOrganizer extends Application {
         VBox root = new VBox();
         TableView<Music> musicasTable = tabelaMusicas();
         musicasTable.prefWidthProperty().bind(root.widthProperty().subtract(10));
+        musicasTable.prefHeightProperty().bind(root.heightProperty().subtract(30));
         TextField filterField = new TextField();
         Button buttonMusic = loadMusic(musicasTable, filterField);
         Button fixMusic = fixMusic(musicasTable);
@@ -81,8 +81,10 @@ public class MusicOrganizer extends Application {
         TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>().prefWidth(WIDTH).scaleShape(false)
             .addColumn("Image", this::convertToImage).addColumn("Título", "titulo").addColumn("Artista", "artista")
             .addColumn("Álbum", "album").addColumn("Pasta", "pasta").addColumn("Gênero", "genero")
-            .addColumn("Ano", "ano").sortable(true).equalColumns().build();
-        musicaTable.setOnMousePressed(new MusicHandler(musicaTable));
+                .addColumn("Ano", "ano").sortable(true).selectionMode(SelectionMode.MULTIPLE).equalColumns().build();
+        MusicHandler value = new MusicHandler(musicaTable);
+        musicaTable.setOnMousePressed(value);
+        musicaTable.setOnKeyReleased(value::handle);
         return musicaTable;
     }
 
@@ -147,10 +149,9 @@ public class MusicOrganizer extends Application {
 
     private static Button loadVideos(final TableView<Music> musicasTable, TextField filterField) {
         return StageHelper.selectDirectory("Carregar _Vídeos", "Carregar Pasta de Músicas", selectedFile -> {
-            ObservableList<Music> videos =
-                    ResourceFXUtils.getPathByExtension(selectedFile, ".mp4", ".wma", ".webm", ".wav")
-                .parallelStream()
-                .map(v -> new Music(v.toFile())).collect(toCollection(FXCollections::observableArrayList));
+            ObservableList<Music> videos = FXCollections.observableArrayList();
+            ResourceFXUtils.getPathByExtensionAsync(selectedFile, v -> videos.add(new Music(v.toFile())), ".mp4",
+                    ".wma", ".webm", ".wav");
             configurarFiltroRapido(filterField, musicasTable, videos);
         });
     }

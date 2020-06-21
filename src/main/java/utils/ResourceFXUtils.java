@@ -19,6 +19,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener.Change;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
@@ -136,32 +139,28 @@ public final class ResourceFXUtils {
                 return Collections.emptyList();
             }
             List<Path> pathList = new ArrayList<>();
-            Files.walkFileTree(start.toPath(), new FileVisitor<Path>() {
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    return exc != null ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    return !Files.isReadable(dir) ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (hasExtension(file, other)) {
-                        pathList.add(file);
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+            walk(start, pathList, other);
             return pathList;
         }, Collections.emptyList());
+    }
+
+    public static ObservableList<Path> getPathByExtensionAsync(File start, ConsumerEx<Path> onPathFound,
+            String... other) {
+        return SupplierEx.get(() -> {
+            if (!start.exists()) {
+                return FXCollections.emptyObservableList();
+            }
+            ObservableList<Path> pathList = FXCollections.observableArrayList();
+            pathList.addListener((Change<? extends Path> c) -> {
+                while (c.next()) {
+                    for (Path path : c.getAddedSubList()) {
+                        ConsumerEx.makeConsumer(onPathFound).accept(path);
+                    }
+                }
+            });
+            RunnableEx.runNewThread(() -> walk(start, pathList, other));
+            return pathList;
+        }, FXCollections.emptyObservableList());
     }
 
     public static Path getRandomPathByExtension(File dir, String... other) {
@@ -264,6 +263,33 @@ public final class ResourceFXUtils {
 
     private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
         return (value - min) * (newMax - newMin) / (max - min) + newMin;
+    }
+
+    private static void walk(File start, List<Path> pathList, String... other) throws IOException {
+        Files.walkFileTree(start.toPath(), new FileVisitor<Path>() {
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                return exc != null ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                return !Files.isReadable(dir) ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (hasExtension(file, other)) {
+                    pathList.add(file);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 
 

@@ -42,18 +42,27 @@ public class JsonViewer extends Application {
     private ObjectProperty<File> fileProp = new SimpleObjectProperty<>();
     private ObservableList<File> files = FXCollections.observableArrayList();
     private TreeView<Map<String, String>> tree;
-    private 
-    List<String> lastSelected = new ArrayList<>();
+    private List<String> lastSelected = new ArrayList<>();
 
     public void addFile(File... filesToAdd) {
-        for (File file : filesToAdd) {
-            if (!files.contains(file)) {
-                files.add(file);
+        RunnableEx.runInPlatform(() -> {
+            for (File file : filesToAdd) {
+                if (!files.contains(file)) {
+                    files.add(file);
+                }
             }
-        }
-        if (filesToAdd.length > 0 && fileProp.get() == null) {
-            fileProp.set(filesToAdd[0]);
-        }
+            if (filesToAdd.length > 0 && fileProp.get() == null) {
+                fileProp.set(filesToAdd[0]);
+            }
+        });
+    }
+
+    public void clear() {
+        files.clear();
+    }
+
+    public ObservableList<File> getFiles() {
+        return files;
     }
 
     public void setFile(File filesToAdd) {
@@ -75,9 +84,8 @@ public class JsonViewer extends Application {
 
     private Parent createSplitTreeListDemoNode() {
         ObservableList<Map<String, String>> list = FXCollections.observableArrayList();
-        TableView<Map<String, String>> sideTable =
-                new SimpleTableViewBuilder<Map<String, String>>().items(list)
-                        .selectionMode(SelectionMode.MULTIPLE).build();
+        TableView<Map<String, String>> sideTable = new SimpleTableViewBuilder<Map<String, String>>().items(list)
+                .selectionMode(SelectionMode.MULTIPLE).build();
         tree = new SimpleTreeViewBuilder<Map<String, String>>().root(newMap("Root", null))
                 .onSelect(newValue -> onSelectTreeItem(list, sideTable, newValue)).build();
         sideTable.setOnKeyPressed(ev -> copyContent(sideTable, ev));
@@ -90,9 +98,7 @@ public class JsonViewer extends Application {
         fileProp.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> {
             List<Integer> arrayList = getSelectionOrder();
             readJsonFile(tree, val);
-
             selectSame(arrayList);
-
             if (!files.contains(val)) {
                 files.add(val);
             }
