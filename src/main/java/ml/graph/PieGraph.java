@@ -7,10 +7,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.canvas.Canvas;
@@ -24,13 +21,14 @@ import utils.CommonsFX;
 
 public class PieGraph extends Canvas {
     private static final int WIDTH = 550;
-    private GraphicsContext gc;
+    private final GraphicsContext gc;
     private final ObservableMap<String, Long> histogram = FXCollections.observableHashMap();
-    private IntegerProperty radius = new SimpleIntegerProperty(WIDTH / 2);
-    private IntegerProperty bins = new SimpleIntegerProperty(10);
-    private IntegerProperty xOffset = new SimpleIntegerProperty(10);
-    private IntegerProperty start = new SimpleIntegerProperty(90);
-    private DoubleProperty legendsRadius = new SimpleDoubleProperty(3. / 4);
+    private final IntegerProperty radius = new SimpleIntegerProperty(WIDTH / 2);
+    private final IntegerProperty bins = new SimpleIntegerProperty(10);
+    private final IntegerProperty xOffset = new SimpleIntegerProperty(10);
+    private final IntegerProperty start = new SimpleIntegerProperty(90);
+    private final DoubleProperty legendsRadius = new SimpleDoubleProperty(3. / 4);
+    private final BooleanProperty showLines = new SimpleBooleanProperty(false);
     private List<Color> availableColors;
     private String column = "Region";
     private DataframeML dataframe;
@@ -44,6 +42,7 @@ public class PieGraph extends Canvas {
         radius.addListener(listener);
         legendsRadius.addListener(listener);
         xOffset.addListener(listener);
+        showLines.addListener(listener);
         start.addListener(listener);
         bins.addListener(e -> {
             Map<String, Long> hist = convertToHistogram();
@@ -53,7 +52,7 @@ public class PieGraph extends Canvas {
             drawGraph();
         });
         widthProperty().addListener(listener);
-        widthProperty().bind(Bindings.selectDouble(sceneProperty(), "width").divide(2));
+        widthProperty().bind(Bindings.selectDouble(sceneProperty(), "width").divide(3 / 2.));
         heightProperty().bind(Bindings.selectDouble(sceneProperty(), "height"));
 
     }
@@ -61,10 +60,10 @@ public class PieGraph extends Canvas {
     public IntegerProperty binsProperty() {
         return bins;
     }
+
     public final void drawGraph() {
         long sum = histogram.values().stream().mapToLong(e -> e).sorted().sum();
         gc.clearRect(0, 0, getWidth(), getHeight());
-        gc.setTextAlign(TextAlignment.CENTER);
 
         double centerX = gc.getCanvas().getWidth() / 4 + xOffset.get();
         double centerY = gc.getCanvas().getHeight() / 4 + xOffset.get();
@@ -85,6 +84,7 @@ public class PieGraph extends Canvas {
             startAngle += arcExtent;
         }
         startAngle = realStartAngle;
+        gc.setTextAlign(TextAlignment.CENTER);
         for (int i = 0; i < histogramLevels.size(); i++) {
             Entry<String, Long> entry = histogramLevels.get(i);
             double arcExtent = entry.getValue() * 360. / sum;
@@ -95,13 +95,26 @@ public class PieGraph extends Canvas {
             double y = Math.cos(Math.toRadians(angdeg)) * radius2 * d + centerY + j;
 
             gc.setFill(Color.BLACK);
-            gc.save();
-            gc.translate(x, y);
-            double degrees = 360 - startAngle - arcExtent / 2;
-            double degrees2 = degrees > 90 ? degrees + 180 : degrees;
-            gc.rotate(degrees2);
-            gc.fillText(entry.getKey(), 0, 0);
-            gc.restore();
+            if (showLines.get()) {
+                double x2 = Math.sin(Math.toRadians(angdeg)) * radius2 / 3 + centerX + j;
+                double y2 = Math.cos(Math.toRadians(angdeg)) * radius2 / 3 + centerY + j;
+                gc.strokeLine(x, y, x2, y2);
+
+                double ang = (angdeg + 720) % 360;
+                gc.setTextAlign(
+                        ang > 180 && ang < 360 ? TextAlignment.RIGHT
+                                : TextAlignment.LEFT);
+                gc.fillText(entry.getKey(), x, y);
+
+            } else {
+                gc.save();
+                gc.translate(x, y);
+                double degrees = 360 - startAngle - arcExtent / 2;
+                double degrees2 = degrees > 90 ? degrees + 180 : degrees;
+                gc.rotate(degrees2);
+                gc.fillText(entry.getKey(), 0, 0);
+                gc.restore();
+            }
 
             startAngle += arcExtent;
         }
@@ -112,8 +125,8 @@ public class PieGraph extends Canvas {
         double x = gc.getCanvas().getWidth() / 10;
         double y = gc.getCanvas().getHeight() * 7 / 8;
         int columns = (int) Math.sqrt(histogramLevels.size()) + 1;
-        int maxLetter = histogramLevels.stream().map(Entry<String, Long>::getKey).mapToInt(String::length).max()
-                .orElse(0);
+        int maxLetter =
+                histogramLevels.stream().map(Entry<String, Long>::getKey).mapToInt(String::length).max().orElse(0);
         double a = gc.getCanvas().getWidth() / columns / 4 + maxLetter * 4;
         double b = gc.getCanvas().getHeight() / columns / 8;
 
@@ -126,7 +139,7 @@ public class PieGraph extends Canvas {
             double y2 = y + b * j;
             gc.setFill(Color.BLACK);
             gc.fillText(entry.getKey(), x2, y2);
-			gc.setFill(availableColors1.get(index));
+            gc.setFill(availableColors1.get(index));
             gc.fillRect(x2 - 10, y2 - 8, 8, 8);
             gc.strokeRect(x2 - 10, y2 - 8, 8, 8);
         }
@@ -140,7 +153,7 @@ public class PieGraph extends Canvas {
         return radius;
     }
 
-	public void setDataframe(DataframeML dataframe, String column) {
+    public void setDataframe(DataframeML dataframe, String column) {
         this.dataframe = dataframe;
         this.column = column;
         histogram.clear();
@@ -154,6 +167,10 @@ public class PieGraph extends Canvas {
         histogram.putAll(dataframe);
         availableColors = CommonsFX.generateRandomColors(histogram.size());
         drawGraph();
+    }
+
+    public BooleanProperty showLinesProperty() {
+        return showLines;
     }
 
     public IntegerProperty startProperty() {
@@ -174,12 +191,10 @@ public class PieGraph extends Canvas {
 
         if (dataframe.getFormat(column) != String.class) {
             Map<Double, Long> dataframeHistogram = DataframeUtils.histogram(dataframe, column, bins.get());
-            return dataframeHistogram.entrySet().stream()
-                    .collect(Collectors.toMap(t -> String.format("%.0f", t.getKey()),
-                            Entry<Double, Long>::getValue, (a, b) -> a + b));
+            return dataframeHistogram.entrySet().stream().collect(Collectors
+                    .toMap(t -> String.format("%.0f", t.getKey()), Entry<Double, Long>::getValue, (a, b) -> a + b));
         }
         return dataframe.histogram(column);
     }
-
 
 }

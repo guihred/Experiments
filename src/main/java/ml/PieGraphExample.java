@@ -11,6 +11,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,6 +22,7 @@ import ml.graph.PieGraph;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.StageHelper;
+import utils.CommonsFX;
 import utils.ImageFXUtils;
 
 public class PieGraphExample extends Application {
@@ -55,11 +57,13 @@ public class PieGraphExample extends Application {
         VBox xSlider = newSlider("X", -SIZE, SIZE, canvas.xOffsetProperty());
         VBox start = newSlider("Start", -180, 180, canvas.startProperty());
         VBox propSlider = newSlider("Legend Distance", 0, 1., canvas.legendsRadiusProperty());
+        CheckBox newCheck = CommonsFX.newCheck("", canvas.showLinesProperty());
         Button chooseFile = StageHelper.chooseFile("Choose CSV", "CSV",
                 f -> dataframeObj.set(DataframeBuilder.build(f)), "CSV", "*.csv");
 
         root.getChildren()
-                .add(new VBox(radiusSlider, binsSlider, start, xSlider, propSlider, build, chooseFile, exportButton));
+                .add(new VBox(newCheck, radiusSlider, binsSlider, start, xSlider, propSlider, build, chooseFile,
+                        exportButton));
         root.getChildren().add(new HBox(canvas));
 		theStage.show();
         onSelect.select("Region");
