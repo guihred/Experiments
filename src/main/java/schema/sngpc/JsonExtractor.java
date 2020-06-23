@@ -57,7 +57,6 @@ public final class JsonExtractor {
         JsonNode rootNode = objectMapper.readTree(Files.newInputStream(outFile.toPath()));
         StringBuilder yaml2 = new StringBuilder();
         processNode(rootNode, yaml2, 0, a);
-
         return yaml2.toString();
     }
 

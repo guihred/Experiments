@@ -154,6 +154,17 @@ public class JsonViewer extends Application {
         });
     }
 
+    public static void copyContent(TableView<Map<String, String>> sideTable, KeyEvent ev) {
+        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
+            ObservableList<Map<String, String>> selectedItems = sideTable.getSelectionModel().getSelectedItems();
+            String collect = selectedItems.stream().map(Map<String, String>::values)
+                    .map(l -> l.stream().collect(Collectors.joining("\t"))).collect(Collectors.joining("\n"));
+            Map<DataFormat, Object> content = FXCollections.observableHashMap();
+            content.put(DataFormat.PLAIN_TEXT, collect);
+            Clipboard.getSystemClipboard().setContent(content);
+        }
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -181,17 +192,6 @@ public class JsonViewer extends Application {
                 return newMap;
             }).collect(Collectors.toList());
             list.addAll(collect);
-        }
-    }
-
-    private static void copyContent(TableView<Map<String, String>> sideTable, KeyEvent ev) {
-        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
-            ObservableList<Map<String, String>> selectedItems = sideTable.getSelectionModel().getSelectedItems();
-            String collect = selectedItems.stream().map(Map<String, String>::values)
-                    .map(l -> l.stream().collect(Collectors.joining("\t"))).collect(Collectors.joining("\n"));
-            Map<DataFormat, Object> content = FXCollections.observableHashMap();
-            content.put(DataFormat.PLAIN_TEXT, collect);
-            Clipboard.getSystemClipboard().setContent(content);
         }
     }
 

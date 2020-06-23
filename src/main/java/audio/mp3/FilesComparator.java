@@ -100,18 +100,19 @@ public class FilesComparator extends Application {
     }
 
     private ObservableValue<File> addTable(HBox root, String nome, String title, ObservableList<File> items1,
-        ObservableList<File> items2, ObjectProperty<File> dir) {
+            ObservableList<File> items2, ObjectProperty<File> dir) {
         TableView<File> table1 = new SimpleTableViewBuilder<File>().items(items1).selectionMode(SelectionMode.MULTIPLE)
-            .addColumn(nome, (s, c) -> {
-                c.setText(toFileString(s));
-                String itemClass = getItemClass(items2, s, c.getStyleClass(), fileMap);
-                c.getStyleClass().add(itemClass);
-            }).onDoubleClick(e -> MusicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1).build();
+                .addColumn(nome, (s, c) -> {
+                    c.setText(toFileString(s));
+                    String itemClass = getItemClass(items2, s, c.getStyleClass(), fileMap);
+                    c.getStyleClass().add(itemClass);
+                }).onDoubleClick(e -> MusicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1)
+                .prefWidth(root.widthProperty().divide(2)).prefHeight(root.heightProperty()).build();
 
         table1.setId(nome);
         directoryMap.put(nome, dir);
         Button files1 = StageHelper.selectDirectory(nome, "Carregar Pasta de Músicas",
-            selectedFile -> addSongsToTable(table1, selectedFile));
+                selectedFile -> addSongsToTable(table1, selectedFile));
         Button copyButton = SimpleButtonBuilder.newButton(title, e -> copy(dir, table1, items2));
         Button deleteButton = SimpleButtonBuilder.newButton("X", e -> delete(table1));
         Text text = new Text("");
@@ -132,7 +133,7 @@ public class FilesComparator extends Application {
     }
 
     private void copySelectedFiles(ObjectProperty<File> dir, TableView<File> table1, ObservableList<File> items2,
-        List<File> selectedItems) {
+            List<File> selectedItems) {
         for (File selectedItem : selectedItems) {
             if (selectedItem == null || !notRepeated(items2, selectedItem) && contentEqual(items2, selectedItem)) {
                 continue;

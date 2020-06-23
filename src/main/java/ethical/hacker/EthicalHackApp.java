@@ -27,6 +27,7 @@ public final class EthicalHackApp {
         simpleTableViewBuilder.getColumns().clear();
         keySet.forEach(key -> {
             TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
+            column.setSortable(true);
             column.setCellValueFactory(
                 param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
             column.prefWidthProperty().bind(simpleTableViewBuilder.widthProperty().divide(keySet.size()).add(-5));

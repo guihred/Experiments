@@ -14,12 +14,17 @@ import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -55,6 +60,18 @@ public class EthicalHackController extends Application {
 
     private ObservableMap<String, Set<String>> count = observableHashMap();
 
+    public void copyContent(KeyEvent ev) {
+        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
+
+            ObservableList<Map<String, String>> selectedItems = commonTable.getSelectionModel().getSelectedItems();
+            String collect = selectedItems.stream().map(Map<String, String>::values)
+                    .map(l -> l.stream().collect(Collectors.joining("\t"))).collect(Collectors.joining("\n"));
+            Map<DataFormat, Object> content = FXCollections.observableHashMap();
+            content.put(DataFormat.PLAIN_TEXT, collect);
+            Clipboard.getSystemClipboard().setContent(content);
+        }
+    }
+
     public void initialize() {
         final int columnWidth = 120;
         HBox parent = (HBox) commonTable.getParent();
@@ -62,7 +79,8 @@ public class EthicalHackController extends Application {
         ports.textProperty().bind(
                 Bindings.createStringBinding(() -> String.format("Port Services %s", portsSelected), portsSelected));
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
-
+        commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        commonTable.setOnKeyReleased(this::copyContent);
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> tcpItems = synchronizedObservableList(observableArrayList(
                 tcpServices.entrySet().stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toList())));
@@ -76,6 +94,7 @@ public class EthicalHackController extends Application {
             cell.setText(Objects.toString(item.getKey()));
         }));
     }
+
 
     public void onActionCurrentTasks() {
         items.clear();
