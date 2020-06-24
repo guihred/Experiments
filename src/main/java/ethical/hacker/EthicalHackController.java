@@ -1,9 +1,5 @@
 package ethical.hacker;
 
-import static javafx.collections.FXCollections.observableArrayList;
-import static javafx.collections.FXCollections.synchronizedObservableList;
-import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
-
 import extract.ExcelService;
 import java.io.File;
 import java.net.URL;
@@ -24,8 +20,8 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.StageHelper;
 import utils.*;
 
@@ -33,7 +29,6 @@ public class EthicalHackController extends EthicalHackApp {
 
     public void copyContent(KeyEvent ev) {
         if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
-
             ObservableList<Map<String, String>> selectedItems = commonTable.getSelectionModel().getSelectedItems();
             String collect = selectedItems.stream().map(Map<String, String>::values)
                     .map(l -> l.stream().collect(Collectors.joining("\t"))).collect(Collectors.joining("\n"));
@@ -45,7 +40,6 @@ public class EthicalHackController extends EthicalHackApp {
 
     public void initialize() {
         final int columnWidth = 120;
-        HBox parent = (HBox) commonTable.getParent();
         commonTable.prefWidthProperty().bind(parent.widthProperty().add(-columnWidth));
         ports.textProperty().bind(
                 Bindings.createStringBinding(() -> String.format("Port Services %s", portsSelected), portsSelected));
@@ -53,19 +47,19 @@ public class EthicalHackController extends EthicalHackApp {
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         commonTable.setOnKeyReleased(this::copyContent);
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
-        ObservableList<Entry<Integer, String>> tcpItems = synchronizedObservableList(observableArrayList(
-                tcpServices.entrySet().stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toList())));
+        ObservableList<Entry<Integer, String>> tcpItems =
+                FXCollections.synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet()
+                        .stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toList())));
 
         servicesTable.setItems(CommonsFX.newFastFilter(filterField, tcpItems.filtered(e -> true)));
         address.setText(TracerouteScanner.IP_TO_SCAN);
         networkAddress.setText(TracerouteScanner.NETWORK_ADDRESS);
         Map<Integer, CheckBox> portChecks = new HashMap<>();
-        portColumn.setCellFactory(newCellFactory((item, cell) -> {
-            cell.setGraphic(EthicalHackApp.getCheckBox(portsSelected, portChecks, item));
+        portColumn.setCellFactory(SimpleTableViewBuilder.newCellFactory((item, cell) -> {
+            cell.setGraphic(getCheckBox(portsSelected, portChecks, item));
             cell.setText(Objects.toString(item.getKey()));
         }));
     }
-
 
     public void onActionCurrentTasks() {
         items.clear();

@@ -16,10 +16,11 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 public abstract class EthicalHackApp extends Application {
-    protected static final int WIDTH = 500;
+    protected static final int WIDTH = 600;
     @FXML
     protected TextField resultsFilter;
     @FXML
@@ -43,6 +44,8 @@ public abstract class EthicalHackApp extends Application {
     protected ObservableList<Integer> portsSelected = observableArrayList();
     protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
     protected ObservableMap<String, Set<String>> count = observableHashMap();
+    @FXML
+    protected HBox parent;
 
     protected EthicalHackApp() {
     }
