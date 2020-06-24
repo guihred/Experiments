@@ -27,7 +27,6 @@ import utils.RunnableEx;
 
 public class PrintConfig extends Application {
 
-    // private static final Logger LOG = HasLogging.log();
     @FXML
     private ComboBox<Integer> linesPerPage;
     @FXML
@@ -73,43 +72,6 @@ public class PrintConfig extends Application {
     }
 
     public void print() {
-        // ObservableSet<Printer> allPrinters = Printer.getAllPrinters();
-        // String string = "Microsoft Print to PDF";
-        // Printer curPrinter = allPrinters.stream().filter(e ->
-        // string.equals(e.getName())).findFirst()
-        // .orElse(Printer.getDefaultPrinter());
-        // PrinterJob job = PrinterJob.createPrinterJob(curPrinter);
-        // if (job == null) {
-        // return;
-        // }
-        // File outFile = ResourceFXUtils.getOutFile("oi.pdf");
-        // job.jobStatusProperty().addListener((ob, old, newV) -> {
-        // LOG.info("Status {}", newV);
-        // if (newV == JobStatus.DONE) {
-        // RunnableEx.run(() -> {
-        // while (!outFile.exists()) {
-        // Thread.sleep(100);
-        // }
-        // ImageFXUtils.openInDesktop(outFile);
-        // });
-        // }
-        // });
-        // RunnableEx.run(() -> {
-        // Files.deleteIfExists(outFile.toPath());
-        // Object jobImpl = ClassReflectionUtils.getFieldValue(job, "jobImpl");
-        // PrintRequestAttributeSet printReqAttrSet =
-        // (PrintRequestAttributeSet) ClassReflectionUtils.getFieldValue(jobImpl,
-        // "printReqAttrSet");
-        // printReqAttrSet.add(new Destination(outFile.toURI()));
-        // });
-        // String description =
-        // ClassReflectionUtils.getDescription(curPrinter.getPrinterAttributes());
-        // LOG.info("PRINTER ATTRIBUTES {}", description);
-        // PageLayout createPageLayout = curPrinter.createPageLayout(Paper.A4,
-        // PageOrientation.PORTRAIT, 5, 5, 5, 5);
-        // LOG.info("DEFAULT LAYOUT{}", curPrinter.getDefaultPageLayout());
-        // job.printPage(createPageLayout, panel);
-        // job.endJob();
         printToPDF();
         StageHelper.closeStage(panel);
     }

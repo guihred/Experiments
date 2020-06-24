@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -23,23 +21,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Mesh;
 import javax.swing.filechooser.FileSystemView;
 import org.slf4j.Logger;
 
 /**
- * @author Note
- *
- *         Easy Methods to get a resource from the resources directory.
- *
+ * @author Note Easy Methods to get a resource from the resources directory.
  */
 public final class ResourceFXUtils {
 
     private static final Logger LOGGER = HasLogging.log();
+
     private static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
             "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
             "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
@@ -76,24 +68,6 @@ public final class ResourceFXUtils {
 
     public static URL convertToURL(File arquivo) {
         return SupplierEx.get(() -> arquivo.toURI().toURL());
-    }
-
-    public static Image createImage(double size1, float[][] noise) {
-        int width = (int) size1;
-        int height = (int) size1;
-
-        WritableImage wr = new WritableImage(width, height);
-        PixelWriter pw = wr.getPixelWriter();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                float value = noise[x][y];
-                double gray = normalizeValue(value, -.5, .5, 0., 1.);
-                gray = clamp(gray, 0, 1);
-                Color color = Color.RED.interpolate(Color.YELLOW, gray);
-                pw.setColor(x, y, color);
-            }
-        }
-        return wr;
     }
 
     public static List<Path> getFirstFileMatch(File dir, PredicateEx<Path> other) {
@@ -139,7 +113,7 @@ public final class ResourceFXUtils {
                 return Collections.emptyList();
             }
             List<Path> pathList = new ArrayList<>();
-            walk(start, pathList, other);
+            FileTreeWalker.walk(start, pathList, other);
             return pathList;
         }, Collections.emptyList());
     }
@@ -158,7 +132,7 @@ public final class ResourceFXUtils {
                     }
                 }
             });
-            RunnableEx.runNewThread(() -> walk(start, pathList, other));
+            RunnableEx.runNewThread(() -> FileTreeWalker.walk(start, pathList, other));
             return pathList;
         }, FXCollections.emptyObservableList());
     }
@@ -186,6 +160,10 @@ public final class ResourceFXUtils {
             LOGGER.trace("", e);
             return ZonedDateTime.now().getYear();
         }
+    }
+
+    public static boolean hasExtension(Path e, String... other) {
+        return Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex));
     }
 
     public static Mesh importStlMesh(File file) {
@@ -253,44 +231,9 @@ public final class ResourceFXUtils {
         return getClassLoader().getResource(arquivo);
     }
 
+
     private static ClassLoader getClassLoader() {
         return Thread.currentThread().getContextClassLoader();
     }
-
-    private static boolean hasExtension(Path e, String... other) {
-        return Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex));
-    }
-
-    private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
-        return (value - min) * (newMax - newMin) / (max - min) + newMin;
-    }
-
-    private static void walk(File start, List<Path> pathList, String... other) throws IOException {
-        Files.walkFileTree(start.toPath(), new FileVisitor<Path>() {
-            @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                return exc != null ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                return !Files.isReadable(dir) ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (hasExtension(file, other)) {
-                    pathList.add(file);
-                }
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                return FileVisitResult.CONTINUE;
-            }
-        });
-    }
-
 
 }

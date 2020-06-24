@@ -17,7 +17,7 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import utils.Axis;
-import utils.ResourceFXUtils;
+import utils.ImageFXUtils;
 import utils.RotateUtils;
 
 public class Chart3dDemo extends Application {
@@ -84,7 +84,7 @@ public class Chart3dDemo extends Application {
         }
 
         // material
-        Image diffuseMap = ResourceFXUtils.createImage(SIZE, noiseArray);
+        Image diffuseMap = ImageFXUtils.createImage(SIZE, noiseArray);
 
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseMap(diffuseMap);

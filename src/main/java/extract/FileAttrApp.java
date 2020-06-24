@@ -19,7 +19,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.SimpleTreeViewBuilder;
 import simplebuilder.StageHelper;
-import utils.*;
+import utils.ConsumerEx;
+import utils.ExtractUtils;
+import utils.ResourceFXUtils;
+import utils.SupplierEx;
 
 public class FileAttrApp extends Application {
     private static final int BYTES_IN_A_KILOBYTE = 1024;
@@ -79,26 +82,25 @@ public class FileAttrApp extends Application {
     }
 
     private void onSelectFile(TreeItem<File> t) {
-        if (t != null) {
-            File value = t.getValue();
-            if (value.isDirectory()) {
-                File[] listFiles = value.listFiles();
-                if (listFiles != null) {
-                    pieData.clear();
-                    Arrays.parallelSort(listFiles,
-                        Comparator.comparing((File e) -> !e.isDirectory()).thenComparing(t1 -> -getSize(t1)));
-                    for (File file2 : listFiles) {
-                        pieData.add(new PieChart.Data(file2.getName(), getSize(file2)));
-                    }
-                    pieData.sort(Comparator.comparing(Data::getPieValue));
-                    if (t.getChildren().isEmpty()) {
-                        for (File file2 : listFiles) {
-                            t.getChildren().add(new TreeItem<>(file2));
-                        }
-                    }
-
-                }
-            }
+        if (t == null || !t.getValue().isDirectory()) {
+            return;
+        }
+        File[] listFiles = t.getValue().listFiles();
+        if (listFiles == null) {
+            return;
+        }
+        pieData.clear();
+        Arrays.parallelSort(listFiles,
+                Comparator.comparing((File e) -> !e.isDirectory()).thenComparing(t1 -> -getSize(t1)));
+        for (File file2 : listFiles) {
+            pieData.add(new PieChart.Data(file2.getName(), getSize(file2)));
+        }
+        pieData.sort(Comparator.comparing(Data::getPieValue));
+        if (!t.getChildren().isEmpty()) {
+            return;
+        }
+        for (File file2 : listFiles) {
+            t.getChildren().add(new TreeItem<>(file2));
         }
     }
 

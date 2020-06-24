@@ -55,27 +55,7 @@ public class BucketTool extends PaintTool {
         final List<Integer> toGo = new CustomList<>();
         toGo.add(index(initX, initY));
         PixelHelper pixel = new PixelHelper();
-        RunnableEx.ignore(() -> {
-            while (!toGo.isEmpty()) {
-                int next = toGo.get(0);
-                int x = x(next);
-                int y = y(next);
-                if (withinImage(x, y, model.getImage())) {
-                    pixel.reset(originalColor);
-                    int color = pixelReader.getArgb(x, y);
-                    if (color != frontColor && (color == originalColor || closeColor(pixel, color))) {
-                        if (y != 0 && y != height - 1) {
-                            addIfNotIn(toGo, next + 1);
-                            addIfNotIn(toGo, next - 1);
-                            addIfNotIn(toGo, next + width);
-                            addIfNotIn(toGo, next - width);
-                        }
-                        model.getImage().getPixelWriter().setArgb(x, y, frontColor);
-                    }
-                }
-                toGo.remove(0);
-            }
-        });
+        RunnableEx.ignore(() -> updateColor(originalColor, frontColor, pixelReader, model, toGo, pixel));
     }
 
     @Override
@@ -123,6 +103,29 @@ public class BucketTool extends PaintTool {
                 PixelHelper.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
         if (originalColor != frontColor) {
             Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
+        }
+    }
+
+    private void updateColor(final int originalColor, final int frontColor, final PixelReader pixelReader,
+            final PaintModel model, final List<Integer> toGo, PixelHelper pixel) {
+        while (!toGo.isEmpty()) {
+            int next = toGo.get(0);
+            int x = x(next);
+            int y = y(next);
+            if (withinImage(x, y, model.getImage())) {
+                pixel.reset(originalColor);
+                int color = pixelReader.getArgb(x, y);
+                if (color != frontColor && (color == originalColor || closeColor(pixel, color))) {
+                    if (y != 0 && y != height - 1) {
+                        addIfNotIn(toGo, next + 1);
+                        addIfNotIn(toGo, next - 1);
+                        addIfNotIn(toGo, next + width);
+                        addIfNotIn(toGo, next - width);
+                    }
+                    model.getImage().getPixelWriter().setArgb(x, y, frontColor);
+                }
+            }
+            toGo.remove(0);
         }
     }
 

@@ -1,7 +1,6 @@
 package ethical.hacker;
 
 import static javafx.collections.FXCollections.observableArrayList;
-import static javafx.collections.FXCollections.observableHashMap;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
 
@@ -11,7 +10,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
@@ -19,46 +17,19 @@ import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.StageHelper;
 import utils.*;
 
-public class EthicalHackController extends Application {
-    private static final int WIDTH = 500;
-    @FXML
-    private TextField resultsFilter;
-    @FXML
-    private TextField dns;
-
-    @FXML
-    private TableView<Entry<Integer, String>> servicesTable;
-    @FXML
-    private TextField address;
-    @FXML
-    private TextField networkAddress;
-    @FXML
-    private TextField filterField;
-    @FXML
-    private TableColumn<Entry<Integer, String>, Object> portColumn;
-    @FXML
-    private ProgressIndicator progressIndicator;
-
-    @FXML
-    private Text ports;
-    @FXML
-    private TableView<Map<String, String>> commonTable;
-    private ObservableList<Integer> portsSelected = observableArrayList();
-    private ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
-
-    private ObservableMap<String, Set<String>> count = observableHashMap();
+public class EthicalHackController extends EthicalHackApp {
 
     public void copyContent(KeyEvent ev) {
         if (ev.isControlDown() && ev.getCode() == KeyCode.C) {

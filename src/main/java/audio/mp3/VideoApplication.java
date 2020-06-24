@@ -40,7 +40,7 @@ public class VideoApplication extends Application {
         player.play();
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         launch(args);
     }
 }

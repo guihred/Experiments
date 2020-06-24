@@ -50,7 +50,7 @@ public class EqualsTest extends AbstractTestExecution {
         HuffmanTree buildTree = measureTime("HuffmanTree.buildTree", () -> HuffmanTree.buildTree(string));
         String encode = measureTime("HuffmanTree.encode", () -> buildTree.encode(string));
         String decoded = measureTime("HuffmanTree.decode", () -> buildTree.decode(encode));
-        Assert.assertEquals(string, decoded);
+        Assert.assertEquals("Decoded String should be equal", string, decoded);
     }
 
     @Test

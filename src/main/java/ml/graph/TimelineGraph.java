@@ -110,7 +110,7 @@ public class TimelineGraph extends Canvas {
             Color value = colors.get(labelRow);
             if (!colors.containsKey(labelRow)) {
                 if (!colorEmpty) {
-                    // continue;
+                    continue;
                 }
                 value = generateRandomColors.get(i);
                 colors.put(labelRow, value);

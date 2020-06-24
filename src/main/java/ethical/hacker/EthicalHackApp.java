@@ -1,25 +1,53 @@
 package ethical.hacker;
 
+import static javafx.collections.FXCollections.observableArrayList;
+import static javafx.collections.FXCollections.observableHashMap;
+import static javafx.collections.FXCollections.synchronizedObservableList;
+
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import utils.HasLogging;
 
-public final class EthicalHackApp {
-
+public abstract class EthicalHackApp extends Application {
     private static final Logger LOG = HasLogging.log();
+    protected static final int WIDTH = 500;
+    @FXML
+    protected TextField resultsFilter;
+    @FXML
+    protected TextField dns;
+    @FXML
+    protected TableView<Entry<Integer, String>> servicesTable;
+    @FXML
+    protected TextField address;
+    @FXML
+    protected TextField networkAddress;
+    @FXML
+    protected TextField filterField;
+    @FXML
+    protected TableColumn<Entry<Integer, String>, Object> portColumn;
+    @FXML
+    protected ProgressIndicator progressIndicator;
+    @FXML
+    protected Text ports;
+    @FXML
+    protected TableView<Map<String, String>> commonTable;
+    protected ObservableList<Integer> portsSelected = observableArrayList();
+    protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
+    protected ObservableMap<String, Set<String>> count = observableHashMap();
 
-    private EthicalHackApp() {
+    protected EthicalHackApp() {
     }
 
     public static void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder,
@@ -69,7 +97,7 @@ public final class EthicalHackApp {
         return change -> updateItem(items, count1, primaryKey, targetKey, change);
     }
 
-    private static void addIfChecked(List<Integer> list, Entry<Integer, String> e, Boolean val) {
+    protected static void addIfChecked(List<Integer> list, Entry<Integer, String> e, Boolean val) {
         if (!val) {
             list.remove(e.getKey());
         } else if (!list.contains(e.getKey())) {
@@ -77,7 +105,7 @@ public final class EthicalHackApp {
         }
     }
 
-    private static CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
+    protected static CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
         CheckBox check = new CheckBox();
         check.selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
         return check;

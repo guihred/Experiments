@@ -20,7 +20,7 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class HashVerifier {
-    public static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
     private static final Path PHANTOM_JS =
             ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
@@ -98,7 +98,8 @@ public final class HashVerifier {
         return renderPage("https://www.virustotal.com/old-browsers/file/" + sha256Hash);
     }
 
-    private static void addToNotRepeated(List<Entry<Path, Path>> notRepeatedEntries, Map<String, Path> fileMap, Path path)
+    private static void addToNotRepeated(List<Entry<Path, Path>> notRepeatedEntries, Map<String, Path> fileMap,
+            Path path)
             throws IOException {
         String sha256Hash = getSha256Hash(path);
         Path put = fileMap.put(sha256Hash, path);

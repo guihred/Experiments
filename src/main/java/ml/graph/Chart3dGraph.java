@@ -24,7 +24,7 @@ import ml.data.DataframeUtils;
 import org.slf4j.Logger;
 import utils.Axis;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
+import utils.ImageFXUtils;
 import utils.RotateUtils;
 
 public class Chart3dGraph extends Application {
@@ -69,7 +69,7 @@ public class Chart3dGraph extends Application {
         createFaces(mesh, length);
 
         // material
-        Image diffuseMap = ResourceFXUtils.createImage(SIZE, noiseArray);
+        Image diffuseMap = ImageFXUtils.createImage(SIZE, noiseArray);
 
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseMap(diffuseMap);

@@ -59,7 +59,6 @@ public class WebBrowserApplication extends Application {
         siteField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
         WebView browser = new WebView();
         engine = browser.getEngine();
-        enableDebugger();
         Button backButton = SimpleButtonBuilder.newButton("<-",
                 event -> RunnableEx.ignore(() -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1)));
         Worker<Void> loadWorker = engine.getLoadWorker();
@@ -129,9 +128,6 @@ public class WebBrowserApplication extends Application {
 
     }
 
-    private void enableDebugger() {
-        // DOES NOTHING
-    }
 
     private ObservableList<String> getByTagAttribute(Document doc, String tagname, String string) {
         NodeList linkList = doc.getElementsByTagName(tagname);

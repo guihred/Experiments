@@ -118,12 +118,12 @@ public class HeatGraph extends Canvas {
         for (int k = 0; k < data.getSize(); k++) {
             double finalX = finalX(xStats, entrySetX.get(k));
             double finalY = finalY(yStats, entrySetY.get(k));
-            double finalZ = finalZ(entrySetZ != null ? entrySetZ.get(k) : 1);
             double[] orElse = triangles.stream().min(Comparator.comparing(d -> {
                 double e = d[0] - finalX;
                 double f = d[1] - finalY;
                 return e * e + f * f;
             })).orElse(triangles.get(0));
+            double finalZ = finalZ(entrySetZ != null ? entrySetZ.get(k) : 1);
             pointHistogram.compute(orElse, (key, v) -> SupplierEx.nonNull(v, 0.) + finalZ);
         }
 
@@ -232,7 +232,7 @@ public class HeatGraph extends Canvas {
     }
 
     private static double finalZ(Object object) {
-        if (object == null || !(object instanceof Number)) {
+        if (!(object instanceof Number)) {
             return 0;
         }
         return ((Number) object).doubleValue();

@@ -122,10 +122,10 @@ public class XmlViewer extends Application {
             }
             if (treeItem.isLeaf()) {
                 finalList.add(treeItem.getValue());
-                continue;
+            } else {
+                lista.addAll(i, treeItem.getChildren());
+                i--;
             }
-            lista.addAll(i, treeItem.getChildren());
-            i--;
         }
         finalList.removeIf(Map<String, String>::isEmpty);
         return finalList;
@@ -187,7 +187,6 @@ public class XmlViewer extends Application {
                     newItem.putAll(t);
                 }
             }
-            return;
         }
     }
 

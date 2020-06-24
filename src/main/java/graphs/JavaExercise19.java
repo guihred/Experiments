@@ -5,7 +5,7 @@ import utils.HasLogging;
 
 public final class JavaExercise19 {
     private static final Logger LOG = HasLogging.log();
-    private static int el = 0;
+    private static int el;
 
     private JavaExercise19() {
     }

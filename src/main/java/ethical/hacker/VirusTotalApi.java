@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -26,7 +27,7 @@ import utils.SupplierEx;
 
 public final class VirusTotalApi {
     private static final String ATTRIBUTES = "attributes";
-    public static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
     private static final String VIRUSTOTAL_APIKEY = "397249a87cac6415141dde0a2263710c23166cc759dc89b681e8df70cc536abd";
 
     private VirusTotalApi() {
@@ -79,7 +80,7 @@ public final class VirusTotalApi {
 
     public static File[] getUrlInformation(String url) throws IOException {
 
-        String string = SupplierEx.getIgnore(() -> new URL(url).toString(), "http://" + url + "/");
+        String string = SupplierEx.getIgnore(new URL(url)::toString, "http://" + url + "/");
 
         File outFile = newJsonFile(string);
         if (!outFile.exists()) {
@@ -115,7 +116,7 @@ public final class VirusTotalApi {
         post.addHeader("x-apikey", VIRUSTOTAL_APIKEY);
         HttpResponse response = client.execute(post);
         HttpEntity entity = response.getEntity();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent()));
+        BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
         List<String> collect = rd.lines().collect(Collectors.toList());
         Files.write(outFile.toPath(), collect);
 

@@ -2,9 +2,11 @@ package contest;
 
 import static contest.IadesHelper.saveContestValues;
 import static utils.CommonsFX.onCloseWindow;
+import static utils.ExtractUtils.addDomain;
 
 import java.net.URL;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -54,7 +56,7 @@ public class IadesCrawler extends Application {
     }
 
     private void createSplitTreeListDemoNode() {
-        treeView1.setRoot(new TreeItem<>(new AbstractMap.SimpleEntry<>("", DOMAIN + "/inscricao/?v=encerrado")));
+        treeView1.setRoot(new TreeItem<>(new SimpleEntry<>("", DOMAIN + "/inscricao/?v=encerrado")));
         SimpleTreeViewBuilder.onSelect(treeView1, this::getNewLinks);
         listView3.setCellFactory(SimpleListViewBuilder.newCellFactory(IadesHelper::addClasses));
         listView3.setItems(FXCollections.observableArrayList());
@@ -70,7 +72,7 @@ public class IadesCrawler extends Application {
 
     private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url, int level) {
         List<Map.Entry<String, String>> linksFound = doc.select("a").stream()
-                .map(l -> new AbstractMap.SimpleEntry<>(l.text(), ExtractUtils.addDomain(currentDomain, l.attr("href"))))
+                .map(l -> new SimpleEntry<>(l.text(), addDomain(currentDomain, l.attr("href"))))
                 .filter(t -> !"#".equals(t.getValue()))
                 .filter(t -> StringUtils.isNotBlank(t.getKey()) && !t.getKey().matches("\\d+\\..*"))
                 .filter(t -> level < 1 || t.getKey().contains("Provas") || t.getKey().contains("Gabarito"))

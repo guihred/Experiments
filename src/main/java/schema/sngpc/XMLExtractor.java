@@ -2,9 +2,9 @@ package schema.sngpc;
 
 import static simplebuilder.SimpleTextBuilder.newBoldText;
 import static utils.RunnableEx.remap;
+import static utils.RunnableEx.run;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +22,12 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import utils.RunnableEx;
+import utils.SupplierEx;
 
 public final class XMLExtractor {
 
@@ -36,7 +35,6 @@ public final class XMLExtractor {
     }
 
     public static void addValue(Node item, TreeItem<Map<String, String>> e) {
-        RunnableEx.run(() -> {
             NamedNodeMap attributes = item.getAttributes();
             for (int i = 0; attributes != null && i < attributes.getLength(); i++) {
                 Node item2 = attributes.item(i);
@@ -63,13 +61,13 @@ public final class XMLExtractor {
                     }
                 }
             }
-        });
     }
 
     public static Document newDocument() throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        factory.setAttribute("http://javax.xml.XMLConstants/feature/secure-processing", true);
+        // factory.setAttribute("http://javax.xml.XMLConstants/feature/secure-processing",
+        // true);
         DocumentBuilder documentBuilder = factory.newDocumentBuilder();
         return documentBuilder.newDocument();
     }
@@ -112,8 +110,9 @@ public final class XMLExtractor {
     }
 
     private static void tryToRead(TreeView<Map<String, String>> build,
-            Map<Node, TreeItem<Map<String, String>>> allItems, File file) throws XmlException, IOException {
-        XmlObject parse = XmlObject.Factory.parse(file);
+            Map<Node, TreeItem<Map<String, String>>> allItems, File file) {
+        XmlObject parse = SupplierEx.remap(() -> XmlObject.Factory.parse(file), "ERROR PARSING");
+
         Node rootNode = parse.getDomNode();
         List<Node> currentNodes = new ArrayList<>();
         currentNodes.add(rootNode);
@@ -133,7 +132,7 @@ public final class XMLExtractor {
                     allItems.get(domNode).getChildren().add(e);
                     allItems.put(item, e);
                     e.setGraphic(newBoldText(item.getNodeName()));
-                    addValue(item, e);
+                    run(() -> addValue(item, e));
                 }
             }
         }

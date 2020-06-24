@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 
 public final class ExtractUtils {
     public static final String PROXY_PORT = "3128";
-    private static final int HUNDRED_SECONDS = 100000;
+    private static final int HUNDRED_SECONDS = 100_000;
     private static final Logger LOG = HasLogging.log();
 
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");

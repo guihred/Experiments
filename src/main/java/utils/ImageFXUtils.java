@@ -9,7 +9,9 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javax.imageio.ImageIO;
 
@@ -17,6 +19,28 @@ public final class ImageFXUtils {
     private static boolean showImage = true;
 
     private ImageFXUtils() {
+    }
+
+    static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
+        return (value - min) * (newMax - newMin) / (max - min) + newMin;
+    }
+
+    public static Image createImage(double size1, float[][] noise) {
+        int width = (int) size1;
+        int height = (int) size1;
+    
+        WritableImage wr = new WritableImage(width, height);
+        PixelWriter pw = wr.getPixelWriter();
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                float value = noise[x][y];
+                double gray = ImageFXUtils.normalizeValue(value, -.5, .5, 0., 1.);
+                gray = ResourceFXUtils.clamp(gray, 0, 1);
+                Color color = Color.RED.interpolate(Color.YELLOW, gray);
+                pw.setColor(x, y, color);
+            }
+        }
+        return wr;
     }
 
     public static WritableImage imageCopy(Image image) {

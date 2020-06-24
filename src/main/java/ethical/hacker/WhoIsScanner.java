@@ -15,9 +15,10 @@ import utils.RunnableEx;
 public class WhoIsScanner {
     private static final Logger LOG = HasLogging.log();
 
-    private final Map<String, String> cookies = new HashMap<>();
+    private final Map<String, String> cookies;
 
     public WhoIsScanner() {
+        cookies = new HashMap<>();
     }
 
     public ObservableList<Map<String, String>> scanIps(String ip) {

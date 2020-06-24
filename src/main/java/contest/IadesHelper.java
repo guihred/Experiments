@@ -24,8 +24,9 @@ import org.slf4j.Logger;
 import utils.*;
 
 public final class IadesHelper {
+    private static final String VERMELHO = "vermelho";
     private static final String AMARELO = "amarelo";
-    public static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
     private static final List<String> IT_KEYWORDS = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
 
     private IadesHelper() {
@@ -33,17 +34,17 @@ public final class IadesHelper {
 
     public static void addClasses(Concurso con, Labeled cell) {
         cell.setText(con.getNome());
-        cell.getStyleClass().removeAll(AMARELO, "vermelho");
+        cell.getStyleClass().removeAll(AMARELO, VERMELHO);
         if (IadesHelper.hasTI(con.getVagas())) {
             cell.getStyleClass().add(AMARELO);
             return;
         }
         if (con.getVagas().isEmpty()) {
-            cell.getStyleClass().add("vermelho");
+            cell.getStyleClass().add(VERMELHO);
             con.getVagas().addListener((Observable c) -> {
                 List<?> vagasList = (List<?>) c;
                 if (con.getNome().equals(cell.getText()) && !vagasList.isEmpty()) {
-                    cell.getStyleClass().remove("vermelho");
+                    cell.getStyleClass().remove(VERMELHO);
                     if (IadesHelper.hasTI(vagasList)) {
                         cell.getStyleClass().add(AMARELO);
                     }

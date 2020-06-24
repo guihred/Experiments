@@ -4,7 +4,6 @@ import static utils.StringSigaUtils.toInteger;
 
 import java.util.function.Supplier;
 import javafx.application.Application;
-//import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -24,7 +23,10 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
-import utils.*;
+import utils.ExtractUtils;
+import utils.HasLogging;
+import utils.ImageFXUtils;
+import utils.RunnableEx;
 
 public class ImageCrackerApp extends Application {
     private static final Logger LOG = HasLogging.log();
