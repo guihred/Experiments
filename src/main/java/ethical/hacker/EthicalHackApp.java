@@ -17,11 +17,8 @@ import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
-import org.slf4j.Logger;
-import utils.HasLogging;
 
 public abstract class EthicalHackApp extends Application {
-    private static final Logger LOG = HasLogging.log();
     protected static final int WIDTH = 500;
     @FXML
     protected TextField resultsFilter;
@@ -87,8 +84,6 @@ public abstract class EthicalHackApp extends Application {
         Set<String> orDefault = count1.getOrDefault(primaryKey, new HashSet<>());
         orDefault.add(key);
         count1.put(targetKey, orDefault);
-        LOG.trace("{} of {} = {}", targetKey, key, valueAdded);
-
     }
 
     public static MapChangeListener<String, List<String>> updateItemOnChange(String primaryKey, String targetKey,
