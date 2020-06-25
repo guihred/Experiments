@@ -135,7 +135,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
         File file = ResourceFXUtils.toFile("anvisa2208.xlsx");
         ObservableList<String> sheetsExcel = measureTime("LeitorArquivos.getSheetsExcel",
-            () -> LeitorArquivos.getSheetsExcel(file));
+            () -> ExcelService.getSheetsExcel(file));
 
         WaitForAsyncUtils.waitForFxEvents();
         ObservableList<List<String>> listExcel = measureTime("LeitorArquivos.getListExcel",

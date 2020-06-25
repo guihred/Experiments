@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.formula.BaseFormulaEvaluator;
@@ -24,6 +26,20 @@ public final class ExcelService {
     private static final Logger LOG = HasLogging.log();
 
     private ExcelService() {
+    }
+
+    public static ObservableList<String> getSheetsExcel(File selectedFile) {
+        ObservableList<String> list = FXCollections.observableArrayList();
+        RunnableEx.runInPlatform(() -> {
+            try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
+                Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
+                int numberOfSheets = workbook.getNumberOfSheets();
+                for (int i = 0; i < numberOfSheets; i++) {
+                    list.add(workbook.getSheetAt(i).getSheetName());
+                }
+            }
+        });
+        return list;
     }
 
     public static <T> void getExcel(BiFunction<Integer, Integer, List<T>> lista,
@@ -61,6 +77,7 @@ public final class ExcelService {
             alterString(map, sheet, row, c);
         }
     }
+
 
     @SuppressWarnings("rawtypes")
     private static void alterNumeric(Map<Object, Object> map, Sheet sheet, Cell cell) {
@@ -250,27 +267,35 @@ public final class ExcelService {
             Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
             createCell.setCellValue((Date) content);
             createCell.setCellStyle(formatMap.get(Date.class));
-        } else if (content instanceof BigDecimal) {
+            return;
+        }
+        if (content instanceof BigDecimal) {
             Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
             createCell.setCellValue(((BigDecimal) content).doubleValue());
             createCell.setCellStyle(formatMap.get(BigDecimal.class));
-        } else if (content instanceof Number) {
+            return;
+        }
+        if (content instanceof Number) {
             Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
             createCell.setCellValue(((Number) content).doubleValue());
-        } else if (content instanceof String) {
+            return;
+        }
+        if (content instanceof String) {
             Cell createCell = row.createCell(colIndex, CellType.STRING);
             String string = Objects.toString(content, "");
             createCell.setCellValue(string.replaceAll("\n", "\r\n").replaceAll("\t", ""));
             createCell.setCellStyle(formatMap.get(String.class));
             row.setHeightInPoints(Math.max(row.getHeightInPoints(),
                 row.getSheet().getDefaultRowHeightInPoints() * string.replaceAll("[^\n]", "").length()));
-        } else if (content instanceof Boolean) {
+            return;
+        }
+        if (content instanceof Boolean) {
             Cell createCell = row.createCell(colIndex, CellType.STRING);
             Boolean campo2 = (Boolean) content;
             createCell.setCellValue(campo2 ? "Sim" : "Não");
-        } else {
-            row.createCell(colIndex, CellType.BLANK);
+            return;
         }
+        row.createCell(colIndex, CellType.BLANK);
     }
 
     private static Map<Class<?>, CellStyle> styleMap(Workbook workbook) {

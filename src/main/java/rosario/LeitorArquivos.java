@@ -15,7 +15,6 @@ import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
@@ -77,7 +76,7 @@ public final class LeitorArquivos {
 
     public static ObservableList<List<String>> getListExcel(File selectedFile, String sheetName) {
         ObservableList<List<String>> list = FXCollections.observableArrayList();
-        Platform.runLater(RunnableEx.make(() -> {
+        RunnableEx.runInPlatform(() -> {
             try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
                 Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
                 Sheet sheetAt = sheetName == null ? workbook.getSheetAt(0) : workbook.getSheet(sheetName);
@@ -89,7 +88,7 @@ public final class LeitorArquivos {
                     list.add(fields);
                 }
             }
-        }));
+        });
         return list;
     }
 
@@ -148,20 +147,6 @@ public final class LeitorArquivos {
             }
             return listaMedicamentos;
         }, "ERROR READING FILE");
-    }
-
-    public static ObservableList<String> getSheetsExcel(File selectedFile) {
-        ObservableList<String> list = FXCollections.observableArrayList();
-        Platform.runLater(RunnableEx.make(() -> {
-            try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-                Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
-                int numberOfSheets = workbook.getNumberOfSheets();
-                for (int i = 0; i < numberOfSheets; i++) {
-                    list.add(workbook.getSheetAt(i).getSheetName());
-                }
-            }
-        }));
-        return list;
     }
 
     public static void main(String[] args) {

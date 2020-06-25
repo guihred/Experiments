@@ -5,6 +5,7 @@ import static rosario.LeitorArquivos.*;
 import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
 import static utils.RunnableEx.runIf;
 
+import extract.ExcelService;
 import java.awt.Desktop;
 import java.io.File;
 import java.util.*;
@@ -202,7 +203,7 @@ public final class RosarioCommons {
         stage.centerOnScreen();
         stage.toFront();
         stage.setTitle("Importar Excel");
-        ObservableList<String> sheetsExcel = LeitorArquivos.getSheetsExcel(excel);
+        ObservableList<String> sheetsExcel = ExcelService.getSheetsExcel(excel);
         ChoiceBox<String> selectSheet = new ChoiceBox<>(sheetsExcel);
         ObservableList<List<String>> listExcel = LeitorArquivos.getListExcel(excel, null);
         selectSheet.getSelectionModel().selectFirst();

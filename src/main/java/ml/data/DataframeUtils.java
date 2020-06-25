@@ -18,20 +18,19 @@ import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 
-public final class DataframeUtils extends DataframeML {
+public class DataframeUtils extends DataframeML {
 
     private static final Logger LOG = HasLogging.log();
 
-    private DataframeUtils() {
+    protected DataframeUtils() {
     }
-
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static List<Double> crossFeature(DataframeML dataframe, String header, ToDoubleFunction<double[]> mapper,
-        String... dependent) {
-        List<Double> newColumn = IntStream.range(0, dataframe.size)
-            .mapToObj(i -> toDoubleArray(dataframe, i, dependent)).mapToDouble(mapper).boxed()
-            .collect(Collectors.toList());
+            String... dependent) {
+        List<Double> newColumn =
+                IntStream.range(0, dataframe.size).mapToObj(i -> toDoubleArray(dataframe, i, dependent))
+                        .mapToDouble(mapper).boxed().collect(Collectors.toList());
         dataframe.getDataframe().put(header, (List) newColumn);
         dataframe.getFormatMap().put(header, Double.class);
         return newColumn;
@@ -39,9 +38,9 @@ public final class DataframeUtils extends DataframeML {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static List<Double> crossFeatureObject(DataframeML dataframe, String header,
-        ToDoubleFunction<Object[]> mapper, String... dependent) {
+            ToDoubleFunction<Object[]> mapper, String... dependent) {
         List<Double> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
-            .mapToDouble(mapper).boxed().collect(Collectors.toList());
+                .mapToDouble(mapper).boxed().collect(Collectors.toList());
         dataframe.getDataframe().put(header, (List) mappedColumn);
         dataframe.getFormatMap().put(header, Double.class);
         return mappedColumn;
@@ -69,7 +68,7 @@ public final class DataframeUtils extends DataframeML {
             double self = stats.get(variable).getCorrelation(variable);
             for (String variable2 : keySet) {
                 s.append(String.format(floatFormating(variable2.length()),
-                    stats.get(variable).getCorrelation(variable2) / self));
+                        stats.get(variable).getCorrelation(variable2) / self));
             }
             s.append("\n");
 
@@ -116,18 +115,19 @@ public final class DataframeUtils extends DataframeML {
     }
 
     public static Map<String, DataframeStatisticAccumulator> makeStats(BaseDataframe dataframe) {
-        return dataframe.getDataframe().entrySet().stream().collect(Collectors.toMap(
-            Entry<String, List<Object>>::getKey,
-            e -> e.getValue().stream().collect(
-                () -> new DataframeStatisticAccumulator(dataframe.getDataframe(), dataframe.getFormatMap(), e.getKey()),
-                DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
-            (m1, m2) -> m1.combine(m2), LinkedHashMap::new));
+        return dataframe.getDataframe().entrySet().stream()
+                .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
+                        e -> e.getValue().stream().collect(
+                                () -> new DataframeStatisticAccumulator(dataframe.getDataframe(),
+                                        dataframe.getFormatMap(), e.getKey()),
+                                DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
+                        (m1, m2) -> m1.combine(m2), LinkedHashMap::new));
     }
 
     public static void readCSV(File csvFile, DataframeML dataframeML) {
         try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
             List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
             for (String column : header) {
                 dataframeML.getDataframe().put(column, new ArrayList<>());
                 dataframeML.putFormat(column, String.class);
@@ -173,9 +173,9 @@ public final class DataframeUtils extends DataframeML {
 
     public static void trim(String header, int trimmingSize, DataframeML dataframe) {
         List<Object> list = dataframe.list(header);
-        List<List<Object>> trimmedColumns = dataframe.getDataframe().entrySet().stream()
-            .filter(e -> !e.getKey().equals(header)).map(Entry<String, List<Object>>::getValue)
-            .collect(Collectors.toList());
+        List<List<Object>> trimmedColumns =
+                dataframe.getDataframe().entrySet().stream().filter(e -> !e.getKey().equals(header))
+                        .map(Entry<String, List<Object>>::getValue).collect(Collectors.toList());
 
         Class<?> class1 = dataframe.getFormat(header);
         if (class1 == String.class) {
@@ -187,8 +187,8 @@ public final class DataframeUtils extends DataframeML {
                 }
             }, String::compareTo);
         }
-        List<Entry<String, List<Object>>> entrySet = dataframe.getDataframe().entrySet().stream()
-            .collect(Collectors.toList());
+        List<Entry<String, List<Object>>> entrySet =
+                dataframe.getDataframe().entrySet().stream().collect(Collectors.toList());
         for (int i = 0; i < entrySet.size(); i++) {
             Entry<String, List<Object>> entry = entrySet.get(i);
             List<Object> value = entry.getValue();
@@ -201,7 +201,7 @@ public final class DataframeUtils extends DataframeML {
         return (List<T>) list;
     }
 
-    private static void categorizeIfCategorizable(DataframeML dataframe, String key, Object tryNumber) {
+    protected static void categorizeIfCategorizable(DataframeML dataframe, String key, Object tryNumber) {
         if (dataframe.categories.containsKey(key)) {
             Set<String> set = dataframe.categories.get(key);
             String string = Objects.toString(tryNumber);
@@ -211,22 +211,74 @@ public final class DataframeUtils extends DataframeML {
         }
     }
 
-    private static void createNullRow(List<String> header, List<String> line2) {
+    protected static void createNullRow(List<String> header, List<String> line2) {
         if (line2.size() < header.size()) {
             long maxSize2 = header.size() - (long) line2.size();
             line2.addAll(Stream.generate(() -> "").limit(maxSize2).collect(Collectors.toList()));
         }
     }
 
-    private static int len(String k, Class<? extends Comparable<?>> class1) {
-        return class1 == String.class ? k.length() * 2 : k.length();
-    }
-
-    private static Object mapIfMappable(DataframeML dataframe, String key, Object tryNumber) {
+    protected static Object mapIfMappable(DataframeML dataframe, String key, Object tryNumber) {
         if (dataframe.mapping.containsKey(key)) {
             return dataframe.mapping.get(key).apply(tryNumber);
         }
         return tryNumber;
+    }
+
+    protected static void removeRow(DataframeML dataframe, List<String> header, int i) {
+        for (int j = 0; j < i; j++) {
+            String key2 = header.get(j);
+            List<Object> list = dataframe.list(key2);
+            Object remove = list.remove(list.size() - 1);
+            if (dataframe.categories.containsKey(key2)) {
+                dataframe.categories.get(key2).remove(remove);
+            }
+        }
+        dataframe.size--;
+    }
+
+    protected static Object tryNumber(DataframeML dataframeML, String header, String field) {
+        if (isBlank(field)) {
+            return null;
+        }
+        Class<?> currentFormat = dataframeML.getFormat(header);
+        if (currentFormat == String.class && dataframeML.getSize() > 1
+                && dataframeML.list(header).stream().anyMatch(String.class::isInstance)) {
+            return field;
+        }
+
+        String number = field;
+        if (field.matches("\\d+\\.0+$") && currentFormat != Double.class) {
+            number = field.replaceAll("\\.0+", "");
+        }
+
+        try {
+            return StringSigaUtils.tryNumber(dataframeML.getFormatMap(), Integer.class, currentFormat, number, header,
+                    Integer::valueOf);
+        } catch (Exception e) {
+            LOG.trace("FORMAT ERROR ", e);
+        }
+        try {
+            return StringSigaUtils.tryNumber(dataframeML.getFormatMap(), Long.class, currentFormat, number, header,
+                    Long::valueOf);
+        } catch (Exception e) {
+            LOG.trace("FORMAT ERROR", e);
+        }
+        try {
+            return StringSigaUtils.tryNumber(dataframeML.getFormatMap(), Double.class, currentFormat, number, header,
+                    Double::valueOf);
+        } catch (Exception e) {
+            LOG.trace("FORMAT ERROR", e);
+        }
+        if (Number.class.isAssignableFrom(dataframeML.getFormat(header))) {
+            dataframeML.getFormatMap().put(header, String.class);
+            dataframeML.map(header, e -> Objects.toString(e, ""));
+        }
+        return number;
+    }
+
+    private static int len(String k, Class<? extends Comparable<?>> class1) {
+        return class1 == String.class ? k.length() * 2 : k.length();
     }
 
     private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
@@ -257,18 +309,6 @@ public final class DataframeUtils extends DataframeML {
         }
     }
 
-    private static void removeRow(DataframeML dataframe, List<String> header, int i) {
-        for (int j = 0; j < i; j++) {
-            String key2 = header.get(j);
-            List<Object> list = dataframe.list(key2);
-            Object remove = list.remove(list.size() - 1);
-            if (dataframe.categories.containsKey(key2)) {
-                dataframe.categories.get(key2).remove(remove);
-            }
-        }
-        dataframe.size--;
-    }
-
     private static Object[] toArray(DataframeML dataframe, int i, String... dependent) {
         Object[] d = new Object[dependent.length];
         for (int j = 0; j < dependent.length; j++) {
@@ -283,45 +323,5 @@ public final class DataframeUtils extends DataframeML {
             d[j] = ((Number) dataframe.getDataframe().get(dependent[j]).get(i)).doubleValue();
         }
         return d;
-    }
-
-    private static Object tryNumber(DataframeML dataframeML, String header, String field) {
-        if (isBlank(field)) {
-            return null;
-        }
-        Class<?> currentFormat = dataframeML.getFormat(header);
-        if (currentFormat == String.class && dataframeML.getSize() > 1
-            && dataframeML.list(header).stream().anyMatch(String.class::isInstance)) {
-            return field;
-        }
-
-        String number = field;
-        if (field.matches("\\d+\\.0+$") && currentFormat != Double.class) {
-            number = field.replaceAll("\\.0+", "");
-        }
-
-        try {
-            return StringSigaUtils.tryNumber(dataframeML.getFormatMap(), Integer.class, currentFormat, number, header,
-                Integer::valueOf);
-        } catch (Exception e) {
-            LOG.trace("FORMAT ERROR ", e);
-        }
-        try {
-            return StringSigaUtils.tryNumber(dataframeML.getFormatMap(), Long.class, currentFormat, number, header,
-                Long::valueOf);
-        } catch (Exception e) {
-            LOG.trace("FORMAT ERROR", e);
-        }
-        try {
-            return StringSigaUtils.tryNumber(dataframeML.getFormatMap(), Double.class, currentFormat, number, header,
-                Double::valueOf);
-        } catch (Exception e) {
-            LOG.trace("FORMAT ERROR", e);
-        }
-        if (Number.class.isAssignableFrom(dataframeML.getFormat(header))) {
-            dataframeML.getFormatMap().put(header, String.class);
-            dataframeML.map(header, e -> Objects.toString(e, ""));
-        }
-        return number;
     }
 }
