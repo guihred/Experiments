@@ -43,18 +43,21 @@ public final class PdfUtils {
     private PdfUtils() {
     }
 
-    public static void createPDFFromImage(BufferedImage bimg, File outputFile) throws IOException {
+    public static void createPDFFromImage(File outputFile, BufferedImage... img) throws IOException {
         try (PDDocument doc = new PDDocument()) {
-            float width = bimg.getWidth();
-            float height = bimg.getHeight();
-            PDPage page = new PDPage(new PDRectangle(width, height));
-            PDImageXObject pdImage = LosslessFactory.createFromImage(doc, bimg);
-            try (PDPageContentStream contentStream =
-                    new PDPageContentStream(doc, page, AppendMode.APPEND, true, true)) {
-                float scale = 1f;
-                contentStream.drawImage(pdImage, 0, 0, pdImage.getWidth() * scale, pdImage.getHeight() * scale);
+            for (BufferedImage bimg : img) {
+                float width = bimg.getWidth();
+                float height = bimg.getHeight();
+                PDPage page = new PDPage(new PDRectangle(width, height));
+                PDImageXObject pdImage = LosslessFactory.createFromImage(doc, bimg);
+                try (PDPageContentStream contentStream =
+                        new PDPageContentStream(doc, page, AppendMode.APPEND, true, true)) {
+                    float scale = 1f;
+                    contentStream.drawImage(pdImage, 0, 0, pdImage.getWidth() * scale, pdImage.getHeight() * scale);
+                }
+                doc.addPage(page);
             }
-            doc.addPage(page);
+
             doc.save(outputFile);
         }
     }

@@ -8,8 +8,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -24,6 +22,7 @@ import paintexp.tool.RectBuilder;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import simplebuilder.StageHelper;
+import utils.ImageFXUtils;
 import utils.PixelatedImageView;
 
 public final class PaintViewUtils {
@@ -46,16 +45,7 @@ public final class PaintViewUtils {
 
     public static void flipRotate(PaintModel paintModel, PaintController paintController) {
 		WritableImage selectedImage = paintController.getSelectedImage();
-		int height = (int) selectedImage.getHeight();
-		int width = (int) selectedImage.getWidth();
-        WritableImage writableImage = new WritableImage(height, width);
-        PixelWriter pixelWriter = writableImage.getPixelWriter();
-		PixelReader pixelReader = selectedImage.getPixelReader();
-		for (int i = 0; i < selectedImage.getWidth(); i++) {
-			for (int j = 0; j < selectedImage.getHeight(); j++) {
-                pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
-            }
-        }
+        WritableImage writableImage = ImageFXUtils.flip(selectedImage);
         paintController.setFinalImage(writableImage);
         paintModel.createImageVersion();
     }

@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
@@ -19,6 +20,20 @@ public final class ImageFXUtils {
     private static boolean showImage = true;
 
     private ImageFXUtils() {
+    }
+
+    public static WritableImage flip(Image selectedImage) {
+        int height = (int) selectedImage.getHeight();
+    	int width = (int) selectedImage.getWidth();
+        WritableImage writableImage = new WritableImage(height, width);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+    	PixelReader pixelReader = selectedImage.getPixelReader();
+    	for (int i = 0; i < selectedImage.getWidth(); i++) {
+    		for (int j = 0; j < selectedImage.getHeight(); j++) {
+                pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
+            }
+        }
+        return writableImage;
     }
 
     static double normalizeValue(double value, double min, double max, double newMin, double newMax) {

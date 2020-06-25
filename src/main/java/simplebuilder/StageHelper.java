@@ -6,6 +6,7 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -95,6 +96,19 @@ public final class StageHelper {
             Node target = (Node) e.getTarget();
             File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
             runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(f));
+        };
+    }
+
+    public static EventHandler<ActionEvent> fileActionMultiple(String title, ConsumerEx<List<File>> onSelect,
+            String filter,
+            String... extensions) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(title);
+        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
+        return e -> {
+            Node target = (Node) e.getTarget();
+            List<File> fileChosen = chooser.showOpenMultipleDialog(target.getScene().getWindow());
+            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(fileChosen));
         };
     }
 

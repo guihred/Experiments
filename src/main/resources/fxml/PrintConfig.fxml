@@ -23,7 +23,6 @@
 		<Insets topRightBottomLeft="20" />
 	</padding>
 	<children>
-
 		<VBox spacing="10">
 			<padding>
 				<Insets topRightBottomLeft="10" />
@@ -81,12 +80,22 @@
 					toggleGroup="$printType"></RadioButton>
 				<RadioButton text="Whole Paper" toggleGroup="$printType"></RadioButton>
 				<RadioButton text="Expand" toggleGroup="$printType" />
-				<Button text="Print To PDF" onAction="#print"/>
+				<CheckBox text="Repeat" fx:id="repeat" onAction="#changeConfig" />
+				<CheckBox text="Vertical" fx:id="vertical" onAction="#changeConfig" />
+				<Button text="_Load Images" onAction="#loadImages" />
+				<Button text="_Print To PDF" onAction="#print" />
+				<HBox spacing="30">
+					<Hyperlink onAction="#subPage" text="&lt;" />
+					<Text fx:id="page" text="1"/>
+					<Hyperlink onAction="#addPage" text="&gt;" />
+				</HBox>
+
 			</children>
 		</VBox>
 
 		<GridPane fx:id="panel" styleClass="whitePane"
-			gridLinesVisible="true" prefWidth="400" prefHeight="565.7">
+			gridLinesVisible="true" prefWidth="400" prefHeight="565.7" minWidth="400"
+			minHeight="565.7" maxWidth="400" maxHeight="565.7">
 		</GridPane>
 
 	</children>

@@ -5,19 +5,29 @@ import static java.lang.Math.nextDown;
 import extract.PdfUtils;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
@@ -33,42 +43,56 @@ public class PrintConfig extends Application {
     private ComboBox<Integer> columnsPerPage;
     @FXML
     private GridPane panel;
-    private final Image image;
+    private ObservableList<Image> images = FXCollections.observableArrayList();
     @FXML
     private ToggleGroup printType;
     @FXML
+    private CheckBox repeat;
+    @FXML
+    private CheckBox vertical;
+    @FXML
     private Slider hgap;
+    @FXML
+    private Text page;
+    private IntegerProperty currentPage = new SimpleIntegerProperty(0);
 
     @FXML
     private Slider vgap;
 
     public PrintConfig() {
-        image = new Image(
-                ResourceFXUtils.getFirstPathByExtension(new File("src").getAbsoluteFile(), ".png").toUri().toString());
+
+        images.add(new Image(
+                ResourceFXUtils.getFirstPathByExtension(new File("src").getAbsoluteFile(), ".png").toUri().toString()));
+    }
+    public PrintConfig(Image image) {
+        images.add(image);
     }
 
-    public PrintConfig(Image image) {
-        this.image = image;
+    public void addPage() {
+        addToCurrentPage(1);
+        changeConfig();
     }
 
     public void changeConfig() {
-        panel.getChildren().clear();
-        Integer lines = linesPerPage.getSelectionModel().getSelectedItem();
-        Integer columns = columnsPerPage.getSelectionModel().getSelectedItem();
-        String text = getImpressionType();
-        panel.setHgap(Math.min(hgap.getValue(), nextDown(1. / columns)) * panel.getPrefWidth());
-        panel.setVgap(Math.min(vgap.getValue(), nextDown(1. / lines)) * panel.getPrefHeight());
-        for (int i = 0; i < lines; i++) {
-            for (int j = 0; j < columns; j++) {
-                ImageView imageView = createImage(lines, columns, text);
-                panel.add(imageView, j, i);
-            }
-        }
+        addToCurrentPage(0);
+        adjustPanel(currentPage.get(), panel);
     }
 
     public void initialize() {
         changeConfig();
+        page.textProperty().bind(currentPage.add(1).asString());
         panel.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+    }
+
+    public void loadImages(ActionEvent event) {
+        StageHelper.fileActionMultiple("Choose Image", f -> {
+            if (!f.isEmpty()) {
+                images.clear();
+                images.addAll(f.stream().map(ResourceFXUtils::convertToURL).map(e -> new Image(e.toExternalForm()))
+                        .collect(Collectors.toList()));
+                changeConfig();
+            }
+        }, "Image", "*.png", "*.jpg", "*.jpeg").handle(event);
     }
 
     public void print() {
@@ -78,9 +102,17 @@ public class PrintConfig extends Application {
 
     public void printToPDF() {
         RunnableEx.run(() -> {
-            BufferedImage bimg = ImageFXUtils.toBufferedImage(panel, panel.getWidth(), panel.getHeight(), 1);
+            Integer lines = linesPerPage.getSelectionModel().getSelectedItem();
+            Integer columns = columnsPerPage.getSelectionModel().getSelectedItem();
+            List<BufferedImage> panelImages = new ArrayList<>();
+            for (int i = 0; i < images.size(); i += lines * columns) {
+                adjustPanel(i, panel);
+                BufferedImage bimg =
+                        ImageFXUtils.toBufferedImage(panel, panel.getWidth(), panel.getHeight(), 1);
+                panelImages.add(bimg);
+            }
             File outputFile = ResourceFXUtils.getOutFile("oi2.pdf");
-            PdfUtils.createPDFFromImage(bimg, outputFile);
+            PdfUtils.createPDFFromImage(outputFile, panelImages.toArray(new BufferedImage[0]));
             ImageFXUtils.openInDesktop(outputFile);
         });
     }
@@ -93,6 +125,11 @@ public class PrintConfig extends Application {
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Print Config", "PrintConfig.fxml", this, primaryStage);
         CommonsFX.addCSS(primaryStage.getScene(), "starterApp.css");
+    }
+
+    public void subPage() {
+        addToCurrentPage(-1);
+        changeConfig();
     }
 
     @SuppressWarnings("unused")
@@ -109,9 +146,41 @@ public class PrintConfig extends Application {
         }
     }
 
-    private ImageView createImage(Integer lines, Integer columns, String printTypeName) {
-        double fitWidth = panel.getPrefWidth() / columns - panel.getHgap() * (columns - 1);
-        double fitHeight = panel.getPrefHeight() / lines - panel.getVgap() * (lines - 1);
+    private void addToCurrentPage(int add) {
+        double lines = linesPerPage.getSelectionModel().getSelectedItem().doubleValue();
+        double columns = columnsPerPage.getSelectionModel().getSelectedItem().doubleValue();
+        int ceil = (int) Math.ceil(images.size() / lines / columns);
+        currentPage.set((currentPage.get() + add + ceil) % ceil);
+
+    }
+
+    private void adjustPanel(int initial, GridPane panel2) {
+        panel2.getChildren().clear();
+        Integer lines = linesPerPage.getSelectionModel().getSelectedItem();
+        Integer columns = columnsPerPage.getSelectionModel().getSelectedItem();
+        String text = getImpressionType();
+        double hgapp = Math.min(hgap.getValue(), nextDown(1. / (columns + 2))) * panel2.getPrefWidth();
+        panel2.setHgap(hgapp);
+        double vgapp = Math.min(vgap.getValue(), nextDown(1. / (lines + 2))) * panel2.getPrefHeight();
+        panel2.setVgap(vgapp);
+        panel2.setPadding(new Insets(vgapp, hgapp, vgapp, hgapp));
+        int k = initial;
+        for (int i = 0; i < lines; i++) {
+            for (int j = 0; j < columns; j++) {
+                ImageView imageView = createImage(lines, columns, text, k++);
+                panel2.add(imageView, j, i);
+            }
+        }
+    }
+
+    private ImageView createImage(Integer lines, Integer columns, String printTypeName, int k) {
+        double fitWidth = panel.getPrefWidth() / columns - panel.getHgap() * (columns + 1);
+        double fitHeight = panel.getPrefHeight() / lines - panel.getVgap() * (lines + 1);
+        Image image =
+                repeat.isSelected() || k < images.size() ? images.get(k % images.size()) : new WritableImage(1, 1);
+        if (vertical.isSelected() == image.getWidth() > image.getHeight()) {
+            image = ImageFXUtils.flip(image);
+        }
         ImageView child = new ImageView(image);
         if ("Whole Image".equals(printTypeName)) {
             child.setPreserveRatio(true);
