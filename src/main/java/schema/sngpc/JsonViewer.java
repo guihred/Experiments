@@ -96,13 +96,15 @@ public class JsonViewer extends Application {
         SimpleComboBoxBuilder<File> onChange = new SimpleComboBoxBuilder<File>().items(files).converter(File::getName)
                 .onChange((old, val) -> fileProp.set(val));
         fileProp.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> {
-            List<Integer> arrayList = getSelectionOrder();
-            readJsonFile(tree, val);
-            selectSame(arrayList);
-            if (!files.contains(val)) {
-                files.add(val);
+            if (val != null) {
+                List<Integer> arrayList = getSelectionOrder();
+                readJsonFile(tree, val);
+                selectSame(arrayList);
+                if (!files.contains(val)) {
+                    files.add(val);
+                }
+                onChange.select(val);
             }
-            onChange.select(val);
         }));
         VBox vBox = new VBox(new HBox(importJsonButton, exportExcel, onChange.build()), splitPane);
         vBox.setMinSize(400, 400);

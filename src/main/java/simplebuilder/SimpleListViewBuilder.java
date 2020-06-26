@@ -37,18 +37,13 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     }
 
     public SimpleListViewBuilder<T> onDoubleClick(final ConsumerEx<T> object) {
-        node.setOnMouseClicked(e -> {
-            if (e.getClickCount() > 1) {
-                T selectedItem = table.getSelectionModel().getSelectedItem();
-                ConsumerEx.makeConsumer(object).accept(selectedItem);
-            }
-        });
+        onDoubleClick(table, object);
         return this;
     }
 
     public SimpleListViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
-            .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+                .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
         return this;
     }
 
@@ -63,9 +58,22 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         };
     }
 
-    public static <T> void onSelect(ListView<T> table,final BiConsumer<T, T> value) {
+    public static <C> Callback<ListView<C>, ListCell<C>> newCellFactory(final FunctionEx<C, String> func) {
+        return newCellFactory((t, cell) -> cell.setText(FunctionEx.apply(func, t)));
+    }
+
+    public static <C> void onDoubleClick(ListView<C> table2, final ConsumerEx<C> object) {
+        table2.setOnMouseClicked(e -> {
+            if (e.getClickCount() > 1) {
+                C selectedItem = table2.getSelectionModel().getSelectedItem();
+                ConsumerEx.makeConsumer(object).accept(selectedItem);
+            }
+        });
+    }
+
+    public static <T> void onSelect(ListView<T> table, final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
-        .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+                .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
     }
 
 }

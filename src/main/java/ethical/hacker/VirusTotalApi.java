@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -53,7 +54,6 @@ public final class VirusTotalApi {
             LOG.info("Malicious FILE {} {}", path, group);
             return new File[] { outFile };
         }
-
         return new File[] {};
     }
 
@@ -80,7 +80,7 @@ public final class VirusTotalApi {
 
     public static File[] getUrlInformation(String url) throws IOException {
 
-        String string = SupplierEx.getIgnore(new URL(url)::toString, "http://" + url + "/");
+        String string = SupplierEx.getIgnore(() -> tryToCreateUrl(url), "http://" + url + "/");
 
         File outFile = newJsonFile(string);
         if (!outFile.exists()) {
@@ -105,8 +105,7 @@ public final class VirusTotalApi {
                 "mail.google.com", "0.client-channel.google.com", "chat-pa.clients6.google.com",
                 "people-pa.clients6.google.com", "people-pa.clients6.google.com", "clients6.google.com",
                 "mail.google.com", "play.google.com", "http://wwwcztapwlwk.net/plafgxc80333067532").stream().distinct()
-                .forEach(ConsumerEx
-                        .makeConsumer(s -> LOG.info("{}", getUrlInformation(s)[0])));
+                .forEach(ConsumerEx.makeConsumer(s -> LOG.info("{}", getUrlInformation(s)[0])));
 
     }
 
@@ -137,5 +136,9 @@ public final class VirusTotalApi {
             LOG.info("{} renamed to {} {}", outFile, outFile3, renameTo);
         }
         return outFile3;
+    }
+
+    private static String tryToCreateUrl(String url) throws MalformedURLException {
+        return new URL(url).toString();
     }
 }

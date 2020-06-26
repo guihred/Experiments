@@ -66,8 +66,6 @@ public final class XMLExtractor {
     public static Document newDocument() throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        // factory.setAttribute("http://javax.xml.XMLConstants/feature/secure-processing",
-        // true);
         DocumentBuilder documentBuilder = factory.newDocumentBuilder();
         return documentBuilder.newDocument();
     }
@@ -88,8 +86,6 @@ public final class XMLExtractor {
     public static void saveToFile(Document document, File file) throws TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-        transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
-        transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalStylesheet", "");
         Transformer transformer = transformerFactory.newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         DOMSource domSource = new DOMSource(document);

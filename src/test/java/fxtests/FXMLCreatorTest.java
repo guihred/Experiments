@@ -1,11 +1,11 @@
 package fxtests;
 
+import ethical.hacker.MalwareInvestigator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import ml.HeatGraphExample;
 import ml.data.CoverageUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public final class FXMLCreatorTest {
 
     @Test
 	public  void testClassesNotClose() {
-        List<Class<? extends Application>> classes = Arrays.asList(HeatGraphExample.class);
+        List<Class<? extends Application>> classes = Arrays.asList(MalwareInvestigator.class);
         FXMLCreatorHelper.testApplications(classes, true);
     }
 

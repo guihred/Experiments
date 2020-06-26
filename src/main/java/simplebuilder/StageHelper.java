@@ -112,16 +112,20 @@ public final class StageHelper {
         };
     }
 
-    public static Button selectDirectory(String nome, String title, ConsumerEx<File> onSelect) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(title);
-        File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
-        chooser.setInitialDirectory(musicsDirectory);
-        return newButton(nome, e -> {
+    public static EventHandler<ActionEvent> handleDirectory(String title, ConsumerEx<File> onSelect) {
+        return e -> {
+            DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle(title);
+            File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
+            chooser.setInitialDirectory(musicsDirectory);
             Node target = (Node) e.getTarget();
             runIf(target.getScene().getWindow(),
                 window -> runIf(chooser.showDialog(window), file -> ConsumerEx.makeConsumer(onSelect).accept(file)));
-        });
+        };
+    }
+
+    public static Button selectDirectory(String nome, String title, ConsumerEx<File> onSelect) {
+        return newButton(nome, handleDirectory(title, onSelect));
     }
 
     private static void closeBoth(Stage stage2, EventHandler<WindowEvent> onCloseRequest, WindowEvent e) {
