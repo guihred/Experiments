@@ -30,7 +30,7 @@ public final class StageHelper {
         return newButton(nome, e -> {
             Node target = (Node) e.getTarget();
             File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
-            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(f));
+            runIf(fileChosen, onSelect);
         });
     }
 
@@ -82,7 +82,7 @@ public final class StageHelper {
         return e -> {
             Node target = (Node) e.getTarget();
             File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
-            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(f));
+            runIf(fileChosen, onSelect);
         };
     }
 
@@ -95,7 +95,7 @@ public final class StageHelper {
         return e -> {
             Node target = (Node) e.getTarget();
             File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
-            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(f));
+            runIf(fileChosen, onSelect);
         };
     }
 
@@ -108,7 +108,7 @@ public final class StageHelper {
         return e -> {
             Node target = (Node) e.getTarget();
             List<File> fileChosen = chooser.showOpenMultipleDialog(target.getScene().getWindow());
-            runIf(fileChosen, f -> ConsumerEx.makeConsumer(onSelect).accept(fileChosen));
+            runIf(fileChosen, onSelect);
         };
     }
 
@@ -120,7 +120,7 @@ public final class StageHelper {
             chooser.setInitialDirectory(musicsDirectory);
             Node target = (Node) e.getTarget();
             runIf(target.getScene().getWindow(),
-                window -> runIf(chooser.showDialog(window), file -> ConsumerEx.makeConsumer(onSelect).accept(file)));
+                    window -> runIf(chooser.showDialog(window), onSelect));
         };
     }
 
