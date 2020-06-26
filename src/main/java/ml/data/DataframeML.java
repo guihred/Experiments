@@ -17,8 +17,14 @@ public class DataframeML extends BaseDataframe {
         row.forEach(this::add);
     }
 
+    @SuppressWarnings("unchecked")
     public void add(String header, Object obj) {
         List<Object> list = list(header);
+        if (list == null) {
+            dataframe.put(header, new ArrayList<>());
+            formatMap.put(header, (Class<? extends Comparable<?>>) obj.getClass());
+            list = list(header);
+        }
         list.add(obj);
         size = Math.max(size, list.size());
     }

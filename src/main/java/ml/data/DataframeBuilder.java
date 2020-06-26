@@ -1,5 +1,6 @@
 package ml.data;
 
+import extract.ExcelService;
 import java.io.File;
 import java.util.HashSet;
 import java.util.function.Predicate;
@@ -42,10 +43,13 @@ public class DataframeBuilder extends DataframeML {
 
 	public static DataframeML build(File csvFile) {
 		DataframeML dataframeML = new DataframeML();
-        if (csvFile.exists()) {
-            DataframeUtils.readCSV(csvFile, dataframeML);
+        if (!csvFile.exists()) {
+            return dataframeML;
         }
-		return dataframeML;
+        if (ExcelService.isExcel(csvFile)) {
+            return ExcelDataReader.readExcel(csvFile);
+        }
+        return DataframeUtils.readCSV(csvFile, dataframeML);
 	}
 	public static DataframeML build(String csvFile) {
 		DataframeML dataframeML = new DataframeML();

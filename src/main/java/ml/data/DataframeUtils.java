@@ -124,7 +124,7 @@ public class DataframeUtils extends DataframeML {
                         (m1, m2) -> m1.combine(m2), LinkedHashMap::new));
     }
 
-    public static void readCSV(File csvFile, DataframeML dataframeML) {
+    public static DataframeML readCSV(File csvFile, DataframeML dataframeML) {
         try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
             List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
                     .collect(Collectors.toList());
@@ -138,6 +138,7 @@ public class DataframeUtils extends DataframeML {
             LOG.error("ERROR IN FILE {} - {}", csvFile, e.getMessage());
             LOG.trace("FILE NOT FOUND " + csvFile, e);
         }
+        return dataframeML;
     }
 
     public static void readCSV(String csvFile, DataframeML dataframeML) {
@@ -218,6 +219,10 @@ public class DataframeUtils extends DataframeML {
         }
     }
 
+    protected static void createNullRow(List<String> header, Map<String, Object> line2) {
+        header.stream().filter(e -> !line2.containsKey(e)).forEach(e -> line2.put(e, null));
+    }
+
     protected static Object mapIfMappable(DataframeML dataframe, String key, Object tryNumber) {
         if (dataframe.mapping.containsKey(key)) {
             return dataframe.mapping.get(key).apply(tryNumber);
@@ -238,7 +243,7 @@ public class DataframeUtils extends DataframeML {
     }
 
     protected static Object tryNumber(DataframeML dataframeML, String header, String field) {
-        if (isBlank(field)) {
+        if (isBlank(field) || field.matches("-+")) {
             return null;
         }
         Class<?> currentFormat = dataframeML.getFormat(header);
