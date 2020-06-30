@@ -31,12 +31,6 @@ public class InstallCert {
         installCertificate(host, port, "changeit".toCharArray());
     }
 
-    public static void main(String[] args) {
-        RunnableEx.run(() -> {
-            String string = "correiov3.dataprev.gov.br";
-            installCertificate(string);
-        });
-    }
 
     private static String getFullURL(String url) {
         return SupplierEx.remap(() -> {

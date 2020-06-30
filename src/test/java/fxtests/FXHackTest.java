@@ -13,12 +13,29 @@ import java.util.stream.IntStream;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import org.junit.Test;
-import schema.sngpc.JsonViewer;
 import utils.*;
 
 @SuppressWarnings("static-method")
 public class FXHackTest extends AbstractTestExecution {
+    @Test
+    public void testHashVerifier() {
+        File userFolder = ResourceFXUtils.getUserFolder("Music");
+        measureTime("HashVerifier.listNotRepeatedFiles", () -> HashVerifier
+                .listNotRepeatedFiles(new File(userFolder, "Cellphone"), new File(userFolder, "Music2")));
+        Path firstMp3 = ResourceFXUtils.getFirstPathByExtension(userFolder, ".mp3");
+        measureTime("HashVerifier.getMD5Hash", () -> HashVerifier.getMD5Hash(firstMp3));
+        measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstMp3));
+        measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstMp3));
+        measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash("whatever"));
+    }
+
+    @Test
+    public void testInstallCert() {
+        String string = "correiov3.dataprev.gov.br";
+        measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate(string));
+    }
 
     @Test
     public void testPortServices() {
@@ -42,6 +59,15 @@ public class FXHackTest extends AbstractTestExecution {
                 () -> NetworkInformationScanner.displayNetworkInformation());
         measureTime("NetworkInformationScanner.displayNetworkInformation",
                 () -> NetworkInformationScanner.displayNetworkInformation());
+    }
+
+    @Test
+    public void testWebBrowserApplication() {
+        show(WebBrowserApplication.class);
+        clickOn(lookupFirst(TextField.class));
+
+        type(KeyCode.ENTER);
+        sleep(1000);
     }
 
     @Test
@@ -85,8 +111,7 @@ public class FXHackTest extends AbstractTestExecution {
         File downloads = ResourceFXUtils.getUserFolder("Downloads");
         interactNoWait(() -> show.chooseDirectory(downloads));
         interactNoWait(RunnableEx.make(() -> {
-            File userFolder = ResourceFXUtils
-                    .getFirstPathByExtension(downloads, ".exe").toFile();
+            File userFolder = ResourceFXUtils.getFirstPathByExtension(downloads, ".exe").toFile();
             show.chooseExeFile(userFolder);
         }));
     }
@@ -95,11 +120,13 @@ public class FXHackTest extends AbstractTestExecution {
     public void verifyVirusTotalApi() {
         Path firstPathByExtension = measureTime("ResourceFXUtils.getFirstPathByExtension",
                 () -> ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
-        File[] filesInformation =
-                measureTime("VirusTotalApi.getFilesInformation",
-                        () -> VirusTotalApi.getFilesInformation(firstPathByExtension));
-        JsonViewer show = show(JsonViewer.class);
-        show.addFile(filesInformation);
+        measureTime("VirusTotalApi.getFilesInformation", () -> VirusTotalApi.getFilesInformation(firstPathByExtension));
+        measureTime("VirusTotalApi.getIpInformation", () -> VirusTotalApi.getIpInformation("111.229.255.22"));
+        String randomItem = randomItem("safebrowsing.googleapis.com", "tracking-protection.cdn.mozilla.net",
+                "shavar.services.mozilla.com", "lh6.googleusercontent.com", "lh3.googleusercontent.com",
+                "people-pa.clients6.google.com", "people-pa.clients6.google.com", "clients6.google.com",
+                "mail.google.com", "play.google.com", "http://wwwcztapwlwk.net/plafgxc80333067532");
+        measureTime("VirusTotalApi.getUrlInformation", () -> VirusTotalApi.getUrlInformation(randomItem));
     }
 
 }

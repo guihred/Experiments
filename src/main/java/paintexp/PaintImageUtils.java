@@ -81,6 +81,7 @@ public final class PaintImageUtils {
             StageHelper.closeStage(root);
         })));
         Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
         stage.setScene(new Scene(root));
         stage.show();
 
@@ -119,6 +120,7 @@ public final class PaintImageUtils {
         }));
 
         Stage stage = new Stage();
+        stage.setAlwaysOnTop(true);
         stage.setScene(new Scene(root));
         stage.show();
     }

@@ -176,7 +176,7 @@ public class WebBrowserApplication extends Application {
         String message = newException.getMessage();
         String url = siteField.getText();
         LOG.info("ERROR LOADING {} {}", url, message);
-        LOG.trace("ERROR LOADING {}", url, newException);
+        LOG.error("ERROR LOADING {}", url, newException);
         if ("SSL handshake failed".equalsIgnoreCase(message)) {
             // RunnableEx.run(() -> InstallCert.installCertificate(siteField.getText()))
             return;

@@ -70,7 +70,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String floatFormating(int length) {
-        return "\t%" + length + ".1f";
+        return "\t%" + Math.max(length, 1) + ".1f";
     }
 
     public static String format(int length, Object mean) {

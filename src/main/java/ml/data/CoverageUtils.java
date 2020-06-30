@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.application.Application;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ import utils.ResourceFXUtils;
 import utils.SupplierEx;
 
 public final class CoverageUtils {
+    private static final String CLASS = "CLASS";
+
     private static final String MISSED = "_MISSED";
 
     private static final String COVERED = "_COVERED";
@@ -39,6 +42,24 @@ public final class CoverageUtils {
     private CoverageUtils() {
     }
 
+    public static List<Entry<Object, Object>> buildDataframe() {
+        File csvFile = getCoverageFile();
+        DataframeML b = buildDataframe("LINE_MISSED", "LINE_COVERED", PERCENTAGE, csvFile);
+
+        List<Entry<Object, Object>> createNumberSeries = createNumberSeries(b, CLASS, PERCENTAGE);
+        createNumberSeries.sort(Comparator.comparing(e -> (Comparable) e.getValue()));
+        return createNumberSeries;
+    }
+
+    public static List<Entry<Object, Object>> createNumberSeries(DataframeML dataframe, String feature,
+            String target) {
+        List<Object> list = dataframe.list(feature);
+        List<Object> list2 = dataframe.list(target);
+        return IntStream.range(0, dataframe.getSize()).filter(i -> list.get(i) != null && list2.get(i) != null)
+                .mapToObj((int i) -> new AbstractMap.SimpleEntry<>(list.get(i), list2.get(i)))
+                .collect(Collectors.toList());
+    }
+
     public static <T> List<Class<? extends T>> getClasses(Class<T> cl) {
         List<String> excludePackages = Arrays.asList("javafx.", "org.", "com.");
         return getClasses(cl, excludePackages);
@@ -52,6 +73,12 @@ public final class CoverageUtils {
                 .filter(makeTest(e -> cl.isAssignableFrom(e.load()))).map(ClassInfo::load)
                 .filter(cla -> !Modifier.isAbstract(cla.getModifiers())).map(e -> (Class<? extends T>) e)
                 .collect(Collectors.toCollection(() -> appClass)), appClass);
+    }
+
+    public static File getCoverageFile() {
+        return ResourceFXUtils.getPathByExtension(new File("target/site/"), ".csv").stream().map(Path::toFile)
+            .filter(e -> ResourceFXUtils.computeAttributes(e).size() > 0L)
+            .max(Comparator.comparing(e -> ResourceFXUtils.computeAttributes(e).size())).orElse(null);
     }
 
     public static double getPercentage(double[] arr) {
@@ -150,8 +177,14 @@ public final class CoverageUtils {
             makeStats.remove(colName + MISSED);
             makeStats.remove(colName + COVERED);
         }
-        makeStats.remove("CLASS");
+        makeStats.remove(CLASS);
         DataframeUtils.displayStats(makeStats);
+    }
+
+    private static DataframeML buildDataframe(String string, String string2, String percentage2, File csvFile) {
+        DataframeML b = DataframeBuilder.build(csvFile);
+        DataframeUtils.crossFeature(b, percentage2, CoverageUtils::getPercentage, string, string2);
+        return b;
     }
 
     private static boolean contains(List<Class<? extends Application>> classes, JavaFileDependency m) {
@@ -184,21 +217,14 @@ public final class CoverageUtils {
         return Collections.emptyList();
     }
 
-    private static File getCoverageFile() {
-        return ResourceFXUtils.getPathByExtension(new File("target/site/"), ".csv").stream().map(Path::toFile)
-            .filter(e -> ResourceFXUtils.computeAttributes(e).size() > 0L)
-            .max(Comparator.comparing(e -> ResourceFXUtils.computeAttributes(e).size())).orElse(null);
-    }
-
     private static List<String> getUncoveredAttribute(int min, String string, String string2, String percentage2) {
         File csvFile = getCoverageFile();
         if (csvFile == null || !csvFile.exists()) {
             return Collections.emptyList();
         }
-        DataframeML b = DataframeBuilder.build(csvFile);
-        DataframeUtils.crossFeature(b, percentage2, CoverageUtils::getPercentage, string, string2);
+        DataframeML b = buildDataframe(string, string2, percentage2, csvFile);
         b.filter(percentage2, v -> ((Number) v).intValue() <= min);
-        List<String> list = b.list("CLASS");
+        List<String> list = b.list(CLASS);
         List<String> nonNull = SupplierEx.nonNull(list, Collections.emptyList());
         return nonNull.stream().map(s -> s.replaceAll("^(\\w+)\\..+", "$1")).collect(Collectors.toList());
     }

@@ -40,8 +40,7 @@ public final class VirusTotalApi {
 
     public static File[] getFilesInformation(Path path, String hash) throws IOException {
         String string = path.getName(path.getNameCount() - 1).toString();
-        File outFile = rename(newJsonFile(hash), string);
-
+        File outFile = newJsonFile(string);
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
         }
@@ -124,18 +123,6 @@ public final class VirusTotalApi {
     private static File newJsonFile(String string) {
         String replaceAll = string.replaceAll("[:/]+", "_");
         return ResourceFXUtils.getOutFile(replaceAll + ".json");
-    }
-
-    private static File rename(File outFile, String string) {
-        File outFile3 = newJsonFile(string);
-        if (outFile.exists()) {
-            boolean renameTo = outFile.renameTo(outFile3);
-            if (!renameTo) {
-                return outFile;
-            }
-            LOG.info("{} renamed to {} {}", outFile, outFile3, renameTo);
-        }
-        return outFile3;
     }
 
     private static String tryToCreateUrl(String url) throws MalformedURLException {

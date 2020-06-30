@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.control.*;
@@ -74,8 +73,7 @@ public class FXEngineTest extends AbstractTestExecution {
     public void verifyImageCracker() {
         ImageCrackerApp show = show(ImageCrackerApp.class);
         show.setClickable(false);
-        Platform.runLater(show::loadURL);
-        ImageCrackerApp.waitABit();
+        interactNoWait(show::loadURL);
     }
 
     @Test

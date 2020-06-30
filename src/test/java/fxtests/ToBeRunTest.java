@@ -5,6 +5,7 @@ import static fxtests.FXTesting.measureTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import ml.data.CoverageUtils;
 import ml.data.JavaFileDependency;
@@ -18,6 +19,14 @@ import utils.HasLogging;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ToBeRunTest {
     private static final Logger LOG = HasLogging.log();
+
+    @Test
+    public void testBuildDataframe() {
+        measureTime("CoverageUtils.buildDataframe", () -> {
+            List<Entry<Object, Object>> buildDataframe = CoverageUtils.buildDataframe();
+            buildDataframe.stream().limit(20).forEach(e -> LOG.info("{}", e));
+        });
+    }
 
     @Test
     public void testFJavaCoverage() {

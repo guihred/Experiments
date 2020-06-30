@@ -193,7 +193,11 @@ public final class ExtractUtils {
 
         });
         boolean b = true;
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> {
+
+            LOG.info("{} verified", hostname);
+            return b;
+        });
     }
 
     public static boolean isNotProxied() {

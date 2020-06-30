@@ -1,10 +1,7 @@
 package fxsamples;
 
-import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener.Change;
 import javafx.concurrent.Worker.State;
-import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
@@ -44,6 +41,7 @@ public class BrowserView extends Region {
     private final ComboBox<String> comboBox = new ComboBox<>();
     private boolean needDocumentationButton;
     private final Stage stage;
+    private final JavaApp javaApp = new JavaApp();
 
     public BrowserView(Stage stage) {
         this.stage = stage;
@@ -65,8 +63,8 @@ public class BrowserView extends Region {
         toolBar.getChildren().add(comboBox);
         toolBar.getChildren().addAll(hpls);
         toolBar.getChildren().add(createSpacer());
-        toggleHelpTopics.setOnAction(
-                (ActionEvent t) -> RunnableEx.run(() -> webEngine.executeScript("toggle_visibility('help_topics')")));
+        toggleHelpTopics
+                .setOnAction(t -> RunnableEx.run(() -> webEngine.executeScript("toggle_visibility('help_topics')")));
         smallView.setPrefSize(120, 80);
         webEngine.setCreatePopupHandler(config -> {
             smallView.setFontScale(0.8);
@@ -85,26 +83,25 @@ public class BrowserView extends Region {
             int offset = comboBox.getSelectionModel().getSelectedIndex() - history.getCurrentIndex();
             history.go(offset);
         });
-        webEngine.getLoadWorker().stateProperty()
-                .addListener((ObservableValue<? extends State> ov, State oldState, State newState) -> {
-                    toolBar.getChildren().remove(toggleHelpTopics);
-                    if (newState == State.SUCCEEDED) {
-                        JSObject win = (JSObject) webEngine.executeScript("window");
-                        win.setMember("app", new JavaApp());
-                        if (needDocumentationButton) {
-                            toolBar.getChildren().add(toggleHelpTopics);
-                        }
-                    }
-                });
+        webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
+            toolBar.getChildren().remove(toggleHelpTopics);
+            if (newState == State.SUCCEEDED) {
+                JSObject win = (JSObject) webEngine.executeScript("window");
+                win.setMember("app", getJavaApp());
+                if (needDocumentationButton) {
+                    toolBar.getChildren().add(toggleHelpTopics);
+                }
+            }
+        });
         final ContextMenu cm = new ContextMenu();
         MenuItem cmItem1 = new MenuItem("Print");
         cm.getItems().add(cmItem1);
-        toolBar.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+        toolBar.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
                 cm.show(toolBar, e.getScreenX(), e.getScreenY());
             }
         });
-        cmItem1.setOnAction((ActionEvent e) -> {
+        cmItem1.setOnAction(e -> {
             PrinterJob job = PrinterJob.createPrinterJob();
             if (job != null && job.showPrintDialog(stage)) {
                 webEngine.print(job);
@@ -114,6 +111,10 @@ public class BrowserView extends Region {
         webEngine.load("http://www.oracle.com/products/index.html");
         getChildren().add(toolBar);
         getChildren().add(browser);
+    }
+
+    public JavaApp getJavaApp() {
+        return javaApp;
     }
 
     public Stage getStage() {
@@ -147,7 +148,7 @@ public class BrowserView extends Region {
 
     public class JavaApp {
         public void exit() {
-            Platform.exit();
+            getStage().close();
         }
     }
 }

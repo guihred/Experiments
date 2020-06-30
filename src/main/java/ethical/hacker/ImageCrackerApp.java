@@ -103,15 +103,15 @@ public class ImageCrackerApp extends Application {
             String cracked = ImageCracker.crackImage(createSelectedImage);
             LOG.info("cracked Image = {} tries={}", cracked, i + 1);
             String crackImage = cracked.replaceAll("[^0-9]", "");
-            if (isValid(crackImage)) {
-                runInPlatform(setValue("captchaId", crackImage));
-                if(isClickable()) {
-                    runInPlatform("$('#btnRegistrar').click()");
-                }
-                successfull.set(true);
-            } else {
+            if (!isValid(crackImage)) {
                 runInPlatform("$('#dtpCaptcha a').get(1).click()");
+                continue;
             }
+            runInPlatform(setValue("captchaId", crackImage));
+            if (isClickable()) {
+                runInPlatform("$('#btnRegistrar').click()");
+            }
+            successfull.set(true);
         }
     }
 

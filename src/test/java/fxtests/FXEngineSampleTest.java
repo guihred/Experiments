@@ -93,7 +93,7 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     @Test
     public void verifyPendulums() {
         verifyAndRun(this::tryClickButtons,
-            Arrays.asList(PendulumAnimationLauncher.class, PathTransitionExample.class, RandomPathExample.class));
+                Arrays.asList(PendulumAnimationLauncher.class, PathTransitionExample.class, RandomPathExample.class));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class FXEngineSampleTest extends AbstractTestExecution {
     @Test
     public void verifyReversiSquareApp() {
         show(ReversiSquareApp.class);
-        for (ReversiSquare reversiSquare : lookup(ReversiSquare .class)) {
+        for (ReversiSquare reversiSquare : lookup(ReversiSquare.class)) {
             tryClickOn(reversiSquare);
         }
     }
@@ -181,6 +181,16 @@ public class FXEngineSampleTest extends AbstractTestExecution {
         ListCell<?> randomItem = randomItem(lookup(ListCell.class));
         clickOn(randomItem);
         clickOn(randomItem);
+    }
+
+    @Test
+    public void verifyWebViewSample() {
+        show(WebViewSample.class);
+        for (Hyperlink hyperlink : lookup(Hyperlink.class)) {
+            tryClickOn(hyperlink);
+        }
+        BrowserView lookupFirst = lookupFirst(BrowserView.class);
+        interactNoWait(() -> lookupFirst.getJavaApp().exit());
     }
 
     @Test

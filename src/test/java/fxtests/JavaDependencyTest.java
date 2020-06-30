@@ -28,8 +28,7 @@ public class JavaDependencyTest {
             HibernateUtil.setShutdownEnabled(false);
             List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
             int b = uncoveredApplications.size();
-            AbstractTestExecution
-                .testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), b)));
+            AbstractTestExecution.testApps(uncoveredApplications.subList(0, Math.min(uncoveredApplications.size(), b)));
             HibernateUtil.setShutdownEnabled(true);
         });
     }
@@ -41,9 +40,12 @@ public class JavaDependencyTest {
             List<String> paths = new ArrayList<>();
             List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getJavaFileDependencies("fxtests");
             List<String> tests = CoverageUtils.getUncoveredTests(paths);
-            List<String> allPaths = paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1"))
-                .collect(Collectors.toList());
+            List<String> allPaths =
+                    paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1")).collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
+            if (allPaths.contains("StringSigaUtils")) {
+                tests.add(0, "IndependentTest");
+            }
 
             int min = Math.min(tests.size() / 2, NUMBER_TESTS / 2);
             List<String> subList = tests.subList(0, min);
@@ -66,9 +68,9 @@ public class JavaDependencyTest {
                 if (forName.getConstructors()[0].getParameterCount() != 0) {
 
                     Collection<?> orElseThrow = ClassReflectionUtils.getAllMethodsRecursive(forName).stream()
-                        .filter(e -> e.getAnnotationsByType(Parameterized.Parameters.class).length > 0)
-                        .map(FunctionEx.makeFunction(e -> e.invoke(null))).findFirst().map(e -> (Collection<?>) e)
-                        .orElseGet(() -> Collections.emptyList());
+                            .filter(e -> e.getAnnotationsByType(Parameterized.Parameters.class).length > 0)
+                            .map(FunctionEx.makeFunction(e -> e.invoke(null))).findFirst().map(e -> (Collection<?>) e)
+                            .orElseGet(() -> Collections.emptyList());
                     for (Object object : orElseThrow) {
                         RunnableEx.run(() -> {
                             Object ob = forName.getConstructors()[0].newInstance(object);
@@ -113,14 +115,14 @@ public class JavaDependencyTest {
             List<Method> declaredMethods = ClassReflectionUtils.getAllMethodsRecursive(testClass);
             invoke(declaredMethods, test, Before.class);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
-                .sorted(Comparator.comparing(Method::getName))
-                .forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
-                    Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
-                    if (expected == null || isNotSame(e, expected)) {
-                        failedTests.add(o + "");
-                        LOG.error("ERROR invoking " + o, e);
-                    }
-                }));
+                    .sorted(Comparator.comparing(Method::getName))
+                    .forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
+                        Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
+                        if (expected == null || isNotSame(e, expected)) {
+                            failedTests.add(o + "");
+                            LOG.error("ERROR invoking " + o, e);
+                        }
+                    }));
             invoke(declaredMethods, test, After.class);
         });
 
@@ -132,15 +134,15 @@ public class JavaDependencyTest {
 
             invoke(declaredMethods, test, Before.class);
             declaredMethods.stream().filter(e -> e.getAnnotationsByType(Test.class).length > 0)
-                .sorted(Comparator.comparing(Method::getName))
-                .filter(e -> methods.isEmpty() || methods.contains(e.getName()))
-                .forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
-                    Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
-                    if (expected == null || isNotSame(e, expected)) {
-                        failedTests.add(o + "");
-                        LOG.error("ERROR invoking " + o, e);
-                    }
-                }));
+                    .sorted(Comparator.comparing(Method::getName))
+                    .filter(e -> methods.isEmpty() || methods.contains(e.getName()))
+                    .forEach(ConsumerEx.make(e -> e.invoke(test), (o, e) -> {
+                        Class<? extends Throwable> expected = o.getAnnotationsByType(Test.class)[0].expected();
+                        if (expected == null || isNotSame(e, expected)) {
+                            failedTests.add(o + "");
+                            LOG.error("ERROR invoking " + o, e);
+                        }
+                    }));
 
             invoke(declaredMethods, test, After.class);
         });

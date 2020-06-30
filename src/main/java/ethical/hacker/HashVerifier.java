@@ -54,6 +54,19 @@ public final class HashVerifier {
         return renderPage("https://hashlookup.org/search.php?q=" + sha1Hash);
     }
 
+    public static List<Entry<Path, Path>> listNotRepeatedFiles(File file,File file2) {
+        List<Entry<Path, Path>> notRepeatedEntries = new ArrayList<>();
+        Map<String, Path> fileMap = new ConcurrentHashMap<>();
+        
+        ResourceFXUtils.getPathByExtensionAsync(file, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
+                ".mp3");
+        ResourceFXUtils.getPathByExtensionAsync(file2, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
+                ".mp3");
+        
+        return notRepeatedEntries;
+    }
+
+
     public static List<Entry<Path, Path>> listRepeatedFiles(File file) {
         List<Entry<Path, Path>> repeatedEntries = new ArrayList<>();
         Map<String, Path> fileMap = new LinkedHashMap<>();
@@ -69,13 +82,6 @@ public final class HashVerifier {
         }, ".mp3");
 
         return repeatedEntries;
-    }
-
-    public static void main(String[] args) {
-        File userFolder = ResourceFXUtils.getUserFolder("Music");
-        List<Entry<Path, Path>> arrayList2 =
-                listNotRepeatedFiles(new File(userFolder, "Cellphone"),new File(userFolder, "Music2"));
-        LOG.info("{}", arrayList2);
     }
 
     public static Document renderPage(String url) {
@@ -112,18 +118,6 @@ public final class HashVerifier {
                 notRepeatedEntries.add(e);
             });
         }
-    }
-
-    private static List<Entry<Path, Path>> listNotRepeatedFiles(File file,File file2) {
-        List<Entry<Path, Path>> notRepeatedEntries = new ArrayList<>();
-        Map<String, Path> fileMap = new ConcurrentHashMap<>();
-        
-        ResourceFXUtils.getPathByExtensionAsync(file, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
-                ".mp3");
-        ResourceFXUtils.getPathByExtensionAsync(file2, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
-                ".mp3");
-        
-        return notRepeatedEntries;
     }
 
     private static String name(Path path) {
