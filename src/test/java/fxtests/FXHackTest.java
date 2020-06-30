@@ -6,17 +6,16 @@ import ethical.hacker.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import org.junit.Test;
 import schema.sngpc.JsonViewer;
-import utils.ConsoleUtils;
-import utils.ExtractUtils;
-import utils.ImageFXUtils;
-import utils.ResourceFXUtils;
+import utils.*;
 
 @SuppressWarnings("static-method")
 public class FXHackTest extends AbstractTestExecution {
@@ -66,6 +65,30 @@ public class FXHackTest extends AbstractTestExecution {
         String sha256Hash =
                 measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
         measureTime("HashVerifier.virusTotal", () -> HashVerifier.virusTotal(sha256Hash).html());
+    }
+
+    @Test
+    public void verifyMalwareInvestigator() {
+        MalwareInvestigator show = show(MalwareInvestigator.class);
+        List<TextField> fields = lookupList(TextField.class);
+        List<Button> lookupList = lookupList(Button.class);
+        this.clickOn(fields.get(0));
+        type(typeText("111.229.255.22"));
+        clickOn(lookupList.get(0));
+        this.clickOn(fields.get(1));
+        String randomItem = randomItem("safebrowsing.googleapis.com", "tracking-protection.cdn.mozilla.net",
+                "shavar.services.mozilla.com", "lh6.googleusercontent.com", "lh3.googleusercontent.com",
+                "people-pa.clients6.google.com", "people-pa.clients6.google.com", "clients6.google.com",
+                "mail.google.com", "play.google.com", "http://wwwcztapwlwk.net/plafgxc80333067532");
+        type(typeText(randomItem));
+        clickOn(lookupList.get(1));
+        File downloads = ResourceFXUtils.getUserFolder("Downloads");
+        interactNoWait(() -> show.chooseDirectory(downloads));
+        interactNoWait(RunnableEx.make(() -> {
+            File userFolder = ResourceFXUtils
+                    .getFirstPathByExtension(downloads, ".exe").toFile();
+            show.chooseExeFile(userFolder);
+        }));
     }
 
     @Test

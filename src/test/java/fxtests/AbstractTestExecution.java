@@ -204,6 +204,16 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         return !queryAll.isEmpty();
     }
 
+    @SuppressWarnings("deprecation")
+    protected  KeyCode[] typeText(String txt) {
+        KeyCode[] values = KeyCode.values();
+        KeyCode[] array = txt.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
+            .flatMap(s -> Stream.of(values).filter(v -> v.impl_getChar().equals(s))).toArray(KeyCode[]::new);
+        String string = Arrays.toString(array);
+        logger.info("TYPING {}", string);
+        return array;
+    }
+
     protected void verifyAndRun(Runnable consumer, List<Class<? extends Application>> applicationClasses) {
         for (Class<? extends Application> class1 : applicationClasses) {
             show(class1);
@@ -244,13 +254,6 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
             T t = list.get(i);
             consu.accept(t);
         }
-    }
-
-    @SuppressWarnings("deprecation")
-    protected static KeyCode[] typeText(String txt) {
-        KeyCode[] values = KeyCode.values();
-        return txt.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
-            .flatMap(s -> Stream.of(values).filter(v -> v.impl_getChar().equals(s))).toArray(KeyCode[]::new);
     }
 
 }

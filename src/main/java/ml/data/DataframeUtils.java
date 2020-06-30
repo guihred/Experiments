@@ -283,7 +283,7 @@ public class DataframeUtils extends DataframeML {
     }
 
     private static int len(String k, Class<? extends Comparable<?>> class1) {
-        return class1 == String.class ? k.length() * 2 : k.length();
+        return Math.max(1, class1 == String.class ? k.length() * 2 : k.length());
     }
 
     private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {

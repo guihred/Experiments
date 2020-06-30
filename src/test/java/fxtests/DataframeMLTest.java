@@ -3,11 +3,9 @@ package fxtests;
 import static fxtests.FXTesting.measureTime;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
-import ml.data.DataframeBuilder;
-import ml.data.DataframeML;
-import ml.data.DataframeStatisticAccumulator;
-import ml.data.DataframeUtils;
+import ml.data.*;
 import org.junit.Test;
 import org.nd4j.linalg.io.Assert;
 import utils.ResourceFXUtils;
@@ -26,6 +24,16 @@ public class DataframeMLTest {
         DataframeML b = DataframeBuilder.build(csvFile);
         b.filter("INSTRUCTION_COVERED", v -> ((Number) v).intValue() == 0);
         DataframeUtils.describe(b);
+    }
+
+    @Test
+    public void testExcelData() {
+        Path firstPathByExtension =
+                ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getOutFile().getParentFile(), ".xls");
+        DataframeML readExcel = measureTime("ExcelDataReader.readExcel",
+                () -> ExcelDataReader.readExcel(firstPathByExtension.toFile()));
+        measureTime("DataframeUtils.toString", () -> DataframeUtils.toString(readExcel));
+        measureTime("DataframeUtils.displayCorrelation", () -> DataframeUtils.displayCorrelation(readExcel));
     }
 
     @Test

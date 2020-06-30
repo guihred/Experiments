@@ -3,7 +3,6 @@ package ml.data;
 import extract.ExcelService;
 import java.io.File;
 import java.io.FileInputStream;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -11,28 +10,18 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import utils.HasLogging;
-import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public class ExcelDataReader extends DataframeUtils {
     private static final Logger LOG = HasLogging.log();
 
-    public static void main(String[] args) {
-        Path firstPathByExtension =
-                ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getOutFile().getParentFile(), ".xls");
-        DataframeML readExcel = readExcel(firstPathByExtension.toFile());
-        String dataStr = toString(readExcel);
-        LOG.info("{}", dataStr);
-        describe(readExcel);
-    }
 
     public static DataframeML readExcel(DataframeML dataframeML2, File excelFile) {
         LOG.info("READING {}", excelFile);
         RunnableEx.remap(() -> {
             Set<String> keySet = new LinkedHashSet<>();
             try (FileInputStream fileInputStream = new FileInputStream(excelFile);
-                    Workbook workbook = ExcelService.getWorkbook(excelFile, fileInputStream);) {
-
+                    Workbook workbook = ExcelService.getWorkbook(excelFile, fileInputStream)) {
                 List<Map<String, Object>> finalList = new ArrayList<>();
                 for (Sheet sheet : workbook) {
                     readSheet(keySet, finalList, sheet);

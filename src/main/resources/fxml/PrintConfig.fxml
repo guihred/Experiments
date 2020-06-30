@@ -82,8 +82,8 @@
 				<RadioButton text="Expand" toggleGroup="$printType" />
 				<CheckBox text="Repeat" fx:id="repeat" onAction="#changeConfig" />
 				<CheckBox text="Vertical" fx:id="vertical" onAction="#changeConfig" />
-				<Button text="_Load Images" onAction="#loadImages" />
 				<Button text="_Print To PDF" onAction="#print" />
+				<Button text="_Load Images" onAction="#loadImages" />
 				<HBox spacing="30">
 					<Hyperlink onAction="#subPage" text="&lt;" />
 					<Text fx:id="page" text="1"/>

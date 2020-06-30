@@ -47,7 +47,7 @@ public class DataframeBuilder extends DataframeML {
             return dataframeML;
         }
         if (ExcelService.isExcel(csvFile)) {
-            return ExcelDataReader.readExcel(csvFile);
+            return ExcelDataReader.readExcel(dataframeML, csvFile);
         }
         return DataframeUtils.readCSV(csvFile, dataframeML);
 	}

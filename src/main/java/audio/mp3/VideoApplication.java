@@ -1,6 +1,6 @@
 package audio.mp3;
 
-import java.io.File;
+import java.nio.file.Path;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
@@ -17,10 +17,12 @@ public class VideoApplication extends Application {
     public void start(Stage stage) throws Exception {
 
         // goes to user Directory
-        File f = ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getOutFile(), ".mp4").toFile();
-
+        Path f = ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getOutFile(), ".mp4");
+        if (f == null) {
+            f = ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Music"), ".mp4");
+        }
         // Converts media to string URL
-        Media media = new Media(f.toURI().toURL().toString());
+        Media media = new Media(f.toFile().toURI().toURL().toString());
         MediaPlayer player = new MediaPlayer(media);
         MediaView viewer = new MediaView(player);
 

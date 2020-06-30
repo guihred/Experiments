@@ -22,7 +22,7 @@ public class CustomList<T> extends LinkedHashSet<T> implements List<T> {
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        Iterator<T> iterator = iterator();
+        Iterator<T> iterator = listIterator();
         LinkedHashSet<T> removed = new LinkedHashSet<>();
         for (int i = 0; iterator.hasNext(); i++) {
             T next = iterator.next();

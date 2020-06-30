@@ -7,6 +7,8 @@ import ex.j8.Chapter4;
 import extract.FileAttrApp;
 import fractal.LeafFractalApp;
 import graphs.app.AllApps;
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,8 +25,10 @@ import ml.*;
 import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
+import schema.sngpc.JsonViewer;
 import schema.sngpc.XmlViewer;
 import utils.ImageFXUtils;
+import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
@@ -72,6 +76,24 @@ public class FXEngineTest extends AbstractTestExecution {
         show.setClickable(false);
         Platform.runLater(show::loadURL);
         ImageCrackerApp.waitABit();
+    }
+
+    @Test
+    public void verifyJsonViewer() {
+        JsonViewer show = show(JsonViewer.class);
+        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".json").stream()
+                .limit(10).collect(Collectors.toList());
+        show.addFile(pathByExtension.stream().map(Path::toFile).toArray(File[]::new));
+
+        sleep(500);
+        targetPos(Pos.TOP_CENTER);
+        clickOn(lookupFirst(TreeView.class));
+        targetPos(Pos.CENTER);
+        type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
+        ImageFXUtils.setShowImage(false);
+        List<Button> lookupList = lookupList(Button.class);
+        runReversed(lookupList, this::tryClickOn);
+        type(KeyCode.ESCAPE);
     }
 
     @Test
@@ -132,7 +154,6 @@ public class FXEngineTest extends AbstractTestExecution {
         targetPos(Pos.CENTER);
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
         ImageFXUtils.setShowImage(false);
-
         List<Button> lookupList = lookupList(Button.class);
         runReversed(lookupList, this::tryClickOn);
         type(KeyCode.ESCAPE);
