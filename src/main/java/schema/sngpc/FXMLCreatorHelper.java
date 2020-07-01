@@ -106,7 +106,7 @@ public final class FXMLCreatorHelper {
         reference.set(null);
         Platform.runLater(RunnableEx.make(() -> {
             LOG.info("CREATING {}.fxml", appClass.getSimpleName());
-            File outFile = ResourceFXUtils.getOutFile(appClass.getSimpleName() + ".fxml");
+            File outFile = ResourceFXUtils.getOutFile("fxml/" + appClass.getSimpleName() + ".fxml");
             Scene scene = primaryStage.getScene();
             Parent root = scene.getRoot();
             root.getStylesheets().addAll(primaryStage.getScene().getStylesheets());

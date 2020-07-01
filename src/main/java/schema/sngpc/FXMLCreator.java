@@ -82,7 +82,7 @@ public final class FXMLCreator {
 
     private void createController(File file, String packageName) throws IOException {
         String name = file.getName().replaceAll("\\.fxml", "") + "Controller";
-        File outFile = getOutFile(name + ".java");
+        File outFile = getOutFile("java/" + name + ".java");
         List<String> lines = new ArrayList<>();
         lines.add("package " + packageName + ";");
         lines.add("import javafx.fxml.*;");

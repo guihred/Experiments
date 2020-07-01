@@ -104,7 +104,11 @@ public final class ResourceFXUtils {
         if (!file.exists()) {
             file.mkdir();
         }
-        return new File(file, out);
+        File file2 = new File(file, out);
+        if (out.contains("/") && !file2.getParentFile().exists()) {
+            file2.getParentFile().mkdir();
+        }
+        return file2;
     }
 
     public static List<Path> getPathByExtension(File start, String... other) {
