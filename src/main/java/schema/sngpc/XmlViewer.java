@@ -112,19 +112,16 @@ public class XmlViewer extends Application {
         ObservableList<TreeItem<Map<String, String>>> lista = FXCollections.observableArrayList();
         lista.add(selectedItem);
         List<Map<String, String>> finalList = new ArrayList<>();
-        for (int i = 0; i < lista.size(); i++) {
-            TreeItem<Map<String, String>> treeItem = lista.remove(i);
+        while (!lista.isEmpty()) {
+            TreeItem<Map<String, String>> treeItem = lista.remove(0);
             if (anyChildLeaf(treeItem)) {
                 Map<String, String> collect = toMap(treeItem);
                 addHeader(finalList, collect);
                 finalList.add(collect);
-                continue;
-            }
-            if (treeItem.isLeaf()) {
+            } else if (treeItem.isLeaf()) {
                 finalList.add(treeItem.getValue());
             } else {
-                lista.addAll(i, treeItem.getChildren());
-                i--;
+                lista.addAll(0, treeItem.getChildren());
             }
         }
         finalList.removeIf(Map<String, String>::isEmpty);

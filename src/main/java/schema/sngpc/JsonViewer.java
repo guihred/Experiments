@@ -223,6 +223,7 @@ public class JsonViewer extends Application {
             addColumns(sideTable, newValue.getValue().keySet());
             list.add(newValue.getValue());
             splitList(list, newValue.getValue());
+            changeDisplayIfTooBig(list, sideTable);
             return;
         }
 

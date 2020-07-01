@@ -44,6 +44,7 @@ public class JavaDependencyTest {
                     paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1")).collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
             if (allPaths.contains("StringSigaUtils")) {
+                tests.remove("IndependentTest");
                 tests.add(0, "IndependentTest");
             }
 

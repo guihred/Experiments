@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
@@ -26,14 +27,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
-import utils.CommonsFX;
 import utils.ResourceFXUtils;
+import utils.SupplierEx;
 
 public class WordSearchApp extends Application {
 
     private Map<String, String> filtersMap = new HashMap<>();
+    private Pattern compile = Pattern.compile("");
 
     @Override
     public void start(Stage theStage) throws Exception {
@@ -47,22 +50,39 @@ public class WordSearchApp extends Application {
         ListView<String> listView = new ListView<>();
 
         VBox filters = new VBox();
+        TextField filterField = new TextField();
 
         List<String> allLines = getLines(ResourceFXUtils.toURI("pt_PT.dic")).collect(Collectors.toList());
         FilteredList<String> lines = FXCollections.observableArrayList(allLines).filtered(e -> true);
-        TextField filterField = new TextField();
-        CommonsFX.newFastFilter(filterField, lines);
+        filterField.textProperty().addListener((o, old, value) -> {
+            compile = SupplierEx.getIgnore(() -> Pattern.compile(value), compile);
+            lines.setPredicate(row -> isInCriteria(row) && hasValue(value, row));
+        });
         filters.getChildren().add(filterField);
         listView.setItems(lines);
-
         root.setCenter(filters);
         root.setLeft(listView);
         Button button = SimpleButtonBuilder.newButton("Add", a -> search(wordMap, filters, lines));
         filters.getChildren().add(button);
         search(wordMap, filters, lines);
-
         theStage.show();
 
+    }
+
+    private boolean hasValue(String value, String row) {
+        return StringUtils.isBlank(value) || StringUtils.containsIgnoreCase(row, value)
+                || compile.matcher(row.replaceFirst("[/\t].+", "")).find();
+    }
+
+    private boolean isInCriteria(String e) {
+        Set<Entry<String, String>> entrySet = filtersMap.entrySet();
+        for (Entry<String, String> entry : entrySet) {
+            String s2 = entry.getKey() + "=" + entry.getValue();
+            if (!e.contains(s2 + ",") && !e.contains(s2 + "]")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void search(ObservableMap<String, Set<String>> observableMap, VBox filters, FilteredList<String> lines) {
@@ -88,16 +108,7 @@ public class WordSearchApp extends Application {
             }
             filtersMap.put(selectedItem, s);
 
-            lines.setPredicate(e -> {
-                Set<Entry<String, String>> entrySet = filtersMap.entrySet();
-                for (Entry<String, String> entry : entrySet) {
-                    String s2 = entry.getKey() + "=" + entry.getValue();
-                    if (!e.contains(s2 + ",") && !e.contains(s2 + "]")) {
-                        return false;
-                    }
-                }
-                return true;
-            });
+            lines.setPredicate(t -> isInCriteria(t) && hasValue(compile.pattern(), t));
         }).build();
 
         filters.getChildren().add(filters.getChildren().size() - 1, new HBox(category, val));
@@ -109,11 +120,10 @@ public class WordSearchApp extends Application {
     }
 
     public static void main(String[] args) {
-        Application.launch(args);
+        launch(args);
     }
 
     private static Map<String, Set<String>> createMap() throws IOException {
-
         return getLines(ResourceFXUtils.toURI("pt_PT.dic")).filter(e -> e.contains("\t"))
             .map(e -> e.replaceAll(".+\t\\[(\\$\\.+\\$)*(.+)\\]", "$2")).flatMap(e -> Stream.of(e.split(",")))
             .collect(Collectors.groupingBy(e -> e.split("=")[0].replaceAll("\\$.+\\$", ""),

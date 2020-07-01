@@ -10,6 +10,9 @@ import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.net.ssl.*;
 import org.slf4j.Logger;
 import utils.HasLogging;
@@ -72,7 +75,7 @@ public class InstallCert {
             LOG.trace("ERROR STARTING HANDSHAKE", e);
         }
 
-        X509Certificate[] chain = tm.chain;
+        X509Certificate[] chain = tm.getAcceptedIssuers();
         if (chain == null || chain.length == 0) {
             LOG.info("Could not obtain server certificate chain");
             return;
@@ -121,7 +124,7 @@ public class InstallCert {
     private static class SavingTrustManager implements X509TrustManager {
 
         private final X509TrustManager tm;
-        private X509Certificate[] chain;
+        private List<X509Certificate> chain = new ArrayList<>();
 
         SavingTrustManager(X509TrustManager tm) {
             this.tm = tm;
@@ -129,18 +132,19 @@ public class InstallCert {
 
         @Override
         public void checkClientTrusted(X509Certificate[] chain1, String authType) throws CertificateException {
-            throw new UnsupportedOperationException();
+            chain.addAll(Arrays.asList(chain1));
+            tm.checkServerTrusted(chain1, authType);
         }
 
         @Override
         public void checkServerTrusted(X509Certificate[] chain1, String authType) throws CertificateException {
-            chain = chain1;
+            chain.addAll(Arrays.asList(chain1));
             tm.checkServerTrusted(chain1, authType);
         }
 
         @Override
         public X509Certificate[] getAcceptedIssuers() {
-            throw new UnsupportedOperationException();
+            return chain.toArray(new X509Certificate[0]);
         }
     }
 
