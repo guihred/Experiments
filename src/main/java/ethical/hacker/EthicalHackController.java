@@ -188,6 +188,17 @@ public class EthicalHackController extends EthicalHackApp {
         CommonsFX.loadFXML("Ethical Hack App", "EthicalHackApp.fxml", this, primaryStage, WIDTH, WIDTH);
     }
 
+    protected static CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
+        CheckBox check = new CheckBox();
+        check.selectedProperty().addListener((ob, o, val) -> EthicalHackApp.addIfChecked(arrayList, e, val));
+        return check;
+    }
+
+    public static CheckBox getCheckBox(List<Integer> checkedPorts, Map<Integer, CheckBox> checkbox,
+            Entry<Integer, String> e) {
+        return checkbox.computeIfAbsent(e.getKey(), i -> EthicalHackController.newCheck(checkedPorts, e));
+    }
+
     public static void main(final String[] args) {
         launch(args);
     }

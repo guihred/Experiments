@@ -17,12 +17,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.fxml.FXML;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory.Entry;
@@ -33,65 +34,38 @@ import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import utils.*;
 
-/**
- * Using the web viewer, implement a browser with a URL bar and a back button.
- * Hint: WebEngine.getHistory().
- */
-
 public class WebBrowserApplication extends Application {
-
     private static final Logger LOG = HasLogging.log();
-    private WebEngine engine;
+    @FXML
+    private ListView<Text> varList;
+    @FXML
+    private ListView<String> linksList;
+    @FXML
+    private ListView<ImageView> imageList;
+    @FXML
+    private ListView<String> historyList;
+    @FXML
     private TextField siteField;
+    @FXML
+    private ProgressIndicator progressIndicator;
+    @FXML
+    private WebView browser;
+    private WebEngine engine;
     private Map<String, String> cookies = new HashMap<>();
 
-    public void loadSite(String textField) {
-        engine.load(textField);
-    }
-
-    @Override
-    public void start(Stage stage) {
+    public void initialize() {
         ExtractUtils.insertProxyConfig();
-        siteField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
-        WebView browser = new WebView();
         engine = browser.getEngine();
-        Button backButton = SimpleButtonBuilder.newButton("<-",
-                event -> RunnableEx.ignore(() -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1)));
         Worker<Void> loadWorker = engine.getLoadWorker();
-        ProgressIndicator progressIndicator = new ProgressIndicator();
         progressIndicator.progressProperty().bind(loadWorker.progressProperty());
-        HBox top = new HBox();
-        BorderPane pane = new BorderPane();
-        pane.setTop(top);
-        pane.setCenter(browser);
-        ListView<Text> varList = new ListView<>();
-        ListView<String> linksList = new ListView<>();
-        ListView<ImageView> imageList = new ListView<>();
-        ListView<String> historyList = new ListView<>();
-        Accordion value = new Accordion(new TitledPane("Links", linksList), new TitledPane("Variables", varList),
-                new TitledPane("Images", imageList), new TitledPane("History", historyList));
-        pane.setRight(value);
-        Scene scene = new Scene(pane);
-        stage.setScene(scene);
-        CommonsFX.addCSS(scene, "filesComparator.css");
-        stage.setTitle("Web Browser");
-        stage.show();
-
         siteField.prefWidthProperty()
                 .bind(browser.widthProperty().add(progressIndicator.widthProperty().add(50).negate()));
-        top.getChildren().addAll(backButton, progressIndicator, siteField);
-        loadWorker.stateProperty()
-                .addListener((ob, oldValue, newState) -> stage.setTitle(engine.getLocation() + " " + newState));
+        loadWorker.stateProperty().addListener((ob, oldValue, newState) -> ((Stage) siteField.getScene().getWindow())
+                .setTitle(engine.getLocation() + " " + newState));
         loadWorker.exceptionProperty().addListener((ob, oldValue, newException) -> onException(newException));
-        siteField.setOnKeyReleased(ev -> {
-            if (ev.getCode() == KeyCode.ENTER) {
-                loadSite(siteField.getText());
-            }
-        });
         engine.getHistory().getEntries().addListener((Change<? extends Entry> c) -> {
             c.next();
             c.getRemoved().stream().forEach(e -> historyList.getItems().remove(e.getUrl()));
@@ -119,15 +93,33 @@ public class WebBrowserApplication extends Application {
         });
         engine.locationProperty().addListener((ob, old, val) -> {
             siteField.setText(val);
-            onDocumentChange(linksList, imageList, engine.getDocument());
+            onDocumentChange(engine.getDocument());
         });
-        engine.documentProperty().addListener((ob, old, doc) -> onDocumentChange(linksList, imageList, doc));
+        engine.documentProperty().addListener((ob, old, doc) -> onDocumentChange(doc));
         File outFile = ResourceFXUtils.getOutFile("cache");
         outFile.mkdir();
         engine.setUserDataDirectory(outFile);
 
     }
 
+    public void loadSite(String textField) {
+        RunnableEx.ignore(() -> engine.load(textField));
+    }
+
+    public void onActionButton6() {
+        RunnableEx.ignore(() -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
+    }
+
+    public void onKeyReleasedTextField8(KeyEvent ev) {
+        if (ev.getCode() == KeyCode.ENTER) {
+            loadSite(siteField.getText());
+        }
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        CommonsFX.loadFXML("WebBrowserApplication", "WebBrowserApplication.fxml", this, primaryStage);
+    }
 
     private ObservableList<String> getByTagAttribute(Document doc, String tagname, String string) {
         NodeList linkList = doc.getElementsByTagName(tagname);
@@ -156,7 +148,7 @@ public class WebBrowserApplication extends Application {
         return getByTagAttribute(doc, "a", "href");
     }
 
-    private void onDocumentChange(ListView<String> linksList, ListView<ImageView> imageList, Document doc) {
+    private void onDocumentChange(Document doc) {
         if (doc != null) {
             RunnableEx.runNewThread(() -> {
                 ObservableList<String> links = getLinks(doc);
@@ -176,7 +168,7 @@ public class WebBrowserApplication extends Application {
         String message = newException.getMessage();
         String url = siteField.getText();
         LOG.info("ERROR LOADING {} {}", url, message);
-        LOG.error("ERROR LOADING {}", url, newException);
+        LOG.trace("ERROR LOADING {}", url, newException);
         if ("SSL handshake failed".equalsIgnoreCase(message)) {
             // RunnableEx.run(() -> InstallCert.installCertificate(siteField.getText()))
             return;
@@ -209,4 +201,5 @@ public class WebBrowserApplication extends Application {
         });
         value.getItems().sort(Comparator.comparing(Text::getText));
     }
+
 }

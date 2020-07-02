@@ -20,9 +20,11 @@ import utils.ResourceFXUtils;
 import utils.RunnableEx;
 import utils.SupplierEx;
 
-public class InstallCert {
-
+public final class InstallCert {
     private static final Logger LOG = HasLogging.log();
+
+    private InstallCert() {
+    }
 
     public static void installCertificate(String url) throws GeneralSecurityException {
         String string = getFullURL(url);
@@ -33,7 +35,6 @@ public class InstallCert {
 
         installCertificate(host, port, "changeit".toCharArray());
     }
-
 
     private static String getFullURL(String url) {
         return SupplierEx.remap(() -> {

@@ -28,20 +28,6 @@ public final class ExcelService {
     private ExcelService() {
     }
 
-    public static ObservableList<String> getSheetsExcel(File selectedFile) {
-        ObservableList<String> list = FXCollections.observableArrayList();
-        RunnableEx.runInPlatform(() -> {
-            try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-                Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
-                int numberOfSheets = workbook.getNumberOfSheets();
-                for (int i = 0; i < numberOfSheets; i++) {
-                    list.add(workbook.getSheetAt(i).getSheetName());
-                }
-            }
-        });
-        return list;
-    }
-
     public static <T> void getExcel(BiFunction<Integer, Integer, List<T>> lista,
         Map<String, FunctionEx<T, Object>> fields, File file) {
         RunnableEx.run(() -> makeBigExcel(lista, fields, file));
@@ -59,6 +45,20 @@ public final class ExcelService {
     public static void getExcel(String arquivo, Map<Object, Object> map, OutputStream outStream) {
         RunnableEx.run(() -> makeExcelWithSubstitutions(arquivo, map, outStream));
 
+    }
+
+    public static ObservableList<String> getSheetsExcel(File selectedFile) {
+        ObservableList<String> list = FXCollections.observableArrayList();
+        RunnableEx.runInPlatform(() -> {
+            try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
+                Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
+                int numberOfSheets = workbook.getNumberOfSheets();
+                for (int i = 0; i < numberOfSheets; i++) {
+                    list.add(workbook.getSheetAt(i).getSheetName());
+                }
+            }
+        });
+        return list;
     }
 
     public static Workbook getWorkbook(File selectedFile, InputStream fileInputStream) throws IOException {
@@ -219,14 +219,17 @@ public final class ExcelService {
                 String sheetName = cloneSheet.getSheetName();
                 workbookXLSX.setSheetName(workbookXLSX.getSheetIndex(sheetName), aba);
             }
-            for (int i = 0; i < workbookXLSX.getNumberOfSheets(); i++) {
+            int j = 0;
+            for (int i = 0; i - j < workbookXLSX.getNumberOfSheets(); i++) {
                 Sheet sheet = workbookXLSX.getSheetAt(i);
                 String sheetName = sheet.getSheetName();
                 if (!abas.contains(sheetName)) {
-                    workbookXLSX.removeSheetAt(i);
-                    i--;
-                    continue;
+                    workbookXLSX.removeSheetAt(i - j);
+                    j++;
                 }
+            }
+
+            for (Sheet sheet : workbookXLSX) {
                 for (Row row : sheet) {
                     for (Cell cell : row) {
                         alterarValorCell(map, sheet, row, cell);

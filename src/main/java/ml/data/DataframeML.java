@@ -71,12 +71,13 @@ public class DataframeML extends BaseDataframe {
 
     public DataframeML filter(String header, Predicate<Object> v) {
         List<Object> list = dataframe.get(header);
-        for (int i = 0; i < list.size(); i++) {
-            Object t = list.get(i);
+        int off = 0;
+        for (int i = 0; i - off < list.size(); i++) {
+            int j = i - off;
+            Object t = list.get(j);
             if (t == null || !v.test(t)) {
-                int j = i;
                 dataframe.forEach((c, l) -> l.remove(j));
-                i--;
+                off++;
             }
         }
         size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
@@ -86,11 +87,12 @@ public class DataframeML extends BaseDataframe {
     public DataframeML filterString(String header, Predicate<String> v) {
         List<Object> list = dataframe.get(header);
         if (list != null) {
-            for (int i = 0; i < list.size(); i++) {
-                if (!v.test(Objects.toString(list.get(i)))) {
-                    int j = i;
+            int off = 0;
+            for (int i = 0; i - off < list.size(); i++) {
+                int j = i - off;
+                if (!v.test(Objects.toString(list.get(j)))) {
                     dataframe.forEach((c, l) -> l.remove(j));
-                    i--;
+                    off++;
                 }
             }
         }

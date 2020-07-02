@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.text.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/filesComparator.css">
+	<center>
+		<WebView fx:id="browser" />
+	</center>
+	<right>
+		<Accordion>
+			<panes>
+				<TitledPane expanded="false" text="Links">
+					<content>
+						<ListView fx:id="linksList" visible="false" />
+					</content>
+				</TitledPane>
+				<TitledPane expanded="false" text="Variables">
+					<content>
+						<ListView fx:id="varList" visible="false">
+						</ListView>
+					</content>
+				</TitledPane>
+				<TitledPane expanded="false" text="Images">
+					<content>
+						<ListView fx:id="imageList" visible="false" />
+					</content>
+				</TitledPane>
+				<TitledPane expanded="false" text="History">
+					<content>
+						<ListView fx:id="historyList" visible="false" />
+					</content>
+				</TitledPane>
+			</panes>
+			<clip>
+				<Rectangle height="547.0" width="250.0" />
+			</clip>
+		</Accordion>
+	</right>
+	<top>
+		<HBox>
+			<children>
+				<Button onAction="#onActionButton6" text="&lt;-" />
+				<ProgressIndicator fx:id="progressIndicator" />
+				<TextField fx:id="siteField" onKeyReleased="#onKeyReleasedTextField8" />
+			</children>
+		</HBox>
+	</top>
+</BorderPane>

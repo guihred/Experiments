@@ -63,10 +63,6 @@ public abstract class EthicalHackApp extends Application {
         });
     }
 
-    public static CheckBox getCheckBox(List<Integer> checkedPorts, Map<Integer, CheckBox> checkbox,
-            Entry<Integer, String> e) {
-        return checkbox.computeIfAbsent(e.getKey(), i -> newCheck(checkedPorts, e));
-    }
 
     public static synchronized void updateItem(ObservableList<Map<String, String>> items,
         ObservableMap<String, Set<String>> count1, String primaryKey, String targetKey,
@@ -101,12 +97,6 @@ public abstract class EthicalHackApp extends Application {
         } else if (!list.contains(e.getKey())) {
             list.add(e.getKey());
         }
-    }
-
-    protected static CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
-        CheckBox check = new CheckBox();
-        check.selectedProperty().addListener((ob, o, val) -> addIfChecked(arrayList, e, val));
-        return check;
     }
 
 }
