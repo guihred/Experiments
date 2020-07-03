@@ -84,9 +84,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     }
 
     @Test
-    @SuppressWarnings("static-method")
     public void testSimplePixelReader() {
-        FXTesting.measureTime("SimplePixelReader.test", () -> {
+        measureTime("SimplePixelReader.test", () -> {
             SimplePixelReader.paintColor(new WritableImage(10, 10), Color.BLACK);
             SimplePixelReader reader = new SimplePixelReader(Color.BLACK);
             reader.getArgb(0, 0);

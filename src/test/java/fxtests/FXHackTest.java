@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import ethical.hacker.*;
 import java.io.File;
 import java.nio.file.Path;
@@ -17,13 +15,12 @@ import javafx.scene.input.KeyCode;
 import org.junit.Test;
 import utils.*;
 
-@SuppressWarnings("static-method")
 public class FXHackTest extends AbstractTestExecution {
     @Test
     public void testHashVerifier() {
         File userFolder = ResourceFXUtils.getUserFolder("Music");
         measureTime("HashVerifier.listNotRepeatedFiles", () -> HashVerifier
-                .listNotRepeatedFiles(new File(userFolder, "Cellphone"), new File(userFolder, "Music2")));
+                .listNotRepeatedFiles(new File(userFolder, "PalavraCantada"), new File(userFolder, "Bita")));
         Path firstMp3 = ResourceFXUtils.getFirstPathByExtension(userFolder, ".mp3");
         measureTime("HashVerifier.getMD5Hash", () -> HashVerifier.getMD5Hash(firstMp3));
         measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstMp3));
@@ -65,8 +62,10 @@ public class FXHackTest extends AbstractTestExecution {
     public void testWebBrowserApplication() {
         show(WebBrowserApplication.class);
         clickOn(lookupFirst(TextField.class));
-
+        type(typeText("correiov3.dataprev.gov.br"));
         type(KeyCode.ENTER);
+        sleep(2000);
+        clickOn(lookupFirst(Button.class));
         sleep(1000);
     }
 

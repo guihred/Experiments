@@ -1,6 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
 import static utils.RunnableEx.make;
 
 import ethical.hacker.AlarmClock;

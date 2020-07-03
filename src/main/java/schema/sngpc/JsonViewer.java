@@ -198,6 +198,9 @@ public class JsonViewer extends Application {
     }
 
     private static void exportToExcel(TableView<Map<String, String>> tree, File file) {
+        if (file == null) {
+            return;
+        }
 
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new HashMap<>();
         List<Map<String, String>> collect = tree.getItems();
@@ -256,7 +259,8 @@ public class JsonViewer extends Application {
 
     private static boolean splitList(ObservableList<Map<String, String>> list, Map<String, String> newItem) {
         long count =
-                newItem.values().stream().mapToInt(e -> e.split("\n").length).filter(i -> i > 1).distinct().count();
+                newItem.values().stream().filter(Objects::nonNull).mapToInt(e -> e.split("\n").length)
+                        .filter(i -> i > 1).distinct().count();
         if (count != 1) {
             return false;
         }

@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import extract.PdfUtils;
 import java.io.File;
 import java.io.PrintStream;

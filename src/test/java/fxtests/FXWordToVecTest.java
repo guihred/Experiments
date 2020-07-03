@@ -1,6 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
 import static java.nio.file.Files.deleteIfExists;
 
 import java.io.File;
@@ -12,7 +11,6 @@ import utils.ConsumerEx;
 
 public class FXWordToVecTest extends AbstractTestExecution {
     @Test
-    @SuppressWarnings("static-method")
 	public void testWord2Vec() throws IOException {
 		File file = Word2VecExample.getPathToSave();
 		deleteIfExists(file.toPath());

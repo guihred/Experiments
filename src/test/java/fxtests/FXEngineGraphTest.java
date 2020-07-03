@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import graphs.app.GraphMain;
 import graphs.app.PackageTopology;
 import graphs.app.ProjectTopology;
@@ -20,7 +18,6 @@ import utils.ConsoleUtils;
 import utils.ImageFXUtils;
 
 
-@SuppressWarnings("static-method")
 public class FXEngineGraphTest extends AbstractTestExecution {
 
     @Test

@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
 import extract.FileAttrApp;

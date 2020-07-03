@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import com.google.common.collect.ImmutableMap;
 import ethical.hacker.ImageCracker;
 import extract.ExcelService;
@@ -23,7 +21,6 @@ import rosario.LeitorArquivos;
 import rosario.Medicamento;
 import utils.*;
 
-@SuppressWarnings("static-method")
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXFileReadersTest extends AbstractTestExecution {

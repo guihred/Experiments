@@ -83,7 +83,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
     @Test
     public void verifyEditSong2() {
-        FXTesting.measureTime("new EditSongController(song)", () -> {
+        measureTime("new EditSongController(song)", () -> {
             File file = getRandomSong().toFile();
             File outFile2 = ResourceFXUtils.getOutFile(file.getName());
             ExtractUtils.copy(file, outFile2);
@@ -99,7 +99,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             sleep(3000);
             lookup(ImageView.class).stream().allMatch(PredicateEx.makeTest(e -> doubleClickOn(e) != null));
         });
-        FXTesting.measureTime("new EditSongController", () -> {
+        measureTime("new EditSongController", () -> {
             show(EditSongController.class);
             List<Button> queryAll = lookupList(Button.class);
             moveSliders(10);

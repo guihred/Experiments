@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -55,7 +57,7 @@ public final class HashVerifier {
     }
 
     public static List<Entry<Path, Path>> listNotRepeatedFiles(File file,File file2) {
-        List<Entry<Path, Path>> notRepeatedEntries = new ArrayList<>();
+        ObservableList<Entry<Path, Path>> notRepeatedEntries = FXCollections.observableArrayList();
         Map<String, Path> fileMap = new ConcurrentHashMap<>();
         
         ResourceFXUtils.getPathByExtensionAsync(file, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),

@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import audio.mp3.PageImage;
 import ex.j8.Chapter4;
 import javafx.application.Application;

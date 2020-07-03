@@ -1,3 +1,4 @@
+
 package utils;
 
 import java.io.*;
@@ -175,6 +176,10 @@ public final class ExtractUtils {
     }
 
     public static void insertProxyConfig() {
+        System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
+        System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
+        boolean b = true;
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
         if (isNotProxied()) {
             return;
         }
@@ -183,7 +188,6 @@ public final class ExtractUtils {
         System.setProperty("https.proxyHost", PROXY_ADDRESS);
         System.setProperty("https.proxyPort", PROXY_PORT);
         System.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
-        System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
 
         Authenticator.setDefault(new Authenticator() {
             @Override
@@ -191,12 +195,6 @@ public final class ExtractUtils {
                 return new PasswordAuthentication(getHTTPUsername(), getHTTPPassword().toCharArray());
             }
 
-        });
-        boolean b = true;
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> {
-
-            LOG.info("{} verified", hostname);
-            return b;
         });
     }
 

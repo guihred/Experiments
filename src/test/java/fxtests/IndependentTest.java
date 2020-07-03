@@ -109,6 +109,13 @@ public class IndependentTest {
     }
 
     @Test
+    public void testDisplayErrors() {
+        measureTime("StatsLogAccess.displayErrors", () -> {
+            StatsLogAccess.displayErrors().forEach(l -> LOGGER.info("{}", l));
+        });
+    }
+
+    @Test
     public void testEanFactorReducer() {
         measureTime("EanFactorReducer.validate", () -> EanFactorReducer.validate("789100031550"));
         measureTime("EanFactorReducer.validate", () -> EanFactorReducer.validate("789100031557"));

@@ -52,11 +52,11 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     public Logger getLogger() {
         return logger;
     }
+
     @Override
     public FxRobotInterface moveTo(Node bounds) {
         return SupplierEx.get(()->super.moveTo(bounds));
     }
-
     @Override
     public void start(Stage stage) throws Exception {
         ResourceFXUtils.initializeFX();
@@ -107,6 +107,14 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected <M extends Node> List<M> lookupList(Class<M> cl, Predicate<? super M> predicate) {
         return lookup(cl::isInstance).queryAllAs(cl).stream().filter(predicate).collect(Collectors.toList());
+    }
+
+    protected void measureTime(String name, RunnableEx runnable) {
+        FXTesting.measureTime(getLogger(), name, runnable);
+    }
+
+    protected <T> T measureTime(String name, SupplierEx<T> runnable) {
+        return FXTesting.measureTime(getLogger(), name, runnable);
     }
 
     protected void moveRandom(int bound) {

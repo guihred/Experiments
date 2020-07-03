@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import furigana.FuriganaCrawlerApp;
 import japstudy.*;
 import java.util.Set;

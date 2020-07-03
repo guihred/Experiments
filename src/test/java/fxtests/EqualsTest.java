@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import contest.db.Contest;
 import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;

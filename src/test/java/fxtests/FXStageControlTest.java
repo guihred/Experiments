@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import fxpro.ch02.StageControlExample;
 import fxsamples.DraggingRectangle;
 import java.util.Arrays;

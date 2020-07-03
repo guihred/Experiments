@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import ethical.hacker.ssh.*;
 import java.io.PrintStream;
 import java.util.List;
@@ -33,7 +31,6 @@ public class FXSSHTest extends AbstractTestExecution {
     }
 
     @Test
-    @SuppressWarnings("static-method")
     public void testCommonTestSupportUtils() {
         measureTime("CommonTestSupportUtils.getClassContainerLocationURL",
             () -> CommonTestSupportUtils.getClassContainerLocationURL(Node.class));

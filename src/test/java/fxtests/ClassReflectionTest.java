@@ -1,7 +1,5 @@
 package fxtests;
 
-import static fxtests.FXTesting.measureTime;
-
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,6 +64,17 @@ public class ClassReflectionTest extends AbstractTestExecution {
 
     }
 
+    private Class<?> getClassWithFields(Class<?> cl, List<Class<? extends Node>> classes) {
+        List<String> fields = measureTime("getFields(" + cl.getSimpleName() + ")",
+            () -> ClassReflectionUtils.getFields(cl));
+        Class<?> newClass = cl;
+        while (fields.isEmpty()) {
+            newClass = classes.remove(0);
+            fields = ClassReflectionUtils.getFields(newClass);
+        }
+        return newClass;
+    }
+
     private static Class<?> getClassInstance(Class<?> cl, List<Class<? extends Node>> classes) {
         Object fields = SupplierEx.getIgnore(() -> ClassReflectionUtils.getInstance(cl));
         Class<?> newClass = cl;
@@ -73,17 +82,6 @@ public class ClassReflectionTest extends AbstractTestExecution {
             Class<? extends Node> remove = classes.remove(0);
             newClass = remove;
             fields = SupplierEx.getIgnore(() -> ClassReflectionUtils.getInstance(remove));
-        }
-        return newClass;
-    }
-
-    private static Class<?> getClassWithFields(Class<?> cl, List<Class<? extends Node>> classes) {
-        List<String> fields = measureTime("getFields(" + cl.getSimpleName() + ")",
-            () -> ClassReflectionUtils.getFields(cl));
-        Class<?> newClass = cl;
-        while (fields.isEmpty()) {
-            newClass = classes.remove(0);
-            fields = ClassReflectionUtils.getFields(newClass);
         }
         return newClass;
     }

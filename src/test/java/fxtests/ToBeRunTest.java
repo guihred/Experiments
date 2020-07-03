@@ -22,7 +22,7 @@ public class ToBeRunTest {
 
     @Test
     public void testBuildDataframe() {
-        measureTime("CoverageUtils.buildDataframe", () -> {
+        measureTime(LOG, "CoverageUtils.buildDataframe", () -> {
             List<Entry<Object, Object>> buildDataframe = CoverageUtils.buildDataframe();
             buildDataframe.stream().limit(20).forEach(e -> LOG.info("{}", e));
         });
@@ -30,7 +30,7 @@ public class ToBeRunTest {
 
     @Test
     public void testFJavaCoverage() {
-        measureTime("JavaFileDependency.javaCoverage", () -> {
+        measureTime(LOG, "JavaFileDependency.javaCoverage", () -> {
             List<String> uncovered = CoverageUtils.getUncovered();
             LOG.info("Uncovered classes ={}", uncovered);
             List<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests");
@@ -41,7 +41,7 @@ public class ToBeRunTest {
 
     @Test
     public void testGetJavaMethods() {
-        measureTime("JavaFileDependency.getPublicMethods", () -> {
+        measureTime(LOG, "JavaFileDependency.getPublicMethods", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
                 List<String> tests = dependency.getPublicMethods();
@@ -52,7 +52,7 @@ public class ToBeRunTest {
 
     @Test
     public void testGraphMethodMap() {
-        measureTime("JavaFileDependency.getPublicMethodsFullName", () -> {
+        measureTime(LOG, "JavaFileDependency.getPublicMethodsFullName", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
                 dependency.setDependents(displayTestsToBeRun);
@@ -64,7 +64,7 @@ public class ToBeRunTest {
 
     @Test
     public void testInvocations() {
-        measureTime("JavaFileDependency.getInvocationsMethods", () -> {
+        measureTime(LOG, "JavaFileDependency.getInvocationsMethods", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
                 dependency.setDependents(displayTestsToBeRun);
@@ -84,7 +84,7 @@ public class ToBeRunTest {
 
     @Test
     public void testMethodMap() {
-        measureTime("JavaFileDependency.getPublicMethodsMap", () -> {
+        measureTime(LOG, "JavaFileDependency.getPublicMethodsMap", () -> {
             List<JavaFileDependency> displayTestsToBeRun = JavaFileDependency.getAllFileDependencies();
             for (JavaFileDependency dependency : displayTestsToBeRun) {
                 Map<String, List<String>> tests = dependency.getPublicMethodsMap();
