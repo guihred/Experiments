@@ -139,8 +139,7 @@ public final class InstallCert {
 
         @Override
         public void checkServerTrusted(X509Certificate[] chain1, String authType) throws CertificateException {
-            chain.addAll(Arrays.asList(chain1));
-            tm.checkServerTrusted(chain1, authType);
+            checkClientTrusted(chain1, authType);
         }
 
         @Override

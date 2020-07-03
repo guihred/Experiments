@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.geometry.*?><?import schema.sngpc.*?><?import javafx.scene.text.*?>
+<VBox xmlns:fx="http://javafx.com/fxml">
+	<children>
+		<HBox>
+			<children>
+				<Button alignment="CENTER" onAction="#onActionImportXML"
+					text="Import XML" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" onAction="#onActionExportExcel"
+					text="Export excel" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+			</children>
+		</HBox>
+		<SplitPane>
+			<items>
+				<TreeView fx:id="tree" showRoot="false" />
+				<TableView fx:id="sideTable" />
+			</items>
+			<padding>
+				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+			</padding>
+		</SplitPane>
+	</children>
+</VBox>

@@ -41,16 +41,17 @@ public enum MachineState {
 }
 
 final class Values {
-    static final String APP_ACTIVE_OPEN = "APP_ACTIVE_OPEN";
-    static final String APP_CLOSE = "APP_CLOSE";
-    static final String APP_TIMEOUT = "APP_TIMEOUT";
-    static final String RCV_ACK = "RCV_ACK";
-    static final String RCV_FIN = "RCV_FIN";
-    static final String RCV_FIN_ACK = "RCV_FIN_ACK";
-    static final String APP_SEND = "APP_SEND";
-    static final String RCV_SYN = "RCV_SYN";
-    static final String RCV_SYN_ACK = "RCV_SYN_ACK";
-    static final String APP_PASSIVE_OPEN = "APP_PASSIVE_OPEN";
+    protected static final String APP_ACTIVE_OPEN = "APP_ACTIVE_OPEN";
+    protected static final String APP_CLOSE = "APP_CLOSE";
+    protected static final String APP_TIMEOUT = "APP_TIMEOUT";
+    protected static final String RCV_ACK = "RCV_ACK";
+    protected static final String RCV_FIN = "RCV_FIN";
+    protected static final String RCV_FIN_ACK = "RCV_FIN_ACK";
+    protected static final String APP_SEND = "APP_SEND";
+    protected static final String RCV_SYN = "RCV_SYN";
+    protected static final String RCV_SYN_ACK = "RCV_SYN_ACK";
+    protected static final String APP_PASSIVE_OPEN = "APP_PASSIVE_OPEN";
+
     private Values() {
     }
 }

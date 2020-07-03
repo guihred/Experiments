@@ -42,7 +42,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             }
         }
 
-        MusicOrganizer organizer = show(MusicOrganizer.class);
+        show(MusicOrganizer.class);
         clickOn("Carregar _Vídeos");
         type(KeyCode.ENTER);
         sleep(1000);
@@ -57,11 +57,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
         clickOn("Carregar _Musicas");
         type(KeyCode.ENTER);
         type(KeyCode.ENTER);
-        while (organizer.getProgress() < 1) {
-            // DOES NOTHING
-            sleep(10);
-        }
-        sleep(100);
+        sleep(1000);
         doubleClickOn(lookupFirst(TableRow.class));
         lookup("_Play/Pause").queryAll().forEach(this::clickOn);
         lookup("_Split").queryAll().forEach(this::clickOn);

@@ -4,13 +4,19 @@ import static simplebuilder.SimpleTextBuilder.newBoldText;
 import static utils.RunnableEx.remap;
 import static utils.RunnableEx.run;
 
+import extract.ExcelService;
 import java.io.File;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javax.xml.parsers.DocumentBuilder;
@@ -27,6 +33,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import utils.FunctionEx;
+import utils.ImageFXUtils;
+import utils.ResourceFXUtils;
 import utils.SupplierEx;
 
 public final class XMLExtractor {
@@ -35,32 +44,32 @@ public final class XMLExtractor {
     }
 
     public static void addValue(Node item, TreeItem<Map<String, String>> e) {
-            NamedNodeMap attributes = item.getAttributes();
-            for (int i = 0; attributes != null && i < attributes.getLength(); i++) {
-                Node item2 = attributes.item(i);
-                e.getValue().put(item2.getNodeName(), item2.getNodeValue());
-            }
-            if (!item.hasChildNodes()) {
+        NamedNodeMap attributes = item.getAttributes();
+        for (int i = 0; attributes != null && i < attributes.getLength(); i++) {
+            Node item2 = attributes.item(i);
+            e.getValue().put(item2.getNodeName(), item2.getNodeValue());
+        }
+        if (!item.hasChildNodes()) {
+            return;
+        }
+        NodeList childNodes = item.getChildNodes();
+        List<Node> collect =
+                IntStream.range(0, childNodes.getLength()).mapToObj(childNodes::item).collect(Collectors.toList());
+        if (collect.stream().allMatch(n -> n.getNodeType() == Node.TEXT_NODE)) {
+            if (collect.size() == 1) {
+                String nodeValue = collect.get(0).getNodeValue();
+                String nodeName = item.getNodeName();
+                e.setValue(newMap(nodeName, nodeValue));
                 return;
             }
-            NodeList childNodes = item.getChildNodes();
-            List<Node> collect =
-                    IntStream.range(0, childNodes.getLength()).mapToObj(childNodes::item).collect(Collectors.toList());
-            if (collect.stream().allMatch(n -> n.getNodeType() == Node.TEXT_NODE)) {
-                if (collect.size() == 1) {
-                    String nodeValue = collect.get(0).getNodeValue();
+            for (Node item2 : collect) {
+                if (item2.getNodeType() == Node.TEXT_NODE) {
+                    String nodeValue = item2.getNodeValue();
                     String nodeName = item.getNodeName();
-                    e.setValue(newMap(nodeName, nodeValue));
-                    return;
-                }
-                for (Node item2 : collect) {
-                    if (item2.getNodeType() == Node.TEXT_NODE) {
-                        String nodeValue = item2.getNodeValue();
-                        String nodeName = item.getNodeName();
-                        e.getValue().put(nodeName, nodeValue);
-                    }
+                    e.getValue().put(nodeName, nodeValue);
                 }
             }
+        }
     }
 
     public static Document newDocument() throws ParserConfigurationException {
@@ -93,6 +102,130 @@ public final class XMLExtractor {
         transformer.transform(domSource, streamResult);
     }
 
+    protected static void exportToExcel(TreeView<Map<String, String>> tree, File file) {
+        TreeItem<Map<String, String>> selectedItem = tree.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            return;
+        }
+
+        List<Map<String, String>> finalList = getFinalList(selectedItem);
+        Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
+        int orElse = finalList.stream().mapToInt(Map<String, String>::size).max().orElse(0);
+        for (int j = 0; j < orElse; j++) {
+            int k = j;
+            mapa.put("" + j, t -> getValue(t, k));
+        }
+
+        File outFile = ResourceFXUtils.getOutFile(file.getName().replaceAll("\\.xml", ".xlsx"));
+        ExcelService.getExcel(finalList, mapa, outFile);
+        ImageFXUtils.openInDesktop(outFile);
+    }
+
+    protected  static void onSelectTreeItem(ObservableList<Map<String, String>> list,
+            TableView<Map<String, String>> sideTable, TreeItem<Map<String, String>> newValue) {
+        list.clear();
+        sideTable.getColumns().clear();
+        if (newValue == null) {
+            return;
+        }
+        if (newValue.isLeaf()) {
+            addColumns(sideTable, newValue.getValue().keySet());
+            list.add(newValue.getValue());
+            return;
+        }
+        if (newValue.getChildren().stream().anyMatch(TreeItem<Map<String, String>>::isLeaf)) {
+            addColumns(sideTable, newValue.getValue().keySet());
+            Map<String, String> newItem = new HashMap<>();
+            newItem.putAll(newValue.getValue());
+            list.add(newItem);
+            if (newValue.getValue().values().stream().allMatch(Objects::isNull)) {
+                newItem.clear();
+                sideTable.getColumns().clear();
+            }
+
+            List<String> keySet = newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue)
+                    .flatMap(m -> m.keySet().stream()).distinct().collect(Collectors.toList());
+            if (newItem.isEmpty()) {
+                keySet.addAll(newItem.keySet());
+                sideTable.getColumns().clear();
+                addColumns(sideTable, keySet);
+                List<Map<String, String>> collect = newValue.getChildren().stream()
+                        .map(TreeItem<Map<String, String>>::getValue).collect(Collectors.toList());
+                for (Map<String, String> t : collect) {
+                    if (newItem.keySet().stream().anyMatch(t::containsKey)) {
+                        newItem = new SimpleMap();
+                        list.add(newItem);
+                    }
+                    newItem.putAll(t);
+                }
+            }
+        }
+    }
+
+    protected static Collector<String, ?, Map<String, String>> toLinkedHashMap2() {
+        return Collectors.toMap(e -> e, e -> e, (a, b) -> a + "\n" + b, LinkedHashMap::new);
+    }
+
+    private static void addColumns(TableView<Map<String, String>> tableView, Collection<String> keySet) {
+        for (String key : keySet) {
+            TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
+            column.setCellValueFactory(
+                    param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
+            column.prefWidthProperty().bind(tableView.widthProperty().divide(keySet.size()).add(-5));
+            tableView.getColumns().add(column);
+        }
+    }
+
+    private static void addHeader(List<Map<String, String>> finalList, Map<String, String> collect) {
+        if (!collect.keySet().stream().allMatch(e -> e.matches("\\w+\\d+"))) {
+            Map<String, String> collect3 = collect.keySet().stream().collect(toLinkedHashMap2());
+            if (!finalList.contains(collect3)) {
+                finalList.add(collect3);
+            }
+        }
+    }
+
+    private static boolean anyChildLeaf(TreeItem<Map<String, String>> e) {
+        return e.getChildren().stream().anyMatch(TreeItem<Map<String, String>>::isLeaf);
+    }
+
+    private static List<Map<String, String>> getFinalList(TreeItem<Map<String, String>> selectedItem) {
+        ObservableList<TreeItem<Map<String, String>>> lista = FXCollections.observableArrayList();
+        lista.add(selectedItem);
+        List<Map<String, String>> finalList = new ArrayList<>();
+        while (!lista.isEmpty()) {
+            TreeItem<Map<String, String>> treeItem = lista.remove(0);
+            if (anyChildLeaf(treeItem)) {
+                Map<String, String> collect = toMap(treeItem);
+                addHeader(finalList, collect);
+                finalList.add(collect);
+            } else if (treeItem.isLeaf()) {
+                finalList.add(treeItem.getValue());
+            } else {
+                lista.addAll(0, treeItem.getChildren());
+            }
+        }
+        finalList.removeIf(Map<String, String>::isEmpty);
+        return finalList;
+    }
+
+    private static Object getValue(Map<String, String> i, int j) {
+        int k = 0;
+        for (String string : i.values()) {
+            if (j == k) {
+                return string;
+            }
+            k++;
+        }
+
+        return "";
+    }
+
+    private static boolean isArrayType(List<Set<Map.Entry<String, String>>> entryList) {
+        return entryList.stream().flatMap(Set<Entry<String, String>>::stream).map(Entry<String, String>::getKey)
+                .distinct().count() < entryList.size();
+    }
+
     private static Map<String, String> newMap(Node item) {
         if (item.getNodeType() == Node.ELEMENT_NODE) {
             return new SimpleMap();
@@ -103,6 +236,35 @@ public final class XMLExtractor {
 
     private static boolean notTextNorComment(Node item) {
         return item.getNodeType() != Node.COMMENT_NODE && item.getNodeType() != Node.TEXT_NODE;
+    }
+
+    private static Collector<Map.Entry<String, String>, ?, Map<String, String>> toLinkedHashMap() {
+        return Collectors.toMap(Map.Entry<String, String>::getKey, Map.Entry<String, String>::getValue,
+                (a, b) -> a + "\n" + b, LinkedHashMap::new);
+    }
+
+    private static Map<String, String> toMap(TreeItem<Map<String, String>> treeItem) {
+        List<Set<Map.Entry<String, String>>> entryList = treeItem.getChildren().stream().map(e -> {
+            if (e.isLeaf()) {
+                return e.getValue().entrySet();
+            }
+            return Stream
+                    .concat(e.getChildren().stream().map(TreeItem<Map<String, String>>::getValue)
+                            .flatMap(n -> n.entrySet().stream()), e.getValue().entrySet().stream())
+                    .collect(Collectors.toSet());
+        }).collect(Collectors.toList());
+        if (isArrayType(entryList)) {
+            // Is a Array type
+            return entryList.stream().flatMap(Set<Entry<String, String>>::stream)
+                    .collect(Collectors.groupingBy(Entry<String, String>::getKey,
+                            Collectors.mapping(Entry<String, String>::getValue, Collectors.toList())))
+                    .entrySet().stream()
+                    .flatMap(en -> IntStream.range(0, en.getValue().size())
+                            .mapToObj(j -> XMLExtractor.newEntry(en.getKey() + j, en.getValue().get(j))))
+                    .collect(toLinkedHashMap());
+        }
+        return treeItem.getChildren().stream().flatMap(e -> Stream.concat(Stream.of(e), e.getChildren().stream()))
+                .flatMap(e -> e.getValue().entrySet().stream()).collect(toLinkedHashMap());
     }
 
     private static void tryToRead(TreeView<Map<String, String>> build,

@@ -1,21 +1,13 @@
 package ethical.hacker;
 
-import extract.ImageLoader;
+import static ethical.hacker.DocumentHelper.addProperties;
+import static ethical.hacker.DocumentHelper.onDocumentChange;
+
 import java.io.File;
-import java.net.URL;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
@@ -31,9 +23,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.jsoup.Connection.Response;
 import org.slf4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import simplebuilder.SimpleDialogBuilder;
 import utils.*;
 
@@ -71,7 +60,7 @@ public class WebBrowserApplication extends Application {
             c.getRemoved().stream().forEach(e -> historyList.getItems().remove(e.getUrl()));
             c.getAddedSubList().stream().forEach(e -> historyList.getItems().add(e.getUrl()));
         });
-        addProperties(loadWorker, varList);
+        DocumentHelper.addProperties(loadWorker, varList);
         addProperties(engine, varList);
         engine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0");
         engine.setConfirmHandler(str -> {
@@ -93,17 +82,17 @@ public class WebBrowserApplication extends Application {
         });
         engine.locationProperty().addListener((ob, old, val) -> {
             siteField.setText(val);
-            onDocumentChange(engine.getDocument());
+            onDocumentChange(engine.getDocument(), getUrl(), linksList, imageList);
         });
-        engine.documentProperty().addListener((ob, old, doc) -> onDocumentChange(doc));
+        engine.documentProperty().addListener((ob, old, doc) -> onDocumentChange(doc, getUrl(), linksList, imageList));
         File outFile = ResourceFXUtils.getOutFile("cache");
         outFile.mkdir();
         engine.setUserDataDirectory(outFile);
 
     }
 
-    public void loadSite(String textField) {
-        RunnableEx.ignore(() -> engine.load(textField));
+    public void loadSite(String url) {
+        RunnableEx.ignore(() -> engine.load(url));
     }
 
     public void onActionButton6() {
@@ -112,7 +101,7 @@ public class WebBrowserApplication extends Application {
 
     public void onKeyReleasedTextField8(KeyEvent ev) {
         if (ev.getCode() == KeyCode.ENTER) {
-            loadSite(siteField.getText());
+            loadSite(getUrl());
         }
     }
 
@@ -121,44 +110,8 @@ public class WebBrowserApplication extends Application {
         CommonsFX.loadFXML("WebBrowserApplication", "WebBrowserApplication.fxml", this, primaryStage);
     }
 
-    private ObservableList<String> getByTagAttribute(Document doc, String tagname, String string) {
-        NodeList linkList = doc.getElementsByTagName(tagname);
-        Property<String> currentDomain = getDomain();
-        return IntStream.range(0, linkList.getLength()).mapToObj(linkList::item).map(Node::getAttributes)
-                .flatMap(attributes -> IntStream.range(0, attributes.getLength()).mapToObj(attributes::item))
-                .filter(e -> string.equalsIgnoreCase(e.getNodeName()))
-                .map(FunctionEx.makeFunction(e -> ExtractUtils.addDomain(currentDomain, e.getTextContent()))).distinct()
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
-    }
-
-    private Property<String> getDomain() {
-        return new SimpleStringProperty(
-                SupplierEx.getIgnore(() -> new URL(siteField.getText()).getHost(), siteField.getText()));
-    }
-
-    private ObservableList<ImageView> getImgs(Document doc) {
-        Property<String> currentDomain = getDomain();
-        return getByTagAttribute(doc, "img", "src").stream()
-                .map(FunctionEx.makeFunction(t -> ImageLoader.convertToImage(currentDomain.getValue(), t)))
-                .filter(Objects::nonNull).sorted(Comparator.comparing(ImageLoader::byArea))
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
-    }
-
-    private ObservableList<String> getLinks(Document doc) {
-        return getByTagAttribute(doc, "a", "href");
-    }
-
-    private void onDocumentChange(Document doc) {
-        if (doc != null) {
-            RunnableEx.runNewThread(() -> {
-                ObservableList<String> links = getLinks(doc);
-                RunnableEx.runInPlatform(() -> linksList.setItems(links));
-            });
-            RunnableEx.runNewThread(() -> {
-                ObservableList<ImageView> imgs = getImgs(doc);
-                RunnableEx.runInPlatform(() -> imageList.setItems(imgs));
-            });
-        }
+    private String getUrl() {
+        return siteField.getText();
     }
 
     private void onException(Throwable newException) {
@@ -166,7 +119,7 @@ public class WebBrowserApplication extends Application {
             return;
         }
         String message = newException.getMessage();
-        String url = siteField.getText();
+        String url = getUrl();
         LOG.info("ERROR LOADING {} {}", url, message);
         LOG.trace("ERROR LOADING {}", url, newException);
         if ("SSL handshake failed".equalsIgnoreCase(message)) {
@@ -176,7 +129,7 @@ public class WebBrowserApplication extends Application {
         if ("Malformed URL".equalsIgnoreCase(message)) {
             if (!url.contains("://")) {
                 siteField.setText("http://" + url);
-                loadSite("http://" + url);
+                loadSite(getUrl());
             }
             return;
         }
@@ -191,15 +144,6 @@ public class WebBrowserApplication extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    private static void addProperties(Object loadWorker, ListView<Text> value) {
-        ClassReflectionUtils.allProperties(loadWorker, loadWorker.getClass()).forEach((s, prop) -> {
-            Text e = new Text();
-            e.textProperty().bind(Bindings.concat(StringSigaUtils.changeCase(s), ": ", prop));
-            value.getItems().add(e);
-        });
-        value.getItems().sort(Comparator.comparing(Text::getText));
     }
 
 }
