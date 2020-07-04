@@ -37,6 +37,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
         bindWindow(stage, node1);
         return this;
     }
+
     public SimpleDialogBuilder bindWindow(Window window) {
         window.showingProperty().addListener((ob, old, n) -> {
             if (!n) {
@@ -67,7 +68,10 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
 
     public SimpleDialogBuilder button(String buttonMsg, Supplier<DoubleExpression> c, RunnableEx run) {
         ProgressIndicator progressIndicator = new ProgressIndicator(0);
-        Button button = newButton(buttonMsg, a -> {
+        Button button1 = new Button(buttonMsg);
+        button1.setId(buttonMsg);
+        button1.setOnAction(a -> {
+            button1.setDisable(true);
             DoubleExpression progress = c.get();
             progressIndicator.progressProperty().bind(progress);
             progress.addListener((v, o, n) -> {
@@ -81,7 +85,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
                 }
             });
         });
-        group.getChildren().addAll(progressIndicator, button);
+        group.getChildren().addAll(progressIndicator, button1);
         return this;
     }
 
@@ -92,7 +96,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
                 return stage;
             }
         }
-
+        stage.setAlwaysOnTop(true);
         stage.setScene(new Scene(group));
         stage.show();
         LOG.info("DIALOG {}", HasLogging.getCurrentLine(1));

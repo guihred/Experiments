@@ -97,7 +97,6 @@ public final class VirusTotalApi {
         BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
         List<String> collect = rd.lines().collect(Collectors.toList());
         Files.write(outFile.toPath(), collect);
-
     }
 
     private static File newJsonFile(String string) {

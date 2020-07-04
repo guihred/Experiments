@@ -3,9 +3,12 @@ package ethical.hacker;
 import static ethical.hacker.DocumentHelper.addProperties;
 import static ethical.hacker.DocumentHelper.onDocumentChange;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener.Change;
 import javafx.concurrent.Worker;
@@ -21,10 +24,19 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.jsoup.Connection.Response;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
-import utils.*;
+import simplebuilder.SimpleListViewBuilder;
+import utils.CommonsFX;
+import utils.ExtractUtils;
+import utils.HasLogging;
+import utils.RunnableEx;
 
 public class WebBrowserApplication extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -48,6 +60,7 @@ public class WebBrowserApplication extends Application {
     public void initialize() {
         ExtractUtils.insertProxyConfig();
         engine = browser.getEngine();
+        SimpleListViewBuilder.onDoubleClick(historyList, this::loadSite);
         Worker<Void> loadWorker = engine.getLoadWorker();
         progressIndicator.progressProperty().bind(loadWorker.progressProperty());
         siteField.prefWidthProperty()
@@ -62,19 +75,6 @@ public class WebBrowserApplication extends Application {
         });
         DocumentHelper.addProperties(loadWorker, varList);
         addProperties(engine, varList);
-        engine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0");
-        engine.setConfirmHandler(str -> {
-            LOG.info("CONFIRM {}", str);
-            return true;
-        });
-        engine.setOnAlert(str -> LOG.info("ALERT {}", str.getData()));
-        engine.setOnError(str -> LOG.info("ERROR {}", str.getException()));
-        engine.setOnResized(str -> LOG.info("RESIZED {}", str.getData()));
-        engine.setOnVisibilityChanged(str -> LOG.info("VISIBILITY CHANGED {}", str.getData()));
-        engine.setPromptHandler(str -> {
-            LOG.info("PROMPTED {}", str.getMessage());
-            return str.getDefaultValue();
-        });
         engine.setCreatePopupHandler(pop -> {
             WebView button = new WebView();
             new SimpleDialogBuilder().button(button).resizable(pop.isResizable()).build();
@@ -85,9 +85,6 @@ public class WebBrowserApplication extends Application {
             onDocumentChange(engine.getDocument(), getUrl(), linksList, imageList);
         });
         engine.documentProperty().addListener((ob, old, doc) -> onDocumentChange(doc, getUrl(), linksList, imageList));
-        File outFile = ResourceFXUtils.getOutFile("cache");
-        outFile.mkdir();
-        engine.setUserDataDirectory(outFile);
 
     }
 
@@ -120,24 +117,38 @@ public class WebBrowserApplication extends Application {
         }
         String message = newException.getMessage();
         String url = getUrl();
-        LOG.info("ERROR LOADING {} {}", url, message);
-        LOG.trace("ERROR LOADING {}", url, newException);
-        if ("SSL handshake failed".equalsIgnoreCase(message)) {
-            // RunnableEx.run(() -> InstallCert.installCertificate(siteField.getText()))
-            return;
-        }
         if ("Malformed URL".equalsIgnoreCase(message)) {
             if (!url.contains("://")) {
                 siteField.setText("http://" + url);
+                LOG.info("REMAPPING URL {} {}", url, getUrl());
                 loadSite(getUrl());
             }
             return;
         }
-        RunnableEx.run(() -> {
+        LOG.info("ERROR LOADING {} {}", url, message);
+        if ("SSL handshake failed".equalsIgnoreCase(message)) {
+            // RunnableEx.run(() -> InstallCert.installCertificate(siteField.getText()))
+            return;
+        }
+        LOG.error("ERROR LOADING {}", url, newException);
+        RunnableEx.runNewThread(() -> {
+
             Response executeRequest = ExtractUtils.executeRequest(url, cookies);
             String body = executeRequest.body();
             String contentType = executeRequest.contentType();
-            engine.loadContent(body, contentType);
+            if (contentType.contains("html")) {
+                engine.loadContent(body, contentType);
+            } else {
+                HttpClient client = HttpClientBuilder.create().build();
+                HttpGet post = new HttpGet(url);
+                HttpResponse response = client.execute(post);
+                HttpEntity entity = response.getEntity();
+                BufferedReader rd =
+                        new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
+                String collect = rd.lines().collect(Collectors.joining("\n"));
+                engine.loadContent(collect);
+            }
+
         });
 
     }

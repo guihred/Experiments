@@ -22,6 +22,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import ml.data.CoverageUtils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -57,7 +58,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     public void testLinePencilTool() {
         show(PaintMain.class);
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
-        List<PaintTool> asList = Arrays.asList(PaintTools.LINE.getTool(), PaintTools.PENCIL.getTool());
+        List<PaintTool> asList =
+                Arrays.asList(PaintTools.LINE.getTool(), PaintTools.PENCIL.getTool(), PaintTools.PICTURE.getTool());
         for (Node next : asList) {
             clickOn(next);
             moveTo(stack);
@@ -108,18 +110,26 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         List<ToggleButton> queryAll = lookupList(ToggleButton.class);
         Collections.shuffle(queryAll);
         List<Node> colors = lookup("#colorGrid").queryAllAs(GridPane.class).stream()
-            .flatMap(e -> e.getChildren().stream()).collect(Collectors.toList());
+                .flatMap(e -> e.getChildren().stream()).collect(Collectors.toList());
         int bound = (int) (stack.getBoundsInParent().getWidth() / 3);
         List<KeyCode> testCodes = Arrays.asList(DELETE, V, C, X, A, RIGHT, LEFT, DOWN, UP, ADD, SUBTRACT);
         if (!colors.isEmpty()) {
             RunnableEx.ignore(() -> doubleClickOn(colors.remove(random.nextInt(colors.size())), MouseButton.PRIMARY));
             tryClickButtons();
         }
+        List<String> collect = queryAll.stream().map(e -> e.getUserData()).map(e -> e.getClass().getSimpleName())
+                .collect(Collectors.toList());
+
+        Map<String, Double> coverageMap =
+                CoverageUtils.buildDataframe().stream().filter(e -> collect.contains(e.getKey()))
+                        .collect(Collectors.toMap(e -> e.getKey().toString(), e -> (Double) e.getValue()));
         for (Node next : queryAll) {
             Object userData = next.getUserData();
-            if (userData != null) {
-                getLogger().info("Testing {} ", userData.getClass().getSimpleName());
+            String simpleName = userData.getClass().getSimpleName();
+            if (coverageMap.getOrDefault(simpleName, 0.) >= 95) {
+                continue;
             }
+            getLogger().info("Testing {} ", simpleName);
             if (!colors.isEmpty()) {
                 tryClickOn(colors.remove(random.nextInt(colors.size())), getRandMouseButton(5));
             }
@@ -213,8 +223,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 }
                 if (i == 1 && j == 2) {
                     interact(() -> {
-                        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(),
-                            ".png");
+                        List<Path> pathByExtension =
+                                ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".png");
                         if (!pathByExtension.isEmpty()) {
                             Map<DataFormat, Object> content = FXCollections.observableHashMap();
                             Path path = randomItem(pathByExtension);
@@ -227,9 +237,8 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 interactNoWait(RunnableEx.make(menu::fire));
                 if (i == 0 && j == 4) {
                     // Print
-                    lookup(ComboBox.class).forEach(
-                            ConsumerEx.ignore(m -> interactNoWait(
-                                    () -> m.getSelectionModel().select(nextInt(m.getItems().size())))));
+                    lookup(ComboBox.class).forEach(ConsumerEx.ignore(
+                            m -> interactNoWait(() -> m.getSelectionModel().select(nextInt(m.getItems().size())))));
                     lookup(Button.class).forEach(this::tryClickOn);
                 }
 

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.testfx.util.WaitForAsyncUtils;
 import schema.sngpc.FXMLCreatorHelper;
 import utils.HasLogging;
+import utils.HibernateUtil;
 
 @SuppressWarnings("static-method")
 public final class FXMLCreatorTest {
@@ -21,6 +22,7 @@ public final class FXMLCreatorTest {
 
     @Test
     public void testAllClasses() {
+        HibernateUtil.setShutdownEnabled(false);
         List<Class<? extends Application>> classes = CoverageUtils.getUncoveredApplications();
         FXMLCreatorTest.testApplications(classes);
     }

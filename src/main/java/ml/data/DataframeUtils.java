@@ -59,6 +59,7 @@ public class DataframeUtils extends DataframeML {
         StringBuilder s = new StringBuilder();
         Set<String> keySet = dataframe.cols();
         int pad = keySet.stream().mapToInt(String::length).max().orElse(1);
+        s.append("\n");
         s.append("\t\t");
         keySet.forEach(k -> s.append(String.format("\t%s", k)));
         s.append("\n");

@@ -64,7 +64,10 @@ public class DataframeStatisticAccumulator {
 
         List<Object> otherVariable = dataframe.get(other);
         double mean2 =
-                otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).average().getAsDouble();
+                otherVariable.stream().filter(Number.class::isInstance).map(Number.class::cast)
+                        .mapToDouble(Number::doubleValue)
+                        .average().getAsDouble();
+
         double sum2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
                 .map(e -> e - mean2).map(e -> e * e).sum();
         double st2 = Math.sqrt(sum2);
