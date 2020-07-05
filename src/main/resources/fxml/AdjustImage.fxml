@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.beans.property.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:id="root">
+	<fx:define>
+		<SimpleDoubleProperty fx:id="opacityProp" />
+	</fx:define>
+	<children>
+		<ImageView fitWidth="300.0" fx:id="view" preserveRatio="true">
+			<effect>
+				<ColorAdjust fx:id="colorAdjust" />
+			</effect>
+		</ImageView>
+		<Text fx:id="saturation" text="Saturation" />
+		<Slider blockIncrement="0.02" fx:id="saturationSlider" max="1.0"
+			min="-1.0" />
+		<Text fx:id="brightness" text="Brightness" />
+		<Slider blockIncrement="0.02" fx:id="brightnessSlider" max="1.0"
+			min="-1.0" />
+		<Text fx:id="hue" text="Hue" />
+		<Slider blockIncrement="0.02" fx:id="hueSlider" max="1.0" min="-1.0" />
+		<Text fx:id="contrast" text="Contrast" />
+		<Slider blockIncrement="0.02" fx:id="contrastSlider" max="1.0"
+			min="-1.0" />
+		<Text fx:id="opacity" text="Opacity" />
+		<Slider blockIncrement="0.02" fx:id="opacitySlider" max="1.0"
+			min="-1.0" />
+		<Button alignment="CENTER" id="Adjust" onAction="#onActionAdjust"
+			text="Adjust" textFill="0x333333ff">
+			<padding>
+				<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+			</padding>
+		</Button>
+	</children>
+</VBox>

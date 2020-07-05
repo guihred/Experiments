@@ -27,7 +27,7 @@ public class PaintModel {
     private final ObjectProperty<Color> frontColor = new SimpleObjectProperty<>(Color.BLACK);
     private WritableImage image = new WritableImage(500, 500);
     private Group imageStack;
-    private final ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>();
+    private final ObjectProperty<PaintTool> tool = new SimpleObjectProperty<>(new DummyTool());
     private final Text imageSize = new Text();
     private final Text toolSize = new Text();
     private final Text mousePosition = new Text();

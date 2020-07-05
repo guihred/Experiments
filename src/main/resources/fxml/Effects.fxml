@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.layout.*?><?import javafx.scene.image.*?><?import javafx.scene.control.*?><?import javafx.collections.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import simplebuilder.*?><?import javafx.scene.effect.*?><?import javafx.geometry.*?>
+<HBox xmlns:fx="http://javafx.com/fxml" spacing="5.0" styleClass="root"
+	fx:id="root">
+	<fx:define>
+		<WritableImage fx:id="writableImage0" height="500"
+			width="500" />
+	</fx:define>
+	<children>
+		<ImageView image="$writableImage0" fx:id="view"
+			preserveRatio="true" />
+		<VBox spacing="5.0">
+			<children>
+				<ComboBox fx:id="effectsCombo">
+					<converter>
+						<SimpleConverter name="class.simpleName" />
+					</converter>
+					<items>
+						<FXCollections fx:factory="observableArrayList">
+                            <Blend />
+                            <Bloom threshold="1" />
+                            <BoxBlur width="5" height="5" iterations="2" />
+                            <ColorAdjust hue="1" saturation="360" brightness="1"
+                                contrast="1" />
+                            <ColorInput />
+                            <DisplacementMap />
+                            <DropShadow offsetX="10" offsetY="10" spread="1"
+                                radius="0" width="0" height="0" />
+                            <GaussianBlur />
+                            <Glow level="1" />
+                            <InnerShadow choke="1" width="0" height="0" />
+                            <Lighting specularConstant="1" surfaceScale="1" />
+                            <MotionBlur angle="180" radius="5" />
+                            <Reflection topOffset="5" bottomOpacity="1"
+                                topOpacity="1" fraction="1" />
+                            <SepiaTone />
+                            <Shadow />
+                        </FXCollections>
+					</items>
+				</ComboBox>
+				<FlowPane hgap="5.0" fx:id="effectsOptions" 
+					vgap="5.0" />
+				<Button alignment="CENTER" fx:id="adjust" id="Adjust"
+					onAction="#onActionAdjust" text="Adjust" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+			</children>
+		</VBox>
+	</children>
+</HBox>

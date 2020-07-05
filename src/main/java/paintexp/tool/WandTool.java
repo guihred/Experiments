@@ -192,15 +192,11 @@ public class WandTool extends AreaTool {
 
     @Override
     protected void onMouseReleased(PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
         if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
             && imageSelected != null) {
             model.getImageStack().getChildren().remove(getArea());
         }
         getArea().setStroke(Color.BLUE);
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
     }
 
     protected void repositionImage(final PaintModel model) {

@@ -137,8 +137,6 @@ public class PolygonTool extends PaintTool {
     }
 
     private void onMouseExited(final PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
@@ -148,8 +146,6 @@ public class PolygonTool extends PaintTool {
         children.remove(getArea());
         children.remove(getLine());
         getArea().getPoints().clear();
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
 
     }
 

@@ -66,12 +66,12 @@ public final class RectBuilder {
         for (int i = 0; i <= width; i++) {
             for (int j = 0; j <= height; j++) {
                 if (within(i + endX, destWidth) && within(j + endY, destHeight) && within(i + startX, srcWidth)
-                    && within(j + startY, srcHeight)) {
+                        && within(j + startY, srcHeight)) {
                     int color = pixelReader.getArgb(i + (int) startX, j + (int) startY);
                     if (Type.BYTE_BGRA_PRE == type) {
                         Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
                         color = PixelHelper.toArgb(Color.hsb(color2.getHue(), color2.getSaturation(),
-                            color2.getBrightness(), color2.getOpacity()));
+                                color2.getBrightness(), color2.getOpacity()));
                     }
                     if (color != argb) {
                         pixelWriter.setArgb(i + (int) endX, j + (int) endY, isTransparent ? color | 0xFF000000 : color);
@@ -279,7 +279,7 @@ public final class RectBuilder {
                 }
             }
         }
-        return writableImage ;
+        return writableImage;
     }
 
     public RectBuilder startX(double value) {
@@ -341,13 +341,18 @@ public final class RectBuilder {
         return new RectBuilder();
     }
 
-    public static void copyImagePart(Image srcImage, WritableImage destImage, Rectangle bounds) {
+    public static void copyImagePart(Image srcImage, WritableImage destImage, Color transparent, Rectangle bounds) {
         int x = (int) bounds.getLayoutX();
         int y = (int) bounds.getLayoutY();
         double width = bounds.getWidth();
         double height = bounds.getHeight();
         RectBuilder.build().startX(x).startY(y).width(width).height(height).copyImagePart(srcImage, destImage,
-                Color.TRANSPARENT);
+                transparent);
+    }
+
+    public static void copyImagePart(Image srcImage, WritableImage destImage, Rectangle bounds) {
+        Color transparent = Color.TRANSPARENT;
+        copyImagePart(srcImage, destImage, transparent, bounds);
     }
 
     public static void drawPoint(WritableImage image, int x2, int y2, Color frontColor) {

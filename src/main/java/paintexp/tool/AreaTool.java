@@ -159,8 +159,13 @@ public abstract class AreaTool extends PaintTool {
         if (option == SelectOption.TRANSPARENT) {
             replaceColor(writableImage, backColor, Color.TRANSPARENT);
         }
-
-        selectArea(0, 0, (int) srcImage.getWidth(), (int) srcImage.getHeight(), model);
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        double hv = Math.max(hvalue * model.getCurrentImage().getWidth() - srcImage.getWidth(), 0);
+        double vv = Math.max(vvalue * model.getCurrentImage().getHeight() - srcImage.getHeight(), 0);
+        int x = (int) hv;
+        int y = (int) vv;
+        selectArea(x, y, x + (int) srcImage.getWidth(), y + (int) srcImage.getHeight(), model);
     }
 
     protected void dragTo(double x, double y) {
@@ -199,8 +204,6 @@ public abstract class AreaTool extends PaintTool {
 
     @Override
     protected void onMousePressed(MouseEvent e, PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
         if (model.getImageStack().getChildren().contains(getArea())) {
             if (CommonsFX.containsMouse(area, e)) {
                 createSelectedImage(model);
@@ -215,14 +218,10 @@ public abstract class AreaTool extends PaintTool {
         initialX = e.getX();
         initialY = e.getY();
         addRect(model);
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
     }
 
     @Override
     protected void onMouseReleased(PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
         if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
             && imageSelected != null) {
             model.getImageStack().getChildren().remove(getArea());
@@ -230,13 +229,9 @@ public abstract class AreaTool extends PaintTool {
             createSelectedImage(model);
         }
         getArea().setStroke(Color.BLUE);
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
     }
 
     protected void setIntoImage(PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
         double width = imageSelected.getWidth();
@@ -254,8 +249,6 @@ public abstract class AreaTool extends PaintTool {
         imageSelected = null;
         model.getImageStack().getChildren().remove(getArea());
         model.createImageVersion();
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
     }
 
     private WritableImage createSelectedImage(PaintModel model, WritableImage srcImage) {

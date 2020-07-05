@@ -120,8 +120,6 @@ public class CurveTool extends PaintTool {
 
     @Override
     protected void onMouseReleased(final PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if ((size() >= 2 || !children.contains(getLine())) && stage == 2) {
@@ -129,8 +127,6 @@ public class CurveTool extends PaintTool {
             model.createImageVersion();
         }
         stage = ++stage % 3;
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
     }
 
     private double size() {

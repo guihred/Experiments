@@ -45,16 +45,12 @@ public class RotateTool extends AreaTool {
 
     @Override
     protected void addRect(final PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
         super.addRect(model);
         if (!model.getImageStack().getChildren().containsAll(getCircles(model))) {
             model.getImageStack().getChildren().addAll(getCircles(model));
         }
         getArea().setRotate(0);
         dragged = false;
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
     }
 
     @Override

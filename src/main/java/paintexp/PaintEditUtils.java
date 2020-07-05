@@ -43,10 +43,12 @@ public final class PaintEditUtils {
             double width = image.getWidth();
             double height = image.getHeight();
             if (pastedImg.getWidth() > width || pastedImg.getHeight() > height) {
-                WritableImage writableImage = new WritableImage(new SimplePixelReader(paintModel.getBackColor()),
+                WritableImage writableImage = new WritableImage(pastedImg.getPixelReader(),
                     (int) Math.max(pastedImg.getWidth(), width),
                     (int) Math.max(pastedImg.getHeight(), height));
-                RectBuilder.copyImagePart(image, writableImage, new Rectangle(width, height));
+                SimplePixelReader.paintColor(writableImage, paintModel.getBackColor());
+                RectBuilder.copyImagePart(image, writableImage,
+                        new Rectangle(width, height));
                 changeCurrentImage(paintModel, writableImage);
             }
         }

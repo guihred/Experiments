@@ -10,12 +10,9 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
-import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.PixelHelper;
 
 public final class SimplePixelReader implements PixelReader {
-    private static final Logger LOG = HasLogging.log();
     private Color onlyColor;
 
     public SimplePixelReader(Color white) {
@@ -40,7 +37,6 @@ public final class SimplePixelReader implements PixelReader {
     @Override
     public void getPixels(int x, int y, int w, int h, WritablePixelFormat<ByteBuffer> pixelformat, byte[] buffer,
         int offset, int scanlineStride) {
-        LOG.error("getPixels({}, {}, {}, {}, {},{}, {},{})", x, y, w, h, pixelformat, buffer, offset, scanlineStride);
 
         for (int i = 0; i < w; i++) {
             for (int j = 0; j < h; j++) {

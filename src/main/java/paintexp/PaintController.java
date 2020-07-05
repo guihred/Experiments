@@ -92,12 +92,16 @@ public class PaintController {
         double y = e.getY();
         paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
         paintModel.getImageSize()
-            .setText(String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
+                .setText(String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
 
         PaintTool paintTool = getTool();
         if (paintTool != null) {
             paintModel.getImageStack().setCursor(paintTool.getMouseCursor());
+            double hvalue = paintModel.getScrollPane().getHvalue();
+            double vvalue = paintModel.getScrollPane().getVvalue();
             paintTool.handleEvent(e, paintModel);
+            paintModel.getScrollPane().setHvalue(hvalue);
+            paintModel.getScrollPane().setVvalue(vvalue);
         } else {
             paintModel.getImageStack().setCursor(Cursor.DEFAULT);
         }
