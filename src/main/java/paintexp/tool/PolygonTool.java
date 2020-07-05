@@ -30,10 +30,10 @@ public class PolygonTool extends PaintTool {
     @Override
     public Polyline createIcon() {
         int pontas = 5;
-		int radius = 15;
+        int radius = 15;
         double[] points = iterate(0, i -> i + 1).limit(pontas)
-            .flatMap(i -> of(radius * cos(i * 2 % 5 * 2 * PI / pontas), radius * sin(i * 2 % 5 * 2 * PI / pontas)))
-            .toArray();
+                .flatMap(i -> of(radius * cos(i * 2 % 5 * 2 * PI / pontas), radius * sin(i * 2 % 5 * 2 * PI / pontas)))
+                .toArray();
         Polyline icon = new Polyline(points);
         icon.setStroke(Color.BLACK);
         return icon;
@@ -84,6 +84,12 @@ public class PolygonTool extends PaintTool {
             onMouseExited(model);
         }
     }
+
+    @Override
+    public void onDeselected(PaintModel model) {
+        onMouseExited(model);
+    }
+
     @Override
     public void onSelected(final PaintModel model) {
         Shape icon2 = createIcon();
@@ -96,9 +102,9 @@ public class PolygonTool extends PaintTool {
         icon4.strokeProperty().bind(model.frontColorProperty());
         icon4.fillProperty().bind(model.backColorProperty());
         List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
-            .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
-            .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
-            .select(option).getTogglesAs(Node.class);
+                .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
+                .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
+                .select(option).getTogglesAs(Node.class);
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren().addAll(togglesAs);
     }
@@ -136,7 +142,7 @@ public class PolygonTool extends PaintTool {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
-			model.takeSnapshotFill(area);
+            model.takeSnapshotFill(area);
             model.createImageVersion();
         }
         children.remove(getArea());

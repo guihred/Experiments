@@ -47,7 +47,7 @@ public final class PaintEditUtils {
                     (int) Math.max(pastedImg.getWidth(), width),
                     (int) Math.max(pastedImg.getHeight(), height));
                 RectBuilder.copyImagePart(image, writableImage, new Rectangle(width, height));
-                changeCurrentImage(paintModel, paintController, writableImage);
+                changeCurrentImage(paintModel, writableImage);
             }
         }
         paintController.getCurrentSelectTool().pasteFromClipboard(paintModel);
@@ -62,6 +62,7 @@ public final class PaintEditUtils {
         if (paintModel.getCurrentVersion() + 1 >= paintModel.getImageVersions().size()) {
             return;
         }
+        controller.getTool().onDeselected(paintModel);
         WritableImage writableImage = paintModel.getCurrentImage();
         if (!imageVersions.isEmpty() && RectBuilder.isEqualImage(paintModel.getImage(), writableImage)) {
             paintModel.incrementCurrentVersion();
@@ -70,13 +71,13 @@ public final class PaintEditUtils {
         WritableImage e = new WritableImage(writableImage.getPixelReader(), (int) writableImage.getWidth(),
             (int) writableImage.getHeight());
 
-        changeCurrentImage(paintModel, controller, e);
+        changeCurrentImage(paintModel, e);
     }
 
     public static void selectAll(PaintModel paintModel, PaintController paintController) {
         paintController.changeTool(PaintTools.SELECT_RECT.getTool());
-        paintController.getCurrentSelectTool().selectArea(0, 0, (int) paintModel.getImage().getWidth() - 1,
-            (int) paintModel.getImage().getHeight() - 1, paintModel);
+        paintController.getCurrentSelectTool().selectArea(0, 0, (int) paintModel.getImage().getWidth(),
+                (int) paintModel.getImage().getHeight(), paintModel);
     }
 
     public static void undo(PaintModel paintModel, PaintController controller) {
@@ -84,6 +85,7 @@ public final class PaintEditUtils {
         if (imageVersions.isEmpty()) {
             return;
         }
+        controller.getTool().onDeselected(paintModel);
         WritableImage writableImage = paintModel.getCurrentImage();
         if (!imageVersions.isEmpty() && RectBuilder.isEqualImage(paintModel.getImage(), writableImage)) {
             paintModel.decrementCurrentVersion();
@@ -92,14 +94,14 @@ public final class PaintEditUtils {
         WritableImage e = new WritableImage(writableImage.getPixelReader(), (int) writableImage.getWidth(),
             (int) writableImage.getHeight());
 
-        changeCurrentImage(paintModel, controller, e);
+        changeCurrentImage(paintModel, e);
     }
 
-    private static void changeCurrentImage(PaintModel paintModel, PaintController controller, WritableImage e) {
+    private static void changeCurrentImage(PaintModel paintModel, WritableImage e) {
         ZoomableScrollPane scrollPane = paintModel.getScrollPane();
         double hvalue = scrollPane.getHvalue();
         double vvalue = scrollPane.getVvalue();
-        controller.getTool().onDeselected(paintModel);
+
         paintModel.getImageStack().getChildren().clear();
         ImageView imageView = new PixelatedImageView(e);
         paintModel.setImage(e);

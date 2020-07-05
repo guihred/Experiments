@@ -22,12 +22,12 @@ public class CurveTool extends PaintTool {
         icon.setStartX(0);
         icon.setStartY(0);
         icon.setControlX1(0);
-		icon.setControlY1(30);
-		icon.setControlX2(30);
+        icon.setControlY1(30);
+        icon.setControlX2(30);
         icon.setControlY2(0);
         icon.setStartY(0);
-		icon.setEndX(30);
-		icon.setEndY(30);
+        icon.setEndX(30);
+        icon.setEndY(30);
         return icon;
     }
 
@@ -54,20 +54,33 @@ public class CurveTool extends PaintTool {
     public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
         KeyCode code = e.getCode();
         if (code == KeyCode.ESCAPE) {
-			paintModel.takeSnapshotFill(getLine());
+            paintModel.takeSnapshotFill(getLine());
             paintModel.createImageVersion();
         }
     }
 
     @Override
     public void onDeselected(final PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (children.contains(getLine())) {
+            model.takeSnapshotFill(getLine());
+            model.createImageVersion();
+            children.remove(getLine());
+        }
+        onSelected(model);
+    }
 
-		model.takeSnapshotFill(getLine());
-        model.createImageVersion();
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
+    @Override
+    public void onSelected(PaintModel model) {
+        stage = 0;
+        getLine().setStartX(-1);
+        getLine().setControlX1(-1);
+        getLine().setControlX2(-1);
+        getLine().setStartY(-1);
+        getLine().setEndX(-1);
+        getLine().setEndY(-1);
+        getLine().setControlY1(-1);
+        getLine().setControlY2(-1);
     }
 
     @Override
@@ -112,7 +125,7 @@ public class CurveTool extends PaintTool {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if ((size() >= 2 || !children.contains(getLine())) && stage == 2) {
-			model.takeSnapshotFill(line);
+            model.takeSnapshotFill(line);
             model.createImageVersion();
         }
         stage = ++stage % 3;

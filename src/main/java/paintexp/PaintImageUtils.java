@@ -42,14 +42,16 @@ import utils.RunnableEx;
 public final class PaintImageUtils {
     private static final int PREF_WIDTH = 300;
 
+    private static ObservableList<Effect> effects = FXCollections.observableArrayList(new ColorAdjust());
+
     private PaintImageUtils() {
     }
 
     public static void addEffect(PaintModel paintModel, PaintController paintController) {
         Map<String, Double> maxMap = new HashMap<>();
-        ComboBox<Effect> effects = new ComboBox<>();
-        effects.setConverter(new SimpleConverter<>("class.simpleName"));
-        effects.setItems(getEffects());
+        ComboBox<Effect> effectsCombo = new ComboBox<>();
+        effectsCombo.setConverter(new SimpleConverter<>("class.simpleName"));
+        effectsCombo.setItems(getEffects());
         Pane effectsOptions = new FlowPane(5,5);
 
         ScrollPane scrollPane = new ScrollPane();// hbarPolicy="NEVER" minWidth="400"
@@ -60,16 +62,16 @@ public final class PaintImageUtils {
         int height = (int) original.getHeight();
         WritableImage image = new WritableImage(reader, width, height);
         ImageView view = new ImageView(image);
-        effects.getSelectionModel().selectedIndexProperty().addListener(e -> {
-            view.setEffect(effects.getSelectionModel().getSelectedItem());
-            PaintToolHelper.addOptionsAccordingly(effects.getSelectionModel().getSelectedItem(),
-                    effectsOptions.getChildren(), maxMap, effects.getItems());
+        effectsCombo.getSelectionModel().selectedIndexProperty().addListener(e -> {
+            view.setEffect(effectsCombo.getSelectionModel().getSelectedItem());
+            PaintToolHelper.addOptionsAccordingly(effectsCombo.getSelectionModel().getSelectedItem(),
+                    effectsOptions.getChildren(), maxMap, effectsCombo.getItems());
         });
 
         Pane root = new HBox(5);
         view.setPreserveRatio(true);
         root.getChildren().add(view);
-        root.getChildren().add(new VBox(5,effects, effectsOptions,SimpleButtonBuilder.newButton("Adjust", e -> {
+        root.getChildren().add(new VBox(5, effectsCombo, effectsOptions, SimpleButtonBuilder.newButton("Adjust", e -> {
             Bounds bounds = view.getBoundsInParent();
             int width2 = (int) bounds.getWidth() + 2;
             int height2 = (int) bounds.getHeight() + 2;
@@ -194,16 +196,16 @@ public final class PaintImageUtils {
                 getWithinRange(color.getBrightness() + bright.get(), 0, 1),
                 getWithinRange(color.getOpacity() + opacity.get(), 0, 1));
     }
-
     private static ObservableList<Effect> getEffects() {
-        
-        ObservableList<Effect> effects = FXCollections.observableArrayList(new ColorAdjust());
-        RunnableEx.runNewThread(() -> {
-            List<? extends Effect> collect = CoverageUtils.getClasses(Effect.class, Collections.emptyList()).stream()
-                    .map(FunctionEx.makeFunction(Class<? extends Effect>::newInstance)).filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            RunnableEx.runInPlatform(() -> effects.setAll(collect));
-        });
+        if (effects.size() == 1) {
+            RunnableEx.runNewThread(() -> {
+                List<? extends Effect> collect = CoverageUtils.getClasses(Effect.class, Collections.emptyList())
+                        .stream()
+                        .map(FunctionEx.makeFunction(Class<? extends Effect>::newInstance)).filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                RunnableEx.runInPlatform(() -> effects.setAll(collect));
+            });
+        }
         return effects;
     }
 

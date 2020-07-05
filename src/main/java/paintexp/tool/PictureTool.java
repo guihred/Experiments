@@ -70,6 +70,11 @@ public class PictureTool extends PaintTool {
     }
 
     @Override
+    public void onDeselected(PaintModel model) {
+        onMouseReleased(model);
+    }
+
+    @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
         SVGPath icon2 = createIcon();
@@ -93,8 +98,8 @@ public class PictureTool extends PaintTool {
 
         HBox value = new HBox();
         value.setAlignment(Pos.CENTER);
-        List<Node> allOptions = picOptions.onChange(
-                (o, old, newV) -> getArea().setContent(
+        List<Node> allOptions = picOptions
+                .onChange((o, old, newV) -> getArea().setContent(
                         FunctionEx.mapIf(newV, n -> (PictureOption) n.getUserData(), PictureOption.TRIANGLE).getPath()))
                 .select(PictureOption.TRIANGLE).getTogglesAs(Node.class);
         value.getChildren().addAll(allOptions);

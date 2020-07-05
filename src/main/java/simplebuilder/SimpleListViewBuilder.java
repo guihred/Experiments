@@ -4,6 +4,7 @@ import java.util.function.BiConsumer;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
 import utils.ConsumerEx;
 import utils.FunctionEx;
@@ -69,6 +70,14 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
                 ConsumerEx.makeConsumer(object).accept(selectedItem);
             }
         });
+        if (table2.getOnKeyReleased() == null) {
+            table2.setOnKeyReleased(e -> {
+                if (e.getCode() == KeyCode.ENTER) {
+                    C selectedItem = table2.getSelectionModel().getSelectedItem();
+                    ConsumerEx.makeConsumer(object).accept(selectedItem);
+                }
+            });
+        }
     }
 
     public static <T> void onSelect(ListView<T> table, final BiConsumer<T, T> value) {
