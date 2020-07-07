@@ -8,13 +8,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.RunnableEx;
 
 public class ExcelDataReader extends DataframeUtils {
-    private static final Logger LOG = HasLogging.log();
-
 
     public static DataframeML readExcel(DataframeML dataframeML2, File excelFile) {
         LOG.info("READING {}", excelFile);

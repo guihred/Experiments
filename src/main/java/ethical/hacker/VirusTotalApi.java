@@ -9,7 +9,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -54,11 +57,7 @@ public final class VirusTotalApi {
         return new File[] {};
     }
 
-    public static File[] getIpInformation(String ip) throws IOException {
-        return getIpInformation(ip, true);
-    }
-
-    public static File[] getIpInformation(String ip, boolean onlyMalicious) throws IOException {
+    public static Entry<File, List<String>> getIpInformation(String ip) throws IOException {
         File outFile = newJsonFile(ip);
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
@@ -67,12 +66,15 @@ public final class VirusTotalApi {
                 "last_analysis_stats", "malicious");
 
         Matcher matcher = Pattern.compile("malicious=([^0]\\d*)").matcher(displayJsonFromFile);
-        if (matcher.find()) {
+        List<String> malicious = new ArrayList<>();
+        while (matcher.find()) {
             String group = matcher.group(1);
-            LOG.info("Malicious IP {} {}", ip, group);
-            return new File[] { outFile };
+            malicious.add(group);
         }
-        return onlyMalicious ? new File[] {} : new File[] { outFile };
+        if (!malicious.isEmpty()) {
+            LOG.info("Malicious IP {} {}", ip, malicious);
+        }
+        return new AbstractMap.SimpleEntry<>(outFile, malicious);
     }
 
     public static File[] getUrlInformation(String url) throws IOException {

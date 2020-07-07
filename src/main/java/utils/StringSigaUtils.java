@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +28,9 @@ public class StringSigaUtils extends StringUtils {
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
         Double.class);
     public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
+
+    public static final Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> FORMAT_HIERARCHY_MAP =
+            formatHierarchy();
 
     public static String changeCase(String simpleName) {
         if (Character.isLowerCase(simpleName.charAt(0))) {
@@ -217,10 +221,25 @@ public class StringSigaUtils extends StringUtils {
         return getIgnore(() -> Integer.valueOf(Objects.toString(numero, "").replaceAll("\\D", "")), 0);
     }
 
-    public static <T extends Comparable<?>> Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,
-        Class<T> class1, Class<?> currentFormat, String number, String header, Function<String, T> func) {
+    public static Object tryAsNumber(Map<String, Class<? extends Comparable<?>>> formatMap2, String header, Class<?> currentFormat, String number) {
+        Set<Entry<Class<? extends Comparable<?>>, Function<String, Comparable<?>>>> entrySet = FORMAT_HIERARCHY_MAP.entrySet();
+        for (Entry<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> entry : entrySet) {
+            try {
+                return tryNumber(formatMap2, entry.getKey(), currentFormat, number,
+                        header, entry.getValue());
+            } catch (Exception e) {
+                HasLogging.log(1).trace("FORMAT ERROR ", e);
+            }
+        }
+        return null;
+    }
+
+    public static Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,
+            Class<? extends Comparable<?>> class1,
+            Class<?> currentFormat,
+            String number, String header, Function<String, Comparable<?>> func) {
         if (FORMAT_HIERARCHY.indexOf(currentFormat) <= FORMAT_HIERARCHY.indexOf(class1)) {
-            T valueOf = func.apply(number);
+            Comparable<?> valueOf = func.apply(number);
             if (currentFormat != class1) {
                 formatMap.put(header, class1);
             }
@@ -260,6 +279,13 @@ public class StringSigaUtils extends StringUtils {
             mask.setValueContainsLiteralCharacters(false);
             return mask.valueToString(valor);
         }, valor);
+    }
+    private static Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> formatHierarchy() {
+        Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put(Integer.class, Integer::valueOf);
+        linkedHashMap.put(Long.class, Long::valueOf);
+        linkedHashMap.put(Double.class, Double::valueOf);
+        return linkedHashMap;
     }
 
     private static boolean hasBom(byte[] input) {

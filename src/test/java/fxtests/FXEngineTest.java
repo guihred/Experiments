@@ -1,6 +1,5 @@
 package fxtests;
 
-import ethical.hacker.ImageCrackerApp;
 import ex.j8.Chapter4;
 import extract.FileAttrApp;
 import fractal.LeafFractalApp;
@@ -67,12 +66,6 @@ public class FXEngineTest extends AbstractTestExecution {
         lookup.forEach(this::tryClickOn);
     }
 
-    @Test
-    public void verifyImageCracker() {
-        ImageCrackerApp show = show(ImageCrackerApp.class);
-        show.setClickable(false);
-        interactNoWait(show::loadURL);
-    }
 
     @Test
     public void verifyJsonViewer() {

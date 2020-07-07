@@ -5,6 +5,8 @@ import java.util.Map.Entry;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import utils.ClassReflectionUtils;
 
 public class DataframeStatisticAccumulator {
     /**
@@ -17,6 +19,7 @@ public class DataframeStatisticAccumulator {
     private double max = Double.NEGATIVE_INFINITY;
     private String header;
     private Map<String, Integer> countMap = new LinkedHashMap<>();
+    private Map<Number, Integer> distributionMap = new LinkedHashMap<>();
     private Class<? extends Comparable<?>> format;
     private Map<String, Class<? extends Comparable<?>>> formatMap;
 
@@ -48,7 +51,10 @@ public class DataframeStatisticAccumulator {
     }
 
     public String getBottom() {
-        return countMap.entrySet().stream().min(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
+        if (format == String.class) {
+            return countMap.entrySet().stream().min(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
+        }
+        return Objects.toString(min);
     }
 
     public double getCorrelation(String other) {
@@ -63,10 +69,8 @@ public class DataframeStatisticAccumulator {
         double st1 = Math.sqrt(sum1 / (count - 1));
 
         List<Object> otherVariable = dataframe.get(other);
-        double mean2 =
-                otherVariable.stream().filter(Number.class::isInstance).map(Number.class::cast)
-                        .mapToDouble(Number::doubleValue)
-                        .average().getAsDouble();
+        double mean2 = otherVariable.stream().filter(Number.class::isInstance).map(Number.class::cast)
+                .mapToDouble(Number::doubleValue).average().getAsDouble();
 
         double sum2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
                 .map(e -> e - mean2).map(e -> e * e).sum();
@@ -80,8 +84,16 @@ public class DataframeStatisticAccumulator {
         return count;
     }
 
+    public Map<String, Integer> getCountMap() {
+        return countMap;
+    }
+
     public Class<? extends Comparable<?>> getFormat() {
         return format;
+    }
+
+    public String getHeader() {
+        return header;
     }
 
     public Object getMax() {
@@ -100,55 +112,15 @@ public class DataframeStatisticAccumulator {
     }
 
     public Object getMedian25() {
-        if (format == String.class) {
-            List<String> array = countMap.entrySet().stream().sorted(comparator()).map(Entry<String, Integer>::getKey)
-                    .collect(Collectors.toList());
-            if (!array.isEmpty()) {
-                return array.get(array.size() / 4);
-            }
-            return null;
-        }
-        List<Double> sortedNumber =
-                dataframe.get(header).stream().filter(Objects::nonNull).filter(Number.class::isInstance)
-                        .map(Number.class::cast).map(Number::doubleValue).sorted().collect(Collectors.toList());
-        if (sortedNumber.isEmpty()) {
-            return 0;
-        }
-        return sortedNumber.get(count / 4).doubleValue();
+        return getByProportion(1. / 4);
     }
 
     public Object getMedian50() {
-        if (format == String.class) {
-            List<String> array = countMap.entrySet().stream().sorted(comparator()).map(Entry<String, Integer>::getKey)
-                    .collect(Collectors.toList());
-            if (!array.isEmpty()) {
-                return array.get(array.size() / 2);
-            }
-            return null;
-        }
-        List<Double> numbersList = dataframe.get(header).stream().filter(Objects::nonNull).map(Number.class::cast)
-                .map(Number::doubleValue).sorted().collect(Collectors.toList());
-        if (numbersList.isEmpty()) {
-            return 0;
-        }
-        return numbersList.get(count / 2).doubleValue();
+        return getByProportion(1. / 2);
     }
 
     public Object getMedian75() {
-        if (format == String.class) {
-            List<String> array = countMap.entrySet().stream().sorted(comparator()).map(Entry<String, Integer>::getKey)
-                    .collect(Collectors.toList());
-            if (!array.isEmpty()) {
-                return array.get(array.size() * 3 / 4);
-            }
-            return null;
-        }
-        List<Double> numbers = dataframe.get(header).stream().filter(Objects::nonNull).map(Number.class::cast)
-                .map(Number::doubleValue).sorted().collect(Collectors.toList());
-        if (numbers.isEmpty()) {
-            return 0;
-        }
-        return numbers.get(count * 3 / 4).doubleValue();
+        return getByProportion(3. / 4);
     }
 
     public Object getMin() {
@@ -166,10 +138,17 @@ public class DataframeStatisticAccumulator {
             return Math.sqrt(sum2 / (countMap.size() - 1));
         }
 
+        List<Object> list = dataframe.get(header);
         double mean = sum / count;
-        double sum2 = dataframe.get(header).stream().filter(Number.class::isInstance).map(Number.class::cast)
+        if (list != null && !list.isEmpty()) {
+            double sum2 = list.stream().filter(Number.class::isInstance).map(Number.class::cast)
+                    .mapToDouble(Number::doubleValue).map(e -> e - mean).map(e -> e * e).sum();
+            return Math.sqrt(sum2 / (count - 1));
+        }
+        double sum2 = distributionMap.entrySet().stream().flatMap(e -> Stream.generate(e::getKey).limit(e.getValue()))
                 .mapToDouble(Number::doubleValue).map(e -> e - mean).map(e -> e * e).sum();
         return Math.sqrt(sum2 / (count - 1));
+
     }
 
     public double getSum() {
@@ -177,11 +156,27 @@ public class DataframeStatisticAccumulator {
     }
 
     public String getTop() {
+        if (format != String.class) {
+            return Objects.toString(max);
+        }
+
         return countMap.entrySet().stream().max(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
     }
 
     public Set<String> getUnique() {
+        if (format != String.class) {
+            return distributionMap.keySet().stream().map(Objects::toString).collect(Collectors.toSet());
+        }
         return countMap.keySet();
+    }
+
+    public void setFormat(Class<? extends Comparable<?>> format) {
+        this.format = format;
+    }
+
+    @Override
+    public String toString() {
+        return ClassReflectionUtils.getDescription(this);
     }
 
     private void acceptNumber(Number n) {
@@ -190,14 +185,45 @@ public class DataframeStatisticAccumulator {
         sum += o;
         min = Math.min(min, o);
         max = Math.max(max, o);
+        distributionMap.merge(n, 1, (a, b) -> a + b);
     }
 
     private void acceptString(String n) {
         sum++;
         count++;
-        countMap.put(n, countMap.computeIfAbsent(n, a -> 0) + 1);
+        countMap.merge(n, 1, (a, b) -> a + b);
         min = countMap.values().stream().mapToDouble(e -> e).min().orElse(min);
         max = countMap.values().stream().mapToDouble(e -> e).max().orElse(max);
+    }
+
+    private Object getByProportion(double d) {
+        if (format == String.class) {
+            return getByProportion(d, countMap);
+        }
+        if (!dataframe.get(header).isEmpty()) {
+            return dataframe.get(header).stream().sorted().collect(Collectors.toList()).get((int) (d * count));
+        }
+        List<Number> array = distributionMap.entrySet().stream()
+                .flatMap(e -> Stream.generate(e::getKey).limit(e.getValue())).sorted().collect(Collectors.toList());
+        if (!array.isEmpty()) {
+            return array.get((int) (array.size() * d));
+        }
+        return null;
+    }
+
+    private <T> Object getByProportion(double d, Map<T, Integer> countMap2) {
+        List<Entry<T, Integer>> array = countMap2.entrySet().stream().sorted(comparator()).collect(Collectors.toList());
+        double sizes = count * d;
+        for (Entry<T, Integer> entry : array) {
+            sizes -= entry.getValue();
+            if (sizes < 0) {
+                return entry.getKey();
+            }
+        }
+        if (!array.isEmpty()) {
+            return array.get((int) (array.size() * d)).getKey();
+        }
+        return null;
     }
 
     public static List<Entry<Number, Number>> createNumberEntries(Map<String, List<Object>> dataframe2, int size,
@@ -236,7 +262,7 @@ public class DataframeStatisticAccumulator {
         };
     }
 
-    private static Comparator<Entry<String, Integer>> comparator() {
-        return Comparator.comparing(Entry<String, Integer>::getValue);
+    private static Comparator<Entry<?, Integer>> comparator() {
+        return Comparator.comparing(Entry<?, Integer>::getValue);
     }
 }

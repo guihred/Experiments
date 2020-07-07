@@ -3,15 +3,22 @@ package ml.data;
 import extract.ExcelService;
 import java.io.File;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import utils.ResourceFXUtils;
 
 public class DataframeBuilder extends DataframeML {
 	private DataframeML dataframeML;
-	private String csvFile;
+    private File csvFile;
 
-	DataframeBuilder(String csvFile) {
-		this.csvFile = csvFile;
+    protected DataframeBuilder(File csvFile) {
+	    this.csvFile = csvFile;
+	    dataframeML = new DataframeML();
+	}
+
+    protected DataframeBuilder(String csvFile) {
+        this.csvFile = ResourceFXUtils.toFile(csvFile);
 		dataframeML = new DataframeML();
 	}
 
@@ -36,6 +43,11 @@ public class DataframeBuilder extends DataframeML {
 		return this;
 	}
 
+    public Map<String, DataframeStatisticAccumulator> makeStats() {
+	    DataframeUtils.makeStats(csvFile, dataframeML);
+        return dataframeML.stats;
+	}
+
 	public DataframeBuilder setMaxSize(int maxSize) {
 		dataframeML.maxSize = maxSize;
 		return this;
@@ -57,7 +69,11 @@ public class DataframeBuilder extends DataframeML {
 		return dataframeML;
 	}
 
-	public static DataframeBuilder builder(String csvFile) {
+	public static DataframeBuilder builder(File csvFile) {
+	    return new DataframeBuilder(csvFile);
+	}
+
+    public static DataframeBuilder builder(String csvFile) {
 	    return new DataframeBuilder(csvFile);
 	}
 

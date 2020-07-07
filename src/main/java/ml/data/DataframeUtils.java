@@ -17,10 +17,11 @@ import org.slf4j.Logger;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
+import utils.SupplierEx;
 
 public class DataframeUtils extends DataframeML {
 
-    private static final Logger LOG = HasLogging.log();
+    public static final Logger LOG = HasLogging.log();
 
     protected DataframeUtils() {
     }
@@ -123,6 +124,37 @@ public class DataframeUtils extends DataframeML {
                                         dataframe.getFormatMap(), e.getKey()),
                                 DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
                         (m1, m2) -> m1.combine(m2), LinkedHashMap::new));
+    }
+
+    public static Map<String, DataframeStatisticAccumulator> makeStats(File csvFile, DataframeML dataframeML) {
+        return SupplierEx.get(() -> {
+            try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
+                List<String> header = addHeaders(dataframeML, scanner);
+                while (scanner.hasNext()) {
+                    dataframeML.size++;
+                    List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
+                    if (header.size() != line2.size()) {
+                        LOG.error("ERROR FIELDS COUNT");
+                        createNullRow(header, line2);
+                    }
+
+                    for (int i = 0; i < header.size(); i++) {
+                        String key = header.get(i);
+                        String field = getFromList(i, line2);
+                        Object tryNumber = tryNumber(dataframeML, key, field);
+                        categorizeIfCategorizable(dataframeML, key, tryNumber);
+                        tryNumber = mapIfMappable(dataframeML, key, tryNumber);
+                        DataframeStatisticAccumulator acc = dataframeML.stats.get(key);
+                        acc.setFormat(dataframeML.getFormat(key));
+                        acc.accept(tryNumber);
+                    }
+                    if (dataframeML.size > dataframeML.maxSize) {
+                        break;
+                    }
+                }
+                return dataframeML.stats;
+            }
+        });
     }
 
     public static DataframeML readCSV(File csvFile, DataframeML dataframeML) {
@@ -258,29 +290,28 @@ public class DataframeUtils extends DataframeML {
             number = field.replaceAll("\\.0+", "");
         }
 
-        try {
-            return StringSigaUtils.tryNumber(dataframeML.getFormatMap(), Integer.class, currentFormat, number, header,
-                    Integer::valueOf);
-        } catch (Exception e) {
-            LOG.trace("FORMAT ERROR ", e);
-        }
-        try {
-            return StringSigaUtils.tryNumber(dataframeML.getFormatMap(), Long.class, currentFormat, number, header,
-                    Long::valueOf);
-        } catch (Exception e) {
-            LOG.trace("FORMAT ERROR", e);
-        }
-        try {
-            return StringSigaUtils.tryNumber(dataframeML.getFormatMap(), Double.class, currentFormat, number, header,
-                    Double::valueOf);
-        } catch (Exception e) {
-            LOG.trace("FORMAT ERROR", e);
+        Object o = StringSigaUtils.tryAsNumber(dataframeML.getFormatMap(), header, currentFormat, number);
+        if (o != null) {
+            return o;
         }
         if (Number.class.isAssignableFrom(dataframeML.getFormat(header))) {
             dataframeML.getFormatMap().put(header, String.class);
             dataframeML.map(header, e -> Objects.toString(e, ""));
         }
         return number;
+    }
+
+    private static List<String> addHeaders(DataframeML dataframeML, Scanner scanner) {
+        List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
+                .collect(Collectors.toList());
+        dataframeML.stats = new LinkedHashMap<>();
+        for (String column : header) {
+            dataframeML.getDataframe().put(column, new ArrayList<>());
+            dataframeML.putFormat(column, String.class);
+            dataframeML.stats.put(column,
+                    new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, column));
+        }
+        return header;
     }
 
     private static int len(String k, Class<? extends Comparable<?>> class1) {

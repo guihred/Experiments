@@ -35,6 +35,14 @@ public class DataframeMLTest {
         measureTime("DataframeUtils.toString", () -> DataframeUtils.toString(readExcel));
         measureTime("DataframeUtils.displayCorrelation", () -> DataframeUtils.displayCorrelation(readExcel));
     }
+    @Test
+    public void testMakeStats() {
+         measureTime("DataframeUtils.makeStats", DataframeBuilder.builder(
+                new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Palo Alto] - Threat.csv"))::makeStats);
+        Path randomPathByExtension = ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".csv");
+        measureTime("DataframeUtils.makeStats",
+                () -> DataframeBuilder.builder(randomPathByExtension.toFile()).makeStats());
+    }
 
     @Test
     public void testNotExists() {
