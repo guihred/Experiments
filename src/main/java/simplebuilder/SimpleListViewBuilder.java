@@ -32,6 +32,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return this;
     }
 
+
     public SimpleListViewBuilder<T> items(final ObservableList<T> value) {
         table.setItems(value);
         return this;

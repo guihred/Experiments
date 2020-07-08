@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javafx.application.Application;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,18 +46,9 @@ public final class CoverageUtils {
         File csvFile = getCoverageFile();
         DataframeML b = buildDataframe("LINE_MISSED", "LINE_COVERED", PERCENTAGE, csvFile);
 
-        List<Entry<Object, Object>> createNumberSeries = createNumberSeries(b, CLASS, PERCENTAGE);
+        List<Entry<Object, Object>> createNumberSeries = DataframeUtils.createSeries(b, CLASS, PERCENTAGE);
         createNumberSeries.sort(Comparator.comparing(e -> (Comparable<Object>) e.getValue()));
         return createNumberSeries;
-    }
-
-    public static List<Entry<Object, Object>> createNumberSeries(DataframeML dataframe, String feature,
-            String target) {
-        List<Object> list = dataframe.list(feature);
-        List<Object> list2 = dataframe.list(target);
-        return IntStream.range(0, dataframe.getSize()).filter(i -> list.get(i) != null && list2.get(i) != null)
-                .mapToObj((int i) -> new AbstractMap.SimpleEntry<>(list.get(i), list2.get(i)))
-                .collect(Collectors.toList());
     }
 
     public static <T> List<Class<? extends T>> getClasses(Class<T> cl) {

@@ -49,6 +49,10 @@ public class BaseDataframe {
         return size;
     }
 
+    public Map<String, DataframeStatisticAccumulator> getStats() {
+        return stats;
+    }
+
     public Class<? extends Comparable<?>> putFormat(String header, Class<? extends Comparable<?>> value) {
         return formatMap.put(header, value);
     }

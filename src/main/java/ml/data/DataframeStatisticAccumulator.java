@@ -85,6 +85,13 @@ public class DataframeStatisticAccumulator {
     }
 
     public Map<String, Integer> getCountMap() {
+        if (!countMap.isEmpty()) {
+            return countMap;
+        }
+        countMap = distributionMap.entrySet().stream()
+                .sorted(Comparator.comparing(Entry<Number, Integer>::getValue))
+                .collect(Collectors.toMap(e -> Objects.toString(e.getKey()), Entry<Number, Integer>::getValue,
+                        (a, b) -> a + b, LinkedHashMap::new));
         return countMap;
     }
 

@@ -26,6 +26,16 @@ public class DataframeUtils extends DataframeML {
     protected DataframeUtils() {
     }
 
+    public static List<Entry<Object, Object>> createSeries(DataframeML dataframe, String feature,
+            String target) {
+        List<Object> list = dataframe.list(feature);
+        List<Object> list2 = dataframe.list(target);
+        return IntStream.range(0, dataframe.getSize()).filter(i -> i < list.size() && i < list2.size())
+                .filter(i -> list.get(i) != null && list2.get(i) != null)
+                .mapToObj((int i) -> new AbstractMap.SimpleEntry<>(list.get(i), list2.get(i)))
+                .collect(Collectors.toList());
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static List<Double> crossFeature(DataframeML dataframe, String header, ToDoubleFunction<double[]> mapper,
             String... dependent) {
@@ -136,6 +146,10 @@ public class DataframeUtils extends DataframeML {
                     if (header.size() != line2.size()) {
                         LOG.error("ERROR FIELDS COUNT");
                         createNullRow(header, line2);
+                    }
+
+                    if (filterOut(dataframeML, header, line2)) {
+                        continue;
                     }
 
                     for (int i = 0; i < header.size(); i++) {
@@ -312,6 +326,15 @@ public class DataframeUtils extends DataframeML {
                     new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, column));
         }
         return header;
+    }
+
+    private static boolean filterOut(DataframeML dataframeML, List<String> header, List<String> line2) {
+        return IntStream.range(0, header.size()).anyMatch(i -> {
+            String key = header.get(i);
+            String field = getFromList(i, line2);
+            Object tryNumber = tryNumber(dataframeML, key, field);
+            return dataframeML.filters.containsKey(key) && !dataframeML.filters.get(key).test(tryNumber);
+        });
     }
 
     private static int len(String k, Class<? extends Comparable<?>> class1) {

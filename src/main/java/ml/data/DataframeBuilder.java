@@ -3,7 +3,6 @@ package ml.data;
 import extract.ExcelService;
 import java.io.File;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import utils.ResourceFXUtils;
@@ -43,9 +42,9 @@ public class DataframeBuilder extends DataframeML {
 		return this;
 	}
 
-    public Map<String, DataframeStatisticAccumulator> makeStats() {
+    public DataframeML makeStats() {
 	    DataframeUtils.makeStats(csvFile, dataframeML);
-        return dataframeML.stats;
+        return dataframeML;
 	}
 
 	public DataframeBuilder setMaxSize(int maxSize) {
