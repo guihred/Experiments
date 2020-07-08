@@ -21,8 +21,8 @@ public class BarChartExample extends Application {
     public void start(Stage primaryStage) {
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
-        BarChart <String,Number> barChart = new BarChart<>(xAxis, yAxis);
-		barChart.setData(getCategoryData());
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setData(getCategoryData());
         barChart.setTitle("speculations");
         barChart.setBarGap(1);
         primaryStage.setTitle("BarChart example");

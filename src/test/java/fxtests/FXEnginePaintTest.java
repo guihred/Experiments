@@ -6,6 +6,7 @@ import java.io.File;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
@@ -122,7 +123,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
 
         Map<String, Double> coverageMap =
                 CoverageUtils.buildDataframe().stream().filter(e -> collect.contains(e.getKey()))
-                        .collect(Collectors.toMap(e -> e.getKey().toString(), e -> (Double) e.getValue()));
+                        .collect(Collectors.toMap(e -> e.getKey().toString(), Entry<Object, Double>::getValue));
         for (Node next : queryAll) {
             Object userData = next.getUserData();
             String simpleName = userData.getClass().getSimpleName();

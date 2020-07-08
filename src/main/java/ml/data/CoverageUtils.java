@@ -41,13 +41,12 @@ public final class CoverageUtils {
     private CoverageUtils() {
     }
 
-    @SuppressWarnings("unchecked")
-    public static List<Entry<Object, Object>> buildDataframe() {
+    public static List<Entry<Object, Double>> buildDataframe() {
         File csvFile = getCoverageFile();
         DataframeML b = buildDataframe("LINE_MISSED", "LINE_COVERED", PERCENTAGE, csvFile);
 
-        List<Entry<Object, Object>> createNumberSeries = DataframeUtils.createSeries(b, CLASS, PERCENTAGE);
-        createNumberSeries.sort(Comparator.comparing(e -> (Comparable<Object>) e.getValue()));
+        List<Entry<Object, Double>> createNumberSeries = DataframeUtils.createSeries(b, CLASS, PERCENTAGE);
+        createNumberSeries.sort(Comparator.comparing(Entry<Object, Double>::getValue));
         return createNumberSeries;
     }
 

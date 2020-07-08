@@ -23,7 +23,7 @@ public class ToBeRunTest {
     @Test
     public void testBuildDataframe() {
         measureTime(LOG, "CoverageUtils.buildDataframe", () -> {
-            List<Entry<Object, Object>> buildDataframe = CoverageUtils.buildDataframe();
+            List<Entry<Object, Double>> buildDataframe = CoverageUtils.buildDataframe();
             buildDataframe.stream().limit(20).forEach(e -> LOG.info("{}", e));
         });
     }

@@ -26,13 +26,17 @@ public class DataframeUtils extends DataframeML {
     protected DataframeUtils() {
     }
 
-    public static List<Entry<Object, Object>> createSeries(DataframeML dataframe, String feature,
-            String target) {
+    public static List<Entry<Object, Double>> createSeries(DataframeML dataframe, String feature, String target) {
         List<Object> list = dataframe.list(feature);
         List<Object> list2 = dataframe.list(target);
-        return IntStream.range(0, dataframe.getSize()).filter(i -> i < list.size() && i < list2.size())
-                .filter(i -> list.get(i) != null && list2.get(i) != null)
-                .mapToObj((int i) -> new AbstractMap.SimpleEntry<>(list.get(i), list2.get(i)))
+
+        Map<Object, Double> collect = IntStream.range(0, dataframe.getSize())
+                .filter(i -> i < list.size() && i < list2.size())
+                .filter(i -> list.get(i) != null && list2.get(i) != null).boxed()
+                .collect(Collectors.groupingBy(list::get, LinkedHashMap::new,
+                        Collectors.mapping(list2::get, Collectors.summingDouble(t -> ((Number) t).doubleValue()))));
+
+        return collect.entrySet().stream().sorted(Comparator.comparing(Entry<Object, Double>::getValue))
                 .collect(Collectors.toList());
     }
 
@@ -300,8 +304,13 @@ public class DataframeUtils extends DataframeML {
         }
 
         String number = field;
-        if (field.matches("\\d+\\.0+$") && currentFormat != Double.class) {
-            number = field.replaceAll("\\.0+", "");
+        if (field.matches("\\d+\\.0+$")) {
+            if (currentFormat != Double.class) {
+                number = field.replaceAll("\\.0+", "");
+            }
+        }
+        if (field.matches("\"*\\d+,\\d+$")) {
+            number = field.replaceAll("[\",]", "");
         }
 
         Object o = StringSigaUtils.tryAsNumber(dataframeML.getFormatMap(), header, currentFormat, number);
