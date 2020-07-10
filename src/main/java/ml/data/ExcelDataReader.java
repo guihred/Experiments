@@ -15,6 +15,7 @@ public class ExcelDataReader extends DataframeUtils {
     public static DataframeML readExcel(DataframeML dataframeML2, File excelFile) {
         LOG.info("READING {}", excelFile);
         RunnableEx.remap(() -> {
+            dataframeML2.file = excelFile;
             Set<String> keySet = new LinkedHashSet<>();
             try (FileInputStream fileInputStream = new FileInputStream(excelFile);
                     Workbook workbook = ExcelService.getWorkbook(excelFile, fileInputStream)) {

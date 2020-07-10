@@ -35,7 +35,7 @@ public class ContestReader extends ContestDTO {
     }
 
     public boolean validate() {
-        if (questionType == QuestionType.OPTIONS
+        if (questionType == ContestQuestionType.OPTIONS
             && listQuestions.stream().anyMatch(q -> q.getOptions().size() != OPTIONS_PER_QUESTION)) {
             List<Integer> invalid = listQuestions.stream().filter(e -> e.getOptions().size() != OPTIONS_PER_QUESTION)
                 .map(ContestQuestion::getNumber).collect(Collectors.toList());
@@ -141,11 +141,11 @@ public class ContestReader extends ContestDTO {
     }
 
     private void addQuestion() {
-        if (questionType == QuestionType.OPTIONS && !contestQuestion.getOptions().isEmpty()
+        if (questionType == ContestQuestionType.OPTIONS && !contestQuestion.getOptions().isEmpty()
             && contestQuestion.getOptions().size() < OPTIONS_PER_QUESTION) {
             contestQuestion.addOption(answer);
         }
-        if (questionType == QuestionType.OPTIONS) {
+        if (questionType == ContestQuestionType.OPTIONS) {
             answer = new ContestQuestionAnswer();
         }
         if (containsIgnoreCase(contestQuestion.getExercise(), "texto") && isBetween()
@@ -161,7 +161,7 @@ public class ContestReader extends ContestDTO {
         contestQuestion.setContest(getContest());
         contestQuestion.setSubject(getSubject());
         contestQuestion.setType(questionType);
-        if (questionType == QuestionType.OPTIONS) {
+        if (questionType == ContestQuestionType.OPTIONS) {
             answer.setExercise(contestQuestion);
             option = 0;
         }
@@ -207,7 +207,7 @@ public class ContestReader extends ContestDTO {
     private void changeTypeOfQuestions(String s) {
         if (getState() == ContestDTO.ReaderState.IGNORE && s.matches(".*CERTO.+ERRADO.*")
             && getContest().getOrganization() == Organization.QUADRIX) {
-            questionType = QuestionType.TRUE_FALSE;
+            questionType = ContestQuestionType.TRUE_FALSE;
         }
     }
 
@@ -287,7 +287,7 @@ public class ContestReader extends ContestDTO {
     }
 
     private boolean isEndOfQuestion(String s) {
-        return questionType == QuestionType.TRUE_FALSE && s.matches("^\\s*_____+\\s*$");
+        return questionType == ContestQuestionType.TRUE_FALSE && s.matches("^\\s*_____+\\s*$");
     }
 
     private boolean isInvalidName() {
@@ -314,7 +314,7 @@ public class ContestReader extends ContestDTO {
     }
 
     private boolean isTrueFalseQuestion(String s) {
-        return questionType == QuestionType.TRUE_FALSE
+        return questionType == ContestQuestionType.TRUE_FALSE
             && (s.matches(listQuestions.size() + 1 + " \\S+.+") || s.matches(listQuestions.size() + 2 + " \\S+.+"));
     }
 

@@ -237,7 +237,7 @@ public class JsonViewer extends Application {
         list.add(newItem);
         List<String> keySet = newValue.getChildren().stream().map(TreeItem<Map<String, String>>::getValue)
                 .flatMap(m -> m.keySet().stream()).distinct().collect(Collectors.toList());
-        if (keySet.size() - 1 == newValue.getChildren().size()) {
+        if (newItem.isEmpty() && keySet.size() - 1 == newValue.getChildren().size()) {
             keySet.addAll(newValue.getValue().keySet());
             sideTable.getColumns().clear();
             addColumns(sideTable, keySet);

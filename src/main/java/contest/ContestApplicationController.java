@@ -8,7 +8,7 @@ import static utils.FunctionEx.mapIf;
 import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;
 import contest.db.ContestText;
-import contest.db.QuestionType;
+import contest.db.ContestQuestionType;
 import java.util.List;
 import java.util.Objects;
 import javafx.beans.property.IntegerProperty;
@@ -140,7 +140,7 @@ public class ContestApplicationController {
     }
 
     private void changeOptions(ContestQuestion contestQuestion) {
-        if (contestQuestion.getOptions() == null && contestQuestion.getType() == QuestionType.TRUE_FALSE) {
+        if (contestQuestion.getOptions() == null && contestQuestion.getType() == ContestQuestionType.TRUE_FALSE) {
             ContestQuestionAnswer e = new ContestQuestionAnswer();
             e.setAnswer("Certo");
             options.getItems().add(e);

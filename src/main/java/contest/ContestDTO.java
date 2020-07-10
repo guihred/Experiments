@@ -22,7 +22,7 @@ public class ContestDTO implements HasLogging {
     protected Contest contest;
     protected ContestQuestion contestQuestion = new ContestQuestion();
     protected final ObservableList<ContestQuestion> listQuestions = FXCollections.observableArrayList();
-    protected QuestionType questionType = QuestionType.OPTIONS;
+    protected ContestQuestionType questionType = ContestQuestionType.OPTIONS;
     protected int option;
     protected int pageNumber;
     protected final List<QuestionPosition> questionPosition = new ArrayList<>();

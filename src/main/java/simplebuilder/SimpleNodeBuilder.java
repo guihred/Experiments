@@ -6,6 +6,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.effect.Effect;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 
@@ -54,6 +55,11 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 
     public Z managed(final boolean value) {
         node.setManaged(value);
+        return (Z) this;
+    }
+
+    public Z onKeyReleased(final EventHandler<? super KeyEvent> value) {
+        node.setOnKeyReleased(value);
         return (Z) this;
     }
 

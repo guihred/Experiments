@@ -34,7 +34,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     private Integer number;
 
     @Enumerated(EnumType.STRING)
-    private QuestionType type = QuestionType.OPTIONS;
+    private ContestQuestionType type = ContestQuestionType.OPTIONS;
 
     @OneToMany(mappedBy = "exercise")
     private List<ContestQuestionAnswer> options;
@@ -110,7 +110,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         return subject;
     }
 
-    public QuestionType getType() {
+    public ContestQuestionType getType() {
         return type;
     }
 
@@ -137,7 +137,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         int index = charAt - 'A';
         if (options != null && index >= 0 && index < options.size()) {
             options.get(index).setCorrect(true);
-        } else if (type == QuestionType.TRUE_FALSE) {
+        } else if (type == ContestQuestionType.TRUE_FALSE) {
             options = new ArrayList<>();
             options.add(new ContestQuestionAnswer("CERTO", charAt == 'C', this, 1));
             options.add(new ContestQuestionAnswer("ERRADO", charAt == 'E', this, 2));
@@ -175,7 +175,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         this.subject = subject;
     }
 
-    public void setType(QuestionType type) {
+    public void setType(ContestQuestionType type) {
         this.type = type;
     }
 

@@ -1,5 +1,7 @@
 package simplebuilder;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListCell;
@@ -12,6 +14,7 @@ import utils.FunctionEx;
 public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, SimpleListViewBuilder<T>> {
 
     private ListView<T> table;
+    private Map<KeyCode, ConsumerEx<T>> mapKey = new HashMap<>();
 
     public SimpleListViewBuilder() {
         super(new ListView<T>());
@@ -32,7 +35,6 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return this;
     }
 
-
     public SimpleListViewBuilder<T> items(final ObservableList<T> value) {
         table.setItems(value);
         return this;
@@ -41,6 +43,18 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     public SimpleListViewBuilder<T> onDoubleClick(final ConsumerEx<T> object) {
         onDoubleClick(table, object);
         return this;
+    }
+
+    public SimpleListViewBuilder<T> onKey(KeyCode code, ConsumerEx<T> object) {
+        mapKey.put(code, object);
+        table.setOnKeyReleased(e -> {
+            if (mapKey.containsKey(e.getCode())) {
+                ConsumerEx.makeConsumer(mapKey.get(e.getCode())).accept(table.getSelectionModel().getSelectedItem());
+            }
+        });
+
+        return this;
+
     }
 
     public SimpleListViewBuilder<T> onSelect(final BiConsumer<T, T> value) {

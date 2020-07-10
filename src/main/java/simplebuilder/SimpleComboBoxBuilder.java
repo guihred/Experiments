@@ -27,6 +27,11 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
 
     }
 
+    public SimpleComboBoxBuilder<T> cellFactory(BiConsumer<T, ListCell<T>> value2) {
+        comboBox.setCellFactory(SimpleListViewBuilder.newCellFactory(value2));
+        return this;
+    }
+
     public SimpleComboBoxBuilder<T> converter(FunctionEx<T, String> func) {
         comboBox.setConverter(new SimpleConverter<>(FunctionEx.makeFunction(func)));
         return this;
@@ -41,7 +46,6 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         return this;
     }
 
-
     @SuppressWarnings("unchecked")
     public SimpleComboBoxBuilder<T> items(T... value) {
         return items(Arrays.asList(value));
@@ -49,7 +53,7 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
 
     public SimpleComboBoxBuilder<T> onChange(BiConsumer<T, T> obj) {
         comboBox.getSelectionModel().selectedItemProperty()
-            .addListener((ob, old, newValue) -> obj.accept(old, newValue));
+                .addListener((ob, old, newValue) -> obj.accept(old, newValue));
         return this;
     }
 

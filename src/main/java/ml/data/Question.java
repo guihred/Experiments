@@ -1,8 +1,9 @@
 package ml.data;
 
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 
-class Question {
+public class Question {
 	private final String colName;
 	private final Object ob;
 	private QuestionType type = QuestionType.EQ;
@@ -23,6 +24,12 @@ class Question {
 		if (type == QuestionType.EQ) {
 			return Objects.equals(test, ob) || Objects.equals(test, Objects.toString(ob));
 		}
+        if (type == QuestionType.NE) {
+            return !Objects.equals(test, ob) && !Objects.equals(test, Objects.toString(ob));
+        }
+        if (type == QuestionType.CONTAINS) {
+            return StringUtils.containsIgnoreCase(Objects.toString(test), Objects.toString(ob));
+        }
 		if (!(test instanceof Number) || !(ob instanceof Number)) {
 			return false;
 		}
@@ -61,6 +68,8 @@ class Question {
 
 	public enum QuestionType {
 		EQ("=="),
+        NE("!="),
+        CONTAINS("contains"),
 		GE(">="),
 		LE("<="),
 		LT("<"),
