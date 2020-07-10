@@ -5,6 +5,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import utils.ResourceFXUtils;
 
 public class DataframeBuilder extends DataframeML {
@@ -43,9 +45,14 @@ public class DataframeBuilder extends DataframeML {
 	}
 
     public DataframeML makeStats() {
-	    DataframeUtils.makeStats(csvFile, dataframeML);
+        DataframeUtils.makeStats(csvFile, dataframeML, new SimpleDoubleProperty());
         return dataframeML;
 	}
+
+    public DataframeML makeStats(DoubleProperty progress) {
+        DataframeUtils.makeStats(csvFile, dataframeML, progress);
+        return dataframeML;
+    }
 
 	public DataframeBuilder setMaxSize(int maxSize) {
 		dataframeML.maxSize = maxSize;

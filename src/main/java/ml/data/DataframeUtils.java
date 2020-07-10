@@ -13,11 +13,9 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.beans.property.DoubleProperty;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.StringSigaUtils;
-import utils.SupplierEx;
+import utils.*;
 
 public class DataframeUtils extends DataframeML {
 
@@ -140,13 +138,21 @@ public class DataframeUtils extends DataframeML {
                         (m1, m2) -> m1.combine(m2), LinkedHashMap::new));
     }
 
-    public static Map<String, DataframeStatisticAccumulator> makeStats(File csvFile, DataframeML dataframeML) {
+    public static Map<String, DataframeStatisticAccumulator> makeStats(File csvFile, DataframeML dataframeML,
+            DoubleProperty progress) {
         return SupplierEx.get(() -> {
             dataframeML.file = csvFile;
+            long computed = 0;
+            long size2 = ResourceFXUtils.computeAttributes(csvFile).size();
+            RunnableEx.runInPlatform(() -> progress.set(0));
             try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
                 List<String> header = addHeaders(dataframeML, scanner);
                 while (scanner.hasNext()) {
-                    List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
+                    String nextLine = scanner.nextLine();
+                    computed += nextLine.getBytes().length;
+                    double co = computed;
+                    RunnableEx.runInPlatform(() -> progress.set(co / size2));
+                    List<String> line2 = CSVUtils.parseLine(nextLine);
                     if (header.size() != line2.size()) {
                         LOG.error("ERROR FIELDS COUNT");
                         createNullRow(header, line2);
@@ -171,6 +177,7 @@ public class DataframeUtils extends DataframeML {
                         break;
                     }
                 }
+                RunnableEx.runInPlatform(() -> progress.set(1));
                 return dataframeML.stats;
             }
         });
@@ -262,10 +269,8 @@ public class DataframeUtils extends DataframeML {
         }
 
         String number = field;
-        if (field.matches("\\d+\\.0+$")) {
-            if (currentFormat != Double.class) {
-                number = field.replaceAll("\\.0+", "");
-            }
+        if (field.matches("\\d+\\.0+$") && currentFormat != Double.class) {
+            number = field.replaceAll("\\.0+", "");
         }
         if (field.matches("\"*\\d+,\\d+$")) {
             number = field.replaceAll("[\",]", "");
@@ -337,6 +342,7 @@ public class DataframeUtils extends DataframeML {
             dataframeML.stats.put(column,
                     new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, column));
         }
+        dataframeML.size = 0;
         return header;
     }
 

@@ -66,25 +66,4 @@ public class Question {
 		return String.format("%s %s %s", getColName(), type.getSign(), ob);
 	}
 
-	public enum QuestionType {
-		EQ("=="),
-        NE("!="),
-        CONTAINS("contains"),
-		GE(">="),
-		LE("<="),
-		LT("<"),
-		GT(">");
-
-		private final String sign;
-
-        QuestionType(String sign) {
-			this.sign = sign;
-		}
-
-		public String getSign() {
-			return sign;
-		}
-
-	}
-
 }

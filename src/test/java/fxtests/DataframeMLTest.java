@@ -37,8 +37,11 @@ public class DataframeMLTest {
     }
     @Test
     public void testMakeStats() {
-         measureTime("DataframeUtils.makeStats", DataframeBuilder.builder(
-                new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Palo Alto] - Threat.csv"))::makeStats);
+        measureTime("DataframeUtils.makeStats",
+                () -> DataframeBuilder
+                        .builder(
+                                new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Palo Alto] - Threat.csv"))
+                        .makeStats());
         Path randomPathByExtension = ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".csv");
         measureTime("DataframeUtils.makeStats",
                 () -> DataframeBuilder.builder(randomPathByExtension.toFile()).makeStats());

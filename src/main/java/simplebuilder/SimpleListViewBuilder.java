@@ -1,6 +1,6 @@
 package simplebuilder;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import javafx.collections.ObservableList;
@@ -14,10 +14,15 @@ import utils.FunctionEx;
 public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, SimpleListViewBuilder<T>> {
 
     private ListView<T> table;
-    private Map<KeyCode, ConsumerEx<T>> mapKey = new HashMap<>();
+    private Map<KeyCode, ConsumerEx<T>> mapKey = new EnumMap<>(KeyCode.class);
 
     public SimpleListViewBuilder() {
         super(new ListView<T>());
+        table = node;
+    }
+
+    public SimpleListViewBuilder(ListView<T> o) {
+        super(o);
         table = node;
     }
 

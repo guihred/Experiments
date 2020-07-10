@@ -17,6 +17,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
@@ -24,12 +25,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ml.data.*;
-import ml.data.Question.QuestionType;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.StageHelper;
+import utils.CommonsFX;
 import utils.FunctionEx;
 import utils.HasLogging;
 import utils.RunnableEx;
@@ -41,6 +42,7 @@ public class DataframeExplorer extends Application {
     private ObservableList<Question> questions = FXCollections.observableArrayList();
     private DataframeML dataframe;
     private PieChart pieChart;
+    private ProgressIndicator progress;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -59,7 +61,10 @@ public class DataframeExplorer extends Application {
         VBox.setVgrow(pieChart, Priority.ALWAYS);
         VBox.setVgrow(barChart, Priority.ALWAYS);
         root.getChildren().add(vBox);
-        vBox2.getChildren().add(StageHelper.chooseFile("Load CSV", "Load CSV", this::addStats, "CSV", "*.csv"));
+        progress = new ProgressIndicator();
+        vBox2.getChildren()
+                .add(new HBox(StageHelper.chooseFile("Load CSV", "Load CSV", this::addStats, "CSV", "*.csv"), progress)
+        );
         HBox.setHgrow(vBox, Priority.ALWAYS);
 
         HBox hBox = new HBox();
@@ -67,18 +72,13 @@ public class DataframeExplorer extends Application {
                 new SimpleComboBoxBuilder<Entry<String, DataframeStatisticAccumulator>>().items(columns)
                         .converter(Entry<String, DataframeStatisticAccumulator>::getKey).build();
         hBox.getChildren().add(headersCombo);
-        ComboBox<QuestionType> questType = new SimpleComboBoxBuilder<Question.QuestionType>()
-                .items(Question.QuestionType.values()).converter(QuestionType::getSign).cellFactory((q, cell) -> {
+        ComboBox<QuestionType> questType = new SimpleComboBoxBuilder<QuestionType>()
+                .items(QuestionType.values()).cellFactory((q, cell) -> {
                     cell.setText(FunctionEx.mapIf(q, QuestionType::getSign));
-
-                    cell.disableProperty().bind(Bindings.createBooleanBinding(() -> {
-                        Entry<String, DataframeStatisticAccumulator> it =
-                                headersCombo.getSelectionModel().getSelectedItem();
-                        return it == null
-                                || q != QuestionType.EQ && q != QuestionType.NE && q != QuestionType.CONTAINS
-                                        && it.getValue().getFormat() == String.class
-                                || q == QuestionType.CONTAINS && it.getValue().getFormat() != String.class;
-                    }, headersCombo.getSelectionModel().selectedItemProperty()));
+                    cell.disableProperty()
+                            .bind(Bindings.createBooleanBinding(
+                                    () -> isTypeDisabled(q, headersCombo.getSelectionModel().getSelectedItem()),
+                                    headersCombo.getSelectionModel().selectedItemProperty()));
                 }).build();
         hBox.getChildren().add(questType);
         TextField text = new TextField();
@@ -94,6 +94,7 @@ public class DataframeExplorer extends Application {
         primaryStage.setTitle("Dataframe Explorer");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+        CommonsFX.addCSS(primaryStage.getScene(), "filesComparator.css");
 
     }
 
@@ -120,7 +121,7 @@ public class DataframeExplorer extends Application {
             for (Question question : questions) {
                 builder.filter(question.getColName(), question::answer);
             }
-            dataframe = builder.makeStats();
+            dataframe = builder.makeStats(progress.progressProperty());
             Set<Entry<String, DataframeStatisticAccumulator>> entrySet = dataframe.getStats().entrySet();
             RunnableEx.runInPlatform(() -> columns.setAll(entrySet));
             if (dataframe.getSize() <= 1000) {
@@ -179,7 +180,7 @@ public class DataframeExplorer extends Application {
             if (pieChart.getTitle() != null) {
                 String key = val.getKey();
                 String title = pieChart.getTitle();
-                List<Entry<String, Number>> collect = toPie(title, key);
+                List<Entry<String, Number>> collect = toPie(dataframe, title, key);
                 pieChart.setData(dataList);
                 addToPieChart(dataList, collect);
             }
@@ -189,7 +190,7 @@ public class DataframeExplorer extends Application {
             pieChart.setData(dataList);
             String title = pieChart.getTitle();
             String key = val.getKey();
-            List<Entry<String, Number>> collect = toPie(title, key);
+            List<Entry<String, Number>> collect = toPie(dataframe, title, key);
             addToPieChart(dataList, collect);
         }
     }
@@ -205,12 +206,6 @@ public class DataframeExplorer extends Application {
                 addStats(dataframe.getFile());
             }
         }
-    }
-
-    private List<Entry<String, Number>> toPie(String title, String key) {
-        List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, title, key);
-        return createSeries.stream().map(e -> new AbstractMap.SimpleEntry<>((String) e.getKey(), (Number) e.getValue()))
-                .collect(Collectors.toList());
     }
 
     public static void main(String[] args) {
@@ -255,5 +250,18 @@ public class DataframeExplorer extends Application {
         ObservableList<T> columns = headersCombo.getItems();
         int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
         return columns.isEmpty() ? null : columns.get(selectedIndex % columns.size());
+    }
+
+    private static Boolean isTypeDisabled(QuestionType q, Entry<String, DataframeStatisticAccumulator> it) {
+        return it == null
+                || q != QuestionType.EQ && q != QuestionType.NE && q != QuestionType.CONTAINS
+                        && it.getValue().getFormat() == String.class
+                || q == QuestionType.CONTAINS && it.getValue().getFormat() != String.class;
+    }
+
+    private static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {
+        List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, title, key);
+        return createSeries.stream().map(e -> new AbstractMap.SimpleEntry<>((String) e.getKey(), (Number) e.getValue()))
+                .collect(Collectors.toList());
     }
 }
