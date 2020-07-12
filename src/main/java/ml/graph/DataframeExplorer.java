@@ -89,7 +89,7 @@ public class DataframeExplorer extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         CommonsFX.loadFXML("Dataframe Explorer", "DataframeExplorer.fxml", this, primaryStage);
-        CommonsFX.addCSS(primaryStage.getScene(), "filesComparator.css");
+        CommonsFX.addCSS(primaryStage.getScene(), "progressLoader.css");
     }
 
     private void addQuestion() {
