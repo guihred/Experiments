@@ -248,10 +248,9 @@ public final class ClassReflectionUtils {
             return typesFit(fieldValue, namedArgsMap.get(fieldName));
         }
         return PredicateEx
-                .makeTest((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass()).stream()
+                .test((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass()).stream()
                         .filter(m -> m.getParameterCount() == 1)
-                        .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m)))
-                .test(fieldName);
+                        .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m)), fieldName);
     }
 
     @SuppressWarnings("rawtypes")

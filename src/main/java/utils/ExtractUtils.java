@@ -203,12 +203,12 @@ public final class ExtractUtils {
     }
 
     public static boolean isPortOpen(String ip0, int porta, int timeout) {
-        return PredicateEx.makeTest((String ip) -> {
+        return PredicateEx.test((String ip) -> {
             try (Socket socket = new Socket()) {
                 socket.connect(new InetSocketAddress(ip, porta), timeout);
                 return true;
             }
-        }).test(ip0);
+        }, ip0);
 
     }
 

@@ -27,6 +27,12 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
 
     }
 
+    public SimpleComboBoxBuilder(ComboBox<T> combo) {
+        super(combo);
+        comboBox = region;
+
+    }
+
     public SimpleComboBoxBuilder<T> cellFactory(BiConsumer<T, ListCell<T>> value2) {
         comboBox.setCellFactory(SimpleListViewBuilder.newCellFactory(value2));
         return this;

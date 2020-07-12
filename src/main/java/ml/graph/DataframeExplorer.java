@@ -3,15 +3,17 @@ package ml.graph;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
-import javafx.scene.Scene;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
@@ -20,13 +22,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ml.data.*;
 import org.slf4j.Logger;
-import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.StageHelper;
@@ -36,70 +34,65 @@ import utils.HasLogging;
 import utils.RunnableEx;
 
 public class DataframeExplorer extends Application {
-
     private static final Logger LOG = HasLogging.log();
+    @FXML
+    private ComboBox<Entry<String, DataframeStatisticAccumulator>> headersCombo;
+    @FXML
+    private ListView<Entry<String, DataframeStatisticAccumulator>> columnsList;
+    @FXML
+    private TextField text;
+    @FXML
+    private ListView<Question> questionsList;
+    @FXML
+    private ComboBox<QuestionType> questType;
     private ObservableList<Entry<String, DataframeStatisticAccumulator>> columns = FXCollections.observableArrayList();
     private ObservableList<Question> questions = FXCollections.observableArrayList();
     private DataframeML dataframe;
-    private PieChart pieChart;
+    @FXML
     private ProgressIndicator progress;
+    @FXML
+    private LineChart<Number, Number> lineChart;
+
+    @FXML
+    private BarChart<String, Number> barChart;
+
+    public void initialize() {
+        questions.addListener(this::onQuestionsChange);
+        lineChart.managedProperty().bind(lineChart.visibleProperty());
+        barChart.managedProperty().bind(barChart.visibleProperty());
+        new SimpleListViewBuilder<>(columnsList).items(columns).onSelect(this::onColumnChosen)
+                .cellFactory(Entry<String, DataframeStatisticAccumulator>::getKey);
+        lineChart.visibleProperty()
+                .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
+        barChart.visibleProperty()
+                .bind(Bindings.createBooleanBinding(() -> !barChart.getData().isEmpty(), barChart.dataProperty()));
+        new SimpleComboBoxBuilder<>(headersCombo).items(columns)
+                .converter(Entry<String, DataframeStatisticAccumulator>::getKey);
+        new SimpleComboBoxBuilder<>(questType).cellFactory((q, cell) -> {
+            cell.setText(FunctionEx.mapIf(q, QuestionType::getSign));
+            cell.disableProperty()
+                    .bind(Bindings.createBooleanBinding(
+                            () -> isTypeDisabled(q, headersCombo.getSelectionModel().getSelectedItem()),
+                            headersCombo.getSelectionModel().selectedItemProperty()));
+        }).converter(QuestionType::getSign);
+        new SimpleListViewBuilder<>(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove);
+    }
+
+    public void onActionAdd() {
+        addQuestion();
+    }
+
+    public void onActionLoadCSV(ActionEvent e) {
+        StageHelper.fileAction("Load CSV", this::addStats, "CSV", "*.csv").handle(e);
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        questions.addListener(this::onQuestionsChange);
-        HBox root = new HBox();
-        pieChart = new PieChart();
-        LineChart<Number, Number> barChart = new LineChart<>(new NumberAxis(), new NumberAxis());
-        VBox vBox2 = new VBox();
-        ListView<Entry<String, DataframeStatisticAccumulator>> columnsList =
-                new SimpleListViewBuilder<Entry<String, DataframeStatisticAccumulator>>().items(columns)
-                        .onSelect((old, val) -> onColumnChosen(barChart, old, val))
-                        .cellFactory(Entry<String, DataframeStatisticAccumulator>::getKey).build();
-        vBox2.getChildren().add(columnsList);
-        root.getChildren().add(vBox2);
-        VBox vBox = new VBox(pieChart, barChart);
-        VBox.setVgrow(pieChart, Priority.ALWAYS);
-        VBox.setVgrow(barChart, Priority.ALWAYS);
-        root.getChildren().add(vBox);
-        progress = new ProgressIndicator();
-        vBox2.getChildren()
-                .add(new HBox(StageHelper.chooseFile("Load CSV", "Load CSV", this::addStats, "CSV", "*.csv"), progress)
-        );
-        HBox.setHgrow(vBox, Priority.ALWAYS);
-
-        HBox hBox = new HBox();
-        ComboBox<Entry<String, DataframeStatisticAccumulator>> headersCombo =
-                new SimpleComboBoxBuilder<Entry<String, DataframeStatisticAccumulator>>().items(columns)
-                        .converter(Entry<String, DataframeStatisticAccumulator>::getKey).build();
-        hBox.getChildren().add(headersCombo);
-        ComboBox<QuestionType> questType = new SimpleComboBoxBuilder<QuestionType>()
-                .items(QuestionType.values()).cellFactory((q, cell) -> {
-                    cell.setText(FunctionEx.mapIf(q, QuestionType::getSign));
-                    cell.disableProperty()
-                            .bind(Bindings.createBooleanBinding(
-                                    () -> isTypeDisabled(q, headersCombo.getSelectionModel().getSelectedItem()),
-                                    headersCombo.getSelectionModel().selectedItemProperty()));
-                }).build();
-        hBox.getChildren().add(questType);
-        TextField text = new TextField();
-        hBox.getChildren().add(text);
-        hBox.getChildren().add(SimpleButtonBuilder.newButton("Add", e -> addQuestion(headersCombo, questType, text)));
-
-        ListView<Question> questionList =
-                new SimpleListViewBuilder<Question>().items(questions).onKey(KeyCode.DELETE, questions::remove).build();
-        VBox.setVgrow(questionList, Priority.ALWAYS);
-        vBox2.getChildren().add(hBox);
-        vBox2.getChildren().add(questionList);
-
-        primaryStage.setTitle("Dataframe Explorer");
-        primaryStage.setScene(new Scene(root));
-        primaryStage.show();
+        CommonsFX.loadFXML("Dataframe Explorer", "DataframeExplorer.fxml", this, primaryStage);
         CommonsFX.addCSS(primaryStage.getScene(), "filesComparator.css");
-
     }
 
-    private void addQuestion(ComboBox<Entry<String, DataframeStatisticAccumulator>> headersCombo,
-            ComboBox<QuestionType> questType, TextField text) {
+    private void addQuestion() {
         QuestionType type = questType.getSelectionModel().getSelectedItem();
         Entry<String, DataframeStatisticAccumulator> selectedItem = getSelected(headersCombo);
         if (type != null && selectedItem != null) {
@@ -114,7 +107,11 @@ public class DataframeExplorer extends Application {
         RunnableEx.runNewThread(() -> {
             LOG.info("File {} STARTING", file.getName());
             if (dataframe != null && !file.equals(dataframe.getFile())) {
-                RunnableEx.runInPlatform(() -> questions.clear());
+                RunnableEx.runInPlatform(() -> {
+                    questions.clear();
+                    barChart.setData(FXCollections.emptyObservableList());
+                    lineChart.setData(FXCollections.emptyObservableList());
+                });
             }
 
             DataframeBuilder builder = DataframeBuilder.builder(file);
@@ -131,15 +128,21 @@ public class DataframeExplorer extends Application {
         });
     }
 
-    private void addToBarChart(LineChart<Number, Number> barChart, Entry<String, DataframeStatisticAccumulator> old,
+    private void addToBarChart(Entry<String, DataframeStatisticAccumulator> old,
             Entry<String, DataframeStatisticAccumulator> val, String extra) {
 
         ObservableList<XYChart.Data<Number, Number>> data = FXCollections.observableArrayList();
         String x = old.getKey();
         String y = val.getKey();
+        Map<Object, XYChart.Data<Number, Number>> linkedHashMap = new LinkedHashMap<>();
         dataframe.forEachRow(map -> {
             XYChart.Data<Number, Number> e = new XYChart.Data<>((Number) map.get(x), (Number) map.get(y));
             if (extra != null) {
+                linkedHashMap.merge(map.get(extra), e, (o, n) -> {
+                    n.setXValue(o.getXValue().doubleValue() + n.getXValue().doubleValue());
+                    n.setYValue(o.getYValue().doubleValue() + n.getYValue().doubleValue());
+                    return n;
+                });
                 e.setExtraValue(map.get(extra));
             }
             data.add(e);
@@ -147,51 +150,55 @@ public class DataframeExplorer extends Application {
 
         Series<Number, Number> a = new Series<>();
         ObservableList<Series<Number, Number>> value = FXCollections.observableArrayList();
+        if (extra != null) {
+            a.setName(extra);
+        }
         value.add(a);
-        barChart.getXAxis().setLabel(old.getKey());
-        barChart.getYAxis().setLabel(val.getKey());
+        lineChart.getXAxis().setLabel(old.getKey());
+        lineChart.getYAxis().setLabel(val.getKey());
         a.setData(data);
-        barChart.setData(value);
+        lineChart.setData(value);
     }
 
-    private void onColumnChosen(LineChart<Number, Number> barChart, Entry<String, DataframeStatisticAccumulator> old,
+    @SuppressWarnings("unchecked")
+    private void onColumnChosen(Entry<String, DataframeStatisticAccumulator> old,
             Entry<String, DataframeStatisticAccumulator> val) {
         if (val == null) {
             return;
         }
-        ObservableList<PieChart.Data> dataList = FXCollections.observableArrayList();
+        ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
         Class<? extends Comparable<?>> format = val.getValue().getFormat();
         if (format == String.class) {
             Map<String, Integer> countMap = val.getValue().getCountMap();
-            pieChart.setTitle(val.getKey());
-            pieChart.setData(dataList);
-            addToPieChart(dataList, countMap);
+            barChart.setTitle(val.getKey());
+            barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+            addToPieChart(barList, countMap);
             return;
         }
         if (!dataframe.isLoaded()) {
             Map<String, Integer> countMap = val.getValue().getCountMap();
-            pieChart.setData(dataList);
-            addToPieChart(dataList, countMap);
+            barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+            addToPieChart(barList, countMap);
             return;
         }
 
         if (old != null && old.getValue().getFormat() != String.class) {
-            addToBarChart(barChart, old, val, pieChart.getTitle());
-            if (pieChart.getTitle() != null) {
+            addToBarChart(old, val, barChart.getTitle());
+            if (barChart.getTitle() != null) {
                 String key = val.getKey();
-                String title = pieChart.getTitle();
+                String title = barChart.getTitle();
                 List<Entry<String, Number>> collect = toPie(dataframe, title, key);
-                pieChart.setData(dataList);
-                addToPieChart(dataList, collect);
+                barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+                addToPieChart(barList, collect);
             }
             return;
         }
-        if (pieChart.getTitle() != null) {
-            pieChart.setData(dataList);
-            String title = pieChart.getTitle();
+        if (barChart.getTitle() != null) {
+            barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+            String title = barChart.getTitle();
             String key = val.getKey();
             List<Entry<String, Number>> collect = toPie(dataframe, title, key);
-            addToPieChart(dataList, collect);
+            addToPieChart(barList, collect);
         }
     }
 
@@ -212,34 +219,36 @@ public class DataframeExplorer extends Application {
         launch(args);
     }
 
-    private static void addToList(ObservableList<PieChart.Data> dataList, List<PieChart.Data> arrayList2) {
+    private static <T, U extends Comparable<? super U>> void addToList(ObservableList<T> dataList, List<T> arrayList2,
+            Function<T, U> keyExtractor) {
         RunnableEx.runInPlatform(() -> {
-            arrayList2.sort(Comparator.comparing(PieChart.Data::getPieValue));
+            arrayList2.sort(Comparator.comparing(keyExtractor));
             dataList.addAll(arrayList2);
         });
     }
 
-    private static <T extends Number> void addToPieChart(ObservableList<PieChart.Data> dataList,
+    private static <T extends Number> void addToPieChart(ObservableList<XYChart.Data<String, Number>> bar2List,
             Collection<Entry<String, T>> countMap) {
         RunnableEx.runNewThread(() -> {
-            List<PieChart.Data> arrayList = Collections.synchronizedList(new ArrayList<>());
+            List<PieChart.Data> pieList = Collections.synchronizedList(new ArrayList<>());
+            List<XYChart.Data<String, Number>> barList = Collections.synchronizedList(new ArrayList<>());
             countMap.forEach(entry -> {
                 String k = entry.getKey();
                 Number v = entry.getValue();
-                PieChart.Data e = new PieChart.Data(k, v.doubleValue());
-                arrayList.add(e);
-                if (arrayList.size() % 100 == 0) {
-                    addToList(dataList, new ArrayList<>(arrayList));
-                    arrayList.clear();
+                barList.add(new XYChart.Data<>(k, v));
+                if (barList.size() % 100 == 0) {
+                    addToList(bar2List, new ArrayList<>(barList), m -> m.getYValue().doubleValue());
+                    pieList.clear();
+                    barList.clear();
                 }
             });
-            addToList(dataList, arrayList);
+            addToList(bar2List, barList, m -> m.getYValue().doubleValue());
         });
     }
 
-    private static <T extends Number> void addToPieChart(ObservableList<PieChart.Data> dataList,
+    private static <T extends Number> void addToPieChart(ObservableList<XYChart.Data<String, Number>> barList,
             Map<String, T> countMap) {
-        addToPieChart(dataList, countMap.entrySet());
+        addToPieChart(barList, countMap.entrySet());
     }
 
     private static <T> T getSelected(ComboBox<T> headersCombo) {
@@ -249,14 +258,11 @@ public class DataframeExplorer extends Application {
         }
         ObservableList<T> columns = headersCombo.getItems();
         int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
-        return columns.isEmpty() ? null : columns.get(selectedIndex % columns.size());
+        return columns.isEmpty() || selectedIndex < 0 ? null : columns.get(selectedIndex % columns.size());
     }
 
     private static Boolean isTypeDisabled(QuestionType q, Entry<String, DataframeStatisticAccumulator> it) {
-        return it == null
-                || q != QuestionType.EQ && q != QuestionType.NE && q != QuestionType.CONTAINS
-                        && it.getValue().getFormat() == String.class
-                || q == QuestionType.CONTAINS && it.getValue().getFormat() != String.class;
+        return it == null || q == null || !q.matchesClass(it.getValue().getFormat());
     }
 
     private static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {

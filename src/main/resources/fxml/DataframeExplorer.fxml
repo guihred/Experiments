@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.*?>
+<?import javafx.collections.*?>
+<?import ml.data.*?>
+<?import simplebuilder.*?>
+<?import javafx.scene.text.*?>
+<HBox xmlns:fx="http://javafx.com/fxml">
+	<children>
+		<VBox>
+			<children>
+				<ListView fx:id="columnsList" />
+				<HBox>
+					<children>
+						<Button alignment="CENTER" fx:id="loadCSV" id="Load CSV"
+							onAction="#onActionLoadCSV" text="Load CSV" textFill="0x333333ff" />
+						<ProgressIndicator fx:id="progress" />
+					</children>
+				</HBox>
+				<HBox>
+					<children>
+						<ComboBox fx:id="headersCombo" />
+						<ComboBox fx:id="questType">
+							<converter>
+								<SimpleConverter name="sign" />
+							</converter>
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<QuestionType fx:value="EQ" />
+									<QuestionType fx:value="NE" />
+									<QuestionType fx:value="GE" />
+									<QuestionType fx:value="LE" />
+									<QuestionType fx:value="LT" />
+									<QuestionType fx:value="GT" />
+									<QuestionType fx:value="CONTAINS" />
+									<QuestionType fx:value="LIKE" />
+								</FXCollections>
+							</items>
+						</ComboBox>
+						<TextField fx:id="text">
+							<padding>
+								<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
+							</padding>
+						</TextField>
+						<Button alignment="CENTER" fx:id="add" id="Add" onAction="#onActionAdd"
+							text="Add" textFill="0x333333ff">
+							<padding>
+								<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+							</padding>
+						</Button>
+					</children>
+				</HBox>
+				<ListView VBox.vgrow="ALWAYS" fx:id="questionsList">
+					<padding>
+						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+					</padding>
+				</ListView>
+			</children>
+		</VBox>
+		<VBox HBox.hgrow="ALWAYS">
+			<children>
+				<BarChart fx:id="barChart" visible="false" >
+					<xAxis>
+						<CategoryAxis />
+					</xAxis>
+					<yAxis>
+						<NumberAxis />
+					</yAxis>
+				</BarChart>
+				<LineChart fx:id="lineChart" verticalGridLinesVisible="false" legendSide="RIGHT" visible="false" >
+					<yAxis>
+						<NumberAxis side="LEFT" tickUnit="10.0" upperBound="100.0" />
+					</yAxis>
+					<xAxis>
+						<NumberAxis side="BOTTOM" tickUnit="10.0" upperBound="100.0" />
+					</xAxis>
+				</LineChart>
+			</children>
+		</VBox>
+	</children>
+</HBox>

@@ -16,4 +16,8 @@ public interface PredicateEx<B> {
             }
         };
     }
+
+    static <B> boolean test(PredicateEx<B> run, B b) {
+        return makeTest(run).test(b);
+    }
 }

@@ -47,7 +47,7 @@ public class CustomList<T> extends LinkedHashSet<T> implements List<T> {
         if (c.size() != size()) {
             return false;
         }
-        return PredicateEx.makeTest(this::containsAll).test(c);
+        return PredicateEx.test(this::containsAll, c);
     }
 
     @Override
