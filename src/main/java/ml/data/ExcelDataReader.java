@@ -12,10 +12,15 @@ import utils.RunnableEx;
 
 public class ExcelDataReader extends DataframeUtils {
 
+    public static void main(String[] args) {
+        readExcel(new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\export.xls"));
+    }
+
     public static DataframeML readExcel(DataframeML dataframeML2, File excelFile) {
         LOG.info("READING {}", excelFile);
         RunnableEx.remap(() -> {
             dataframeML2.file = excelFile;
+            dataframeML2.size = 0;
             Set<String> keySet = new LinkedHashSet<>();
             try (FileInputStream fileInputStream = new FileInputStream(excelFile);
                     Workbook workbook = ExcelService.getWorkbook(excelFile, fileInputStream)) {

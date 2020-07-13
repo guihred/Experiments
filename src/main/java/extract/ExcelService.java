@@ -15,10 +15,7 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
-import utils.FunctionEx;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.*;
 
 public final class ExcelService {
 
@@ -61,7 +58,7 @@ public final class ExcelService {
         return list;
     }
 
-    public static Workbook getWorkbook(File selectedFile, InputStream fileInputStream) throws IOException {
+    public static Workbook getWorkbook(File selectedFile, InputStream fileInputStream) {
         return getWorkbook(selectedFile.getName(), fileInputStream);
     }
 
@@ -130,8 +127,12 @@ public final class ExcelService {
         }
     }
 
-    private static Workbook getWorkbook(String selectedFile, InputStream fileInputStream) throws IOException {
-        return selectedFile.endsWith(".xls") ? new HSSFWorkbook(fileInputStream) : new XSSFWorkbook(fileInputStream);
+    private static Workbook getWorkbook(String selectedFile, InputStream fileInputStream) {
+
+        return SupplierEx.remap(() ->
+
+        selectedFile.endsWith(".xls") ? new HSSFWorkbook(fileInputStream) : new XSSFWorkbook(fileInputStream),
+                "ERROR GETTING WORKBOOK");
     }
 
     private static <T> void makeBigExcel(BiFunction<Integer, Integer, List<T>> lista,

@@ -72,6 +72,8 @@ public final class XMLExtractor {
         }
     }
 
+
+
     public static Document newDocument() throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -116,12 +118,12 @@ public final class XMLExtractor {
             mapa.put("" + j, t -> getValue(t, k));
         }
 
-        File outFile = ResourceFXUtils.getOutFile(file.getName().replaceAll("\\.xml", ".xlsx"));
+        File outFile = ResourceFXUtils.getOutFile("xlsx/" + file.getName().replaceAll("\\.xml", ".xlsx"));
         ExcelService.getExcel(finalList, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
     }
 
-    protected  static void onSelectTreeItem(ObservableList<Map<String, String>> list,
+    protected static void onSelectTreeItem(ObservableList<Map<String, String>> list,
             TableView<Map<String, String>> sideTable, TreeItem<Map<String, String>> newValue) {
         list.clear();
         sideTable.getColumns().clear();
@@ -188,6 +190,9 @@ public final class XMLExtractor {
     private static boolean anyChildLeaf(TreeItem<Map<String, String>> e) {
         return e.getChildren().stream().anyMatch(TreeItem<Map<String, String>>::isLeaf);
     }
+
+
+
 
     private static List<Map<String, String>> getFinalList(TreeItem<Map<String, String>> selectedItem) {
         ObservableList<TreeItem<Map<String, String>>> lista = FXCollections.observableArrayList();
@@ -295,4 +300,5 @@ public final class XMLExtractor {
             }
         }
     }
+
 }

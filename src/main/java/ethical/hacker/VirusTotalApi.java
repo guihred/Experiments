@@ -87,6 +87,15 @@ public final class VirusTotalApi {
         }
         String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile);
         LOG.info(displayJsonFromFile);
+        Matcher matcher = Pattern.compile("malicious=([^0]\\d*)").matcher(displayJsonFromFile);
+        List<String> malicious = new ArrayList<>();
+        while (matcher.find()) {
+            String group = matcher.group(1);
+            malicious.add(group);
+        }
+        if (!malicious.isEmpty()) {
+            LOG.info("Malicious URL {} {}", url, malicious);
+        }
         return new File[] { outFile };
     }
 
