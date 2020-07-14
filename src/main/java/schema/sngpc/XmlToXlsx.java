@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,13 +30,14 @@ public class XmlToXlsx {
             Map<Class<?>, SupplierEx<?>> supplierMap = new HashMap<>();
             supplierMap.put(CellStyle.class, xssfWorkbook::createCellStyle);
             supplierMap.put(Font.class, xssfWorkbook::createFont);
-
+            Map<String, CellStyle> styleMap = new HashMap<>();
             for (int i = 0; i < rootNode.getLength(); i++) {
                 Node xmlObject = rootNode.item(i);
 
                 CellStyle style = xssfWorkbook.createCellStyle();
-                Map<String, Object> fieldMap = childMap(xmlObject, style, supplierMap);
-                LOG.info("{}", fieldMap);
+                Map<String, String> childMap = childMap(xmlObject, style, supplierMap);
+                styleMap.put(childMap.get("ID"), style);
+
                 // attributes.item(index)
             }
 
@@ -59,7 +57,7 @@ public class XmlToXlsx {
         if (attributes != null) {
             for (int i = 0; i < attributes.getLength(); i++) {
                 Node item = attributes.item(i);
-                String nodeName = item.getNodeName().replaceAll("ss:", "");
+                String nodeName = item.getNodeName().replaceAll("^\\w+:", "");
                 String textContent = item.getTextContent();
                 hashMap.put(nodeName, textContent);
             }
@@ -67,7 +65,7 @@ public class XmlToXlsx {
         return hashMap;
     }
 
-    private static Map<String, Object> childMap(Node xmlObject, CellStyle ob,
+    private static Map<String, String> childMap(Node xmlObject, Object ob,
             Map<Class<?>, SupplierEx<?>> supplierMap) {
         List<Method> setters = ClassReflectionUtils.setters(ob.getClass());
         Map<String, Method> collect = setters.stream().collect(Collectors.toMap(ClassReflectionUtils::getFieldName,
@@ -79,19 +77,18 @@ public class XmlToXlsx {
                     attributeMap.keySet().stream().filter(e -> collect.containsKey(e + nodeName)).findFirst();
             if (collect.containsKey(nodeName) || findFirst.isPresent()) {
                 setField(ob, collect, item, nodeName, attributeMap, findFirst, supplierMap);
-            } else {
-                foreach(item.getChildNodes(), it -> {
-                    Map<String, Object> attributes = attributeMap(it);
-                    attributes.forEach((k, v) -> {
-                        if (collect.containsKey(it.getNodeName() + v)) {
-
-                        }
-                    });
-
-                });
             }
         });
-        Map<String, Object> hashMap = new HashMap<>();
+        Map<String, Object> attributeMap = attributeMap(xmlObject);
+        Map<String, String> hashMap = new HashMap<>();
+        attributeMap.forEach((k, v) -> {
+            if (collect.containsKey(k)) {
+                setField(ob, collect, attributeMap, k);
+            } else {
+                hashMap.put(k, Objects.toString(v));
+                LOG.info("{}.{} NOT SET TO {}", ob.getClass().getSimpleName(), k, v);
+            }
+        });
         return hashMap;
     }
 
@@ -102,6 +99,31 @@ public class XmlToXlsx {
 
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static void setField(Object ob, Map<String, Method> collect, Map<String, Object> attributeMap,
+            String fieldName) {
+        Method method = collect.get(fieldName);
+        Class<?> setterType = method.getParameters()[0].getType();
+        
+        String upperCase = attributeMap.getOrDefault(fieldName, "").toString().toUpperCase();
+        if (setterType.isEnum()) {
+            RunnableEx.make(() -> {
+                Class setterType2 = setterType;
+                Enum<?> valueOf = Enum.valueOf(setterType2, upperCase);
+                method.invoke(ob, valueOf);
+            }, e -> LOG.error("ERROR IN FIELD {} {}", fieldName, e.getMessage())).run();
+        } else if (setterType.isPrimitive()) {
+            RunnableEx.make(() -> {
+                Method method2 = Class.forName("java.lang." + StringSigaUtils.changeCase(setterType.getName()))
+                        .getMethod("valueOf", String.class);
+                method.invoke(ob, method2.invoke(null, upperCase));
+            }, e -> LOG.error("ERROR IN FIELD {} {}", fieldName, e.getMessage())).run();
+
+        } else {
+            LOG.info("{}.{} NOT SET TO {} AS {}", ob.getClass().getSimpleName(), fieldName, upperCase, setterType);
+        }
+
+    }
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static void setField(Object ob, Map<String, Method> collect, Node item, String nodeName,
             Map<String, Object> attributeMap, Optional<String> findFirst, Map<Class<?>, SupplierEx<?>> supplierMap) {
@@ -114,14 +136,14 @@ public class XmlToXlsx {
                 Class setterType2 = setterType;
                 Enum<?> valueOf = Enum.valueOf(setterType2, upperCase);
                 method.invoke(ob, valueOf);
-                LOG.info("SETTING FIELD {} {}", orElse, upperCase);
-            }, e -> LOG.info("ERROR IN FIELD {} {}", nodeName, e.getMessage())).run();
+            }, e -> LOG.error("ERROR IN FIELD {} {}", nodeName, e.getMessage())).run();
         } else if (supplierMap.containsKey(setterType)) {
             RunnableEx.make(() -> {
                 Object object = SupplierEx.remap(supplierMap.get(setterType), "ERROR " + setterType);
+                childMap(item, object, supplierMap);
 
                 method.invoke(ob, object);
-            }, e -> LOG.info("ERROR IN FIELD {} {}", nodeName, e.getMessage())).run();
+            }, e -> LOG.error("ERROR IN FIELD {} {}", nodeName, e.getMessage())).run();
         } else {
             LOG.info("CONVERT {}-> {}", item, setterType);
         }
