@@ -31,15 +31,11 @@ public class XmlToXlsx {
             supplierMap.put(CellStyle.class, xssfWorkbook::createCellStyle);
             supplierMap.put(Font.class, xssfWorkbook::createFont);
             Map<String, CellStyle> styleMap = new HashMap<>();
-            for (int i = 0; i < rootNode.getLength(); i++) {
-                Node xmlObject = rootNode.item(i);
-
+            foreach(rootNode, xmlObject -> {
                 CellStyle style = xssfWorkbook.createCellStyle();
                 Map<String, String> childMap = childMap(xmlObject, style, supplierMap);
                 styleMap.put(childMap.get("ID"), style);
-
-                // attributes.item(index)
-            }
+            });
 
             File outFile = ResourceFXUtils.getOutFile("xlsx/" + file.getName().replaceAll("xls", "xlsx"));
             xssfWorkbook.write(new FileOutputStream(outFile));

@@ -46,7 +46,7 @@ public final class JsonExtractor {
     public static String convertObj(JsonNode jsonNode) {
         String asText = jsonNode.asText();
         if (!asText.matches("\\d{10}")) {
-            return asText;
+            return "\"" + asText + "\"";
         }
         return DateFormatUtils.epochSecondToLocalDate(asText).toString();
     }
@@ -58,6 +58,15 @@ public final class JsonExtractor {
         StringBuilder yaml2 = new StringBuilder();
         processNode(rootNode, yaml2, 0, a);
         return yaml2.toString();
+    }
+
+    public static Map<String, Object> makeMapFromJsonFile(File outFile, String... a) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // read JSON like DOM Parser
+        JsonNode rootNode = objectMapper.readTree(Files.newInputStream(outFile.toPath()));
+        Map<String, Object> yaml2 = new LinkedHashMap<>();
+        processNode(rootNode, yaml2, 0, a);
+        return yaml2;
     }
 
     public static Map.Entry<String, String> newEntry(String key, String value) {
@@ -96,6 +105,18 @@ public final class JsonExtractor {
 
     }
 
+    private static String appendJsonArray(JsonNode jsonNode, Map<String, Object> yaml, int depth,
+            String... filters) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Iterator<JsonNode> iterator = jsonNode.iterator(); iterator.hasNext();) {
+            JsonNode arrayItem = iterator.next();
+            stringBuilder.append(processNode(arrayItem, yaml, depth + 1, filters));
+            if (iterator.hasNext()) {
+                stringBuilder.append("\n");
+            }
+        }
+        return stringBuilder.toString();
+    }
     private static void appendJsonArray(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
         String repeat = StringUtils.repeat(" ", depth);
 
@@ -111,6 +132,25 @@ public final class JsonExtractor {
         yaml.append("\n" + repeat + "]");
     }
 
+    private static String appendJsonObject(JsonNode jsonNode, Map<String, Object> ob, int depth, String... filters) {
+        StringBuilder yaml = new StringBuilder();
+        yaml.append("{");
+        for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
+            Entry<String, JsonNode> next = iterator.next();
+            String key = next.getKey();
+            yaml.append("\n" + " \"" + key + "\":");
+            String value = processNode(next.getValue(), ob, depth + 1, filters);
+            yaml.append(value);
+            if (filters.length == 0 || Arrays.asList(filters).contains(key)) {
+                ob.merge(key, value, (o, n) -> o + "\n" + n);
+            }
+            if (iterator.hasNext()) {
+                yaml.append(",");
+            }
+        }
+        yaml.append("\n" + "}");
+        return yaml.toString();
+    }
     private static void appendJsonObject(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
         String repeat = StringUtils.repeat(" ", depth);
         yaml.append("{");
@@ -118,7 +158,7 @@ public final class JsonExtractor {
             Entry<String, JsonNode> next = iterator.next();
             String key = next.getKey();
             if (filters.length == 0 || Arrays.asList(filters).contains(key)) {
-                yaml.append("\n" + repeat + " " + key + "=");
+                yaml.append("\n" + repeat + " \"" + key + "\":");
                 ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(filters));
                 arrayList.remove(key);
                 String[] array = arrayList.toArray(new String[] {});
@@ -151,6 +191,17 @@ public final class JsonExtractor {
             return newMap(item.getKey(), convertObj(item.getValue()));
         }
         return newMap(item.getKey(), "");
+    }
+
+    private static String processNode(JsonNode jsonNode, Map<String,Object> yaml, int depth, String... filters) {
+        if (jsonNode.isValueNode()) {
+            return JsonExtractor.convertObj(jsonNode);
+        } else if (jsonNode.isArray()) {
+            return appendJsonArray(jsonNode, yaml, depth, filters);
+        } else if (jsonNode.isObject()) {
+            return appendJsonObject(jsonNode, yaml, depth, filters);
+        }
+        return "";
     }
 
     private static void processNode(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {

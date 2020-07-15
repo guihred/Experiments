@@ -67,9 +67,15 @@ public final class ExtractUtils {
         }
     }
 
-
     public static void copy(Path input, File outFile) throws IOException {
         copy(input.toFile(), outFile);
+    }
+
+
+    public static void copy(Reader inputStream, File outFile) throws IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(outFile)) {
+            IOUtils.copy(inputStream, fileOutputStream);
+        }
     }
 
     public static void copy(String url, File outFile) throws IOException {
@@ -179,7 +185,9 @@ public final class ExtractUtils {
         System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
         System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
         boolean b = true;
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> {
+            return b;
+        });
         if (isNotProxied()) {
             return;
         }

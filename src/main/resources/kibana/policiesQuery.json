@@ -1,0 +1,58 @@
+{
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "policy-name.keyword",
+        "size": 20,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "match_all": {}
+        },
+        {
+          "match_phrase": {
+            "SourceIP": {
+              "query": "%s"
+            }
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": %s,
+              "lte": %s,
+              "format": "epoch_millis"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}
