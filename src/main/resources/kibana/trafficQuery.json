@@ -1,0 +1,85 @@
+{
+  "version": true,
+  "size": 5,
+  "sort": [
+    {
+      "@timestamp": {
+        "order": "desc",
+        "unmapped_type": "boolean"
+      }
+    }
+  ],
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    },
+    {
+      "field": "GeneratedTime",
+      "format": "date_time"
+    },
+    {
+      "field": "ReceiveTime",
+      "format": "date_time"
+    },
+    {
+      "field": "StartTime",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "match_phrase": {
+            "SourceIP": {
+              "query": "%s"
+            }
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": %s,
+              "lte": %s,
+              "format": "epoch_millis"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": [
+        {
+          "match_phrase": {
+            "dtpcategoria": {
+              "query": "threat"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "highlight": {
+    "pre_tags": [
+      "@kibana-highlighted-field@"
+    ],
+    "post_tags": [
+      "@/kibana-highlighted-field@"
+    ],
+    "fields": {
+      "*": {}
+    },
+    "fragment_size": 2147483647
+  }
+}

@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -42,6 +43,9 @@ public final class KibanaApi {
     }
 
     public static Map<String, String> kibanaFullScan(String query) throws IOException {
+        if (StringUtils.isBlank(query)) {
+            return Collections.emptyMap();
+        }
         Map<String, Object> policiesSearch =
                 makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/policiesQuery.json"));
         Map<String, Object> accessesSearch =
@@ -51,9 +55,10 @@ public final class KibanaApi {
                 makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/destinationQuery.json"), "key", "value");
         destinationSearch.computeIfPresent("value", (k, v) -> Stream.of(v.toString().split("\n")).map(Double::valueOf)
                 .map(Double::longValue).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
-
-        Map<String, String> fullScan = new LinkedHashMap<>();
+        Map<String, Object> trafficSearch =
+                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/trafficQuery.json"), "@timestamp");
         Map<String, Object> ipInformation = VirusTotalApi.getIpTotalInfo(query);
+        Map<String, String> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", query);
         fullScan.put("Provedor", Objects.toString(ipInformation.get("as_owner")));
         fullScan.put("Geolocation", Objects.toString(ipInformation.get("country")));
@@ -63,6 +68,7 @@ public final class KibanaApi {
         LOG.info("KIBANA RESULT{}", fullScan);
         fullScan.put("TOP Conexão FW", display(destinationSearch));
         fullScan.put("TOP conexões WEB", display(accessesSearch));
+        fullScan.put("Ultimo Acesso", display(trafficSearch));
         return fullScan;
     }
 
