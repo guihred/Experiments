@@ -42,27 +42,30 @@ public final class KibanaApi {
     private KibanaApi() {
     }
 
-    public static Map<String, String> kibanaFullScan(String query) throws IOException {
+    public static Map<String, String> kibanaFullScan(String query) {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
         }
         Map<String, Object> policiesSearch =
                 makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/policiesQuery.json"));
         Map<String, Object> accessesSearch =
-                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/acessosQuery.json"));
-        Map<String, Object> threatsSearch = makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/threatQuery.json"));
+                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/acessosQuery.json"), "key", "doc_count");
+        Map<String, Object> threatsSearch =
+                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/threatQuery.json"));
         Map<String, Object> destinationSearch =
                 makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/destinationQuery.json"), "key", "value");
         destinationSearch.computeIfPresent("value", (k, v) -> Stream.of(v.toString().split("\n")).map(Double::valueOf)
                 .map(Double::longValue).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
         Map<String, Object> trafficSearch =
-                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/trafficQuery.json"), "@timestamp");
+                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/trafficQuery.json"), "ReceiveTime",
+                        "country_code2");
         Map<String, Object> ipInformation = VirusTotalApi.getIpTotalInfo(query);
         Map<String, String> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", query);
         fullScan.put("Provedor", Objects.toString(ipInformation.get("as_owner")));
-        fullScan.put("Geolocation", Objects.toString(ipInformation.get("country")));
-        fullScan.put("VirusTotal Result", Objects.toString(ipInformation.get("last_analysis_stats")));
+        fullScan.put("Geolocation",
+                Objects.toString(ipInformation.getOrDefault("country", trafficSearch.remove("country_code2"))));
+        fullScan.put("Talos Blacklist", isInBlacklist(query));
         fullScan.put("Bloqueio WAF", display(policiesSearch));
         fullScan.put("Palo Alto Threat", display(threatsSearch));
         LOG.info("KIBANA RESULT{}", fullScan);
@@ -72,30 +75,29 @@ public final class KibanaApi {
         return fullScan;
     }
 
-
-    public static Map<String, Object> makeKibanaSearch(String query, File file) throws IOException {
-        return makeKibanaSearch(query, file, "key", "doc_count");
+    public static Map<String, Object> makeKibanaSearch(String query, File file) {
+        return makeKibanaSearch(query, file, "key");
     }
-
-    public static Map<String, Object> makeKibanaSearch(String query, File file, String... params) throws IOException {
-        File outFile = newJsonFile(query + file.getName().replaceAll("\\.json", ""));
-        if (!outFile.exists()) {
-            String gte = Objects.toString(Instant.now().minus(1, ChronoUnit.DAYS).toEpochMilli());
-            String lte = Objects.toString(Instant.now().toEpochMilli());
-            getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
-                    getContent(file, query, gte, lte), outFile);
-        }
-        return JsonExtractor.makeMapFromJsonFile(outFile, params);
+    public static Map<String, Object> makeKibanaSearch(String query, File file, String... params) {
+        return SupplierEx.get(() -> {
+            File outFile = newJsonFile(query + file.getName().replaceAll("\\.json", ""));
+            if (!outFile.exists()) {
+                String gte = Objects.toString(Instant.now().minus(1, ChronoUnit.DAYS).toEpochMilli());
+                String lte = Objects.toString(Instant.now().toEpochMilli());
+                getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
+                        getContent(file, query, gte, lte), outFile);
+            }
+            return JsonExtractor.makeMapFromJsonFile(outFile, params);
+        }, Collections.emptyMap());
     }
 
     private static String display(Map<String, Object> ob) {
-        List<List<String>> collect = ob.values().stream().map(Objects::toString)
-                .map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+        List<List<String>> collect = ob.values().stream().map(Objects::toString).map(s -> Arrays.asList(s.split("\n")))
+                .collect(Collectors.toList());
         int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
         return IntStream.range(0, orElse).mapToObj(
                 j -> collect.stream().filter(e -> j < e.size()).map(e -> e.get(j)).collect(Collectors.joining("    ")))
-                .distinct()
-                .collect(Collectors.joining("\n"));
+                .distinct().collect(Collectors.joining("\n"));
 
     }
 
@@ -117,6 +119,12 @@ public final class KibanaApi {
         HttpEntity entity = response.getEntity();
         BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
         ExtractUtils.copy(rd, outFile);
+    }
+
+    private static String isInBlacklist(String query) {
+        File file = ResourceFXUtils.toFile("kibana/ip_filter.txt");
+        return SupplierEx.get(() -> java.nio.file.Files.lines(file.toPath()).anyMatch(query::equals) ? "sim" : "não",
+                "não");
     }
 
     private static File newJsonFile(String string) {

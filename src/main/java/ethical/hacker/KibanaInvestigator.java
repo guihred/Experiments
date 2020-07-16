@@ -61,6 +61,7 @@ public class KibanaInvestigator extends Application {
     }
 
     public void onActionKibanaScan() {
+        items.clear();
         RunnableEx.runNewThread(() -> {
             String text = networkAddress.getText();
             if (StringUtils.isNotBlank(text)) {
@@ -76,6 +77,7 @@ public class KibanaInvestigator extends Application {
                         items.add(nsInformation);
                     });
                 }
+                RunnableEx.runInPlatform(() -> progressIndicator.setProgress(1));
             }
         });
     }
@@ -85,7 +87,7 @@ public class KibanaInvestigator extends Application {
         ObservableList<TableColumn<Map<String, String>, ?>> columns = commonTable.getColumns();
         for (TableColumn<Map<String, String>, ?> tableColumn : columns) {
             String text = tableColumn.getText();
-            mapa.put(text, t -> t.getOrDefault(text, ""));
+            mapa.put(text, t -> t.getOrDefault(text, "-"));
         }
         File outFile = ResourceFXUtils.getOutFile("xlsx/kibana.xlsx");
         ExcelService.getExcel(items, mapa, outFile);
