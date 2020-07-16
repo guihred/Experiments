@@ -32,7 +32,7 @@ public class WhoIsScanner {
         return observableArrayList;
     }
 
-    private Map<String, String> whoIsScan(String ip) throws IOException {
+    public Map<String, String> whoIsScan(String ip) throws IOException {
         String scanIP = "http://isc.sans.edu/api/ip/" + ip;
         Map<String, String> map = new LinkedHashMap<>();
         ExtractUtils.getDocument(scanIP, cookies).getElementsByTag("ip")
@@ -45,7 +45,7 @@ public class WhoIsScanner {
 
     public static void main(String[] args) {
         String ip =
-                "49.89.254.226,49.89.255.113,114.239.52.44,114.239.53.58,114.239.53.124,114.239.54.144,114.239.104.152";
+                "187.22.201.244";
         new WhoIsScanner().scanIps(ip);
 
     }

@@ -3,7 +3,10 @@ package extract;
 
 import java.io.File;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,14 +22,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.SimpleTreeViewBuilder;
 import simplebuilder.StageHelper;
-import utils.ConsumerEx;
-import utils.ExtractUtils;
-import utils.ResourceFXUtils;
-import utils.SupplierEx;
+import utils.*;
 
 public class FileAttrApp extends Application {
-    private static final int BYTES_IN_A_KILOBYTE = 1024;
-    private static final String[] SIZES = { "B", "KB", "MB", "GB", "TB" };
     private Map<File, BasicFileAttributes> attrMap = new LinkedHashMap<>();
     private Map<File, Long> sizeMap = new LinkedHashMap<>();
     private ObservableList<Data> pieData = FXCollections.observableArrayList();
@@ -105,7 +103,7 @@ public class FileAttrApp extends Application {
     }
 
     private void setText(File file, TreeCell<File> cell) {
-        cell.setText(file == null ? "" : file.getName() + " " + getFileSize(getSize(file)));
+        cell.setText(file == null ? "" : file.getName() + " " + StringSigaUtils.getFileSize(getSize(file)));
         cell.setGraphic(file == null ? null : getGraphic(file));
 
     }
@@ -114,13 +112,6 @@ public class FileAttrApp extends Application {
         launch(args);
     }
 
-    private static String getFileSize(long sizeInBytes) {
-        if (sizeInBytes == 0) {
-            return "0";
-        }
-        int a0 = (int) Math.floor(Math.log10(sizeInBytes) / Math.log10(BYTES_IN_A_KILOBYTE));
-        return String.format(Locale.ENGLISH, "%.2f %s", sizeInBytes / Math.pow(BYTES_IN_A_KILOBYTE, a0), SIZES[a0]);
-    }
 
     private static ImageView getGraphic(File file) {
         ImageView value = new ImageView(Extension.getExtension(file).getFile());

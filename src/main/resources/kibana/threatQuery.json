@@ -1,0 +1,104 @@
+{
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "ThreatID.keyword",
+        "size": 50,
+        "order": {
+          "_count": "desc"
+        }
+      },
+      "aggs": {
+        "3": {
+          "terms": {
+            "field": "ThreatContentType.keyword",
+            "size": 5,
+            "order": {
+              "_count": "desc"
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "version": true,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    },
+    {
+      "field": "GeneratedTime",
+      "format": "date_time"
+    },
+    {
+      "field": "ReceiveTime",
+      "format": "date_time"
+    },
+    {
+      "field": "StartTime",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "match_all": {}
+        },
+        {
+          "match_all": {}
+        },
+        {
+          "match_phrase": {
+            "SourceIP": {
+              "query": "%s"
+            }
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": %s,
+              "lte": %s,
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "Type": {
+              "query": "THREAT"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  },
+  "highlight": {
+    "pre_tags": [
+      "@kibana-highlighted-field@"
+    ],
+    "post_tags": [
+      "@/kibana-highlighted-field@"
+    ],
+    "fields": {
+      "*": {}
+    },
+    "fragment_size": 2147483647
+  }
+}

@@ -21,14 +21,15 @@ import javax.swing.text.MaskFormatter;
 import org.apache.commons.lang3.StringUtils;
 
 public class StringSigaUtils extends StringUtils {
-
+    private static final int BYTES_IN_A_KILOBYTE = 1024;
+    private static final String[] SIZES = { "B", "KB", "MB", "GB", "TB" };
     private static final int TAMANHO_CEP = 8;
+
     private static final int TAMANHO_CPF = 11;
     private static final int TAMANHO_CNPJ = 14;
     private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
         Double.class);
     public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
-
     public static final Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> FORMAT_HIERARCHY_MAP =
             formatHierarchy();
 
@@ -48,10 +49,10 @@ public class StringSigaUtils extends StringUtils {
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
     }
 
-
     public static String decodificar(String nome) {
         return getIgnore(() -> URLDecoder.decode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
+
 
     public static String fixEncoding(String latin1) {
         if (latin1 == null) {
@@ -103,7 +104,6 @@ public class StringSigaUtils extends StringUtils {
         return SupplierEx.getIgnore(() -> Integer.parseInt(getApenasNumeros(texto)));
     }
 
-
     public static String getCEPFormatado(String cep) {
         if (StringUtils.isNotBlank(cep)) {
             String formatado = StringUtils.leftPad(cep, TAMANHO_CEP, "0");
@@ -121,10 +121,10 @@ public class StringSigaUtils extends StringUtils {
         return cnpj;
     }
 
+
     public static Long getCpfDesformatado(String cpf) {
         return SupplierEx.getIgnore(() -> Long.valueOf(retirarMascara(cpf)));
     }
-
 
     public static String getCpfFormatado(String cpf) {
         if (StringUtils.isNotBlank(cpf)) {
@@ -132,6 +132,15 @@ public class StringSigaUtils extends StringUtils {
             return formatar("###.###.###-##", formatado);
         }
         return cpf;
+    }
+
+
+    public static String getFileSize(long sizeInBytes) {
+        if (sizeInBytes == 0) {
+            return "0";
+        }
+        int a0 = (int) Math.floor(Math.log10(sizeInBytes) / Math.log10(BYTES_IN_A_KILOBYTE));
+        return String.format(Locale.ENGLISH, "%.2f %s", sizeInBytes / Math.pow(BYTES_IN_A_KILOBYTE, a0), SIZES[a0]);
     }
 
     public static List<String> getLinks(String content) {

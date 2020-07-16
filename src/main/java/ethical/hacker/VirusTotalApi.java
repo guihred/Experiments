@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,6 +76,15 @@ public final class VirusTotalApi {
             LOG.info("Malicious IP {} {}", ip, malicious);
         }
         return new AbstractMap.SimpleEntry<>(outFile, malicious);
+    }
+
+    public static Map<String, Object> getIpTotalInfo(String ip) throws IOException {
+        File outFile = newJsonFile(ip);
+        if (!outFile.exists()) {
+            getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
+        }
+        return JsonExtractor.makeMapFromJsonFile(outFile, "as_owner", "country", "last_analysis_results",
+                "last_analysis_stats", "malicious");
     }
 
     public static File[] getUrlInformation(String url) throws IOException {

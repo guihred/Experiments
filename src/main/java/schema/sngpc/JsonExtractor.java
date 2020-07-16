@@ -46,7 +46,7 @@ public final class JsonExtractor {
     public static String convertObj(JsonNode jsonNode) {
         String asText = jsonNode.asText();
         if (!asText.matches("\\d{10}")) {
-            return "\"" + asText + "\"";
+            return asText;
         }
         return DateFormatUtils.epochSecondToLocalDate(asText).toString();
     }

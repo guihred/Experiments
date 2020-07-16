@@ -9,8 +9,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -22,10 +24,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import schema.sngpc.JsonExtractor;
-import utils.ExtractUtils;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.SupplierEx;
+import utils.*;
 
 public final class KibanaApi {
     private static final Logger LOG = HasLogging.log();
@@ -42,23 +41,61 @@ public final class KibanaApi {
     private KibanaApi() {
     }
 
-    public static void main(String[] args) throws IOException {
-        Map<String, Object> makeKibanaSearch = makeKibanaSearch("191.101.252.62");
-        LOG.info("{}", makeKibanaSearch);
+    public static Map<String, String> kibanaFullScan(String query) throws IOException {
+        Map<String, Object> policiesSearch =
+                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/policiesQuery.json"));
+        Map<String, Object> accessesSearch =
+                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/acessosQuery.json"));
+        Map<String, Object> threatsSearch = makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/threatQuery.json"));
+        Map<String, Object> destinationSearch =
+                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/destinationQuery.json"), "key", "value");
+        destinationSearch.computeIfPresent("value", (k, v) -> Stream.of(v.toString().split("\n")).map(Double::valueOf)
+                .map(Double::longValue).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
+
+        Map<String, String> fullScan = new LinkedHashMap<>();
+        Map<String, Object> ipInformation = VirusTotalApi.getIpTotalInfo(query);
+        fullScan.put("IP", query);
+        fullScan.put("Provedor", Objects.toString(ipInformation.get("as_owner")));
+        fullScan.put("Geolocation", Objects.toString(ipInformation.get("country")));
+        fullScan.put("Bloqueio WAF", display(policiesSearch));
+        fullScan.put("Palo Alto Threat", display(threatsSearch));
+        fullScan.put("TOP Conexão FW", display(destinationSearch));
+        fullScan.put("TOP conexões WEB", display(accessesSearch));
+        return fullScan;
     }
 
-    public static Map<String, Object> makeKibanaSearch(String query) throws IOException {
-        File outFile = newJsonFile(query + "kibana");
+    public static void main(String[] args) throws IOException {
+        String query = "187.22.201.244";
+
+        kibanaFullScan(query);
+    }
+
+    public static Map<String, Object> makeKibanaSearch(String query, File file) throws IOException {
+        return makeKibanaSearch(query, file, "key", "doc_count");
+    }
+
+    public static Map<String, Object> makeKibanaSearch(String query, File file, String... params) throws IOException {
+        File outFile = newJsonFile(query + file.getName().replaceAll("\\.json", ""));
         if (!outFile.exists()) {
             String gte = Objects.toString(Instant.now().minus(1, ChronoUnit.DAYS).toEpochMilli());
             String lte = Objects.toString(Instant.now().toEpochMilli());
             getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
-                    getContent(ResourceFXUtils.toFile("kibana/policiesQuery.json"), query, gte, lte),
-                    outFile);
+                    getContent(file, query, gte, lte), outFile);
         }
         String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile);
         LOG.info("{}", displayJsonFromFile);
-        return JsonExtractor.makeMapFromJsonFile(outFile, "key", "doc_count");
+        return JsonExtractor.makeMapFromJsonFile(outFile, params);
+    }
+
+    private static String display(Map<String, Object> ob) {
+        List<List<String>> collect = ob.values().stream().map(Objects::toString)
+                .map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
+        return IntStream.range(0, orElse).mapToObj(
+                j -> collect.stream().filter(e -> j < e.size()).map(e -> e.get(j)).collect(Collectors.joining("    ")))
+                .distinct()
+                .collect(Collectors.joining("\n"));
+
     }
 
     private static String getContent(File file, Object... params) {
