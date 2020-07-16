@@ -57,18 +57,15 @@ public final class KibanaApi {
         fullScan.put("IP", query);
         fullScan.put("Provedor", Objects.toString(ipInformation.get("as_owner")));
         fullScan.put("Geolocation", Objects.toString(ipInformation.get("country")));
+        fullScan.put("VirusTotal Result", Objects.toString(ipInformation.get("last_analysis_stats")));
         fullScan.put("Bloqueio WAF", display(policiesSearch));
         fullScan.put("Palo Alto Threat", display(threatsSearch));
+        LOG.info("KIBANA RESULT{}", fullScan);
         fullScan.put("TOP Conexão FW", display(destinationSearch));
         fullScan.put("TOP conexões WEB", display(accessesSearch));
         return fullScan;
     }
 
-    public static void main(String[] args) throws IOException {
-        String query = "187.22.201.244";
-
-        kibanaFullScan(query);
-    }
 
     public static Map<String, Object> makeKibanaSearch(String query, File file) throws IOException {
         return makeKibanaSearch(query, file, "key", "doc_count");
@@ -82,8 +79,6 @@ public final class KibanaApi {
             getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
                     getContent(file, query, gte, lte), outFile);
         }
-        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile);
-        LOG.info("{}", displayJsonFromFile);
         return JsonExtractor.makeMapFromJsonFile(outFile, params);
     }
 

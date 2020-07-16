@@ -35,6 +35,11 @@ public class FXHackTest extends AbstractTestExecution {
     }
 
     @Test
+    public void testKibanaApi() {
+        measureTime("KibanaApi.kibanaFullScan", () -> KibanaApi.kibanaFullScan("187.22.201.244"));
+    }
+
+    @Test
     public void testPortServices() {
         measureTime("PortServices.loadServiceNames", () -> PortServices.loadServiceNames());
         measureTime("PortServices.getServiceByPort", () -> PortServices.getServiceByPort(80));
