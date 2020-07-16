@@ -210,7 +210,7 @@ public class JsonViewer extends Application {
             mapa.put(key, t -> t.get(key));
         }
 
-        File outFile = ResourceFXUtils.getOutFile(file.getName().replaceAll(".json", ".xlsx"));
+        File outFile = ResourceFXUtils.getOutFile("xlsx/" + file.getName().replaceAll(".json", ".xlsx"));
         ExcelService.getExcel(collect, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
     }

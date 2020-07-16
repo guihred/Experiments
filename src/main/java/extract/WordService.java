@@ -1,6 +1,9 @@
 package extract;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -65,7 +68,7 @@ public final class WordService {
 
     private static void recordPicture(XSLFPictureData data) {
         RunnableEx.run(() -> {
-            File outFile = ResourceFXUtils.getOutFile(data.getFileName());
+            File outFile = ResourceFXUtils.getOutFile("ppt/" + data.getFileName());
             InputStream inputStream = data.getInputStream();
             ExtractUtils.copy(inputStream, outFile);
         });

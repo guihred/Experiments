@@ -27,12 +27,13 @@ import utils.StringSigaUtils;
 public class SSHSessionApp extends Application {
     private Button serverButton;
     private SshServer server;
+
     @Override
     public void start(Stage primaryStage) {
 
         Text text = new Text();
         text.textProperty().bind(Bindings.createStringBinding(
-            () -> EchoShell.getCommands().stream().collect(Collectors.joining("\n")), EchoShell.getCommands()));
+                () -> EchoShell.getCommands().stream().collect(Collectors.joining("\n")), EchoShell.getCommands()));
         TextField portField = new TextField("22");
         TextField commandField = new TextField();
         TextField hostField = new TextField();
@@ -52,12 +53,13 @@ public class SSHSessionApp extends Application {
 
         Text text2 = new Text();
         Button clientButton = SimpleButtonBuilder.newButton("Start Client", e -> RunnableEx.run(() -> {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(ResourceFXUtils.getOutFile("log.txt"));
-                PrintStream out = new PrintTextStream(fileOutputStream, true, StandardCharsets.UTF_8.displayName(),
+            try (FileOutputStream fileOutputStream = new FileOutputStream(ResourceFXUtils.getOutFile("log/log.txt"));
+                    PrintStream out = new PrintTextStream(fileOutputStream, true, StandardCharsets.UTF_8.displayName(),
                             text2.textProperty())) {
                 String testLocalhost = hostField.getText();
                 SSHClientUtils.sendMessage(commandField.getText(), testLocalhost,
-                    StringSigaUtils.toInteger(portField.getText()), userField.getText(), passwordField.getText(), out);
+                        StringSigaUtils.toInteger(portField.getText()), userField.getText(), passwordField.getText(),
+                        out);
             }
         }));
 

@@ -90,7 +90,7 @@ public final class HashVerifier {
         DesiredCapabilities dcap = DesiredCapabilities.firefox();
         PhantomJSDriverService createDefaultService =
                 new PhantomJSDriverService.Builder().usingPhantomJSExecutable(PHANTOM_JS.toFile()).usingAnyFreePort()
-                        .withLogFile(ResourceFXUtils.getOutFile("phantomjsdriver.log")).build();
+                        .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log")).build();
         PhantomJSDriver ghostDriver = new PhantomJSDriver(createDefaultService, dcap);
         try {
             ghostDriver.setLogLevel(Level.SEVERE);

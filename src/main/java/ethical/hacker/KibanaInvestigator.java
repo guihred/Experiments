@@ -87,7 +87,7 @@ public class KibanaInvestigator extends Application {
             String text = tableColumn.getText();
             mapa.put(text, t -> t.getOrDefault(text, ""));
         }
-        File outFile = ResourceFXUtils.getOutFile("hackResult.xlsx");
+        File outFile = ResourceFXUtils.getOutFile("xlsx/kibana.xlsx");
         ExcelService.getExcel(items, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
     }

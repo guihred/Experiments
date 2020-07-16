@@ -178,7 +178,7 @@ public class EthicalHackController extends EthicalHackApp {
             String text = tableColumn.getText();
             mapa.put(text, t -> t.getOrDefault(text, ""));
         }
-        File outFile = ResourceFXUtils.getOutFile("hackResult.xlsx");
+        File outFile = ResourceFXUtils.getOutFile("xlsx/hackResult.xlsx");
         ExcelService.getExcel(items, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
     }
@@ -188,12 +188,6 @@ public class EthicalHackController extends EthicalHackApp {
         CommonsFX.loadFXML("Ethical Hack App", "EthicalHackApp.fxml", this, primaryStage, WIDTH, WIDTH);
     }
 
-    protected static CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
-        CheckBox check = new CheckBox();
-        check.selectedProperty().addListener((ob, o, val) -> EthicalHackApp.addIfChecked(arrayList, e, val));
-        return check;
-    }
-
     public static CheckBox getCheckBox(List<Integer> checkedPorts, Map<Integer, CheckBox> checkbox,
             Entry<Integer, String> e) {
         return checkbox.computeIfAbsent(e.getKey(), i -> EthicalHackController.newCheck(checkedPorts, e));
@@ -201,6 +195,12 @@ public class EthicalHackController extends EthicalHackApp {
 
     public static void main(final String[] args) {
         launch(args);
+    }
+
+    protected static CheckBox newCheck(List<Integer> arrayList, Entry<Integer, String> e) {
+        CheckBox check = new CheckBox();
+        check.selectedProperty().addListener((ob, o, val) -> EthicalHackApp.addIfChecked(arrayList, e, val));
+        return check;
     }
 
 }
