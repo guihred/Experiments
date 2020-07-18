@@ -9,7 +9,9 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
+import utils.ConsumerEx;
 import utils.FunctionEx;
 
 public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>, SimpleTableViewBuilder<T>> {
@@ -23,7 +25,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public SimpleTableViewBuilder<T> addColumn(final String columnName,
-        final BiConsumer<T, TableCell<T, Object>> value) {
+            final BiConsumer<T, TableCell<T, Object>> value) {
         final TableColumn<T, Object> column = new TableColumn<>(columnName);
         column.setCellFactory(newCellFactory(value));
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
@@ -83,7 +85,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public SimpleTableViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
-            .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+                .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
         return this;
     }
 
@@ -112,8 +114,8 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         prefWidthColumns(table, columns.stream().mapToDouble(e -> 1).toArray());
     }
 
-    public static <C, M> Callback<TableColumn<C, M>, TableCell<C, M>> newCellFactory(
-        final BiConsumer<C, TableCell<C, M>> value) {
+    public static <C, M> Callback<TableColumn<C, M>, TableCell<C, M>>
+            newCellFactory(final BiConsumer<C, TableCell<C, M>> value) {
         return p -> new CustomableTableCell<C, M>() {
             @Override
             protected void setStyleable(final C auxMed) {
@@ -123,9 +125,26 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         };
     }
 
+    public static <T> void onDoubleClick(TableView<T> table2, ConsumerEx<T> object) {
+        table2.setOnMouseClicked(e -> {
+            if (e.getClickCount() > 1) {
+                T selectedItem = table2.getSelectionModel().getSelectedItem();
+                ConsumerEx.makeConsumer(object).accept(selectedItem);
+            }
+        });
+        if (table2.getOnKeyReleased() == null) {
+            table2.setOnKeyReleased(e -> {
+                if (e.getCode() == KeyCode.ENTER) {
+                    T selectedItem = table2.getSelectionModel().getSelectedItem();
+                    ConsumerEx.makeConsumer(object).accept(selectedItem);
+                }
+            });
+        }
+    }
+
     public static <T> void onSelect(TableView<T> table, final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
-        .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+                .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
     }
 
     public static <S> void prefWidthColumns(TableView<S> table1, double... prefs) {

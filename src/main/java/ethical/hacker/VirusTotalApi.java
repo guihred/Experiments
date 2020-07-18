@@ -78,7 +78,7 @@ public final class VirusTotalApi {
         return new AbstractMap.SimpleEntry<>(outFile, malicious);
     }
 
-    public static Map<String, Object> getIpTotalInfo(String ip) {
+    public static Map<String, String> getIpTotalInfo(String ip) {
         return SupplierEx.get(() -> {
 
         File outFile = newJsonFile(ip);

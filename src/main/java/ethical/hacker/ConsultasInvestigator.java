@@ -6,6 +6,7 @@ import static javafx.collections.FXCollections.synchronizedObservableList;
 import extract.ExcelService;
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -19,10 +20,11 @@ import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
+import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
 
-public class KibanaInvestigator extends Application {
+public class ConsultasInvestigator extends Application {
+    private static final String USER_NAME_QUERY = "\"http.user-name.keyword\": {\n\"query\": \"%s\"\n}";
     private static final int WIDTH = 600;
     @FXML
     private TextField resultsFilter;
@@ -51,31 +53,34 @@ public class KibanaInvestigator extends Application {
                 .bind(Bindings.selectDouble(commonTable.parentProperty(), "width").add(-columnWidth));
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        networkAddress.setText(TracerouteScanner.IP_TO_SCAN);
+        SimpleTableViewBuilder.onDoubleClick(commonTable, e -> {
+            networkAddress.setText(String.format(USER_NAME_QUERY, e.get("key")));
+            onActionKibanaScan();
+        });
+    }
+
+    public void onActionClear() {
+        networkAddress.setText("");
+        onActionKibanaScan();
     }
 
     public void onActionKibanaScan() {
         items.clear();
         RunnableEx.runNewThread(() -> {
-            String text = networkAddress.getText();
-            if (StringUtils.isNotBlank(text)) {
-                String[] split = text.split("[,\n\t; ]+");
-                RunnableEx.runInPlatform(() -> progressIndicator.setProgress(0));
-                for (String ip : split) {
-                    Map<String, String> nsInformation = KibanaApi.kibanaFullScan(ip);
-                    RunnableEx.runInPlatform(() -> {
-                        progressIndicator.setProgress(progressIndicator.getProgress() + 1. / split.length);
-                        if (commonTable.getColumns().isEmpty()) {
-                            EthicalHackApp.addColumns(commonTable, nsInformation.keySet());
-                        }
-                        items.add(nsInformation);
-                    });
+            RunnableEx.runInPlatform(() -> progressIndicator.setProgress(0));
+            Map<String, String> nsInformation =
+                    KibanaApi.makeKibanaSearch("kibana/geridQuery.json", networkAddress.getText(), "key", "value");
+            RunnableEx.runInPlatform(() -> {
+                progressIndicator.setProgress(progressIndicator.getProgress() + 1);
+                if (commonTable.getColumns().isEmpty()) {
+                    EthicalHackApp.addColumns(commonTable, nsInformation.keySet());
                 }
-                RunnableEx.runInPlatform(() -> progressIndicator.setProgress(1));
-            }
+                List<Map<String, String>> remap = KibanaApi.remap(nsInformation);
+                items.addAll(remap);
+            });
+            RunnableEx.runInPlatform(() -> progressIndicator.setProgress(1));
         });
     }
-
     public void onExportExcel() {
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
         ObservableList<TableColumn<Map<String, String>, ?>> columns = commonTable.getColumns();
@@ -90,7 +95,7 @@ public class KibanaInvestigator extends Application {
 
     @Override
     public void start(final Stage primaryStage) {
-        CommonsFX.loadFXML("Kibana Investigator", "KibanaInvestigator.fxml", this, primaryStage, WIDTH, WIDTH);
+        CommonsFX.loadFXML("Consultas Investigator", "ConsultasInvestigator.fxml", this, primaryStage, WIDTH, WIDTH);
     }
 
     public static void main(String[] args) {

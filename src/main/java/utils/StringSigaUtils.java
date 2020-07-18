@@ -27,8 +27,8 @@ public class StringSigaUtils extends StringUtils {
 
     private static final int TAMANHO_CPF = 11;
     private static final int TAMANHO_CNPJ = 14;
-    private static final List<Class<?>> FORMAT_HIERARCHY = Arrays.asList(String.class, Integer.class, Long.class,
-        Double.class);
+    private static final List<Class<?>> FORMAT_HIERARCHY =
+            Arrays.asList(String.class, Integer.class, Long.class, Double.class);
     public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
     public static final Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> FORMAT_HIERARCHY_MAP =
             formatHierarchy();
@@ -52,7 +52,6 @@ public class StringSigaUtils extends StringUtils {
     public static String decodificar(String nome) {
         return getIgnore(() -> URLDecoder.decode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
-
 
     public static String fixEncoding(String latin1) {
         if (latin1 == null) {
@@ -112,7 +111,6 @@ public class StringSigaUtils extends StringUtils {
         return cep;
     }
 
-
     public static String getCnpjFormatado(String cnpj) {
         if (StringUtils.isNotBlank(cnpj)) {
             String formatado = StringUtils.leftPad(cnpj, TAMANHO_CNPJ, "0");
@@ -120,7 +118,6 @@ public class StringSigaUtils extends StringUtils {
         }
         return cnpj;
     }
-
 
     public static Long getCpfDesformatado(String cpf) {
         return SupplierEx.getIgnore(() -> Long.valueOf(retirarMascara(cpf)));
@@ -134,13 +131,16 @@ public class StringSigaUtils extends StringUtils {
         return cpf;
     }
 
-
     public static String getFileSize(long sizeInBytes) {
         if (sizeInBytes == 0) {
             return "0";
         }
         int a0 = (int) Math.floor(Math.log10(sizeInBytes) / Math.log10(BYTES_IN_A_KILOBYTE));
         return String.format(Locale.ENGLISH, "%.2f %s", sizeInBytes / Math.pow(BYTES_IN_A_KILOBYTE, a0), SIZES[a0]);
+    }
+
+    public static String getFileSize(String sizeInBytes) {
+        return SupplierEx.get(() -> getFileSize(Double.valueOf(sizeInBytes).longValue()));
     }
 
     public static List<String> getLinks(String content) {
@@ -170,7 +170,7 @@ public class StringSigaUtils extends StringUtils {
     public static String putNumbers(List<String> map) {
         int orElse = map.stream().mapToInt(String::length).max().orElse(0);
         return IntStream.range(0, map.size()).mapToObj(i -> numberLines(map, orElse, i))
-            .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining("\n"));
     }
 
     public static String removeMathematicalOperators(String s) {
@@ -190,7 +190,7 @@ public class StringSigaUtils extends StringUtils {
 
     public static String removerDiacritico(String string) {
         return Normalizer.normalize(Objects.toString(string, ""), Form.NFD)
-            .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 
     public static String retirarMascara(String valor) {
@@ -230,12 +230,13 @@ public class StringSigaUtils extends StringUtils {
         return getIgnore(() -> Integer.valueOf(Objects.toString(numero, "").replaceAll("\\D", "")), 0);
     }
 
-    public static Object tryAsNumber(Map<String, Class<? extends Comparable<?>>> formatMap2, String header, Class<?> currentFormat, String number) {
-        Set<Entry<Class<? extends Comparable<?>>, Function<String, Comparable<?>>>> entrySet = FORMAT_HIERARCHY_MAP.entrySet();
+    public static Object tryAsNumber(Map<String, Class<? extends Comparable<?>>> formatMap2, String header,
+            Class<?> currentFormat, String number) {
+        Set<Entry<Class<? extends Comparable<?>>, Function<String, Comparable<?>>>> entrySet =
+                FORMAT_HIERARCHY_MAP.entrySet();
         for (Entry<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> entry : entrySet) {
             try {
-                return tryNumber(formatMap2, entry.getKey(), currentFormat, number,
-                        header, entry.getValue());
+                return tryNumber(formatMap2, entry.getKey(), currentFormat, number, header, entry.getValue());
             } catch (Exception e) {
                 HasLogging.log(1).trace("FORMAT ERROR ", e);
             }
@@ -244,9 +245,8 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,
-            Class<? extends Comparable<?>> class1,
-            Class<?> currentFormat,
-            String number, String header, Function<String, Comparable<?>> func) {
+            Class<? extends Comparable<?>> class1, Class<?> currentFormat, String number, String header,
+            Function<String, Comparable<?>> func) {
         if (FORMAT_HIERARCHY.indexOf(currentFormat) <= FORMAT_HIERARCHY.indexOf(class1)) {
             Comparable<?> valueOf = func.apply(number);
             if (currentFormat != class1) {
@@ -289,6 +289,7 @@ public class StringSigaUtils extends StringUtils {
             return mask.valueToString(valor);
         }, valor);
     }
+
     private static Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> formatHierarchy() {
         Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> linkedHashMap = new LinkedHashMap<>();
         linkedHashMap.put(Integer.class, Integer::valueOf);

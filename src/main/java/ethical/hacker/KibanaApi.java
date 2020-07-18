@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -46,20 +47,15 @@ public final class KibanaApi {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
         }
-        Map<String, Object> policiesSearch =
-                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/policiesQuery.json"));
-        Map<String, Object> accessesSearch =
-                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/acessosQuery.json"), "key", "doc_count");
-        Map<String, Object> threatsSearch =
-                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/threatQuery.json"));
-        Map<String, Object> destinationSearch =
-                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/destinationQuery.json"), "key", "value");
-        destinationSearch.computeIfPresent("value", (k, v) -> Stream.of(v.toString().split("\n")).map(Double::valueOf)
-                .map(Double::longValue).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
-        Map<String, Object> trafficSearch =
-                makeKibanaSearch(query, ResourceFXUtils.toFile("kibana/trafficQuery.json"), "ReceiveTime",
-                        "country_code2");
-        Map<String, Object> ipInformation = VirusTotalApi.getIpTotalInfo(query);
+        Map<String, String> policiesSearch = makeKibanaSearch("kibana/policiesQuery.json", query, "key");
+        Map<String, String> accessesSearch = makeKibanaSearch("kibana/acessosQuery.json", query, "key", "doc_count");
+        Map<String, String> threatsSearch = makeKibanaSearch("kibana/threatQuery.json", query, "key");
+        Map<String, String> destinationSearch = makeKibanaSearch("kibana/destinationQuery.json", query, "key", "value");
+        destinationSearch.computeIfPresent("value",
+                (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
+        Map<String, String> trafficSearch =
+                makeKibanaSearch("kibana/trafficQuery.json", query, "ReceiveTime", "country_code2");
+        Map<String, String> ipInformation = VirusTotalApi.getIpTotalInfo(query);
         Map<String, String> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", query);
         fullScan.put("Provedor", Objects.toString(ipInformation.get("as_owner")));
@@ -75,36 +71,57 @@ public final class KibanaApi {
         return fullScan;
     }
 
-    public static Map<String, Object> makeKibanaSearch(String query, File file) {
-        return makeKibanaSearch(query, file, "key");
-    }
-    public static Map<String, Object> makeKibanaSearch(String query, File file, String... params) {
+    public static Map<String, String> makeKibanaSearch(File file, String query, String... params) {
         return SupplierEx.get(() -> {
             File outFile = newJsonFile(query + file.getName().replaceAll("\\.json", ""));
-            if (!outFile.exists()) {
+            if (!outFile.exists() || oneDayModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(1, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
-                        getContent(file, query, gte, lte), outFile);
+                        getContent(file, query, gte, lte),
+                        outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, Collections.emptyMap());
     }
 
-    private static String display(Map<String, Object> ob) {
-        List<List<String>> collect = ob.values().stream().map(Objects::toString).map(s -> Arrays.asList(s.split("\n")))
-                .collect(Collectors.toList());
+    public static Map<String, String> makeKibanaSearch(String file, String query, String... params) {
+        return makeKibanaSearch(ResourceFXUtils.toFile(file), query, params);
+    }
+
+    public static List<Map<String, String>> remap(Map<String, String> ob) {
+        List<List<String>> collect =
+                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
+        List<String> keys=ob.keySet().stream().collect(Collectors.toList());
+        List<Map<String, String>> arrayList = new ArrayList<>();
+        for (int i = 0; i < orElse; i++) {
+            Map<String, String> linkedHashMap = new LinkedHashMap<>();
+            int j=i;
+            List<String> collect2 = collect.stream().map(e -> j < e.size()?e.get(j):"").collect(Collectors.toList());
+            IntStream.range(0, keys.size()).forEach(k->{
+                linkedHashMap.put(keys.get(k), collect2.get(k));
+            });
+            arrayList.add(linkedHashMap);
+        }
+        return arrayList;
+    }
+
+    private static String display(Map<String, String> ob) {
+        List<List<String>> collect =
+                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
         int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
         return IntStream.range(0, orElse).mapToObj(
-                j -> collect.stream().filter(e -> j < e.size()).map(e -> e.get(j)).collect(Collectors.joining("    ")))
+                j -> collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
                 .distinct().collect(Collectors.joining("\n"));
-
     }
 
     private static String getContent(File file, Object... params) {
         return SupplierEx.remap(() -> {
             String string = Files.toString(file, StandardCharsets.UTF_8);
-            return String.format(string, params);
+            String format = String.format(string, params);
+            LOG.info("QUERY\n{}", format);
+            return format;
         }, "ERROR IN FILE " + file);
     }
 
@@ -128,7 +145,13 @@ public final class KibanaApi {
     }
 
     private static File newJsonFile(String string) {
-        String replaceAll = string.replaceAll("[:/]+", "_");
+        String replaceAll = string.replaceAll("[:/{}\" ]+", "_");
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
+    }
+
+    private static boolean oneDayModified(File outFile) {
+        FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
+        Instant instant = lastModifiedTime.toInstant();
+        return ChronoUnit.DAYS.between(instant, Instant.now()) > 0;
     }
 }

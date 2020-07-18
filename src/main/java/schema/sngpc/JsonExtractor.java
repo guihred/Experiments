@@ -60,11 +60,11 @@ public final class JsonExtractor {
         return yaml2.toString();
     }
 
-    public static Map<String, Object> makeMapFromJsonFile(File outFile, String... a) throws IOException {
+    public static Map<String, String> makeMapFromJsonFile(File outFile, String... a) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         // read JSON like DOM Parser
         JsonNode rootNode = objectMapper.readTree(Files.newInputStream(outFile.toPath()));
-        Map<String, Object> yaml2 = new LinkedHashMap<>();
+        Map<String, String> yaml2 = new LinkedHashMap<>();
         processNode(rootNode, yaml2, 0, a);
         return yaml2;
     }
@@ -105,7 +105,7 @@ public final class JsonExtractor {
 
     }
 
-    private static String appendJsonArray(JsonNode jsonNode, Map<String, Object> yaml, int depth,
+    private static String appendJsonArray(JsonNode jsonNode, Map<String, String> yaml, int depth,
             String... filters) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Iterator<JsonNode> iterator = jsonNode.iterator(); iterator.hasNext();) {
@@ -132,7 +132,7 @@ public final class JsonExtractor {
         yaml.append("\n" + repeat + "]");
     }
 
-    private static String appendJsonObject(JsonNode jsonNode, Map<String, Object> ob, int depth, String... filters) {
+    private static String appendJsonObject(JsonNode jsonNode, Map<String, String> ob, int depth, String... filters) {
         StringBuilder yaml = new StringBuilder();
         yaml.append("{");
         for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
@@ -193,7 +193,7 @@ public final class JsonExtractor {
         return newMap(item.getKey(), "");
     }
 
-    private static String processNode(JsonNode jsonNode, Map<String,Object> yaml, int depth, String... filters) {
+    private static String processNode(JsonNode jsonNode, Map<String, String> yaml, int depth, String... filters) {
         if (jsonNode.isValueNode()) {
             return JsonExtractor.convertObj(jsonNode);
         } else if (jsonNode.isArray()) {
