@@ -6,21 +6,40 @@
 <?import javafx.scene.text.*?>
 <?import javafx.event.*?>
 <?import javafx.scene.input.*?>
+<?import javafx.geometry.*?>
 <HBox xmlns:fx="http://javafx.com/fxml">
+	<padding>
+		<Insets topRightBottomLeft="10" />
+	</padding>
 	<children>
-		<VBox>
+		<VBox spacing="10">
 			<children>
 				<Text text="Filter Results" />
 				<TextField fx:id="resultsFilter" />
 				<Text text="IPs" />
-				<TextField fx:id="networkAddress" disable="true"/>
+				<TextField fx:id="ipsQuery" disable="true" />
+				<Text text="Consultas" />
+				<TextField fx:id="consultasQuery" disable="true" />
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
 				<Button onAction="#onActionClear" text="Clear" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
-				<ProgressIndicator fx:id="progressIndicator"
-					minHeight="40.0" minWidth="40.0" progress="0.0" />
+				<ProgressIndicator fx:id="progressIndicator" 
+					VBox.vgrow="ALWAYS" minHeight="40.0" minWidth="40.0" progress="0.0" />
 			</children>
 		</VBox>
-		<TableView fx:id="commonTable" onKeyReleased="#copyContent" />
+		<SplitPane HBox.hgrow="ALWAYS">
+			<items>
+				<VBox>
+					<Text text="Quantidade de Ips" textAlignment="CENTER" />
+					<TableView fx:id="ipsTable" onKeyReleased="#copyContent"
+						VBox.vgrow="ALWAYS" />
+				</VBox>
+				<VBox>
+					<Text text="Número de Consultas" />
+					<TableView fx:id="consultasTable" onKeyReleased="#copyContent"
+						VBox.vgrow="ALWAYS" />
+				</VBox>
+			</items>
+		</SplitPane>
 	</children>
 </HBox>

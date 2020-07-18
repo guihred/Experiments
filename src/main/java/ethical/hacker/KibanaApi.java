@@ -99,10 +99,30 @@ public final class KibanaApi {
             Map<String, String> linkedHashMap = new LinkedHashMap<>();
             int j=i;
             List<String> collect2 = collect.stream().map(e -> j < e.size()?e.get(j):"").collect(Collectors.toList());
-            IntStream.range(0, keys.size()).forEach(k->{
-                linkedHashMap.put(keys.get(k), collect2.get(k));
-            });
+            IntStream.range(0, keys.size()).forEach(k -> linkedHashMap.put(keys.get(k), collect2.get(k)));
             arrayList.add(linkedHashMap);
+        }
+        return arrayList;
+    }
+
+    public static List<Map<String, String>> remap(Map<String, String> ob, int group) {
+        List<List<String>> collect =
+                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
+        List<String> keys = ob.keySet().stream().collect(Collectors.toList());
+        List<Map<String, String>> arrayList = new ArrayList<>();
+        for (int i = 0; i < orElse; i++) {
+
+            Map<String, String> linkedHashMap = i % group == 0 ? new LinkedHashMap<>() : arrayList.get(i / group);
+            int j = i;
+            List<String> collect2 =
+                    collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
+            IntStream.range(0, keys.size()).forEach(k -> {
+                linkedHashMap.put(keys.get(k) + j % group, collect2.get(k));
+            });
+            if (i % group == 0) {
+                arrayList.add(linkedHashMap);
+            }
         }
         return arrayList;
     }

@@ -3,6 +3,7 @@ package extract;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
@@ -26,7 +27,7 @@ public final class ExcelService {
     }
 
     public static <T> void getExcel(BiFunction<Integer, Integer, List<T>> lista,
-        Map<String, FunctionEx<T, Object>> fields, File file) {
+            Map<String, FunctionEx<T, Object>> fields, File file) {
         RunnableEx.run(() -> makeBigExcel(lista, fields, file));
     }
 
@@ -34,8 +35,12 @@ public final class ExcelService {
         RunnableEx.run(() -> makeExcelList(lista, mapa, file));
     }
 
+    public static <T> void getExcel(Map<String, List<T>> lista, Map<String, FunctionEx<T, Object>> mapa, File file) {
+        RunnableEx.run(() -> makeMultiTabExcel(lista, mapa, file));
+    }
+
     public static void getExcel(String documento, Map<Object, Object> map, List<String> abas, int sheetClonada,
-        OutputStream response) {
+            OutputStream response) {
         RunnableEx.run(() -> makeExcelWithClonedSheets(documento, map, abas, sheetClonada, response));
     }
 
@@ -48,7 +53,7 @@ public final class ExcelService {
         ObservableList<String> list = FXCollections.observableArrayList();
         RunnableEx.runInPlatform(() -> {
             try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
-                Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
+                    Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
                 int numberOfSheets = workbook.getNumberOfSheets();
                 for (int i = 0; i < numberOfSheets; i++) {
                     list.add(workbook.getSheetAt(i).getSheetName());
@@ -74,7 +79,6 @@ public final class ExcelService {
             alterString(map, sheet, row, c);
         }
     }
-
 
     @SuppressWarnings("rawtypes")
     private static void alterNumeric(Map<Object, Object> map, Sheet sheet, Cell cell) {
@@ -136,9 +140,9 @@ public final class ExcelService {
     }
 
     private static <T> void makeBigExcel(BiFunction<Integer, Integer, List<T>> lista,
-        Map<String, FunctionEx<T, Object>> fields, File file) throws IOException {
+            Map<String, FunctionEx<T, Object>> fields, File file) throws IOException {
         try (FileOutputStream response = new FileOutputStream(file);
-            SXSSFWorkbook xssfWorkbook = new SXSSFWorkbook(DEFAULT_ROW_SIZE)) {
+                SXSSFWorkbook xssfWorkbook = new SXSSFWorkbook(DEFAULT_ROW_SIZE)) {
             SXSSFSheet sheetAt = xssfWorkbook.createSheet();
             sheetAt.trackAllColumnsForAutoSizing();
             Row row2 = sheetAt.createRow(0);
@@ -170,7 +174,7 @@ public final class ExcelService {
     }
 
     private static <T> void makeExcelList(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, File file)
-        throws IOException {
+            throws IOException {
         try (FileOutputStream response = new FileOutputStream(file); Workbook workbook = new XSSFWorkbook()) {
             Sheet sheetAt = workbook.createSheet();
             Row row2 = sheetAt.createRow(0);
@@ -206,15 +210,15 @@ public final class ExcelService {
     }
 
     private static void makeExcelWithClonedSheets(String documento, Map<Object, Object> map, List<String> abas,
-        int sheetClonada, OutputStream response) throws IOException {
+            int sheetClonada, OutputStream response) throws IOException {
         try (InputStream file = ResourceFXUtils.toStream(documento);
-            Workbook workbookXLSX = getWorkbook(documento, file)) {
+                Workbook workbookXLSX = getWorkbook(documento, file)) {
             List<String> abasPresentes = new ArrayList<>();
             for (int i = 0; i < workbookXLSX.getNumberOfSheets(); i++) {
                 abasPresentes.add(workbookXLSX.getSheetName(i));
             }
-            List<String> abasAdicionadas = abas.stream().filter(s -> !abasPresentes.contains(s))
-                .collect(Collectors.toList());
+            List<String> abasAdicionadas =
+                    abas.stream().filter(s -> !abasPresentes.contains(s)).collect(Collectors.toList());
             for (String aba : abasAdicionadas) {
                 Sheet cloneSheet = workbookXLSX.cloneSheet(sheetClonada);
                 String sheetName = cloneSheet.getSheetName();
@@ -243,10 +247,10 @@ public final class ExcelService {
     }
 
     private static void makeExcelWithSubstitutions(String arquivo, Map<Object, Object> map, OutputStream outStream)
-        throws IOException {
+            throws IOException {
         try (InputStream file = ResourceFXUtils.toStream(arquivo);
-            // Get the workbook instance for XLS file
-            Workbook workbookXLSX = getWorkbook(arquivo, file)) {
+                // Get the workbook instance for XLS file
+                Workbook workbookXLSX = getWorkbook(arquivo, file)) {
             // Get first sheet from the workbook
             Sheet sheet = workbookXLSX.getSheetAt(0);
             // Get iterator to all the rows in current sheet
@@ -259,6 +263,46 @@ public final class ExcelService {
             }
             BaseFormulaEvaluator.evaluateAllFormulaCells(workbookXLSX);
             workbookXLSX.write(outStream);
+        }
+    }
+
+    private static <T> void makeMultiTabExcel(Map<String, List<T>> lista, Map<String, FunctionEx<T, Object>> mapa,
+            File file) throws IOException {
+        try (FileOutputStream response = new FileOutputStream(file); Workbook workbook = new XSSFWorkbook()) {
+            Set<Entry<String, List<T>>> entrySet = lista.entrySet();
+            for (Entry<String, List<T>> entry : entrySet) {
+
+                Sheet sheetAt = workbook.createSheet(entry.getKey());
+                Row row2 = sheetAt.createRow(0);
+                Set<String> keySet = mapa.keySet();
+                boolean addHeader = !keySet.stream().allMatch(StringUtils::isNumeric);
+                if (addHeader) {
+                    int j = 0;
+                    for (String titulo : keySet) {
+                        row2.createCell(j, CellType.STRING).setCellValue(titulo);
+                        j++;
+                    }
+                }
+                Map<Class<?>, CellStyle> formatMap = styleMap(workbook);
+
+                for (int i = 0; i < entry.getValue().size(); i++) {
+                    T entidade = entry.getValue().get(i);
+                    Row row = sheetAt.createRow(i + (addHeader ? 1 : 0));
+                    int k = 0;
+                    for (FunctionEx<T, Object> campoFunction : mapa.values()) {
+                        Object campo = FunctionEx.makeFunction(campoFunction).apply(entidade);
+                        setValorPorClasse(formatMap, row, k, campo);
+                        k++;
+                    }
+
+                }
+                for (int k = 0; k < mapa.size(); k++) {
+                    sheetAt.autoSizeColumn(k);
+                }
+            }
+
+            workbook.write(response);
+
         }
     }
 
@@ -290,7 +334,7 @@ public final class ExcelService {
             createCell.setCellValue(string.replaceAll("\n", "\r\n").replaceAll("\t", ""));
             createCell.setCellStyle(formatMap.get(String.class));
             row.setHeightInPoints(Math.max(row.getHeightInPoints(),
-                row.getSheet().getDefaultRowHeightInPoints() * string.replaceAll("[^\n]", "").length()));
+                    row.getSheet().getDefaultRowHeightInPoints() * string.replaceAll("[^\n]", "").length()));
             return;
         }
         if (content instanceof Boolean) {
