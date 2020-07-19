@@ -69,6 +69,15 @@ public final class JsonExtractor {
         return yaml2;
     }
 
+    public static Map<String, String> makeMapFromJsonFile(String fileContent, String... a) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // read JSON like DOM Parser
+        JsonNode rootNode = objectMapper.readTree(fileContent);
+        Map<String, String> yaml2 = new LinkedHashMap<>();
+        processNode(rootNode, yaml2, 0, a);
+        return yaml2;
+    }
+
     public static Map.Entry<String, String> newEntry(String key, String value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }

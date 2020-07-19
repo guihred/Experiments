@@ -28,12 +28,6 @@
     "bool": {
       "must": [
         {
-          "match_all": {}
-        },
-        {
-          "match_all": {}
-        },
-        {
           "match_phrase": {
             "SourceIP": {
               "query": "%s"

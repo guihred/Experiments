@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -22,15 +23,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import schema.sngpc.JsonExtractor;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
 
 public class ConsultasInvestigator extends Application {
     private static final String USER_NAME_QUERY =
             "{\"match_phrase\": {\"http.user-name.keyword\": {\"query\": \"%s\"}}},";
-
-    private static final String CONSULTAS_QUERY =
-            "{\"match_phrase\": {\"mdc.uid.keyword\": {\"query\": \"%s\"}}},";
+    private static final String CONSULTAS_QUERY = "{\"match_phrase\": {\"clientip.keyword\": {\"query\": \"%s\"}}},";
     private static final String ACESSOS_SISTEMA_QUERY =
             "{\"match_phrase\": {\"dtpsistema.keyword\": {\"query\": \"%s\"}}},";
     private static final int WIDTH = 600;
@@ -43,6 +43,8 @@ public class ConsultasInvestigator extends Application {
     @FXML
     private Text acessosSistemaQuery;
     @FXML
+    private ComboBox<String> fields;
+    @FXML
     private Text pathsQuery;
     @FXML
     private ProgressIndicator progressIndicator;
@@ -54,7 +56,7 @@ public class ConsultasInvestigator extends Application {
     private TableView<Map<String, String>> consultasTable;
     @FXML
     private TableView<Map<String, String>> pathsTable;
-    private List<QueryObjects> list = new ArrayList<>();
+    private List<QueryObjects> queryList = new ArrayList<>();
 
     @SuppressWarnings({ "static-method", "unchecked" })
     public void copyContent(KeyEvent ev) {
@@ -73,30 +75,29 @@ public class ConsultasInvestigator extends Application {
     public void initialize() {
         configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, ipsQuery, "key", "value");
         configureTable(CONSULTAS_QUERY, "consultasQuery.json", consultasTable, consultasQuery, "key", "doc_count")
-                .setGroup("\\d{11}");
+        ;
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, acessosSistemaQuery,
                 "key", "doc_count");
-        configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, pathsQuery, "key",
-                "doc_count").setGroup("[^\\/\\?\\d]+");
+        configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, pathsQuery, "key", "doc_count")
+                .setGroup("[^\\/\\?\\d]+");
     }
 
     public void onActionClear() {
         resultsFilter.setText("");
-        list.forEach(e -> e.getQueryField().setText(""));
+        queryList.forEach(e -> e.getQueryField().setText(""));
         onActionKibanaScan();
     }
 
     public void onActionKibanaScan() {
         RunnableEx.runNewThread(() -> {
             RunnableEx.runInPlatform(() -> progressIndicator.setProgress(0));
-            for (QueryObjects queryObjects : list) {
+            for (QueryObjects queryObjects : queryList) {
                 RunnableEx.runInPlatform(() -> queryObjects.getItems().clear());
                 Map<String, String> nsInformation = KibanaApi.makeKibanaSearch("kibana/" + queryObjects.getQueryFile(),
                         queryObjects.getQueryField().getText(), queryObjects.getParams());
                 RunnableEx.runInPlatform(() -> {
-                    progressIndicator.setProgress(progressIndicator.getProgress() + 1. / list.size());
-                    List<Map<String, String>> remap =
-                            KibanaApi.remap(nsInformation, queryObjects.getGroup());
+                    progressIndicator.setProgress(progressIndicator.getProgress() + 1. / queryList.size());
+                    List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
                     if (queryObjects.getTable().getColumns().isEmpty()) {
                         EthicalHackApp.addColumns(queryObjects.getTable(), remap.stream()
                                 .flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList()));
@@ -111,10 +112,9 @@ public class ConsultasInvestigator extends Application {
     public void onExportExcel() {
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
         Map<String, List<Map<String, String>>> collect =
-                list.stream().collect(Collectors.toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
-        List<String> collect2 = list.stream().flatMap(e -> e.getTable().getColumns().stream())
-                .map(TableColumn<Map<String, String>, ?>::getText)
-                .distinct().collect(Collectors.toList());
+                queryList.stream().collect(Collectors.toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
+        List<String> collect2 = queryList.stream().flatMap(e -> e.getTable().getColumns().stream())
+                .map(TableColumn<Map<String, String>, ?>::getText).distinct().collect(Collectors.toList());
         for (String text : collect2) {
             mapa.put(text, t -> t.getOrDefault(text, ""));
         }
@@ -128,11 +128,23 @@ public class ConsultasInvestigator extends Application {
         CommonsFX.loadFXML("Consultas Investigator", "ConsultasInvestigator.fxml", this, primaryStage, WIDTH, WIDTH);
     }
 
+    private void addFields(String queryFile) {
+        RunnableEx.run(() -> {
+            String content = KibanaApi.getContent(ResourceFXUtils.toFile("kibana/" + queryFile), "", "1", "1");
+            Map<String, String> makeMapFromJsonFile =
+                    JsonExtractor.makeMapFromJsonFile(content, "field");
+            List<String> collect = makeMapFromJsonFile.values().stream().flatMap(e -> Stream.of(e.split("\n")))
+                    .distinct().filter(s -> !fields.getItems().contains(s)).collect(Collectors.toList());
+            fields.getItems().addAll(collect);
+        });
+    }
+
     private QueryObjects configureTable(String userNameQuery, String queryFile,
             TableView<Map<String, String>> ipsTable2, Text networkAddress2, String... params) {
         QueryObjects fieldObjects = new QueryObjects(userNameQuery, queryFile, networkAddress2, ipsTable2, params);
         ObservableList<Map<String, String>> ipItems2 = fieldObjects.getItems();
-        list.add(fieldObjects);
+        queryList.add(fieldObjects);
+        addFields(queryFile);
         final int columnWidth = 120;
         ipsTable2.prefWidthProperty()
                 .bind(Bindings.selectDouble(ipsTable2.parentProperty(), "width").add(-columnWidth));
@@ -145,7 +157,7 @@ public class ConsultasInvestigator extends Application {
         SimpleTableViewBuilder.onDoubleClick(ipsTable2, e -> {
             String format = String.format(userNameQuery, e.values().stream().findFirst().orElse("key"));
             networkAddress2.setText(format);
-            list.forEach(r -> r.getQueryField().setText(format));
+            queryList.forEach(r -> r.getQueryField().setText(format));
 
             onActionKibanaScan();
         });

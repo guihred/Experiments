@@ -5,6 +5,7 @@
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.event.*?>
+<?import javafx.collections.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.geometry.*?>
 <HBox xmlns:fx="http://javafx.com/fxml">
@@ -16,6 +17,13 @@
 			<children>
 				<Text text="Filter Results" />
 				<TextField fx:id="resultsFilter" />
+				<ComboBox fx:id="fields" value="">
+					<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="" />
+						</FXCollections>
+					</items>
+				</ComboBox>
 
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
 				<Button onAction="#onActionClear" text="Clear" />

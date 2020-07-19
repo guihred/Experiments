@@ -1,67 +1,63 @@
 {
-  "aggs": {
-    "2": {
-      "terms": {
-        "field": "dtpsistema.keyword",
-        "size": 50,
-        "order": {
-          "_count": "desc"
-        }
-      },
-            "aggs": {
-                "1": {
-                    "cardinality": {
-                        "field": "clientip.keyword"
-                    }
-                }
-            }
-    }
-  },
-  "size": 0,
-  "_source": {
-    "excludes": []
-  },
-  "stored_fields": [
-    "*"
-  ],
-  "script_fields": {},
-  "docvalue_fields": [
-    {
-      "field": "@timestamp",
-      "format": "date_time"
-    }
-  ],
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "match_all": {}
-        },
-        {
-          "match_all": {}
-        },
-        %s
-        {
-          "range": {
-            "@timestamp": {
-              "gte": %s,
-              "lte": %s,
-              "format": "epoch_millis"
-            }
-          }
-        }
-      ],
-      "filter": [],
-      "should": [],
-      "must_not": [
-        {
-          "match_phrase": {
-            "clientip.keyword": {
-              "query": "189.9.32.130"
-            }
-          }
-        }
-      ]
-    }
-  }
+	"aggs": {
+		"2": {
+			"terms": {
+				"field": "dtpsistema.keyword",
+				"size": 50,
+				"order": {
+					"_count": "desc"
+				}
+			},
+			"aggs": {
+				"1": {
+					"cardinality": {
+						"field": "clientip.keyword" 
+					}
+				}
+			}
+		}
+	},
+	"size": 0,
+	"_source": {
+		"excludes": []
+	},
+	"stored_fields": [
+		"*"
+	],
+	"script_fields": {
+		
+	},
+	"docvalue_fields": [
+		{
+			"field": "@timestamp",
+			"format": "date_time"
+		}
+	],
+	"query": {
+		"bool": {
+			"must": [
+				%s
+				{
+					"range": {
+						"@timestamp": {
+							"gte": %s,
+							"lte": %s,
+							"format": "epoch_millis"
+						}
+					}
+				}
+			],
+			"filter": [],
+			"should": [],
+			"must_not": [
+				{
+					"match_phrase": {
+						"clientip.keyword": {
+							"query": "189.9.32.130"
+						}
+					}
+				}
+			]
+		}
+	}
 }

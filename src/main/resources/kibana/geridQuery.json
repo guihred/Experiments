@@ -43,9 +43,8 @@
 						"analyze_wildcard": true,
 						"default_field": "*"
 					}
-				},
-                %s
-                {
+				},%s
+				{
 					"range": {
 						"@timestamp": {
 							"gte": %s,

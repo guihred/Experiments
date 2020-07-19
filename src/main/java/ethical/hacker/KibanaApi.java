@@ -43,6 +43,15 @@ public final class KibanaApi {
     private KibanaApi() {
     }
 
+    public static String getContent(File file, Object... params) {
+        return SupplierEx.remap(() -> {
+            String string = Files.toString(file, StandardCharsets.UTF_8);
+            String format = String.format(string, params);
+            LOG.info("QUERY\n{}", format);
+            return format;
+        }, "ERROR IN FILE " + file);
+    }
+
     public static Map<String, String> kibanaFullScan(String query) {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
@@ -119,15 +128,6 @@ public final class KibanaApi {
         return IntStream.range(0, orElse).mapToObj(
                 j -> collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
                 .distinct().collect(Collectors.joining("\n"));
-    }
-
-    private static String getContent(File file, Object... params) {
-        return SupplierEx.remap(() -> {
-            String string = Files.toString(file, StandardCharsets.UTF_8);
-            String format = String.format(string, params);
-            LOG.info("QUERY\n{}", format);
-            return format;
-        }, "ERROR IN FILE " + file);
     }
 
     private static void getFromURL(String url, String content, File outFile) throws IOException {

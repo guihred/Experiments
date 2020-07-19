@@ -40,7 +40,6 @@
 	"query": {
 		"bool": {
 			"must": [
-			
 				%s
 				{
 					"range": {
