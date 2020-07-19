@@ -2,23 +2,26 @@
 	"aggs": {
 		"2": {
 			"terms": {
-				"field": "http.user-name.keyword",
+				"field": "dtpsistema.keyword",
 				"size": 50,
 				"order": {
-					"1": "desc"
+					"_count": "desc"
 				}
 			},
 			"aggs": {
-				"1": {
-					"cardinality": {
-						"field": "clientip.keyword"
+				"3": {
+					"terms": {
+						"field": "request.keyword",
+						"size": 50,
+						"order": {
+							"_count": "desc"
+						}
 					}
 				}
 			}
 		}
 	},
 	"size": 0,
-	"version": true,
 	"_source": {
 		"excludes": []
 	},
@@ -37,20 +40,21 @@
 	"query": {
 		"bool": {
 			"must": [
+			
+				%s
 				{
-					"query_string": {
-						"query": "policy-name:\"Dataprev_GeridINSS_Monitor_User\" OR policy-name:\"Dataprev_GeridINSS_Monitor_AGU\"",
-						"analyze_wildcard": true,
-						"default_field": "*"
-					}
-				},
-                %s
-                {
 					"range": {
 						"@timestamp": {
 							"gte": %s,
 							"lte": %s,
 							"format": "epoch_millis"
+						}
+					}
+				},
+				{
+					"match_phrase": {
+						"dtpcategoria": {
+							"query": "access"
 						}
 					}
 				}
@@ -67,19 +71,5 @@
 				}
 			]
 		}
-	},
-	"highlight": {
-		"pre_tags": [
-			"@kibana-highlighted-field@"
-		],
-		"post_tags": [
-			"@/kibana-highlighted-field@"
-		],
-		"fields": {
-			"*": {
-				
-			}
-		},
-		"fragment_size": 2147483647
 	}
 }

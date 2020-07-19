@@ -78,8 +78,7 @@ public final class KibanaApi {
                 String gte = Objects.toString(Instant.now().minus(1, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
-                        getContent(file, query, gte, lte),
-                        outFile);
+                        getContent(file, query, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, Collections.emptyMap());
@@ -89,38 +88,24 @@ public final class KibanaApi {
         return makeKibanaSearch(ResourceFXUtils.toFile(file), query, params);
     }
 
-    public static List<Map<String, String>> remap(Map<String, String> ob) {
-        List<List<String>> collect =
-                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
-        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
-        List<String> keys=ob.keySet().stream().collect(Collectors.toList());
-        List<Map<String, String>> arrayList = new ArrayList<>();
-        for (int i = 0; i < orElse; i++) {
-            Map<String, String> linkedHashMap = new LinkedHashMap<>();
-            int j=i;
-            List<String> collect2 = collect.stream().map(e -> j < e.size()?e.get(j):"").collect(Collectors.toList());
-            IntStream.range(0, keys.size()).forEach(k -> linkedHashMap.put(keys.get(k), collect2.get(k)));
-            arrayList.add(linkedHashMap);
+    public static List<Map<String, String>> remap(Map<String, String> ob, String regex) {
+        if (StringUtils.isBlank(regex)) {
+            return remap(ob);
         }
-        return arrayList;
-    }
-
-    public static List<Map<String, String>> remap(Map<String, String> ob, int group) {
         List<List<String>> collect =
                 ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
         int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
         List<String> keys = ob.keySet().stream().collect(Collectors.toList());
         List<Map<String, String>> arrayList = new ArrayList<>();
         for (int i = 0; i < orElse; i++) {
-
-            Map<String, String> linkedHashMap = i % group == 0 ? new LinkedHashMap<>() : arrayList.get(i / group);
             int j = i;
             List<String> collect2 =
                     collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
-            IntStream.range(0, keys.size()).forEach(k -> {
-                linkedHashMap.put(keys.get(k) + j % group, collect2.get(k));
-            });
-            if (i % group == 0) {
+            Map<String, String> linkedHashMap =
+                    collect2.get(0).matches(regex) || arrayList.isEmpty() ? new LinkedHashMap<>()
+                            : arrayList.get(arrayList.size() - 1);
+            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, linkedHashMap, k));
+            if (!arrayList.contains(linkedHashMap) && collect2.get(0).matches(regex)) {
                 arrayList.add(linkedHashMap);
             }
         }
@@ -164,6 +149,17 @@ public final class KibanaApi {
                 "não");
     }
 
+    private static void merge(String regex, List<String> keys, List<String> collect2,
+            Map<String, String> linkedHashMap, int k) {
+        int l = 0;
+        for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
+            if (!linkedHashMap.get(keys.get(k) + l).matches(regex)) {
+                break;
+            }
+        }
+        linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
+    }
+
     private static File newJsonFile(String string) {
         String replaceAll = string.replaceAll("[:/{}\" ]+", "_");
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
@@ -172,6 +168,24 @@ public final class KibanaApi {
     private static boolean oneDayModified(File outFile) {
         FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
         Instant instant = lastModifiedTime.toInstant();
-        return ChronoUnit.DAYS.between(instant, Instant.now()) > 0;
+        long between = ChronoUnit.HOURS.between(instant, Instant.now());
+        return between > 12;
+    }
+
+    private static List<Map<String, String>> remap(Map<String, String> ob) {
+        List<List<String>> collect =
+                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
+        List<String> keys = ob.keySet().stream().collect(Collectors.toList());
+        List<Map<String, String>> arrayList = new ArrayList<>();
+        for (int i = 0; i < orElse; i++) {
+            Map<String, String> linkedHashMap = new LinkedHashMap<>();
+            int j = i;
+            List<String> collect2 =
+                    collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
+            IntStream.range(0, keys.size()).forEach(k -> linkedHashMap.put(keys.get(k), collect2.get(k)));
+            arrayList.add(linkedHashMap);
+        }
+        return arrayList;
     }
 }

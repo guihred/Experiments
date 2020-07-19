@@ -16,29 +16,51 @@
 			<children>
 				<Text text="Filter Results" />
 				<TextField fx:id="resultsFilter" />
-				<Text text="IPs" />
-				<TextField fx:id="ipsQuery" disable="true" />
-				<Text text="Consultas" />
-				<TextField fx:id="consultasQuery" disable="true" />
+
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
 				<Button onAction="#onActionClear" text="Clear" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
-				<ProgressIndicator fx:id="progressIndicator" 
+				<ProgressIndicator fx:id="progressIndicator"
 					VBox.vgrow="ALWAYS" minHeight="40.0" minWidth="40.0" progress="0.0" />
 			</children>
 		</VBox>
-		<SplitPane HBox.hgrow="ALWAYS">
+		<SplitPane HBox.hgrow="ALWAYS" orientation="VERTICAL">
 			<items>
-				<VBox>
-					<Text text="Quantidade de Ips" textAlignment="CENTER" />
-					<TableView fx:id="ipsTable" onKeyReleased="#copyContent"
-						VBox.vgrow="ALWAYS" />
-				</VBox>
-				<VBox>
-					<Text text="Número de Consultas" />
-					<TableView fx:id="consultasTable" onKeyReleased="#copyContent"
-						VBox.vgrow="ALWAYS" />
-				</VBox>
+				<SplitPane HBox.hgrow="ALWAYS">
+					<items>
+						<VBox>
+							<Text text="Gerid INSS - Usuário x Qtde IPs de Origem"
+								textAlignment="CENTER" />
+							<Text fx:id="ipsQuery" />
+							<TableView fx:id="ipsTable" onKeyReleased="#copyContent"
+								VBox.vgrow="ALWAYS" />
+						</VBox>
+						<VBox>
+							<Text text="Usuários x Número consultas" />
+
+							<Text fx:id="consultasQuery" />
+							<TableView fx:id="consultasTable" onKeyReleased="#copyContent"
+								VBox.vgrow="ALWAYS" />
+						</VBox>
+					</items>
+				</SplitPane>
+				<SplitPane HBox.hgrow="ALWAYS">
+					<items>
+						<VBox>
+							<Text text="Acessos por Sistema" textAlignment="CENTER" />
+
+							<Text fx:id="acessosSistemaQuery" />
+							<TableView fx:id="acessosSistemaTable" onKeyReleased="#copyContent"
+								VBox.vgrow="ALWAYS" />
+						</VBox>
+						<VBox>
+							<Text text="Requisições por Sistema" />
+							<Text fx:id="pathsQuery" />
+							<TableView fx:id="pathsTable" onKeyReleased="#copyContent"
+								VBox.vgrow="ALWAYS" />
+						</VBox>
+					</items>
+				</SplitPane>
 			</items>
 		</SplitPane>
 	</children>
