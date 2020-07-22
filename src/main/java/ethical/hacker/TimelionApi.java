@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
@@ -53,34 +54,38 @@ public final class TimelionApi {
     public static String getContent(File file, Object... params) {
         return SupplierEx.remap(() -> {
             String string = Files.toString(file, StandardCharsets.UTF_8);
-            return String.format(string, params);
+
+            String format = String.format(string, params);
+            LOG.info(format);
+            return format;
         }, "ERROR IN FILE " + file);
     }
 
     public static void main(String[] args) {
-        TimelionApi.timelionFullScan("first");
+        TimelionApi.timelionFullScan("", "now-1d");
     }
 
-    public static Object maketimelionSearch(File file, int days, String query) {
+    public static Object maketimelionSearch(File file, String ip, String query) {
         return SupplierEx.get(() -> {
-            File outFile = newJsonFile(query + file.getName().replaceAll("\\.json", "") + days);
+            File outFile = newJsonFile(
+                    Stream.of(ip, query).collect(Collectors.joining()) + file.getName().replaceAll("\\.json", ""));
             if (!outFile.exists() || oneDayModified(outFile)) {
-                String content = getContent(file, query);
+                String s = StringUtils.isNotBlank(ip)
+                        ? String.format("{\"match_phrase\": {\"mdc.uid.keyword\": {\"query\": \"%s\"}}},", ip)
+                        : "";
+                String content = getContent(file, s, query);
                 getFromURL("https://n321p000124.fast.prevnet/api/timelion/run", content, outFile);
             }
             return JsonExtractor.toObject(outFile);
         });
     }
 
-    public static ObservableList<XYChart.Series<Number, Number>> timelionFullScan(String query) {
-        if (StringUtils.isBlank(query)) {
-            return FXCollections.emptyObservableList();
-        }
-        Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"), 1, query);
-        Object access = access(policiesSearch, "sheet");
-        LOG.info("{}", access);
-
-        return extracted(access);
+    public static ObservableList<XYChart.Series<Number, Number>> timelionFullScan(String ip, String query) {
+        return SupplierEx.get(() -> {
+            Object policiesSearch =
+                    maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"), ip, query);
+            return convertToSeries(access(policiesSearch, "sheet"));
+        }, FXCollections.emptyObservableList());
     }
 
     @SuppressWarnings("rawtypes")
@@ -93,21 +98,18 @@ public final class TimelionApi {
             if (object instanceof Integer) {
                 o = ((List) o).get(((Integer) object).intValue());
             }
-            if (o == null) {
-                return null;
-            }
         }
         return o;
 
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static ObservableList<XYChart.Series<Number, Number>> extracted(Object access) {
+    @SuppressWarnings({ "unchecked" })
+    private static ObservableList<XYChart.Series<Number, Number>> convertToSeries(Object access) {
         return ((List<Object>) access).stream().flatMap(e -> ((List<Object>) access(e, "list")).stream())
                 .map((Object o) -> {
                     XYChart.Series<Number, Number> java = new XYChart.Series<>();
                     java.setName(Objects.toString(access(o, "label")));
-                    ((List) access(o, "data")).stream().filter(f -> !"0".equals(access(f, 1))).forEach(f -> {
+                    ((List<Object>) access(o, "data")).stream().forEach(f -> {
                         Long access2 = Long.valueOf(Objects.toString(access(f, 0)));
                         Long access3 = Long.valueOf(Objects.toString(access(f, 1)));
                         java.getData().add(new XYChart.Data<>(access2, access3));

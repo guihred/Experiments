@@ -40,17 +40,17 @@ public class LineChartExample extends Application {
             }
         });
         LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
-        ObservableList<Series<Number, Number>> timelionFullScan = TimelionApi.timelionFullScan("first");
-        timelionFullScan.get(0).setNode(null);
+        ObservableList<Series<Number, Number>> timelionFullScan = TimelionApi.timelionFullScan("03113712998", "now-d");
         lineChart.setData(timelionFullScan);
         lineChart.setCreateSymbols(false);
-        lineChart.setTitle("speculations");
+        lineChart.setTitle("[Sistemas] [SatCentral] Timeline Usuários");
         lineChart.setVerticalZeroLineVisible(false);
         primaryStage.setTitle("LineChart example");
         StackPane root = new StackPane();
         root.getChildren().add(lineChart);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+
     }
 
     public static void main(String[] args) {
