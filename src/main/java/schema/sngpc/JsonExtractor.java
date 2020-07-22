@@ -91,6 +91,12 @@ public final class JsonExtractor {
         remap(() -> tryToRead(build, allItems, file), "ERROR READING");
     }
 
+    public static Object toObject(File file) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // read JSON like DOM Parser
+        JsonNode rootNode = objectMapper.readTree(Files.newInputStream(file.toPath()));
+        return toObject(rootNode, 0);
+    }
     public static Object toObject(JsonNode jsonNode, int depth) {
         if (jsonNode.isValueNode()) {
             return convertObj(jsonNode);

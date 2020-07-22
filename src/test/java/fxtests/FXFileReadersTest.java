@@ -3,6 +3,7 @@ package fxtests;
 import com.google.common.collect.ImmutableMap;
 import ethical.hacker.DocumentHelper;
 import ethical.hacker.ImageCracker;
+import ethical.hacker.KibanaApi;
 import extract.ExcelService;
 import extract.WordService;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import ml.data.CSVUtils;
@@ -173,6 +175,28 @@ public class FXFileReadersTest extends AbstractTestExecution {
     }
 
     @Test
+    public void testLoadKibanaApi() {
+        measureTime("ExcelService.getExcel",()->ExcelService.getExcel(ResourceFXUtils.toFile("Lista de IP da Caixa.xlsx"), (List<Object> l) -> {
+            if (l.isEmpty()) {
+                return null;
+            }
+            long count = l.stream().filter(Objects::nonNull).count();
+            if (count != 1) {
+                return null;
+            }
+            String string = convert(l.get(0));
+            if (string.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
+                Map<String, String> kibanaFullScan = KibanaApi.kibanaFullScan(string);
+                List<String> collect = kibanaFullScan.values().stream().collect(Collectors.toList());
+                collect.add(1, "Guilherme");
+                return collect;
+            }
+            return null;
+        }, ResourceFXUtils.getOutFile("apiResult2.xlsx"))
+                );
+    }
+
+    @Test
     public void testRar() {
         measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
         File userFolder = ResourceFXUtils.getOutFile().getParentFile();
@@ -188,6 +212,14 @@ public class FXFileReadersTest extends AbstractTestExecution {
     @Test
     public void testZIP() {
         measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
+    }
+
+    private static String convert(Object o) {
+        if (o instanceof Double) {
+            long longValue = ((Double) o).longValue();
+            return String.format(Locale.getDefault(), "%,d", longValue);
+        }
+        return Objects.toString(o, "");
     }
 
 }

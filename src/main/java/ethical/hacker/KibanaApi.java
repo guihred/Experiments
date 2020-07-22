@@ -46,9 +46,7 @@ public final class KibanaApi {
     public static String getContent(File file, Object... params) {
         return SupplierEx.remap(() -> {
             String string = Files.toString(file, StandardCharsets.UTF_8);
-            String format = String.format(string, params);
-            LOG.info("QUERY\n{}", format);
-            return format;
+            return String.format(string, params);
         }, "ERROR IN FILE " + file);
     }
 
@@ -64,6 +62,8 @@ public final class KibanaApi {
                 (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
         Map<String, String> trafficSearch =
                 makeKibanaSearch("kibana/trafficQuery.json", query, "ReceiveTime", "country_code2");
+        trafficSearch.computeIfPresent("ReceiveTime",
+                (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
         Map<String, String> ipInformation = VirusTotalApi.getIpTotalInfo(query);
         Map<String, String> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", query);
@@ -73,24 +73,28 @@ public final class KibanaApi {
         fullScan.put("Talos Blacklist", isInBlacklist(query));
         fullScan.put("Bloqueio WAF", display(policiesSearch));
         fullScan.put("Palo Alto Threat", display(threatsSearch));
-        LOG.info("KIBANA RESULT{}", fullScan);
         fullScan.put("TOP Conexão FW", display(destinationSearch));
         fullScan.put("TOP conexões WEB", display(accessesSearch));
         fullScan.put("Ultimo Acesso", display(trafficSearch));
+        LOG.info("KIBANA RESULT{}", fullScan);
         return fullScan;
     }
 
-    public static Map<String, String> makeKibanaSearch(File file, String query, String... params) {
+    public static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
         return SupplierEx.get(() -> {
-            File outFile = newJsonFile(query + file.getName().replaceAll("\\.json", ""));
+            File outFile = newJsonFile(query + file.getName().replaceAll("\\.json", "") + days);
             if (!outFile.exists() || oneDayModified(outFile)) {
-                String gte = Objects.toString(Instant.now().minus(1, ChronoUnit.DAYS).toEpochMilli());
+                String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
                         getContent(file, query, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, Collections.emptyMap());
+    }
+
+    public static Map<String, String> makeKibanaSearch(File file, String query, String... params) {
+        return makeKibanaSearch(file, 1, query, params);
     }
 
     public static Map<String, String> makeKibanaSearch(String file, String query, String... params) {
@@ -149,8 +153,8 @@ public final class KibanaApi {
                 "não");
     }
 
-    private static void merge(String regex, List<String> keys, List<String> collect2,
-            Map<String, String> linkedHashMap, int k) {
+    private static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
+            int k) {
         int l = 0;
         for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
             if (!linkedHashMap.get(keys.get(k) + l).matches(regex)) {

@@ -16,7 +16,7 @@
 				<TextField fx:id="networkAddress" />
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
-				<ProgressIndicator fx:id="progressIndicator"
+				<ProgressIndicator fx:id="progressIndicator" VBox.vgrow="ALWAYS"
 					minHeight="40.0" minWidth="40.0" progress="0.0" />
 			</children>
 		</VBox>

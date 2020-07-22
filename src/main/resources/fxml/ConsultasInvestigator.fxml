@@ -24,6 +24,19 @@
 						</FXCollections>
 					</items>
 				</ComboBox>
+				<ComboBox fx:id="days" value="1">
+					<items>
+						<FXCollections fx:factory="observableArrayList">
+							<Integer fx:value="1" />
+							<Integer fx:value="2" />
+							<Integer fx:value="3" />
+							<Integer fx:value="4" />
+							<Integer fx:value="5" />
+							<Integer fx:value="6" />
+							<Integer fx:value="7" />
+						</FXCollections>
+					</items>
+				</ComboBox>
 
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
 				<Button onAction="#onActionClear" text="Clear" />

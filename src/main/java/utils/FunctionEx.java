@@ -14,11 +14,14 @@ public interface FunctionEx<T, R> {
 
     static <A, B> B apply(FunctionEx<A, B> run, A a, B orElse) {
         try {
-            return run.apply(a);
+            B apply = run.apply(a);
+            if (apply != null) {
+                return apply;
+            }
         } catch (Exception e) {
             HasLogging.log(1).trace("", e);
-            return orElse;
         }
+        return orElse;
     }
 
     static <A, B> Function<A, B> ignore(FunctionEx<A, B> run) {

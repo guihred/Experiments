@@ -31,6 +31,10 @@ public final class ExcelService {
         RunnableEx.run(() -> makeBigExcel(lista, fields, file));
     }
 
+    public static void getExcel(File arquivo, FunctionEx<List<Object>, Collection<?>> map, File outStream) {
+        RunnableEx.run(() -> makeExcelWithReplace(arquivo, map, outStream));
+    }
+
     public static <T> void getExcel(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, File file) {
         RunnableEx.run(() -> makeExcelList(lista, mapa, file));
     }
@@ -46,7 +50,6 @@ public final class ExcelService {
 
     public static void getExcel(String arquivo, Map<Object, Object> map, OutputStream outStream) {
         RunnableEx.run(() -> makeExcelWithSubstitutions(arquivo, map, outStream));
-
     }
 
     public static ObservableList<String> getSheetsExcel(File selectedFile) {
@@ -70,6 +73,7 @@ public final class ExcelService {
     public static boolean isExcel(File file) {
         return file.getName().endsWith("xlsx") || file.getName().endsWith("xls");
     }
+
 
     private static void alterarValorCell(Map<Object, Object> map, Sheet sheet, Row row, Cell c) {
         if (c.getCellTypeEnum() == CellType.NUMERIC) {
@@ -131,12 +135,26 @@ public final class ExcelService {
         }
     }
 
+    private static Object getCellValue(Cell cell) {
+        CellType cellTypeEnum = cell.getCellTypeEnum();
+        switch (cellTypeEnum) {
+            case BOOLEAN:
+                return cell.getBooleanCellValue();
+            case FORMULA:
+                return cell.getCellFormula();
+            case NUMERIC:
+                return cell.getNumericCellValue();
+            case STRING:
+                return cell.getStringCellValue();
+            default:
+                return null;
+        }
+    }
+
     private static Workbook getWorkbook(String selectedFile, InputStream fileInputStream) {
 
-        return SupplierEx.remap(() ->
-
-        selectedFile.endsWith(".xls") ? new HSSFWorkbook(fileInputStream) : new XSSFWorkbook(fileInputStream),
-                "ERROR GETTING WORKBOOK");
+        return SupplierEx.remap(() -> selectedFile.endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
+                : new XSSFWorkbook(fileInputStream), "ERROR GETTING WORKBOOK");
     }
 
     private static <T> void makeBigExcel(BiFunction<Integer, Integer, List<T>> lista,
@@ -243,6 +261,31 @@ public final class ExcelService {
             }
             BaseFormulaEvaluator.evaluateAllFormulaCells(workbookXLSX);
             workbookXLSX.write(response);
+        }
+    }
+
+    private static void makeExcelWithReplace(File arquivo, FunctionEx<List<Object>, Collection<?>> map, File outStream)
+            throws IOException {
+        // Get the workbook instance for XLS file
+        try (InputStream response = new FileInputStream(arquivo); Workbook workbook = getWorkbook(arquivo, response)) {
+            Map<Class<?>, CellStyle> formatMap = styleMap(workbook);
+            for (Sheet sheetAt : workbook) {
+                for (Row row2 : sheetAt) {
+                    List<Object> arrayList = new ArrayList<>();
+                    for (Cell cell : row2) {
+                        Object o = getCellValue(cell);
+                        arrayList.add(o);
+                    }
+                    Collection<?> apply = FunctionEx.apply(map, arrayList, arrayList);
+                    int i = 0;
+                    for (Object object : apply) {
+                        setValorPorClasse(formatMap, row2, i++, object);
+                    }
+                }
+            }
+            try (FileOutputStream stream = new FileOutputStream(outStream)) {
+                workbook.write(stream);
+            }
         }
     }
 

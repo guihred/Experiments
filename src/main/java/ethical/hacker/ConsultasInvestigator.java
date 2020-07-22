@@ -45,6 +45,8 @@ public class ConsultasInvestigator extends Application {
     @FXML
     private ComboBox<String> fields;
     @FXML
+    private ComboBox<Integer> days;
+    @FXML
     private Text pathsQuery;
     @FXML
     private ProgressIndicator progressIndicator;
@@ -93,7 +95,9 @@ public class ConsultasInvestigator extends Application {
             RunnableEx.runInPlatform(() -> progressIndicator.setProgress(0));
             for (QueryObjects queryObjects : queryList) {
                 RunnableEx.runInPlatform(() -> queryObjects.getItems().clear());
-                Map<String, String> nsInformation = KibanaApi.makeKibanaSearch("kibana/" + queryObjects.getQueryFile(),
+                Map<String, String> nsInformation =
+                        KibanaApi.makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + queryObjects.getQueryFile()),
+                                days.getSelectionModel().getSelectedItem(),
                         queryObjects.getQueryField().getText(), queryObjects.getParams());
                 RunnableEx.runInPlatform(() -> {
                     progressIndicator.setProgress(progressIndicator.getProgress() + 1. / queryList.size());
