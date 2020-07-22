@@ -3,8 +3,10 @@ package gaming.ex21;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -12,11 +14,25 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import simplebuilder.SimpleButtonBuilder;
+import utils.FunctionEx;
 
 public final class ListHelper {
     private ListHelper() {
     }
 
+
+    public static <T,D > ObservableList<D> mapping(ObservableList<T> center1,FunctionEx<T,D> map) {
+        ObservableList<D> observableArrayList = center1.stream().map(FunctionEx.makeFunction(map))
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+        center1.addListener((ListChangeListener<T>) c -> {
+            while(c.next()) {
+                c.getAddedSubList().forEach(e1 -> observableArrayList.add(FunctionEx.apply(map, e1)));
+                c.getRemoved().forEach(e2 -> observableArrayList.remove(FunctionEx.apply(map, e2)));
+            }
+        });
+        return observableArrayList;
+        
+    }
 
     public static VBox newDeal(VBox vBox, ObservableList<Deal> deal, Predicate<? super Deal> disableIf,
         Consumer<Deal> onAction, Observable... a) {
@@ -37,7 +53,6 @@ public final class ListHelper {
         });
         return vBox;
     }
-
     public static <T extends Node> ListChangeListener<T> onChangeElement(Pane center1) {
         return c -> {
             while (c.next()) {

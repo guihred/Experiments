@@ -1,8 +1,9 @@
-package ethical.hacker;
+package kibana;
 
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
+import ethical.hacker.EthicalHackApp;
 import extract.ExcelService;
 import java.io.File;
 import java.util.ArrayList;

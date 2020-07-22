@@ -1,7 +1,8 @@
-package ethical.hacker;
+package kibana;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
+import ethical.hacker.VirusTotalApi;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import org.slf4j.Logger;
 import schema.sngpc.JsonExtractor;
 import utils.*;
 
-public final class KibanaApi {
+public class KibanaApi {
     private static final Logger LOG = HasLogging.log();
 
     private static final ImmutableMap<String, String> GET_HEADERS = ImmutableMap.<String, String>builder()
@@ -40,7 +41,7 @@ public final class KibanaApi {
             .put("Referer", "https://n321p000124.fast.prevnet/app/kibana").put("Cookie", "io=3PIP6uXMWNC7_9EfAAAE")
             .put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization()).build();
 
-    private KibanaApi() {
+    protected KibanaApi() {
     }
 
     public static String getContent(File file, Object... params) {
@@ -125,16 +126,7 @@ public final class KibanaApi {
         return arrayList;
     }
 
-    private static String display(Map<String, String> ob) {
-        List<List<String>> collect =
-                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
-        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
-        return IntStream.range(0, orElse).mapToObj(
-                j -> collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
-                .distinct().collect(Collectors.joining("\n"));
-    }
-
-    private static void getFromURL(String url, String content, File outFile) throws IOException {
+    protected static void getFromURL(String url, String content, File outFile) throws IOException {
         ExtractUtils.insertProxyConfig();
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
@@ -145,6 +137,27 @@ public final class KibanaApi {
         HttpEntity entity = response.getEntity();
         BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
         ExtractUtils.copy(rd, outFile);
+    }
+
+    protected static File newJsonFile(String string) {
+        String replaceAll = string.replaceAll("[:/{}\" ]+", "_");
+        return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
+    }
+
+    protected static boolean oneDayModified(File outFile) {
+        FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
+        Instant instant = lastModifiedTime.toInstant();
+        long between = ChronoUnit.HOURS.between(instant, Instant.now());
+        return between > 12;
+    }
+
+    private static String display(Map<String, String> ob) {
+        List<List<String>> collect =
+                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
+        return IntStream.range(0, orElse).mapToObj(
+                j -> collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
+                .distinct().collect(Collectors.joining("\n"));
     }
 
     private static String isInBlacklist(String query) {
@@ -162,18 +175,6 @@ public final class KibanaApi {
             }
         }
         linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
-    }
-
-    private static File newJsonFile(String string) {
-        String replaceAll = string.replaceAll("[:/{}\" ]+", "_");
-        return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
-    }
-
-    private static boolean oneDayModified(File outFile) {
-        FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
-        Instant instant = lastModifiedTime.toInstant();
-        long between = ChronoUnit.HOURS.between(instant, Instant.now());
-        return between > 12;
     }
 
     private static List<Map<String, String>> remap(Map<String, String> ob) {
