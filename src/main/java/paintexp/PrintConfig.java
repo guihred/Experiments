@@ -108,7 +108,7 @@ public class PrintConfig extends Application {
             for (int i = 0; i < images.size(); i += lines * columns) {
                 adjustPanel(i, panel);
                 BufferedImage bimg =
-                        ImageFXUtils.toBufferedImage(panel, panel.getWidth(), panel.getHeight(), 1);
+                        ImageFXUtils.toBufferedImage(panel, panel.getWidth(), panel.getHeight(), 8);
                 panelImages.add(bimg);
             }
             File outputFile = ResourceFXUtils.getOutFile("oi2.pdf");
