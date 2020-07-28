@@ -71,10 +71,10 @@ public final class EditSongHelper {
             mediaPlayer.get().getTotalDuration().multiply(finalSlider.getValue()));
         progressIndicator.progressProperty().bind(progress);
         progressIndicator.setVisible(true);
+        RunnableEx.runInPlatform(() -> SongUtils.stopAndDispose(mediaPlayer.get()));
         progress.addListener((v, o, n) -> {
             if (n.intValue() == 1) {
                 RunnableEx.runInPlatform(() -> {
-                    SongUtils.stopAndDispose(mediaPlayer.get());
                     run(() -> {
                         MusicReader.saveMetadata(selectedItem, outFile);
                         File arquivo = selectedItem.getArquivo();

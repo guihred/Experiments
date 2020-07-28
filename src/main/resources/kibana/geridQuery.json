@@ -3,7 +3,7 @@
 		"2": {
 			"terms": {
 				"field": "http.user-name.keyword",
-				"size": 50,
+				"size": 150,
 				"order": {
 					"1": "desc"
 				}

@@ -63,7 +63,7 @@ public final class WordService {
     }
 
     private static Object getObject(Map<String, Object> map, String cellText) {
-        return map.containsKey(cellText) ? map.get(cellText) : map.get(cellText.trim());
+        return map.getOrDefault(cellText, map.get(cellText.trim()));
     }
 
     private static void recordPicture(XSLFPictureData data) {

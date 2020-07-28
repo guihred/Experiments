@@ -14,25 +14,31 @@ import javafx.scene.chart.XYChart.Series;
 import org.apache.commons.lang3.StringUtils;
 import schema.sngpc.JsonExtractor;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 import utils.SupplierEx;
 
 public final class TimelionApi extends KibanaApi {
 
     public static final String TIMELINE_USERS =
-            ".es(index=inss-*-prod*,q=\"dtpsistema:portalatendimento\",split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
+            ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\",split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
+    public static final String TIMELINE_IPS =
+            ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\",split=mdc.ip:12).label('$1','.*>.*:(.*)>.*')";
 
     private TimelionApi() {
     }
 
     public static void main(String[] args) {
-        TimelionApi.timelionFullScan("", "now-1d");
+        TimelionApi.timelionScan(FXCollections.observableArrayList(), TimelionApi.TIMELINE_USERS, new HashMap<>(),
+                "now-1d");
     }
 
     public static Object maketimelionSearch(File file, String timelionQuery, Map<String, String> search, String time) {
         return SupplierEx.get(() -> {
             String values = search.values().stream().collect(Collectors.joining());
+            String replaceAll = timelionQuery.replaceAll(".+split=(.+?):.+", "$1");
+
             File outFile = newJsonFile(
-                    Stream.of(values, time).collect(Collectors.joining()) + file.getName().replaceAll("\\.json", ""));
+                    replaceAll + Stream.of(values, time).collect(Collectors.joining()));
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String keywords = search
                         .entrySet().stream().map(e -> String
@@ -50,7 +56,18 @@ public final class TimelionApi extends KibanaApi {
         if (StringUtils.isNotBlank(user)) {
             map.put("mdc.uid.keyword", user);
         }
-        return timelionScan(TIMELINE_USERS, map, time);
+        return timelionScan(FXCollections.observableArrayList(), TIMELINE_USERS, map, time);
+    }
+
+    public static ObservableList<Series<Number, Number>> timelionScan(ObservableList<Series<Number, Number>> series,
+            String timelineUsers, Map<String, String> map,
+            String time) {
+        return SupplierEx.get(() -> {
+            Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
+                    timelineUsers, map, time);
+            RunnableEx.runInPlatform(() -> convertToSeries(series, access(policiesSearch, "sheet")));
+            return series;
+        }, FXCollections.emptyObservableList());
     }
 
     @SuppressWarnings("rawtypes")
@@ -69,7 +86,8 @@ public final class TimelionApi extends KibanaApi {
     }
 
     @SuppressWarnings({ "unchecked" })
-    private static ObservableList<XYChart.Series<Number, Number>> convertToSeries(Object access) {
+    private static ObservableList<XYChart.Series<Number, Number>>
+            convertToSeries(ObservableList<Series<Number, Number>> series, Object access) {
         return ((List<Object>) access).stream().flatMap(e -> ((List<Object>) access(e, "list")).stream())
                 .map((Object o) -> {
                     XYChart.Series<Number, Number> java = new XYChart.Series<>();
@@ -80,16 +98,9 @@ public final class TimelionApi extends KibanaApi {
                         java.getData().add(new XYChart.Data<>(access2, access3));
                     });
                     return java;
-                }).collect(Collectors.toCollection(FXCollections::observableArrayList));
-    }
-
-    private static ObservableList<Series<Number, Number>> timelionScan(String timelineUsers, Map<String, String> map,
-            String time) {
-        return SupplierEx.get(() -> {
-            Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
-                    timelineUsers, map, time);
-            return convertToSeries(access(policiesSearch, "sheet"));
-        }, FXCollections.emptyObservableList());
+                }).collect(Collectors.toCollection(() -> {
+                    return series;
+                }));
     }
 
 }

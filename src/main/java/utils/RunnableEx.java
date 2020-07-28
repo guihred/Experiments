@@ -1,5 +1,6 @@
 package utils;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.application.Platform;
 import org.assertj.core.api.exception.RuntimeIOException;
 
@@ -67,6 +68,17 @@ public interface RunnableEx {
 
     static void runInPlatform(RunnableEx run) {
         Platform.runLater(make(run));
+    }
+
+    static void runInPlatformSync(RunnableEx run) {
+        AtomicBoolean a = new AtomicBoolean(false);
+        Platform.runLater(() -> {
+            run(run);
+            a.set(true);
+        });
+        while (!a.get()) {
+            // DOES NOTHING
+        }
     }
 
     static void runNewThread(RunnableEx run) {

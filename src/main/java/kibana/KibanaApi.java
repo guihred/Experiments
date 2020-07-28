@@ -81,6 +81,26 @@ public class KibanaApi {
         return fullScan;
     }
 
+    public static Map<String, String> makeKibanaSearch(File file, int days, Map<String,String> search, String... params) {
+        return SupplierEx.get(() -> {
+            String values = search.values().stream().collect(Collectors.joining());
+
+            File outFile = newJsonFile(
+                    file.getName().replaceAll("\\.json", "") +values +days);
+            if (!outFile.exists() || oneDayModified(outFile)) {
+                String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
+                String lte = Objects.toString(Instant.now().toEpochMilli());
+                String keywords = search
+                        .entrySet().stream().map(e -> String
+                                .format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
+                        .collect(Collectors.joining("\n"));
+                getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
+                        getContent(file, keywords , gte, lte), outFile);
+            }
+            return JsonExtractor.makeMapFromJsonFile(outFile, params);
+        }, Collections.emptyMap());
+    }
+
     public static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
         return SupplierEx.get(() -> {
             File outFile = newJsonFile(query + file.getName().replaceAll("\\.json", "") + days);
@@ -148,7 +168,7 @@ public class KibanaApi {
         FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
         Instant instant = lastModifiedTime.toInstant();
         long between = ChronoUnit.HOURS.between(instant, Instant.now());
-        return between > 12;
+        return between > 1;
     }
 
     private static String display(Map<String, String> ob) {

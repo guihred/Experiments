@@ -55,8 +55,9 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
             return;
         }
         SimpleDialogBuilder dialog = new SimpleDialogBuilder();
+        dialog.text("Convert");
         for (Music m : songs) {
-            dialog.text(String.format("Convert%n%s", m.getArquivo().getName()));
+            dialog.text(String.format("%n%s", m.getArquivo().getName()));
         }
         dialog.button("_Convert to Mp3", () -> {
             DoubleBinding finalResult = new SimpleDoubleProperty(0).add(0);

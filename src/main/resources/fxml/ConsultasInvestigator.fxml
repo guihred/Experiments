@@ -1,18 +1,115 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?import javafx.scene.layout.*?>
 <?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.control.cell.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.event.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.input.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
 <HBox xmlns:fx="http://javafx.com/fxml">
 	<padding>
 		<Insets topRightBottomLeft="10" />
 	</padding>
 	<children>
+
+		<TabPane fx:id="tabPane0" tabMaxHeight="22.0" HBox.hgrow="ALWAYS"
+			tabMinHeight="22.0">
+			<tabs>
+				<Tab closable="false" text="Gerid INSS - Usuário x Qtde IPs de Origem">
+					<content>
+						<VBox>
+							<TableView fx:id="ipsTable" onKeyReleased="#copyContent"
+								VBox.vgrow="ALWAYS" />
+						</VBox>
+					</content>
+				</Tab>
+				<Tab closable="false" text="Usuários x Número consultas">
+					<content>
+						<VBox>
+							<TableView fx:id="consultasTable" onKeyReleased="#copyContent"
+								VBox.vgrow="ALWAYS" />
+						</VBox>
+					</content>
+				</Tab>
+				<Tab closable="false" text="Acessos por Sistema">
+					<content>
+						<VBox>
+
+							<TableView fx:id="acessosSistemaTable" onKeyReleased="#copyContent"
+								VBox.vgrow="ALWAYS" />
+						</VBox>
+					</content>
+				</Tab>
+				<Tab closable="false" text="Requisições por Sistema">
+					<content>
+						<VBox>
+							<TableView fx:id="pathsTable" onKeyReleased="#copyContent"
+								VBox.vgrow="ALWAYS" />
+						</VBox>
+					</content>
+				</Tab>
+				<Tab text="Timeline Usuários">
+					<content>
+						<VBox>
+							<children>
+								<Text text="mdc.uid.keyword" />
+								<ComboBox fx:id="uidCombo">
+									<items>
+										<FXCollections fx:factory="observableArrayList">
+											<String fx:value="" />
+										</FXCollections>
+									</items>
+								</ComboBox>
+								<LineChart fx:id="timelineUsuarios" title="Timeline Usuários" legendSide="LEFT"
+									verticalZeroLineVisible="false" animated="false" createSymbols="false">
+									<yAxis>
+										<NumberAxis animated="false" side="LEFT"
+											tickLabelFill="0x585858ff" tickUnit="10.0" upperBound="110.0" />
+									</yAxis>
+									<xAxis>
+										<NumberAxis animated="false" forceZeroInRange="false"
+											side="BOTTOM" tickLabelFill="0x585858ff" tickUnit="50.0"
+											upperBound="150.0" />
+									</xAxis>
+								</LineChart>
+							</children>
+						</VBox>
+					</content>
+				</Tab>
+				<Tab text="Timeline Endereço de Origem">
+					<content>
+						<VBox>
+							<children>
+								<Text fx:id="text3" text="mdc.ip" />
+								<ComboBox fx:id="ipCombo">
+									<items>
+										<FXCollections fx:factory="observableArrayList">
+											<String fx:value="" />
+										</FXCollections>
+									</items>
+								</ComboBox>
+								<LineChart title="Timeline Endereço de Origem" fx:id="timelineIPs" legendSide="LEFT"
+									verticalZeroLineVisible="false" animated="false" createSymbols="false">
+									<yAxis>
+										<NumberAxis animated="false" side="LEFT"
+											tickLabelFill="0x585858ff" tickUnit="10.0" upperBound="110.0" />
+									</yAxis>
+									<xAxis>
+										<NumberAxis animated="false" forceZeroInRange="false"
+											side="BOTTOM" tickLabelFill="0x585858ff" tickUnit="50.0"
+											upperBound="150.0" />
+									</xAxis>
+								</LineChart>
+							</children>
+						</VBox>
+					</content>
+				</Tab>
+			</tabs>
+		</TabPane>
 		<VBox spacing="10">
 			<children>
 				<Text text="Filter Results" />
@@ -24,7 +121,7 @@
 						</FXCollections>
 					</items>
 				</ComboBox>
-				<ComboBox fx:id="days" value="1">
+				<ComboBox fx:id="days">
 					<items>
 						<FXCollections fx:factory="observableArrayList">
 							<Integer fx:value="1" />
@@ -36,8 +133,12 @@
 							<Integer fx:value="7" />
 						</FXCollections>
 					</items>
+					<value>
+						<Integer fx:value="1" />
+					</value>
 				</ComboBox>
 
+				<Text fx:id="filterText" text="" />
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
 				<Button onAction="#onActionClear" text="Clear" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
@@ -45,44 +146,5 @@
 					VBox.vgrow="ALWAYS" minHeight="40.0" minWidth="40.0" progress="0.0" />
 			</children>
 		</VBox>
-		<SplitPane HBox.hgrow="ALWAYS" orientation="VERTICAL">
-			<items>
-				<SplitPane HBox.hgrow="ALWAYS">
-					<items>
-						<VBox>
-							<Text text="Gerid INSS - Usuário x Qtde IPs de Origem"
-								textAlignment="CENTER" />
-							<Text fx:id="ipsQuery" />
-							<TableView fx:id="ipsTable" onKeyReleased="#copyContent"
-								VBox.vgrow="ALWAYS" />
-						</VBox>
-						<VBox>
-							<Text text="Usuários x Número consultas" />
-
-							<Text fx:id="consultasQuery" />
-							<TableView fx:id="consultasTable" onKeyReleased="#copyContent"
-								VBox.vgrow="ALWAYS" />
-						</VBox>
-					</items>
-				</SplitPane>
-				<SplitPane HBox.hgrow="ALWAYS">
-					<items>
-						<VBox>
-							<Text text="Acessos por Sistema" textAlignment="CENTER" />
-
-							<Text fx:id="acessosSistemaQuery" />
-							<TableView fx:id="acessosSistemaTable" onKeyReleased="#copyContent"
-								VBox.vgrow="ALWAYS" />
-						</VBox>
-						<VBox>
-							<Text text="Requisições por Sistema" />
-							<Text fx:id="pathsQuery" />
-							<TableView fx:id="pathsTable" onKeyReleased="#copyContent"
-								VBox.vgrow="ALWAYS" />
-						</VBox>
-					</items>
-				</SplitPane>
-			</items>
-		</SplitPane>
 	</children>
 </HBox>

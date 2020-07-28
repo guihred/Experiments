@@ -1,52 +1,54 @@
 {
-  "aggs": {
-    "2": {
-      "terms": {
-        "field": "dtpsistema.keyword",
-        "size": 10,
-        "order": {
-          "_count": "desc"
-        }
-      }
-    }
-  },
-  "size": 0,
-  "_source": {
-    "excludes": []
-  },
-  "stored_fields": [
-    "*"
-  ],
-  "script_fields": {},
-  "docvalue_fields": [
-    {
-      "field": "@timestamp",
-      "format": "date_time"
-    }
-  ],
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "match_phrase": {
-            "clientip": {
-              "query": "%s"
-            }
-          }
-        },
-        {
-          "range": {
-            "@timestamp": {
-              "gte": %s,
-              "lte": %s,
-              "format": "epoch_millis"
-            }
-          }
-        }
-      ],
-      "filter": [],
-      "should": [],
-      "must_not": []
-    }
-  }
+	"aggs": {
+		"2": {
+			"terms": {
+				"field": "dtpsistema.keyword",
+				"size": 10,
+				"order": {
+					"_count": "desc"
+				}
+			}
+		}
+	},
+	"size": 0,
+	"_source": {
+		"excludes": []
+	},
+	"stored_fields": [
+		"*"
+	],
+	"script_fields": {
+		
+	},
+	"docvalue_fields": [
+		{
+			"field": "@timestamp",
+			"format": "date_time"
+		}
+	],
+	"query": {
+		"bool": {
+			"must": [
+				{
+					"match_phrase": {
+						"clientip": {
+							"query": "%s"
+						}
+					}
+				},
+				{
+					"range": {
+						"@timestamp": {
+							"gte": %s,
+							"lte": %s,
+							"format": "epoch_millis"
+						}
+					}
+				}
+			],
+			"filter": [],
+			"should": [],
+			"must_not": []
+		}
+	}
 }

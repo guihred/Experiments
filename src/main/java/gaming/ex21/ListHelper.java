@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import simplebuilder.SimpleButtonBuilder;
+import utils.ConsumerEx;
 import utils.FunctionEx;
 
 public final class ListHelper {
@@ -27,7 +28,7 @@ public final class ListHelper {
         center1.addListener((ListChangeListener<T>) c -> {
             while(c.next()) {
                 c.getAddedSubList().forEach(e1 -> observableArrayList.add(FunctionEx.apply(map, e1)));
-                c.getRemoved().forEach(e2 -> observableArrayList.remove(FunctionEx.apply(map, e2)));
+                c.getRemoved().forEach(ConsumerEx.ignore(e2 -> observableArrayList.remove(FunctionEx.apply(map, e2))));
             }
         });
         return observableArrayList;

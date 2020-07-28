@@ -1,22 +1,26 @@
 package kibana;
 
-import static javafx.collections.FXCollections.observableArrayList;
-import static javafx.collections.FXCollections.synchronizedObservableList;
-
+import com.google.common.collect.ImmutableMap;
 import ethical.hacker.EthicalHackApp;
 import extract.ExcelService;
+import gaming.ex21.ListHelper;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
@@ -24,31 +28,28 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import org.apache.commons.lang3.StringUtils;
 import schema.sngpc.JsonExtractor;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
 
 public class ConsultasInvestigator extends Application {
-    private static final String USER_NAME_QUERY =
-            "{\"match_phrase\": {\"http.user-name.keyword\": {\"query\": \"%s\"}}},";
-    private static final String CONSULTAS_QUERY = "{\"match_phrase\": {\"clientip.keyword\": {\"query\": \"%s\"}}},";
-    private static final String ACESSOS_SISTEMA_QUERY =
-            "{\"match_phrase\": {\"dtpsistema.keyword\": {\"query\": \"%s\"}}},";
-    private static final int WIDTH = 600;
+    private static final String MDC_IP = "mdc.ip";
+    private static final String MDC_UID_KEYWORD = "mdc.uid.keyword";
+    private static final String USER_NAME_QUERY = "http.user-name.keyword";
+    private static final String CLIENT_IP_QUERY = "clientip.keyword";
+    private static final String ACESSOS_SISTEMA_QUERY = "dtpsistema.keyword";
+    private static final ImmutableMap<String, String> REPLACEMENT_MAP = ImmutableMap.<String, String>builder()
+            .put(USER_NAME_QUERY, MDC_UID_KEYWORD).put(CLIENT_IP_QUERY, MDC_IP).build();
     @FXML
     private TextField resultsFilter;
     @FXML
-    private Text ipsQuery;
-    @FXML
-    private Text consultasQuery;
-    @FXML
-    private Text acessosSistemaQuery;
+    private Text filterText;
     @FXML
     private ComboBox<String> fields;
     @FXML
     private ComboBox<Integer> days;
-    @FXML
-    private Text pathsQuery;
     @FXML
     private ProgressIndicator progressIndicator;
     @FXML
@@ -60,6 +61,16 @@ public class ConsultasInvestigator extends Application {
     @FXML
     private TableView<Map<String, String>> pathsTable;
     private List<QueryObjects> queryList = new ArrayList<>();
+
+    private ObservableMap<String, String> filter = FXCollections.observableHashMap();
+    @FXML
+    private ComboBox<String> ipCombo;
+    @FXML
+    private ComboBox<String> uidCombo;
+    @FXML
+    private LineChart<Number, Number> timelineUsuarios;
+    @FXML
+    private LineChart<Number, Number> timelineIPs;
 
     @SuppressWarnings({ "static-method", "unchecked" })
     public void copyContent(KeyEvent ev) {
@@ -76,18 +87,20 @@ public class ConsultasInvestigator extends Application {
     }
 
     public void initialize() {
-        configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, ipsQuery, "key", "value");
-        configureTable(CONSULTAS_QUERY, "consultasQuery.json", consultasTable, consultasQuery, "key", "doc_count")
-        ;
-        configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, acessosSistemaQuery,
-                "key", "doc_count");
-        configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, pathsQuery, "key", "doc_count")
-                .setGroup("[^\\/\\?\\d]+");
+        configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value");
+        String count = "doc_count";
+        configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count);
+        configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
+        configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("[^\\/\\?\\d]+");
+        configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
+        configureTimeline(MDC_IP, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
+        filterText.textProperty().bind(Bindings.createStringBinding(
+                () -> filter.entrySet().stream().map(Objects::toString).collect(Collectors.joining("\n")), filter));
     }
 
     public void onActionClear() {
         resultsFilter.setText("");
-        queryList.forEach(e -> e.getQueryField().setText(""));
+        filter.clear();
         onActionKibanaScan();
     }
 
@@ -95,20 +108,36 @@ public class ConsultasInvestigator extends Application {
         RunnableEx.runNewThread(() -> {
             RunnableEx.runInPlatform(() -> progressIndicator.setProgress(0));
             for (QueryObjects queryObjects : queryList) {
-                RunnableEx.runInPlatform(() -> queryObjects.getItems().clear());
-                Map<String, String> nsInformation =
-                        KibanaApi.makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + queryObjects.getQueryFile()),
-                                days.getSelectionModel().getSelectedItem(),
-                        queryObjects.getQueryField().getText(), queryObjects.getParams());
-                RunnableEx.runInPlatform(() -> {
-                    progressIndicator.setProgress(progressIndicator.getProgress() + 1. / queryList.size());
-                    List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
-                    if (queryObjects.getTable().getColumns().isEmpty()) {
-                        EthicalHackApp.addColumns(queryObjects.getTable(), remap.stream()
-                                .flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList()));
-                    }
-                    queryObjects.getItems().addAll(remap);
-                });
+                if (queryObjects.getLineChart() != null) {
+                    ObservableList<Series<Number, Number>> data = queryObjects.getSeries();
+                    RunnableEx.runInPlatformSync(() -> {
+                        data.clear();
+                        queryObjects.getLineChart().getYAxis().setAutoRanging(true);
+                    });
+                    Map<String, String> hashMap = new HashMap<>(filter);
+                    REPLACEMENT_MAP.entrySet().forEach(e -> {
+                        if (hashMap.containsKey(e.getKey())) {
+                            hashMap.put(e.getValue(), hashMap.remove(e.getKey()));
+                        }
+                    });
+
+                    TimelionApi.timelionScan(data, queryObjects.getQueryFile(), filter, "now-d");
+                } else {
+                    RunnableEx.runInPlatform(() -> queryObjects.getItems().clear());
+                    Map<String, String> nsInformation =
+                            KibanaApi.makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + queryObjects.getQueryFile()),
+                                    days.getSelectionModel().getSelectedItem(), filter, queryObjects.getParams());
+                    RunnableEx.runInPlatform(() -> {
+                        List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
+                        if (queryObjects.getTable().getColumns().isEmpty()) {
+                            EthicalHackApp.addColumns(queryObjects.getTable(), remap.stream()
+                                    .flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList()));
+                        }
+                        queryObjects.getItems().addAll(remap);
+                    });
+                }
+                RunnableEx.runInPlatform(
+                        () -> progressIndicator.setProgress(progressIndicator.getProgress() + 1. / queryList.size()));
             }
             RunnableEx.runInPlatform(() -> progressIndicator.setProgress(1));
         });
@@ -118,8 +147,9 @@ public class ConsultasInvestigator extends Application {
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
         Map<String, List<Map<String, String>>> collect =
                 queryList.stream().collect(Collectors.toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
-        List<String> collect2 = queryList.stream().flatMap(e -> e.getTable().getColumns().stream())
-                .map(TableColumn<Map<String, String>, ?>::getText).distinct().collect(Collectors.toList());
+        List<String> collect2 =
+                queryList.stream().filter(e -> e.getTable() != null).flatMap(e -> e.getTable().getColumns().stream())
+                        .map(TableColumn<Map<String, String>, ?>::getText).distinct().collect(Collectors.toList());
         for (String text : collect2) {
             mapa.put(text, t -> t.getOrDefault(text, ""));
         }
@@ -130,23 +160,24 @@ public class ConsultasInvestigator extends Application {
 
     @Override
     public void start(final Stage primaryStage) {
-        CommonsFX.loadFXML("Consultas Investigator", "ConsultasInvestigator.fxml", this, primaryStage, WIDTH, WIDTH);
+        final int width = 600;
+        CommonsFX.loadFXML("Consultas Investigator", "ConsultasInvestigator.fxml", this, primaryStage, width, width);
     }
 
-    private void addFields(String queryFile) {
-        RunnableEx.run(() -> {
+    private List<String> addFields(String queryFile) {
+        return SupplierEx.get(() -> {
             String content = KibanaApi.getContent(ResourceFXUtils.toFile("kibana/" + queryFile), "", "1", "1");
-            Map<String, String> makeMapFromJsonFile =
-                    JsonExtractor.makeMapFromJsonFile(content, "field");
+            Map<String, String> makeMapFromJsonFile = JsonExtractor.makeMapFromJsonFile(content, "field");
             List<String> collect = makeMapFromJsonFile.values().stream().flatMap(e -> Stream.of(e.split("\n")))
                     .distinct().filter(s -> !fields.getItems().contains(s)).collect(Collectors.toList());
             fields.getItems().addAll(collect);
+            return makeMapFromJsonFile.values().stream().collect(Collectors.toList());
         });
     }
 
     private QueryObjects configureTable(String userNameQuery, String queryFile,
-            TableView<Map<String, String>> ipsTable2, Text networkAddress2, String... params) {
-        QueryObjects fieldObjects = new QueryObjects(userNameQuery, queryFile, networkAddress2, ipsTable2, params);
+            TableView<Map<String, String>> ipsTable2, String... params) {
+        QueryObjects fieldObjects = new QueryObjects(userNameQuery, queryFile, ipsTable2, params);
         ObservableList<Map<String, String>> ipItems2 = fieldObjects.getItems();
         queryList.add(fieldObjects);
         addFields(queryFile);
@@ -155,77 +186,51 @@ public class ConsultasInvestigator extends Application {
                 .bind(Bindings.selectDouble(ipsTable2.parentProperty(), "width").add(-columnWidth));
         ipsTable2.setItems(CommonsFX.newFastFilter(resultsFilter, ipItems2.filtered(e -> true)));
         ipsTable2.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        networkAddress2.setOnMouseReleased(e -> {
-            networkAddress2.setText("");
+        SimpleTableViewBuilder.onDoubleClick(ipsTable2, e -> {
+            filter.put(userNameQuery, e.values().stream().findFirst().orElse("key"));
             onActionKibanaScan();
         });
-        SimpleTableViewBuilder.onDoubleClick(ipsTable2, e -> {
-            String format = String.format(userNameQuery, e.values().stream().findFirst().orElse("key"));
-            networkAddress2.setText(format);
-            queryList.forEach(r -> r.getQueryField().setText(format));
+        return fieldObjects;
+    }
 
-            onActionKibanaScan();
+    private QueryObjects configureTimeline(String field, String userNameQuery, LineChart<Number, Number> lineChart,
+            ComboBox<String> combo) {
+        QueryObjects fieldObjects = new QueryObjects(field, userNameQuery, lineChart);
+        queryList.add(fieldObjects);
+        NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
+        xAxis.setTickLabelFormatter(new StringConverter<Number>() {
+            @Override
+            public Number fromString(String string) {
+                return LocalDateTime.parse(string).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            }
+            @Override
+            public String toString(Number object) {
+                return Instant.ofEpochMilli(object.longValue()).atZone(ZoneId.systemDefault()).toLocalTime()
+                        .toString();
+            }
+        });
+        ObservableList<Series<Number, Number>> timelionFullScan = fieldObjects.getSeries();
+
+        ObservableList<String> mapping = ListHelper.mapping(timelionFullScan, Series<Number, Number>::getName);
+        mapping.add(0, "");
+        FilteredList<Series<Number, Number>> filtered = timelionFullScan.filtered(e -> true);
+        lineChart.setData(filtered);
+        combo.setItems(mapping);
+        String key = REPLACEMENT_MAP.asMultimap().inverse().get(field).stream().findFirst().orElse(field);
+        combo.getSelectionModel().selectedItemProperty().addListener((ob, old, val) -> {
+            if (StringUtils.isBlank(val)) {
+                filter.remove(key);
+            } else {
+                filter.put(key, val);
+            }
+            lineChart.getYAxis().setAutoRanging(false);
+            filtered.setPredicate(e -> StringUtils.isBlank(val) || Objects.equals(e.getName(), val));
         });
         return fieldObjects;
     }
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    static class QueryObjects {
-        private final String query;
-
-        private final String queryFile;
-        private final String[] params;
-        private String group = "";
-
-        private final Text queryField;
-
-        private final TableView<Map<String, String>> table;
-
-        private final ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
-
-        public QueryObjects(String query, String queryFile, Text queryField, TableView<Map<String, String>> table,
-                String[] params) {
-            this.query = query;
-            this.queryFile = queryFile;
-            this.queryField = queryField;
-            this.table = table;
-            this.params = params;
-        }
-
-        public String getGroup() {
-            return group;
-        }
-
-        public ObservableList<Map<String, String>> getItems() {
-            return items;
-        }
-
-        public String[] getParams() {
-            return params;
-        }
-
-        public String getQuery() {
-            return query;
-        }
-
-        public Text getQueryField() {
-            return queryField;
-        }
-
-        public String getQueryFile() {
-            return queryFile;
-        }
-
-        public TableView<Map<String, String>> getTable() {
-            return table;
-        }
-
-        public void setGroup(String group) {
-            this.group = group;
-        }
     }
 
 }

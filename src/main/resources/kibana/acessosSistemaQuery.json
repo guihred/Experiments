@@ -3,7 +3,7 @@
 		"2": {
 			"terms": {
 				"field": "dtpsistema.keyword",
-				"size": 50,
+				"size": 150,
 				"order": {
 					"_count": "desc"
 				}
