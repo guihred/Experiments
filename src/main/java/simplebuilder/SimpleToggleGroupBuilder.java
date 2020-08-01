@@ -34,9 +34,6 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         return this;
     }
 
-
-
-
     public SimpleToggleGroupBuilder addToggle(final String node, final Object userData) {
 	    ToggleButton toggleButton = new ToggleButton(node);
 	    toggleButton.setTooltip(new Tooltip(Objects.toString(userData, "")));
@@ -45,6 +42,8 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
 	    e.setToggleGroup(toggleGroup);
 	    return this;
 	}
+
+
 
 
     public SimpleToggleGroupBuilder addToggleTooltip(final Node node, final String text) {
@@ -56,6 +55,7 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         return this;
     }
 
+
     @Override
     public ToggleGroup build() {
         return toggleGroup;
@@ -65,11 +65,11 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
     	return toggleGroup.getToggles().stream().map(Node.class::cast).toArray(Node[]::new);
     }
 
-	public <T>List<T> getTogglesAs(final Class<T> cl) {
+    public <T>List<T> getTogglesAs(final Class<T> cl) {
         return toggleGroup.getToggles().stream().map(cl::cast).collect(Collectors.toList());
     }
 
-    public SimpleToggleGroupBuilder onChange(final ChangeListener<? super Toggle> listener) {
+	public SimpleToggleGroupBuilder onChange(final ChangeListener<? super Toggle> listener) {
         toggleGroup.selectedToggleProperty().addListener(listener);
         return this;
     }
@@ -90,8 +90,19 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
                         .orElse(null));
         return this;
     }
+
     public Toggle selectedItem() {
         return toggleGroup.getSelectedToggle();
     }
+
+    public static ToggleButton addToggle(ToggleGroup toggleGroup, final Node node, final Object userData) {
+	    ToggleButton toggleButton = new ToggleButton(null, node);
+	    String tooltip = Objects.toString(userData, "");
+	    toggleButton.setTooltip(new Tooltip(tooltip));
+	    toggleButton.setUserData(userData);
+	    toggleButton.getStyleClass().add(tooltip.toLowerCase().replaceAll(" ", "-"));
+	    toggleButton.setToggleGroup(toggleGroup);
+        return toggleButton;
+	}
 
 }
