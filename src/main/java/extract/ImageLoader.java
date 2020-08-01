@@ -95,15 +95,16 @@ public class ImageLoader {
     public static void loadImages(ObservableList<Node> root, String... value) {
         Set<String> keywords = Stream.of(value).filter(StringUtils::isNotBlank).map(String::trim)
             .flatMap(e -> Stream.of(e.split("\\s+-\\s+"))).collect(Collectors.toSet());
+        ImageLoader imageLoader = new ImageLoader();
         for (String string : keywords) {
-            new ImageLoader().addThread(root, string);
+            imageLoader.addThread(root, string);
         }
     }
 
     private static void addImageView(ObservableList<Node> children, List<? extends String> addedSubList, int j) {
         ignore(() -> {
             String url = addedSubList.get(j);
-            LOG.trace("NEW IMAGE {}", url);
+            LOG.info("NEW IMAGE {}", url);
             ImageView imageView = ImageLoader.convertToImage(url);
             int i = getIndex(children, imageView);
             children.add(i, imageView);

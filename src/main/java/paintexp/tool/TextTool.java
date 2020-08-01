@@ -21,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
 import utils.CommonsFX;
+import utils.ResourceFXUtils;
 
 public class TextTool extends PaintTool {
 
@@ -162,6 +163,12 @@ public class TextTool extends PaintTool {
     private void loadParent() {
         options = CommonsFX.loadParent("TextTool.fxml", this);
         fontFamily.setItems(FXCollections.observableArrayList(Font.getFamilies()));
+        ResourceFXUtils.getPathByExtensionAsync(ResourceFXUtils.getUserFolder("Documents"), p -> {
+            Font loadFont = Font.loadFont(p.toUri().toURL().toExternalForm(), 12);
+            if (loadFont != null && !fontFamily.getItems().contains(loadFont.getFamily())) {
+                fontFamily.getItems().add(loadFont.getFamily());
+            }
+        }, ".ttf");
         fontFamily.setCellFactory(cellStyle(fontFamily, t -> "-fx-font-family:\"" + t + "\";"));
         fontFamily.getSelectionModel().selectedItemProperty().addListener(e -> onOptionsChanged());
         fontSize.setItems(range(7, 500).boxed().collect(toCollection(FXCollections::observableArrayList)));

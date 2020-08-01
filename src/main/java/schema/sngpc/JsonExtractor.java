@@ -15,9 +15,9 @@ import org.nd4j.shade.jackson.databind.JsonNode;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
 import simplebuilder.SimpleTextBuilder;
 import utils.DateFormatUtils;
+import utils.ResourceFXUtils;
 
 public final class JsonExtractor {
-
 
     private JsonExtractor() {
     }
@@ -60,6 +60,29 @@ public final class JsonExtractor {
         return yaml2.toString();
     }
 
+    public static Object fullObj(JsonNode jsonNode) {
+        if (jsonNode.isBoolean()) {
+            return jsonNode.asBoolean();
+        }
+
+        if (jsonNode.isDouble()) {
+            return jsonNode.asDouble();
+        }
+        if (jsonNode.isInt()) {
+            return jsonNode.asInt();
+        }
+        if (jsonNode.isLong()) {
+            return jsonNode.asLong();
+        }
+        return jsonNode.asText();
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        Object makeMapFromJsonFile = toObject(ResourceFXUtils.toFile("kibana/fields.json"), "index", "fields");
+        System.out.println(makeMapFromJsonFile);
+    }
+
     public static Map<String, String> makeMapFromJsonFile(File outFile, String... a) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         // read JSON like DOM Parser
@@ -97,6 +120,16 @@ public final class JsonExtractor {
         JsonNode rootNode = objectMapper.readTree(Files.newInputStream(file.toPath()));
         return toObject(rootNode, 0);
     }
+
+    public static Object toObject(File file, String... f) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // read JSON like DOM Parser
+        JsonNode rootNode = objectMapper.readTree(Files.newInputStream(file.toPath()));
+        Map<String, Object> linkedHashMap = new LinkedHashMap<>();
+        toObject(rootNode, 0, linkedHashMap, f);
+        return linkedHashMap;
+    }
+
     public static Object toObject(JsonNode jsonNode, int depth) {
         if (jsonNode.isValueNode()) {
             return convertObj(jsonNode);
@@ -120,8 +153,35 @@ public final class JsonExtractor {
 
     }
 
-    private static String appendJsonArray(JsonNode jsonNode, Map<String, String> yaml, int depth,
-            String... filters) {
+    public static Object toObject(JsonNode jsonNode, int depth, Map<String, Object> finalMap, String... f) {
+        if (jsonNode.isValueNode()) {
+            return fullObj(jsonNode);
+        }
+        if (jsonNode.isArray()) {
+            List<Object> arrayObject = new ArrayList<>();
+            for (JsonNode arrayItem : jsonNode) {
+                arrayObject.add(toObject(arrayItem, depth + 1, finalMap, f));
+            }
+            return arrayObject;
+        }
+        if (jsonNode.isObject()) {
+            Map<String, Object> mapObject = new HashMap<>();
+            for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
+                Entry<String, JsonNode> next = iterator.next();
+                Object merge = mapObject.merge(next.getKey(), toObject(next.getValue(), depth + 1, finalMap, f),
+                        JsonExtractor::mergeObjs);
+                if (Arrays.asList(f).contains(next.getKey())) {
+                    finalMap.merge(next.getKey(), merge, JsonExtractor::mergeObjs);
+                }
+
+            }
+            return mapObject;
+        }
+        return null;
+
+    }
+
+    private static String appendJsonArray(JsonNode jsonNode, Map<String, String> yaml, int depth, String... filters) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Iterator<JsonNode> iterator = jsonNode.iterator(); iterator.hasNext();) {
             JsonNode arrayItem = iterator.next();
@@ -132,6 +192,7 @@ public final class JsonExtractor {
         }
         return stringBuilder.toString();
     }
+
     private static void appendJsonArray(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
         String repeat = StringUtils.repeat(" ", depth);
 
@@ -166,6 +227,7 @@ public final class JsonExtractor {
         yaml.append("\n" + "}");
         return yaml.toString();
     }
+
     private static void appendJsonObject(JsonNode jsonNode, StringBuilder yaml, int depth, String... filters) {
         String repeat = StringUtils.repeat(" ", depth);
         yaml.append("{");
@@ -199,6 +261,18 @@ public final class JsonExtractor {
             e.getValue().merge(nodeName, convertObj(item2),
                     (old, val) -> StringUtils.isBlank(old) ? val : old + "\n" + val);
         }
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static Object mergeObjs(Object a, Object b) {
+        if (a instanceof List && ((List) a).stream().findFirst().map(Object::getClass).orElse(null) == b.getClass()) {
+            ((List) a).add(b);
+            return a;
+        }
+        if (a.getClass() == b.getClass()) {
+            return new ArrayList<>(Arrays.asList(a, b));
+        }
+        return a;
     }
 
     private static Map<String, String> newMap(Entry<String, JsonNode> item) {

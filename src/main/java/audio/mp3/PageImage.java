@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -21,6 +22,7 @@ public class PageImage extends Application {
         textField.textProperty().addListener((ob, t, value) -> ImageLoader.loadImages(root.getChildren(), value));
         textField.setText("Dog");
         Scene scene = new Scene(new VBox(textField, scrollPane));
+        VBox.setVgrow(scrollPane, Priority.ALWAYS);
         textField.prefWidthProperty().bind(scene.widthProperty().multiply(9. / 10));
         primaryStage.setScene(scene);
         primaryStage.show();

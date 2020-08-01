@@ -33,22 +33,28 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    public void addSlider(final PaintModel model, String string, Slider lengthSlider2) {
+    public VBox addSlider(final PaintModel model, String string, Slider lengthSlider2) {
         Text text = new Text();
         text.textProperty().bind(lengthSlider2.valueProperty().asString(string + " %.0f"));
-        model.getToolOptions().getChildren().add(new VBox(text, lengthSlider2));
+        VBox e = new VBox(text, lengthSlider2);
+        model.getToolOptions().getChildren().add(e);
+        return e;
     }
 
-    public void addSlider(final PaintModel model, String string, Slider slider, DoubleExpression prop) {
+    public VBox addSlider(final PaintModel model, String string, Slider slider, DoubleExpression prop) {
         Text text = new Text();
         text.textProperty().bind(prop.divide(slider.getMax()).multiply(100).asString(string + " %.0f%%"));
-        model.getToolOptions().getChildren().add(new VBox(text, slider));
+        VBox e = new VBox(text, slider);
+        model.getToolOptions().getChildren().add(e);
+        return e;
     }
 
-    public void addSlider(final PaintModel model, String string, Slider lengthSlider2, IntegerProperty prop) {
+    public VBox addSlider(final PaintModel model, String string, Slider lengthSlider2, IntegerProperty prop) {
         Text text = new Text();
         text.textProperty().bind(prop.asString(string + " %d"));
-        model.getToolOptions().getChildren().add(new VBox(text, lengthSlider2));
+        VBox e = new VBox(text, lengthSlider2);
+        model.getToolOptions().getChildren().add(e);
+        return e;
     }
 
     public abstract Node createIcon();

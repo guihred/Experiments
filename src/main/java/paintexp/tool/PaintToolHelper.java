@@ -7,6 +7,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -30,13 +31,15 @@ public final class PaintToolHelper {
     }
 
     public static void addOptionsAccordingly(Object selectedItem, ObservableList<Node> children,
-            Map<String, Double> maxMap, Map<Class<?>, List<?>> classMap ) {
+            Map<String, Double> maxMap, List<String> exclude) {
         children.clear();
         if (selectedItem == null) {
             return;
         }
-        ClassReflectionUtils.properties(selectedItem, selectedItem.getClass())
-        .forEach((k, v) -> addOptions(selectedItem, children, maxMap, classMap, k, v));
+        Map<Class<?>, List<?>> classMap = new HashMap<>();
+        ClassReflectionUtils.simpleProperties(selectedItem, selectedItem.getClass())
+                .entrySet().stream().filter(t -> !exclude.contains(t.getKey()))
+                .forEach(e -> addOptions(selectedItem, children, maxMap, classMap, e.getKey(), e.getValue()));
     }
 
     public static void addOptionsAccordingly(Object selectedItem, ObservableList<Node> children,
@@ -57,7 +60,7 @@ public final class PaintToolHelper {
     public static Image getClipboardImage() {
         Clipboard systemClipboard = Clipboard.getSystemClipboard();
         return SupplierEx.orElse(systemClipboard.getImage(), () -> systemClipboard.getFiles().stream().findFirst()
-            .map(FunctionEx.makeFunction(f -> new Image(convertToURL(f).toExternalForm()))).orElse(null));
+                .map(FunctionEx.makeFunction(f -> new Image(convertToURL(f).toExternalForm()))).orElse(null));
     }
 
     public static void setClipboardContent(Object imageSelected2) {
@@ -69,37 +72,42 @@ public final class PaintToolHelper {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static void addOptions(Object selectedItem, ObservableList<Node> options, Map<String, Double> maxMap,
             Map<Class<?>, List<?>> effects, String fieldName, Property property) {
-        String changeCase = StringSigaUtils.changeCase(fieldName);
+        Object value = property.getValue();
+        if (value instanceof EventHandler) {
+            return;
+        }
+
+        String changeCase = StringSigaUtils.splitMargeCamelCase(StringSigaUtils.changeCase(fieldName));
         Text text2 = new Text(changeCase);
         text2.textProperty().bind(Bindings.createStringBinding(() -> propValue(property, changeCase), property));
 
         VBox vBox = new VBox(text2);
         options.add(vBox);
         ObservableList<Node> effectsOptions = vBox.getChildren();
-        Object value = property.getValue();
         if (value instanceof Number) {
             double value3 = ((Number) value).doubleValue();
             Double max = maxMap.computeIfAbsent(fieldName, v -> getMax(value3));
             SimpleSliderBuilder builder = new SimpleSliderBuilder(0, max, value3);
-            builder.build().valueProperty().bindBidirectional(property);
+            bindBidirectional(builder.build().valueProperty(), property);
             effectsOptions.add(builder.build());
             return;
         }
         if (value instanceof Boolean) {
             CheckBox e = new CheckBox();
-            e.selectedProperty().bindBidirectional(property);
+            bindBidirectional(e.selectedProperty(), property);
             effectsOptions.add(e);
             return;
         }
         if (value instanceof String) {
             TextField e = new TextField();
-            e.textProperty().bindBidirectional(property);
+            bindBidirectional(e.textProperty(), property);
+
             effectsOptions.add(e);
             return;
         }
         if (value instanceof Color) {
             ColorPicker colorPicker = new ColorPicker((Color) value);
-            ((Property<Color>) property).bind(colorPicker.valueProperty());
+            bindBidirectional(colorPicker.valueProperty(), property);
             effectsOptions.add(colorPicker);
             return;
         }
@@ -116,7 +124,8 @@ public final class PaintToolHelper {
             Property colorProperty = properties.get("color");
             Color value3 = (Color) colorProperty.getValue();
             ColorPicker colorPicker = new ColorPicker(value3);
-            colorProperty.bind(colorPicker.valueProperty());
+            bindBidirectional(colorPicker.valueProperty(), colorProperty);
+
             effectsOptions.add(colorPicker);
             return;
         }
@@ -133,6 +142,11 @@ public final class PaintToolHelper {
             property.bind(comboBox.getSelectionModel().selectedItemProperty());
             effectsOptions.add(comboBox);
         }
+    }
+
+    private static <T> void bindBidirectional(Property<T> prop1, Property<T> prop2) {
+        prop1.addListener((ob, old, val) -> prop2.setValue(val));
+        prop2.addListener((ob, old, val) -> prop1.setValue(val));
     }
 
     private static double getMax(double value3) {

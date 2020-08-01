@@ -67,4 +67,21 @@ enum PictureOption {
         return svgPath;
     }
 
+    public static SVGPath toSVG(String path) {
+        SVGPath svgPath = new SVGPath();
+        svgPath.setContent(path);
+        double width = svgPath.getBoundsInLocal().getWidth();
+        double height = svgPath.getBoundsInLocal().getHeight();
+        svgPath.maxWidth(PREF_WIDTH);
+        svgPath.minWidth(PREF_WIDTH);
+        svgPath.prefWidth(PREF_WIDTH);
+        svgPath.setFill(Color.TRANSPARENT);
+        svgPath.setStroke(Color.BLACK);
+        svgPath.setLayoutX(0);
+        svgPath.setLayoutY(0);
+        svgPath.setScaleX(PREF_WIDTH / width);
+        svgPath.setScaleY(PREF_WIDTH / height);
+        return svgPath;
+    }
+
 }

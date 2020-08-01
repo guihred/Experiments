@@ -54,7 +54,7 @@ public final class EditSongHelper {
             SongUtils.stopAndDispose(mediaPlayer.get());
             MusicReader.saveMetadata(selectedItem);
         });
-        new SimpleDialogBuilder().text(value).button(builder).bindWindow(stage).displayDialog();
+        new SimpleDialogBuilder().text(value).node(builder).bindWindow(stage).displayDialog();
         ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
             selectedItem.getTitulo());
     }
@@ -107,7 +107,7 @@ public final class EditSongHelper {
         Button splitButton = SimpleButtonBuilder.newButton("_Split", a -> EditSongHelper.splitInFiles(mediaPlayer, file,
             currentSlider, currentTime, music, progressIndicator, startTime));
         root.getChildren().addAll(splitButton);
-        new SimpleDialogBuilder().text("Split Multiple").button(root).bindWindow(currentSlider).displayDialog();
+        new SimpleDialogBuilder().text("Split Multiple").node(root).bindWindow(currentSlider).displayDialog();
     }
 
     public static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,

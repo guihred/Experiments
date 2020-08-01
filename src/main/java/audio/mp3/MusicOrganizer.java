@@ -143,7 +143,7 @@ public class MusicOrganizer extends Application {
             MusicReader.saveMetadata(music);
             StageHelper.closeStage(vBox);
         }));
-        new SimpleDialogBuilder().text("Fix Fields").button(vBox).bindWindow(musicasTable).displayDialog();
+        new SimpleDialogBuilder().text("Fix Fields").node(vBox).bindWindow(musicasTable).displayDialog();
 
     }
 

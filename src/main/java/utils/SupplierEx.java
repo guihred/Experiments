@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.assertj.core.api.exception.RuntimeIOException;
@@ -9,20 +11,33 @@ public interface SupplierEx<T> {
     T get() throws Exception;
 
     static <A> A get(SupplierEx<A> run) {
-        return makeSupplier(run::get, e -> HasLogging.log(1).error("", e)).get();
+        return makeSupplier(run, e -> HasLogging.log(1).error("", e)).get();
     }
 
     static <A> A get(SupplierEx<A> run, A orElse) {
         return getHandle(run, orElse, e -> HasLogging.log(1).info("", e));
     }
 
+    @SafeVarargs
+    static <A> A getFirst(SupplierEx<A>... run) {
+        List<Exception> arrayList = new ArrayList<>();
+        for (SupplierEx<A> supplierEx : run) {
+            A a = makeSupplier(supplierEx, e -> {
+                arrayList.add(e);
+                HasLogging.log(1).error("", e);
+            }).get();
+            if(a!=null) {
+                return a;
+            }
+        }
+        throw new RuntimeIOException("ERROR " + HasLogging.getCurrentLine(1),
+                arrayList.stream().findFirst().orElse(null));
+    }
+
     static <A> A getHandle(SupplierEx<A> run, A orElse, Consumer<Exception> onError) {
         try {
             A a = run.get();
-            if (a == null) {
-                return orElse;
-            }
-            return a;
+            return a != null ? a : orElse;
         } catch (Exception e) {
             HasLogging.log(1).trace("", e);
             onError.accept(e);

@@ -111,7 +111,7 @@ public class PrintConfig extends Application {
                         ImageFXUtils.toBufferedImage(panel, panel.getWidth(), panel.getHeight(), 8);
                 panelImages.add(bimg);
             }
-            File outputFile = ResourceFXUtils.getOutFile("oi2.pdf");
+            File outputFile = ResourceFXUtils.getOutFile("oi2" + images.hashCode() + ".pdf");
             PdfUtils.createPDFFromImage(outputFile, panelImages.toArray(new BufferedImage[0]));
             ImageFXUtils.openInDesktop(outputFile);
         });

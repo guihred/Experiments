@@ -86,7 +86,8 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
 
     public SimpleToggleGroupBuilder select(final Object index) {
         toggleGroup.selectToggle(
-                toggleGroup.getToggles().stream().filter(t -> t.getUserData().equals(index)).findFirst().orElse(null));
+                toggleGroup.getToggles().stream().filter(t -> Objects.equals(t.getUserData(), index)).findFirst()
+                        .orElse(null));
         return this;
     }
     public Toggle selectedItem() {

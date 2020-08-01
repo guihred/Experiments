@@ -62,7 +62,7 @@ public final class StageHelper {
                 textArea.requestFocus();
             }
         }));
-        Stage stage2 = new SimpleDialogBuilder().button(new VBox(textArea, saveButton)).bindWindow(scene.getRoot())
+        Stage stage2 = new SimpleDialogBuilder().node(new VBox(textArea, saveButton)).bindWindow(scene.getRoot())
             .height(500)
             .displayDialog();
         textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));

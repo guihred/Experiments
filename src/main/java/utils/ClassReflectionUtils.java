@@ -54,9 +54,13 @@ public final class ClassReflectionUtils {
     }
 
     public static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
+        return getAllMethodsRecursive(targetClass, 10);
+    }
+
+    public static List<Method> getAllMethodsRecursive(Class<?> targetClass, int maxHierarchy) {
         Class<?> a = targetClass;
         List<Method> getters = new ArrayList<>();
-        for (int i = 0; i < 10 && a != null; i++, a = a.getSuperclass()) {
+        for (int i = 0; i < maxHierarchy && a != null; i++, a = a.getSuperclass()) {
             List<Method> getters2 = Arrays.asList(a.getDeclaredMethods());
             getters.addAll(getters2);
             Class<?>[] interfaces = a.getInterfaces();
@@ -274,6 +278,19 @@ public final class ClassReflectionUtils {
         return Stream.of(c.getDeclaredMethods()).filter(m -> Modifier.isPublic(m.getModifiers()))
                 .filter(m -> m.getName().matches(METHOD_REGEX_SETTER)).filter(m -> m.getParameterCount() == 1)
                 .sorted(Comparator.comparing(ClassReflectionUtils::getFieldName)).collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static Map<String, Property> simpleProperties(Object o, Class<?> c) {
+        String regex = "(\\w+)Property";
+        List<Method> allMethodsRecursive = getAllMethodsRecursive(c, 2);
+        return allMethodsRecursive.stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
+                .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
+                .filter(m -> m.getParameterCount() == 0).filter(e -> Property.class.isAssignableFrom(e.getReturnType()))
+                .filter(m -> m.getAnnotationsByType(Deprecated.class).length == 0)
+                .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
+                .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"), t -> (Property) invoke(o, t),
+                        (u, v) -> u, LinkedHashMap::new));
     }
 
     private static <T> String getDescription(T obj, Class<?> class1,

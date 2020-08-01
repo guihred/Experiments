@@ -77,7 +77,7 @@ public class WebBrowserApplication extends Application {
         addProperties(engine, varList);
         engine.setCreatePopupHandler(pop -> {
             WebView button = new WebView();
-            new SimpleDialogBuilder().button(button).resizable(pop.isResizable()).build();
+            new SimpleDialogBuilder().node(button).resizable(pop.isResizable()).build();
             return button.getEngine();
         });
         engine.locationProperty().addListener((ob, old, val) -> {

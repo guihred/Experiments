@@ -82,7 +82,7 @@ public class Ch4 {
             e.setAccessible(true);
             e.get(s);
             return !Modifier.isStatic(e.getModifiers());
-        }, true);
+        }, false);
     }
 
     private static boolean isClassUsed(List<Class<?>> classes, Field e) {

@@ -5,6 +5,7 @@ import static utils.StringSigaUtils.codificar;
 import com.twelvemonkeys.imageio.stream.ByteArrayImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -49,8 +50,9 @@ public final class WikiImagesUtils {
         LOG.info("SEARCHING FOR {}", artista);
         String encode = codificar(artista.replace(' ', '_'));
         String url = "https://en.wikipedia.org/wiki/" + encode;
-        String url2 = "https://pt.wikipedia.org/wiki/" + encode;
+
         images.addAll(SupplierEx.getIgnore(() -> readPage(url), Collections.emptyList()));
+        String url2 = "https://pt.wikipedia.org/wiki/" + encode;
         images.addAll(SupplierEx.getIgnore(() -> readPage(url2), Collections.emptyList()));
         return images;
     }
@@ -72,7 +74,12 @@ public final class WikiImagesUtils {
             Document parse = ExtractUtils.getDocument(urlString);
             LOG.info("READING PAGE {}", urlString);
             Elements kun = parse.select("img");
-            return kun.stream().map(e -> e.attr("src")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+
+            URL url2 = new URL(urlString);
+            String currentDomain = url2.getProtocol() + "://" + url2.getHost();
+
+            return kun.stream().map(e -> e.attr("src")).filter(StringUtils::isNotBlank)
+                    .map(e -> ExtractUtils.addDomain(currentDomain, e)).collect(Collectors.toList());
         }, "ERROR Reading Page");
     }
 

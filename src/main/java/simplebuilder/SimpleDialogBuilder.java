@@ -52,7 +52,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
         return stage;
     }
 
-    public SimpleDialogBuilder button(Node button) {
+    public SimpleDialogBuilder node(Node button) {
         group.getChildren().add(button);
         return this;
     }
