@@ -3,6 +3,7 @@ package paintexp.tool;
 import static utils.ResourceFXUtils.convertToURL;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
@@ -18,7 +19,9 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleConverter;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ClassReflectionUtils;
@@ -37,9 +40,16 @@ public final class PaintToolHelper {
             return;
         }
         Map<Class<?>, List<?>> classMap = new HashMap<>();
-        ClassReflectionUtils.simpleProperties(selectedItem, selectedItem.getClass())
-                .entrySet().stream().filter(t -> !exclude.contains(t.getKey()))
+        ClassReflectionUtils.simpleProperties(selectedItem, selectedItem.getClass()).entrySet().stream()
+                .filter(t -> !exclude.contains(t.getKey()))
                 .forEach(e -> addOptions(selectedItem, children, maxMap, classMap, e.getKey(), e.getValue()));
+
+        Map<String, Object> getterMap = ClassReflectionUtils.getGetterMap(selectedItem);
+        String key = "strokeDashArray";
+        if (getterMap.containsKey(key)) {
+            addStrokeArray(children, key, getterMap);
+        }
+
     }
 
     public static void addOptionsAccordingly(Object selectedItem, ObservableList<Node> children,
@@ -125,7 +135,6 @@ public final class PaintToolHelper {
             Color value3 = (Color) colorProperty.getValue();
             ColorPicker colorPicker = new ColorPicker(value3);
             bindBidirectional(colorPicker.valueProperty(), colorProperty);
-
             effectsOptions.add(colorPicker);
             return;
         }
@@ -135,13 +144,41 @@ public final class PaintToolHelper {
         if (effects.containsKey(setterType) || ClassReflectionUtils.hasClass(effects.keySet(), class1)) {
             Optional<Class<?>> findFirst = effects.keySet().stream()
                     .filter(c -> c.isAssignableFrom(class1) || class1.isAssignableFrom(c)).findFirst();
-
             ComboBox comboBox =
                     new ComboBox<>(FXCollections.observableArrayList(effects.get(findFirst.orElse(setterType))));
             comboBox.setConverter(new SimpleConverter("class.simpleName"));
-            property.bind(comboBox.getSelectionModel().selectedItemProperty());
+            comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, val) -> property.setValue(val));
+            property.addListener((ob, old, val) -> comboBox.getSelectionModel().select(val));
             effectsOptions.add(comboBox);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void addStrokeArray(ObservableList<Node> children, String key, Map<String, Object> getterMap) {
+        ObservableList<Double> property = (ObservableList<Double>) getterMap.get(key);
+        String changeCase = StringSigaUtils.splitMargeCamelCase(StringSigaUtils.changeCase(key));
+        Text text2 = new Text(changeCase);
+        VBox vBox = new VBox(text2);
+        children.add(vBox);
+        ObservableList<Node> effectsOptions = vBox.getChildren();
+        ObservableList<ObservableList<Double>> observableArrayList = FXCollections.observableArrayList();
+        observableArrayList.add(FXCollections.observableArrayList(1.));
+        observableArrayList.add(FXCollections.observableArrayList(1., 1.));
+        observableArrayList.add(FXCollections.observableArrayList(1., 2.));
+        observableArrayList.add(FXCollections.observableArrayList(1., 2., 3.));
+        ComboBox<ObservableList<Double>> comboBox = new SimpleComboBoxBuilder<ObservableList<Double>>()
+                .items(observableArrayList)
+                .onChange((old, val) -> property.setAll(
+                        val.stream().map(e -> e * (Double) getterMap.get("strokeWidth")).collect(Collectors.toList())))
+                .select(property).cellFactory((arr, cell) -> {
+                    if (arr == null) {
+                        return;
+                    }
+                    Line value = new Line(0, 0, vBox.getWidth() - 10, 0);
+                    value.getStrokeDashArray().setAll(arr);
+                    cell.setGraphic(value);
+                }).build();
+        effectsOptions.add(comboBox);
     }
 
     private static <T> void bindBidirectional(Property<T> prop1, Property<T> prop2) {

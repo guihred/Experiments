@@ -57,6 +57,9 @@ public class EllipseTool extends PaintTool {
             .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
             .select(option).getTogglesAs(Node.class);
         model.getToolOptions().getChildren().addAll(togglesAs);
+        model.getToolOptions().getChildren()
+                .addAll(PolygonTool.propertiesPane(getArea(), "fill", "stroke", "radiusX", "radiusY", "centerX",
+                        "centerY", "strokeLineJoin", "strokeLineCap"));
     }
 
     @Override
@@ -98,15 +101,8 @@ public class EllipseTool extends PaintTool {
     protected void onMouseReleased(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getRadiusX() > 2 && children.contains(getArea())) {
-            double xRad = getArea().getRadiusX();
-            double yRad = getArea().getRadiusY();
-            RectBuilder circle = RectBuilder.build().startX(initialX).startY(initialY).width(xRad).height(yRad);
-            if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
-                circle.drawCircleFill(model.getImage(), model.getCurrentImage(), model.getBackColor(), 1);
-            }
-            if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
-                circle.drawCircle(model.getImage(), model.getCurrentImage(), model.getFrontColor(), 1);
-            }
+            model.takeSnapshot(area);
+            model.createImageVersion();
         }
         children.remove(getArea());
     }

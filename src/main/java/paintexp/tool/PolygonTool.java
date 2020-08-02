@@ -6,20 +6,30 @@ import static java.lang.Math.sin;
 import static java.util.stream.DoubleStream.iterate;
 import static java.util.stream.DoubleStream.of;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
+import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import simplebuilder.SimpleToggleGroupBuilder;
+import utils.ClassReflectionUtils;
+import utils.RunnableEx;
 
 public class PolygonTool extends PaintTool {
 
@@ -54,6 +64,8 @@ public class PolygonTool extends PaintTool {
             line = new Line();
             line.setStroke(Color.BLACK);
             line.setManaged(false);
+
+            copyIcon(line, getArea());
         }
         return line;
     }
@@ -92,13 +104,13 @@ public class PolygonTool extends PaintTool {
 
     @Override
     public void onSelected(final PaintModel model) {
-        Shape icon2 = createIcon();
+        Shape icon2 = copyIcon(createIcon(), getArea());
         icon2.strokeProperty().bind(model.frontColorProperty());
         icon2.setFill(Color.TRANSPARENT);
-        Shape icon3 = createIcon();
+        Shape icon3 = copyIcon(createIcon(), getArea());
         icon3.setStroke(Color.TRANSPARENT);
         icon3.fillProperty().bind(model.backColorProperty());
-        Shape icon4 = createIcon();
+        Shape icon4 = copyIcon(createIcon(), getArea());
         icon4.strokeProperty().bind(model.frontColorProperty());
         icon4.fillProperty().bind(model.backColorProperty());
         List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
@@ -107,6 +119,9 @@ public class PolygonTool extends PaintTool {
                 .select(option).getTogglesAs(Node.class);
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren().addAll(togglesAs);
+        FlowPane flowPane = propertiesPane(getArea(), "fill", "stroke");
+        model.getToolOptions().getChildren().addAll(flowPane);
+
     }
 
     @Override
@@ -140,7 +155,7 @@ public class PolygonTool extends PaintTool {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (getArea().getBoundsInParent().getWidth() > 2 && children.contains(getArea())) {
-            model.takeSnapshotFill(area);
+            model.takeSnapshot(area);
             model.createImageVersion();
         }
         children.remove(getArea());
@@ -159,6 +174,32 @@ public class PolygonTool extends PaintTool {
             getLine().setEndX(e.getX());
             getLine().setEndY(e.getY());
         }
+    }
+
+    public static FlowPane propertiesPane(Node area2, String... exclude) {
+        FlowPane flowPane = new FlowPane(Orientation.VERTICAL, 5.0, 5.0);
+        flowPane.setMaxHeight(100);
+        HBox.setHgrow(flowPane, Priority.ALWAYS);
+        flowPane.setPrefWrapLength(100.0);
+        Map<String, Double> maxMap = new HashMap<>();
+        maxMap.put("strokeWidth", 10.);
+        PaintToolHelper.addOptionsAccordingly(area2, flowPane.getChildren(), maxMap,
+                Arrays.asList(exclude));
+        return flowPane;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static <T> T copyIcon(T createIcon, Shape area2) {
+        Map<String, Property> areaProperties = ClassReflectionUtils.simpleProperties(area2, area2.getClass());
+        Map<String, Property> simpleProperties =
+                ClassReflectionUtils.simpleProperties(createIcon, createIcon.getClass());
+        List<String> exclude = Arrays.asList("fill", "stroke");
+        simpleProperties.forEach((k, v) -> {
+            if (!exclude.contains(k) && areaProperties.containsKey(k)) {
+                areaProperties.get(k).addListener((ob, o, val) -> RunnableEx.ignore(() -> v.setValue(val)));
+            }
+        });
+        return createIcon;
     }
 
 }

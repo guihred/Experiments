@@ -45,36 +45,38 @@
 		<FlowPane HBox.hgrow="ALWAYS" hgap="5.0" maxHeight="150.0"
 			fx:id="propertiesPane" orientation="VERTICAL" vgap="5.0">
 		</FlowPane>
-		<FlowPane fx:id="picturePane" hgap="5.0" maxHeight="0.0"
+		<FlowPane fx:id="picturePane" hgap="5.0" maxHeight="100.0"
 			orientation="VERTICAL" prefWrapLength="800.0" vgap="5.0">
 			<children>
-				<ToggleButton styleClass="toggle-button m-12,4-l-20,20-4,20-12,4z"
+				<ToggleButton styleClass="toggle-button" minHeight="20" minWidth="20"
 					textFill="0x333333ff" toggleGroup="$shapeOption" userData="M 12,4 L 20,20 4,20 12,4z">
 					<graphic>
 						<SVGPath content="M 12,4 L 20,20 4,20 12,4z" fill="0x00000000"
 							scaleX="1.25" scaleY="1.25" stroke="0x000000ff" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="M 12,4 L 20,20 4,20 12,4z" />
+						<Tooltip text="Triangle" />
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
-				<ToggleButton styleClass="toggle-button m-0,0-l-0,20-20,0-z-"
+				<ToggleButton styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption" userData="M 0,0 l 0,20 20,0 Z ">
 					<graphic>
 						<SVGPath content="M 0,0 l 0,20 20,0 Z " fill="0x00000000"
 							stroke="0x000000ff" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="M 0,0 l 0,20 20,0 Z " />
+						<Tooltip text="Scalene" />
+     
+     
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
-				<ToggleButton styleClass="toggle-button m-20,0-l-10,10--10,10--10,-10-z-"
+				<ToggleButton styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="M 20,0 l 10,10 -10,10 -10,-10 Z ">
 					<graphic>
@@ -82,13 +84,13 @@
 							stroke="0x000000ff" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="M 20,0 l 10,10 -10,10 -10,-10 Z " />
+						<Tooltip text="Diamond" />
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
-				<ToggleButton styleClass="toggle-button m-10,0-l-0,7-l-4,19-l-16,19-l-20,7-z"
+				<ToggleButton styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="M 10,0 L 0,7 L 4,19 L 16,19 L 20,7 Z">
 					<graphic>
@@ -96,14 +98,17 @@
 							fill="0x00000000" scaleY="1.0526315789473684" stroke="0x000000ff" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="M 10,0 L 0,7 L 4,19 L 16,19 L 20,7 Z" />
+						<Tooltip text="Pentagon" />
+        
+     
+     
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
 				<ToggleButton selected="true"
-					styleClass="toggle-button m-20,9-l-15,17.310350-5,17.310350-0,9-5,0.061711-15,0.061711-20,9-z"
+					styleClass="toggle-button arrow-right"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="M 20,9 L 15,17.310350 5,17.310350 0,9 5,0.061711 15,0.061711 20,9 z">
 					<graphic>
@@ -113,14 +118,14 @@
 					</graphic>
 					<tooltip>
 						<Tooltip
-							text="M 20,9 L 15,17.310350 5,17.310350 0,9 5,0.061711 15,0.061711 20,9 z" />
+							text="Hexagon" />
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
 				<ToggleButton
-					styleClass="toggle-button m-3,7-l10,0-0,-7-10,10--10,10-0,-7--10,0-z"
+					styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="m 3,7 l10,0 0,-7 10,10 -10,10 0,-7 -10,0 z">
 					<graphic>
@@ -128,14 +133,16 @@
 							fill="0x00000000" stroke="0x000000ff" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="m 3,7 l10,0 0,-7 10,10 -10,10 0,-7 -10,0 z" />
+						<Tooltip text="Arrow Right " />
+     
+    
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
 				<ToggleButton
-					styleClass="toggle-button m-0,20-l10,10-0,-7-10,0-0,-7--10,0-0,-7-z"
+					styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="m 0,20 l10,10 0,-7 10,0 0,-7 -10,0 0,-7 z">
 					<graphic>
@@ -144,14 +151,15 @@
 							stroke="0x000000ff" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="m 0,20 l10,10 0,-7 10,0 0,-7 -10,0 0,-7 z" />
+						<Tooltip text="Arrow Left" />
+      
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
 				<ToggleButton
-					styleClass="toggle-button m-20,0-l10,10--7,0-0,10--7,0-0,-10--7,0-z"
+					styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="m 20,0 l10,10 -7,0 0,10 -7,0 0,-10 -7,0 z">
 					<graphic>
@@ -159,14 +167,14 @@
 							fill="0x00000000" scaleX="0.9523809523809523" stroke="0x000000ff" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="m 20,0 l10,10 -7,0 0,10 -7,0 0,-10 -7,0 z" />
+						<Tooltip text="Arrow Up" />
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
 				<ToggleButton
-					styleClass="toggle-button m-0,20-l0,10--7,0-10,10-10,-10--7,0-0,-10-z"
+					styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="m 0,20 l0,10 -7,0 10,10 10,-10 -7,0 0,-10 z">
 					<graphic>
@@ -174,14 +182,14 @@
 							fill="0x00000000" layoutY="-14.0" stroke="0x000000ff" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="m 0,20 l0,10 -7,0 10,10 10,-10 -7,0 0,-10 z" />
+						<Tooltip text="Arrow Down" />
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
 				<ToggleButton
-					styleClass="toggle-button m-10-4-l-11.9385-9.8393-l-18-12-l-11.9385-14.1607-l-10-20-l-7.6171-14.1607-l-2-12-l-7.6171-9.8393-z"
+					styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="M 10 4 L 11.9385 9.8393 L 18 12 L 11.9385 14.1607 L 10 20 L 7.6171 14.1607 L 2 12 L 7.6171 9.8393 Z">
 					<graphic>
@@ -191,14 +199,14 @@
 					</graphic>
 					<tooltip>
 						<Tooltip
-							text="M 10 4 L 11.9385 9.8393 L 18 12 L 11.9385 14.1607 L 10 20 L 7.6171 14.1607 L 2 12 L 7.6171 9.8393 Z" />
+							text="Star 4" />
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
 				<ToggleButton
-					styleClass="toggle-button m10,0-2,6h6l-5,4-2,6-5-4-5,4-2-6-5-4h6z"
+					styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="m10,0 2,6h6l-5,4 2,6-5-4-5,4 2-6-5-4h6z">
 					<graphic>
@@ -206,14 +214,14 @@
 							fill="0x00000000" scaleX="1.25" scaleY="1.25" stroke="0x000000ff" />
 					</graphic>
 					<tooltip>
-						<Tooltip text="m10,0 2,6h6l-5,4 2,6-5-4-5,4 2-6-5-4h6z" />
+						<Tooltip text="Star 5" />
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
 				<ToggleButton
-					styleClass="toggle-button m10,0-l3,5-6,0--3,5-3,5--6,0--3,5--3,-5--6,0-3,-5--3,-5-6,0z"
+					styleClass="toggle-button"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="M10,0 l3,5 6,0 -3,5 3,5 -6,0 -3,5 -3,-5 -6,0 3,-5 -3,-5 6,0z">
 					<graphic>
@@ -223,14 +231,14 @@
 					</graphic>
 					<tooltip>
 						<Tooltip
-							text="M10,0 l3,5 6,0 -3,5 3,5 -6,0 -3,5 -3,-5 -6,0 3,-5 -3,-5 6,0z" />
+							text="Star 6" />
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 				</ToggleButton>
 				<ToggleButton
-					styleClass="toggle-button m15.53-1a5.52-5.52-0-0-0-11-6-5.52-5.52-0-0-0-0-6c0-12.37-11-20-11-20s11-7.63-11-13.42a5.53-5.53-0-0-0-15.53-1z"
+					styleClass="toggle-button Heart"
 					textFill="0x333333ff" toggleGroup="$shapeOption"
 					userData="M15.53 1A5.52 5.52 0 0 0 11 6 5.52 5.52 0 0 0 0 6C0 12.37 11 20 11 20s11-7.63 11-13.42A5.53 5.53 0 0 0 15.53 1z">
 					<graphic>
@@ -241,7 +249,7 @@
 					</graphic>
 					<tooltip>
 						<Tooltip
-							text="M15.53 1A5.52 5.52 0 0 0 11 6 5.52 5.52 0 0 0 0 6C0 12.37 11 20 11 20s11-7.63 11-13.42A5.53 5.53 0 0 0 15.53 1z" />
+							text="Heart" />
 					</tooltip>
 					<padding>
 						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />

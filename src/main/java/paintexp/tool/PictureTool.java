@@ -60,6 +60,7 @@ public class PictureTool extends PaintTool {
 
     @FXML
     private SVGPath icon2;
+    private Parent loadParent;
 
     @Override
     public SVGPath createIcon() {
@@ -108,7 +109,7 @@ public class PictureTool extends PaintTool {
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
 
-        Parent loadParent = CommonsFX.loadParent("PictureTool.fxml", this);
+        loadParent = CommonsFX.loadParent("PictureTool.fxml", this);
         fillOptionGroup.selectedToggleProperty().addListener((o, old, newV) -> option =
                 FunctionEx.mapIf(newV, n -> (FillOption) n.getUserData(), FillOption.STROKE));
         copyIcon(icon2);
@@ -217,7 +218,6 @@ public class PictureTool extends PaintTool {
                 areaProperties.get(k).addListener((ob, o, val) -> RunnableEx.ignore(() -> v.setValue(val)));
             }
         });
-
         return createIcon;
     }
 

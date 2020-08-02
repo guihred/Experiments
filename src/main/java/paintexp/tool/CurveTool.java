@@ -81,6 +81,12 @@ public class CurveTool extends PaintTool {
         getLine().setEndY(-1);
         getLine().setControlY1(-1);
         getLine().setControlY2(-1);
+
+        model.getToolOptions().getChildren().clear();
+        model.getToolOptions().getChildren()
+                .add(PolygonTool.propertiesPane(getLine(), "fill", "stroke", "startX", "startY", "endX", "endY",
+                        "controlX1", "controlY1", "controlX2", "controlY2"));
+
     }
 
     @Override
@@ -123,7 +129,7 @@ public class CurveTool extends PaintTool {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if ((size() >= 2 || !children.contains(getLine())) && stage == 2) {
-            model.takeSnapshotFill(line);
+            model.takeSnapshot(line);
             model.createImageVersion();
         }
         stage = ++stage % 3;

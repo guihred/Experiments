@@ -15,6 +15,7 @@ import javafx.beans.property.Property;
 import org.junit.Ignore;
 
 public final class ClassReflectionUtils {
+    private static final String PROPERTY_REGEX = "(\\w+)Property";
     private static final String METHOD_REGEX = "is(\\w+)|get(\\w+)";
     private static final String METHOD_REGEX_SETTER = "set(\\w+)";
 
@@ -38,17 +39,16 @@ public final class ClassReflectionUtils {
     }
 
     public static Map<String, Observable> allProperties(Object o, Class<?> c) {
-        String regex = "(\\w+)Property";
         List<Method> allMethodsRecursive = getAllMethodsRecursive(c);
         Object[] args = {};
         return allMethodsRecursive.stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
-                .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
+                .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(PROPERTY_REGEX))
                 .filter(m -> m.getParameterCount() == 0)
                 .filter(e -> Observable.class.isAssignableFrom(e.getReturnType()))
                 .filter(m -> m.getAnnotationsByType(Deprecated.class).length == 0)
                 .filter(t -> (Observable) SupplierEx.getIgnore(() -> t.invoke(o, args)) != null)
-                .sorted(Comparator.comparing(t -> t.getName().replaceAll(regex, "$1")))
-                .collect(Collectors.toMap(t -> t.getName().replaceAll(regex, "$1"),
+                .sorted(Comparator.comparing(t -> t.getName().replaceAll(PROPERTY_REGEX, "$1")))
+                .collect(Collectors.toMap(t -> t.getName().replaceAll(PROPERTY_REGEX, "$1"),
                         FunctionEx.makeFunction(t -> (Observable) invoke(o, t)),
                         (u, v) -> u, LinkedHashMap::new));
     }
@@ -117,6 +117,13 @@ public final class ClassReflectionUtils {
         return getFieldsRecursive(ob.getClass()).stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
                 .filter(e -> e.getName().equals(name)).findFirst().map(field -> BaseEntity.getFieldValue(ob, field))
                 .orElse(null);
+    }
+
+    public static Map<String,Object> getGetterMap(Object targetClass) {
+        return getGetterMethodsRecursive(targetClass.getClass(), 10).stream()
+                .filter(e -> invoke(targetClass, e) != null)
+                .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase, e -> invoke(targetClass, e),
+                        (u, v) -> v));
     }
 
     public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
@@ -263,7 +270,7 @@ public final class ClassReflectionUtils {
 
     @SuppressWarnings("rawtypes")
     public static Map<String, Property> properties(Object o, Class<?> c) {
-        String regex = "(\\w+)Property";
+        String regex = PROPERTY_REGEX;
         List<Method> allMethodsRecursive = getAllMethodsRecursive(c);
         return allMethodsRecursive.stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
                 .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
@@ -282,7 +289,7 @@ public final class ClassReflectionUtils {
 
     @SuppressWarnings("rawtypes")
     public static Map<String, Property> simpleProperties(Object o, Class<?> c) {
-        String regex = "(\\w+)Property";
+        String regex = PROPERTY_REGEX;
         List<Method> allMethodsRecursive = getAllMethodsRecursive(c, 2);
         return allMethodsRecursive.stream().filter(m -> !Modifier.isStatic(m.getModifiers()))
                 .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getName().matches(regex))
