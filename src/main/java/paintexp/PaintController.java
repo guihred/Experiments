@@ -43,6 +43,7 @@ public class PaintController {
             PaintTool oldTool = getTool();
             if (oldTool != null) {
                 oldTool.onDeselected(paintModel);
+                paintModel.getToolOptions().getChildren().clear();
             }
             setTool(newValue);
             PaintTool paintTool = getTool();

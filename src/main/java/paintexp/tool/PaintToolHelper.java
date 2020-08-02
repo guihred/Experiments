@@ -104,6 +104,7 @@ public final class PaintToolHelper {
         }
         if (value instanceof Boolean) {
             CheckBox e = new CheckBox();
+            e.setSelected((boolean) value);
             bindBidirectional(e.selectedProperty(), property);
             effectsOptions.add(e);
             return;

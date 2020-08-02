@@ -63,8 +63,7 @@ public class CurveTool extends PaintTool {
     public void onDeselected(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (children.contains(getLine())) {
-            model.takeSnapshotFill(getLine());
-            model.createImageVersion();
+            model.takeSnapshot(getLine());
             children.remove(getLine());
         }
         onSelected(model);
