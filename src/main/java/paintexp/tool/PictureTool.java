@@ -24,6 +24,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.ClassReflectionUtils;
@@ -81,9 +82,10 @@ public class PictureTool extends PaintTool {
             area.setFill(Color.TRANSPARENT);
             area.setStroke(Color.BLACK);
             area.setManaged(false);
+            area.setSmooth(false);
         }
-        if (area.getContent() == null) {
-            getArea().setContent(PictureOption.TRIANGLE.getPath());
+        if (StringUtils.isBlank(area.getContent())) {
+            area.setContent(PictureOption.TRIANGLE.getPath());
         }
         return area;
     }
@@ -108,26 +110,29 @@ public class PictureTool extends PaintTool {
     @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
+        if (icon2 == null) {
 
-        loadParent = CommonsFX.loadParent("PictureTool.fxml", this);
-        fillOptionGroup.selectedToggleProperty().addListener((o, old, newV) -> option =
-                FunctionEx.mapIf(newV, n -> (FillOption) n.getUserData(), FillOption.STROKE));
-        copyIcon(icon2);
-        icon2.strokeProperty().bind(model.frontColorProperty());
-        icon2.setFill(Color.TRANSPARENT);
-        copyIcon(icon3);
-        icon3.setStroke(Color.TRANSPARENT);
-        icon3.fillProperty().bind(model.backColorProperty());
-        copyIcon(icon4);
-        icon4.strokeProperty().bind(model.frontColorProperty());
-        icon4.fillProperty().bind(model.backColorProperty());
+            loadParent = CommonsFX.loadParent("PictureTool.fxml", this);
+            fillOptionGroup.selectedToggleProperty().addListener((o, old, newV) -> option =
+                    FunctionEx.mapIf(newV, n -> (FillOption) n.getUserData(), FillOption.STROKE));
+            copyIcon(icon2);
+            icon2.strokeProperty().bind(model.frontColorProperty());
+            icon2.setFill(Color.TRANSPARENT);
+            copyIcon(icon3);
+            icon3.setStroke(Color.TRANSPARENT);
+            icon3.fillProperty().bind(model.backColorProperty());
+            copyIcon(icon4);
+            icon4.strokeProperty().bind(model.frontColorProperty());
+            icon4.fillProperty().bind(model.backColorProperty());
 
-        maxMap.put("strokeWidth", 10.);
-        PaintToolHelper.addOptionsAccordingly(getArea(), propertiesPane.getChildren(), maxMap,
-                Arrays.asList("content", "fill", "stroke"));
-        shapeOption.selectedToggleProperty().addListener((o, old, newV) -> getArea()
-                .setContent(FunctionEx.mapIf(newV, n -> (String) n.getUserData(), PictureOption.TRIANGLE.getPath())));
-        model.getToolOptions().getChildren().setAll(loadParent.getChildrenUnmodifiable());
+            maxMap.put("strokeWidth", 10.);
+            PaintToolHelper.addOptionsAccordingly(getArea(), propertiesPane.getChildren(), maxMap,
+                    Arrays.asList("content", "fill", "stroke"));
+            shapeOption.selectedToggleProperty().addListener((o, old, newV) -> getArea().setContent(
+                    FunctionEx.mapIf(newV, n -> (String) n.getUserData(), PictureOption.TRIANGLE.getPath())));
+            shapeOption.selectToggle(shapeOption.getSelectedToggle());
+        }
+        model.getToolOptions().getChildren().setAll(loadParent);
 
     }
 
@@ -203,7 +208,7 @@ public class PictureTool extends PaintTool {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (children.contains(getArea())) {
-            model.takeSnapshotFill(area);
+            model.takeSnapshot(area);
         }
         children.remove(getArea());
     }

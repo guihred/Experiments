@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.layout.*?><?import javafx.geometry.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.shape.*?><?import javafx.scene.text.*?><?import javafx.collections.*?>
-<HBox xmlns:fx="http://javafx.com/fxml" >
+<HBox xmlns:fx="http://javafx.com/fxml" HBox.hgrow="ALWAYS" spacing="5" centerShape="true">
 	<fx:define>
 		<ToggleGroup fx:id="fillOptionGroup" />
 		<ToggleGroup fx:id="shapeOption" />
@@ -7,7 +7,7 @@
 	<children>
 		<VBox>
 			<children>
-				<ToggleButton styleClass="toggle-button stroke"
+				<ToggleButton styleClass="toggle-button stroke" selected="true" 
 					toggleGroup="$fillOptionGroup">
 					<graphic>
 						<SVGPath content="m10,0 2,6h6l-5,4 2,6-5-4-5,4 2-6-5-4h6z"
@@ -29,7 +29,7 @@
 						<Tooltip text="Fill" />
 					</tooltip>
 				</ToggleButton>
-				<ToggleButton selected="true" styleClass="toggle-button stroke-and-fill"
+				<ToggleButton styleClass="toggle-button stroke-and-fill"
 					toggleGroup="$fillOptionGroup">
 					<graphic>
 						<SVGPath content="m10,0 2,6h6l-5,4 2,6-5-4-5,4 2-6-5-4h6z"

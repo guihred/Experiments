@@ -198,7 +198,7 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    public static FlowPane propertiesPane(Node area2, Map<String, Double> maxMap, String... exclude) {
+    public static FlowPane propertiesPane(Shape area2, Map<String, Double> maxMap, String... exclude) {
         FlowPane flowPane = new FlowPane(Orientation.VERTICAL, 5.0, 5.0);
         flowPane.setMaxHeight(100);
         HBox.setHgrow(flowPane, Priority.ALWAYS);
@@ -208,7 +208,7 @@ public abstract class PaintTool extends Group {
         return flowPane;
     }
 
-    public static FlowPane propertiesPane(Node area2, String... exclude) {
+    public static FlowPane propertiesPane(Shape area2, String... exclude) {
         Map<String, Double> maxMap = new HashMap<>();
         maxMap.put("strokeWidth", 10.);
         return propertiesPane(area2, maxMap, exclude);

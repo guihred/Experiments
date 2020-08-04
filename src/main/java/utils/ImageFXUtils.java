@@ -22,24 +22,6 @@ public final class ImageFXUtils {
     private ImageFXUtils() {
     }
 
-    public static WritableImage flip(Image selectedImage) {
-        int height = (int) selectedImage.getHeight();
-    	int width = (int) selectedImage.getWidth();
-        WritableImage writableImage = new WritableImage(height, width);
-        PixelWriter pixelWriter = writableImage.getPixelWriter();
-    	PixelReader pixelReader = selectedImage.getPixelReader();
-    	for (int i = 0; i < selectedImage.getWidth(); i++) {
-    		for (int j = 0; j < selectedImage.getHeight(); j++) {
-                pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
-            }
-        }
-        return writableImage;
-    }
-
-    static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
-        return (value - min) * (newMax - newMin) / (max - min) + newMin;
-    }
-
     public static Image createImage(double size1, float[][] noise) {
         int width = (int) size1;
         int height = (int) size1;
@@ -58,6 +40,20 @@ public final class ImageFXUtils {
         return wr;
     }
 
+    public static WritableImage flip(Image selectedImage) {
+        int height = (int) selectedImage.getHeight();
+    	int width = (int) selectedImage.getWidth();
+        WritableImage writableImage = new WritableImage(height, width);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+    	PixelReader pixelReader = selectedImage.getPixelReader();
+    	for (int i = 0; i < selectedImage.getWidth(); i++) {
+    		for (int j = 0; j < selectedImage.getHeight(); j++) {
+                pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
+            }
+        }
+        return writableImage;
+    }
+
     public static WritableImage imageCopy(Image image) {
         return new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
     }
@@ -66,6 +62,14 @@ public final class ImageFXUtils {
         RunnableEx.run(() -> {
             if (showImage) {
                 Desktop.getDesktop().open(destination);
+            }
+        });
+    }
+
+    public static void printInDesktop(File destination) {
+        RunnableEx.run(() -> {
+            if (showImage) {
+                Desktop.getDesktop().print(destination);
             }
         });
     }
@@ -120,5 +124,9 @@ public final class ImageFXUtils {
             final WritableImage snapshot = canvas.snapshot(params, writableImage);
             return SwingFXUtils.fromFXImage(snapshot, null);
         });
+    }
+
+    static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
+        return (value - min) * (newMax - newMin) / (max - min) + newMin;
     }
 }

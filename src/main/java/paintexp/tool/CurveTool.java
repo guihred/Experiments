@@ -25,6 +25,7 @@ public class CurveTool extends PaintTool {
         icon.setControlY1(30);
         icon.setControlX2(30);
         icon.setControlY2(0);
+
         icon.setStartY(0);
         icon.setEndX(30);
         icon.setEndY(30);
@@ -36,6 +37,7 @@ public class CurveTool extends PaintTool {
             line = new CubicCurve();
             line.setStroke(Color.BLACK);
             line.setFill(Color.TRANSPARENT);
+            line.setSmooth(false);
         }
         return line;
     }

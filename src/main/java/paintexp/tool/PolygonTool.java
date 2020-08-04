@@ -46,6 +46,7 @@ public class PolygonTool extends PaintTool {
             area.setFill(Color.TRANSPARENT);
             area.setStroke(Color.BLACK);
             area.setManaged(false);
+            area.setSmooth(false);
         }
         return area;
     }

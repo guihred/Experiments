@@ -20,6 +20,7 @@ import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleConverter;
@@ -31,25 +32,6 @@ import utils.SupplierEx;
 
 public final class PaintToolHelper {
     private PaintToolHelper() {
-    }
-
-    public static void addOptionsAccordingly(Object selectedItem, ObservableList<Node> children,
-            Map<String, Double> maxMap, List<String> exclude) {
-        children.clear();
-        if (selectedItem == null) {
-            return;
-        }
-        Map<Class<?>, List<?>> classMap = new HashMap<>();
-        ClassReflectionUtils.simpleProperties(selectedItem, selectedItem.getClass()).entrySet().stream()
-                .filter(t -> !exclude.contains(t.getKey()))
-                .forEach(e -> addOptions(selectedItem, children, maxMap, classMap, e.getKey(), e.getValue()));
-
-        Map<String, Object> getterMap = ClassReflectionUtils.getGetterMap(selectedItem);
-        String key = "strokeDashArray";
-        if (getterMap.containsKey(key)) {
-            addStrokeArray(children, key, getterMap);
-        }
-
     }
 
     public static void addOptionsAccordingly(Object selectedItem, ObservableList<Node> children,
@@ -65,6 +47,21 @@ public final class PaintToolHelper {
         }
         ClassReflectionUtils.properties(selectedItem, selectedItem.getClass())
                 .forEach((k, v) -> addOptions(selectedItem, children, maxMap, classMap, k, v));
+    }
+
+    public static void addOptionsAccordingly(Shape selectedItem, ObservableList<Node> children,
+            Map<String, Double> maxMap, List<String> exclude) {
+        children.clear();
+        if (selectedItem == null) {
+            return;
+        }
+        Map<Class<?>, List<?>> classMap = new HashMap<>();
+        ClassReflectionUtils.simpleProperties(selectedItem, selectedItem.getClass()).entrySet().stream()
+                .filter(t -> !exclude.contains(t.getKey()))
+                .forEach(e -> addOptions(selectedItem, children, maxMap, classMap, e.getKey(), e.getValue()));
+
+        addStrokeArray(selectedItem, children, "strokeDashArray", selectedItem.getStrokeDashArray());
+
     }
 
     public static Image getClipboardImage() {
@@ -154,9 +151,8 @@ public final class PaintToolHelper {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static void addStrokeArray(ObservableList<Node> children, String key, Map<String, Object> getterMap) {
-        ObservableList<Double> property = (ObservableList<Double>) getterMap.get(key);
+    private static void addStrokeArray(Shape selectedItem, ObservableList<Node> children, String key,
+            ObservableList<Double> property) {
         String changeCase = StringSigaUtils.splitMargeCamelCase(StringSigaUtils.changeCase(key));
         Text text2 = new Text(changeCase);
         VBox vBox = new VBox(text2);
@@ -170,7 +166,7 @@ public final class PaintToolHelper {
         ComboBox<ObservableList<Double>> comboBox = new SimpleComboBoxBuilder<ObservableList<Double>>()
                 .items(observableArrayList)
                 .onChange((old, val) -> property.setAll(
-                        val.stream().map(e -> e * (Double) getterMap.get("strokeWidth")).collect(Collectors.toList())))
+                        val.stream().map(e -> e * selectedItem.getStrokeWidth()).collect(Collectors.toList())))
                 .select(property).cellFactory((arr, cell) -> {
                     if (arr == null) {
                         return;
@@ -179,6 +175,9 @@ public final class PaintToolHelper {
                     value.getStrokeDashArray().setAll(arr);
                     cell.setGraphic(value);
                 }).build();
+        selectedItem.strokeWidthProperty()
+                .addListener((ob, old, val) -> property.setAll(
+                        comboBox.getValue().stream().map(e -> e * val.doubleValue()).collect(Collectors.toList())));
         effectsOptions.add(comboBox);
     }
 

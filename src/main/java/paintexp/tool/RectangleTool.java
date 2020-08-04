@@ -34,7 +34,8 @@ public class RectangleTool extends PaintTool {
 
     public Rectangle getArea() {
         return orElse(area,
-                () -> area = new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).build());
+                () -> area =
+                        new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).smooth(false).build());
     }
 
     @Override
