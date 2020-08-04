@@ -1,10 +1,15 @@
 package paintexp.tool;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -13,10 +18,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
+import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
+import utils.RunnableEx;
 
 @SuppressWarnings({ "unused", "static-method" })
 public abstract class PaintTool extends Group {
@@ -122,6 +133,20 @@ public abstract class PaintTool extends Group {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> T copyIcon(T createIcon, Shape area2) {
+        Map<String, Property> areaProperties = ClassReflectionUtils.simpleProperties(area2, area2.getClass());
+        Map<String, Property> simpleProperties =
+                ClassReflectionUtils.simpleProperties(createIcon, createIcon.getClass());
+        List<String> exclude = Arrays.asList("fill", "stroke");
+        simpleProperties.forEach((k, v) -> {
+            if (!exclude.contains(k) && areaProperties.containsKey(k)) {
+                areaProperties.get(k).addListener((ob, o, val) -> RunnableEx.ignore(() -> v.setValue(val)));
+            }
+        });
+        return createIcon;
+    }
+
     public static ImageView getIconByURL(String src) {
         return getIconByURL(src, 30);
 
@@ -171,6 +196,22 @@ public abstract class PaintTool extends Group {
             default:
                 return false;
         }
+    }
+
+    public static FlowPane propertiesPane(Node area2, Map<String, Double> maxMap, String... exclude) {
+        FlowPane flowPane = new FlowPane(Orientation.VERTICAL, 5.0, 5.0);
+        flowPane.setMaxHeight(100);
+        HBox.setHgrow(flowPane, Priority.ALWAYS);
+        flowPane.setPrefWrapLength(100.0);
+        maxMap.put("strokeWidth", 10.);
+        PaintToolHelper.addOptionsAccordingly(area2, flowPane.getChildren(), maxMap, Arrays.asList(exclude));
+        return flowPane;
+    }
+
+    public static FlowPane propertiesPane(Node area2, String... exclude) {
+        Map<String, Double> maxMap = new HashMap<>();
+        maxMap.put("strokeWidth", 10.);
+        return propertiesPane(area2, maxMap, exclude);
     }
 
 }

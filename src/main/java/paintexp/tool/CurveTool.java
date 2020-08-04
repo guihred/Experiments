@@ -83,7 +83,7 @@ public class CurveTool extends PaintTool {
 
         model.getToolOptions().getChildren().clear();
         model.getToolOptions().getChildren()
-                .add(PolygonTool.propertiesPane(getLine(), "fill", "stroke", "startX", "startY", "endX", "endY",
+                .add(PaintTool.propertiesPane(getLine(), "fill", "stroke", "startX", "startY", "endX", "endY",
                         "controlX1", "controlY1", "controlX2", "controlY2"));
 
     }

@@ -6,30 +6,21 @@ import static java.lang.Math.sin;
 import static java.util.stream.DoubleStream.iterate;
 import static java.util.stream.DoubleStream.of;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.event.EventType;
-import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import simplebuilder.SimpleToggleGroupBuilder;
-import utils.ClassReflectionUtils;
-import utils.RunnableEx;
 
 public class PolygonTool extends PaintTool {
 
@@ -176,30 +167,5 @@ public class PolygonTool extends PaintTool {
         }
     }
 
-    public static FlowPane propertiesPane(Node area2, String... exclude) {
-        FlowPane flowPane = new FlowPane(Orientation.VERTICAL, 5.0, 5.0);
-        flowPane.setMaxHeight(100);
-        HBox.setHgrow(flowPane, Priority.ALWAYS);
-        flowPane.setPrefWrapLength(100.0);
-        Map<String, Double> maxMap = new HashMap<>();
-        maxMap.put("strokeWidth", 10.);
-        PaintToolHelper.addOptionsAccordingly(area2, flowPane.getChildren(), maxMap,
-                Arrays.asList(exclude));
-        return flowPane;
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static <T> T copyIcon(T createIcon, Shape area2) {
-        Map<String, Property> areaProperties = ClassReflectionUtils.simpleProperties(area2, area2.getClass());
-        Map<String, Property> simpleProperties =
-                ClassReflectionUtils.simpleProperties(createIcon, createIcon.getClass());
-        List<String> exclude = Arrays.asList("fill", "stroke");
-        simpleProperties.forEach((k, v) -> {
-            if (!exclude.contains(k) && areaProperties.containsKey(k)) {
-                areaProperties.get(k).addListener((ob, o, val) -> RunnableEx.ignore(() -> v.setValue(val)));
-            }
-        });
-        return createIcon;
-    }
 
 }

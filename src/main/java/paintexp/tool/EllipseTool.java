@@ -30,6 +30,7 @@ public class EllipseTool extends PaintTool {
             area = new Ellipse(3, 5);
             area.setFill(Color.TRANSPARENT);
             area.setStroke(Color.BLACK);
+            area.setSmooth(false);
             area.setManaged(false);
         }
         return area;
@@ -58,7 +59,7 @@ public class EllipseTool extends PaintTool {
             .select(option).getTogglesAs(Node.class);
         model.getToolOptions().getChildren().addAll(togglesAs);
         model.getToolOptions().getChildren()
-                .addAll(PolygonTool.propertiesPane(getArea(), "fill", "stroke", "radiusX", "radiusY", "centerX",
+                .addAll(PaintTool.propertiesPane(getArea(), "fill", "stroke", "radiusX", "radiusY", "centerX",
                         "centerY", "strokeLineJoin", "strokeLineCap"));
     }
 

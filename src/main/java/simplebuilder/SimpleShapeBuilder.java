@@ -30,6 +30,11 @@ public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> ext
 		return (Z) this;
 	}
 
+    public Z smooth(boolean value) {
+        shape.setSmooth(value);
+        return (Z) this;
+    }
+
     public Z stroke(Paint value) {
         shape.setStroke(value);
         return (Z) this;
