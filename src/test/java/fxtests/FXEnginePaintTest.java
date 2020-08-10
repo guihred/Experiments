@@ -220,7 +220,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 getLogger().info("FIRING {}", menu.getId());
                 if (i == 0 && items.size() == j + 1 || i == 0 && j > 0 && items.size() != j + 1) {
                     // OPEN and save as
-                    new Thread(this::typeInParallel).start();
+                    RunnableEx.runNewThread(this::typeInParallel);
                 }
                 if (i == 1 && j == 2) {
                     interact(() -> {

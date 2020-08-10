@@ -4,12 +4,16 @@ import extract.PdfInfo;
 import extract.PdfUtils;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -19,10 +23,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +59,7 @@ public class PdfController extends Application {
             new SimpleTimelineBuilder().addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), time -> displayNextWord())
                     .cycleCount(Animation.INDEFINITE).build();
     @FXML
-    private TextArea currentLines;
+    private WebView currentLines;
     @FXML
     private SplitPane splitPane;
 
@@ -63,7 +67,6 @@ public class PdfController extends Application {
 
         if (pdfInfo.getLineIndex() < pdfInfo.getLines().size()) {
             String value = pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd());
-            pdfInfo.getSkipLines().add(value);
             currentLine.setText(value);
             pdfInfo.getWords().setAll(Arrays.asList(value.split(PdfUtils.SPLIT_WORDS_REGEX)));
             pdfInfo.setIndex(0);
@@ -79,9 +82,9 @@ public class PdfController extends Application {
             pdfInfo.setPageIndex(pdfInfo.getPageIndex() + 1);
             pdfInfo.setIndex(0);
             pdfInfo.setLineIndex(0);
-            pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
             updateAll();
             displayNextWord();
+            pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
         }
     }
 
@@ -129,11 +132,20 @@ public class PdfController extends Application {
         imageBox.managedProperty().bind(imageBox.visibleProperty());
         imageBox.setVisible(false);
         splitPane.setDividerPosition(1, 1);
-        currentLines.textProperty().bind(Bindings.createStringBinding(
-                () -> pdfInfo.getLines()
-                        .stream().filter(StringUtils::isNotBlank).filter(t -> !pdfInfo.getSkipLines().contains(t))
-                        .collect(Collectors.joining("\n")),
-                pdfInfo.getLines(), pdfInfo.getSkipLines()));
+        StringBinding createStringBinding =
+                Bindings.createStringBinding(this::getPageLines, pdfInfo.getLines(), pdfInfo.getSkipLines(),
+                        pdfInfo.lineIndexProperty());
+        InvalidationListener listener =
+                (Observable o) -> RunnableEx
+                        .runInPlatform(() -> {
+                            currentLines.getEngine().loadContent(createStringBinding.get());
+                            RunnableEx.ignore(() -> currentLines.getEngine()
+                                    .executeScript("document.getElementsByTagName(\"b\")[0].scrollIntoView(true);"));
+
+                        });
+        pdfInfo.getLines().addListener(listener);
+        pdfInfo.lineIndexProperty().addListener(listener);
+        pdfInfo.getSkipLines().addListener(listener);
         PdfUtils.readFile(pdfInfo);
     }
 
@@ -165,10 +177,22 @@ public class PdfController extends Application {
     private String getCurrentLine() {
         String value = pdfInfo.getLines().isEmpty() ? ""
                 : pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd() % pdfInfo.getLines().size());
-        if (!pdfInfo.getSkipLines().contains(value) || pdfInfo.getLineIndex() >= pdfInfo.getLines().size() - 1) {
+        if (!pdfInfo.getSkipLines().contains(value)) {
             return value;
+        } else if (pdfInfo.getLineIndex() >= pdfInfo.getLines().size() - 1) {
+            return "";
         }
         return pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd());
+    }
+
+    private String getPageLines() {
+        ObservableList<String> lines = pdfInfo.getLines();
+        String string = lines.isEmpty() ? "" : lines.get((pdfInfo.getLineIndex() - 1 + lines.size()) % lines.size());
+
+        return lines.stream().filter(StringUtils::isNotBlank)
+                .filter(t -> !pdfInfo.getSkipLines().contains(t))
+                .map(e -> "<div>" + (Objects.equals(e, string) ? "<b>" + e + "</b>" : e) + "</div>")
+                .collect(Collectors.joining("\n"));
     }
 
     private void onImageChange() {
@@ -204,7 +228,12 @@ public class PdfController extends Application {
 
     private void updateWords() {
         if (!pdfInfo.getWords().isEmpty() && pdfInfo.getIndex() < pdfInfo.getWords().size()) {
-            currentWord.setText(pdfInfo.getWords().get(pdfInfo.getIndexAndAdd()));
+
+            String value = pdfInfo.getWords().get(pdfInfo.getIndexAndAdd());
+            while (currentWord.getText().equals(value) && pdfInfo.getIndex() < pdfInfo.getWords().size()) {
+                value = pdfInfo.getWords().get(pdfInfo.getIndexAndAdd());
+            }
+            currentWord.setText(value);
         }
     }
 

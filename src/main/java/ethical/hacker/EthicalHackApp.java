@@ -15,7 +15,10 @@ import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
@@ -57,7 +60,7 @@ public abstract class EthicalHackApp extends Application {
             TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
             column.setSortable(true);
             column.setCellValueFactory(
-                param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
+                    param -> new SimpleStringProperty(param.getValue().getOrDefault(key, "-")));
             column.prefWidthProperty().bind(simpleTableViewBuilder.widthProperty().divide(keySet.size()).add(-5));
             simpleTableViewBuilder.getColumns().add(column);
         });

@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import java.lang.*?>
+<?import javafx.event.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.collections.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.cell.*?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Text?>
-<?import javafx.scene.control.TextArea?>
-
-<SplitPane xmlns:fx="http://javafx.com/fxml" fx:controller="pdfreader.PdfController"
-	fx:id="splitPane">
-	<items>
-		<VBox alignment="CENTER" prefWidth="250.0">
-			<children>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="pdfreader.PdfController">
+	<SplitPane VBox.vgrow="ALWAYS" fx:id="splitPane">
+		<items>
+			<VBox alignment="CENTER" prefWidth="250.0">
 				<Text fx:id="currentWord">
 					<font>
 						<Font size="60.0" />
@@ -23,31 +22,26 @@
 				</Text>
 				<Text fx:id="currentLine" textAlignment="CENTER" wrappingWidth="250" />
 				<Text fx:id="currentPage" text="0" />
-				<FlowPane alignment="CENTER" maxWidth="250">
-					<Button alignment="CENTER" text="_Start/Stop" onAction="#toggleTimelineStatus" />
-					<Button alignment="CENTER" text="Next _Line" onAction="#displayNextLine" />
-					<Button alignment="CENTER" text="P_revious Page" onAction="#displayPreviousPage" />
-					<Button alignment="CENTER" text="_Next Page" onAction="#displayNextPage" />
-					<Button alignment="CENTER" text="New _PDF" onAction="#openNewPDF" />
-				</FlowPane>
-				<Text text="Rate" />
 				<Slider fx:id="slider" blockIncrement="0.05" max="5.0"
 					prefWidth="250" maxWidth="250" min="0.01" value="1.0" />
-				<ProgressIndicator fx:id="progress">
-					<padding>
-						<Insets topRightBottomLeft="10" />
-					</padding>
-				</ProgressIndicator>
+				<WebView fx:id="currentLines" VBox.vgrow="ALWAYS" />
+			</VBox>
+			<ScrollPane visible="${imageBox.visible}" managed="${imageBox.visible}">
+				<VBox fx:id="imageBox" />
+			</ScrollPane>
 
-			</children>
-		</VBox>
-		<VBox>
-			<TextArea fx:id="currentLines" editable="false"
-				prefHeight="${currentLines.parent.height}" />
-		</VBox>
-		<ScrollPane visible="${imageBox.visible}" managed="${imageBox.visible}">
-			<VBox fx:id="imageBox" />
-		</ScrollPane>
-
-	</items>
-</SplitPane>
+		</items>
+	</SplitPane>
+	<FlowPane alignment="CENTER">
+		<ProgressIndicator fx:id="progress">
+			<padding>
+				<Insets topRightBottomLeft="0" />
+			</padding>
+		</ProgressIndicator>
+		<Button alignment="CENTER" text="New _PDF" onAction="#openNewPDF" />
+		<Button alignment="CENTER" text="_Start/Stop" onAction="#toggleTimelineStatus" />
+		<Button alignment="CENTER" text="Next _Line" onAction="#displayNextLine" />
+		<Button alignment="CENTER" text="P_revious Page" onAction="#displayPreviousPage" />
+		<Button alignment="CENTER" text="_Next Page" onAction="#displayNextPage" />
+	</FlowPane>
+</VBox>

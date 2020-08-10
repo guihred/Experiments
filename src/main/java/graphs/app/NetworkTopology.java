@@ -17,6 +17,7 @@ import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import utils.HasLogging;
+import utils.RunnableEx;
 
 public class NetworkTopology extends BaseTopology {
 
@@ -109,10 +110,10 @@ public class NetworkTopology extends BaseTopology {
         Platform.runLater(this::execute);
         String ip = change.getKey();
         if (!change.wasRemoved()) {
-            new Thread(() -> {
+            RunnableEx.runNewThread(() -> {
                 ObservableMap<String, List<String>> scanOSes = PortScanner.scanPossibleOSes(ip);
                 scanOSes.addListener(onChange(scanOSes));
-            }).start();
+            });
         }
     }
 

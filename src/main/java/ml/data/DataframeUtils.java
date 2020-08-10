@@ -3,7 +3,6 @@ package ml.data;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static utils.StringSigaUtils.floatFormating;
 import static utils.StringSigaUtils.format;
-import static utils.StringSigaUtils.formating;
 import static utils.StringSigaUtils.intFormating;
 
 import java.io.File;
@@ -38,6 +37,16 @@ public class DataframeUtils extends DataframeML {
                 .collect(Collectors.toList());
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static List<Double> crossDoubleFeature(DataframeML dataframe, String header,
+            ToDoubleFunction<Object[]> mapper, String... dependent) {
+        List<Double> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
+                .mapToDouble(mapper).boxed().collect(Collectors.toList());
+        dataframe.getDataframe().put(header, (List) mappedColumn);
+        dataframe.getFormatMap().put(header, Double.class);
+        return mappedColumn;
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static List<Double> crossFeature(DataframeML dataframe, String header, ToDoubleFunction<double[]> mapper,
             String... dependent) {
@@ -50,12 +59,12 @@ public class DataframeUtils extends DataframeML {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static List<Double> crossFeatureObject(DataframeML dataframe, String header,
-            ToDoubleFunction<Object[]> mapper, String... dependent) {
-        List<Double> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
-                .mapToDouble(mapper).boxed().collect(Collectors.toList());
+    public static <T> List<T> crossFeatureObject(DataframeML dataframe, String header,
+            FunctionEx<Object[],T> mapper, String... dependent) {
+        List<T> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
+                .map(FunctionEx.makeFunction(mapper)).collect(Collectors.toList());
         dataframe.getDataframe().put(header, (List) mappedColumn);
-        dataframe.getFormatMap().put(header, Double.class);
+        dataframe.getFormatMap().put(header, (Class<? extends Comparable<?>>) mappedColumn.stream().findFirst().map(e->e.getClass()).orElse(null));
         return mappedColumn;
     }
 
@@ -206,34 +215,7 @@ public class DataframeUtils extends DataframeML {
         readCSV(ResourceFXUtils.toFile(csvFile), dataframeML);
     }
 
-    public static String toString(DataframeML dataframe) {
-        StringBuilder str = new StringBuilder();
-        str.append("\n");
-        dataframe.forEach((s, l) -> str.append(s + "\t"));
-        str.append("\n");
-        dataframe.getFormatMap().forEach((s, l) -> str.append(String.format(formating(s), l.getSimpleName())));
-        str.append("\n");
-        for (int i = 0; i < 10; i++) {
-            int j = i;
-            dataframe.forEach((s, l) -> {
-                if (l.size() > j) {
-                    String string = Objects.toString(l.get(j), "");
-                    if (string.length() > s.length() + 3) {
-                        string = string.substring(0, s.length() + 3);
-                    }
-                    str.append(String.format(formating(s), string));
-                }
-            });
-            str.append("\n");
-        }
-        if (dataframe.size > 10) {
-            str.append("...\n");
-        }
-        str.append("Size=" + dataframe.size + " \n");
-        return str.toString();
-    }
-
-    public static void trim(String header, int trimmingSize, DataframeML dataframe) {
+    public static void sort(DataframeML dataframe, String header) {
         List<Object> list = dataframe.list(header);
         List<List<Object>> trimmedColumns =
                 dataframe.getDataframe().entrySet().stream().filter(e -> !e.getKey().equals(header))
@@ -249,6 +231,66 @@ public class DataframeUtils extends DataframeML {
                 }
             }, String::compareTo);
         }
+        
+        if (class1 == Double.class) {
+            Comparator<Double> compa = Double::compareTo;
+            QuickSortML.sort(typedList(list), (i, j) -> {
+                for (List<Object> list2 : trimmedColumns) {
+                    Object object = list2.get(i);
+                    list2.set(i, list2.get(j));
+                    list2.set(j, object);
+                }
+            }, compa.reversed());
+        }
+        
+    }
+
+    public static String toString(DataframeML dataframe) {
+        return toString(dataframe, 10);
+    }
+
+    public static String toString(DataframeML dataframe, int max) {
+        StringBuilder str = new StringBuilder();
+        str.append("\n");
+        Map<String, Integer> maxFormatMap = new LinkedHashMap<>();
+        dataframe.forEach((s, l) -> {
+            maxFormatMap.put(s, s.length());
+            Class<? extends Comparable<?>> format2 = dataframe.getFormat(s);
+            l.stream().limit(max).forEach(
+                    e -> maxFormatMap
+                            .merge(s,
+                                    format2 == Double.class ? Objects.toString(e).replaceAll("\\.\\d+$", "").length()
+                                            : Objects.toString(e).length(),
+                                    (t, u) -> Integer.min(Integer.max(t, u), 30)));
+        });
+
+        dataframe.forEach((s, l) -> str.append(StringSigaUtils.format(maxFormatMap.get(s), s)));
+        str.append("\n");
+        dataframe.getFormatMap()
+                .forEach((s, l) -> str.append(StringSigaUtils.format(maxFormatMap.get(s), l.getSimpleName())));
+        str.append("\n");
+        for (int i = 0; i < max; i++) {
+            int j = i;
+            dataframe.forEach((s, l) -> {
+                if (l.size() > j) {
+                    String string = Objects.toString(l.get(j), "");
+                    if (string.length() > maxFormatMap.get(s)) {
+                        string = string.substring(0, maxFormatMap.get(s));
+                    }
+                    str.append(StringSigaUtils.format(maxFormatMap.get(s), string));
+                }
+            });
+            str.append("\n");
+        }
+        if (dataframe.size > max) {
+            str.append("...\n");
+        }
+        str.append("Size=" + dataframe.size + " \n");
+        return str.toString();
+    }
+
+    public static void trim(String header, int trimmingSize, DataframeML dataframe) {
+        sort(dataframe, header);
         List<Entry<String, List<Object>>> entrySet =
                 dataframe.getDataframe().entrySet().stream().collect(Collectors.toList());
         for (int i = 0; i < entrySet.size(); i++) {

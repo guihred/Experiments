@@ -20,7 +20,7 @@ public class PdfInfo {
     private ObservableList<List<String>> pages = FXCollections.observableArrayList();
     private Map<Integer, List<PdfImage>> images;
     private int index;
-    private int lineIndex;
+    private IntegerProperty lineIndex = new SimpleIntegerProperty(0);
     private final ObservableList<String> lines = FXCollections.observableArrayList();
     private final ObservableSet<String> skipLines = FXCollections.observableSet();
     private final ObservableList<String> words = FXCollections.observableArrayList();
@@ -52,11 +52,13 @@ public class PdfInfo {
     }
 
     public int getLineIndex() {
-        return lineIndex;
+        return lineIndex.get();
     }
 
     public int getLineIndexAndAdd() {
-        return lineIndex++;
+        int i = lineIndex.get();
+        lineIndex.set(i + 1);
+        return i;
     }
 
     public ObservableList<String> getLines() {
@@ -87,6 +89,10 @@ public class PdfInfo {
         return words;
     }
 
+    public IntegerProperty lineIndexProperty() {
+        return lineIndex;
+    }
+
     public IntegerProperty numberOfPagesProperty() {
         return numberOfPages;
     }
@@ -108,9 +114,8 @@ public class PdfInfo {
     }
 
     public void setLineIndex(int lineIndex) {
-        this.lineIndex = lineIndex;
+        this.lineIndex.set(lineIndex);
     }
-
 
     public void setNumberOfPages(int numberOfPages) {
         this.numberOfPages.set(numberOfPages);
@@ -120,17 +125,14 @@ public class PdfInfo {
         pageIndex.set(v);
     }
 
-
     public void setProgress(double value) {
         progress.set(value);
     }
 
-
     @Override
     public String toString() {
         return String.format(
-            "PdfInfo {%n file=%s,%n numberOfPages=%s,%n progress=%s,%n index=%s,%n lineIndex=%s,%n pageIndex=%s%n}",
-            mapIf(file, File::getName), numberOfPages.get(), progress.get(), index, lineIndex,
-            pageIndex.get());
+                "PdfInfo {%n file=%s,%n numberOfPages=%s,%n progress=%s,%n index=%s,%n lineIndex=%s,%n pageIndex=%s%n}",
+                mapIf(file, File::getName), numberOfPages.get(), progress.get(), index, lineIndex, pageIndex.get());
     }
 }

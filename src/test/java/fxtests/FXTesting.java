@@ -128,7 +128,7 @@ public class FXTesting implements HasLogging {
             long start = System.currentTimeMillis();
             while (System.currentTimeMillis() - start < maxTime) {
                 if (!thread.isAlive()) {
-                    break;
+                    return;
                 }
             }
             thread.interrupt();

@@ -34,10 +34,10 @@ public class WorldMapExample2 extends Application {
         root.getChildren().add(CommonsFX.newCheck("Neighbors", canvas.showNeighborsProperty()));
         DataframeML points = DataframeBuilder.builder("cities.csv").build();
 		String latDegree = "Lat Degree";
-		DataframeUtils.crossFeatureObject(points, latDegree, WorldMapExample2::convertToDegrees, latDegree,
+		DataframeUtils.crossDoubleFeature(points, latDegree, WorldMapExample2::convertToDegrees, latDegree,
 				"Lat Minute");
 		String lonDegree = "Lon Degree";
-		DataframeUtils.crossFeatureObject(points, lonDegree, WorldMapExample2::convertToDegrees, lonDegree,
+		DataframeUtils.crossDoubleFeature(points, lonDegree, WorldMapExample2::convertToDegrees, lonDegree,
 				"Lon Minute");
         canvas.valueHeaderProperty().set("Time");
         canvas.setDataframe(points, "Country");

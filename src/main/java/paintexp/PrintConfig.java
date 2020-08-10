@@ -8,8 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -54,7 +56,11 @@ public class PrintConfig extends Application {
     @FXML
     private Slider hgap;
     @FXML
+    private Slider quality;
+    @FXML
     private Text page;
+    @FXML
+    private Text qualityText;
     private IntegerProperty currentPage = new SimpleIntegerProperty(0);
 
     @FXML
@@ -81,6 +87,7 @@ public class PrintConfig extends Application {
 
     public void initialize() {
         changeConfig();
+        qualityText.textProperty().bind(Bindings.format(Locale.ENGLISH, "Print Quality %.1f", quality.valueProperty()));
         page.textProperty().bind(currentPage.add(1).asString());
         panel.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
     }
@@ -208,7 +215,7 @@ public class PrintConfig extends Application {
         for (int i = 0; i < images.size(); i += lines * columns) {
             adjustPanel(i, panel);
             BufferedImage bimg =
-                    ImageFXUtils.toBufferedImage(panel, panel.getWidth(), panel.getHeight(), 8);
+                    ImageFXUtils.toBufferedImage(panel, panel.getWidth(), panel.getHeight(), quality.getValue());
             panelImages.add(bimg);
         }
         File outputFile = ResourceFXUtils.getOutFile("oi2" + images.hashCode() + ".pdf");

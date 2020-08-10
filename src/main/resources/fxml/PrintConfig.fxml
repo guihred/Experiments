@@ -75,7 +75,12 @@
 
 				<Slider fx:id="vgap" max="0.5" min="0.0" value="0.0"
 					onValueChange="#valueChanged" blockIncrement="0.01" />
+				<Text text="Print Quality" fx:id="qualityText" />
+				<Slider fx:id="quality" max="8" min="0.1" value="8"
+					onValueChange="#valueChanged" blockIncrement="0.01" />
+
 				<Text text="Print Type" />
+
 				<RadioButton text="Whole Image" selected="true"
 					toggleGroup="$printType"></RadioButton>
 				<RadioButton text="Whole Paper" toggleGroup="$printType"></RadioButton>
@@ -86,7 +91,7 @@
 				<Button text="_Load Images" onAction="#loadImages" />
 				<HBox spacing="30">
 					<Hyperlink onAction="#subPage" text="&lt;" />
-					<Text fx:id="page" text="1"/>
+					<Text fx:id="page" text="1" />
 					<Hyperlink onAction="#addPage" text="&gt;" />
 				</HBox>
 

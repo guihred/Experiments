@@ -81,12 +81,12 @@ public final class VirusTotalApi {
     public static Map<String, String> getIpTotalInfo(String ip) {
         return SupplierEx.get(() -> {
 
-        File outFile = newJsonFile(ip);
-        if (!outFile.exists()) {
-            getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
-        }
-        return JsonExtractor.makeMapFromJsonFile(outFile, "as_owner", "country", "last_analysis_results",
-                "last_analysis_stats", "malicious");
+            File outFile = newJsonFile(ip);
+            if (!outFile.exists()) {
+                getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
+            }
+            return JsonExtractor.makeMapFromJsonFile(outFile, "as_owner", "country", "last_analysis_results",
+                    "last_analysis_stats", "malicious", "network");
         });
     }
 

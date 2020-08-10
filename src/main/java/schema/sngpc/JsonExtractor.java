@@ -130,57 +130,6 @@ public final class JsonExtractor {
         return linkedHashMap;
     }
 
-    public static Object toObject(JsonNode jsonNode, int depth) {
-        if (jsonNode.isValueNode()) {
-            return convertObj(jsonNode);
-        }
-        if (jsonNode.isArray()) {
-            List<Object> arrayObject = new ArrayList<>();
-            for (JsonNode arrayItem : jsonNode) {
-                arrayObject.add(toObject(arrayItem, depth + 1));
-            }
-            return arrayObject;
-        }
-        if (jsonNode.isObject()) {
-            Map<String, Object> mapObject = new HashMap<>();
-            for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
-                Entry<String, JsonNode> next = iterator.next();
-                mapObject.put(next.getKey(), toObject(next.getValue(), depth + 1));
-            }
-            return mapObject;
-        }
-        return null;
-
-    }
-
-    public static Object toObject(JsonNode jsonNode, int depth, Map<String, Object> finalMap, String... f) {
-        if (jsonNode.isValueNode()) {
-            return fullObj(jsonNode);
-        }
-        if (jsonNode.isArray()) {
-            List<Object> arrayObject = new ArrayList<>();
-            for (JsonNode arrayItem : jsonNode) {
-                arrayObject.add(toObject(arrayItem, depth + 1, finalMap, f));
-            }
-            return arrayObject;
-        }
-        if (jsonNode.isObject()) {
-            Map<String, Object> mapObject = new HashMap<>();
-            for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
-                Entry<String, JsonNode> next = iterator.next();
-                Object merge = mapObject.merge(next.getKey(), toObject(next.getValue(), depth + 1, finalMap, f),
-                        JsonExtractor::mergeObjs);
-                if (Arrays.asList(f).contains(next.getKey())) {
-                    finalMap.merge(next.getKey(), merge, JsonExtractor::mergeObjs);
-                }
-
-            }
-            return mapObject;
-        }
-        return null;
-
-    }
-
     private static String appendJsonArray(JsonNode jsonNode, Map<String, String> yaml, int depth, String... filters) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Iterator<JsonNode> iterator = jsonNode.iterator(); iterator.hasNext();) {
@@ -345,6 +294,57 @@ public final class JsonExtractor {
         allItems.put(item.getValue(), e);
         e.setGraphic(SimpleTextBuilder.newBoldText(item.getKey()));
         addValue(item.getValue(), e);
+    }
+
+    private static Object toObject(JsonNode jsonNode, int depth) {
+        if (jsonNode.isValueNode()) {
+            return convertObj(jsonNode);
+        }
+        if (jsonNode.isArray()) {
+            List<Object> arrayObject = new ArrayList<>();
+            for (JsonNode arrayItem : jsonNode) {
+                arrayObject.add(toObject(arrayItem, depth + 1));
+            }
+            return arrayObject;
+        }
+        if (jsonNode.isObject()) {
+            Map<String, Object> mapObject = new HashMap<>();
+            for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
+                Entry<String, JsonNode> next = iterator.next();
+                mapObject.put(next.getKey(), toObject(next.getValue(), depth + 1));
+            }
+            return mapObject;
+        }
+        return null;
+
+    }
+
+    private static Object toObject(JsonNode jsonNode, int depth, Map<String, Object> finalMap, String... f) {
+        if (jsonNode.isValueNode()) {
+            return fullObj(jsonNode);
+        }
+        if (jsonNode.isArray()) {
+            List<Object> arrayObject = new ArrayList<>();
+            for (JsonNode arrayItem : jsonNode) {
+                arrayObject.add(toObject(arrayItem, depth + 1, finalMap, f));
+            }
+            return arrayObject;
+        }
+        if (jsonNode.isObject()) {
+            Map<String, Object> mapObject = new HashMap<>();
+            for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
+                Entry<String, JsonNode> next = iterator.next();
+                Object merge = mapObject.merge(next.getKey(), toObject(next.getValue(), depth + 1, finalMap, f),
+                        JsonExtractor::mergeObjs);
+                if (f.length == 0 || Arrays.asList(f).contains(next.getKey())) {
+                    finalMap.merge(next.getKey(), merge, JsonExtractor::mergeObjs);
+                }
+
+            }
+            return mapObject;
+        }
+        return null;
+
     }
 
     private static void tryToRead(TreeView<Map<String, String>> build,

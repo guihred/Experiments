@@ -102,7 +102,7 @@ public final class ConsoleUtils {
         Map<String, ObservableList<String>> result = new HashMap<>();
         result.put(ACTIVE_FLAG, FXCollections.observableArrayList());
         responses.forEach((reg, li) -> result.put(reg, FXCollections.observableArrayList()));
-        new Thread(RunnableEx.make(() -> updateRegexMapValues(cmd, responses, result))).start();
+        RunnableEx.runNewThread(() -> updateRegexMapValues(cmd, responses, result));
         return result;
     }
 
@@ -136,7 +136,7 @@ public final class ConsoleUtils {
         ObservableList<String> execution = FXCollections.observableArrayList();
         LOGGER.info(EXECUTING, cmd);
         PROCESSES.put(cmd, false);
-        Thread thread = new Thread(() -> {
+        RunnableEx.runNewThread(() -> {
             RunnableEx.ignore(() -> Thread.sleep(100));
             Process p = newProcess(cmd);
             try (BufferedReader in2 = new BufferedReader(
@@ -157,7 +157,6 @@ public final class ConsoleUtils {
                 LOGGER.error("", e);
             }
         });
-        thread.start();
         return execution;
     }
 

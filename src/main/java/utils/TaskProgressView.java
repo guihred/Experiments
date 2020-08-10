@@ -108,7 +108,7 @@ public class TaskProgressView {
     }
 
     private void hookupEvents(Worker<String> worker, AtomicBoolean shouldThrow) {
-        startButton.setOnAction(actionEvent -> new Thread((Runnable) worker).start());
+        startButton.setOnAction(actionEvent -> RunnableEx.runNewThread(worker::getValue));
         cancelButton.setOnAction(actionEvent -> worker.cancel());
         exceptionButton.setOnAction(actionEvent -> shouldThrow.getAndSet(true));
     }

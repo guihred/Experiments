@@ -24,9 +24,9 @@ public interface SupplierEx<T> {
         for (SupplierEx<A> supplierEx : run) {
             A a = makeSupplier(supplierEx, e -> {
                 arrayList.add(e);
-                HasLogging.log(1).error("", e);
+                HasLogging.log(1).error("{}", e.getMessage());
             }).get();
-            if(a!=null) {
+            if (a != null) {
                 return a;
             }
         }

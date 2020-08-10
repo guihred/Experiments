@@ -2,6 +2,7 @@ package paintexp.tool;
 
 import static utils.ResourceFXUtils.convertToURL;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
@@ -15,6 +16,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
@@ -66,8 +68,10 @@ public final class PaintToolHelper {
 
     public static Image getClipboardImage() {
         Clipboard systemClipboard = Clipboard.getSystemClipboard();
-        return SupplierEx.orElse(systemClipboard.getImage(), () -> systemClipboard.getFiles().stream().findFirst()
-                .map(FunctionEx.makeFunction(f -> new Image(convertToURL(f).toExternalForm()))).orElse(null));
+        return SupplierEx.orElse(systemClipboard.getImage(), () -> {
+            List<File> files = systemClipboard.getFiles();
+            return gatherImages(files);
+        });
     }
 
     public static void setClipboardContent(Object imageSelected2) {
@@ -165,8 +169,8 @@ public final class PaintToolHelper {
         observableArrayList.add(FXCollections.observableArrayList(1., 2., 3.));
         ComboBox<ObservableList<Double>> comboBox = new SimpleComboBoxBuilder<ObservableList<Double>>()
                 .items(observableArrayList)
-                .onChange((old, val) -> property.setAll(
-                        val.stream().map(e -> e * selectedItem.getStrokeWidth()).collect(Collectors.toList())))
+                .onChange((old, val) -> property
+                        .setAll(val.stream().map(e -> e * selectedItem.getStrokeWidth()).collect(Collectors.toList())))
                 .select(property).cellFactory((arr, cell) -> {
                     if (arr == null) {
                         return;
@@ -175,15 +179,37 @@ public final class PaintToolHelper {
                     value.getStrokeDashArray().setAll(arr);
                     cell.setGraphic(value);
                 }).build();
-        selectedItem.strokeWidthProperty()
-                .addListener((ob, old, val) -> property.setAll(
-                        comboBox.getValue().stream().map(e -> e * val.doubleValue()).collect(Collectors.toList())));
+        selectedItem.strokeWidthProperty().addListener((ob, old, val) -> property
+                .setAll(comboBox.getValue().stream().map(e -> e * val.doubleValue()).collect(Collectors.toList())));
         effectsOptions.add(comboBox);
     }
 
     private static <T> void bindBidirectional(Property<T> prop1, Property<T> prop2) {
         prop1.addListener((ob, old, val) -> prop2.setValue(val));
         prop2.addListener((ob, old, val) -> prop1.setValue(val));
+    }
+
+    private static Image gatherImages(List<File> files) {
+        List<Image> collect =
+                files.stream().map(FunctionEx.makeFunction(f -> new Image(convertToURL(f).toExternalForm())))
+                        .filter(Objects::nonNull).collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            return null;
+        }
+        if (collect.size() == 1) {
+            return collect.get(0);
+        }
+        double width = collect.stream().mapToDouble(Image::getWidth).max().orElse(0);
+        double height = collect.stream().mapToDouble(Image::getHeight).max().orElse(0);
+        WritableImage writableImage = new WritableImage((int) width, (int) height * collect.size());
+        int x = 0;
+        for (Image image : collect) {
+            int height2 = (int) image.getHeight();
+            writableImage.getPixelWriter().setPixels(0, x, (int) image.getWidth(), height2, image.getPixelReader(), 0,
+                    0);
+            x += height2;
+        }
+        return writableImage;
     }
 
     private static double getMax(double value3) {
