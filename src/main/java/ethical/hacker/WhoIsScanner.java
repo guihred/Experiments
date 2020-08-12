@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ml.data.DataframeBuilder;
@@ -15,10 +16,7 @@ import ml.data.DataframeUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
-import utils.HasLogging;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.*;
 
 public class WhoIsScanner {
     private static final Logger LOG = HasLogging.log();
@@ -51,19 +49,29 @@ public class WhoIsScanner {
     }
 
     public static void main(String[] args) {
-        WhoIsScanner whoIsScanner = new WhoIsScanner();
         File csvFile = new File(
-                "C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Acesso Web] Top Origens x URL acessadas.csv");
+                "C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[WAF ] Gerid INSS - IP de Origem x Qtde Usuários.csv");
+        DataframeML dataframe = fillIPInformation(csvFile);
+        DataframeUtils.save(dataframe, ResourceFXUtils.getOutFile("csv/" + csvFile.getName()));
+
+    }
+
+    private static DataframeML fillIPInformation(File csvFile) {
+        WhoIsScanner whoIsScanner = new WhoIsScanner();
         DataframeML dataframe = DataframeBuilder.builder(csvFile)
                 .build();
         String ipColumn = dataframe.cols().stream().filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst()
                 .orElse("IP de Origem");
-        dataframe.filter(ipColumn, s -> !s.toString().matches("^10\\..+"));
+        dataframe.filter(ipColumn,
+                s -> !s.toString().matches("^10\\..+") && s.toString().matches("^\\d+\\.\\d+\\.\\d+\\.\\d+$"));
         DataframeUtils.crossFeatureObject(dataframe, "Rede",
                 e -> SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("network"),
                         () -> whoIsScanner.whoIsScan(e[0].toString()).get("network")),
                 ipColumn);
-        String target = "Count";
+        List<String> numberCols =
+                dataframe.getFormatMap().entrySet().stream().filter(e -> Number.class.isAssignableFrom(e.getValue()))
+                        .map(Entry<String, Class<? extends Comparable<?>>>::getKey).collect(Collectors.toList());
+        String target = numberCols.get(numberCols.size() - 1);
         List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, "Rede", target);
         createSeries.forEach(s -> LOG.info("{}", s));
         DataframeUtils.crossFeatureObject(dataframe, "Owner",
@@ -76,6 +84,6 @@ public class WhoIsScanner {
         dataframe.removeCol("filters");
         String string2 = DataframeUtils.toString(dataframe, 30);
         LOG.info(string2);
-
+        return dataframe;
     }
 }

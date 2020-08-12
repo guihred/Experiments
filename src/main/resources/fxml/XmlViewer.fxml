@@ -17,7 +17,7 @@
 				</Button>
 			</children>
 		</HBox>
-		<SplitPane>
+		<SplitPane VBox.vgrow="ALWAYS">
 			<items>
 				<TreeView fx:id="tree" showRoot="false" />
 				<TableView fx:id="sideTable" />

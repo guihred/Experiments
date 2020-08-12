@@ -6,6 +6,7 @@ import static utils.StringSigaUtils.format;
 import static utils.StringSigaUtils.intFormating;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.ToDoubleFunction;
@@ -79,7 +80,7 @@ public class DataframeUtils extends DataframeML {
         Map<String, DataframeStatisticAccumulator> stats = makeStats(dataframe);
 
         StringBuilder s = new StringBuilder();
-        Set<String> keySet = dataframe.cols();
+        List<String> keySet = dataframe.cols();
         int pad = keySet.stream().mapToInt(String::length).max().orElse(1);
         s.append("\n");
         s.append("\t\t");
@@ -215,6 +216,19 @@ public class DataframeUtils extends DataframeML {
         readCSV(ResourceFXUtils.toFile(csvFile), dataframeML);
     }
 
+    public static void save(DataframeML dataframe, File outFile) {
+        RunnableEx.run(()->{
+            List<String> lines = new ArrayList<>();
+            List<String> cols = dataframe.cols();
+            lines.add(cols.stream().map(e -> "\"" + e + "\"").collect(Collectors.joining(",")));
+            dataframe.forEachRow(
+                    m -> lines.add(cols.stream().map(e -> m.getOrDefault(e, "")).map(e -> "\"" + e + "\"")
+                            .collect(Collectors.joining(","))));
+            Files.write(outFile.toPath(), lines);
+        });
+    
+    }
+
     public static void sort(DataframeML dataframe, String header) {
         List<Object> list = dataframe.list(header);
         List<List<Object>> trimmedColumns =
@@ -269,7 +283,7 @@ public class DataframeUtils extends DataframeML {
         dataframe.getFormatMap()
                 .forEach((s, l) -> str.append(StringSigaUtils.format(maxFormatMap.get(s), l.getSimpleName())));
         str.append("\n");
-        for (int i = 0; i < max; i++) {
+        for (int i = 0; i < Math.min(dataframe.size, max); i++) {
             int j = i;
             dataframe.forEach((s, l) -> {
                 if (l.size() > j) {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class BaseDataframe {
 
@@ -34,8 +35,8 @@ public class BaseDataframe {
         filters = new LinkedHashMap<>(frame.filters);
     }
 
-    public Set<String> cols() {
-        return dataframe.keySet();
+    public List<String> cols() {
+        return dataframe.keySet().stream().collect(Collectors.toList());
     }
 
     public Map<String, List<Object>> getDataframe() {

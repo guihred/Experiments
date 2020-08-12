@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.assertj.core.api.exception.RuntimeIOException;
 
 @FunctionalInterface
@@ -20,18 +21,16 @@ public interface SupplierEx<T> {
 
     @SafeVarargs
     static <A> A getFirst(SupplierEx<A>... run) {
-        List<Exception> arrayList = new ArrayList<>();
+        List<Exception> exceptions = new ArrayList<>();
         for (SupplierEx<A> supplierEx : run) {
-            A a = makeSupplier(supplierEx, e -> {
-                arrayList.add(e);
-                HasLogging.log(1).error("{}", e.getMessage());
-            }).get();
+            A a = makeSupplier(supplierEx, exceptions::add).get();
             if (a != null) {
                 return a;
             }
         }
-        throw new RuntimeIOException("ERROR " + HasLogging.getCurrentLine(1),
-                arrayList.stream().findFirst().orElse(null));
+        HasLogging.log(1).error("ERROR {} {}", HasLogging.getCurrentLine(1),
+                exceptions.stream().map(Exception::getMessage).collect(Collectors.toList()));
+        return null;
     }
 
     static <A> A getHandle(SupplierEx<A> run, A orElse, Consumer<Exception> onError) {
