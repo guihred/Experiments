@@ -19,10 +19,10 @@
 						<Button alignment="CENTER" fx:id="loadCSV" id="Load CSV"
 							onAction="#onActionLoadCSV" text="_Load CSV" textFill="0x333333ff" />
 						<ProgressIndicator fx:id="progress" />
-						<Button  fx:id="fillIP"  alignment="CENTER" onAction="#onActionFillIP"
-							text="Fill _IP" textFill="0x333333ff" disable="true"/>
+						<Button fx:id="fillIP" alignment="CENTER" onAction="#onActionFillIP"
+							text="Fill _IP" textFill="0x333333ff" disable="true" />
 						<Button alignment="CENTER" fx:id="add" id="Add" onAction="#onActionSave"
-							text="_Save" textFill="0x333333ff"/>
+							text="_Save" textFill="0x333333ff" />
 					</children>
 				</HBox>
 				<HBox>
@@ -65,26 +65,41 @@
 				</ListView>
 			</children>
 		</VBox>
-		<VBox HBox.hgrow="ALWAYS">
-			<children>
-				<BarChart fx:id="barChart" visible="false">
-					<xAxis>
-						<CategoryAxis />
-					</xAxis>
-					<yAxis>
-						<NumberAxis />
-					</yAxis>
-				</BarChart>
-				<LineChart fx:id="lineChart" verticalGridLinesVisible="false"
-					legendSide="RIGHT" visible="false">
-					<yAxis>
-						<NumberAxis side="LEFT" tickUnit="10.0" upperBound="100.0" />
-					</yAxis>
-					<xAxis>
-						<NumberAxis side="BOTTOM" tickUnit="10.0" upperBound="100.0" />
-					</xAxis>
-				</LineChart>
-			</children>
-		</VBox>
+		<TabPane fx:id="tabPane0" tabMaxHeight="22.0" HBox.hgrow="ALWAYS"
+			tabMinHeight="22.0">
+			<tabs>
+				<Tab text="Bar Chart">
+					<content>
+						<BarChart fx:id="barChart" visible="false" categoryGap="0">
+							<xAxis>
+								<CategoryAxis />
+							</xAxis>
+							<yAxis>
+								<NumberAxis />
+							</yAxis>
+						</BarChart>
+					</content>
+				</Tab>
+				<Tab text="Pie Chart">
+					<content>
+						<PieChart fx:id="pieChart" legendSide="BOTTOM">
+						</PieChart>
+					</content>
+				</Tab>
+				<Tab  text="Line Chart">
+					<content>
+						<LineChart fx:id="lineChart" verticalGridLinesVisible="false"
+							legendSide="RIGHT" visible="false">
+							<yAxis>
+								<NumberAxis side="LEFT" tickUnit="10.0" upperBound="100.0" />
+							</yAxis>
+							<xAxis>
+								<NumberAxis side="BOTTOM" tickUnit="10.0" upperBound="100.0" />
+							</xAxis>
+						</LineChart>
+					</content>
+				</Tab>
+			</tabs>
+		</TabPane>
 	</children>
 </HBox>

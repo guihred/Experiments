@@ -1,6 +1,7 @@
 package ml.graph;
 
 import ethical.hacker.WhoIsScanner;
+import gaming.ex21.ListHelper;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
@@ -56,6 +57,8 @@ public class DataframeExplorer extends Application {
     private ProgressIndicator progress;
     @FXML
     private LineChart<Number, Number> lineChart;
+    @FXML
+    private PieChart pieChart;
 
     @FXML
     private BarChart<String, Number> barChart;
@@ -65,10 +68,14 @@ public class DataframeExplorer extends Application {
         questions.addListener(this::onQuestionsChange);
         lineChart.managedProperty().bind(lineChart.visibleProperty());
         barChart.managedProperty().bind(barChart.visibleProperty());
+        pieChart.managedProperty().bind(pieChart.visibleProperty());
+
         SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen)
                 .cellFactory(Entry<String, DataframeStatisticAccumulator>::getKey);
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
+        pieChart.visibleProperty()
+                .bind(pieChart.titleProperty().isNotEmpty());
         barChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !barChart.getData().isEmpty(), barChart.dataProperty()));
         SimpleComboBoxBuilder.of(headersCombo).items(columns)
@@ -151,6 +158,7 @@ public class DataframeExplorer extends Application {
                 RunnableEx.runInPlatform(() -> {
                     questions.clear();
                     barChart.setData(FXCollections.emptyObservableList());
+                    pieChart.setData(FXCollections.emptyObservableList());
                     lineChart.setData(FXCollections.emptyObservableList());
                 });
             }
@@ -219,17 +227,22 @@ public class DataframeExplorer extends Application {
         boolean allMatch = unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
         fillIP.setDisable(unique.isEmpty() || !allMatch);
         ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
+        ObservableList<PieChart.Data> pieData =
+                ListHelper.mapping(barList, e -> new PieChart.Data(e.getXValue(), e.getYValue().doubleValue()));
         Class<? extends Comparable<?>> format = val.getValue().getFormat();
         if (format == String.class) {
             Map<String, Integer> countMap = val.getValue().getCountMap();
             barChart.setTitle(val.getKey());
+            pieChart.setTitle(val.getKey());
             barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+            pieChart.setData(pieData);
             addToPieChart(barList, countMap);
             return;
         }
         if (!dataframe.isLoaded()) {
             Map<String, Integer> countMap = val.getValue().getCountMap();
             barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+            pieChart.setData(pieData);
             addToPieChart(barList, countMap);
             return;
         }
@@ -241,12 +254,14 @@ public class DataframeExplorer extends Application {
                 String title = barChart.getTitle();
                 List<Entry<String, Number>> collect = toPie(dataframe, title, key);
                 barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+                pieChart.setData(pieData);
                 addToPieChart(barList, collect);
             }
             return;
         }
         if (barChart.getTitle() != null) {
             barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+            pieChart.setData(pieData);
             String title = barChart.getTitle();
             String key = val.getKey();
             List<Entry<String, Number>> collect = toPie(dataframe, title, key);
@@ -295,7 +310,6 @@ public class DataframeExplorer extends Application {
     private static <T extends Number> void addToPieChart(ObservableList<XYChart.Data<String, Number>> bar2List,
             Collection<Entry<String, T>> countMap) {
         RunnableEx.runNewThread(() -> {
-            List<PieChart.Data> pieList = Collections.synchronizedList(new ArrayList<>());
             List<XYChart.Data<String, Number>> barList = Collections.synchronizedList(new ArrayList<>());
             countMap.forEach(entry -> {
                 String k = entry.getKey();
@@ -303,7 +317,6 @@ public class DataframeExplorer extends Application {
                 barList.add(new XYChart.Data<>(k, v));
                 if (barList.size() % 100 == 0) {
                     addToList(bar2List, new ArrayList<>(barList), m -> m.getYValue().doubleValue());
-                    pieList.clear();
                     barList.clear();
                 }
             });
