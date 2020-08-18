@@ -74,12 +74,13 @@ public class DataframeUtils extends DataframeML {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> List<T> crossFeatureObject(DataframeML dataframe, String header,
-            FunctionEx<Object[],T> mapper, String... dependent) {
+    public static <T> List<T> crossFeatureObject(DataframeML dataframe, String header, FunctionEx<Object[], T> mapper,
+            String... dependent) {
         List<T> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
                 .map(FunctionEx.makeFunction(mapper)).collect(Collectors.toList());
         dataframe.getDataframe().put(header, (List) mappedColumn);
-        dataframe.getFormatMap().put(header, (Class<? extends Comparable<?>>) mappedColumn.stream().findFirst().map(e->e.getClass()).orElse(null));
+        dataframe.getFormatMap().put(header,
+                (Class<? extends Comparable<?>>) mappedColumn.stream().findFirst().map(e -> e.getClass()).orElse(null));
         return mappedColumn;
     }
 
@@ -154,12 +155,12 @@ public class DataframeUtils extends DataframeML {
 
     public static Map<String, DataframeStatisticAccumulator> makeStats(BaseDataframe dataframe) {
         return dataframe.getDataframe().entrySet().stream()
-                .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
-                        e -> e.getValue().stream().collect(
-                                () -> new DataframeStatisticAccumulator(dataframe.getDataframe(),
-                                        dataframe.getFormatMap(), e.getKey()),
-                                DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
-                        (m1, m2) -> m1.combine(m2), LinkedHashMap::new));
+                        .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
+                                e -> e.getValue().stream().collect(
+                                        () -> new DataframeStatisticAccumulator(dataframe.getDataframe(),
+                                                dataframe.getFormatMap(), e.getKey()),
+                                        DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),
+                                (m1, m2) -> m1.combine(m2), LinkedHashMap::new));
     }
 
     public static Map<String, DataframeStatisticAccumulator> makeStats(File csvFile, DataframeML dataframeML,
@@ -229,16 +230,15 @@ public class DataframeUtils extends DataframeML {
     }
 
     public static void save(DataframeML dataframe, File outFile) {
-        RunnableEx.run(()->{
+        RunnableEx.run(() -> {
             List<String> lines = new ArrayList<>();
             List<String> cols = dataframe.cols();
             lines.add(cols.stream().map(e -> "\"" + e + "\"").collect(Collectors.joining(",")));
-            dataframe.forEachRow(
-                    m -> lines.add(cols.stream().map(e -> m.getOrDefault(e, "")).map(e -> "\"" + e + "\"")
-                            .collect(Collectors.joining(","))));
+            dataframe.forEachRow(m -> lines.add(cols.stream().map(e -> m.getOrDefault(e, "")).map(e -> "\"" + e + "\"")
+                    .collect(Collectors.joining(","))));
             Files.write(outFile.toPath(), lines);
         });
-    
+
     }
 
     public static void sort(DataframeML dataframe, String header) {
@@ -257,7 +257,7 @@ public class DataframeUtils extends DataframeML {
                 }
             }, String::compareTo);
         }
-        
+
         if (class1 == Double.class) {
             Comparator<Double> compa = Double::compareTo;
             QuickSortML.sort(typedList(list), (i, j) -> {
@@ -278,7 +278,7 @@ public class DataframeUtils extends DataframeML {
                 }
             }, compa.reversed());
         }
-        
+
     }
 
     public static String toString(DataframeML dataframe) {
@@ -292,9 +292,7 @@ public class DataframeUtils extends DataframeML {
         dataframe.forEach((s, l) -> {
             maxFormatMap.put(s, s.length());
             Class<? extends Comparable<?>> format2 = dataframe.getFormat(s);
-            l.stream().limit(max).forEach(
-                    e -> maxFormatMap
-                            .merge(s,
+            l.stream().limit(max).forEach(e -> maxFormatMap.merge(s,
                                     format2 == Double.class ? Objects.toString(e).replaceAll("\\.\\d+$", "").length()
                                             : Objects.toString(e).length(),
                                     (t, u) -> Integer.min(Integer.max(t, u), 30)));
@@ -415,15 +413,13 @@ public class DataframeUtils extends DataframeML {
             String key = header.get(i);
             String field = getFromList(i, line2);
             Object tryNumber = tryNumber(dataframeML, key, field);
-            return dataframeML.filters.containsKey(key) 
-                    && !dataframeML.filters.get(key).test(tryNumber);
+            return dataframeML.filters.containsKey(key) && !dataframeML.filters.get(key).test(tryNumber);
         });
     }
 
     private static List<String> getHeaders(Scanner scanner) {
         return CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
-                .map(c -> StringSigaUtils.fixEncoding(c).replaceAll("\\?", ""))
-                .collect(Collectors.toList());
+                .map(c -> StringSigaUtils.fixEncoding(c).replaceAll("\\?", "")).collect(Collectors.toList());
     }
 
     private static int len(String k, Class<? extends Comparable<?>> class1) {

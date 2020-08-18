@@ -68,6 +68,12 @@
 		<TabPane fx:id="tabPane0" tabMaxHeight="22.0" HBox.hgrow="ALWAYS"
 			tabMinHeight="22.0">
 			<tabs>
+				<Tab text="Pie Chart">
+					<content>
+						<PieChart fx:id="pieChart" legendSide="BOTTOM">
+						</PieChart>
+					</content>
+				</Tab>
 				<Tab text="Bar Chart">
 					<content>
 						<BarChart fx:id="barChart" visible="false" categoryGap="0">
@@ -78,12 +84,6 @@
 								<NumberAxis />
 							</yAxis>
 						</BarChart>
-					</content>
-				</Tab>
-				<Tab text="Pie Chart">
-					<content>
-						<PieChart fx:id="pieChart" legendSide="BOTTOM">
-						</PieChart>
 					</content>
 				</Tab>
 				<Tab  text="Line Chart">

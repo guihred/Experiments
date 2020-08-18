@@ -6,7 +6,6 @@ import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import utils.ClassReflectionUtils;
 
 public class DataframeStatisticAccumulator {
     /**
@@ -14,10 +13,11 @@ public class DataframeStatisticAccumulator {
      */
     private final Map<String, List<Object>> dataframe;
     private int count;
+    private int distinct;
     private double sum;
     private double min = Double.MAX_VALUE;
     private double max = Double.NEGATIVE_INFINITY;
-    private String header;
+    private final String header;
     private Map<String, Integer> countMap = new LinkedHashMap<>();
     private final Map<Number, Integer> distributionMap = new LinkedHashMap<>();
     private final Map<String, Class<? extends Comparable<?>>> formatMap;
@@ -45,6 +45,8 @@ public class DataframeStatisticAccumulator {
         min = Math.min(min, n.min);
         max = Math.max(max, n.max);
         n.countMap.forEach((k, v) -> countMap.merge(k, v, (a, b) -> a + b));
+        n.distributionMap.forEach((k, v) -> distributionMap.merge(k, v, (a, b) -> a + b));
+        distinct = getUnique().size();
         return this;
     }
 
@@ -86,8 +88,7 @@ public class DataframeStatisticAccumulator {
         if (!countMap.isEmpty()) {
             return countMap;
         }
-        countMap = distributionMap.entrySet().stream()
-                .sorted(Comparator.comparing(Entry<Number, Integer>::getValue))
+        countMap = distributionMap.entrySet().stream().sorted(Comparator.comparing(Entry<Number, Integer>::getValue))
                 .collect(Collectors.toMap(e -> Objects.toString(e.getKey()), Entry<Number, Integer>::getValue,
                         (a, b) -> a + b, LinkedHashMap::new));
         return countMap;
@@ -176,19 +177,21 @@ public class DataframeStatisticAccumulator {
     }
 
     public DataframeStatisticAccumulator reset() {
-        count =0;
+        count = 0;
         sum = 0;
         min = Double.MAX_VALUE;
         max = Double.NEGATIVE_INFINITY;
         countMap.clear();
         distributionMap.clear();
+        distinct = 0;
         return this;
     }
 
-
     @Override
     public String toString() {
-        return ClassReflectionUtils.getDescription(this);
+        Class<? extends Comparable<?>> format = getFormat();
+        return format == String.class ? String.format("{format: %s, distinct: %d}", format.getSimpleName(), distinct)
+                : String.format("{format: %s, sum: %.0f}", format.getSimpleName(), sum);
     }
 
     private void acceptNumber(Number n) {
@@ -197,13 +200,19 @@ public class DataframeStatisticAccumulator {
         sum += o;
         min = Math.min(min, o);
         max = Math.max(max, o);
-        distributionMap.merge(n, 1, (a, b) -> a + b);
+        Integer merge = distributionMap.merge(n, 1, (a, b) -> a + b);
+        if (merge == 1) {
+            distinct++;
+        }
     }
 
     private void acceptString(String n) {
         sum++;
         count++;
-        countMap.merge(n, 1, (a, b) -> a + b);
+        Integer merge = countMap.merge(n, 1, (a, b) -> a + b);
+        if (merge == 1) {
+            distinct++;
+        }
         min = countMap.values().stream().mapToDouble(e -> e).min().orElse(min);
         max = countMap.values().stream().mapToDouble(e -> e).max().orElse(max);
     }
@@ -215,8 +224,9 @@ public class DataframeStatisticAccumulator {
         if (!dataframe.get(header).isEmpty()) {
             return dataframe.get(header).stream().sorted().collect(Collectors.toList()).get((int) (d * count));
         }
-        List<Number> array = distributionMap.entrySet().stream()
-                .flatMap(e -> Stream.generate(e::getKey).limit(e.getValue())).sorted().collect(Collectors.toList());
+        List<Number> array =
+                distributionMap.entrySet().stream().flatMap(e -> Stream.generate(e::getKey).limit(e.getValue()))
+                        .sorted(Comparator.comparing(Number::doubleValue)).collect(Collectors.toList());
         if (!array.isEmpty()) {
             return array.get((int) (array.size() * d));
         }

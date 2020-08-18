@@ -71,7 +71,9 @@ public class DataframeExplorer extends Application {
         pieChart.managedProperty().bind(pieChart.visibleProperty());
 
         SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen)
-                .cellFactory(Entry<String, DataframeStatisticAccumulator>::getKey);
+        // .cellFactory(Entry<String, DataframeStatisticAccumulator>::getKey)
+
+        ;
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
         pieChart.visibleProperty()
