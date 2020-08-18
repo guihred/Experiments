@@ -198,6 +198,7 @@ public class DataframeUtils extends DataframeML {
             dataframeML.file = csvFile;
             dataframeML.size = 0;
             List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
+                    .map(c -> StringSigaUtils.fixEncoding(c).replaceAll("\\?", ""))
                     .collect(Collectors.toList());
             for (String column : header) {
                 dataframeML.getDataframe().put(column, new ArrayList<>());
@@ -248,6 +249,16 @@ public class DataframeUtils extends DataframeML {
         
         if (class1 == Double.class) {
             Comparator<Double> compa = Double::compareTo;
+            QuickSortML.sort(typedList(list), (i, j) -> {
+                for (List<Object> list2 : trimmedColumns) {
+                    Object object = list2.get(i);
+                    list2.set(i, list2.get(j));
+                    list2.set(j, object);
+                }
+            }, compa.reversed());
+        }
+        if (class1 == Integer.class) {
+            Comparator<Integer> compa = Integer::compareTo;
             QuickSortML.sort(typedList(list), (i, j) -> {
                 for (List<Object> list2 : trimmedColumns) {
                     Object object = list2.get(i);

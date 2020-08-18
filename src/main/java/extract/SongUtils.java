@@ -110,14 +110,14 @@ public final class SongUtils {
         StringBuilder cmd = new StringBuilder();
         cmd.append(FFMPEG);
         cmd.append(" -y -i \"");
-        cmd.append(inFile);
+        cmd.append(inFile.toString().replaceAll("\\\\", "/"));
         cmd.append("\" -ss ");
         cmd.append(formatFullDuration(start));
         cmd.append(" -r 1 -to ");
         cmd.append(formatFullDuration(end));
         cmd.append(" \"");
 
-        cmd.append(outFile);
+        cmd.append(outFile.toString().replaceAll("\\\\", "/"));
         cmd.append("\"");
         Map<String, String> responses = new HashMap<>();
         String duration = "\\s*Duration: ([^,]+),.+";

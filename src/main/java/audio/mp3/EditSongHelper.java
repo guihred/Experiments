@@ -74,11 +74,13 @@ public final class EditSongHelper {
         RunnableEx.runInPlatform(() -> SongUtils.stopAndDispose(mediaPlayer.get()));
         progress.addListener((v, o, n) -> {
             if (n.intValue() == 1) {
+                RunnableEx.run(() -> Thread.sleep(1500));
                 RunnableEx.runInPlatform(() -> {
                     run(() -> {
+
                         MusicReader.saveMetadata(selectedItem, outFile);
                         File arquivo = selectedItem.getArquivo();
-                        ExtractUtils.copy(arquivo, outFile);
+                        ExtractUtils.copy(outFile, arquivo);
                     });
                     StageHelper.closeStage(progressIndicator);
                 });

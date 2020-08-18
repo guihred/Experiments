@@ -9,6 +9,7 @@ import static utils.SupplierEx.remap;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import utils.ResourceFXUtils;
 import utils.RunnableEx;
 
 public final class PdfUtils {
@@ -120,10 +122,6 @@ public final class PdfUtils {
         return readFile(new PdfInfo(), file1, null);
     }
 
-    public static PdfInfo readFile(File file1, PrintStream out) {
-        return readFile(new PdfInfo(), file1, out);
-    }
-
     public static PdfInfo readFile(PdfInfo pdfInfo) {
         return readFile(pdfInfo, pdfInfo.getFile(), null);
     }
@@ -132,21 +130,9 @@ public final class PdfUtils {
         return readFile(pdfInfo, file1, null);
     }
 
-    public static PdfInfo readFile(PdfInfo pdfInfo, File file1, PrintStream out) {
-        if (file1 == null) {
-            return pdfInfo;
-        }
-        pdfInfo.setProgress(0);
-        pdfInfo.setIndex(0);
-        pdfInfo.setLineIndex(0);
-        pdfInfo.getLines().clear();
-        pdfInfo.getSkipLines().clear();
-        pdfInfo.getWords().clear();
-        pdfInfo.setFile(file1);
-        pdfInfo.setPageIndex(0);
-        pdfInfo.getPages().clear();
-        ignore(() -> read(pdfInfo, file1, out));
-        return pdfInfo;
+    public static PdfInfo readText(File file1) throws FileNotFoundException {
+        PrintStream out = new PrintStream(ResourceFXUtils.getOutFile(file1.getName().replaceAll("\\.pdf", ".txt")));
+        return readFile(new PdfInfo(), file1, out);
     }
 
     public static void runOnFile(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
@@ -197,6 +183,23 @@ public final class PdfUtils {
 
             pdfInfo.getLines().setAll(pdfInfo.getPages().get(pdfInfo.getPageIndex()));
         }
+    }
+
+    private static PdfInfo readFile(PdfInfo pdfInfo, File file1, PrintStream out) {
+        if (file1 == null) {
+            return pdfInfo;
+        }
+        pdfInfo.setProgress(0);
+        pdfInfo.setIndex(0);
+        pdfInfo.setLineIndex(0);
+        pdfInfo.getLines().clear();
+        pdfInfo.getSkipLines().clear();
+        pdfInfo.getWords().clear();
+        pdfInfo.setFile(file1);
+        pdfInfo.setPageIndex(0);
+        pdfInfo.getPages().clear();
+        ignore(() -> read(pdfInfo, file1, out));
+        return pdfInfo;
     }
 
     private static void runOnLines(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,

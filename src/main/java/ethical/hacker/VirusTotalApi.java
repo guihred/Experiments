@@ -53,9 +53,8 @@ public final class VirusTotalApi {
         if (matcher.find()) {
             String group = matcher.group(1);
             LOG.info("Malicious FILE {} {}", path, group);
-            return new File[] { outFile };
         }
-        return new File[] {};
+        return new File[] { outFile };
     }
 
     public static Entry<File, List<String>> getIpInformation(String ip) throws IOException {
