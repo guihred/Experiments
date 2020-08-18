@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
+import ml.data.DataframeStatisticAccumulator;
 import ml.data.DataframeUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,8 @@ import org.slf4j.Logger;
 import utils.*;
 
 public class WhoIsScanner {
+    public static final String IP_REGEX = "^\\d+\\.\\d+\\.\\d+\\.\\d+$";
+
     private static final Logger LOG = HasLogging.log();
 
     private final Map<String, String> cookies;
@@ -59,31 +62,14 @@ public class WhoIsScanner {
         return document;
     }
 
-    public static void main(String[] args) {
-        File csvFile = new File(
-                "C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Acesso Web] Top Clientes por número de requisições.csv");
-        DataframeML dataframe = fillIPInformation(csvFile);
-        DataframeUtils.save(dataframe, ResourceFXUtils.getOutFile("csv/" + csvFile.getName()));
-
-    }
-
-    private static DataframeML fillIPInformation(File csvFile) {
+    public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn) {
+        builder.filter(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(IP_REGEX));
+        DataframeML dataframe = builder.build();
         WhoIsScanner whoIsScanner = new WhoIsScanner();
-        DataframeML dataframe = DataframeBuilder.builder(csvFile).build();
-        String ipColumn = dataframe.cols().stream().filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst()
-                .orElse("IP de Origem");
-        dataframe.filter(ipColumn,
-                s -> !s.toString().matches("^10\\..+") && s.toString().matches("^\\d+\\.\\d+\\.\\d+\\.\\d+$"));
         DataframeUtils.crossFeatureObject(dataframe, "Rede",
                 e -> SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("network"),
                         () -> whoIsScanner.whoIsScan(e[0].toString()).get("network")),
                 ipColumn);
-        List<String> numberCols =
-                dataframe.getFormatMap().entrySet().stream().filter(e -> Number.class.isAssignableFrom(e.getValue()))
-                        .map(Entry<String, Class<? extends Comparable<?>>>::getKey).collect(Collectors.toList());
-        String target = numberCols.get(numberCols.size() - 1);
-        List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, "Rede", target);
-        createSeries.forEach(s -> LOG.info("{}", s));
         DataframeUtils.crossFeatureObject(dataframe, "Owner",
                 e -> SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("as_owner"),
                         () -> whoIsScanner.whoIsScan(e[0].toString()).get("asname")),
@@ -92,12 +78,44 @@ public class WhoIsScanner {
                 e -> SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("country"),
                         () -> whoIsScanner.whoIsScan(e[0].toString()).get("ascountry")),
                 ipColumn);
-        List<Entry<Object, Double>> series = DataframeUtils.createSeries(dataframe, "Owner", target);
-        series.forEach(s -> LOG.info("{}", s));
-        DataframeUtils.sort(dataframe, target);
+        return dataframe;
+    }
+
+    public static void main(String[] args) {
+        File csvFile = new File(
+                "C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Acesso Web] Top Origens x URL Únicas acessadas.csv");
+        DataframeML dataframe = fillIPInformation(csvFile);
+        reorderAndLog(dataframe, getLastNumberField(dataframe));
+        DataframeUtils.save(dataframe, ResourceFXUtils.getOutFile("csv/" + csvFile.getName()));
+
+    }
+
+    private static DataframeML fillIPInformation(File csvFile) {
+        DataframeBuilder builder = DataframeBuilder.builder(csvFile);
+        String ipColumn = getIPColumn(builder);
+        return fillIPInformation(builder, ipColumn);
+    }
+
+    private static String getIPColumn(DataframeBuilder builder) {
+        return builder.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
+                .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
+    }
+
+    private static String getLastNumberField(DataframeML dataframe) {
+        List<String> numberCols =
+                dataframe.getFormatMap().entrySet().stream().filter(e -> Number.class.isAssignableFrom(e.getValue()))
+                        .map(Entry<String, Class<? extends Comparable<?>>>::getKey).collect(Collectors.toList());
+        return numberCols.get(numberCols.size() - 1);
+    }
+
+    private static void reorderAndLog(DataframeML dataframe, String numberField) {
+        DataframeUtils.sort(dataframe, numberField);
+        List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, "Rede", numberField);
+        createSeries.forEach(s2 -> LOG.info("{}", s2));
+        List<Entry<Object, Double>> series = DataframeUtils.createSeries(dataframe, "Owner", numberField);
+        series.forEach(s1 -> LOG.info("{}", s1));
         dataframe.removeCol("filters");
         String string2 = DataframeUtils.toString(dataframe, 30);
         LOG.info(string2);
-        return dataframe;
     }
 }

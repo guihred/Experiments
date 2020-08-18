@@ -27,10 +27,9 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
 
     }
 
-    public SimpleComboBoxBuilder(ComboBox<T> combo) {
+    private SimpleComboBoxBuilder(ComboBox<T> combo) {
         super(combo);
         comboBox = region;
-
     }
 
     public SimpleComboBoxBuilder<T> cellFactory(BiConsumer<T, ListCell<T>> value2) {
@@ -95,6 +94,11 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
             cell.setText(comboBox.getConverter().toString(item));
             cell.setStyle(func.apply(item));
         });
+    }
+
+    public static <V> SimpleComboBoxBuilder<V> of(ComboBox<V> combo) {
+        return new SimpleComboBoxBuilder<>(combo);
+
     }
 
 }

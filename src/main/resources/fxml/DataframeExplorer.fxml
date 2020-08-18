@@ -17,8 +17,12 @@
 				<HBox>
 					<children>
 						<Button alignment="CENTER" fx:id="loadCSV" id="Load CSV"
-							onAction="#onActionLoadCSV" text="Load CSV" textFill="0x333333ff" />
+							onAction="#onActionLoadCSV" text="_Load CSV" textFill="0x333333ff" />
 						<ProgressIndicator fx:id="progress" />
+						<Button  fx:id="fillIP"  alignment="CENTER" onAction="#onActionFillIP"
+							text="Fill _IP" textFill="0x333333ff" disable="true"/>
+						<Button alignment="CENTER" fx:id="add" id="Add" onAction="#onActionSave"
+							text="_Save" textFill="0x333333ff"/>
 					</children>
 				</HBox>
 				<HBox>
@@ -41,11 +45,11 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
-						<TextField fx:id="text">
+						<AutocompleteField fx:id="text">
 							<padding>
 								<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
 							</padding>
-						</TextField>
+						</AutocompleteField>
 						<Button alignment="CENTER" fx:id="add" id="Add" onAction="#onActionAdd"
 							text="Add" textFill="0x333333ff">
 							<padding>
@@ -63,7 +67,7 @@
 		</VBox>
 		<VBox HBox.hgrow="ALWAYS">
 			<children>
-				<BarChart fx:id="barChart" visible="false" >
+				<BarChart fx:id="barChart" visible="false">
 					<xAxis>
 						<CategoryAxis />
 					</xAxis>
@@ -71,7 +75,8 @@
 						<NumberAxis />
 					</yAxis>
 				</BarChart>
-				<LineChart fx:id="lineChart" verticalGridLinesVisible="false" legendSide="RIGHT" visible="false" >
+				<LineChart fx:id="lineChart" verticalGridLinesVisible="false"
+					legendSide="RIGHT" visible="false">
 					<yAxis>
 						<NumberAxis side="LEFT" tickUnit="10.0" upperBound="100.0" />
 					</yAxis>

@@ -24,6 +24,20 @@ public class DataframeUtils extends DataframeML {
     protected DataframeUtils() {
     }
 
+    public static List<String> addHeaders(DataframeML dataframeML, Scanner scanner) {
+        List<String> header = getHeaders(scanner);
+        dataframeML.stats = new LinkedHashMap<>();
+        dataframeML.formatMap.clear();
+        for (String column : header) {
+            dataframeML.getDataframe().put(column, new ArrayList<>());
+            dataframeML.putFormat(column, String.class);
+            dataframeML.stats.putIfAbsent(column,
+                    new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, column));
+        }
+        dataframeML.size = 0;
+        return header;
+    }
+
     public static List<Entry<Object, Double>> createSeries(DataframeML dataframe, String feature, String target) {
         List<Object> list = dataframe.list(feature);
         List<Object> list2 = dataframe.list(target);
@@ -197,9 +211,7 @@ public class DataframeUtils extends DataframeML {
         try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
             dataframeML.file = csvFile;
             dataframeML.size = 0;
-            List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
-                    .map(c -> StringSigaUtils.fixEncoding(c).replaceAll("\\?", ""))
-                    .collect(Collectors.toList());
+            List<String> header = getHeaders(scanner);
             for (String column : header) {
                 dataframeML.getDataframe().put(column, new ArrayList<>());
                 dataframeML.putFormat(column, String.class);
@@ -399,20 +411,6 @@ public class DataframeUtils extends DataframeML {
         dataframe.size--;
     }
 
-    private static List<String> addHeaders(DataframeML dataframeML, Scanner scanner) {
-        List<String> header = CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
-                .collect(Collectors.toList());
-        dataframeML.stats = new LinkedHashMap<>();
-        for (String column : header) {
-            dataframeML.getDataframe().put(column, new ArrayList<>());
-            dataframeML.putFormat(column, String.class);
-            dataframeML.stats.put(column,
-                    new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, column));
-        }
-        dataframeML.size = 0;
-        return header;
-    }
-
     private static boolean filterOut(DataframeML dataframeML, List<String> header, List<String> line2) {
         return IntStream.range(0, header.size()).anyMatch(i -> {
             String key = header.get(i);
@@ -421,6 +419,12 @@ public class DataframeUtils extends DataframeML {
             return dataframeML.filters.containsKey(key) 
                     && !dataframeML.filters.get(key).test(tryNumber);
         });
+    }
+
+    private static List<String> getHeaders(Scanner scanner) {
+        return CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
+                .map(c -> StringSigaUtils.fixEncoding(c).replaceAll("\\?", ""))
+                .collect(Collectors.toList());
     }
 
     private static int len(String k, Class<? extends Comparable<?>> class1) {

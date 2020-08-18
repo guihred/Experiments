@@ -12,7 +12,7 @@ public class BaseDataframe {
 
     protected final Map<String, List<Object>> dataframe = new LinkedHashMap<>();
     protected Map<String, Set<String>> categories = new LinkedHashMap<>();
-    protected Map<String, Class<? extends Comparable<?>>> formatMap = new LinkedHashMap<>();
+    protected final Map<String, Class<? extends Comparable<?>>> formatMap = new LinkedHashMap<>();
     protected Map<String, Function<Object, Object>> mapping = new LinkedHashMap<>();
     protected int size;
     protected File file;
@@ -25,7 +25,7 @@ public class BaseDataframe {
     public BaseDataframe(BaseDataframe frame) {
         file = frame.file;
         frame.dataframe.forEach((h, l) -> dataframe.put(h, new ArrayList<>(l)));
-        formatMap = new LinkedHashMap<>(frame.formatMap);
+        formatMap.putAll(frame.formatMap);
         mapping = new LinkedHashMap<>(frame.mapping);
         size = frame.size;
         stats = new LinkedHashMap<>();

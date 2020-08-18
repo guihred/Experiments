@@ -1,5 +1,6 @@
 package ml.graph;
 
+import ethical.hacker.WhoIsScanner;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
@@ -17,11 +18,12 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import ml.data.*;
 import org.slf4j.Logger;
@@ -40,7 +42,9 @@ public class DataframeExplorer extends Application {
     @FXML
     private ListView<Entry<String, DataframeStatisticAccumulator>> columnsList;
     @FXML
-    private TextField text;
+    private AutocompleteField text;
+    @FXML
+    private Button fillIP;
     @FXML
     private ListView<Question> questionsList;
     @FXML
@@ -55,35 +59,65 @@ public class DataframeExplorer extends Application {
 
     @FXML
     private BarChart<String, Number> barChart;
+    private Thread currentThread;
 
     public void initialize() {
         questions.addListener(this::onQuestionsChange);
         lineChart.managedProperty().bind(lineChart.visibleProperty());
         barChart.managedProperty().bind(barChart.visibleProperty());
-        new SimpleListViewBuilder<>(columnsList).items(columns).onSelect(this::onColumnChosen)
+        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen)
                 .cellFactory(Entry<String, DataframeStatisticAccumulator>::getKey);
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
         barChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !barChart.getData().isEmpty(), barChart.dataProperty()));
-        new SimpleComboBoxBuilder<>(headersCombo).items(columns)
-                .converter(Entry<String, DataframeStatisticAccumulator>::getKey);
-        new SimpleComboBoxBuilder<>(questType).cellFactory((q, cell) -> {
+        SimpleComboBoxBuilder.of(headersCombo).items(columns)
+                .converter(Entry<String, DataframeStatisticAccumulator>::getKey).onChange((old, val) -> text
+                        .setEntries(FunctionEx.mapIf(val, v -> v.getValue().getUnique(), Collections.emptySet())));
+
+        SimpleComboBoxBuilder.of(questType).cellFactory((q, cell) -> {
             cell.setText(FunctionEx.mapIf(q, QuestionType::getSign));
             cell.disableProperty()
                     .bind(Bindings.createBooleanBinding(
                             () -> isTypeDisabled(q, headersCombo.getSelectionModel().getSelectedItem()),
                             headersCombo.getSelectionModel().selectedItemProperty()));
         }).converter(QuestionType::getSign);
-        new SimpleListViewBuilder<>(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove);
+        SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove);
     }
 
     public void onActionAdd() {
         addQuestion();
     }
 
+    public void onActionFillIP() {
+        DataframeBuilder builder = builderWithQuestions(dataframe.getFile());
+        dataframe = WhoIsScanner.fillIPInformation(builder, columnsList.getSelectionModel().getSelectedItem().getKey());
+        RunnableEx.runInPlatform(() -> columns.setAll(DataframeUtils.makeStats(dataframe).entrySet()));
+        LOG.info("File {} read", dataframe.getFile().getName());
+    }
+
     public void onActionLoadCSV(ActionEvent e) {
         StageHelper.fileAction("Load CSV", this::addStats, "CSV", "*.csv").handle(e);
+    }
+
+    public void onActionSave() {
+        if (dataframe != null) {
+
+            FileChooser fileChooser2 = new FileChooser();
+            fileChooser2.setTitle("Save File");
+            fileChooser2.setInitialFileName(dataframe.getFile().getName());
+            fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Data", "*.csv"));
+            File outFile = fileChooser2.showSaveDialog(text.getScene().getWindow());
+            if (outFile != null) {
+                RunnableEx.runNewThread(() -> {
+                    if (!dataframe.isLoaded()) {
+                        readDataframe(dataframe.getFile(), dataframe.getSize());
+                    }
+                    DataframeUtils.save(dataframe, outFile);
+                    LOG.info("{} SAVED", outFile);
+                });
+            }
+        }
     }
 
     @Override
@@ -104,7 +138,9 @@ public class DataframeExplorer extends Application {
     }
 
     private void addStats(File file) {
-        RunnableEx.runNewThread(() -> {
+        interruptCurrentThread();
+
+        currentThread = RunnableEx.runNewThread(() -> {
             LOG.info("File {} STARTING", file.getName());
             if (dataframe != null && !file.equals(dataframe.getFile())) {
                 RunnableEx.runInPlatform(() -> {
@@ -113,18 +149,8 @@ public class DataframeExplorer extends Application {
                     lineChart.setData(FXCollections.emptyObservableList());
                 });
             }
-
-            DataframeBuilder builder = DataframeBuilder.builder(file);
-            for (Question question : questions) {
-                builder.filter(question.getColName(), question::answer);
-            }
-            dataframe = builder.makeStats(progress.progressProperty());
-            Set<Entry<String, DataframeStatisticAccumulator>> entrySet = dataframe.getStats().entrySet();
-            RunnableEx.runInPlatform(() -> columns.setAll(entrySet));
-            if (dataframe.getSize() <= 1000) {
-                dataframe = builder.build();
-            }
-            LOG.info("File {} read", file.getName());
+            int maxSize = 1000;
+            readDataframe(file, maxSize);
         });
     }
 
@@ -160,12 +186,33 @@ public class DataframeExplorer extends Application {
         lineChart.setData(value);
     }
 
+    private DataframeBuilder builderWithQuestions(File file) {
+        DataframeBuilder builder = DataframeBuilder.builder(file);
+        for (Question question : questions) {
+            builder.filter(question.getColName(), question::answer);
+        }
+        return builder;
+    }
+
+    private void interruptCurrentThread() {
+        RunnableEx.run(() -> {
+            if (currentThread != null && currentThread.isAlive()) {
+                currentThread.interrupt();
+                dataframe = null;
+            }
+        });
+    }
+
     @SuppressWarnings("unchecked")
     private void onColumnChosen(Entry<String, DataframeStatisticAccumulator> old,
             Entry<String, DataframeStatisticAccumulator> val) {
         if (val == null) {
             return;
         }
+
+        Set<String> unique = val.getValue().getUnique();
+        boolean allMatch = unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
+        fillIP.setDisable(!allMatch);
         ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
         Class<? extends Comparable<?>> format = val.getValue().getFormat();
         if (format == String.class) {
@@ -213,6 +260,19 @@ public class DataframeExplorer extends Application {
                 addStats(dataframe.getFile());
             }
         }
+    }
+
+    private void readDataframe(File file, int maxSize) {
+        DataframeBuilder builder = builderWithQuestions(file);
+        Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
+        dataframe = builder.dataframe();
+        RunnableEx.runInPlatform(() -> columns.setAll(entrySet));
+        builder.makeStats(progress.progressProperty());
+        RunnableEx.runInPlatform(() -> columns.setAll(dataframe.getStats().entrySet()));
+        if (dataframe.getSize() <= maxSize) {
+            dataframe = builder.build();
+        }
+        LOG.info("File {} read", file.getName());
     }
 
     public static void main(String[] args) {

@@ -21,7 +21,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         table = node;
     }
 
-    public SimpleListViewBuilder(ListView<T> o) {
+    private SimpleListViewBuilder(ListView<T> o) {
         super(o);
         table = node;
     }
@@ -81,6 +81,10 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
 
     public static <C> Callback<ListView<C>, ListCell<C>> newCellFactory(final FunctionEx<C, String> func) {
         return newCellFactory((t, cell) -> cell.setText(FunctionEx.apply(func, t)));
+    }
+
+    public static <V>SimpleListViewBuilder<V> of(ListView<V> o) {
+        return new SimpleListViewBuilder<>(o); 
     }
 
     public static <C> void onDoubleClick(ListView<C> table2, final ConsumerEx<C> object) {

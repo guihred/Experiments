@@ -81,7 +81,9 @@ public interface RunnableEx {
         }
     }
 
-    static void runNewThread(RunnableEx run) {
-        new Thread(make(run)).start();
+    static Thread runNewThread(RunnableEx run) {
+        Thread thread = new Thread(make(run));
+        thread.start();
+        return thread;
     }
 }
