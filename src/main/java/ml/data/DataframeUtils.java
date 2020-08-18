@@ -26,13 +26,13 @@ public class DataframeUtils extends DataframeML {
 
     public static List<String> addHeaders(DataframeML dataframeML, Scanner scanner) {
         List<String> header = getHeaders(scanner);
-        dataframeML.stats = new LinkedHashMap<>();
+        dataframeML.stats = SupplierEx.nonNull(dataframeML.stats, new LinkedHashMap<>());
         dataframeML.formatMap.clear();
         for (String column : header) {
             dataframeML.getDataframe().put(column, new ArrayList<>());
             dataframeML.putFormat(column, String.class);
-            dataframeML.stats.putIfAbsent(column,
-                    new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, column));
+            dataframeML.stats.compute(column, (k, val) -> val != null ? val.reset()
+                    : new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, column));
         }
         dataframeML.size = 0;
         return header;
@@ -194,7 +194,6 @@ public class DataframeUtils extends DataframeML {
                         categorizeIfCategorizable(dataframeML, key, tryNumber);
                         tryNumber = mapIfMappable(dataframeML, key, tryNumber);
                         DataframeStatisticAccumulator acc = dataframeML.stats.get(key);
-                        acc.setFormat(dataframeML.getFormat(key));
                         acc.accept(tryNumber);
                     }
                     if (dataframeML.size > dataframeML.maxSize) {

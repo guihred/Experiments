@@ -19,23 +19,21 @@ public class DataframeStatisticAccumulator {
     private double max = Double.NEGATIVE_INFINITY;
     private String header;
     private Map<String, Integer> countMap = new LinkedHashMap<>();
-    private Map<Number, Integer> distributionMap = new LinkedHashMap<>();
-    private Class<? extends Comparable<?>> format;
-    private Map<String, Class<? extends Comparable<?>>> formatMap;
+    private final Map<Number, Integer> distributionMap = new LinkedHashMap<>();
+    private final Map<String, Class<? extends Comparable<?>>> formatMap;
 
     public DataframeStatisticAccumulator(Map<String, List<Object>> dataframe,
             Map<String, Class<? extends Comparable<?>>> formatMap, String header) {
         this.dataframe = dataframe;
         this.formatMap = formatMap;
-        format = formatMap.get(header);
         this.header = header;
     }
 
     public DataframeStatisticAccumulator accept(Object o) {
-        if (format.isInstance(o) && Number.class.isAssignableFrom(format)) {
+        if (getFormat().isInstance(o) && Number.class.isAssignableFrom(getFormat())) {
             acceptNumber((Number) o);
         }
-        if (format.isInstance(o) && String.class.isAssignableFrom(format)) {
+        if (getFormat().isInstance(o) && String.class.isAssignableFrom(getFormat())) {
             acceptString((String) o);
         }
         return this;
@@ -51,14 +49,14 @@ public class DataframeStatisticAccumulator {
     }
 
     public String getBottom() {
-        if (format == String.class) {
+        if (getFormat() == String.class) {
             return countMap.entrySet().stream().min(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
         }
         return Objects.toString(min);
     }
 
     public double getCorrelation(String other) {
-        if (format == String.class || formatMap.get(other) == String.class) {
+        if (getFormat() == String.class || formatMap.get(other) == String.class) {
             return 0;
         }
 
@@ -96,7 +94,7 @@ public class DataframeStatisticAccumulator {
     }
 
     public Class<? extends Comparable<?>> getFormat() {
-        return format;
+        return formatMap.get(header);
     }
 
     public String getHeader() {
@@ -104,14 +102,14 @@ public class DataframeStatisticAccumulator {
     }
 
     public Object getMax() {
-        if (format == String.class) {
+        if (getFormat() == String.class) {
             return countMap.entrySet().stream().max(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
         }
         return max;
     }
 
     public Object getMean() {
-        if (format == String.class) {
+        if (getFormat() == String.class) {
             return countMap.entrySet().stream().max(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
         }
 
@@ -131,7 +129,7 @@ public class DataframeStatisticAccumulator {
     }
 
     public Object getMin() {
-        if (format == String.class) {
+        if (getFormat() == String.class) {
             return countMap.entrySet().stream().min(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
         }
 
@@ -139,7 +137,7 @@ public class DataframeStatisticAccumulator {
     }
 
     public double getStd() {
-        if (format == String.class) {
+        if (getFormat() == String.class) {
             double mean = sum / countMap.size();
             double sum2 = countMap.values().stream().mapToDouble(e -> e).map(e -> e - mean).map(e -> e * e).sum();
             return Math.sqrt(sum2 / (countMap.size() - 1));
@@ -163,7 +161,7 @@ public class DataframeStatisticAccumulator {
     }
 
     public String getTop() {
-        if (format != String.class) {
+        if (getFormat() != String.class) {
             return Objects.toString(max);
         }
 
@@ -171,15 +169,22 @@ public class DataframeStatisticAccumulator {
     }
 
     public Set<String> getUnique() {
-        if (format != String.class) {
+        if (getFormat() != String.class) {
             return distributionMap.keySet().stream().map(Objects::toString).collect(Collectors.toSet());
         }
         return countMap.keySet();
     }
 
-    public void setFormat(Class<? extends Comparable<?>> format) {
-        this.format = format;
+    public DataframeStatisticAccumulator reset() {
+        count =0;
+        sum = 0;
+        min = Double.MAX_VALUE;
+        max = Double.NEGATIVE_INFINITY;
+        countMap.clear();
+        distributionMap.clear();
+        return this;
     }
+
 
     @Override
     public String toString() {
@@ -204,7 +209,7 @@ public class DataframeStatisticAccumulator {
     }
 
     private Object getByProportion(double d) {
-        if (format == String.class) {
+        if (getFormat() == String.class) {
             return getByProportion(d, countMap);
         }
         if (!dataframe.get(header).isEmpty()) {

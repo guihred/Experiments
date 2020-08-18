@@ -90,10 +90,15 @@ public class DataframeExplorer extends Application {
     }
 
     public void onActionFillIP() {
-        DataframeBuilder builder = builderWithQuestions(dataframe.getFile());
-        dataframe = WhoIsScanner.fillIPInformation(builder, columnsList.getSelectionModel().getSelectedItem().getKey());
-        RunnableEx.runInPlatform(() -> columns.setAll(DataframeUtils.makeStats(dataframe).entrySet()));
-        LOG.info("File {} read", dataframe.getFile().getName());
+        RunnableEx.runNewThread(() -> {
+            LOG.info("FILLING {} IPS", dataframe.getFile().getName());
+
+            DataframeBuilder builder = builderWithQuestions(dataframe.getFile());
+            dataframe =
+                    WhoIsScanner.fillIPInformation(builder, columnsList.getSelectionModel().getSelectedItem().getKey());
+            RunnableEx.runInPlatform(() -> columns.setAll(DataframeUtils.makeStats(dataframe).entrySet()));
+            LOG.info("File {} IPS FILLED", dataframe.getFile().getName());
+        });
     }
 
     public void onActionLoadCSV(ActionEvent e) {
@@ -212,7 +217,7 @@ public class DataframeExplorer extends Application {
 
         Set<String> unique = val.getValue().getUnique();
         boolean allMatch = unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
-        fillIP.setDisable(!allMatch);
+        fillIP.setDisable(unique.isEmpty() || !allMatch);
         ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
         Class<? extends Comparable<?>> format = val.getValue().getFormat();
         if (format == String.class) {
