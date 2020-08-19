@@ -31,10 +31,7 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.StageHelper;
-import utils.CommonsFX;
-import utils.FunctionEx;
-import utils.HasLogging;
-import utils.RunnableEx;
+import utils.*;
 
 public class DataframeExplorer extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -103,9 +100,13 @@ public class DataframeExplorer extends Application {
             LOG.info("FILLING {} IPS", dataframe.getFile().getName());
 
             DataframeBuilder builder = builderWithQuestions(dataframe.getFile());
+            String ipColumn = columnsList.getSelectionModel().getSelectedItem().getKey();
             dataframe =
-                    WhoIsScanner.fillIPInformation(builder, columnsList.getSelectionModel().getSelectedItem().getKey());
-            RunnableEx.runInPlatform(() -> columns.setAll(DataframeUtils.makeStats(dataframe).entrySet()));
+                    WhoIsScanner.fillIPInformation(builder, ipColumn);
+
+            File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
+            DataframeUtils.save(dataframe, outFile);
+            addStats(outFile);
             LOG.info("File {} IPS FILLED", dataframe.getFile().getName());
         });
     }
@@ -277,7 +278,9 @@ public class DataframeExplorer extends Application {
                 for (Question question : c.getAddedSubList()) {
                     dataframe.filter(question.getColName(), question::answer);
                 }
+                int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
                 columns.setAll(DataframeUtils.makeStats(dataframe).entrySet());
+                headersCombo.getSelectionModel().select(selectedIndex);
             } else {
                 addStats(dataframe.getFile());
             }
