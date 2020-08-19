@@ -9,8 +9,9 @@
 <?import ml.data.*?>
 <?import simplebuilder.*?>
 <?import javafx.scene.text.*?>
-<HBox xmlns:fx="http://javafx.com/fxml">
-	<children>
+<SplitPane xmlns:fx="http://javafx.com/fxml" fx:id="splitPane0"
+    >
+    <items>
 		<VBox>
 			<children>
 				<ListView fx:id="columnsList" />
@@ -18,10 +19,10 @@
 					<children>
 						<Button alignment="CENTER" fx:id="loadCSV" id="Load CSV"
 							onAction="#onActionLoadCSV" text="_Load CSV" textFill="0x333333ff" />
-						<ProgressIndicator fx:id="progress" />
+						<ProgressIndicator fx:id="progress"  minWidth="100" />
 						<Button fx:id="fillIP" alignment="CENTER" onAction="#onActionFillIP"
-							text="Fill _IP" textFill="0x333333ff" disable="true" />
-						<Button alignment="CENTER" fx:id="add" id="Add" onAction="#onActionSave"
+							text="Fill _IP" textFill="0x333333ff" disable="true"/>
+						<Button alignment="CENTER" fx:id="add"  onAction="#onActionSave"
 							text="_Save" textFill="0x333333ff" />
 					</children>
 				</HBox>
@@ -51,7 +52,7 @@
 							</padding>
 						</AutocompleteField>
 						<Button alignment="CENTER" fx:id="add" id="Add" onAction="#onActionAdd"
-							text="Add" textFill="0x333333ff">
+							text="+" textFill="0x333333ff">
 							<padding>
 								<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 							</padding>
@@ -101,5 +102,5 @@
 				</Tab>
 			</tabs>
 		</TabPane>
-	</children>
-</HBox>
+	</items>
+</SplitPane>

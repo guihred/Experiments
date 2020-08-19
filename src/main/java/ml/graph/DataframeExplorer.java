@@ -106,7 +106,8 @@ public class DataframeExplorer extends Application {
 
             File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
             DataframeUtils.save(dataframe, outFile);
-            addStats(outFile);
+            int maxSize = 1000;
+            readDataframe(outFile, maxSize);
             LOG.info("File {} IPS FILLED", dataframe.getFile().getName());
         });
     }

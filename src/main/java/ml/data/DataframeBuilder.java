@@ -41,11 +41,11 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public Set<Entry<String, DataframeStatisticAccumulator>> columns() {
-            RunnableEx.run(() -> {
-                try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
-                    DataframeUtils.addHeaders(dataframeML, scanner);
-                }
-            });
+        RunnableEx.run(() -> {
+            try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
+                DataframeUtils.addHeaders(dataframeML, scanner);
+            }
+        });
         return dataframeML.getStats().entrySet();
     }
 
