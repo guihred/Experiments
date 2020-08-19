@@ -9,9 +9,8 @@
 <?import ml.data.*?>
 <?import simplebuilder.*?>
 <?import javafx.scene.text.*?>
-<SplitPane xmlns:fx="http://javafx.com/fxml" fx:id="splitPane0"
-    >
-    <items>
+<SplitPane xmlns:fx="http://javafx.com/fxml" fx:id="splitPane0">
+	<items>
 		<VBox>
 			<children>
 				<ListView fx:id="columnsList" />
@@ -19,10 +18,10 @@
 					<children>
 						<Button alignment="CENTER" fx:id="loadCSV" id="Load CSV"
 							onAction="#onActionLoadCSV" text="_Load CSV" textFill="0x333333ff" />
-						<ProgressIndicator fx:id="progress"  minWidth="100" />
+						<ProgressIndicator fx:id="progress" minWidth="100" />
 						<Button fx:id="fillIP" alignment="CENTER" onAction="#onActionFillIP"
-							text="Fill _IP" textFill="0x333333ff" disable="true"/>
-						<Button alignment="CENTER" fx:id="add"  onAction="#onActionSave"
+							text="Fill _IP" textFill="0x333333ff" disable="true" />
+						<Button alignment="CENTER" fx:id="add" onAction="#onActionSave"
 							text="_Save" textFill="0x333333ff" />
 					</children>
 				</HBox>
@@ -46,13 +45,13 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
-						<AutocompleteField fx:id="text">
+						<AutocompleteField fx:id="text" >
 							<padding>
 								<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
 							</padding>
 						</AutocompleteField>
 						<Button alignment="CENTER" fx:id="add" id="Add" onAction="#onActionAdd"
-							text="+" textFill="0x333333ff">
+							text="+" HBox.hgrow="ALWAYS" textFill="0x333333ff">
 							<padding>
 								<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 							</padding>
@@ -87,7 +86,12 @@
 						</BarChart>
 					</content>
 				</Tab>
-				<Tab  text="Line Chart">
+				<Tab text="Data Table">
+					<content>
+						<PaginatedTableView fx:id="dataTable" />
+					</content>
+				</Tab>
+				<Tab text="Line Chart">
 					<content>
 						<LineChart fx:id="lineChart" verticalGridLinesVisible="false"
 							legendSide="RIGHT" visible="false">

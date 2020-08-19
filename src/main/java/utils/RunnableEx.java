@@ -86,4 +86,9 @@ public interface RunnableEx {
         thread.start();
         return thread;
     }
+
+    static <A> Thread runNewThread(SupplierEx<A> run, ConsumerEx<A> onEnd) {
+
+        return RunnableEx.runNewThread(() -> onEnd.accept(run.get()));
+    }
 }

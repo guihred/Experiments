@@ -34,6 +34,7 @@ import simplebuilder.StageHelper;
 import utils.*;
 
 public class DataframeExplorer extends Application {
+    private static final int MAX_ELEMENTS = 1000;
     private static final Logger LOG = HasLogging.log();
     @FXML
     private ComboBox<Entry<String, DataframeStatisticAccumulator>> headersCombo;
@@ -51,6 +52,8 @@ public class DataframeExplorer extends Application {
     private ObservableList<Question> questions = FXCollections.observableArrayList();
     private DataframeML dataframe;
     @FXML
+    private PaginatedTableView dataTable;
+    @FXML
     private ProgressIndicator progress;
     @FXML
     private LineChart<Number, Number> lineChart;
@@ -66,15 +69,11 @@ public class DataframeExplorer extends Application {
         lineChart.managedProperty().bind(lineChart.visibleProperty());
         barChart.managedProperty().bind(barChart.visibleProperty());
         pieChart.managedProperty().bind(pieChart.visibleProperty());
-
-        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen)
-        // .cellFactory(Entry<String, DataframeStatisticAccumulator>::getKey)
-
-        ;
+        columns.addListener(this::onColumnsChange);
+        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen);
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
-        pieChart.visibleProperty()
-                .bind(pieChart.titleProperty().isNotEmpty());
+        pieChart.visibleProperty().bind(pieChart.titleProperty().isNotEmpty());
         barChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !barChart.getData().isEmpty(), barChart.dataProperty()));
         SimpleComboBoxBuilder.of(headersCombo).items(columns)
@@ -101,12 +100,11 @@ public class DataframeExplorer extends Application {
 
             DataframeBuilder builder = builderWithQuestions(dataframe.getFile());
             String ipColumn = columnsList.getSelectionModel().getSelectedItem().getKey();
-            dataframe =
-                    WhoIsScanner.fillIPInformation(builder, ipColumn);
+            dataframe = WhoIsScanner.fillIPInformation(builder, ipColumn);
 
             File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
             DataframeUtils.save(dataframe, outFile);
-            int maxSize = 1000;
+            int maxSize = MAX_ELEMENTS;
             readDataframe(outFile, maxSize);
             LOG.info("File {} IPS FILLED", dataframe.getFile().getName());
         });
@@ -166,7 +164,7 @@ public class DataframeExplorer extends Application {
                     lineChart.setData(FXCollections.emptyObservableList());
                 });
             }
-            int maxSize = 1000;
+            int maxSize = MAX_ELEMENTS;
             readDataframe(file, maxSize);
         });
     }
@@ -227,9 +225,14 @@ public class DataframeExplorer extends Application {
             return;
         }
 
-        Set<String> unique = val.getValue().getUnique();
-        boolean allMatch = unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
-        fillIP.setDisable(unique.isEmpty() || !allMatch);
+        fillIP.setDisable(true);
+        RunnableEx.runNewThread(
+                () -> {
+                    Set<String> unique = val.getValue().getUnique();
+                    return unique.isEmpty()
+                            || unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
+                },
+                e -> RunnableEx.runInPlatform(() -> fillIP.setDisable(e)));
         ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
         ObservableList<PieChart.Data> pieData =
                 ListHelper.mapping(barList, e -> new PieChart.Data(e.getXValue(), e.getYValue().doubleValue()));
@@ -273,6 +276,35 @@ public class DataframeExplorer extends Application {
         }
     }
 
+    private void onColumnsChange(Change<? extends Entry<String, DataframeStatisticAccumulator>> c) {
+        while (c.next()) {
+            if (c.wasRemoved()) {
+                dataTable.clearColumns();
+            }
+            List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
+            if (!dataframe.isLoaded()) {
+                Map<Integer, Map<String, Object>> cache = new HashMap<>();
+                for (String key : Arrays.asList("Header", "Format", "Count", "Max", "Mean", "Min", "Median25",
+                        "Median50", "Median75", "Sum")) {
+                    dataTable.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
+                }
+
+                dataTable.setListSize(addedSubList.size());
+            } else {
+                addedSubList.forEach(entry -> dataTable.addColumn(entry.getKey(),
+                        i -> dataframe.getDataframe().get(entry.getKey()).get(i)));
+                dataTable.setListSize(dataframe.getSize());
+                double[] array =
+                        addedSubList.stream()
+                                .mapToDouble(e -> Math.max(Objects.toString(e.getValue().getTop()).length(),
+                                        e.getKey().length()))
+                                .toArray();
+                dataTable.setColumnsWidth(array);
+
+            }
+        }
+    }
+
     private void onQuestionsChange(Change<? extends Question> c) {
         while (c.next()) {
             if (dataframe.isLoaded() && c.wasAdded() && !c.wasRemoved()) {
@@ -297,6 +329,7 @@ public class DataframeExplorer extends Application {
         RunnableEx.runInPlatform(() -> columns.setAll(dataframe.getStats().entrySet()));
         if (dataframe.getSize() <= maxSize) {
             dataframe = builder.build();
+            RunnableEx.runInPlatform(() -> dataTable.setListSize(dataframe.getSize()));
         }
         LOG.info("File {} read", file.getName());
     }
@@ -305,11 +338,20 @@ public class DataframeExplorer extends Application {
         launch(args);
     }
 
-    private static <T, U extends Comparable<? super U>> void addToList(ObservableList<T> dataList, List<T> arrayList2,
-            Function<T, U> keyExtractor) {
-        RunnableEx.runInPlatform(() -> {
-            arrayList2.sort(Comparator.comparing(keyExtractor));
-            dataList.addAll(arrayList2);
+    private static void addToList(ObservableList<XYChart.Data<String, Number>> dataList,
+            List<XYChart.Data<String, Number>> arrayList2, XYChart.Data<String, Number> others,
+            Function<XYChart.Data<String, Number>, Double> keyExtractor) {
+        RunnableEx.runInPlatformSync(() -> {
+            if (dataList.size() >= MAX_ELEMENTS / 2) {
+                others.setYValue(keyExtractor.apply(others) + arrayList2.stream()
+                        .mapToDouble(keyExtractor::apply).sum());
+                if (!dataList.contains(others)) {
+                    dataList.add(others);
+                }
+            } else {
+                arrayList2.sort(Comparator.comparing(keyExtractor));
+                dataList.addAll(arrayList2);
+            }
         });
     }
 
@@ -317,16 +359,17 @@ public class DataframeExplorer extends Application {
             Collection<Entry<String, T>> countMap) {
         RunnableEx.runNewThread(() -> {
             List<XYChart.Data<String, Number>> barList = Collections.synchronizedList(new ArrayList<>());
+            XYChart.Data<String, Number> others = new XYChart.Data<>("Others", 0);
             countMap.forEach(entry -> {
                 String k = entry.getKey();
                 Number v = entry.getValue();
                 barList.add(new XYChart.Data<>(k, v));
-                if (barList.size() % 100 == 0) {
-                    addToList(bar2List, new ArrayList<>(barList), m -> m.getYValue().doubleValue());
+                if (barList.size() % (MAX_ELEMENTS / 10) == 0) {
+                    addToList(bar2List, new ArrayList<>(barList), others, m -> m.getYValue().doubleValue());
                     barList.clear();
                 }
             });
-            addToList(bar2List, barList, m -> m.getYValue().doubleValue());
+            addToList(bar2List, barList, others, m -> m.getYValue().doubleValue());
         });
     }
 
@@ -343,6 +386,12 @@ public class DataframeExplorer extends Application {
         ObservableList<T> columns = headersCombo.getItems();
         int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
         return columns.isEmpty() || selectedIndex < 0 ? null : columns.get(selectedIndex % columns.size());
+    }
+
+    private static Object getStatAt(List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList,
+            Map<Integer, Map<String, Object>> cache, String key, Integer i) {
+        return cache.computeIfAbsent(i, k -> ClassReflectionUtils.getGetterMap(addedSubList.get(k).getValue()))
+                .get(key);
     }
 
     private static Boolean isTypeDisabled(QuestionType q, Entry<String, DataframeStatisticAccumulator> it) {

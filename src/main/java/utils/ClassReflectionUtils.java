@@ -119,10 +119,9 @@ public final class ClassReflectionUtils {
                 .orElse(null);
     }
 
-    public static Map<String,Object> getGetterMap(Object targetClass) {
-        return getGetterMethodsRecursive(targetClass.getClass(), 10).stream()
-                .filter(e -> invoke(targetClass, e) != null)
-                .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase, e -> invoke(targetClass, e),
+    public static Map<String, Object> getGetterMap(Object object) {
+        return getGetterMethodsRecursive(object.getClass(), 10).stream().filter(e -> invoke(object, e) != null)
+                .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase, e -> invoke(object, e),
                         (u, v) -> v));
     }
 

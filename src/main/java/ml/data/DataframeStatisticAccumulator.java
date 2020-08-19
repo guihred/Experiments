@@ -36,6 +36,7 @@ public class DataframeStatisticAccumulator {
         if (getFormat().isInstance(o) && String.class.isAssignableFrom(getFormat())) {
             acceptString((String) o);
         }
+        count++;
         return this;
     }
 
@@ -111,7 +112,7 @@ public class DataframeStatisticAccumulator {
 
     public Object getMean() {
         if (getFormat() == String.class) {
-            return countMap.entrySet().stream().max(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
+            return getMedian50();
         }
 
         return count == 0 ? 0 : sum / count;
@@ -195,7 +196,7 @@ public class DataframeStatisticAccumulator {
     }
 
     private void acceptNumber(Number n) {
-        count++;
+
         double o = n.doubleValue();
         sum += o;
         min = Math.min(min, o);
@@ -208,7 +209,7 @@ public class DataframeStatisticAccumulator {
 
     private void acceptString(String n) {
         sum++;
-        count++;
+
         Integer merge = countMap.merge(n, 1, (a, b) -> a + b);
         if (merge == 1) {
             distinct++;
