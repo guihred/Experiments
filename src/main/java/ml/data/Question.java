@@ -1,6 +1,7 @@
 
 package ml.data;
 
+import java.util.Collection;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import utils.PredicateEx;
@@ -10,11 +11,6 @@ public class Question {
     private final Object ob;
     private QuestionType type = QuestionType.EQ;
     private double infoGain;
-
-    public Question(String colName, Object ob) {
-        this.colName = colName;
-        this.ob = ob;
-    }
 
     public Question(String colName, Object ob, QuestionType type) {
         this.colName = colName;
@@ -29,7 +25,8 @@ public class Question {
             case NE:
                 return !Objects.equals(test, ob) && !Objects.equals(test, Objects.toString(ob));
             case CONTAINS:
-                return StringUtils.containsIgnoreCase(Objects.toString(test), Objects.toString(ob));
+                return ob instanceof Collection ? ((Collection<?>) ob).contains(test)
+                        : StringUtils.containsIgnoreCase(Objects.toString(test), Objects.toString(ob));
             case LIKE:
                 return PredicateEx.test(s -> s.matches(Objects.toString(ob)), Objects.toString(test));
             default:

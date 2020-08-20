@@ -1,15 +1,22 @@
 package simplebuilder;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import utils.ConsumerEx;
 import utils.FunctionEx;
@@ -107,6 +114,18 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> sortable(boolean value) {
         table.getColumns().forEach(e -> e.setSortable(value));
         return this;
+    }
+
+    public static <T> void copyContent(TableView<T> table, KeyEvent ev) {
+        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
+            ObservableList<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
+            String collect = selectedItems.stream().map(l -> table.getColumns().stream()
+                    .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
+                    .collect(Collectors.joining("\n"));
+            Map<DataFormat, Object> content = FXCollections.observableHashMap();
+            content.put(DataFormat.PLAIN_TEXT, collect);
+            Clipboard.getSystemClipboard().setContent(content);
+        }
     }
 
     public static <S> void equalColumns(TableView<S> table) {

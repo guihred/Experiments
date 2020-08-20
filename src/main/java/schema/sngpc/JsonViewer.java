@@ -20,10 +20,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -88,7 +84,7 @@ public class JsonViewer extends Application {
                 .selectionMode(SelectionMode.MULTIPLE).build();
         tree = new SimpleTreeViewBuilder<Map<String, String>>().root(newMap("Root", null))
                 .onSelect(newValue -> onSelectTreeItem(list, sideTable, newValue)).build();
-        sideTable.setOnKeyPressed(ev -> copyContent(sideTable, ev));
+        sideTable.setOnKeyPressed(ev -> SimpleTableViewBuilder.copyContent(sideTable, ev));
 
         Button importJsonButton = StageHelper.chooseFile("Import Json", "Import Json", fileProp::set, "Json", "*.json");
         Button exportExcel = newButton("Export excel", e -> exportToExcel(sideTable, fileProp.get()));
@@ -156,16 +152,6 @@ public class JsonViewer extends Application {
         });
     }
 
-    public static void copyContent(TableView<Map<String, String>> sideTable, KeyEvent ev) {
-        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
-            ObservableList<Map<String, String>> selectedItems = sideTable.getSelectionModel().getSelectedItems();
-            String collect = selectedItems.stream().map(Map<String, String>::values)
-                    .map(l -> l.stream().collect(Collectors.joining("\t"))).collect(Collectors.joining("\n"));
-            Map<DataFormat, Object> content = FXCollections.observableHashMap();
-            content.put(DataFormat.PLAIN_TEXT, collect);
-            Clipboard.getSystemClipboard().setContent(content);
-        }
-    }
 
     public static void main(String[] args) {
         launch(args);

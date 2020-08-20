@@ -22,9 +22,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -72,18 +69,10 @@ public class ConsultasInvestigator extends Application {
     @FXML
     private LineChart<Number, Number> timelineIPs;
 
-    @SuppressWarnings({ "static-method", "unchecked" })
+    @SuppressWarnings({ "static-method" })
     public void copyContent(KeyEvent ev) {
-        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
-            TableView<Map<String, String>> target = (TableView<Map<String, String>>) ev.getSource();
-
-            ObservableList<Map<String, String>> selectedItems = target.getSelectionModel().getSelectedItems();
-            String collect = selectedItems.stream().map(Map<String, String>::values)
-                    .map(l -> l.stream().collect(Collectors.joining("\t"))).collect(Collectors.joining("\n"));
-            Map<DataFormat, Object> content = FXCollections.observableHashMap();
-            content.put(DataFormat.PLAIN_TEXT, collect);
-            Clipboard.getSystemClipboard().setContent(content);
-        }
+        TableView<?> target = (TableView<?>) ev.getSource();
+        SimpleTableViewBuilder.copyContent(target, ev);
     }
 
     public void initialize() {

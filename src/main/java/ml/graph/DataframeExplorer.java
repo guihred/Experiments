@@ -69,7 +69,8 @@ public class DataframeExplorer extends Application {
         lineChart.managedProperty().bind(lineChart.visibleProperty());
         barChart.managedProperty().bind(barChart.visibleProperty());
         pieChart.managedProperty().bind(pieChart.visibleProperty());
-        columns.addListener(this::onColumnsChange);
+        columns.addListener((Change<? extends Entry<String, DataframeStatisticAccumulator>> c) -> onColumnsChange(
+                dataframe, dataTable, c));
         SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen);
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
@@ -98,7 +99,7 @@ public class DataframeExplorer extends Application {
         RunnableEx.runNewThread(() -> {
             LOG.info("FILLING {} IPS", dataframe.getFile().getName());
 
-            DataframeBuilder builder = builderWithQuestions(dataframe.getFile());
+            DataframeBuilder builder = builderWithQuestions(dataframe.getFile(), questions);
             String ipColumn = columnsList.getSelectionModel().getSelectedItem().getKey();
             dataframe = WhoIsScanner.fillIPInformation(builder, ipColumn);
 
@@ -169,46 +170,6 @@ public class DataframeExplorer extends Application {
         });
     }
 
-    private void addToBarChart(Entry<String, DataframeStatisticAccumulator> old,
-            Entry<String, DataframeStatisticAccumulator> val, String extra) {
-
-        ObservableList<XYChart.Data<Number, Number>> data = FXCollections.observableArrayList();
-        String x = old.getKey();
-        String y = val.getKey();
-        Map<Object, XYChart.Data<Number, Number>> linkedHashMap = new LinkedHashMap<>();
-        dataframe.forEachRow(map -> {
-            XYChart.Data<Number, Number> e = new XYChart.Data<>((Number) map.get(x), (Number) map.get(y));
-            if (extra != null) {
-                linkedHashMap.merge(map.get(extra), e, (o, n) -> {
-                    n.setXValue(o.getXValue().doubleValue() + n.getXValue().doubleValue());
-                    n.setYValue(o.getYValue().doubleValue() + n.getYValue().doubleValue());
-                    return n;
-                });
-                e.setExtraValue(map.get(extra));
-            }
-            data.add(e);
-        });
-
-        Series<Number, Number> a = new Series<>();
-        ObservableList<Series<Number, Number>> value = FXCollections.observableArrayList();
-        if (extra != null) {
-            a.setName(extra);
-        }
-        value.add(a);
-        lineChart.getXAxis().setLabel(old.getKey());
-        lineChart.getYAxis().setLabel(val.getKey());
-        a.setData(data);
-        lineChart.setData(value);
-    }
-
-    private DataframeBuilder builderWithQuestions(File file) {
-        DataframeBuilder builder = DataframeBuilder.builder(file);
-        for (Question question : questions) {
-            builder.filter(question.getColName(), question::answer);
-        }
-        return builder;
-    }
-
     private void interruptCurrentThread() {
         RunnableEx.run(() -> {
             if (currentThread != null && currentThread.isAlive()) {
@@ -230,7 +191,7 @@ public class DataframeExplorer extends Application {
                 () -> {
                     Set<String> unique = val.getValue().getUnique();
                     return unique.isEmpty()
-                            || unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
+                            || !unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
                 },
                 e -> RunnableEx.runInPlatform(() -> fillIP.setDisable(e)));
         ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
@@ -255,7 +216,7 @@ public class DataframeExplorer extends Application {
         }
 
         if (old != null && old.getValue().getFormat() != String.class) {
-            addToBarChart(old, val, barChart.getTitle());
+            addToBarChart(lineChart, dataframe, old, val, barChart.getTitle());
             if (barChart.getTitle() != null) {
                 String key = val.getKey();
                 String title = barChart.getTitle();
@@ -276,35 +237,6 @@ public class DataframeExplorer extends Application {
         }
     }
 
-    private void onColumnsChange(Change<? extends Entry<String, DataframeStatisticAccumulator>> c) {
-        while (c.next()) {
-            if (c.wasRemoved()) {
-                dataTable.clearColumns();
-            }
-            List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
-            if (!dataframe.isLoaded()) {
-                Map<Integer, Map<String, Object>> cache = new HashMap<>();
-                for (String key : Arrays.asList("Header", "Format", "Count", "Max", "Mean", "Min", "Median25",
-                        "Median50", "Median75", "Sum")) {
-                    dataTable.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
-                }
-
-                dataTable.setListSize(addedSubList.size());
-            } else {
-                addedSubList.forEach(entry -> dataTable.addColumn(entry.getKey(),
-                        i -> dataframe.getDataframe().get(entry.getKey()).get(i)));
-                dataTable.setListSize(dataframe.getSize());
-                double[] array =
-                        addedSubList.stream()
-                                .mapToDouble(e -> Math.max(Objects.toString(e.getValue().getTop()).length(),
-                                        e.getKey().length()))
-                                .toArray();
-                dataTable.setColumnsWidth(array);
-
-            }
-        }
-    }
-
     private void onQuestionsChange(Change<? extends Question> c) {
         while (c.next()) {
             if (dataframe.isLoaded() && c.wasAdded() && !c.wasRemoved()) {
@@ -321,7 +253,7 @@ public class DataframeExplorer extends Application {
     }
 
     private void readDataframe(File file, int maxSize) {
-        DataframeBuilder builder = builderWithQuestions(file);
+        DataframeBuilder builder = builderWithQuestions(file,questions);
         Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
         dataframe = builder.dataframe();
         RunnableEx.runInPlatform(() -> columns.setAll(entrySet));
@@ -338,11 +270,44 @@ public class DataframeExplorer extends Application {
         launch(args);
     }
 
+    private static void addToBarChart(LineChart<Number, Number> lineChart, DataframeML dataframe,
+            Entry<String, DataframeStatisticAccumulator> old,
+            Entry<String, DataframeStatisticAccumulator> val, String name) {
+
+        ObservableList<XYChart.Data<Number, Number>> data = FXCollections.observableArrayList();
+        String x = old.getKey();
+        String y = val.getKey();
+        Map<Object, XYChart.Data<Number, Number>> linkedHashMap = new LinkedHashMap<>();
+        dataframe.forEachRow(map -> {
+            XYChart.Data<Number, Number> e = new XYChart.Data<>((Number) map.get(x), (Number) map.get(y));
+            if (name != null) {
+                linkedHashMap.merge(map.get(name), e, (o, n) -> {
+                    n.setXValue(o.getXValue().doubleValue() + n.getXValue().doubleValue());
+                    n.setYValue(o.getYValue().doubleValue() + n.getYValue().doubleValue());
+                    return n;
+                });
+                e.setExtraValue(map.get(name));
+            }
+            data.add(e);
+        });
+
+        Series<Number, Number> a = new Series<>();
+        ObservableList<Series<Number, Number>> value = FXCollections.observableArrayList();
+        if (name != null) {
+            a.setName(name);
+        }
+        value.add(a);
+        lineChart.getXAxis().setLabel(old.getKey());
+        lineChart.getYAxis().setLabel(val.getKey());
+        a.setData(data);
+        lineChart.setData(value);
+    }
+
     private static void addToList(ObservableList<XYChart.Data<String, Number>> dataList,
             List<XYChart.Data<String, Number>> arrayList2, XYChart.Data<String, Number> others,
             Function<XYChart.Data<String, Number>, Double> keyExtractor) {
         RunnableEx.runInPlatformSync(() -> {
-            if (dataList.size() >= MAX_ELEMENTS / 2) {
+            if (dataList.size() >= MAX_ELEMENTS / 4) {
                 others.setYValue(keyExtractor.apply(others) + arrayList2.stream()
                         .mapToDouble(keyExtractor::apply).sum());
                 if (!dataList.contains(others)) {
@@ -378,6 +343,14 @@ public class DataframeExplorer extends Application {
         addToPieChart(barList, countMap.entrySet());
     }
 
+    private static DataframeBuilder builderWithQuestions(File file, ObservableList<Question> questions) {
+        DataframeBuilder builder = DataframeBuilder.builder(file);
+        for (Question question : questions) {
+            builder.filter(question.getColName(), question::answer);
+        }
+        return builder;
+    }
+
     private static <T> T getSelected(ComboBox<T> headersCombo) {
         T selectedItem = headersCombo.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
@@ -396,6 +369,35 @@ public class DataframeExplorer extends Application {
 
     private static Boolean isTypeDisabled(QuestionType q, Entry<String, DataframeStatisticAccumulator> it) {
         return it == null || q == null || !q.matchesClass(it.getValue().getFormat());
+    }
+
+    private static void onColumnsChange(DataframeML dataframe,PaginatedTableView dataTable,Change<? extends Entry<String, DataframeStatisticAccumulator>> c) {
+        while (c.next()) {
+            if (c.wasRemoved()) {
+                dataTable.clearColumns();
+            }
+            List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
+            if (!dataframe.isLoaded()) {
+                Map<Integer, Map<String, Object>> cache = new HashMap<>();
+                for (String key : Arrays.asList("Header", "Format", "Count", "Max", "Mean", "Min", "Median25",
+                        "Median50", "Median75", "Sum")) {
+                    dataTable.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
+                }
+
+                dataTable.setListSize(addedSubList.size());
+            } else {
+                addedSubList.forEach(entry -> dataTable.addColumn(entry.getKey(),
+                        i -> dataframe.getDataframe().get(entry.getKey()).get(i)));
+                dataTable.setListSize(dataframe.getSize());
+                double[] array =
+                        addedSubList.stream()
+                                .mapToDouble(e -> Math.max(Objects.toString(e.getValue().getTop()).length(),
+                                        e.getKey().length()))
+                                .toArray();
+                dataTable.setColumnsWidth(array);
+
+            }
+        }
     }
 
     private static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {

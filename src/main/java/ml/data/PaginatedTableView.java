@@ -10,13 +10,12 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.scene.control.Pagination;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import simplebuilder.SimpleComboBoxBuilder;
+import simplebuilder.SimpleTableViewBuilder;
 import utils.FunctionEx;
 
 public final class PaginatedTableView extends VBox {
@@ -26,6 +25,7 @@ public final class PaginatedTableView extends VBox {
     private IntegerProperty maxSize = new SimpleIntegerProperty(0);
 
     public PaginatedTableView() {
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         pagination.currentPageIndexProperty().addListener(ob -> updateItems());
         pageSize.addListener(ob -> updateItems());
         maxSize.addListener(ob -> updateItems());
@@ -35,6 +35,7 @@ public final class PaginatedTableView extends VBox {
         table.getColumns().add(e2);
         pagination.pageCountProperty().bind(maxSize.divide(pageSize).add(1));
         VBox.setVgrow(table, Priority.ALWAYS);
+        table.setOnKeyReleased(e -> SimpleTableViewBuilder.copyContent(table, e));
         updateItems();
         getChildren().add(table);
         getChildren().add(new HBox(new SimpleComboBoxBuilder<Integer>().items(10, 20, 50, 100)
@@ -43,6 +44,10 @@ public final class PaginatedTableView extends VBox {
 
     public <T> void addColumn(String name, FunctionEx<Integer, T> func) {
         TableColumn<Integer, T> e2 = new TableColumn<>(name);
+        Hyperlink value = new Hyperlink("X");
+        value.setOnAction(e -> table.getColumns().remove(e2));
+        value.setStyle("-fx-text-fill: red;");
+        e2.setGraphic(value);
         e2.setCellValueFactory(m -> new SimpleObjectProperty<>(FunctionEx.apply(func, m.getValue())));
         table.getColumns().add(e2);
         updateItems();
@@ -68,5 +73,6 @@ public final class PaginatedTableView extends VBox {
         table.setItems(IntStream.range(intValue * size, intValue * size + size).boxed().filter(i -> i < maxSize.get())
                 .collect(Collectors.toCollection(FXCollections::observableArrayList)));
     }
+
 
 }

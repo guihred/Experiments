@@ -9,19 +9,15 @@ import extract.ExcelService;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
 
 public class KibanaInvestigator extends Application {
@@ -37,14 +33,7 @@ public class KibanaInvestigator extends Application {
     private ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
 
     public void copyContent(KeyEvent ev) {
-        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
-            ObservableList<Map<String, String>> selectedItems = commonTable.getSelectionModel().getSelectedItems();
-            String collect = selectedItems.stream().map(Map<String, String>::values)
-                    .map(l -> l.stream().collect(Collectors.joining("\t"))).collect(Collectors.joining("\n"));
-            Map<DataFormat, Object> content = FXCollections.observableHashMap();
-            content.put(DataFormat.PLAIN_TEXT, collect);
-            Clipboard.getSystemClipboard().setContent(content);
-        }
+        SimpleTableViewBuilder.copyContent(commonTable, ev);
     }
 
     public void initialize() {

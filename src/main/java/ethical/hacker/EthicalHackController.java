@@ -16,9 +16,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import simplebuilder.SimpleTableViewBuilder;
@@ -28,14 +25,7 @@ import utils.*;
 public class EthicalHackController extends EthicalHackApp {
 
     public void copyContent(KeyEvent ev) {
-        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
-            ObservableList<Map<String, String>> selectedItems = commonTable.getSelectionModel().getSelectedItems();
-            String collect = selectedItems.stream().map(Map<String, String>::values)
-                    .map(l -> l.stream().collect(Collectors.joining("\t"))).collect(Collectors.joining("\n"));
-            Map<DataFormat, Object> content = FXCollections.observableHashMap();
-            content.put(DataFormat.PLAIN_TEXT, collect);
-            Clipboard.getSystemClipboard().setContent(content);
-        }
+        SimpleTableViewBuilder.copyContent(commonTable, ev);
     }
 
     public void initialize() {
