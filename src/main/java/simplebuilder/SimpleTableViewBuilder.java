@@ -111,10 +111,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> selectionMode(SelectionMode value) {
-        table.getSelectionModel().setSelectionMode(value);
-        return this;
-    }
 
     public SimpleTableViewBuilder<T> sortable(boolean value) {
         table.getColumns().forEach(e -> e.setSortable(value));
