@@ -81,7 +81,7 @@ public class MusicOrganizer extends Application {
         TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>().prefWidth(WIDTH).scaleShape(false)
             .addColumn("Image", this::convertToImage).addColumn("Título", "titulo").addColumn("Artista", "artista")
             .addColumn("Álbum", "album").addColumn("Pasta", "pasta").addColumn("Gênero", "genero")
-                .addColumn("Ano", "ano").sortable(true).selectionMode(SelectionMode.MULTIPLE).equalColumns().build();
+                .addColumn("Ano", "ano").sortable(true).multipleSelection().equalColumns().build();
         MusicHandler value = new MusicHandler(musicaTable);
         musicaTable.setOnMousePressed(value);
         musicaTable.setOnKeyReleased(value::handle);

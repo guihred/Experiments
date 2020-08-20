@@ -81,7 +81,7 @@ public class JsonViewer extends Application {
     private Parent createSplitTreeListDemoNode() {
         ObservableList<Map<String, String>> list = FXCollections.observableArrayList();
         TableView<Map<String, String>> sideTable = new SimpleTableViewBuilder<Map<String, String>>().items(list)
-                .selectionMode(SelectionMode.MULTIPLE).build();
+                .multipleSelection().build();
         tree = new SimpleTreeViewBuilder<Map<String, String>>().root(newMap("Root", null))
                 .onSelect(newValue -> onSelectTreeItem(list, sideTable, newValue)).build();
         sideTable.setOnKeyPressed(ev -> SimpleTableViewBuilder.copyContent(sideTable, ev));

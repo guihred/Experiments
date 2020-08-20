@@ -22,7 +22,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -101,7 +100,8 @@ public class FilesComparator extends Application {
 
     private ObservableValue<File> addTable(HBox root, String nome, String title, ObservableList<File> items1,
             ObservableList<File> items2, ObjectProperty<File> dir) {
-        TableView<File> table1 = new SimpleTableViewBuilder<File>().items(items1).selectionMode(SelectionMode.MULTIPLE)
+        TableView<File> table1 =
+                new SimpleTableViewBuilder<File>().items(items1).multipleSelection()
                 .addColumn(nome, (s, c) -> {
                     c.setText(toFileString(s));
                     String itemClass = getItemClass(items2, s, c.getStyleClass(), fileMap);

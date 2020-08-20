@@ -80,6 +80,11 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public SimpleTableViewBuilder<T> multipleSelection() {
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        return this;
+    }
+
     public SimpleTableViewBuilder<T> onDoubleClick(final Consumer<T> object) {
         node.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
