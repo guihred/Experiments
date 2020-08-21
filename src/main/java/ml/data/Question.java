@@ -65,7 +65,7 @@ public class Question {
 
     @Override
     public String toString() {
-        return String.format("%s %s %s", getColName(), type.getSign(), ob);
+        return String.format("%s %s %s", getColName(), type.getSign(), ob instanceof String ? "\"" + ob + "\"" : ob);
     }
 
 }

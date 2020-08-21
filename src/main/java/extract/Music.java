@@ -1,11 +1,14 @@
 package extract;
 
 import java.io.File;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 import org.apache.commons.lang3.StringUtils;
+import utils.FunctionEx;
 import utils.ResourceFXUtils;
 
 public class Music {
@@ -25,11 +28,14 @@ public class Music {
     private StringProperty trilha = new SimpleStringProperty("");
     private StringProperty pasta = new SimpleStringProperty("");
 
+    private FileTime lastModified;
+
     public Music() {
     }
 
     public Music(File file) {
         arquivo = file;
+        lastModified = FunctionEx.mapIf(ResourceFXUtils.computeAttributes(file), BasicFileAttributes::lastModifiedTime);
         titulo.set(file.getName());
         pasta.set(file.getParentFile().getName());
     }
@@ -97,6 +103,10 @@ public class Music {
         return image;
     }
 
+    public FileTime getLastModified() {
+        return lastModified;
+    }
+
     public String getPasta() {
         return pasta.get();
     }
@@ -144,6 +154,10 @@ public class Music {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    public void setLastModified(FileTime creationTime) {
+        lastModified = creationTime;
     }
 
     public void setPasta(String pasta) {

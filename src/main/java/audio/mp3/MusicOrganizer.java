@@ -4,7 +4,9 @@ import static simplebuilder.SimpleVBoxBuilder.newVBox;
 
 import extract.Music;
 import extract.MusicReader;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -15,14 +17,19 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import ml.data.QuickSortML;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.*;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
+import utils.SupplierEx;
 
 public class MusicOrganizer extends Application {
 
@@ -32,6 +39,7 @@ public class MusicOrganizer extends Application {
     private static final Image DEFAULT_VIEW = defaultView();
 
     private ProgressIndicator progress = new ProgressIndicator(0);
+    private ObservableList<Music> musicas = FXCollections.observableArrayList();
 
     public double getProgress() {
         return progress.getProgress();
@@ -52,32 +60,37 @@ public class MusicOrganizer extends Application {
         Button buttonVideos = loadVideos(musicasTable, filterField);
         progress.setMinSize(PREF_SIZE, PREF_SIZE);
         root.getChildren().add(new VBox(new Label("Lista Músicas"),
-            new HBox(buttonMusic, buttonVideos, fixMusic, filterField, progress), musicasTable));
+                new HBox(buttonMusic, buttonVideos, fixMusic, filterField, progress), musicasTable));
         Scene scene = new Scene(root, WIDTH, HEIGHT);
-        CommonsFX.addCSS(scene, "filesComparator.css");
+        // CommonsFX.addCSS(scene, "filesComparator.css");
         primaryStage.setTitle("Organizador de Músicas");
         primaryStage.setScene(scene);
         primaryStage.show();
 
     }
 
-    private void convertToImage(Music music, TableCell<Music, Object> cell) {
-        cell.setGraphic(view(SupplierEx.nonNull(music.getImage(), DEFAULT_VIEW)));
-    }
-
     private Button loadMusic(TableView<Music> musicasTable, TextField filterField) {
-        return new FileChooserBuilder().name("Carregar _Musicas").title("Carregar Pasta de Músicas").onSelect(selectedFile -> RunnableEx.runNewThread(() -> {
-            ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
-            musicasTable.setItems(musicas);
-            configurarFiltroRapido(filterField, musicasTable, musicas);
-        })).buildOpenDirectoryButton();
+        return new FileChooserBuilder().name("Carregar _Musicas").title("Carregar Pasta de Músicas")
+                .onSelect(selectedFile -> {
+                    musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
+                    configurarFiltroRapido(filterField, musicasTable, musicas);
+                }).buildOpenDirectoryButton();
     }
 
     private TableView<Music> tabelaMusicas() {
-        TableView<Music> musicaTable = new SimpleTableViewBuilder<Music>().prefWidth(WIDTH).scaleShape(false)
-            .addColumn("Image", this::convertToImage).addColumn("Título", "titulo").addColumn("Artista", "artista")
-            .addColumn("Álbum", "album").addColumn("Pasta", "pasta").addColumn("Gênero", "genero")
-                .addColumn("Ano", "ano").sortable(true).multipleSelection().equalColumns().build();
+        SimpleTableViewBuilder<Music> simpleTableViewBuilder = new SimpleTableViewBuilder<>();
+        TableView<Music> musicaTable = simpleTableViewBuilder.prefWidth(WIDTH).scaleShape(false)
+                .addColumn("Image", music -> view(SupplierEx.nonNull(music.getImage(), DEFAULT_VIEW)))
+                .addColumn("Título", "titulo").addColumn("Artista", "artista").addColumn("Álbum", "album")
+                .addColumn("Pasta", "pasta").addColumn("Gênero", "genero").addColumn("LastModified", "lastModified")
+                .sortable(true).multipleSelection().equalColumns().build();
+        simpleTableViewBuilder.onSortClicked(columnName -> {
+            ObservableList<Music> items2 = SupplierEx.nonNull(musicas, musicaTable.getItems());
+            Comparator<Music> comparing = Comparator.comparing(e -> comparing(e,
+                    StringSigaUtils.removerDiacritico(StringSigaUtils.changeCase(columnName.getKey()))));
+            SortType value = columnName.getValue();
+            QuickSortML.sort(items2, value == SortType.ASCENDING ? comparing : comparing.reversed());
+        });
         MusicHandler value = new MusicHandler(musicaTable);
         musicaTable.setOnMousePressed(value);
         musicaTable.setOnKeyReleased(value::handle);
@@ -88,13 +101,18 @@ public class MusicOrganizer extends Application {
         launch(args);
     }
 
+    private static String comparing(Music e, String columnName) {
+        Object fieldValue = ClassReflectionUtils.getFieldValue(e, columnName);
+        return StringSigaUtils.removerDiacritico(Objects.toString(fieldValue).toLowerCase().trim());
+    }
+
     private static void configurarFiltroRapido(TextField filterField, final TableView<Music> musicasEstoqueTable,
-        ObservableList<Music> musicas) {
+            ObservableList<Music> musicas) {
         FilteredList<Music> filteredData = new FilteredList<>(musicas, p -> true);
         musicasEstoqueTable.setItems(filteredData);
         filterField.textProperty()
-            .addListener((o, old, newV) -> filteredData.setPredicate(musica -> musica.getArquivo().exists()
-                && (StringUtils.isEmpty(newV) || StringUtils.containsIgnoreCase(musica.toString(), newV))));
+                .addListener((o, old, newV) -> filteredData.setPredicate(musica -> musica.getArquivo().exists()
+                        && (StringUtils.isEmpty(newV) || StringUtils.containsIgnoreCase(musica.toString(), newV))));
     }
 
     private static Image defaultView() {
@@ -104,14 +122,14 @@ public class MusicOrganizer extends Application {
     private static Button fixMusic(TableView<Music> musicasTable) {
         Button newButton = SimpleButtonBuilder.newButton("_Consertar Musicas", e -> fixSongs(musicasTable));
         newButton.disableProperty().bind(Bindings.createBooleanBinding(
-            () -> musicasTable.getItems().stream().anyMatch(Music::isNotMP3), musicasTable.getItems()));
+                () -> musicasTable.getItems().stream().anyMatch(Music::isNotMP3), musicasTable.getItems()));
         return newButton;
     }
 
     private static void fixSongs(TableView<Music> musicasTable) {
         ObservableList<Music> items = musicasTable.getItems();
         Optional<Music> findFirst = items.stream().filter(m -> StringUtils.isBlank(m.getArtista())
-            || StringUtils.isBlank(m.getAlbum()) || m.getTitulo().contains("-")).findFirst();
+                || StringUtils.isBlank(m.getAlbum()) || m.getTitulo().contains("-")).findFirst();
         if (!findFirst.isPresent()) {
             return;
         }
@@ -144,12 +162,13 @@ public class MusicOrganizer extends Application {
     }
 
     private static Button loadVideos(final TableView<Music> musicasTable, TextField filterField) {
-        return new FileChooserBuilder().name("Carregar _Vídeos").title("Carregar Pasta de Músicas").onSelect(selectedFile -> {
-            ObservableList<Music> videos = FXCollections.observableArrayList();
-            ResourceFXUtils.getPathByExtensionAsync(selectedFile, v -> videos.add(new Music(v.toFile())), ".mp4",
-                    ".wma", ".webm", ".wav");
-            configurarFiltroRapido(filterField, musicasTable, videos);
-        }).buildOpenDirectoryButton();
+        return new FileChooserBuilder().name("Carregar _Vídeos").title("Carregar Pasta de Músicas")
+                .onSelect(selectedFile -> {
+                    ObservableList<Music> videos = FXCollections.observableArrayList();
+                    ResourceFXUtils.getPathByExtensionAsync(selectedFile, v -> videos.add(new Music(v.toFile())),
+                            ".mp4", ".wma", ".webm", ".wav");
+                    configurarFiltroRapido(filterField, musicasTable, videos);
+                }).buildOpenDirectoryButton();
     }
 
     private static ImageView view(Image music) {

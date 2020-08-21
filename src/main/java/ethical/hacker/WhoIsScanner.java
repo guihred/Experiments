@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ml.data.DataframeBuilder;
@@ -63,12 +65,19 @@ public class WhoIsScanner {
     }
 
     public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn) {
+        return fillIPInformation(builder, ipColumn, new SimpleDoubleProperty(0));
+    }
+
+    public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn, DoubleProperty count) {
         builder.filter(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(IP_REGEX));
         DataframeML dataframe = builder.build();
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         DataframeUtils.crossFeatureObject(dataframe, "Rede",
-                e -> SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("network"),
-                        () -> whoIsScanner.whoIsScan(e[0].toString()).get("network")),
+                e -> {
+                    count.set(1 + count.get());
+                    return SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("network"),
+                            () -> whoIsScanner.whoIsScan(e[0].toString()).get("network"));
+                },
                 ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, "Owner",
                 e -> SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("as_owner"),

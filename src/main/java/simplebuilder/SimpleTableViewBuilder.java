@@ -1,16 +1,20 @@
 package simplebuilder;
 
+import java.util.AbstractMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
@@ -40,8 +44,17 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public <V> SimpleTableViewBuilder<T> addColumn(final String columnName, final FunctionEx<T, V> value) {
+        final TableColumn<T, V> column = new TableColumn<>(columnName);
+        column.setCellValueFactory(m -> new SimpleObjectProperty<>(FunctionEx.apply(value, m.getValue())));
+        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
+        table.getColumns().add(column);
+        return this;
+    }
+
+
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
-        final TableColumn<T, String> column = new TableColumn<>(columnName);
+        final TableColumn<T, ?> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         column.setId(propertyName);
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
@@ -103,6 +116,24 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+        return this;
+    }
+
+    public SimpleTableViewBuilder<T> onSortClicked(ConsumerEx<Entry<String,SortType >> c) {
+        table.setSortPolicy((TableView<T> o) -> {
+            ObservableList<TableColumn<T, ?>> sortOrder = o.getSortOrder();
+            if (!sortOrder.isEmpty()) {
+                
+                TableColumn<T, ?> tableColumn = sortOrder.get(0);
+                SortType sortType = tableColumn.getSortType();
+                ConsumerEx.makeConsumer(c).accept(new AbstractMap.SimpleEntry<>(tableColumn.getText(),sortType));
+            }
+            return true;
+        });
+
+        // table.getColumns().forEach(e -> e.sortNodeProperty()
+        // .addListener((ob, o, n) -> n.setOnMouseClicked(e0 ->
+        // ConsumerEx.makeConsumer(c).accept(e.getText()))));
         return this;
     }
 

@@ -6,6 +6,7 @@ import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import utils.SupplierEx;
 
 public class DataframeStatisticAccumulator {
     /**
@@ -225,9 +226,10 @@ public class DataframeStatisticAccumulator {
         if (!dataframe.get(header).isEmpty()) {
             return dataframe.get(header).stream().sorted().collect(Collectors.toList()).get((int) (d * count));
         }
-        List<Number> array =
-                distributionMap.entrySet().stream().flatMap(e -> Stream.generate(e::getKey).limit(e.getValue()))
-                        .sorted(Comparator.comparing(Number::doubleValue)).collect(Collectors.toList());
+        List<Number> array = SupplierEx.getIgnore(
+                () -> distributionMap.entrySet().stream().flatMap(e -> Stream.generate(e::getKey).limit(e.getValue()))
+                        .sorted(Comparator.comparing(Number::doubleValue)).collect(Collectors.toList()),
+                Collections.emptyList());
         if (!array.isEmpty()) {
             return array.get((int) (array.size() * d));
         }
@@ -235,7 +237,12 @@ public class DataframeStatisticAccumulator {
     }
 
     private <T> Object getByProportion(double d, Map<T, Integer> countMap2) {
-        List<Entry<T, Integer>> array = countMap2.entrySet().stream().sorted(comparator()).collect(Collectors.toList());
+        List<Entry<T, Integer>> array = SupplierEx.getIgnore(
+                () -> countMap2.entrySet().stream().sorted(comparator()).collect(Collectors.toList()),
+                Collections.emptyList());
+        if (array.isEmpty()) {
+            return null;
+        }
         double sizes = count * d;
         for (Entry<T, Integer> entry : array) {
             sizes -= entry.getValue();
@@ -243,10 +250,7 @@ public class DataframeStatisticAccumulator {
                 return entry.getKey();
             }
         }
-        if (!array.isEmpty()) {
-            return array.get((int) (array.size() * d)).getKey();
-        }
-        return null;
+        return array.get((int) (array.size() * d)).getKey();
     }
 
     public static List<Entry<Number, Number>> createNumberEntries(Map<String, List<Object>> dataframe2, int size,

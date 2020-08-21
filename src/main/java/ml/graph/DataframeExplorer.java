@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -100,8 +101,10 @@ public class DataframeExplorer extends Application {
 
             DataframeBuilder builder = builderWithQuestions(dataframe.getFile(), questions);
             String ipColumn = columnsList.getSelectionModel().getSelectedItem().getKey();
-            dataframe = WhoIsScanner.fillIPInformation(builder, ipColumn);
-
+            SimpleDoubleProperty count = new SimpleDoubleProperty();
+            count.divide((double) dataframe.getSize())
+                    .addListener((ob, old, val) -> progress.setProgress(val.doubleValue()));
+            dataframe = WhoIsScanner.fillIPInformation(builder, ipColumn, count);
             File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
             DataframeUtils.save(dataframe, outFile);
             int maxSize = MAX_ELEMENTS;
@@ -255,7 +258,7 @@ public class DataframeExplorer extends Application {
             dataframe = builder.build();
             RunnableEx.runInPlatform(() -> dataTable.setListSize(dataframe.getSize()));
         }
-        LOG.info("File {} read", file.getName());
+        LOG.info("File {} READ", file.getName());
     }
 
     public static void main(String[] args) {
