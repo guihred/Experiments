@@ -30,8 +30,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleSliderBuilder;
-import simplebuilder.StageHelper;
 
 public class PlayerControlView extends BaseSongView {
 
@@ -129,10 +129,10 @@ public class PlayerControlView extends BaseSongView {
 
     private Button createOpenButton() {
 
-        Button openButton = StageHelper.chooseFile(null, "Pick a Sound File", song -> {
+        Button openButton = new FileChooserBuilder().title("Pick a Sound File").onSelect(song -> {
             songModel.setURL(song.toURI().toString());
             songModel.getMediaPlayer().play();
-        });
+        }).buildOpenButton();
         openButton.setId("openButton");
         final int prefSize = 32;
         openButton.setPrefWidth(prefSize);

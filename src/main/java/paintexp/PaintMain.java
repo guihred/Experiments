@@ -22,35 +22,36 @@ public class PaintMain extends Application {
         BorderPane root = new BorderPane();
         MenuBar menuBar = new SimpleMenuBarBuilder()
             .addMenu("_File")
-            .addMenuItem("_New File", "Ctrl+N", e -> PaintFileUtils.newFile(paintModel))
-            .addMenuItem("_Open", "Ctrl+O", e -> PaintFileUtils.openFile(stage, paintModel))
-            .addMenuItem("_Save", "Ctrl+S", e -> PaintFileUtils.saveFile(stage, paintModel))
-            .addMenuItem("Save _As", "Ctrl+Shift+S", e -> PaintFileUtils.saveAsFile(stage, paintModel))
-            .addMenuItem("_Print", "Ctrl+P", e -> PaintFileUtils.print(paintModel))
+                .addMenuItem("_New File", "Ctrl+N", e -> PaintFileUtils.newFile(paintModel))
+                .addMenuItem("_Open", "Ctrl+O", e -> PaintFileUtils.openFile(e, paintModel))
+                .addMenuItem("_Save", "Ctrl+S", e -> PaintFileUtils.saveFile(e, paintModel))
+                .addMenuItem("Save _As", "Ctrl+Shift+S", e -> PaintFileUtils.saveAsFile(e, paintModel))
+                .addMenuItem("_Print", "Ctrl+P", e -> PaintFileUtils.print(paintModel))
             .addMenu("_Edit")
-            .addMenuItem("Select _All", "Ctrl+A", e -> PaintEditUtils.selectAll(paintModel, controller))
-            .addMenuItem("C_opy", "Ctrl+C", e -> PaintEditUtils.copy(paintModel, controller),
-                controller.containsSelectedArea().not())
-            .addMenuItem("_Paste", "Ctrl+V", e -> PaintEditUtils.paste(paintModel, controller))
-            .addMenuItem("_Cut", "Ctrl+X", e -> PaintEditUtils.cut(paintModel, controller),
-                controller.containsSelectedArea().not())
-            .addMenuItem("Undo", "Ctrl+Z", e -> PaintEditUtils.undo(paintModel, controller))
-            .addMenuItem("Redo", "Ctrl+Y", e -> PaintEditUtils.redo(paintModel, controller))
-            .addMenu("_View")
-            .addMenuItem("Resize/Ske_w", "Ctrl+W", e -> PaintViewUtils.resize(paintModel, controller))
-            .addMenuItem("_Flip/Rotate", "Ctrl+R", e -> PaintViewUtils.flipRotate(paintModel, controller))
-            .addMenuItem("Invert S_election", "Ctrl+E", e -> PaintViewUtils.invertSelection(paintModel, controller),
+                .addMenuItem("Select _All", "Ctrl+A", e -> PaintEditUtils.selectAll(paintModel, controller))
+                .addMenuItem("C_opy", "Ctrl+C", e -> PaintEditUtils.copy(paintModel, controller),
                         controller.containsSelectedArea().not())
-            .addMenuItem("_Crop", e -> PaintViewUtils.crop(paintModel, controller),
-                controller.containsSelectedArea().not())
+                .addMenuItem("_Paste", "Ctrl+V", e -> PaintEditUtils.paste(paintModel, controller))
+                .addMenuItem("_Cut", "Ctrl+X", e -> PaintEditUtils.cut(paintModel, controller),
+                        controller.containsSelectedArea().not())
+                .addMenuItem("Undo", "Ctrl+Z", e -> PaintEditUtils.undo(paintModel, controller))
+                .addMenuItem("Redo", "Ctrl+Y", e -> PaintEditUtils.redo(paintModel, controller))
+            .addMenu("_View")
+                .addMenuItem("Resize/Ske_w", "Ctrl+W", e -> PaintViewUtils.resize(paintModel, controller))
+                .addMenuItem("_Flip/Rotate", "Ctrl+R", e -> PaintViewUtils.flipRotate(paintModel, controller))
+                .addMenuItem("Invert S_election", "Ctrl+E", e -> PaintViewUtils.invertSelection(paintModel, controller),
+                        controller.containsSelectedArea().not())
+                .addMenuItem("_Crop", e -> PaintViewUtils.crop(paintModel, controller),
+                        controller.containsSelectedArea().not())
             .addMenu("_Image")
-            .addMenuItem("_Adjust", "Ctrl+J", e -> PaintImageUtils.adjustColors(paintModel, controller))
+                .addMenuItem("_Adjust", "Ctrl+J", e -> PaintImageUtils.adjustColors(paintModel, controller))
                 .addMenuItem("E_ffect", "Ctrl+F", e -> PaintImageUtils.addEffect(paintModel, controller))
-            .addMenuItem("Mirror _Horizontally", "Ctrl+H",
-                e -> PaintImageUtils.mirrorHorizontally(paintModel, controller))
-            .addMenuItem("Mirror _Vertically", "Ctrl+M", e -> PaintImageUtils.mirrorVertically(paintModel, controller))
+                .addMenuItem("Mirror _Horizontally", "Ctrl+H",
+                        e -> PaintImageUtils.mirrorHorizontally(paintModel, controller))
+                .addMenuItem("Mirror _Vertically", "Ctrl+M",
+                        e -> PaintImageUtils.mirrorVertically(paintModel, controller))
             .addMenu("_Colors")
-            .addMenuItem("_Invert Colors", "Ctrl+I", e -> PaintImageUtils.invertColors(paintModel, controller))
+                .addMenuItem("_Invert Colors", "Ctrl+I", e -> PaintImageUtils.invertColors(paintModel, controller))
             .addMenu("_Help").build();
         SimplePixelReader.paintColor(paintModel.getImage(), paintModel.getBackColor());
         paintModel.getImageStack().addEventHandler(MouseEvent.ANY, controller::handleMouse);

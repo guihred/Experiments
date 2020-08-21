@@ -28,9 +28,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import simplebuilder.StageHelper;
 import utils.*;
 
 public class FilesComparator extends Application {
@@ -111,8 +111,7 @@ public class FilesComparator extends Application {
 
         table1.setId(nome);
         directoryMap.put(nome, dir);
-        Button files1 = StageHelper.selectDirectory(nome, "Carregar Pasta de Músicas",
-                selectedFile -> addSongsToTable(table1, selectedFile));
+        Button files1 = new FileChooserBuilder().name(nome).title("Carregar Pasta de Músicas").onSelect(selectedFile -> addSongsToTable(table1, selectedFile)).buildOpenDirectoryButton();
         Button copyButton = SimpleButtonBuilder.newButton(title, e -> copy(dir, table1, items2));
         Button deleteButton = SimpleButtonBuilder.newButton("X", e -> delete(table1));
         Text text = new Text("");

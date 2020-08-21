@@ -20,8 +20,8 @@ import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.graph.PieGraph;
 import org.apache.commons.lang3.StringUtils;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
-import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 
@@ -58,8 +58,9 @@ public class PieGraphExample extends Application {
         VBox start = newSlider("Start", -180, 180, canvas.startProperty());
         VBox propSlider = newSlider("Legend Distance", 0, 1., canvas.legendsRadiusProperty());
         CheckBox newCheck = CommonsFX.newCheck("", canvas.showLinesProperty());
-        Button chooseFile = StageHelper.chooseFile("Choose CSV", "CSV",
-                f -> dataframeObj.set(DataframeBuilder.build(f)), "CSV", "*.csv");
+        Button chooseFile = new FileChooserBuilder().name("Choose CSV").title("CSV").extensions("CSV", "*.csv")
+                .onSelect(f -> dataframeObj.set(DataframeBuilder.build(f)))
+        .buildOpenButton();
 
         root.getChildren()
                 .add(new VBox(newCheck, radiusSlider, binsSlider, start, xSlider, propSlider, build, chooseFile,

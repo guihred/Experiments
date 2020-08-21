@@ -3,17 +3,15 @@ package paintexp;
 import java.io.File;
 import java.io.FileInputStream;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.stage.FileChooser;
-import javafx.stage.Window;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import paintexp.tool.PaintModel;
-import utils.HasLogging;
-import utils.PixelatedImageView;
-import utils.RunnableEx;
+import simplebuilder.FileChooserBuilder;
+import utils.*;
 
 public final class PaintFileUtils {
     private static final Logger LOG = HasLogging.log();
@@ -36,16 +34,15 @@ public final class PaintFileUtils {
 
     }
 
-    public static void openFile(final Window ownerWindow, PaintModel paintModel) {
-        FileChooser fileChooser2 = new FileChooser();
-        setInitialDirectory(paintModel, fileChooser2);
-        fileChooser2.setTitle("Open File");
-        fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png", "*.jpg", "*.jpeg"));
-        paintModel.setCurrentFile(fileChooser2.showOpenDialog(ownerWindow));
-        if (paintModel.getCurrentFile() == null) {
-            return;
-        }
-        RunnableEx.run(() -> {
+    public static void openFile(ActionEvent e, PaintModel paintModel) {
+
+        FileChooserBuilder chooser = new FileChooserBuilder();
+        chooser.title("Open File");
+        chooser.extensions("Image", "*.png", "*.jpg", "*.jpeg");
+        chooser.initialDir(SupplierEx.getFirst(() -> FunctionEx.mapIf(paintModel.getCurrentFile(), File::getParentFile),
+                () -> defaultFile));
+        chooser.onSelect(file -> {
+            paintModel.setCurrentFile(file);
             Image image2 = new Image(new FileInputStream(paintModel.getCurrentFile()));
             int w = (int) image2.getWidth();
             int h = (int) image2.getHeight();
@@ -57,46 +54,38 @@ public final class PaintFileUtils {
             paintModel.getImageStack().getChildren().add(imageView);
             paintModel.createImageVersion();
         });
+        chooser.openFileAction().handle(e);
     }
 
     public static void print(PaintModel paintModel) {
         new PrintConfig(paintModel.getImage()).show();
     }
 
-    public static void saveAsFile(final Window primaryStage, PaintModel paintModel) {
+    public static void saveAsFile(ActionEvent primaryStage, PaintModel paintModel) {
         paintModel.setCurrentFile(null);
         saveFile(primaryStage, paintModel);
     }
 
-    public static void saveFile(final Window primaryStage, PaintModel paintModel) {
-        RunnableEx.run(() -> {
-            if (paintModel.getCurrentFile() == null) {
-                FileChooser fileChooser2 = new FileChooser();
-                fileChooser2.setTitle("Save File");
-                setInitialDirectory(paintModel, fileChooser2);
-                fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image", "*.png"));
-                paintModel.setCurrentFile(fileChooser2.showSaveDialog(primaryStage));
-            }
-            if (paintModel.getCurrentFile() != null) {
-                File destination = paintModel.getCurrentFile();
-                WritableImage image = paintModel.getImage();
-                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", destination);
-            }
+    public static void saveFile(ActionEvent event, PaintModel paintModel) {
+        if (paintModel.getCurrentFile() == null) {
+            FileChooserBuilder chooser = new FileChooserBuilder();
+            chooser.title("Save File");
+            chooser.initialDir(SupplierEx.getFirst(
+                    () -> FunctionEx.mapIf(paintModel.getCurrentFile(), File::getParentFile), () -> defaultFile));
+            chooser.extensions("Image", "*.png");
+            chooser.onSelect(paintModel::setCurrentFile);
+            chooser.saveFileAction().handle(event);
+        }
+        RunnableEx.runIf(paintModel.getCurrentFile(), file -> {
+            WritableImage image = paintModel.getImage();
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", file);
         });
+
     }
 
     public static void setDefaultFile(File defaultFile) {
         PaintFileUtils.defaultFile = defaultFile;
         LOG.info("DEFAULT FILE SET TO {}", defaultFile);
-    }
-
-    private static void setInitialDirectory(PaintModel paintModel, FileChooser fileChooser2) {
-        if (paintModel.getCurrentFile() != null) {
-            fileChooser2.setInitialDirectory(paintModel.getCurrentFile().getParentFile());
-        }
-        if (defaultFile != null) {
-            fileChooser2.setInitialDirectory(defaultFile);
-        }
     }
 
 }

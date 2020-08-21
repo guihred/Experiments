@@ -20,8 +20,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import simplebuilder.StageHelper;
 import utils.*;
 
 public class FileAttrApp extends Application {
@@ -65,10 +65,10 @@ public class FileAttrApp extends Application {
         pieChart.setClockwise(false);
         pieChart.setStartAngle(90);
         pieChart.setLabelsVisible(true);
-        return new VBox(StageHelper.selectDirectory("Select Directory", "Select Directory", f -> {
+        return new VBox(new FileChooserBuilder().name("Select Directory").title("Select Directory").onSelect(f -> {
             root.build().getRoot().getChildren().clear();
             root.root(f);
-        }), splitPane, pieChart);
+        }).buildOpenDirectoryButton(), splitPane, pieChart);
     }
 
     private BasicFileAttributes getAttributes(File value) {

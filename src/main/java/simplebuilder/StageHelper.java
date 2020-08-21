@@ -6,9 +6,7 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Optional;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.scene.Node;
@@ -16,7 +14,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import javafx.stage.*;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import utils.*;
 
 public final class StageHelper {
@@ -24,25 +24,9 @@ public final class StageHelper {
     private StageHelper() {
     }
 
-    public static Button chooseFile(String nome, String title, ConsumerEx<File> onSelect) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(title);
-        return newButton(nome, e -> {
-            Node target = (Node) e.getTarget();
-            File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
-            runIf(fileChosen, onSelect);
-        });
-    }
-
-    public static Button chooseFile(String nome, String title, ConsumerEx<File> onSelect, String filter,
-        String... extensions) {
-        return newButton(nome, fileAction(title, onSelect, filter, extensions));
-    }
-
     public static void closeStage(EventTarget button) {
         Optional.ofNullable((Node) button).map(Node::getScene).map(sc -> (Stage) sc.getWindow())
-            .ifPresent(Stage::close);
-
+                .ifPresent(Stage::close);
     }
 
     public static Stage displayCSSStyler(Scene scene, String pathname) {
@@ -53,7 +37,7 @@ public final class StageHelper {
         if (file.exists()) {
             RunnableEx.ignore(() -> scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString()));
         }
-        Button saveButton = newButton("_Save", e -> RunnableEx.run(() -> {
+        Button saveButton = FileChooserBuilder.newButton("_Save", e -> RunnableEx.run(() -> {
             try (PrintStream fileOutputStream = new PrintStream(file, StandardCharsets.UTF_8.name())) {
                 fileOutputStream.print(textArea.getText());
                 fileOutputStream.flush();
@@ -63,69 +47,13 @@ public final class StageHelper {
             }
         }));
         Stage stage2 = new SimpleDialogBuilder().node(new VBox(textArea, saveButton)).bindWindow(scene.getRoot())
-            .height(500)
-            .displayDialog();
+                .height(500).displayDialog();
         textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));
-
 
         Window windowc = scene.getWindow();
         closeIfPossible(stage2, windowc);
         scene.windowProperty().addListener((ob, o, window) -> closeIfPossible(stage2, window));
         return stage2;
-    }
-
-    public static EventHandler<ActionEvent> fileAction(String title, ConsumerEx<File> onSelect, String filter,
-        String... extensions) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(title);
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
-        return e -> {
-            Node target = (Node) e.getTarget();
-            File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
-            runIf(fileChosen, onSelect);
-        };
-    }
-
-    public static EventHandler<ActionEvent> fileAction(String title, File initialDir, ConsumerEx<File> onSelect,
-        String filter, String... extensions) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(title);
-        chooser.setInitialDirectory(initialDir);
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
-        return e -> {
-            Node target = (Node) e.getTarget();
-            File fileChosen = chooser.showOpenDialog(target.getScene().getWindow());
-            runIf(fileChosen, onSelect);
-        };
-    }
-
-    public static EventHandler<ActionEvent> fileActionMultiple(String title, ConsumerEx<List<File>> onSelect,
-            String filter,
-            String... extensions) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(title);
-        chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
-        return e -> {
-            Node target = (Node) e.getTarget();
-            List<File> fileChosen = chooser.showOpenMultipleDialog(target.getScene().getWindow());
-            runIf(fileChosen, onSelect);
-        };
-    }
-
-    public static EventHandler<ActionEvent> handleDirectory(String title, ConsumerEx<File> onSelect) {
-        return e -> {
-            DirectoryChooser chooser = new DirectoryChooser();
-            chooser.setTitle(title);
-            File musicsDirectory = ResourceFXUtils.getUserFolder("Music");
-            chooser.setInitialDirectory(musicsDirectory);
-            Node target = (Node) e.getTarget();
-            runIf(target.getScene().getWindow(),
-                    window -> runIf(chooser.showDialog(window), onSelect));
-        };
-    }
-
-    public static Button selectDirectory(String nome, String title, ConsumerEx<File> onSelect) {
-        return newButton(nome, handleDirectory(title, onSelect));
     }
 
     private static void closeBoth(Stage stage2, EventHandler<WindowEvent> onCloseRequest, WindowEvent e) {
@@ -143,12 +71,5 @@ public final class StageHelper {
 
     private static String getText(File file) {
         return file.exists() ? SupplierEx.get(() -> Files.toString(file, StandardCharsets.UTF_8), "") : "";
-    }
-
-    private static Button newButton(String nome, EventHandler<ActionEvent> onAction) {
-        Button button = new Button(nome);
-        button.setId(nome);
-        button.setOnAction(onAction);
-        return button;
     }
 }

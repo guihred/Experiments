@@ -20,8 +20,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import org.w3c.dom.Node;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
 
@@ -54,7 +54,8 @@ public class XmlViewer extends Application {
     }
 
     public void onActionImportXML(ActionEvent e) {
-        StageHelper.fileAction("Import XML", fileProp::set, "Xml", "*.xml").handle(e);
+        new FileChooserBuilder().title("Import XML").extensions("Xml", "*.xml").onSelect(fileProp::set).openFileAction()
+                .handle(e);
     }
 
     @Override

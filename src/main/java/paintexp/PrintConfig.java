@@ -32,6 +32,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
@@ -71,6 +72,7 @@ public class PrintConfig extends Application {
         images.add(new Image(
                 ResourceFXUtils.getFirstPathByExtension(new File("src").getAbsoluteFile(), ".png").toUri().toString()));
     }
+
     public PrintConfig(Image image) {
         images.add(image);
     }
@@ -93,16 +95,16 @@ public class PrintConfig extends Application {
     }
 
     public void loadImages(ActionEvent event) {
-        StageHelper.fileActionMultiple("Choose Image", f -> {
-            if (!f.isEmpty()) {
-                images.clear();
-                images.addAll(f.stream().map(ResourceFXUtils::convertToURL).map(e -> new Image(e.toExternalForm()))
-                        .collect(Collectors.toList()));
-                changeConfig();
-            }
-        }, "Image", "*.png", "*.jpg", "*.jpeg").handle(event);
+        new FileChooserBuilder().title("Choose Image").extensions("Image", "*.png", "*.jpg", "*.jpeg")
+                .openFileMultipleAction(f -> {
+                    if (!f.isEmpty()) {
+                        images.clear();
+                        images.addAll(f.stream().map(ResourceFXUtils::convertToURL)
+                                .map(e -> new Image(e.toExternalForm())).collect(Collectors.toList()));
+                        changeConfig();
+                    }
+                }).handle(event);
     }
-
 
     public void printToPDF() {
         RunnableEx.run(() -> {

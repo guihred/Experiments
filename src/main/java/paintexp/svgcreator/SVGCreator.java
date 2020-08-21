@@ -19,8 +19,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleSliderBuilder;
-import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
@@ -71,7 +71,7 @@ public class SVGCreator extends Application {
                 handleSimple(e);
             }
         }
-		if (isSimpleHandle(e)) {
+        if (isSimpleHandle(e)) {
             handleSimple(e);
         }
         if (MouseEvent.MOUSE_RELEASED == e.getEventType()) {
@@ -87,7 +87,7 @@ public class SVGCreator extends Application {
 
     }
 
-	public void initialize() {
+    public void initialize() {
         svgChanger = new SVGChanger(path.contentProperty());
         stack.addEventHandler(MouseEvent.ANY, this::handleEvent);
         slider.valueProperty().bindBidirectional(svgChanger.scaleProperty());
@@ -104,11 +104,9 @@ public class SVGCreator extends Application {
     }
 
     public void onActionBackground(ActionEvent event) {
-        StageHelper
-				.fileAction("Imagem", ResourceFXUtils.getOutFile().getParentFile(),
-						f -> image.setImage(new Image(ResourceFXUtils.convertToURL(f).toExternalForm())),
-                "Imagens", "*.jpg", "*.png", "*.bmp", "*.jpg")
-            .handle(event);
+        new FileChooserBuilder().title("Imagem").initialDir(ResourceFXUtils.getOutFile().getParentFile())
+                .onSelect(f -> image.setImage(new Image(ResourceFXUtils.convertToURL(f).toExternalForm())))
+                .extensions("Images", "*.jpg", "*.png", "*.bmp", "*.jpg").openFileAction().handle(event);
     }
 
     public void onActionRelative() {
@@ -150,7 +148,7 @@ public class SVGCreator extends Application {
     }
 
     @Override
-	public void start(final Stage stage) {
+    public void start(final Stage stage) {
         CommonsFX.loadFXML("SVG Creator", "SVGCreator.fxml", this, stage);
     }
 
@@ -167,9 +165,9 @@ public class SVGCreator extends Application {
     }
 
     private boolean isSimpleHandle(MouseEvent e) {
-		return MouseEvent.MOUSE_DRAGGED == e.getEventType() && pointStage == 0
-            || MouseEvent.MOUSE_MOVED == e.getEventType() && pointStage > 0;
-	}
+        return MouseEvent.MOUSE_DRAGGED == e.getEventType() && pointStage == 0
+                || MouseEvent.MOUSE_MOVED == e.getEventType() && pointStage > 0;
+    }
 
     private void rescale() {
         if (slider.isValueChanging()) {

@@ -70,6 +70,11 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public SimpleTableViewBuilder<T> copiable() {
+        table.setOnKeyReleased(e -> copyContent(table, e));
+        return this;
+    }
+
     public SimpleTableViewBuilder<T> equalColumns() {
         equalColumns(table);
         return this;
@@ -111,7 +116,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-
     public SimpleTableViewBuilder<T> sortable(boolean value) {
         table.getColumns().forEach(e -> e.setSortable(value));
         return this;
@@ -120,9 +124,11 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public static <T> void copyContent(TableView<T> table, KeyEvent ev) {
         if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
             ObservableList<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
-            String collect = selectedItems.stream().map(l -> table.getColumns().stream()
-                    .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
-                    .collect(Collectors.joining("\n"));
+            String collect =
+                    selectedItems
+                            .stream().map(l -> table.getColumns().stream()
+                                    .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
+                            .collect(Collectors.joining("\n"));
             Map<DataFormat, Object> content = FXCollections.observableHashMap();
             content.put(DataFormat.PLAIN_TEXT, collect);
             Clipboard.getSystemClipboard().setContent(content);

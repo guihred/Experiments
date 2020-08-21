@@ -18,8 +18,8 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import simplebuilder.StageHelper;
 import utils.*;
 
 public class EthicalHackController extends EthicalHackApp {
@@ -69,8 +69,9 @@ public class EthicalHackController extends EthicalHackApp {
     }
 
     public void onActionIps(ActionEvent event) {
-        StageHelper.fileAction("Select IP File", file -> networkAddress.setText(String.format("-iL \"%s\"", file)),
-                "Any", "*.*").handle(event);
+        new FileChooserBuilder().title("Select IP File").extensions("Any", "*.*")
+                .onSelect(file -> networkAddress.setText(String.format("-iL \"%s\"", file))).openFileAction()
+                .handle(event);
     }
 
     public void onActionNetstats() {

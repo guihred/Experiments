@@ -21,10 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import simplebuilder.SimpleButtonBuilder;
-import simplebuilder.SimpleDialogBuilder;
-import simplebuilder.SimpleTableViewBuilder;
-import simplebuilder.StageHelper;
+import simplebuilder.*;
 import utils.*;
 
 public class MusicOrganizer extends Application {
@@ -69,12 +66,11 @@ public class MusicOrganizer extends Application {
     }
 
     private Button loadMusic(TableView<Music> musicasTable, TextField filterField) {
-        return StageHelper.selectDirectory("Carregar _Musicas", "Carregar Pasta de Músicas",
-            selectedFile -> RunnableEx.runNewThread(() -> {
-                ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
-                musicasTable.setItems(musicas);
-                configurarFiltroRapido(filterField, musicasTable, musicas);
-            }));
+        return new FileChooserBuilder().name("Carregar _Musicas").title("Carregar Pasta de Músicas").onSelect(selectedFile -> RunnableEx.runNewThread(() -> {
+            ObservableList<Music> musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
+            musicasTable.setItems(musicas);
+            configurarFiltroRapido(filterField, musicasTable, musicas);
+        })).buildOpenDirectoryButton();
     }
 
     private TableView<Music> tabelaMusicas() {
@@ -148,12 +144,12 @@ public class MusicOrganizer extends Application {
     }
 
     private static Button loadVideos(final TableView<Music> musicasTable, TextField filterField) {
-        return StageHelper.selectDirectory("Carregar _Vídeos", "Carregar Pasta de Músicas", selectedFile -> {
+        return new FileChooserBuilder().name("Carregar _Vídeos").title("Carregar Pasta de Músicas").onSelect(selectedFile -> {
             ObservableList<Music> videos = FXCollections.observableArrayList();
             ResourceFXUtils.getPathByExtensionAsync(selectedFile, v -> videos.add(new Music(v.toFile())), ".mp4",
                     ".wma", ".webm", ".wav");
             configurarFiltroRapido(filterField, musicasTable, videos);
-        });
+        }).buildOpenDirectoryButton();
     }
 
     private static ImageView view(Image music) {

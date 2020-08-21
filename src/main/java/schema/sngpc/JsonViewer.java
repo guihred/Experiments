@@ -24,10 +24,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import simplebuilder.StageHelper;
 import utils.FunctionEx;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
@@ -80,13 +80,13 @@ public class JsonViewer extends Application {
 
     private Parent createSplitTreeListDemoNode() {
         ObservableList<Map<String, String>> list = FXCollections.observableArrayList();
-        TableView<Map<String, String>> sideTable = new SimpleTableViewBuilder<Map<String, String>>().items(list)
-                .multipleSelection().build();
+        TableView<Map<String, String>> sideTable =
+                new SimpleTableViewBuilder<Map<String, String>>().items(list).copiable().multipleSelection().build();
         tree = new SimpleTreeViewBuilder<Map<String, String>>().root(newMap("Root", null))
                 .onSelect(newValue -> onSelectTreeItem(list, sideTable, newValue)).build();
-        sideTable.setOnKeyPressed(ev -> SimpleTableViewBuilder.copyContent(sideTable, ev));
-
-        Button importJsonButton = StageHelper.chooseFile("Import Json", "Import Json", fileProp::set, "Json", "*.json");
+        Button importJsonButton = new FileChooserBuilder().name("Import Json").title("Import Json")
+                .extensions("Json", "*.json").onSelect(fileProp::set)
+        .buildOpenButton();
         Button exportExcel = newButton("Export excel", e -> exportToExcel(sideTable, fileProp.get()));
         SplitPane splitPane = new SplitPane(tree, sideTable);
         SimpleComboBoxBuilder<File> onChange = new SimpleComboBoxBuilder<File>().items(files).converter(File::getName)
@@ -151,7 +151,6 @@ public class JsonViewer extends Application {
 
         });
     }
-
 
     public static void main(String[] args) {
         launch(args);
@@ -244,9 +243,8 @@ public class JsonViewer extends Application {
     }
 
     private static boolean splitList(ObservableList<Map<String, String>> list, Map<String, String> newItem) {
-        long count =
-                newItem.values().stream().filter(Objects::nonNull).mapToInt(e -> e.split("\n").length)
-                        .filter(i -> i > 1).distinct().count();
+        long count = newItem.values().stream().filter(Objects::nonNull).mapToInt(e -> e.split("\n").length)
+                .filter(i -> i > 1).distinct().count();
         if (count != 1) {
             return false;
         }

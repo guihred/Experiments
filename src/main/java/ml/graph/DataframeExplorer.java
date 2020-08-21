@@ -24,13 +24,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.input.KeyCode;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import ml.data.*;
 import org.slf4j.Logger;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
-import simplebuilder.StageHelper;
 import utils.*;
 
 public class DataframeExplorer extends Application {
@@ -112,26 +111,22 @@ public class DataframeExplorer extends Application {
     }
 
     public void onActionLoadCSV(ActionEvent e) {
-        StageHelper.fileAction("Load CSV", this::addStats, "CSV", "*.csv").handle(e);
+        new FileChooserBuilder().title("Load CSV").extensions("CSV", "*.csv").onSelect(this::addStats).openFileAction()
+                .handle(e);
     }
 
-    public void onActionSave() {
+    public void onActionSave(ActionEvent event) {
         if (dataframe != null) {
-
-            FileChooser fileChooser2 = new FileChooser();
-            fileChooser2.setTitle("Save File");
-            fileChooser2.setInitialFileName(dataframe.getFile().getName());
-            fileChooser2.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Data", "*.csv"));
-            File outFile = fileChooser2.showSaveDialog(text.getScene().getWindow());
-            if (outFile != null) {
-                RunnableEx.runNewThread(() -> {
-                    if (!dataframe.isLoaded()) {
-                        readDataframe(dataframe.getFile(), dataframe.getSize());
-                    }
-                    DataframeUtils.save(dataframe, outFile);
-                    LOG.info("{} SAVED", outFile);
-                });
-            }
+            new FileChooserBuilder().title("Save File").initialDir(dataframe.getFile().getParentFile())
+                    .initialFilename(dataframe.getFile().getName()).extensions("Data", "*.csv").onSelect(outFile -> {
+                        RunnableEx.runNewThread(() -> {
+                            if (!dataframe.isLoaded()) {
+                                readDataframe(dataframe.getFile(), dataframe.getSize());
+                            }
+                            DataframeUtils.save(dataframe, outFile);
+                            LOG.info("{} SAVED", outFile);
+                        });
+                    }).saveFileAction().handle(event);
         }
     }
 
@@ -187,13 +182,10 @@ public class DataframeExplorer extends Application {
         }
 
         fillIP.setDisable(true);
-        RunnableEx.runNewThread(
-                () -> {
-                    Set<String> unique = val.getValue().getUnique();
-                    return unique.isEmpty()
-                            || !unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
-                },
-                e -> RunnableEx.runInPlatform(() -> fillIP.setDisable(e)));
+        RunnableEx.runNewThread(() -> {
+            Set<String> unique = val.getValue().getUnique();
+            return unique.isEmpty() || !unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
+        }, e -> RunnableEx.runInPlatform(() -> fillIP.setDisable(e)));
         ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
         ObservableList<PieChart.Data> pieData =
                 ListHelper.mapping(barList, e -> new PieChart.Data(e.getXValue(), e.getYValue().doubleValue()));
@@ -253,7 +245,7 @@ public class DataframeExplorer extends Application {
     }
 
     private void readDataframe(File file, int maxSize) {
-        DataframeBuilder builder = builderWithQuestions(file,questions);
+        DataframeBuilder builder = builderWithQuestions(file, questions);
         Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
         dataframe = builder.dataframe();
         RunnableEx.runInPlatform(() -> columns.setAll(entrySet));
@@ -271,8 +263,8 @@ public class DataframeExplorer extends Application {
     }
 
     private static void addToBarChart(LineChart<Number, Number> lineChart, DataframeML dataframe,
-            Entry<String, DataframeStatisticAccumulator> old,
-            Entry<String, DataframeStatisticAccumulator> val, String name) {
+            Entry<String, DataframeStatisticAccumulator> old, Entry<String, DataframeStatisticAccumulator> val,
+            String name) {
 
         ObservableList<XYChart.Data<Number, Number>> data = FXCollections.observableArrayList();
         String x = old.getKey();
@@ -308,8 +300,8 @@ public class DataframeExplorer extends Application {
             Function<XYChart.Data<String, Number>, Double> keyExtractor) {
         RunnableEx.runInPlatformSync(() -> {
             if (dataList.size() >= MAX_ELEMENTS / 4) {
-                others.setYValue(keyExtractor.apply(others) + arrayList2.stream()
-                        .mapToDouble(keyExtractor::apply).sum());
+                others.setYValue(
+                        keyExtractor.apply(others) + arrayList2.stream().mapToDouble(keyExtractor::apply).sum());
                 if (!dataList.contains(others)) {
                     dataList.add(others);
                 }
@@ -371,7 +363,8 @@ public class DataframeExplorer extends Application {
         return it == null || q == null || !q.matchesClass(it.getValue().getFormat());
     }
 
-    private static void onColumnsChange(DataframeML dataframe,PaginatedTableView dataTable,Change<? extends Entry<String, DataframeStatisticAccumulator>> c) {
+    private static void onColumnsChange(DataframeML dataframe, PaginatedTableView dataTable,
+            Change<? extends Entry<String, DataframeStatisticAccumulator>> c) {
         while (c.next()) {
             if (c.wasRemoved()) {
                 dataTable.clearColumns();
@@ -389,11 +382,10 @@ public class DataframeExplorer extends Application {
                 addedSubList.forEach(entry -> dataTable.addColumn(entry.getKey(),
                         i -> dataframe.getDataframe().get(entry.getKey()).get(i)));
                 dataTable.setListSize(dataframe.getSize());
-                double[] array =
-                        addedSubList.stream()
-                                .mapToDouble(e -> Math.max(Objects.toString(e.getValue().getTop()).length(),
-                                        e.getKey().length()))
-                                .toArray();
+                double[] array = addedSubList.stream()
+                        .mapToDouble(
+                                e -> Math.max(Objects.toString(e.getValue().getTop()).length(), e.getKey().length()))
+                        .toArray();
                 dataTable.setColumnsWidth(array);
 
             }

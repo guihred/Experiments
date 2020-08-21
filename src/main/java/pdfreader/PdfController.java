@@ -30,8 +30,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
+import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTimelineBuilder;
-import simplebuilder.StageHelper;
 import utils.*;
 
 public class PdfController extends Application {
@@ -151,10 +151,10 @@ public class PdfController extends Application {
 
     public void openNewPDF(ActionEvent event) {
 
-        StageHelper.fileAction("Selecione Arquivo PDF", file -> {
+        new FileChooserBuilder().title("Selecione Arquivo PDF").extensions("File", "*.pdf").onSelect(file -> {
             timeline.stop();
             RunnableEx.runNewThread(() -> PdfUtils.readFile(pdfInfo, file));
-        }, "File", "*.pdf").handle(event);
+        }).openFileAction().handle(event);
         updateAll();
 
     }

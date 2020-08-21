@@ -28,8 +28,10 @@ public interface SupplierEx<T> {
                 return a;
             }
         }
-        HasLogging.log(1).error("ERROR {} {}", HasLogging.getCurrentLine(1),
-                exceptions.stream().map(Exception::getMessage).collect(Collectors.toList()));
+        if (!exceptions.isEmpty()) {
+            HasLogging.log(1).error("ERROR {} {}", HasLogging.getCurrentLine(1),
+                    exceptions.stream().map(Exception::getMessage).collect(Collectors.toList()));
+        }
         return null;
     }
 
