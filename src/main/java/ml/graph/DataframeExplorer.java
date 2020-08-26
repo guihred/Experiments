@@ -106,6 +106,7 @@ public class DataframeExplorer extends Application {
                     .addListener((ob, old, val) -> progress.setProgress(val.doubleValue()));
             dataframe = WhoIsScanner.fillIPInformation(builder, ipColumn, count);
             File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
+            LOG.info("File {} SAVING IN", outFile);
             DataframeUtils.save(dataframe, outFile);
             int maxSize = MAX_ELEMENTS;
             readDataframe(outFile, maxSize);
@@ -156,7 +157,7 @@ public class DataframeExplorer extends Application {
         currentThread = RunnableEx.runNewThread(() -> {
             LOG.info("File {} STARTING", file.getName());
             if (dataframe != null && !file.equals(dataframe.getFile())) {
-                RunnableEx.runInPlatform(() -> {
+                RunnableEx.runInPlatformSync(() -> {
                     questions.clear();
                     barChart.setData(FXCollections.emptyObservableList());
                     pieChart.setData(FXCollections.emptyObservableList());
@@ -171,8 +172,10 @@ public class DataframeExplorer extends Application {
     private void interruptCurrentThread() {
         RunnableEx.run(() -> {
             if (currentThread != null && currentThread.isAlive()) {
+                LOG.info("STOPPING THREAD");
                 currentThread.interrupt();
                 dataframe = null;
+
             }
         });
     }
@@ -253,11 +256,11 @@ public class DataframeExplorer extends Application {
         dataframe = builder.dataframe();
         RunnableEx.runInPlatform(() -> columns.setAll(entrySet));
         builder.makeStats(progress.progressProperty());
-        RunnableEx.runInPlatform(() -> columns.setAll(dataframe.getStats().entrySet()));
         if (dataframe.getSize() <= maxSize) {
             dataframe = builder.build();
             RunnableEx.runInPlatform(() -> dataTable.setListSize(dataframe.getSize()));
         }
+        RunnableEx.runInPlatform(() -> columns.setAll(dataframe.getStats().entrySet()));
         LOG.info("File {} READ", file.getName());
     }
 

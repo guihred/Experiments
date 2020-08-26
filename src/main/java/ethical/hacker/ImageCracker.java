@@ -2,7 +2,6 @@ package ethical.hacker;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
@@ -10,31 +9,29 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javax.imageio.ImageIO;
 import net.sourceforge.tess4j.Tesseract;
-import org.slf4j.Logger;
-import utils.*;
+import utils.DrawOnPoint;
+import utils.PixelHelper;
+import utils.ResourceFXUtils;
+import utils.SupplierEx;
 
 public final class ImageCracker {
     private static final Tesseract INSTANCE = getInstance();
-    private static final Logger LOG = HasLogging.log();
 
     private ImageCracker() {
     }
 
-
     public static String crackImage(File imageFile) {
-        return SupplierEx
-            .makeSupplier(() -> INSTANCE.doOCR(imageFile), e -> LOG.error(String.format("ERROR IN %s", imageFile), e))
-            .get();
+        return SupplierEx.get(() -> INSTANCE.doOCR(imageFile));
     }
+
     public static String crackImage(Image img) {
-        File outFile = ResourceFXUtils.getOutFile("captchaOut.png");
-		try (FileOutputStream out = new FileOutputStream(outFile)) {
-            ImageIO.write(SwingFXUtils.fromFXImage(img, null), "PNG", out);
-        } catch (IOException e) {
-            LOG.error("", e);
-            return "Error writing image";
-        }
-        return crackImage(outFile);
+        return SupplierEx.get(() -> {
+            File outFile = ResourceFXUtils.getOutFile("captchaOut.png");
+            try (FileOutputStream out = new FileOutputStream(outFile)) {
+                ImageIO.write(SwingFXUtils.fromFXImage(img, null), "PNG", out);
+            }
+            return crackImage(outFile);
+        }, "Error writing image");
     }
 
     public static WritableImage createSelectedImage(Image image) {
@@ -61,7 +58,6 @@ public final class ImageCracker {
         return image;
     }
 
-
     private static int countDarkPoints(WritableImage image, PixelReader pixelReader, int x, int y) {
         int blacks = 0;
         for (int i = 0; i < 3; i++) {
@@ -83,7 +79,7 @@ public final class ImageCracker {
         if (Math.abs(blacks) > limit) {
             return blacks > 0 ? black : white;
         }
-		return brightness > 0.5 ? white : black;
+        return brightness > 0.5 ? white : black;
     }
 
     private static Tesseract getInstance() {

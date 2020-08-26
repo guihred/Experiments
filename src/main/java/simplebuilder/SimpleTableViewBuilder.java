@@ -28,11 +28,9 @@ import utils.FunctionEx;
 public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>, SimpleTableViewBuilder<T>> {
 
     private static final int COLUMN_DEFAULT_WIDTH = 150;
-    private TableView<T> table;
 
     public SimpleTableViewBuilder() {
         super(new TableView<T>());
-        table = node;
     }
 
     public SimpleTableViewBuilder<T> addColumn(final String columnName,
@@ -40,7 +38,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         final TableColumn<T, Object> column = new TableColumn<>(columnName);
         column.setCellFactory(newCellFactory(value));
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-        table.getColumns().add(column);
+        node.getColumns().add(column);
         return this;
     }
 
@@ -48,19 +46,19 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         final TableColumn<T, V> column = new TableColumn<>(columnName);
         column.setCellValueFactory(m -> new SimpleObjectProperty<>(FunctionEx.apply(value, m.getValue())));
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-        table.getColumns().add(column);
+        node.getColumns().add(column);
         return this;
     }
-
 
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, ?> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
         column.setId(propertyName);
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-        table.getColumns().add(column);
+        node.getColumns().add(column);
         return this;
     }
+
 
     public SimpleTableViewBuilder<T> addColumn(String columnName, String property, boolean editable) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
@@ -68,7 +66,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         column.setId(property);
         column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
         column.setEditable(editable);
-        table.getColumns().add(column);
+        node.getColumns().add(column);
         return this;
     }
 
@@ -78,35 +76,35 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             column.setId(columnProp);
             column.setCellValueFactory(new PropertyValueFactory<>(columnProp));
             column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-            table.getColumns().add(column);
+            node.getColumns().add(column);
         }
         return this;
     }
 
     public SimpleTableViewBuilder<T> copiable() {
-        table.setOnKeyReleased(e -> copyContent(table, e));
+        node.setOnKeyReleased(e -> copyContent(node, e));
         return this;
     }
 
     public SimpleTableViewBuilder<T> equalColumns() {
-        equalColumns(table);
+        equalColumns(node);
         return this;
     }
 
     public SimpleTableViewBuilder<T> items(final ObservableList<T> value) {
-        table.setItems(value);
+        node.setItems(value);
         return this;
     }
 
     public SimpleTableViewBuilder<T> multipleSelection() {
-        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        node.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         return this;
     }
 
     public SimpleTableViewBuilder<T> onDoubleClick(final Consumer<T> object) {
         node.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
-                T selectedItem = table.getSelectionModel().getSelectedItem();
+                T selectedItem = node.getSelectionModel().getSelectedItem();
                 object.accept(selectedItem);
             }
         });
@@ -114,41 +112,36 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public SimpleTableViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
-        table.getSelectionModel().selectedItemProperty()
+        node.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
         return this;
     }
 
     public SimpleTableViewBuilder<T> onSortClicked(ConsumerEx<Entry<String,SortType >> c) {
-        table.setSortPolicy((TableView<T> o) -> {
+        node.setSortPolicy((TableView<T> o) -> {
             ObservableList<TableColumn<T, ?>> sortOrder = o.getSortOrder();
             if (!sortOrder.isEmpty()) {
-                
                 TableColumn<T, ?> tableColumn = sortOrder.get(0);
                 SortType sortType = tableColumn.getSortType();
                 ConsumerEx.makeConsumer(c).accept(new AbstractMap.SimpleEntry<>(tableColumn.getText(),sortType));
             }
             return true;
         });
-
-        // table.getColumns().forEach(e -> e.sortNodeProperty()
-        // .addListener((ob, o, n) -> n.setOnMouseClicked(e0 ->
-        // ConsumerEx.makeConsumer(c).accept(e.getText()))));
         return this;
     }
 
     public SimpleTableViewBuilder<T> prefWidthColumns(double... prefs) {
-        prefWidthColumns(table, prefs);
+        prefWidthColumns(node, prefs);
         return this;
     }
 
     public SimpleTableViewBuilder<T> scrollTo(int value) {
-        table.scrollTo(value);
+        node.scrollTo(value);
         return this;
     }
 
     public SimpleTableViewBuilder<T> sortable(boolean value) {
-        table.getColumns().forEach(e -> e.setSortable(value));
+        node.getColumns().forEach(e -> e.setSortable(value));
         return this;
     }
 
@@ -180,6 +173,12 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             }
 
         };
+    }
+
+    public static <V>SimpleTableViewBuilder<V>of(TableView<V> table) {
+        SimpleTableViewBuilder<V> simpleTableViewBuilder = new SimpleTableViewBuilder<>();
+        simpleTableViewBuilder.node=table;
+        return simpleTableViewBuilder;
     }
 
     public static <T> void onDoubleClick(TableView<T> table2, ConsumerEx<T> object) {

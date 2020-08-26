@@ -8,24 +8,17 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
 public final class HashVerifier {
     private static final Logger LOG = HasLogging.log();
-
-    private static final Path PHANTOM_JS =
-            ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
 
     private HashVerifier() {
     }
@@ -53,7 +46,7 @@ public final class HashVerifier {
     }
 
     public static Document hashLookup(String sha1Hash) {
-        return renderPage("https://hashlookup.org/search.php?q=" + sha1Hash);
+        return ExtractUtils.renderPage("https://hashlookup.org/search.php?q=" + sha1Hash);
     }
 
     public static List<Entry<Path, Path>> listNotRepeatedFiles(File file,File file2) {
@@ -64,7 +57,6 @@ public final class HashVerifier {
                 ".mp3");
         ResourceFXUtils.getPathByExtensionAsync(file2, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
                 ".mp3");
-        
         return notRepeatedEntries;
     }
 
@@ -86,24 +78,8 @@ public final class HashVerifier {
         return repeatedEntries;
     }
 
-    public static Document renderPage(String url) {
-        DesiredCapabilities dcap = DesiredCapabilities.firefox();
-        PhantomJSDriverService createDefaultService =
-                new PhantomJSDriverService.Builder().usingPhantomJSExecutable(PHANTOM_JS.toFile()).usingAnyFreePort()
-                        .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log")).build();
-        PhantomJSDriver ghostDriver = new PhantomJSDriver(createDefaultService, dcap);
-        try {
-            ghostDriver.setLogLevel(Level.SEVERE);
-            ghostDriver.manage().window().maximize();
-            ghostDriver.get(url);
-            return Jsoup.parse(ghostDriver.getPageSource());
-        } finally {
-            ghostDriver.quit();
-        }
-    }
-
     public static Document virusTotal(String sha256Hash) {
-        return renderPage("https://www.virustotal.com/old-browsers/file/" + sha256Hash);
+        return ExtractUtils.renderPage("https://www.virustotal.com/old-browsers/file/" + sha256Hash);
     }
 
     private static void addToNotRepeated(List<Entry<Path, Path>> notRepeatedEntries, Map<String, Path> fileMap,

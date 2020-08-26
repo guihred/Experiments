@@ -224,7 +224,7 @@ public class DataframeStatisticAccumulator {
             return getByProportion(d, countMap);
         }
         if (!dataframe.get(header).isEmpty()) {
-            return dataframe.get(header).stream().sorted().collect(Collectors.toList()).get((int) (d * count));
+            return dataframe.get(header).stream().sorted().skip((long) (d * count)).findFirst().orElse(null);
         }
         List<Number> array = SupplierEx.getIgnore(
                 () -> distributionMap.entrySet().stream().flatMap(e -> Stream.generate(e::getKey).limit(e.getValue()))

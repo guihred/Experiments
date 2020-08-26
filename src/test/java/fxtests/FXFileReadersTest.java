@@ -8,6 +8,8 @@ import extract.WordService;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -134,6 +136,16 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
     @Test
     public void testImageCracker() {
+        measureTime("ImageCracker.readScreenshots", () -> {
+            File screenshotsDir = ResourceFXUtils.getOutFile("screenshots");
+            if (screenshotsDir.exists()) {
+                for (File file : screenshotsDir.listFiles()) {
+                    String crackImage = ImageCracker.crackImage(file);
+                    File outFile = ResourceFXUtils.getOutFile("screenshots/" + file.getName() + ".txt");
+                    Files.write(outFile.toPath(), crackImage.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+        });
         measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA.jpg")));
         measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA2.jpg")));
         measureTime("ImageCracker.createSelectedImage", () -> ImageCracker.crackImage(

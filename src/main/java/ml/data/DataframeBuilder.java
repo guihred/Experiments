@@ -2,6 +2,7 @@ package ml.data;
 
 import extract.ExcelService;
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Scanner;
@@ -11,7 +12,7 @@ import java.util.function.UnaryOperator;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.SupplierEx;
 
 public class DataframeBuilder extends DataframeML {
     private final DataframeML dataframeML = new DataframeML();
@@ -41,12 +42,12 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public Set<Entry<String, DataframeStatisticAccumulator>> columns() {
-        RunnableEx.run(() -> {
+        return SupplierEx.get(() -> {
             try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
                 DataframeUtils.addHeaders(dataframeML, scanner);
             }
-        });
-        return dataframeML.getStats().entrySet();
+            return dataframeML.getStats().entrySet();
+        }, Collections.emptySet());
     }
 
     public DataframeML dataframe() {
