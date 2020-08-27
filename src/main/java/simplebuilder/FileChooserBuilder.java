@@ -28,6 +28,10 @@ public class FileChooserBuilder {
         return FileChooserBuilder.newButton(name, openDirectoryAction());
     }
 
+    public Button buildSaveButton() {
+        return FileChooserBuilder.newButton(name, saveFileAction());
+    }
+
     public FileChooserBuilder extensions(String filter, String... extensions) {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(filter, extensions));
         return this;

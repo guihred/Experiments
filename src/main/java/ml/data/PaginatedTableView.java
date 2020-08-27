@@ -5,6 +5,7 @@ import static java.util.stream.DoubleStream.of;
 import static simplebuilder.SimpleTableViewBuilder.prefWidthColumns;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.FunctionEx;
+import utils.PredicateEx;
 import utils.RunnableEx;
 
 public final class PaginatedTableView extends VBox {
@@ -49,8 +51,8 @@ public final class PaginatedTableView extends VBox {
         table.setOnKeyReleased(e -> SimpleTableViewBuilder.copyContent(table, e));
         updateItems();
         getChildren().add(table);
-        textField.textProperty().addListener((ob, o, n) -> RunnableEx.runIf(filteredItems,
-                i -> i.setPredicate(e -> containsString(n, e))));
+        textField.textProperty().addListener(
+                (ob, o, n) -> RunnableEx.runIf(filteredItems, i -> i.setPredicate(e -> containsString(n, e))));
         SimpleTableViewBuilder.of(table)
                 .onSortClicked(e -> RunnableEx.runIf(items,
                         i -> table.getColumns().stream().filter(c -> c.getText().equals(e.getKey())).findFirst()
@@ -77,6 +79,15 @@ public final class PaginatedTableView extends VBox {
         table.getColumns().add(tableColumn);
     }
 
+    public List<String> getColumns() {
+        return table.getColumns().stream().skip(1L).map(TableColumn<Integer, ?>::getText).collect(Collectors.toList());
+
+    }
+
+    public List<Integer> getFilteredItems() {
+        return filteredItems;
+    }
+
     public void setColumnsWidth(double... array) {
         prefWidthColumns(table, concat(of(3.), of(array)).toArray());
     }
@@ -86,8 +97,9 @@ public final class PaginatedTableView extends VBox {
     }
 
     private boolean containsString(String n, Integer e) {
-        return StringUtils.isBlank(n) || table.getColumns().stream()
-                .anyMatch(c -> StringUtils.containsIgnoreCase(Objects.toString(c.getCellData(e)), n));
+        return StringUtils.isBlank(n)
+                || table.getColumns().stream().map(c -> Objects.toString(c.getCellData(e), "")).anyMatch(
+                        str -> StringUtils.containsIgnoreCase(str, n) || PredicateEx.test(s -> s.matches(n), str));
     }
 
     private void updateItems() {

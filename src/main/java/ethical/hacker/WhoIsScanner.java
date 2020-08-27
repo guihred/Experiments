@@ -79,14 +79,13 @@ public class WhoIsScanner {
                 .getFirstFileMatch(ResourceFXUtils.getOutFile("screenshots"),
                         p -> p.getName(p.getNameCount() - 1).toString().startsWith(url + ".html"))
                 .stream().max(Comparator.comparing(p -> ResourceFXUtils.computeAttributes(p.toFile()).size()))
-                .map(Path::toFile)
-                .orElse(ResourceFXUtils.getOutFile(screenshotsFolder + url + ".html"));
+                .map(Path::toFile).orElse(ResourceFXUtils.getOutFile(screenshotsFolder + url + ".html"));
         Document renderPage;
         if (!htmlFile.exists() || containsWait(htmlFile)) {
             File pngFile = ResourceFXUtils.getOutFile(screenshotsFolder + url + ".png");
             renderPage = ExtractUtils.renderPage(
-                    "https://www.ssllabs.com/ssltest/analyze.html?d=" + url + "&ignoreMismatch=on&latest",
-                    pngFile, "Please wait...");
+                    "https://www.ssllabs.com/ssltest/analyze.html?d=" + url + "&ignoreMismatch=on&latest", pngFile,
+                    "Please wait...");
             Files.write(htmlFile.toPath(), renderPage.outerHtml().getBytes(StandardCharsets.UTF_8));
         } else {
             renderPage = Jsoup.parse(htmlFile, StandardCharsets.UTF_8.name());
@@ -161,32 +160,30 @@ public class WhoIsScanner {
     }
 
     public static void main(String[] args) {
-        List<String> asList = Arrays.asList("caged.maisemprego.mte.gov.br", "www3.dataprev.gov.br", "dataprev.gov.br",
-                "ppfacil.dataprev.gov.br", "caged.maisemprego.mte.gov.br", "vip-pgerid01.dataprev.gov.br",
-                "geriddtp.dataprev.gov.br", "saa.previdencia.gov.br", "psdcwlg.dataprev.gov.br",
-                "captcha.dataprev.gov.br", "geridinss.dataprev.gov.br", "pssomteapr01.dataprev.gov.br",
-                "tarefas.inss.gov.br", "www11.dataprev.gov.br", "meu.inss.gov.br", "vip-agendamentoapr01.inss.gov.br",
-                "pservicoexternoapr01.dataprev.gov.br", "vip-pmeuinssprxr.inss.gov.br", "vip-psat.inss.gov.br",
-                "vip-auxilioemergencial.dataprev.gov.br", "portal.dataprev.gov.br", "vip-ppmf.inss.gov.br",
-                "mobdigital.inss.gov.br", "vip-ppmfapr03.dataprev.gov.br", "consultacadastral.inss.gov.br",
-                "www5.dataprev.gov.br", "www2.dataprev.gov.br", "www9.dataprev.gov.br", "pcnisweb01.dataprev.gov.br",
-                "pcnisappweb01.inss.gov.br", "pesocialweb01.dataprev.gov.br", "b2b.dataprev.gov.br",
-                "www8.dataprev.gov.br", "www6.dataprev.gov.br", "vip-pcomprevohs.inss.gov.br",
-                "vip-pcomprevapacheinter.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br",
-                "portal.dataprev.gov.br", "vip-auxilio-emergencial-gerencia.dataprev.gov.br",
-                "extratoir-weblog-prod.inss.gov.br", "psispagbenapr.dataprev.gov.br", "vip-sisgpep-prod.inss.gov.br",
-                "vip-psisrec.inss.gov.br", "www99.dataprev.gov.br", "vip-pcniswebapr02.inss.gov.br",
-                "vip-pedocapr01.dataprev.gov.br", "dadosabertos.dataprev.gov.br", "edoc.inss.gov.br",
-                "ppfacil.dataprev.gov.br", "edoc-mobile.dataprev.gov.br", "vip-pmoodle.dataprev.gov.br",
-                "edoc4.inss.gov.br", "www-ohsrevartrecben.dataprev.gov.br", "vip-pcoaf.dataprev.gov.br",
-                "gru.inss.gov.br", "rppss.cnis.gov.br", "vip-psiacwebapr01.dataprev.gov.br",
-                "vip-psiacproxyrev.dataprev.gov.br", "homol-store.dataprev.gov.br", "store.dataprev.gov.br",
-                "degustacao.dataprev.gov.br", "vip-psicapweb.dataprev.gov.br", "sinpat.dataprev.gov.br",
-                "pportalmaisemprego.dataprev.gov.br", "vip-psineaberto.dataprev.gov.br",
-                "mte-auto-atendimento.dataprev.gov.br", "mte-posto-atendimento.dataprev.gov.br");
+        List<String> asList = Arrays.asList("www.previc.gov.br", "smtp2.dataprev.gov.br", "pius.previc.gov.br",
+                "owa.dataprev.gov.br", "ouvidoria.previdencia.gov.br", "mx71.registrarh-saude.dataprev.gov.br",
+                "mx02.registrarh-saude.dataprev.gov.br", "mx01.registrarh-saude.dataprev.gov.br", "mx.inss.gov.br",
+                "mx.dataprev.gov.br", "mailint.dataprev.gov.br", "cioba.previdencia.gov.br",
+                "cgeridinss.dataprev.gov.br", "agendaconselho.dataprev.gov.br", "cgeridinss.dataprev.gov.br",
+                "chat.dataprev.gov.br", "cioba.previdencia.gov.br", "consultaprocessos.inss.gov.br",
+                "correio.dataprev.gov.br", "correio.inss.gov.br", "correiov2.dataprev.gov.br", "correiov2.inss.gov.br",
+                "correiov3.inss.gov.br", "correiovs.dataprev.gov.br", "cplp.dataprev.gov.br", "databox.dataprev.gov.br",
+                "dtp-gerid.dataprev.gov.br", "erecursos.previdencia.gov.br", "estatisticasweb.dataprev.gov.br",
+                "estatisticaswebatualiza.dataprev.gov.br", "eu.dataprev.gov.br", "exemplo20080624.previdencia.gov.br",
+                "treina-sei.inss.gov.br", "geridmps.dataprev.gov.br", "geridprevic.dataprev.gov.br",
+                "hagendaconselho.dataprev.gov.br", "hdtp.gerid.dataprev.gov.br", "hempregabrasil.mte.gov.br",
+                "homo-sei.inss.gov.br", "hportal.inss.gov.br", "hprevic.gerid.dataprev.gov.br", "hu.dataprev.gov.br",
+                "imap.dataprev.gov.br", "m.dataprev.gov.br", "mailint.dataprev.gov.br", "mx.dataprev.gov.br",
+                "mx.inss.gov.br", "mx01.registrarh-saude.dataprev.gov.br", "ouvidoria.previdencia.gov.br",
+                "owa.dataprev.gov.br", "pesquisas.dataprev.gov.br", "pius.previc.gov.br", "portal.dataprev.gov.br",
+                "previc.gerid.dataprev.gov.br", "projetos.dataprev.gov.br", "sf.dataprev.gov.br",
+                "saa2.previdencia.gov.br", "sdtp.gerid.dataprev.gov.br", "sei.inss.gov.br", "sirc.gov.br",
+                "smtp2.dataprev.gov.br", "waw-erecursos", "www-dtpprojetos.prevnet", "www-gerdic", "www.inss.gov.br",
+                "www.previc.gov.br", "www.sirc.gov.br", "wwwhom.inss.gov.br").stream().distinct()
+                .collect(Collectors.toList());
         for (int i = 0; i < asList.size(); i++) {
             String url = asList.get(i);
-            LOG.info("SCANING {} -- {}/{}", url, i, asList.size());
+            LOG.info("SCANNING {} -- {}/{}", url, i, asList.size());
             RunnableEx.run(() -> WhoIsScanner.evaluateURL(url));
         }
     }

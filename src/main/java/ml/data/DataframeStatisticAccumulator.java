@@ -142,7 +142,7 @@ public class DataframeStatisticAccumulator {
     public double getStd() {
         if (getFormat() == String.class) {
             double mean = sum / countMap.size();
-            double sum2 = countMap.values().stream().mapToDouble(e -> e).map(e -> e - mean).map(e -> e * e).sum();
+            double sum2 = countMap.values().stream().mapToDouble(e -> e - mean).map(e -> e * e).sum();
             return Math.sqrt(sum2 / (countMap.size() - 1));
         }
 
@@ -153,8 +153,12 @@ public class DataframeStatisticAccumulator {
                     .mapToDouble(Number::doubleValue).map(e -> e - mean).map(e -> e * e).sum();
             return Math.sqrt(sum2 / (count - 1));
         }
-        double sum2 = distributionMap.entrySet().stream().flatMap(e -> Stream.generate(e::getKey).limit(e.getValue()))
-                .mapToDouble(Number::doubleValue).map(e -> e - mean).map(e -> e * e).sum();
+        double sum2 = SupplierEx.getIgnore(
+                () -> distributionMap.entrySet().stream().flatMap(e -> Stream.generate(e::getKey).limit(e.getValue()))
+                        .mapToDouble(Number::doubleValue).map(e -> e - mean).map(e -> e * e).sum(),
+                0.)
+
+        ;
         return Math.sqrt(sum2 / (count - 1));
 
     }

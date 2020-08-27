@@ -2,6 +2,10 @@ package ethical.hacker;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
@@ -32,6 +36,12 @@ public final class ImageCracker {
             }
             return crackImage(outFile);
         }, "Error writing image");
+    }
+
+    public static Map<File, String> crackImages(File imageFile) {
+        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(imageFile, ".png", ".PNG");
+        return pathByExtension.stream().map(Path::toFile)
+                .collect(Collectors.toMap(e -> e, ImageCracker::crackImage));
     }
 
     public static WritableImage createSelectedImage(Image image) {
