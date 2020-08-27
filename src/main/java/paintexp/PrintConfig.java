@@ -55,6 +55,8 @@ public class PrintConfig extends Application {
     @FXML
     private CheckBox vertical;
     @FXML
+    private CheckBox center;
+    @FXML
     private Slider hgap;
     @FXML
     private Slider quality;
@@ -203,8 +205,8 @@ public class PrintConfig extends Application {
         }
         final double width = Math.max(1, realWidth * d);
         final double height = Math.max(1, realHeight * e);
-        double a = Math.max(0, (realWidth - width) / 2.);
-        double b = Math.max(0, (realHeight - height) / 2.);
+        double a = !center.isSelected() ? 0 : Math.max(0, (realWidth - width) / 2.);
+        double b = !center.isSelected() ? 0 : Math.max(0, (realHeight - height) / 2.);
         child.setPreserveRatio(true);
         child.setViewport(new Rectangle2D(a, b, Math.min(realWidth, width), Math.min(realHeight, height)));
         return child;

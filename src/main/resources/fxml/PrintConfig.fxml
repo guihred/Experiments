@@ -87,6 +87,7 @@
 				<RadioButton text="Expand" toggleGroup="$printType" />
 				<CheckBox text="Repeat" fx:id="repeat" onAction="#changeConfig" />
 				<CheckBox text="Vertical" fx:id="vertical" onAction="#changeConfig" />
+				<CheckBox text="Center" fx:id="center" selected="true" onAction="#changeConfig" />
 				<Button text="_Print To PDF" onAction="#printToPDF" />
 				<Button text="_Load Images" onAction="#loadImages" />
 				<HBox spacing="30">
