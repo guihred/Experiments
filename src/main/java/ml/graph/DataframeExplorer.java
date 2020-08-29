@@ -96,7 +96,7 @@ public class DataframeExplorer extends Application {
     }
 
     public void onActionFillIP() {
-        RunnableEx.runNewThread(() -> {
+        currentThread = RunnableEx.runNewThread(() -> {
             LOG.info("FILLING {} IPS", dataframe.getFile().getName());
 
             DataframeBuilder builder = builderWithQuestions(dataframe.getFile(), questions);
@@ -111,6 +111,7 @@ public class DataframeExplorer extends Application {
             int maxSize = MAX_ELEMENTS;
             readDataframe(outFile, maxSize);
             LOG.info("File {} IPS FILLED", dataframe.getFile().getName());
+            currentThread = null;
         });
     }
 
@@ -166,6 +167,7 @@ public class DataframeExplorer extends Application {
             }
             int maxSize = MAX_ELEMENTS;
             readDataframe(file, maxSize);
+            currentThread = null;
         });
     }
 
@@ -193,8 +195,9 @@ public class DataframeExplorer extends Application {
             return unique.isEmpty() || !unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
         }, e -> RunnableEx.runInPlatform(() -> fillIP.setDisable(e)));
         ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
-        ObservableList<PieChart.Data> pieData =
-                ListHelper.mapping(barList, e -> new PieChart.Data(e.getXValue(), e.getYValue().doubleValue()));
+        ObservableList<PieChart.Data> pieData = ListHelper.mapping(barList,
+                e -> new PieChart.Data(String.format("(%d) %s", e.getYValue().intValue(), e.getXValue()),
+                        e.getYValue().doubleValue()));
         Class<? extends Comparable<?>> format = val.getValue().getFormat();
         if (format == String.class) {
             Map<String, Integer> countMap = val.getValue().getCountMap();
@@ -260,7 +263,8 @@ public class DataframeExplorer extends Application {
             dataframe = builder.build();
             RunnableEx.runInPlatform(() -> dataTable.setListSize(dataframe.getSize()));
         }
-        RunnableEx.runInPlatform(() -> columns.setAll(dataframe.getStats().entrySet()));
+        RunnableEx.runInPlatform(() -> columns
+                .setAll(SupplierEx.orElse(dataframe.getStats(), () -> DataframeUtils.makeStats(dataframe)).entrySet()));
         LOG.info("File {} READ", file.getName());
     }
 

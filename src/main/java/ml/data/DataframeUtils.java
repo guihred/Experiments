@@ -58,7 +58,7 @@ public class DataframeUtils extends DataframeML {
         List<Double> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
                 .mapToDouble(mapper).boxed().collect(Collectors.toList());
         dataframe.getDataframe().put(header, (List) mappedColumn);
-        dataframe.getFormatMap().put(header, Double.class);
+        dataframe.putFormat(header, Double.class);
         return mappedColumn;
     }
 
@@ -69,7 +69,7 @@ public class DataframeUtils extends DataframeML {
                 IntStream.range(0, dataframe.size).mapToObj(i -> toDoubleArray(dataframe, i, dependent))
                         .mapToDouble(mapper).boxed().collect(Collectors.toList());
         dataframe.getDataframe().put(header, (List) newColumn);
-        dataframe.getFormatMap().put(header, Double.class);
+        dataframe.putFormat(header, Double.class);
         return newColumn;
     }
 
@@ -79,8 +79,8 @@ public class DataframeUtils extends DataframeML {
         List<T> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
                 .map(FunctionEx.makeFunction(mapper)).collect(Collectors.toList());
         dataframe.getDataframe().put(header, (List) mappedColumn);
-        dataframe.getFormatMap().put(header,
-                (Class<? extends Comparable<?>>) mappedColumn.stream().findFirst().map(e -> e.getClass()).orElse(null));
+        dataframe.putFormat(header,
+                (Class<? extends Comparable<?>>) mappedColumn.stream().findFirst().map(T::getClass).orElse(null));
         return mappedColumn;
     }
 
@@ -357,7 +357,7 @@ public class DataframeUtils extends DataframeML {
             return o;
         }
         if (Number.class.isAssignableFrom(dataframeML.getFormat(header))) {
-            dataframeML.getFormatMap().put(header, String.class);
+            dataframeML.putFormat(header, String.class);
             dataframeML.map(header, e -> Objects.toString(e, ""));
         }
         return number;

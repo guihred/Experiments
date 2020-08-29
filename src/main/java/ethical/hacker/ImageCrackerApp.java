@@ -34,7 +34,6 @@ public class ImageCrackerApp extends Application {
         paginatedTableView.addColumn("Read", i -> textField(value, i));
         paginatedTableView.addColumn("Image", i -> new ImageView(value.get(i).toURI().toURL().toExternalForm()));
         Button buildOpenDirectoryButton = new FileChooserBuilder()
-
                 .name("Load Images").onSelect(file -> {
                     crackImages = ImageCracker.crackImages(file);
                     paginatedTableView.setListSize(crackImages.size());

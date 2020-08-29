@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,6 +28,7 @@ import simplebuilder.SimpleTableViewBuilder;
 import utils.FunctionEx;
 import utils.PredicateEx;
 import utils.RunnableEx;
+import utils.SupplierEx;
 
 public final class PaginatedTableView extends VBox {
     private final IntegerProperty pageSize = new SimpleIntegerProperty(20);
@@ -41,12 +43,18 @@ public final class PaginatedTableView extends VBox {
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         pagination.currentPageIndexProperty().addListener(ob -> updateItems());
         pageSize.addListener(ob -> updateItems());
-        maxSize.addListener(ob -> updateItems());
+        ComboBox<Integer> pageSizeCombo = new SimpleComboBoxBuilder<Integer>().items(10, 20, 50, 100)
+                .onChange((old, val) -> pageSize.set(SupplierEx.nonNull(val, old))).select((Integer) 10).build();
+        maxSize.addListener((ob, o, n) -> {
+            updateItems();
+            updatePageSizeCombo(pageSizeCombo, n);
+        });
         pagination.setPageCount(0);
         TableColumn<Integer, Number> e2 = new TableColumn<>("Nº");
         e2.setCellValueFactory(m -> new SimpleObjectProperty<>(m.getValue()));
         table.getColumns().add(e2);
-        pagination.pageCountProperty().bind(maxSize.divide(pageSize).add(1));
+        pagination.pageCountProperty().bind(Bindings.createIntegerBinding(
+                () -> getPageCount(), maxSize, pageSize, pageSizeCombo.itemsProperty()));
         VBox.setVgrow(table, Priority.ALWAYS);
         table.setOnKeyReleased(e -> SimpleTableViewBuilder.copyContent(table, e));
         updateItems();
@@ -58,8 +66,7 @@ public final class PaginatedTableView extends VBox {
                         i -> table.getColumns().stream().filter(c -> c.getText().equals(e.getKey())).findFirst()
                                 .ifPresent(col -> items.sort(getComparator(col, e)))));
 
-        getChildren().add(new HBox(new SimpleComboBoxBuilder<Integer>().items(10, 20, 50, 100)
-                .onChange((old, val) -> pageSize.set(val)).select((Integer) 10).build(), pagination, textField));
+        getChildren().add(new HBox(pageSizeCombo, pagination, textField));
     }
 
     public <T> void addColumn(String name, FunctionEx<Integer, T> func) {
@@ -102,6 +109,10 @@ public final class PaginatedTableView extends VBox {
                         str -> StringUtils.containsIgnoreCase(str, n) || PredicateEx.test(s -> s.matches(n), str));
     }
 
+    private int getPageCount() {
+        return maxSize.get() / pageSize.get() + (int) Math.signum(maxSize.get() % pageSize.get());
+    }
+
     private void updateItems() {
         int intValue = pagination.getCurrentPageIndex();
         int size = pageSize.get();
@@ -118,6 +129,26 @@ public final class PaginatedTableView extends VBox {
             return (Comparable) (cellData instanceof Comparable ? cellData : Objects.toString(cellData));
         });
         return e.getValue() == SortType.ASCENDING ? comparing : comparing.reversed();
+    }
+
+    private static void updatePageSizeCombo(ComboBox<Integer> build, Number n) {
+        ObservableList<Integer> value = FXCollections.observableArrayList();
+        double doubleValue = n.doubleValue();
+        double ceil = Math.ceil(Math.log10(doubleValue));
+        Integer selectedItem = build.getSelectionModel().getSelectedItem();
+        for (int i = 1; i <= ceil; i++) {
+            if (value.isEmpty() || doubleValue > value.get(value.size() - 1)) {
+                value.add((int) Math.pow(10, i));
+            }
+            if (doubleValue > value.get(value.size() - 1)) {
+                value.add((int) Math.pow(10, i) * 2);
+            }
+            if (doubleValue > value.get(value.size() - 1)) {
+                value.add((int) Math.pow(10, i) * 5);
+            }
+        }
+        build.setItems(value);
+        build.getSelectionModel().select(selectedItem);
     }
 
 }

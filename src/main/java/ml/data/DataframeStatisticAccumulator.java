@@ -197,7 +197,7 @@ public class DataframeStatisticAccumulator {
     public String toString() {
         Class<? extends Comparable<?>> format = getFormat();
         return format == String.class ? String.format("{format: %s, distinct: %d}", format.getSimpleName(), distinct)
-                : String.format("{format: %s, sum: %.0f}", format.getSimpleName(), sum);
+                : String.format("{format: %s, median: %s}", format.getSimpleName(), getMedian50());
     }
 
     private void acceptNumber(Number n) {
