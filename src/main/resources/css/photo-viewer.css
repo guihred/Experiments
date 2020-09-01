@@ -10,17 +10,11 @@
 }
 .right-arrow{
 	-fx-base: black;	
-	-fx-translate-y:3px;
-	-fx-translate-x:40px;
-	-fx-scale-shape:false;
 	-fx-shape:"M0,0 l 0 20 l 16 -10 z";
 }
 
 .left-arrow{
 	-fx-base: black;
-	-fx-translate-x:5px;
-	-fx-translate-y:3px;
-	-fx-scale-shape:false;
 	-fx-shape:"M0,0 l 0 20 l -16 -10 z";
 }
 .ticker-border{

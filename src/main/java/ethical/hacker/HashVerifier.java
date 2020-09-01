@@ -11,9 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
 
@@ -45,9 +43,6 @@ public final class HashVerifier {
         return DigestUtils.sha256Hex(data);
     }
 
-    public static Document hashLookup(String sha1Hash) {
-        return ExtractUtils.renderPage("https://hashlookup.org/search.php?q=" + sha1Hash);
-    }
 
     public static List<Entry<Path, Path>> listNotRepeatedFiles(File file,File file2) {
         ObservableList<Entry<Path, Path>> notRepeatedEntries = FXCollections.observableArrayList();
@@ -76,10 +71,6 @@ public final class HashVerifier {
         }, ".mp3");
 
         return repeatedEntries;
-    }
-
-    public static Document virusTotal(String sha256Hash) {
-        return ExtractUtils.renderPage("https://www.virustotal.com/old-browsers/file/" + sha256Hash);
     }
 
     private static void addToNotRepeated(List<Entry<Path, Path>> notRepeatedEntries, Map<String, Path> fileMap,

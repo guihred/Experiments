@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -22,6 +23,7 @@ import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
@@ -40,7 +42,7 @@ public final class ExtractUtils {
     private static final String PROXY_ADDRESS = getProxyAddress();
     private static final boolean IS_PROXIED = PROXY_ADDRESS != null;
     public static final Path PHANTOM_JS =
-    ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
+            ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
 
     private ExtractUtils() {
     }
@@ -96,7 +98,6 @@ public final class ExtractUtils {
     public static void copy(String src, String dest) throws IOException {
         copy(new File(src), new File(dest));
     }
-
 
     public static Response executeRequest(String url, Map<String, String> cookies) throws IOException {
         Connection connect = HttpConnection.connect(url);
@@ -244,47 +245,41 @@ public final class ExtractUtils {
 
     }
 
-    public static Document renderPage(String url) {
-        DesiredCapabilities dcap = DesiredCapabilities.firefox();
+
+    @SafeVarargs
+    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr,
+            ConsumerEx<PhantomJSDriver>... onload) throws Exception {
         PhantomJSDriverService createDefaultService =
-                new PhantomJSDriverService.Builder().usingPhantomJSExecutable(ExtractUtils.PHANTOM_JS.toFile()).usingAnyFreePort()
-                        .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log")).build();
-        PhantomJSDriver ghostDriver = new PhantomJSDriver(createDefaultService, dcap);
+                new PhantomJSDriverService.Builder().usingPhantomJSExecutable(ExtractUtils.PHANTOM_JS.toFile())
+                        .usingAnyFreePort().withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log")).build();
+        PhantomJSDriver ghostDriver = new PhantomJSDriver(createDefaultService, DesiredCapabilities.firefox());
         try {
             ghostDriver.setLogLevel(Level.SEVERE);
             ghostDriver.manage().window().maximize();
+            URL url2 = new URL(url);
+            RunnableEx.run(() -> cookies
+                    .forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v, url2.getHost(), "/", null))));
             ghostDriver.get(url);
-            RunnableEx.run(() -> Thread.sleep(10000));
+
+            RunnableEx.run(() -> Thread.sleep(500));
+            String pageSource = ghostDriver.getPageSource();
+            while (StringUtils.isNotBlank(loadingStr) && pageSource.contains(loadingStr)) {
+                RunnableEx.run(() -> Thread.sleep(5000));
+                pageSource = ghostDriver.getPageSource();
+            }
+            for (ConsumerEx<PhantomJSDriver> consumerEx : onload) {
+                consumerEx.accept(ghostDriver);
+            }
             return Jsoup.parse(ghostDriver.getPageSource());
         } finally {
             ghostDriver.quit();
         }
     }
 
-    public static Document renderPage(String url, File outFile, String loadingStr) {
-        PhantomJSDriverService createDefaultService =
-                new PhantomJSDriverService.Builder().usingPhantomJSExecutable(ExtractUtils.PHANTOM_JS.toFile()).usingAnyFreePort()
-                        .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log")).build();
-        PhantomJSDriver ghostDriver = new PhantomJSDriver(createDefaultService, DesiredCapabilities.firefox());
-        try {
-            ghostDriver.setLogLevel(Level.SEVERE);
-            ghostDriver.manage().window().maximize();
-            ghostDriver.get(url);
-            RunnableEx.run(() -> Thread.sleep(500));
-            String pageSource = ghostDriver.getPageSource();
-            while (pageSource.contains(loadingStr)) {
-                RunnableEx.run(() -> Thread.sleep(5000));
-                pageSource = ghostDriver.getPageSource();
-            }
-            RunnableEx.run(() -> copy(ghostDriver.getScreenshotAs(OutputType.FILE),
-                    outFile));
-            return Jsoup.parse(ghostDriver.getPageSource());
-        } catch (Exception e) {
-            LOG.error("", e);
-            return null;
-        } finally {
-            ghostDriver.quit();
-        }
+    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr, File outFile)
+            throws Exception {
+        return renderPage(url, cookies, loadingStr,
+                driver -> copy(driver.getScreenshotAs(OutputType.FILE), outFile));
     }
 
     private static void addBasicAuthorization(HttpURLConnection con) {
@@ -300,6 +295,5 @@ public final class ExtractUtils {
         return Stream.of(PROXY_CONFIG).filter(PredicateEx.makeTest(s -> isPortOpen(s, 3128, timeout))).findFirst()
                 .orElse(null);
     }
-
 
 }

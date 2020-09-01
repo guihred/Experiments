@@ -8,6 +8,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.util.Callback;
+import utils.ConsumerEx;
 
 public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, SimpleTreeViewBuilder<T>> {
     private TreeView<T> treeView;
@@ -36,8 +37,9 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         return this;
     }
 
-    public SimpleTreeViewBuilder<T> onSelect(Consumer<TreeItem<T>> consume) {
-        treeView.getSelectionModel().selectedItemProperty().addListener((ob, old, n) -> consume.accept(n));
+    public SimpleTreeViewBuilder<T> onSelect(ConsumerEx<TreeItem<T>> consume) {
+        treeView.getSelectionModel().selectedItemProperty()
+                .addListener((ob, old, n) -> ConsumerEx.makeConsumer(consume).accept(n));
         return this;
     }
 

@@ -44,9 +44,12 @@ public class FXHackTest extends AbstractTestExecution {
                 "degustacao.dataprev.gov.br", "vip-psicapweb.dataprev.gov.br", "sinpat.dataprev.gov.br",
                 "pportalmaisemprego.dataprev.gov.br", "vip-psineaberto.dataprev.gov.br",
                 "mte-auto-atendimento.dataprev.gov.br", "mte-posto-atendimento.dataprev.gov.br");
+        WhoIsScanner whoIsScanner = new WhoIsScanner();
         for (String url : asList) {
             measureTime("HashVerifier.renderPage", () -> {
-                WhoIsScanner.evaluateURL(url);
+                RunnableEx.run(() -> whoIsScanner.name(url).waitStr("Please wait...")
+                        .subFolder("#gradeA", "#warningBox", "ratingTitle", "reportTitle").evaluateURL(
+                                "https://www.ssllabs.com/ssltest/analyze.html?d=" + url + "&ignoreMismatch=on&latest"));
             });
         }
     }
@@ -136,11 +139,9 @@ public class FXHackTest extends AbstractTestExecution {
         Path firstPathByExtension = measureTime("ResourceFXUtils.getFirstPathByExtension",
                 () -> ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
         measureTime("HashVerifier.getMD5Hash", () -> HashVerifier.getMD5Hash(firstPathByExtension));
-        String sha1Hash = measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstPathByExtension));
-        measureTime("HashVerifier.hashLookup", () -> HashVerifier.hashLookup(sha1Hash).html());
-        String sha256Hash =
+        measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstPathByExtension));
+        measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
                 measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
-        measureTime("HashVerifier.virusTotal", () -> HashVerifier.virusTotal(sha256Hash).html());
     }
 
     @Test

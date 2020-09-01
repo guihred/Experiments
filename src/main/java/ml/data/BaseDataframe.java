@@ -16,7 +16,9 @@ public class BaseDataframe {
     protected Map<String, Function<Object, Object>> mapping = new LinkedHashMap<>();
     protected int size;
     protected File file;
+
     protected Map<String, DataframeStatisticAccumulator> stats;
+
     protected Map<String, Predicate<Object>> filters = new LinkedHashMap<>();
 
     public BaseDataframe() {
@@ -37,6 +39,18 @@ public class BaseDataframe {
 
     public List<String> cols() {
         return dataframe.keySet().stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        BaseDataframe other = (BaseDataframe) obj;
+        return Objects.equals(file, other.file);
     }
 
     public Map<String, List<Object>> getDataframe() {
@@ -61,6 +75,11 @@ public class BaseDataframe {
 
     public Map<String, DataframeStatisticAccumulator> getStats() {
         return stats;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(file);
     }
 
     public boolean isLoaded() {

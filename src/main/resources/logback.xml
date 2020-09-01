@@ -24,7 +24,7 @@
 		<appender-ref ref="STDOUT" />
 	</root>
 	<logger name="contest.ContestReader" level="OFF" />
-	<logger name="utils.ExtractUtils" level="OFF" />
+	<logger name="utils.ExtractUtils" level="INFO" />
 	<logger name="utils.ConsoleUtils" level="INFO" />
  	<logger name="schema.sngpc.FXMLCreator" level="OFF" /> 
  	<logger name="rosario.LeitorArquivos" level="OFF" /> 

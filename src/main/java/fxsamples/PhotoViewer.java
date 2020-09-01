@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
@@ -17,6 +19,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import simplebuilder.FileChooserBuilder;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
 import utils.RotateUtils;
@@ -31,7 +34,7 @@ public class PhotoViewer extends Application {
     @FXML
     private Text news;
     @FXML
-    private Group buttonGroup;
+    private Parent buttonGroup;
     @FXML
     private Group tickerArea;
     @FXML
@@ -59,6 +62,14 @@ public class PhotoViewer extends Application {
         addPicturesImageFolder();
     }
 
+    public void onAddFolder(ActionEvent event) {
+        new FileChooserBuilder().onSelect(f -> {
+            imageFiles.clear();
+            ResourceFXUtils.runOnFiles(f, t -> tryAddImage(t, imageFiles, currentIndex));
+            loadImage(imageFiles.get(currentIndex.get()), loading, progressIndicator, news, currentImageView);
+        }).openDirectoryAction().handle(event);
+    }
+
     public void onMousePressedButton1() {
         runIfNotLoading(() -> {
             currentIndex.set(goToImageIndex(ButtonMove.PREV, imageFiles, currentIndex));
@@ -80,7 +91,7 @@ public class PhotoViewer extends Application {
 
     private void addPicturesImageFolder() {
         ResourceFXUtils.runOnFiles(ResourceFXUtils.getUserFolder("Pictures"),
-            t -> tryAddImage(t, imageFiles, currentIndex));
+                t -> tryAddImage(t, imageFiles, currentIndex));
         loadImage(imageFiles.get(currentIndex.get()), loading, progressIndicator, news, currentImageView);
     }
 

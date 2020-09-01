@@ -1,6 +1,7 @@
 package ethical.hacker;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
@@ -12,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import utils.*;
 
@@ -45,6 +47,7 @@ public class WebsiteScanner {
     public List<Entry<String, List<String>>> entrySet() {
         return websiteRoutes.entrySet().stream().collect(Collectors.toList());
     }
+
     public ObservableMap<String, List<String>> getLinkNetwork(String url, BiConsumer<String, List<String>> run) {
         if (websiteRoutes.isEmpty()) {
             websiteRoutes.addListener(
@@ -58,7 +61,7 @@ public class WebsiteScanner {
     }
 
     public ObservableMap<String, List<String>> getLinkNetwork(String url, ConsumerEx<String> run) {
-        return getLinkNetwork(url, (page,links)->ConsumerEx.makeConsumer(run).accept(page));
+        return getLinkNetwork(url, (page, links) -> ConsumerEx.makeConsumer(run).accept(page));
     }
 
     public ObservableMap<String, List<String>> getLinkNetwork(String url, RunnableEx run) {
@@ -74,15 +77,10 @@ public class WebsiteScanner {
             websiteRoutes.putIfAbsent(ip2, new ArrayList<>());
         }
     }
-    private List<String> getLinks(String url) throws IOException {
-        SimpleStringProperty currentDomain = new SimpleStringProperty("");
-        URL url2 = new URL(url);
-        currentDomain.set(url2.getProtocol() + "://" + url2.getHost());
 
-        return ExtractUtils.getDocument(url, cookies).select("a").stream().map(e -> e.attr("href"))
-                .filter(StringUtils::isNotBlank).filter(s -> !s.contains("#"))
-                .map(e -> ExtractUtils.addDomain(currentDomain, e)).filter(s -> !Objects.equals(s, url)).distinct()
-                .limit(linkMax).collect(Collectors.toList());
+    private List<String> getLinks(String url) throws IOException {
+        Document document = ExtractUtils.getDocument(url, cookies);
+        return getLinks(url, document).stream().limit(linkMax).collect(Collectors.toList());
     }
 
     private int getSize() {
@@ -111,6 +109,15 @@ public class WebsiteScanner {
             }, e -> LOG.info("ERRO {} {}", change.getKey(),
                     FunctionEx.mapIf(e.getCause(), Throwable::getMessage, e.getMessage()))).run());
         }
+    }
+
+    public static List<String> getLinks(String url, Document document) throws MalformedURLException {
+        URL url2 = new URL(url);
+        SimpleStringProperty currentDomain = new SimpleStringProperty(url2.getProtocol() + "://" + url2.getHost());
+        return document.select("a").stream().map(e -> e.attr("href"))
+                .filter(StringUtils::isNotBlank).filter(s -> !s.contains("#"))
+                .map(e -> ExtractUtils.addDomain(currentDomain, e)).filter(s -> !Objects.equals(s, url)).distinct()
+                .collect(Collectors.toList());
     }
 
 }

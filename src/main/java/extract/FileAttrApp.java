@@ -22,7 +22,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import utils.*;
+import utils.ExtractUtils;
+import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
+import utils.SupplierEx;
 
 public class FileAttrApp extends Application {
     private Map<File, BasicFileAttributes> attrMap = new LinkedHashMap<>();
@@ -54,7 +57,7 @@ public class FileAttrApp extends Application {
     private Parent createSplitTreeListDemoNode() {
         File rootFile = new File("").getAbsoluteFile();
         SimpleTreeViewBuilder<File> root = new SimpleTreeViewBuilder<File>().root(rootFile).cellFactory(this::setText)
-            .onSelect(ConsumerEx.makeConsumer(this::onSelectFile));
+                .onSelect(this::onSelectFile);
 
         PieChart pieChart = new PieChart();
         SplitPane splitPane = new SplitPane(root.build(), pieChart);

@@ -11,6 +11,7 @@ import javafx.animation.Animation;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
@@ -31,16 +32,15 @@ public class PhotoViewerHelper {
         }
     }
 
-    static Group createButtonPanel(Scene scene, Group buttonGroup, Rectangle buttonArea) {
+    static void createButtonPanel(Scene scene, Parent buttonGroup, Rectangle buttonArea) {
         // create button panel
-        buttonGroup.translateXProperty().bind(scene.widthProperty().subtract(buttonArea.getWidth() + 6));
+        buttonGroup.translateXProperty().bind(scene.widthProperty().subtract(buttonArea.getWidth() + 50));
         buttonGroup.translateYProperty().bind(scene.heightProperty().subtract(buttonArea.getHeight() + 6));
         scene.setOnMouseEntered(me -> new SimpleSequentialTransitionBuilder()
             .addFadeTransition(DURATION_MILLIS, buttonGroup, 0, 1).build().play());
         // Fade out button controls
         scene.setOnMouseExited(me -> new SimpleSequentialTransitionBuilder()
             .addFadeTransition(DURATION_MILLIS, buttonGroup, 1, 0).build().play());
-        return buttonGroup;
     }
 
     static void createProgressIndicator(Scene scene, ProgressIndicator progressIndicator) {
