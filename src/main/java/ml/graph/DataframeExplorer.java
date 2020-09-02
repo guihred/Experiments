@@ -52,7 +52,7 @@ public class DataframeExplorer extends Application {
     private ComboBox<QuestionType> questType;
     private ObservableList<Entry<String, DataframeStatisticAccumulator>> columns = FXCollections.observableArrayList();
     private ObservableList<Question> questions = FXCollections.observableArrayList();
-    private ObjectProperty<DataframeML> dataframe = new SimpleObjectProperty<>();
+    private final ObjectProperty<DataframeML> dataframe = new SimpleObjectProperty<>();
     @FXML
     private PaginatedTableView dataTable;
     @FXML
@@ -121,8 +121,9 @@ public class DataframeExplorer extends Application {
     }
 
     public void onActionLoadCSV(ActionEvent e) {
-        new FileChooserBuilder().title("Load CSV").extensions("CSV", "*.csv").onSelect(this::addStats).openFileAction()
-                .handle(e);
+        new FileChooserBuilder().title("Load CSV")
+                .initialDir(FunctionEx.mapIf(getDataframe(), d -> d.getFile().getParentFile()))
+                .extensions("CSV", "*.csv").onSelect(this::addStats).openFileAction().handle(e);
     }
 
     public void onActionSave(ActionEvent event) {

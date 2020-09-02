@@ -141,7 +141,7 @@ public final class PaginatedTableView extends VBox {
                 value.add((int) Math.pow(10, i));
             }
             if (doubleValue > value.get(value.size() - 1)) {
-                value.add((int) Math.pow(10, i) * 2);
+                value.add((int) (Math.pow(10, i) * 2.5));
             }
             if (doubleValue > value.get(value.size() - 1)) {
                 value.add((int) Math.pow(10, i) * 5);
