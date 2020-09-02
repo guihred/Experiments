@@ -23,6 +23,7 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.shape.Mesh;
 import javax.swing.filechooser.FileSystemView;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 /**
@@ -167,7 +168,7 @@ public final class ResourceFXUtils {
     }
 
     public static boolean hasExtension(Path e, String... other) {
-        return Stream.of(other).anyMatch(ex -> e.toString().endsWith(ex));
+        return Stream.of(other).anyMatch(ex -> StringUtils.endsWithIgnoreCase(e.toString(), ex));
     }
 
     public static Mesh importStlMesh(File file) {

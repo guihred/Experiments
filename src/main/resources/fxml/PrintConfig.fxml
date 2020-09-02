@@ -90,6 +90,7 @@
 				<CheckBox text="Center" fx:id="center" selected="true" onAction="#changeConfig" />
 				<Button text="_Print To PDF" onAction="#printToPDF" />
 				<Button text="_Load Images" onAction="#loadImages" />
+				<Button text="_Load Images Directory" onAction="#loadImagesDir" />
 				<HBox spacing="30">
 					<Hyperlink onAction="#subPage" text="&lt;" />
 					<Text fx:id="page" text="1" />

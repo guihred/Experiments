@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import ml.data.PaginatedTableView;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleButtonBuilder;
+import utils.ExtractUtils;
 import utils.FunctionEx;
 import utils.HasLogging;
 import utils.ResourceFXUtils;
@@ -37,6 +39,7 @@ public class PageExtractor extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Page Extractor");
         HBox root = new HBox();
+        ExtractUtils.insertProxyConfig();
 
         ObservableList<Document> value = FXCollections.observableArrayList();
         PaginatedTableView paginatedTableView = new PaginatedTableView();
@@ -52,21 +55,28 @@ public class PageExtractor extends Application {
                 }).title("HTML to LOAD").buildOpenDirectoryButton();
         TextField selector = new TextField();
         TextField columnName = new TextField();
-        Map<String, String> hashMap = new HashMap<>();
+        Map<String, String> columnMap = new HashMap<>();
         root.getChildren().add(new VBox(new Text("Name"), columnName, new Text("Selector"), selector,
-                SimpleButtonBuilder.newButton("Add Field", e -> {
+                SimpleButtonBuilder.newButton("Add Text Field", e -> {
                     String text = selector.getText();
-                    hashMap.put(columnName.getText(), text);
+                    columnMap.put(columnName.getText(), text);
                     HasLogging.log().info("{} = {}", columnName.getText(), text);
                     paginatedTableView.addColumn(columnName.getText(), i -> getColumnValue(value, text, i));
-                }), buildOpenDirectoryButton, new FileChooserBuilder().name("Export Excel").title("Export Excel")
+                }), SimpleButtonBuilder.newButton("Add _HTML Field", e -> {
+                    String text = selector.getText();
+                    columnMap.put(columnName.getText(), text);
+                    HasLogging.log().info("{} = {}", columnName.getText(), text);
+                    paginatedTableView.addColumn(columnName.getText(), i -> getColumnHtml(value, text, i));
+                })
+
+                , buildOpenDirectoryButton, new FileChooserBuilder().name("Export Excel").title("Export Excel")
                         .extensions("Excel", "*.xlsx").onSelect(file -> {
                             List<Integer> items = paginatedTableView.getFilteredItems();
                             List<String> columns = paginatedTableView.getColumns();
                             Map<String, FunctionEx<Integer, Object>> mapa = new LinkedHashMap<>();
                             List<Integer> collect = items;
                             for (String column : columns) {
-                                String string = hashMap.get(column);
+                                String string = columnMap.get(column);
                                 mapa.put(column, i -> getColumnValue(value, string, i));
                             }
                             ExcelService.getExcel(collect, mapa, file);
@@ -81,6 +91,16 @@ public class PageExtractor extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static WebView getColumnHtml(ObservableList<Document> value, String text, Integer i) {
+        Elements select = value.get(i).select(text);
+        String collect =
+                select.stream().map(Element::html).filter(StringUtils::isNotBlank).collect(Collectors.joining("\n"));
+        WebView view = new WebView();
+        view.getEngine().loadContent(collect);
+        // view.setDisable(true);
+        return view;
     }
 
     private static String getColumnValue(ObservableList<Document> value, String text, Integer i) {

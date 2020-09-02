@@ -6,6 +6,8 @@ import extract.PdfUtils;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -106,6 +108,21 @@ public class PrintConfig extends Application {
                         changeConfig();
                     }
                 }).handle(event);
+    }
+
+    public void loadImagesDir(ActionEvent event) {
+        new FileChooserBuilder().title("Choose Image").extensions("Image", "*.png", "*.jpg", "*.jpeg")
+                .onSelect(file -> {
+                    List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(file, ".png", ".jpg", ".jpeg");
+                    if (!pathByExtension.isEmpty()) {
+                        images.clear();
+                        for (Path f : pathByExtension) {
+                            URL e = ResourceFXUtils.convertToURL(f.toFile());
+                            images.add(new Image(e.toExternalForm()));
+                        }
+                        changeConfig();
+                    }
+                }).openDirectoryAction().handle(event);
     }
 
     public void printToPDF() {
