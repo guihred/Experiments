@@ -123,7 +123,7 @@ public class DataframeExplorer extends Application {
     public void onActionLoadCSV(ActionEvent e) {
         new FileChooserBuilder().title("Load CSV")
                 .initialDir(FunctionEx.mapIf(getDataframe(), d -> d.getFile().getParentFile()))
-                .extensions("CSV", "*.csv").onSelect(this::addStats).openFileAction().handle(e);
+                .extensions("CSV", "*.csv").onSelect(this::addStats).openFileAction(e);
     }
 
     public void onActionSave(ActionEvent event) {
@@ -136,7 +136,7 @@ public class DataframeExplorer extends Application {
                         }
                         DataframeUtils.save(getDataframe(), outFile);
                         LOG.info("{} SAVED", outFile);
-                    })).saveFileAction().handle(event);
+                    })).saveFileAction(event);
         }
     }
 

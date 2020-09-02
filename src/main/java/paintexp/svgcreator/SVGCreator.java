@@ -105,8 +105,8 @@ public class SVGCreator extends Application {
 
     public void onActionBackground(ActionEvent event) {
         new FileChooserBuilder().title("Imagem").initialDir(ResourceFXUtils.getOutFile().getParentFile())
-                .onSelect(f -> image.setImage(new Image(ResourceFXUtils.convertToURL(f).toExternalForm())))
-                .extensions("Images", "*.jpg", "*.png", "*.bmp", "*.jpg").openFileAction().handle(event);
+        .onSelect(f -> image.setImage(new Image(ResourceFXUtils.convertToURL(f).toExternalForm())))
+                .extensions("Images", "*.jpg", "*.png", "*.bmp", "*.jpg").openFileAction(event);
     }
 
     public void onActionRelative() {

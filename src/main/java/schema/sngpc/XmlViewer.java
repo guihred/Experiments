@@ -54,8 +54,8 @@ public class XmlViewer extends Application {
     }
 
     public void onActionImportXML(ActionEvent e) {
-        new FileChooserBuilder().title("Import XML").extensions("Xml", "*.xml").onSelect(fileProp::set).openFileAction()
-                .handle(e);
+        new FileChooserBuilder().title("Import XML").extensions("Xml", "*.xml").onSelect(fileProp::set)
+                .openFileAction(e);
     }
 
     @Override

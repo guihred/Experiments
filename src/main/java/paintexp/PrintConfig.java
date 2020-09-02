@@ -99,15 +99,16 @@ public class PrintConfig extends Application {
     }
 
     public void loadImages(ActionEvent event) {
-        new FileChooserBuilder().title("Choose Image").extensions("Image", "*.png", "*.jpg", "*.jpeg")
-                .openFileMultipleAction(f -> {
-                    if (!f.isEmpty()) {
-                        images.clear();
-                        images.addAll(f.stream().map(ResourceFXUtils::convertToURL)
-                                .map(e -> new Image(e.toExternalForm())).collect(Collectors.toList()));
-                        changeConfig();
-                    }
-                }).handle(event);
+        FileChooserBuilder chooser =
+                new FileChooserBuilder().title("Choose Image").extensions("Image", "*.png", "*.jpg", "*.jpeg");
+        chooser.openFileMultipleAction(f -> {
+            if (!f.isEmpty()) {
+                images.clear();
+                images.addAll(f.stream().map(ResourceFXUtils::convertToURL).map(e -> new Image(e.toExternalForm()))
+                        .collect(Collectors.toList()));
+                changeConfig();
+            }
+        }, event);
     }
 
     public void loadImagesDir(ActionEvent event) {
@@ -122,7 +123,7 @@ public class PrintConfig extends Application {
                         }
                         changeConfig();
                     }
-                }).openDirectoryAction().handle(event);
+                }).openDirectoryAction(event);
     }
 
     public void printToPDF() {

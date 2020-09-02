@@ -54,7 +54,7 @@ public final class PaintFileUtils {
             paintModel.getImageStack().getChildren().add(imageView);
             paintModel.createImageVersion();
         });
-        chooser.openFileAction().handle(e);
+        chooser.openFileAction(e);
     }
 
     public static void print(PaintModel paintModel) {
@@ -68,13 +68,9 @@ public final class PaintFileUtils {
 
     public static void saveFile(ActionEvent event, PaintModel paintModel) {
         if (paintModel.getCurrentFile() == null) {
-            FileChooserBuilder chooser = new FileChooserBuilder();
-            chooser.title("Save File");
-            chooser.initialDir(SupplierEx.getFirst(
+            FileChooserBuilder chooser = new FileChooserBuilder().title("Save File").initialDir(SupplierEx.getFirst(
                     () -> FunctionEx.mapIf(paintModel.getCurrentFile(), File::getParentFile), () -> defaultFile));
-            chooser.extensions("Image", "*.png");
-            chooser.onSelect(paintModel::setCurrentFile);
-            chooser.saveFileAction().handle(event);
+            chooser.extensions("Image", "*.png").onSelect(paintModel::setCurrentFile).saveFileAction(event);
         }
         RunnableEx.runIf(paintModel.getCurrentFile(), file -> {
             WritableImage image = paintModel.getImage();

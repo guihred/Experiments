@@ -67,7 +67,7 @@ public class PhotoViewer extends Application {
             imageFiles.clear();
             ResourceFXUtils.runOnFiles(f, t -> tryAddImage(t, imageFiles, currentIndex));
             loadImage(imageFiles.get(currentIndex.get()), loading, progressIndicator, news, currentImageView);
-        }).openDirectoryAction().handle(event);
+        }).openDirectoryAction(event);
     }
 
     public void onMousePressedButton1() {

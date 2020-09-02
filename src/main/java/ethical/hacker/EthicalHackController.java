@@ -70,8 +70,7 @@ public class EthicalHackController extends EthicalHackApp {
 
     public void onActionIps(ActionEvent event) {
         new FileChooserBuilder().title("Select IP File").extensions("Any", "*.*")
-                .onSelect(file -> networkAddress.setText(String.format("-iL \"%s\"", file))).openFileAction()
-                .handle(event);
+                .onSelect(file -> networkAddress.setText(String.format("-iL \"%s\"", file))).openFileAction(event);
     }
 
     public void onActionNetstats() {

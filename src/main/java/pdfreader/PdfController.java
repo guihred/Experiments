@@ -154,7 +154,7 @@ public class PdfController extends Application {
         new FileChooserBuilder().title("Selecione Arquivo PDF").extensions("File", "*.pdf").onSelect(file -> {
             timeline.stop();
             RunnableEx.runNewThread(() -> PdfUtils.readFile(pdfInfo, file));
-        }).openFileAction().handle(event);
+        }).openFileAction(event);
         updateAll();
 
     }

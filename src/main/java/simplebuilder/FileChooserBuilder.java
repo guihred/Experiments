@@ -21,15 +21,15 @@ public class FileChooserBuilder {
     private String name;
 
     public Button buildOpenButton() {
-        return FileChooserBuilder.newButton(name, openFileAction());
+        return FileChooserBuilder.newButton(name, this::openFileAction);
     }
 
     public Button buildOpenDirectoryButton() {
-        return FileChooserBuilder.newButton(name, openDirectoryAction());
+        return FileChooserBuilder.newButton(name, this::openDirectoryAction);
     }
 
     public Button buildSaveButton() {
-        return FileChooserBuilder.newButton(name, saveFileAction());
+        return FileChooserBuilder.newButton(name, this::saveFileAction);
     }
 
     public FileChooserBuilder extensions(String filter, String... extensions) {
@@ -58,37 +58,30 @@ public class FileChooserBuilder {
         return this;
     }
 
-    public EventHandler<ActionEvent> openDirectoryAction() {
-        return e -> {
-            Node target = (Node) e.getTarget();
-            runIf(target.getScene().getWindow(), window -> runIf(chooser.showDialog(window), onSelect));
-        };
+
+    public void openDirectoryAction(ActionEvent e) {
+        Node target = (Node) e.getTarget();
+        runIf(target.getScene().getWindow(), window -> runIf(chooser.showDialog(window), onSelect));
     }
 
-    public EventHandler<ActionEvent> openFileAction() {
-        return e -> {
-            EventTarget target2 = e.getTarget();
-            Node target = target2 instanceof Node ? (Node) target2 : null;
-            File fileChosen = fileChooser.showOpenDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
-            runIf(fileChosen, onSelect);
-        };
+    public void openFileAction(ActionEvent e) {
+        EventTarget target2 = e.getTarget();
+        Node target = target2 instanceof Node ? (Node) target2 : null;
+        File fileChosen = fileChooser.showOpenDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
+        runIf(fileChosen, onSelect);
     }
 
-    public EventHandler<ActionEvent> openFileMultipleAction(ConsumerEx<List<File>> onSelect0) {
-        return e -> {
-            Node target = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
-            List<File> fileChosen =
-                    fileChooser.showOpenMultipleDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
-            runIf(fileChosen, onSelect0);
-        };
+    public void openFileMultipleAction(ConsumerEx<List<File>> onSelect0, ActionEvent e) {
+        Node target = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
+        List<File> fileChosen =
+                fileChooser.showOpenMultipleDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
+        runIf(fileChosen, onSelect0);
     }
 
-    public EventHandler<ActionEvent> saveFileAction() {
-        return e -> {
-            Node target = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
-            File fileChosen = fileChooser.showSaveDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
-            runIf(fileChosen, onSelect);
-        };
+    public void saveFileAction(ActionEvent e) {
+        Node target = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
+        File fileChosen = fileChooser.showSaveDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
+        runIf(fileChosen, onSelect);
     }
 
     public FileChooserBuilder title(String title) {
