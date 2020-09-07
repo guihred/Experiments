@@ -54,7 +54,8 @@ public class DataframeStatisticAccumulator {
 
     public String getBottom() {
         if (getFormat() == String.class) {
-            return countMap.entrySet().stream().min(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
+            return SupplierEx.get(() -> countMap.entrySet().stream().min(comparator())
+                    .map(Entry<String, Integer>::getKey).orElse(null));
         }
         return Objects.toString(min);
     }
@@ -106,7 +107,8 @@ public class DataframeStatisticAccumulator {
 
     public Object getMax() {
         if (getFormat() == String.class) {
-            return countMap.entrySet().stream().max(comparator()).map(Entry<String, Integer>::getKey).orElse(null);
+            return SupplierEx.get(() -> countMap.entrySet().stream().max(comparator())
+                    .map(Entry<String, Integer>::getKey).orElse(null));
         }
         return max;
     }

@@ -2,6 +2,7 @@ package kibana;
 
 import com.google.common.collect.ImmutableMap;
 import ethical.hacker.EthicalHackApp;
+import ethical.hacker.WhoIsScanner;
 import extract.ExcelService;
 import gaming.ex21.ListHelper;
 import java.io.File;
@@ -57,8 +58,8 @@ public class ConsultasInvestigator extends Application {
     private TableView<Map<String, String>> consultasTable;
     @FXML
     private TableView<Map<String, String>> pathsTable;
-    private List<QueryObjects> queryList = new ArrayList<>();
 
+    private List<QueryObjects> queryList = new ArrayList<>();
     private ObservableMap<String, String> filter = FXCollections.observableHashMap();
     @FXML
     private ComboBox<String> ipCombo;
@@ -66,6 +67,7 @@ public class ConsultasInvestigator extends Application {
     private ComboBox<String> uidCombo;
     @FXML
     private LineChart<Number, Number> timelineUsuarios;
+
     @FXML
     private LineChart<Number, Number> timelineIPs;
 
@@ -82,7 +84,7 @@ public class ConsultasInvestigator extends Application {
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
         configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("[^\\/\\?\\d]+");
         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
-        configureTimeline(MDC_IP, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
+        configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
         filterText.textProperty().bind(Bindings.createStringBinding(
                 () -> filter.entrySet().stream().map(Objects::toString).collect(Collectors.joining("\n")), filter));
     }
@@ -91,6 +93,30 @@ public class ConsultasInvestigator extends Application {
         resultsFilter.setText("");
         filter.clear();
         onActionKibanaScan();
+    }
+
+    public void onActionFillIP() {
+        RunnableEx.runNewThread(() -> {
+            ObservableList<Map<String, String>> items = consultasTable.getItems();
+            if (items.isEmpty()) {
+                return;
+            }
+            RunnableEx.runInPlatform(() -> progressIndicator.setProgress(0));
+            WhoIsScanner whoIsScanner = new WhoIsScanner();
+            for (Map<String, String> map : items) {
+                Map<String, String> ipInformation = whoIsScanner.getIpInformation(map.get("key"));
+                map.put("Rede", ipInformation.getOrDefault("network", ipInformation.get("CanonicalHostName")));
+                map.put("Owner", ipInformation.getOrDefault("as_owner", ipInformation.get("asname")));
+                map.put("Country", ipInformation.getOrDefault("country", ipInformation.get("ascountry")));
+                if (progressIndicator.getProgress() == 0) {
+                    RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, map.keySet()));
+                }
+                RunnableEx.runInPlatform(
+                        () -> progressIndicator.setProgress(progressIndicator.getProgress() + 1. / items.size()));
+            }
+            RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, items.get(0).keySet()));
+            RunnableEx.runInPlatform(() -> progressIndicator.setProgress(1));
+        });
     }
 
     public void onActionKibanaScan() {
@@ -175,7 +201,7 @@ public class ConsultasInvestigator extends Application {
                 .bind(Bindings.selectDouble(ipsTable2.parentProperty(), "width").add(-columnWidth));
         ipsTable2.setItems(CommonsFX.newFastFilter(resultsFilter, ipItems2.filtered(e -> true)));
         ipsTable2.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        SimpleTableViewBuilder.onDoubleClick(ipsTable2, e -> {
+        SimpleTableViewBuilder.of(ipsTable2).copiable().onDoubleClick(e -> {
             filter.put(userNameQuery, e.values().stream().findFirst().orElse("key"));
             onActionKibanaScan();
         });
@@ -192,10 +218,10 @@ public class ConsultasInvestigator extends Application {
             public Number fromString(String string) {
                 return LocalDateTime.parse(string).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
             }
+
             @Override
             public String toString(Number object) {
-                return Instant.ofEpochMilli(object.longValue()).atZone(ZoneId.systemDefault()).toLocalTime()
-                        .toString();
+                return Instant.ofEpochMilli(object.longValue()).atZone(ZoneId.systemDefault()).toLocalTime().toString();
             }
         });
         ObservableList<Series<Number, Number>> timelionFullScan = fieldObjects.getSeries();

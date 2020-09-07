@@ -37,7 +37,7 @@ public final class StageHelper {
         if (file.exists()) {
             RunnableEx.ignore(() -> scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString()));
         }
-        Button saveButton = FileChooserBuilder.newButton("_Save", e -> RunnableEx.run(() -> {
+        Button saveButton = SimpleButtonBuilder.newButton("_Save", e -> RunnableEx.run(() -> {
             try (PrintStream fileOutputStream = new PrintStream(file, StandardCharsets.UTF_8.name())) {
                 fileOutputStream.print(textArea.getText());
                 fileOutputStream.flush();

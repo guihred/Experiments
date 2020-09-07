@@ -16,14 +16,13 @@ import utils.SupplierEx;
 
 public class DataframeBuilder extends DataframeML {
     private final DataframeML dataframeML = new DataframeML();
-    private final File csvFile;
 
     protected DataframeBuilder(File csvFile) {
-        this.csvFile = csvFile;
+        dataframeML.file = csvFile;
     }
 
     protected DataframeBuilder(String csvFile) {
-        this.csvFile = ResourceFXUtils.toFile(csvFile);
+        this(ResourceFXUtils.toFile(csvFile));
     }
 
     public DataframeBuilder addCategory(String d) {
@@ -37,13 +36,13 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public DataframeML build() {
-        DataframeUtils.readCSV(csvFile, dataframeML);
+        DataframeUtils.readCSV(dataframeML.file, dataframeML);
         return dataframeML;
     }
 
     public Set<Entry<String, DataframeStatisticAccumulator>> columns() {
         return SupplierEx.get(() -> {
-            try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
+            try (Scanner scanner = new Scanner(dataframeML.file, "UTF-8")) {
                 DataframeUtils.addHeaders(dataframeML, scanner);
             }
             return dataframeML.getStats().entrySet();
@@ -61,12 +60,12 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public DataframeML makeStats() {
-        DataframeUtils.makeStats(csvFile, dataframeML, new SimpleDoubleProperty());
+        DataframeUtils.makeStats(dataframeML.file, dataframeML, new SimpleDoubleProperty());
         return dataframeML;
     }
 
     public DataframeML makeStats(DoubleProperty progress) {
-        DataframeUtils.makeStats(csvFile, dataframeML, progress);
+        DataframeUtils.makeStats(dataframeML.file, dataframeML, progress);
         return dataframeML;
     }
 
@@ -77,6 +76,7 @@ public class DataframeBuilder extends DataframeML {
 
     public static DataframeML build(File csvFile) {
         DataframeML dataframeML = new DataframeML();
+        dataframeML.file = csvFile;
         if (!csvFile.exists()) {
             return dataframeML;
         }

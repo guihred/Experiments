@@ -1,6 +1,8 @@
 
 package utils;
 
+import gui.ava.html.image.generator.HtmlImageGenerator;
+import java.awt.Dimension;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -245,7 +247,6 @@ public final class ExtractUtils {
 
     }
 
-
     @SafeVarargs
     public static Document renderPage(String url, Map<String, String> cookies, String loadingStr,
             ConsumerEx<PhantomJSDriver>... onload) throws Exception {
@@ -254,12 +255,11 @@ public final class ExtractUtils {
                         .usingAnyFreePort().withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log")).build();
         PhantomJSDriver ghostDriver = new PhantomJSDriver(createDefaultService, DesiredCapabilities.firefox());
         try {
-            ghostDriver.setLogLevel(Level.SEVERE);
+            ghostDriver.setLogLevel(Level.OFF);
             ghostDriver.manage().window().maximize();
             URL url2 = new URL(url);
             RunnableEx.run(() -> cookies
                     .forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v, url2.getHost(), "/", null))));
-            ghostDriver.get(url);
 
             RunnableEx.run(() -> Thread.sleep(500));
             String pageSource = ghostDriver.getPageSource();
@@ -278,8 +278,17 @@ public final class ExtractUtils {
 
     public static Document renderPage(String url, Map<String, String> cookies, String loadingStr, File outFile)
             throws Exception {
-        return renderPage(url, cookies, loadingStr,
-                driver -> copy(driver.getScreenshotAs(OutputType.FILE), outFile));
+        return renderPage(url, cookies, loadingStr, driver -> copy(driver.getScreenshotAs(OutputType.FILE), outFile));
+    }
+
+    public static void saveHtmlImage(String html, File file) {
+        HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
+        Dimension dim = imageGenerator.getDefaultSize();
+        dim.setSize(Math.min(800, dim.getWidth()), dim.getHeight());
+        imageGenerator.setSize(dim);
+        imageGenerator.loadHtml(html);
+        imageGenerator.saveAsImage(file);
+
     }
 
     private static void addBasicAuthorization(HttpURLConnection con) {

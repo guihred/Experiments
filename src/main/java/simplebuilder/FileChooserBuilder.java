@@ -3,9 +3,10 @@ package simplebuilder;
 import static utils.RunnableEx.runIf;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -13,23 +14,31 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import utils.ConsumerEx;
 import utils.FunctionEx;
+import utils.HasLogging;
+import utils.SupplierEx;
 
 public class FileChooserBuilder {
+    private static final Map<String, File> LAST_FILES = new LinkedHashMap<>();
     private DirectoryChooser chooser = new DirectoryChooser();
     private FileChooser fileChooser = new FileChooser();
     private ConsumerEx<File> onSelect;
     private String name;
+    private String evocationLine;
+
+    public FileChooserBuilder() {
+        evocationLine = HasLogging.getCurrentLine(1);
+    }
 
     public Button buildOpenButton() {
-        return FileChooserBuilder.newButton(name, this::openFileAction);
+        return SimpleButtonBuilder.newButton(name, this::openFileAction);
     }
 
     public Button buildOpenDirectoryButton() {
-        return FileChooserBuilder.newButton(name, this::openDirectoryAction);
+        return SimpleButtonBuilder.newButton(name, this::openDirectoryAction);
     }
 
     public Button buildSaveButton() {
-        return FileChooserBuilder.newButton(name, this::saveFileAction);
+        return SimpleButtonBuilder.newButton(name, this::saveFileAction);
     }
 
     public FileChooserBuilder extensions(String filter, String... extensions) {
@@ -58,29 +67,43 @@ public class FileChooserBuilder {
         return this;
     }
 
-
     public void openDirectoryAction(ActionEvent e) {
         Node target = (Node) e.getTarget();
-        runIf(target.getScene().getWindow(), window -> runIf(chooser.showDialog(window), onSelect));
+        chooser.setInitialDirectory(SupplierEx.nonNull(chooser.getInitialDirectory(), LAST_FILES.get(evocationLine)));
+        runIf(target.getScene().getWindow(), window -> {
+            File fileChosen = chooser.showDialog(window);
+            LAST_FILES.put(evocationLine, fileChosen);
+            runIf(fileChosen, onSelect);
+        });
     }
 
     public void openFileAction(ActionEvent e) {
         EventTarget target2 = e.getTarget();
+        fileChooser.setInitialDirectory(
+                SupplierEx.nonNull(fileChooser.getInitialDirectory(), LAST_FILES.get(evocationLine)));
         Node target = target2 instanceof Node ? (Node) target2 : null;
         File fileChosen = fileChooser.showOpenDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
+        LAST_FILES.put(evocationLine, FunctionEx.mapIf(fileChosen, File::getParentFile));
         runIf(fileChosen, onSelect);
     }
 
     public void openFileMultipleAction(ConsumerEx<List<File>> onSelect0, ActionEvent e) {
         Node target = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
+        fileChooser.setInitialDirectory(
+                SupplierEx.nonNull(fileChooser.getInitialDirectory(), LAST_FILES.get(evocationLine)));
         List<File> fileChosen =
                 fileChooser.showOpenMultipleDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
+        LAST_FILES.put(evocationLine, fileChosen.stream().findFirst().map(File::getParentFile).orElse(null));
         runIf(fileChosen, onSelect0);
     }
 
     public void saveFileAction(ActionEvent e) {
         Node target = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
+        fileChooser.setInitialDirectory(
+                SupplierEx.nonNull(fileChooser.getInitialDirectory(), LAST_FILES.get(evocationLine)));
+
         File fileChosen = fileChooser.showSaveDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
+        LAST_FILES.put(evocationLine, FunctionEx.mapIf(fileChosen, File::getParentFile));
         runIf(fileChosen, onSelect);
     }
 
@@ -90,10 +113,4 @@ public class FileChooserBuilder {
         return this;
     }
 
-    public static Button newButton(String nome, EventHandler<ActionEvent> onAction) {
-        Button button = new Button(nome);
-        button.setId(nome);
-        button.setOnAction(onAction);
-        return button;
-    }
 }

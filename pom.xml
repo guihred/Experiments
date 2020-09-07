@@ -386,6 +386,13 @@
 			<systemPath>${project.basedir}/jimStlMeshImporterJFX.jar</systemPath>
 		</dependency>
 		<dependency>
+			<groupId>gui.ava</groupId>
+			<artifactId>html2image</artifactId>
+			<version>0.9</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/html2image-0.9.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>com.github.jai-imageio</groupId>
 			<artifactId>jai-imageio-jpeg2000</artifactId>
 			<version>1.3.0</version>

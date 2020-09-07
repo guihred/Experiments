@@ -19,14 +19,6 @@
 		<TabPane fx:id="tabPane0" tabMaxHeight="22.0" HBox.hgrow="ALWAYS"
 			tabMinHeight="22.0">
 			<tabs>
-				<Tab closable="false" text="Gerid INSS - Usuário x Qtde IPs de Origem">
-					<content>
-						<VBox>
-							<TableView fx:id="ipsTable" onKeyReleased="#copyContent"
-								VBox.vgrow="ALWAYS" />
-						</VBox>
-					</content>
-				</Tab>
 				<Tab closable="false" text="Usuários x Número consultas">
 					<content>
 						<VBox>
@@ -52,6 +44,14 @@
 						</VBox>
 					</content>
 				</Tab>
+                <Tab closable="false" text="Gerid INSS - Usuário x Qtde IPs de Origem">
+                    <content>
+                        <VBox>
+                            <TableView fx:id="ipsTable" onKeyReleased="#copyContent"
+                                VBox.vgrow="ALWAYS" />
+                        </VBox>
+                    </content>
+                </Tab>
 				<Tab text="Timeline Usuários">
 					<content>
 						<VBox>
@@ -140,6 +140,7 @@
 
 				<Text fx:id="filterText" text="" />
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
+				<Button onAction="#onActionFillIP" text="Fill IP" />
 				<Button onAction="#onActionClear" text="Clear" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
 				<ProgressIndicator fx:id="progressIndicator"

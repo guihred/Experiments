@@ -116,6 +116,13 @@ public final class ImageFXUtils {
         }).get();
     }
 
+    public static BufferedImage toBufferedImage(final Node canvas) {
+        return ImageFXUtils.toBufferedImage(canvas, Math.max(100, canvas.getBoundsInLocal().getWidth()),
+                Math.max(100, canvas.getBoundsInLocal().getHeight()),
+                canvas.getScaleX());
+        
+    }
+
     public static BufferedImage toBufferedImage(final Node canvas, final double w, final double h, final double scale) {
         return SupplierEx.get(() -> {
             final WritableImage writableImage = new WritableImage((int) (w * scale), (int) (h * scale));
@@ -124,6 +131,22 @@ public final class ImageFXUtils {
             final WritableImage snapshot = canvas.snapshot(params, writableImage);
             return SwingFXUtils.fromFXImage(snapshot, null);
         });
+    }
+
+    public static WritableImage toImage(final Node canvas) {
+        return toImage(canvas, canvas.getScaleX());
+    }
+
+    public static WritableImage toImage(final Node canvas, double scale) {
+        return SupplierEx.get(() -> {
+            double d = Math.max(100, canvas.getBoundsInLocal().getWidth()) * scale;
+            double e = Math.max(100, canvas.getBoundsInLocal().getHeight()) * scale;
+            final WritableImage writableImage = new WritableImage((int) d, (int) e);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setTransform(new Scale(scale, scale));
+            return canvas.snapshot(params, writableImage);
+        });
+        
     }
 
     static double normalizeValue(double value, double min, double max, double newMin, double newMax) {

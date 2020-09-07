@@ -94,6 +94,11 @@ public class DataframeExplorer extends Application {
                             headersCombo.getSelectionModel().selectedItemProperty()));
         }).converter(QuestionType::getSign);
         SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove);
+        dataframe.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> {
+            String format = String.format("Dataframe Explorer (%s)",
+                    FunctionEx.mapIf(getDataframe(), d -> d.getFile().getName(), ""));
+            ((Stage) questionsList.getScene().getWindow()).setTitle(format);
+        }));
     }
 
     public void onActionAdd() {
@@ -121,9 +126,8 @@ public class DataframeExplorer extends Application {
     }
 
     public void onActionLoadCSV(ActionEvent e) {
-        new FileChooserBuilder().title("Load CSV")
-                .initialDir(FunctionEx.mapIf(getDataframe(), d -> d.getFile().getParentFile()))
-                .extensions("CSV", "*.csv").onSelect(this::addStats).openFileAction(e);
+        new FileChooserBuilder().title("Load CSV").extensions("CSV", "*.csv").onSelect(this::addStats)
+                .openFileAction(e);
     }
 
     public void onActionSave(ActionEvent event) {
@@ -148,11 +152,7 @@ public class DataframeExplorer extends Application {
     public void start(Stage primaryStage) throws Exception {
         CommonsFX.loadFXML("Dataframe Explorer", "DataframeExplorer.fxml", this, primaryStage);
         CommonsFX.addCSS(primaryStage.getScene(), "progressLoader.css");
-        Bindings.createStringBinding(
-                () -> String.format("Dataframe Explorer %s",
-                        FunctionEx.mapIf(getDataframe(), d -> d.getFile().getName(), "")),
-                dataframe, columns, questions)
-                .addListener((ob, o, n) -> RunnableEx.runInPlatform(() -> primaryStage.setTitle(n)));
+
     }
 
     private void addQuestion() {
@@ -260,12 +260,16 @@ public class DataframeExplorer extends Application {
             List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
             if (!getDataframe().isLoaded()) {
                 Map<Integer, Map<String, Object>> cache = new HashMap<>();
-                for (String key : Arrays.asList("Header", "Format", "Count", "Max", "Mean", "Min", "Median25",
-                        "Median50", "Median75", "Sum")) {
+                List<String> asList = Arrays.asList("Header", "Format", "Count", "Max", "Mean", "Min", "Median25",
+                        "Median50", "Median75", "Sum");
+                for (String key : asList) {
                     dataTable.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
                 }
-
                 dataTable.setListSize(addedSubList.size());
+                double[] array = asList.stream().mapToDouble(e -> Math
+                        .max(Objects.toString(getStatAt(addedSubList, cache, e.toLowerCase(), 0)).length(), e.length()))
+                        .toArray();
+                dataTable.setColumnsWidth(array);
             } else {
                 addedSubList.forEach(entry -> dataTable.addColumn(entry.getKey(),
                         i -> getDataframe().getDataframe().get(entry.getKey()).get(i)));

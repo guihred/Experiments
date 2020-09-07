@@ -54,7 +54,7 @@ public final class PaginatedTableView extends VBox {
         e2.setCellValueFactory(m -> new SimpleObjectProperty<>(m.getValue()));
         table.getColumns().add(e2);
         pagination.pageCountProperty().bind(Bindings.createIntegerBinding(
-                () -> getPageCount(), maxSize, pageSize, pageSizeCombo.itemsProperty()));
+                this::getPageCount, maxSize, pageSize, pageSizeCombo.itemsProperty()));
         VBox.setVgrow(table, Priority.ALWAYS);
         table.setOnKeyReleased(e -> SimpleTableViewBuilder.copyContent(table, e));
         updateItems();
@@ -88,6 +88,14 @@ public final class PaginatedTableView extends VBox {
 
     public List<String> getColumns() {
         return table.getColumns().stream().skip(1L).map(TableColumn<Integer, ?>::getText).collect(Collectors.toList());
+
+    }
+
+    public List<List<Object>> getElements() {
+        return items
+                .stream().map(i -> table.getColumns().stream().skip(1L)
+                        .map(c -> (Object) c.getCellData(i)).collect(Collectors.toList()))
+                .collect(Collectors.toList());
 
     }
 

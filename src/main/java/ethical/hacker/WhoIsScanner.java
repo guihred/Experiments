@@ -14,7 +14,9 @@ import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.data.DataframeStatisticAccumulator;
@@ -68,6 +70,10 @@ public class WhoIsScanner {
 
         repositionFiles(screenshotsFolder, renderPage);
         return renderPage;
+    }
+
+    public Map<String, String> getIpInformation(String ip) {
+        return getIpInformation(this,ip);
     }
 
     public File getPrint() {
@@ -161,18 +167,24 @@ public class WhoIsScanner {
         builder.filter(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(IP_REGEX));
         DataframeML dataframe = builder.build();
         WhoIsScanner whoIsScanner = new WhoIsScanner();
-        DataframeUtils.crossFeatureObject(dataframe, "Rede", e -> {
-            count.set(1 + count.get());
-            return SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("network"),
-                    () -> whoIsScanner.whoIsScan(e[0].toString()).get("network"));
-        }, ipColumn);
+        ObservableMap<String, Map<String, String>> ipInfo = FXCollections.observableHashMap();
+        ipInfo.addListener((Change<? extends String, ? extends Map<String, String>> e) -> count.set(e.getMap().size()));
+        DataframeUtils.crossFeatureObject(dataframe, "Rede",
+                e -> ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)).get("network"),
+                ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, "Owner",
-                e -> SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("as_owner"),
-                        () -> whoIsScanner.whoIsScan(e[0].toString()).get("asname")),
+                e -> {
+                    Map<String, String> first =
+                            ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip));
+                    return first.getOrDefault("as_owner", first.get("asname"));
+                },
                 ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, "Country",
-                e -> SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(e[0].toString()).get("country"),
-                        () -> whoIsScanner.whoIsScan(e[0].toString()).get("ascountry")),
+                e -> {
+                    Map<String, String> first =
+                            ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip));
+                    return first.getOrDefault("country", first.get("ascountry"));
+                },
                 ipColumn);
         return dataframe;
     }
@@ -181,6 +193,18 @@ public class WhoIsScanner {
         DataframeBuilder builder = DataframeBuilder.builder(csvFile);
         String ipColumn = getIPColumn(builder);
         return fillIPInformation(builder, ipColumn);
+    }
+    public static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String ip) {
+        if (ip.matches("^10\\..+")) {
+            Map<String, String> hashMap = new HashMap<>();
+            InetAddress ia = SupplierEx.get(() -> toInetAddress(ip));
+            hashMap.put("CanonicalHostName", ia.getCanonicalHostName());
+            hashMap.put("HostAddress", ia.getHostAddress());
+            hashMap.put("HostName", ia.getHostName());
+            return hashMap;
+        }
+
+        return SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(ip), () -> whoIsScanner.whoIsScan(ip));
     }
 
     public static String getLastNumberField(DataframeML dataframe) {
@@ -191,10 +215,8 @@ public class WhoIsScanner {
     }
 
     public static String getReverseDNS(String ip) throws UnknownHostException {
-        List<Byte> collect =
-                Stream.of(ip.split("\\.")).map(t -> Integer.valueOf(t).byteValue()).collect(Collectors.toList());
         InetAddress ia =
-                InetAddress.getByAddress(new byte[] { collect.get(0), collect.get(1), collect.get(2), collect.get(3) });
+        toInetAddress(ip);
         return ia.getCanonicalHostName();
 
     }
@@ -245,6 +267,12 @@ public class WhoIsScanner {
     private static String getIPColumn(DataframeBuilder builder) {
         return builder.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
                 .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
+    }
+
+    private static InetAddress toInetAddress(String ip) throws UnknownHostException {
+        List<Byte> collect =
+                Stream.of(ip.split("\\.")).map(t -> Integer.valueOf(t).byteValue()).collect(Collectors.toList());
+        return InetAddress.getByAddress(new byte[] { collect.get(0), collect.get(1), collect.get(2), collect.get(3) });
     }
 
 }

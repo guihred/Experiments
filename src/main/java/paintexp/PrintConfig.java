@@ -59,6 +59,8 @@ public class PrintConfig extends Application {
     @FXML
     private CheckBox center;
     @FXML
+    private CheckBox unaltered;
+    @FXML
     private Slider hgap;
     @FXML
     private Slider quality;
@@ -79,6 +81,10 @@ public class PrintConfig extends Application {
 
     public PrintConfig(Image image) {
         images.add(image);
+    }
+
+    public PrintConfig(List<Image> image) {
+        images.addAll(image);
     }
 
     public void addPage() {
@@ -134,6 +140,11 @@ public class PrintConfig extends Application {
         StageHelper.closeStage(panel);
     }
 
+    public void setLinesColumns(Integer lines,Integer columns) {
+        linesPerPage.getSelectionModel().select(lines);
+        columnsPerPage.getSelectionModel().select(columns);
+    }
+
     public void show() {
         RunnableEx.run(() -> start(new Stage()));
     }
@@ -162,7 +173,6 @@ public class PrintConfig extends Application {
             changeConfig();
         }
     }
-
     private void addToCurrentPage(int add) {
         double lines = linesPerPage.getSelectionModel().getSelectedItem().doubleValue();
         double columns = columnsPerPage.getSelectionModel().getSelectedItem().doubleValue();
@@ -195,7 +205,7 @@ public class PrintConfig extends Application {
         double fitHeight = panel.getPrefHeight() / lines - panel.getVgap() * (lines + 1);
         Image image =
                 repeat.isSelected() || k < images.size() ? images.get(k % images.size()) : new WritableImage(1, 1);
-        if (vertical.isSelected() == image.getWidth() > image.getHeight()) {
+        if (!unaltered.isSelected() && vertical.isSelected() == image.getWidth() > image.getHeight()) {
             image = ImageFXUtils.flip(image);
         }
         ImageView child = new ImageView(image);

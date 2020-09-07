@@ -64,6 +64,7 @@ public final class PdfUtils {
         }
     }
 
+
     public static Map<Integer, List<PdfImage>> extractImages(File file) {
         return PdfUtils.extractImages(file, 0, 0);
     }

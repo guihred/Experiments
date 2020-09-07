@@ -70,7 +70,7 @@
 			<tabs>
 				<Tab text="Pie Chart">
 					<content>
-						<PieChart fx:id="pieChart" legendSide="BOTTOM" animated="false">
+						<PieChart fx:id="pieChart" legendVisible="false" animated="false">
 						</PieChart>
 					</content>
 				</Tab>
