@@ -16,7 +16,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTableViewBuilder;
@@ -24,9 +23,6 @@ import utils.*;
 
 public class EthicalHackController extends EthicalHackApp {
 
-    public void copyContent(KeyEvent ev) {
-        SimpleTableViewBuilder.copyContent(commonTable, ev);
-    }
 
     public void initialize() {
         final int columnWidth = 120;
@@ -35,7 +31,7 @@ public class EthicalHackController extends EthicalHackApp {
                 Bindings.createStringBinding(() -> String.format("Port Services %s", portsSelected), portsSelected));
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        commonTable.setOnKeyReleased(this::copyContent);
+        SimpleTableViewBuilder.of(commonTable).copiable().savable();
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> tcpItems =
                 FXCollections.synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet()

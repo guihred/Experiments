@@ -4,15 +4,18 @@ import ethical.hacker.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import kibana.KibanaApi;
+import kibana.TimelionApi;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.junit.Test;
@@ -110,6 +113,12 @@ public class FXHackTest extends AbstractTestExecution {
                 () -> NetworkInformationScanner.displayNetworkInformation());
         measureTime("NetworkInformationScanner.displayNetworkInformation",
                 () -> NetworkInformationScanner.displayNetworkInformation());
+    }
+
+    @Test
+    public void testTimelionScan() {
+        measureTime("TimelionApi.timelionScan", () -> TimelionApi.timelionScan(FXCollections.observableArrayList(), TimelionApi.TIMELINE_USERS, new HashMap<>(),
+                "now-1d"));
     }
 
     @Test

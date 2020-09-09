@@ -73,7 +73,9 @@ public class WhoIsScanner {
     }
 
     public Map<String, String> getIpInformation(String ip) {
-        return getIpInformation(this,ip);
+        Map<String, String> ipInformation = getIpInformation(this,ip);
+        LOG.info("{}", ipInformation);
+        return ipInformation;
     }
 
     public File getPrint() {

@@ -7,10 +7,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -257,18 +254,23 @@ public final class ExtractUtils {
         try {
             ghostDriver.setLogLevel(Level.OFF);
             ghostDriver.manage().window().maximize();
-            URL url2 = new URL(url);
+            ghostDriver.get(url);
             RunnableEx.run(() -> cookies
-                    .forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v, url2.getHost(), "/", null))));
+                    .forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v))));
 
             RunnableEx.run(() -> Thread.sleep(500));
             String pageSource = ghostDriver.getPageSource();
-            while (StringUtils.isNotBlank(loadingStr) && pageSource.contains(loadingStr)) {
+
+            for (int i = 0; StringUtils.isNotBlank(loadingStr) && pageSource.contains(loadingStr) && i < 10; i++) {
                 RunnableEx.run(() -> Thread.sleep(5000));
                 pageSource = ghostDriver.getPageSource();
             }
             for (ConsumerEx<PhantomJSDriver> consumerEx : onload) {
                 consumerEx.accept(ghostDriver);
+            }
+            Set<Cookie> cookies2 = ghostDriver.manage().getCookies();
+            for (Cookie cookie : cookies2) {
+                cookies.put(cookie.getName(), cookie.getValue());
             }
             return Jsoup.parse(ghostDriver.getPageSource());
         } finally {

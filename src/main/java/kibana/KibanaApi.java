@@ -13,6 +13,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -130,20 +131,27 @@ public class KibanaApi {
                 ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
         int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
         List<String> keys = ob.keySet().stream().collect(Collectors.toList());
-        List<Map<String, String>> arrayList = new ArrayList<>();
+        List<Map<String, String>> finalList = new ArrayList<>();
+        Map<String, String> reference = null;
         for (int i = 0; i < orElse; i++) {
             int j = i;
             List<String> collect2 =
                     collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
-            Map<String, String> linkedHashMap =
-                    collect2.get(0).matches(regex) || arrayList.isEmpty() ? new LinkedHashMap<>()
-                            : arrayList.get(arrayList.size() - 1);
-            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, linkedHashMap, k));
-            if (!arrayList.contains(linkedHashMap) && collect2.get(0).matches(regex)) {
-                arrayList.add(linkedHashMap);
+            Map<String, String> newMap;
+            if (collect2.get(0).matches(regex) || reference == null) {
+                reference = new LinkedHashMap<>();
+                newMap = reference;
+            } else {
+                newMap = new LinkedHashMap<>(reference);
+                newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
+                        .map(Entry<String, String>::getKey).orElse(null));
             }
+
+            Map<String, String> m = newMap;
+            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, m, k));
+            finalList.add(newMap);
         }
-        return arrayList;
+        return finalList;
     }
 
     protected static void getFromURL(String url, String content, File outFile) throws IOException {
@@ -197,6 +205,7 @@ public class KibanaApi {
                 break;
             }
         }
+
         linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
     }
 

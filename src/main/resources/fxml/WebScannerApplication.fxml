@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<SplitPane xmlns:fx="http://javafx.com/fxml" fx:id="splitPane0">
+	<items>
+		<VBox>
+			<children>
+				<Text text="URL" />
+				<TextField fx:id="urlField" onKeyReleased="#onKeyReleasedUrlField">
+					<padding>
+						<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
+					</padding>
+				</TextField>
+				<Text text="Cookies" />
+				<TextField fx:id="cookieField" 
+				
+				text="rdtrk=%7B%22id%22%3A%22f7f77868-5d52-4f51-a585-1c436b401ce9%22%7D; darkmode=false; _gcl_au=1.1.470272904.1598049562; __cfduid=dc00783bb0c6a7dc937faed557994bff31598261000; caelum.login.token=10ca04b164aff2456b311b0e2180aa70f93adeb8fd01487f6150e381776b1e48; alura.userId=456133; gnarus.menuClosed=true; JSESSIONID=9265D15CFA663B40708873B4FA2AA77D">
+					<padding>
+						<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
+					</padding>
+				</TextField>
+				<TreeView VBox.vgrow="ALWAYS" fx:id="treeView3" layoutY="31.0">
+					<padding>
+						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+					</padding>
+				</TreeView>
+			</children>
+		</VBox>
+		<ScrollPane HBox.hgrow="ALWAYS" fx:id="scrollPane1">
+			<content>
+				<ImageView HBox.hgrow="ALWAYS" fx:id="image" />
+			</content>
+		</ScrollPane>
+	</items>
+	<padding>
+		<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+	</padding>
+</SplitPane>

@@ -23,6 +23,7 @@ import org.testfx.util.WaitForAsyncUtils;
 import org.w3c.dom.Document;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
+import schema.sngpc.XmlToXlsx;
 import utils.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -42,7 +43,6 @@ public class FXFileReadersTest extends AbstractTestExecution {
         measureTime("DocumentHelper.getImgs", () -> DocumentHelper.getImgs("oioi.com", doc));
         measureTime("DocumentHelper.getLinks", () -> DocumentHelper.getLinks("oioi.com", doc));
     }
-
 
     @Test
     public void testExcelAndWordFile() {
@@ -66,6 +66,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
         });
     }
+
 
     @Test
     public void testExcelService() {
@@ -209,6 +210,12 @@ public class FXFileReadersTest extends AbstractTestExecution {
             return outFile.toPath();
         })).forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile())));
 
+    }
+
+    @Test
+    public void testXmlToXlsx() {
+        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\export.xls");
+        measureTime("XmlToXlsx.convertXML2XLS", () -> XmlToXlsx.convertXML2XLS(file));
     }
 
     @Test

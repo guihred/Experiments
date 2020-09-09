@@ -53,15 +53,14 @@ public final class PaginatedTableView extends VBox {
         TableColumn<Integer, Number> e2 = new TableColumn<>("Nº");
         e2.setCellValueFactory(m -> new SimpleObjectProperty<>(m.getValue()));
         table.getColumns().add(e2);
-        pagination.pageCountProperty().bind(Bindings.createIntegerBinding(
-                this::getPageCount, maxSize, pageSize, pageSizeCombo.itemsProperty()));
+        pagination.pageCountProperty().bind(
+                Bindings.createIntegerBinding(this::getPageCount, maxSize, pageSize, pageSizeCombo.itemsProperty()));
         VBox.setVgrow(table, Priority.ALWAYS);
-        table.setOnKeyReleased(e -> SimpleTableViewBuilder.copyContent(table, e));
         updateItems();
         getChildren().add(table);
         textField.textProperty().addListener(
                 (ob, o, n) -> RunnableEx.runIf(filteredItems, i -> i.setPredicate(e -> containsString(n, e))));
-        SimpleTableViewBuilder.of(table)
+        SimpleTableViewBuilder.of(table).copiable().savable()
                 .onSortClicked(e -> RunnableEx.runIf(items,
                         i -> table.getColumns().stream().filter(c -> c.getText().equals(e.getKey())).findFirst()
                                 .ifPresent(col -> items.sort(getComparator(col, e)))));
@@ -92,10 +91,8 @@ public final class PaginatedTableView extends VBox {
     }
 
     public List<List<Object>> getElements() {
-        return items
-                .stream().map(i -> table.getColumns().stream().skip(1L)
-                        .map(c -> (Object) c.getCellData(i)).collect(Collectors.toList()))
-                .collect(Collectors.toList());
+        return items.stream().map(i -> table.getColumns().stream().skip(1L).map(c -> (Object) c.getCellData(i))
+                .collect(Collectors.toList())).collect(Collectors.toList());
 
     }
 
@@ -112,9 +109,8 @@ public final class PaginatedTableView extends VBox {
     }
 
     private boolean containsString(String n, Integer e) {
-        return StringUtils.isBlank(n)
-                || table.getColumns().stream().map(c -> Objects.toString(c.getCellData(e), "")).anyMatch(
-                        str -> StringUtils.containsIgnoreCase(str, n) || PredicateEx.test(s -> s.matches(n), str));
+        return StringUtils.isBlank(n) || table.getColumns().stream().map(c -> Objects.toString(c.getCellData(e), ""))
+                .anyMatch(str -> StringUtils.containsIgnoreCase(str, n) || PredicateEx.test(s -> s.matches(n), str));
     }
 
     private int getPageCount() {

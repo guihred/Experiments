@@ -22,8 +22,7 @@
 				<Tab closable="false" text="Usuários x Número consultas">
 					<content>
 						<VBox>
-							<TableView fx:id="consultasTable" onKeyReleased="#copyContent"
-								VBox.vgrow="ALWAYS" />
+							<TableView fx:id="consultasTable" VBox.vgrow="ALWAYS" />
 						</VBox>
 					</content>
 				</Tab>
@@ -31,27 +30,24 @@
 					<content>
 						<VBox>
 
-							<TableView fx:id="acessosSistemaTable" onKeyReleased="#copyContent"
-								VBox.vgrow="ALWAYS" />
+							<TableView fx:id="acessosSistemaTable" VBox.vgrow="ALWAYS" />
 						</VBox>
 					</content>
 				</Tab>
 				<Tab closable="false" text="Requisições por Sistema">
 					<content>
 						<VBox>
-							<TableView fx:id="pathsTable" onKeyReleased="#copyContent"
-								VBox.vgrow="ALWAYS" />
+							<TableView fx:id="pathsTable" VBox.vgrow="ALWAYS" />
 						</VBox>
 					</content>
 				</Tab>
-                <Tab closable="false" text="Gerid INSS - Usuário x Qtde IPs de Origem">
-                    <content>
-                        <VBox>
-                            <TableView fx:id="ipsTable" onKeyReleased="#copyContent"
-                                VBox.vgrow="ALWAYS" />
-                        </VBox>
-                    </content>
-                </Tab>
+				<Tab closable="false" text="IP x Qtde URLs">
+					<content>
+						<VBox>
+							<TableView fx:id="ipsTable" VBox.vgrow="ALWAYS" />
+						</VBox>
+					</content>
+				</Tab>
 				<Tab text="Timeline Usuários">
 					<content>
 						<VBox>
@@ -64,8 +60,9 @@
 										</FXCollections>
 									</items>
 								</ComboBox>
-								<LineChart fx:id="timelineUsuarios" title="Timeline Usuários" legendSide="LEFT"
-									verticalZeroLineVisible="false" animated="false" createSymbols="false">
+								<LineChart fx:id="timelineUsuarios" title="Timeline Usuários"
+									legendSide="LEFT" verticalZeroLineVisible="false" animated="false"
+									createSymbols="false">
 									<yAxis>
 										<NumberAxis animated="false" side="LEFT"
 											tickLabelFill="0x585858ff" tickUnit="10.0" upperBound="110.0" />
@@ -84,7 +81,7 @@
 					<content>
 						<VBox>
 							<children>
-								<Text fx:id="text3" text="mdc.ip" />
+								<Text fx:id="text3" text="clientip.keyword" />
 								<ComboBox fx:id="ipCombo">
 									<items>
 										<FXCollections fx:factory="observableArrayList">
@@ -92,8 +89,9 @@
 										</FXCollections>
 									</items>
 								</ComboBox>
-								<LineChart title="Timeline Endereço de Origem" fx:id="timelineIPs" legendSide="LEFT"
-									verticalZeroLineVisible="false" animated="false" createSymbols="false">
+								<LineChart title="Timeline Endereço de Origem" fx:id="timelineIPs"
+									legendSide="LEFT" verticalZeroLineVisible="false" animated="false"
+									createSymbols="false">
 									<yAxis>
 										<NumberAxis animated="false" side="LEFT"
 											tickLabelFill="0x585858ff" tickUnit="10.0" upperBound="110.0" />
@@ -143,7 +141,7 @@
 				<Button onAction="#onActionFillIP" text="Fill IP" />
 				<Button onAction="#onActionClear" text="Clear" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
-				<ProgressIndicator fx:id="progressIndicator"
+				<ProgressIndicator fx:id="progress"
 					VBox.vgrow="ALWAYS" minHeight="40.0" minWidth="40.0" progress="0.0" />
 			</children>
 		</VBox>

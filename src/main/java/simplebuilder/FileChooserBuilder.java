@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventTarget;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -97,7 +98,7 @@ public class FileChooserBuilder {
         runIf(fileChosen, onSelect0);
     }
 
-    public void saveFileAction(ActionEvent e) {
+    public void saveFileAction(Event e) {
         Node target = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
         fileChooser.setInitialDirectory(
                 SupplierEx.nonNull(fileChooser.getInitialDirectory(), LAST_FILES.get(evocationLine)));

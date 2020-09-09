@@ -14,7 +14,6 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
@@ -32,16 +31,13 @@ public class KibanaInvestigator extends Application {
     private TableView<Map<String, String>> commonTable;
     private ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
 
-    public void copyContent(KeyEvent ev) {
-        SimpleTableViewBuilder.copyContent(commonTable, ev);
-    }
-
     public void initialize() {
         final int columnWidth = 120;
         commonTable.prefWidthProperty()
                 .bind(Bindings.selectDouble(commonTable.parentProperty(), "width").add(-columnWidth));
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        SimpleTableViewBuilder.of(commonTable).copiable().savable();
         networkAddress.setText(TracerouteScanner.IP_TO_SCAN);
     }
 

@@ -84,7 +84,7 @@ public final class VirusTotalApi {
             if (!outFile.exists()) {
                 getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
             }
-            return JsonExtractor.makeMapFromJsonFile(outFile, "as_owner", "country", "last_analysis_results",
+            return JsonExtractor.makeMapFromJsonFile(outFile, "as_owner", "country", 
                     "last_analysis_stats", "malicious", "network");
         });
     }

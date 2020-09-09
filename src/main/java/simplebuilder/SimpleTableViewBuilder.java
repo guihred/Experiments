@@ -1,16 +1,17 @@
 package simplebuilder;
 
-import java.util.AbstractMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -24,6 +25,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import utils.ConsumerEx;
 import utils.FunctionEx;
+import utils.RunnableEx;
 
 public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>, SimpleTableViewBuilder<T>> {
 
@@ -59,7 +61,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-
     public SimpleTableViewBuilder<T> addColumn(String columnName, String property, boolean editable) {
         final TableColumn<T, String> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(property));
@@ -82,7 +83,11 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public SimpleTableViewBuilder<T> copiable() {
-        node.setOnKeyReleased(e -> copyContent(node, e));
+        EventHandler<? super KeyEvent> onKeyReleased = node.getOnKeyReleased();
+        node.setOnKeyReleased(e -> {
+            RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
+            copyContent(node, e);
+        });
         return this;
     }
 
@@ -101,13 +106,8 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> onDoubleClick(final Consumer<T> object) {
-        node.setOnMouseClicked(e -> {
-            if (e.getClickCount() > 1) {
-                T selectedItem = node.getSelectionModel().getSelectedItem();
-                object.accept(selectedItem);
-            }
-        });
+    public SimpleTableViewBuilder<T> onDoubleClick(final ConsumerEx<T> object) {
+        SimpleTableViewBuilder.onDoubleClick(node, object);
         return this;
     }
 
@@ -117,13 +117,13 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> onSortClicked(ConsumerEx<Entry<String,SortType >> c) {
+    public SimpleTableViewBuilder<T> onSortClicked(ConsumerEx<Entry<String, SortType>> c) {
         node.setSortPolicy((TableView<T> o) -> {
             ObservableList<TableColumn<T, ?>> sortOrder = o.getSortOrder();
             if (!sortOrder.isEmpty()) {
                 TableColumn<T, ?> tableColumn = sortOrder.get(0);
                 SortType sortType = tableColumn.getSortType();
-                ConsumerEx.makeConsumer(c).accept(new AbstractMap.SimpleEntry<>(tableColumn.getText(),sortType));
+                ConsumerEx.makeConsumer(c).accept(new AbstractMap.SimpleEntry<>(tableColumn.getText(), sortType));
             }
             return true;
         });
@@ -132,6 +132,15 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public SimpleTableViewBuilder<T> prefWidthColumns(double... prefs) {
         prefWidthColumns(node, prefs);
+        return this;
+    }
+
+    public SimpleTableViewBuilder<T> savable() {
+        EventHandler<? super KeyEvent> onKeyReleased = node.getOnKeyReleased();
+        node.setOnKeyReleased(e -> {
+            RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
+            saveContent(node, e);
+        });
         return this;
     }
 
@@ -175,9 +184,9 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         };
     }
 
-    public static <V>SimpleTableViewBuilder<V>of(TableView<V> table) {
+    public static <V> SimpleTableViewBuilder<V> of(TableView<V> table) {
         SimpleTableViewBuilder<V> simpleTableViewBuilder = new SimpleTableViewBuilder<>();
-        simpleTableViewBuilder.node=table;
+        simpleTableViewBuilder.node = table;
         return simpleTableViewBuilder;
     }
 
@@ -188,14 +197,14 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
                 ConsumerEx.makeConsumer(object).accept(selectedItem);
             }
         });
-        if (table2.getOnKeyReleased() == null) {
-            table2.setOnKeyReleased(e -> {
-                if (e.getCode() == KeyCode.ENTER) {
-                    T selectedItem = table2.getSelectionModel().getSelectedItem();
-                    ConsumerEx.makeConsumer(object).accept(selectedItem);
-                }
-            });
-        }
+        EventHandler<? super KeyEvent> onKeyReleased = table2.getOnKeyReleased();
+        table2.setOnKeyReleased(e -> {
+            RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
+            if (e.getCode() == KeyCode.ENTER) {
+                T selectedItem = table2.getSelectionModel().getSelectedItem();
+                ConsumerEx.makeConsumer(object).accept(selectedItem);
+            }
+        });
     }
 
     public static <T> void onSelect(TableView<T> table, final BiConsumer<T, T> value) {
@@ -209,6 +218,28 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         for (int i = 0; i < prefs.length; i++) {
             double pref = prefs[i];
             columns.get(i).prefWidthProperty().bind(table1.widthProperty().multiply(pref / sum));
+        }
+    }
+
+    public static <T> void saveContent(TableView<T> table, KeyEvent ev) {
+        if (ev.isControlDown() && ev.getCode() == KeyCode.S) {
+            new FileChooserBuilder().initialFilename(Objects.toString(table.getId(), "table") + ".csv")
+                    .extensions("CSV", "*.csv").onSelect(f -> {
+                        List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
+                        if (selectedItems.isEmpty()) {
+                            selectedItems =
+                                    IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
+                        }
+
+                        String collect2 = table.getColumns().stream().map(TableColumn<T, ?>::getText)
+                                .collect(Collectors.joining("\",\"", "\"", "\""));
+                        String collect = selectedItems.stream()
+                                .map(l -> table.getColumns().stream().map(e -> Objects.toString(e.getCellData(l), ""))
+                                        .collect(Collectors.joining("\",\"", "\"", "\"")))
+                                .collect(Collectors.joining("\n"));
+                        Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
+                    }).saveFileAction(ev);
+
         }
     }
 

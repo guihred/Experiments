@@ -18,6 +18,11 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         treeView = region;
     }
 
+    protected SimpleTreeViewBuilder(TreeView<T> tree) {
+        super(tree);
+        treeView = tree;
+    }
+
     @Override
     public TreeView<T> build() {
         return treeView;
@@ -62,6 +67,10 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
                 value.accept(getItem(), this);
             }
         };
+    }
+
+    public static <V>SimpleTreeViewBuilder<V> of(TreeView<V> treeView) {
+        return new SimpleTreeViewBuilder<>(treeView);
     }
 
     public static <T> void onSelect(TreeView<T> treeView, Consumer<TreeItem<T>> consume) {

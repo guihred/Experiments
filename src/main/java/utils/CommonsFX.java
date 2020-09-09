@@ -57,8 +57,8 @@ public final class CommonsFX {
         int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
         for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
             Color rgb = Color.rgb(Math.abs(maxByte - i / cubicRoot / cubicRoot % cubicRoot * max / cubicRoot) % max,
-                Math.abs(maxByte - i / cubicRoot % cubicRoot * max / cubicRoot) % max,
-                Math.abs(maxByte - i % cubicRoot * max / cubicRoot) % max);
+                    Math.abs(maxByte - i / cubicRoot % cubicRoot * max / cubicRoot) % max,
+                    Math.abs(maxByte - i % cubicRoot * max / cubicRoot) % max);
 
             availableColors.add(rgb);
         }
@@ -116,8 +116,11 @@ public final class CommonsFX {
     }
 
     public static <T> FilteredList<T> newFastFilter(TextField filterField, FilteredList<T> filteredData) {
-        filterField.textProperty().addListener((o, old, value) -> filteredData
-            .setPredicate(row -> StringUtils.isBlank(value) || StringUtils.containsIgnoreCase(row.toString(), value)));
+        filterField.textProperty()
+                .addListener((o, old,
+                        value) -> filteredData.setPredicate(row -> StringUtils.isBlank(value)
+                                || StringUtils.containsIgnoreCase(row.toString(), value)
+                                || PredicateEx.test(s -> s.matches(value), row.toString())));
         return filteredData;
     }
 

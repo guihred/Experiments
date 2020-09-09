@@ -20,16 +20,11 @@ import utils.SupplierEx;
 public final class TimelionApi extends KibanaApi {
 
     public static final String TIMELINE_USERS =
-            ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\",split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
+            ".es(index=inss-*-prod*,split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
     public static final String TIMELINE_IPS =
             ".es(index=*apache-prod*,q=\\\"dtptype:nginx OR dtptype:apache OR dtptype:varnish\\\",split= clientip.keyword:12).label('$1','.*>.*:(.*)>.*')";
 
     private TimelionApi() {
-    }
-
-    public static void main(String[] args) {
-        TimelionApi.timelionScan(FXCollections.observableArrayList(), TimelionApi.TIMELINE_USERS, new HashMap<>(),
-                "now-1d");
     }
 
     public static Object maketimelionSearch(File file, String timelionQuery, Map<String, String> search, String time) {
@@ -37,8 +32,7 @@ public final class TimelionApi extends KibanaApi {
             String values = search.values().stream().collect(Collectors.joining());
             String replaceAll = timelionQuery.replaceAll(".+split=(.+?):.+", "$1");
 
-            File outFile = newJsonFile(
-                    replaceAll + Stream.of(values, time).collect(Collectors.joining()));
+            File outFile = newJsonFile(replaceAll + Stream.of(values, time).collect(Collectors.joining()));
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String keywords = search
                         .entrySet().stream().map(e -> String
@@ -60,11 +54,10 @@ public final class TimelionApi extends KibanaApi {
     }
 
     public static ObservableList<Series<Number, Number>> timelionScan(ObservableList<Series<Number, Number>> series,
-            String timelineUsers, Map<String, String> map,
-            String time) {
+            String timelineUsers, Map<String, String> filterMap, String time) {
         return SupplierEx.get(() -> {
             Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
-                    timelineUsers, map, time);
+                    timelineUsers, filterMap, time);
             RunnableEx.runInPlatform(() -> convertToSeries(series, access(policiesSearch, "sheet")));
             return series;
         }, FXCollections.emptyObservableList());

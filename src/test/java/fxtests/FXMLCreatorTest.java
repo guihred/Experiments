@@ -1,11 +1,11 @@
 package fxtests;
 
+import ethical.hacker.WebScannerApplication;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import kibana.TimelionDisplay;
 import ml.data.CoverageUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public final class FXMLCreatorTest {
 
     @Test
 	public  void testClassesNotClose() {
-        List<Class<? extends Application>> classes = Arrays.asList(TimelionDisplay.class);
+        List<Class<? extends Application>> classes = Arrays.asList(WebScannerApplication.class);
         FXMLCreatorHelper.testApplications(classes, true);
     }
 

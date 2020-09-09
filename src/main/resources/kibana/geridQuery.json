@@ -2,8 +2,8 @@
 	"aggs": {
 		"2": {
 			"terms": {
-				"field": "http.user-name.keyword",
-				"size": 150,
+				"field": "clientip.keyword",
+				"size": 20,
 				"order": {
 					"1": "desc"
 				}
@@ -11,7 +11,7 @@
 			"aggs": {
 				"1": {
 					"cardinality": {
-						"field": "clientip.keyword"
+						"field": "request.keyword"
 					}
 				}
 			}
@@ -37,13 +37,7 @@
 	"query": {
 		"bool": {
 			"must": [
-				{
-					"query_string": {
-						"query": "policy-name:\"Dataprev_GeridINSS_Monitor_User\" OR policy-name:\"Dataprev_GeridINSS_Monitor_AGU\"",
-						"analyze_wildcard": true,
-						"default_field": "*"
-					}
-				},%s
+				%s
 				{
 					"range": {
 						"@timestamp": {
@@ -66,19 +60,5 @@
 				}
 			]
 		}
-	},
-	"highlight": {
-		"pre_tags": [
-			"@kibana-highlighted-field@"
-		],
-		"post_tags": [
-			"@/kibana-highlighted-field@"
-		],
-		"fields": {
-			"*": {
-				
-			}
-		},
-		"fragment_size": 2147483647
 	}
 }

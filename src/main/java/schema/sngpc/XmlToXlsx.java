@@ -1,17 +1,13 @@
 package schema.sngpc;
 
+import extract.ExcelService;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -22,30 +18,48 @@ import utils.*;
 public class XmlToXlsx {
     private static final Logger LOG = HasLogging.log();
 
-    public static void convertXML2XLS(File file) throws IOException {
-        try (Workbook xssfWorkbook = new SXSSFWorkbook(100)) {
-            Document parse = SupplierEx.remap(
-                    () -> DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file), "ERROR PARSING");
-            NodeList rootNode = parse.getElementsByTagName("Style");
-            Map<Class<?>, SupplierEx<?>> supplierMap = new HashMap<>();
-            supplierMap.put(CellStyle.class, xssfWorkbook::createCellStyle);
-            supplierMap.put(Font.class, xssfWorkbook::createFont);
-            Map<String, CellStyle> styleMap = new HashMap<>();
-            foreach(rootNode, xmlObject -> {
-                CellStyle style = xssfWorkbook.createCellStyle();
-                Map<String, String> childMap = childMap(xmlObject, style, supplierMap);
-                styleMap.put(childMap.get("ID"), style);
+    public static void convertXML2XLS(File file) {
+        Document parse = SupplierEx.remap(() -> DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file),
+                "ERROR PARSING");
+        // NodeList rootNode = parse.getElementsByTagName("Style");
+        // Map<Class<?>, SupplierEx<?>> supplierMap = new HashMap<>();
+        // supplierMap.put(CellStyle.class, xssfWorkbook::createCellStyle);
+        // supplierMap.put(Font.class, xssfWorkbook::createFont);
+        // Map<String, CellStyle> styleMap = new HashMap<>();
+        // foreach(rootNode, xmlObject -> {
+        // CellStyle style = xssfWorkbook.createCellStyle();
+        // Map<String, String> childMap = childMap(xmlObject, style, supplierMap);
+        // styleMap.put(childMap.get("ID"), style);
+        // });
+        List<List<String>> arrayList = new ArrayList<>();
+
+        foreach(parse.getElementsByTagName("Row"), (xmlObject) -> {
+            List<String> arrayList2 = new ArrayList<>();
+            NodeList childNodes = xmlObject.getChildNodes();
+            foreach(childNodes, (cell, i) -> {
+                foreach(cell.getChildNodes(), (Node data) -> {
+                    if ("Data".equals(data.getNodeName())) {
+                        String textContent = data.getTextContent();
+                        arrayList2.add(i, textContent.trim());
+                    }
+                });
             });
+            arrayList.add(arrayList2);
+        });
 
-            File outFile = ResourceFXUtils.getOutFile("xlsx/" + file.getName().replaceAll("xls", "xlsx"));
-            xssfWorkbook.write(new FileOutputStream(outFile));
+        arrayList.forEach(l -> System.out.println(l));
+
+        File outFile = ResourceFXUtils.getOutFile("xlsx/" + file.getName().replaceAll("xls", "xlsx"));
+
+        Map<String, FunctionEx<List<String>, Object>> mapa = new LinkedHashMap<>();
+        for (int i = 0; i < arrayList.get(0).size(); i++) {
+            int j = i;
+            mapa.put("" + i, (l) -> l.get(j));
         }
+
+        ExcelService.getExcel(arrayList, mapa, outFile);
     }
 
-    public static void main(String[] args) throws IOException {
-        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\export.xls");
-        convertXML2XLS(file);
-    }
 
     private static Map<String, Object> attributeMap(Node xmlObject) {
         NamedNodeMap attributes = xmlObject.getAttributes();
@@ -61,8 +75,7 @@ public class XmlToXlsx {
         return hashMap;
     }
 
-    private static Map<String, String> childMap(Node xmlObject, Object ob,
-            Map<Class<?>, SupplierEx<?>> supplierMap) {
+    private static Map<String, String> childMap(Node xmlObject, Object ob, Map<Class<?>, SupplierEx<?>> supplierMap) {
         List<Method> setters = ClassReflectionUtils.setters(ob.getClass());
         Map<String, Method> collect = setters.stream().collect(Collectors.toMap(ClassReflectionUtils::getFieldName,
                 e -> e, (u, v) -> u.getParameters()[0].getType().isPrimitive() ? v : u));
@@ -88,11 +101,16 @@ public class XmlToXlsx {
         return hashMap;
     }
 
+    private static void foreach(NodeList childNodes, BiConsumer<Node, Integer> cons) {
+        for (int j = 0; j < childNodes.getLength(); j++) {
+            cons.accept(childNodes.item(j), j);
+        }
+    }
+
     private static void foreach(NodeList childNodes, Consumer<Node> cons) {
         for (int j = 0; j < childNodes.getLength(); j++) {
             cons.accept(childNodes.item(j));
         }
-
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -100,7 +118,7 @@ public class XmlToXlsx {
             String fieldName) {
         Method method = collect.get(fieldName);
         Class<?> setterType = method.getParameters()[0].getType();
-        
+
         String upperCase = attributeMap.getOrDefault(fieldName, "").toString().toUpperCase();
         if (setterType.isEnum()) {
             RunnableEx.make(() -> {
@@ -120,6 +138,7 @@ public class XmlToXlsx {
         }
 
     }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static void setField(Object ob, Map<String, Method> collect, Node item, String nodeName,
             Map<String, Object> attributeMap, Optional<String> findFirst, Map<Class<?>, SupplierEx<?>> supplierMap) {

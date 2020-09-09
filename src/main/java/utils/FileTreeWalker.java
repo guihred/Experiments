@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import javafx.collections.ObservableList;
 
 final class FileTreeWalker implements FileVisitor<Path> {
     private final List<Path> pathList;
@@ -31,7 +32,11 @@ final class FileTreeWalker implements FileVisitor<Path> {
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         if (ResourceFXUtils.hasExtension(file, other)) {
-            pathList.add(file);
+            if (pathList instanceof ObservableList) {
+                RunnableEx.runInPlatform(()->pathList.add(file));
+            } else {
+                pathList.add(file);
+            }
         }
         return FileVisitResult.CONTINUE;
     }

@@ -23,7 +23,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -33,13 +33,15 @@ import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
 
 public class ConsultasInvestigator extends Application {
-    private static final String MDC_IP = "mdc.ip";
     private static final String MDC_UID_KEYWORD = "mdc.uid.keyword";
     private static final String USER_NAME_QUERY = "http.user-name.keyword";
     private static final String CLIENT_IP_QUERY = "clientip.keyword";
     private static final String ACESSOS_SISTEMA_QUERY = "dtpsistema.keyword";
-    private static final ImmutableMap<String, String> REPLACEMENT_MAP = ImmutableMap.<String, String>builder()
-            .put(USER_NAME_QUERY, MDC_UID_KEYWORD).put(CLIENT_IP_QUERY, MDC_IP).build();
+    private static final ImmutableMap<String,
+            String> REPLACEMENT_MAP = ImmutableMap.<String, String>builder().put(USER_NAME_QUERY, MDC_UID_KEYWORD)
+                    .put(ACESSOS_SISTEMA_QUERY, "dtpsistema")
+
+                    .build();
     @FXML
     private TextField resultsFilter;
     @FXML
@@ -49,7 +51,7 @@ public class ConsultasInvestigator extends Application {
     @FXML
     private ComboBox<Integer> days;
     @FXML
-    private ProgressIndicator progressIndicator;
+    private ProgressIndicator progress;
     @FXML
     private TableView<Map<String, String>> ipsTable;
     @FXML
@@ -71,18 +73,12 @@ public class ConsultasInvestigator extends Application {
     @FXML
     private LineChart<Number, Number> timelineIPs;
 
-    @SuppressWarnings({ "static-method" })
-    public void copyContent(KeyEvent ev) {
-        TableView<?> target = (TableView<?>) ev.getSource();
-        SimpleTableViewBuilder.copyContent(target, ev);
-    }
-
     public void initialize() {
         configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value");
         String count = "doc_count";
         configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count);
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
-        configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("[^\\/\\?\\d]+");
+        configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^[^\\/\\d].+");
         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
         filterText.textProperty().bind(Bindings.createStringBinding(
@@ -101,60 +97,37 @@ public class ConsultasInvestigator extends Application {
             if (items.isEmpty()) {
                 return;
             }
-            RunnableEx.runInPlatform(() -> progressIndicator.setProgress(0));
+            RunnableEx.runInPlatform(() -> progress.setProgress(0));
             WhoIsScanner whoIsScanner = new WhoIsScanner();
             for (Map<String, String> map : items) {
                 Map<String, String> ipInformation = whoIsScanner.getIpInformation(map.get("key"));
-                map.put("Rede", ipInformation.getOrDefault("network", ipInformation.get("CanonicalHostName")));
-                map.put("Owner", ipInformation.getOrDefault("as_owner", ipInformation.get("asname")));
-                map.put("Country", ipInformation.getOrDefault("country", ipInformation.get("ascountry")));
-                if (progressIndicator.getProgress() == 0) {
+                map.put("Rede", getFirst(ipInformation, "network", "CanonicalHostName"));
+                map.put("Owner", getFirst(ipInformation, "as_owner", "asname"));
+                map.put("Country", getFirst(ipInformation, "country", "ascountry"));
+                if (progress.getProgress() == 0) {
                     RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, map.keySet()));
                 }
                 RunnableEx.runInPlatform(
-                        () -> progressIndicator.setProgress(progressIndicator.getProgress() + 1. / items.size()));
+                        () -> progress.setProgress(progress.getProgress() + 1. / items.size()));
             }
             RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, items.get(0).keySet()));
-            RunnableEx.runInPlatform(() -> progressIndicator.setProgress(1));
+            RunnableEx.runInPlatform(() -> progress.setProgress(1));
         });
     }
 
     public void onActionKibanaScan() {
         RunnableEx.runNewThread(() -> {
-            RunnableEx.runInPlatform(() -> progressIndicator.setProgress(0));
+            RunnableEx.runInPlatform(() -> progress.setProgress(0));
             for (QueryObjects queryObjects : queryList) {
                 if (queryObjects.getLineChart() != null) {
-                    ObservableList<Series<Number, Number>> data = queryObjects.getSeries();
-                    RunnableEx.runInPlatformSync(() -> {
-                        data.clear();
-                        queryObjects.getLineChart().getYAxis().setAutoRanging(true);
-                    });
-                    Map<String, String> hashMap = new HashMap<>(filter);
-                    REPLACEMENT_MAP.entrySet().forEach(e -> {
-                        if (hashMap.containsKey(e.getKey())) {
-                            hashMap.put(e.getValue(), hashMap.remove(e.getKey()));
-                        }
-                    });
-
-                    TimelionApi.timelionScan(data, queryObjects.getQueryFile(), filter, "now-d");
+                    makeTimelionQuery(queryObjects);
                 } else {
-                    RunnableEx.runInPlatform(() -> queryObjects.getItems().clear());
-                    Map<String, String> nsInformation =
-                            KibanaApi.makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + queryObjects.getQueryFile()),
-                                    days.getSelectionModel().getSelectedItem(), filter, queryObjects.getParams());
-                    RunnableEx.runInPlatform(() -> {
-                        List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
-                        if (queryObjects.getTable().getColumns().isEmpty()) {
-                            EthicalHackApp.addColumns(queryObjects.getTable(), remap.stream()
-                                    .flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList()));
-                        }
-                        queryObjects.getItems().addAll(remap);
-                    });
+                    makeKibanaQuery(queryObjects);
                 }
                 RunnableEx.runInPlatform(
-                        () -> progressIndicator.setProgress(progressIndicator.getProgress() + 1. / queryList.size()));
+                        () -> progress.setProgress(progress.getProgress() + 1. / queryList.size()));
             }
-            RunnableEx.runInPlatform(() -> progressIndicator.setProgress(1));
+            RunnableEx.runInPlatform(() -> progress.setProgress(1));
         });
     }
 
@@ -201,10 +174,22 @@ public class ConsultasInvestigator extends Application {
                 .bind(Bindings.selectDouble(ipsTable2.parentProperty(), "width").add(-columnWidth));
         ipsTable2.setItems(CommonsFX.newFastFilter(resultsFilter, ipItems2.filtered(e -> true)));
         ipsTable2.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        SimpleTableViewBuilder.of(ipsTable2).copiable().onDoubleClick(e -> {
-            filter.put(userNameQuery, e.values().stream().findFirst().orElse("key"));
+        SimpleTableViewBuilder.of(ipsTable2).copiable().savable().onDoubleClick(e -> {
+            if (e != null) {
+                filter.put(userNameQuery, e.values().stream().findFirst().orElse("key"));
+            }
+            resultsFilter.setText("");
             onActionKibanaScan();
-        });
+        }).onSortClicked(e -> {
+            Comparator<Map<String, String>> comparing =
+                    Comparator.comparing(m -> StringUtils.isNumeric(m.get(e.getKey()))
+                            ? String.format("%09d", Long.valueOf(m.get(e.getKey())))
+                            : Objects.toString(m.get(e.getKey()), ""));
+            SortType value = e.getValue();
+            ipItems2.sort(value == SortType.DESCENDING ? comparing.reversed() : comparing);
+        })
+
+        ;
         return fieldObjects;
     }
 
@@ -244,8 +229,43 @@ public class ConsultasInvestigator extends Application {
         return fieldObjects;
     }
 
+    private void makeKibanaQuery(QueryObjects queryObjects) {
+        RunnableEx.runInPlatform(() -> queryObjects.getItems().clear());
+        Map<String, String> nsInformation =
+                KibanaApi.makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + queryObjects.getQueryFile()),
+                        days.getSelectionModel().getSelectedItem(), filter, queryObjects.getParams());
+        RunnableEx.runInPlatform(() -> {
+            List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
+            if (queryObjects.getTable().getColumns().isEmpty()) {
+                EthicalHackApp.addColumns(queryObjects.getTable(),
+                        remap.stream().flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList()));
+            }
+            queryObjects.getItems().addAll(remap);
+        });
+    }
+
+    private void makeTimelionQuery(QueryObjects queryObjects) {
+        ObservableList<Series<Number, Number>> data = queryObjects.getSeries();
+        RunnableEx.runInPlatformSync(() -> {
+            data.clear();
+            queryObjects.getLineChart().getYAxis().setAutoRanging(true);
+        });
+        Map<String, String> hashMap = new HashMap<>(filter);
+        REPLACEMENT_MAP.entrySet().forEach(e -> {
+            if (hashMap.containsKey(e.getKey())) {
+                hashMap.put(e.getValue(), hashMap.remove(e.getKey()));
+            }
+        });
+
+        TimelionApi.timelionScan(data, queryObjects.getQueryFile(), filter, "now-d");
+    }
+
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static String getFirst(Map<String, String> ipInformation, String... keys) {
+        return Stream.of(keys).map(ipInformation::get).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
 }
