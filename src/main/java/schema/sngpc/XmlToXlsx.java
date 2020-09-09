@@ -15,8 +15,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import utils.*;
 
-public class XmlToXlsx {
+public final class XmlToXlsx {
     private static final Logger LOG = HasLogging.log();
+
+    private XmlToXlsx() {
+    }
 
     public static void convertXML2XLS(File file) {
         Document parse = SupplierEx.remap(() -> DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file),
@@ -33,17 +36,15 @@ public class XmlToXlsx {
         // });
         List<List<String>> arrayList = new ArrayList<>();
 
-        foreach(parse.getElementsByTagName("Row"), (xmlObject) -> {
+        foreach(parse.getElementsByTagName("Row"), xmlObject -> {
             List<String> arrayList2 = new ArrayList<>();
             NodeList childNodes = xmlObject.getChildNodes();
-            foreach(childNodes, (cell, i) -> {
-                foreach(cell.getChildNodes(), (Node data) -> {
-                    if ("Data".equals(data.getNodeName())) {
-                        String textContent = data.getTextContent();
-                        arrayList2.add(i, textContent.trim());
-                    }
-                });
-            });
+            foreach(childNodes, (cell, i) -> foreach(cell.getChildNodes(), data -> {
+                if ("Data".equals(data.getNodeName())) {
+                    String textContent = data.getTextContent();
+                    arrayList2.add(textContent.trim());
+                }
+            }));
             arrayList.add(arrayList2);
         });
 
@@ -54,12 +55,11 @@ public class XmlToXlsx {
         Map<String, FunctionEx<List<String>, Object>> mapa = new LinkedHashMap<>();
         for (int i = 0; i < arrayList.get(0).size(); i++) {
             int j = i;
-            mapa.put("" + i, (l) -> l.get(j));
+            mapa.put("" + i, l -> l.get(j));
         }
 
         ExcelService.getExcel(arrayList, mapa, outFile);
     }
-
 
     private static Map<String, Object> attributeMap(Node xmlObject) {
         NamedNodeMap attributes = xmlObject.getAttributes();
