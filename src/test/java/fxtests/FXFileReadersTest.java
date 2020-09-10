@@ -3,6 +3,7 @@ package fxtests;
 import com.google.common.collect.ImmutableMap;
 import ethical.hacker.DocumentHelper;
 import ethical.hacker.ImageCracker;
+import ethical.hacker.PCapReader;
 import extract.ExcelService;
 import extract.WordService;
 import java.io.File;
@@ -67,7 +68,6 @@ public class FXFileReadersTest extends AbstractTestExecution {
         });
     }
 
-
     @Test
     public void testExcelService() {
         ObservableList<Medicamento> medicamentosSNGPCPDF =
@@ -83,6 +83,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
                 ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
 
     }
+
 
     @Test
     public void testExcelService2() {
@@ -197,6 +198,12 @@ public class FXFileReadersTest extends AbstractTestExecution {
             return null;
         }, ResourceFXUtils.getOutFile("apiResult2.xlsx"))
                 );
+    }
+
+    @Test
+    public void testPCapReader() {
+        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\CiscoCNNA\\one.pcapng");
+        measureTime("PCapReader.readPCAPngFile", () ->PCapReader.readPCAPngFile(file));
     }
 
     @Test

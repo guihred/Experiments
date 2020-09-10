@@ -11,8 +11,8 @@ import java.io.IOException;
 
 public class PCapReader {
 
-    public static void main(String[] args) throws IOException {
-        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\CiscoCNNA\\one.pcapng");
+
+    public static void readPCAPngFile(File file) throws IOException {
         final Pcap pcap = Pcap.openStream(file);
 
         pcap.loop(packet -> {

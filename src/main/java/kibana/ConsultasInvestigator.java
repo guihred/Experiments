@@ -74,13 +74,14 @@ public class ConsultasInvestigator extends Application {
     private LineChart<Number, Number> timelineIPs;
 
     public void initialize() {
-        configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value");
         String count = "doc_count";
         configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count);
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
         configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^[^\\/\\d].+");
-        configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
+        // configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS,
+        // timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
+        configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value");
         filterText.textProperty().bind(Bindings.createStringBinding(
                 () -> filter.entrySet().stream().map(Objects::toString).collect(Collectors.joining("\n")), filter));
     }
@@ -107,8 +108,7 @@ public class ConsultasInvestigator extends Application {
                 if (progress.getProgress() == 0) {
                     RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, map.keySet()));
                 }
-                RunnableEx.runInPlatform(
-                        () -> progress.setProgress(progress.getProgress() + 1. / items.size()));
+                RunnableEx.runInPlatform(() -> progress.setProgress(progress.getProgress() + 1. / items.size()));
             }
             RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, items.get(0).keySet()));
             RunnableEx.runInPlatform(() -> progress.setProgress(1));
@@ -119,13 +119,15 @@ public class ConsultasInvestigator extends Application {
         RunnableEx.runNewThread(() -> {
             RunnableEx.runInPlatform(() -> progress.setProgress(0));
             for (QueryObjects queryObjects : queryList) {
-                if (queryObjects.getLineChart() != null) {
+                RunnableEx.measureTime(queryObjects.getQueryFile(), () -> {
+                    if (queryObjects.getLineChart() == null) {
+                        makeKibanaQuery(queryObjects);
+                        return;
+                    }
                     makeTimelionQuery(queryObjects);
-                } else {
-                    makeKibanaQuery(queryObjects);
-                }
-                RunnableEx.runInPlatform(
-                        () -> progress.setProgress(progress.getProgress() + 1. / queryList.size()));
+                });
+
+                RunnableEx.runInPlatform(() -> progress.setProgress(progress.getProgress() + 1. / queryList.size()));
             }
             RunnableEx.runInPlatform(() -> progress.setProgress(1));
         });
@@ -185,8 +187,7 @@ public class ConsultasInvestigator extends Application {
                     Comparator.comparing(m -> StringUtils.isNumeric(m.get(e.getKey()))
                             ? String.format("%09d", Long.valueOf(m.get(e.getKey())))
                             : Objects.toString(m.get(e.getKey()), ""));
-            SortType value = e.getValue();
-            ipItems2.sort(value == SortType.DESCENDING ? comparing.reversed() : comparing);
+            ipItems2.sort(e.getValue() == SortType.DESCENDING ? comparing.reversed() : comparing);
         })
 
         ;
@@ -234,8 +235,8 @@ public class ConsultasInvestigator extends Application {
         Map<String, String> nsInformation =
                 KibanaApi.makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + queryObjects.getQueryFile()),
                         days.getSelectionModel().getSelectedItem(), filter, queryObjects.getParams());
+        List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
         RunnableEx.runInPlatform(() -> {
-            List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
             if (queryObjects.getTable().getColumns().isEmpty()) {
                 EthicalHackApp.addColumns(queryObjects.getTable(),
                         remap.stream().flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList()));

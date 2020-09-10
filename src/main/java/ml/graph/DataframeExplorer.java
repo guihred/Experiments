@@ -110,8 +110,13 @@ public class DataframeExplorer extends Application {
         currentThread = RunnableEx.runNewThread(() -> {
             LOG.info("FILLING {} IPS", getDataframe().getFile().getName());
 
+            Entry<String, DataframeStatisticAccumulator> selectedItem =
+                    columnsList.getSelectionModel().getSelectedItem();
+            if (selectedItem == null) {
+                return;
+            }
+            String ipColumn = selectedItem.getKey();
             DataframeBuilder builder = builderWithQuestions(getDataframe().getFile(), questions);
-            String ipColumn = columnsList.getSelectionModel().getSelectedItem().getKey();
             SimpleDoubleProperty count = new SimpleDoubleProperty();
             count.divide((double) getDataframe().getSize())
                     .addListener((ob, old, val) -> progress.setProgress(val.doubleValue()));

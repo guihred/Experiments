@@ -2,11 +2,21 @@ package utils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.application.Platform;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
 
 @FunctionalInterface
 public interface RunnableEx {
     void run() throws Exception;
+
+    public static void measureTime(String name, RunnableEx runnable) {
+        long currentTimeMillis = System.currentTimeMillis();
+        run(runnable);
+        long currentTimeMillis2 = System.currentTimeMillis();
+        long arg2 = currentTimeMillis2 - currentTimeMillis;
+        String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
+        HasLogging.log(1).info("{} took {}", name, formatDuration);
+    }
 
     static void ignore(RunnableEx run) {
         try {

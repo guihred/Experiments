@@ -29,6 +29,9 @@ import utils.ResourceFXUtils;
 import utils.SupplierEx;
 
 public final class VirusTotalApi {
+    private static final String MALICIOUS_POSITIVE_REGEX = "malicious=([^0]\\d*)";
+    private static final String LAST_ANALYSIS_STATS = "last_analysis_stats";
+    private static final String MALICIOUS_ATTR = "malicious";
     private static final String ATTRIBUTES = "attributes";
     private static final Logger LOG = HasLogging.log();
     private static final String VIRUSTOTAL_APIKEY = "397249a87cac6415141dde0a2263710c23166cc759dc89b681e8df70cc536abd";
@@ -47,9 +50,9 @@ public final class VirusTotalApi {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
         }
         String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES,
-                "last_analysis_stats", "malicious", "type_description", "tags", "type", "trid", "magic",
+                LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "type_description", "tags", "type", "trid", "magic",
                 "meaningful_name", "file_type", "probability");
-        Matcher matcher = Pattern.compile("malicious=([^0]\\d*)").matcher(displayJsonFromFile);
+        Matcher matcher = Pattern.compile(MALICIOUS_POSITIVE_REGEX).matcher(displayJsonFromFile);
         if (matcher.find()) {
             String group = matcher.group(1);
             LOG.info("Malicious FILE {} {}", path, group);
@@ -63,9 +66,9 @@ public final class VirusTotalApi {
             getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
         }
         String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES, "id",
-                "last_analysis_stats", "malicious");
+                LAST_ANALYSIS_STATS, MALICIOUS_ATTR);
 
-        Matcher matcher = Pattern.compile("malicious=([^0]\\d*)").matcher(displayJsonFromFile);
+        Matcher matcher = Pattern.compile(MALICIOUS_POSITIVE_REGEX).matcher(displayJsonFromFile);
         List<String> malicious = new ArrayList<>();
         while (matcher.find()) {
             String group = matcher.group(1);
@@ -85,7 +88,7 @@ public final class VirusTotalApi {
                 getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, "as_owner", "country", 
-                    "last_analysis_stats", "malicious", "network");
+                    LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "network");
         });
     }
 
@@ -99,7 +102,7 @@ public final class VirusTotalApi {
         }
         String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile);
         LOG.info(displayJsonFromFile);
-        Matcher matcher = Pattern.compile("malicious=([^0]\\d*)").matcher(displayJsonFromFile);
+        Matcher matcher = Pattern.compile(MALICIOUS_POSITIVE_REGEX).matcher(displayJsonFromFile);
         List<String> malicious = new ArrayList<>();
         while (matcher.find()) {
             String group = matcher.group(1);

@@ -1,5 +1,6 @@
 package schema.sngpc;
 
+import ethical.hacker.DocumentHelper;
 import extract.ExcelService;
 import java.io.File;
 import java.lang.reflect.Method;
@@ -7,7 +8,6 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -22,20 +22,8 @@ public final class XmlToXlsx {
     }
 
     public static void convertXML2XLS(File file) {
-        Document parse = SupplierEx.remap(() -> DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file),
-                "ERROR PARSING");
-        // NodeList rootNode = parse.getElementsByTagName("Style");
-        // Map<Class<?>, SupplierEx<?>> supplierMap = new HashMap<>();
-        // supplierMap.put(CellStyle.class, xssfWorkbook::createCellStyle);
-        // supplierMap.put(Font.class, xssfWorkbook::createFont);
-        // Map<String, CellStyle> styleMap = new HashMap<>();
-        // foreach(rootNode, xmlObject -> {
-        // CellStyle style = xssfWorkbook.createCellStyle();
-        // Map<String, String> childMap = childMap(xmlObject, style, supplierMap);
-        // styleMap.put(childMap.get("ID"), style);
-        // });
+        Document parse = SupplierEx.remap(() -> DocumentHelper.getDoc(file), "ERROR PARSING " + file);
         List<List<String>> arrayList = new ArrayList<>();
-
         foreach(parse.getElementsByTagName("Row"), xmlObject -> {
             List<String> arrayList2 = new ArrayList<>();
             NodeList childNodes = xmlObject.getChildNodes();
@@ -48,7 +36,7 @@ public final class XmlToXlsx {
             arrayList.add(arrayList2);
         });
 
-        arrayList.forEach(l -> System.out.println(l));
+        arrayList.forEach(l -> LOG.info("{}", l));
 
         File outFile = ResourceFXUtils.getOutFile("xlsx/" + file.getName().replaceAll("xls", "xlsx"));
 
@@ -113,29 +101,32 @@ public final class XmlToXlsx {
         }
     }
 
+    private static void logError(String fieldName, Throwable e) {
+        LOG.error("ERROR IN FIELD {} {}", fieldName, e.getMessage());
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static void setField(Object ob, Map<String, Method> collect, Map<String, Object> attributeMap,
             String fieldName) {
         Method method = collect.get(fieldName);
-        Class<?> setterType = method.getParameters()[0].getType();
-
+        Class setterType = method.getParameters()[0].getType();
         String upperCase = attributeMap.getOrDefault(fieldName, "").toString().toUpperCase();
         if (setterType.isEnum()) {
             RunnableEx.make(() -> {
-                Class setterType2 = setterType;
-                Enum<?> valueOf = Enum.valueOf(setterType2, upperCase);
+                Enum<?> valueOf = Enum.valueOf(setterType, upperCase);
                 method.invoke(ob, valueOf);
-            }, e -> LOG.error("ERROR IN FIELD {} {}", fieldName, e.getMessage())).run();
-        } else if (setterType.isPrimitive()) {
+            }, e -> logError(fieldName, e)).run();
+            return;
+        }
+        if (setterType.isPrimitive()) {
             RunnableEx.make(() -> {
                 Method method2 = Class.forName("java.lang." + StringSigaUtils.changeCase(setterType.getName()))
                         .getMethod("valueOf", String.class);
                 method.invoke(ob, method2.invoke(null, upperCase));
-            }, e -> LOG.error("ERROR IN FIELD {} {}", fieldName, e.getMessage())).run();
-
-        } else {
-            LOG.info("{}.{} NOT SET TO {} AS {}", ob.getClass().getSimpleName(), fieldName, upperCase, setterType);
+            }, e -> logError(fieldName, e)).run();
+            return;
         }
+        LOG.info("{}.{} NOT SET TO {} AS {}", ob.getClass().getSimpleName(), fieldName, upperCase, setterType);
 
     }
 
@@ -143,25 +134,25 @@ public final class XmlToXlsx {
     private static void setField(Object ob, Map<String, Method> collect, Node item, String nodeName,
             Map<String, Object> attributeMap, Optional<String> findFirst, Map<Class<?>, SupplierEx<?>> supplierMap) {
         Method method = findFirst.map(e -> collect.get(e + nodeName)).orElse(collect.get(nodeName));
-        Class<?> setterType = method.getParameters()[0].getType();
+        Class setterType = method.getParameters()[0].getType();
         if (setterType.isEnum()) {
             RunnableEx.make(() -> {
                 String orElse = findFirst.orElse(nodeName);
                 String upperCase = attributeMap.getOrDefault(orElse, "").toString().toUpperCase();
-                Class setterType2 = setterType;
-                Enum<?> valueOf = Enum.valueOf(setterType2, upperCase);
+                Enum<?> valueOf = Enum.valueOf(setterType, upperCase);
                 method.invoke(ob, valueOf);
-            }, e -> LOG.error("ERROR IN FIELD {} {}", nodeName, e.getMessage())).run();
-        } else if (supplierMap.containsKey(setterType)) {
+            }, e -> logError(nodeName, e)).run();
+            return;
+        }
+        if (supplierMap.containsKey(setterType)) {
             RunnableEx.make(() -> {
                 Object object = SupplierEx.remap(supplierMap.get(setterType), "ERROR " + setterType);
                 childMap(item, object, supplierMap);
-
                 method.invoke(ob, object);
-            }, e -> LOG.error("ERROR IN FIELD {} {}", nodeName, e.getMessage())).run();
-        } else {
-            LOG.info("CONVERT {}-> {}", item, setterType);
+            }, e -> logError(nodeName, e)).run();
+            return;
         }
+        LOG.info("CONVERT {}-> {}", item, setterType);
     }
 
 }
