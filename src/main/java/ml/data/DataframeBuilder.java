@@ -36,6 +36,9 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public DataframeML build() {
+        if (ExcelService.isExcel(dataframeML.file)) {
+            return ExcelDataReader.readExcel(dataframeML, dataframeML.file);
+        }
         DataframeUtils.readCSV(dataframeML.file, dataframeML);
         return dataframeML;
     }
@@ -60,6 +63,7 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public DataframeML makeStats() {
+
         DataframeUtils.makeStats(dataframeML.file, dataframeML, new SimpleDoubleProperty());
         return dataframeML;
     }

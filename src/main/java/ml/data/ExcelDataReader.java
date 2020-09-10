@@ -152,6 +152,9 @@ public class ExcelDataReader extends DataframeUtils {
         List<Integer> headerRows = mergedRegions.stream().filter(e -> e.getFirstRow() != e.getLastRow())
                 .flatMapToInt(m -> IntStream.range(m.getFirstRow(), m.getLastRow() + 1)).boxed().distinct()
                 .collect(Collectors.toList());
+        if (headerRows.isEmpty()) {
+            headerRows.add(0);
+        }
         int rowi = 0;
         for (Row row : sheet) {
             int rowindex = rowi;

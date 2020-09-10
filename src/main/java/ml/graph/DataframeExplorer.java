@@ -1,6 +1,7 @@
 package ml.graph;
 
 import ethical.hacker.WhoIsScanner;
+import extract.ExcelService;
 import gaming.ex21.ListHelper;
 import java.io.File;
 import java.util.*;
@@ -126,8 +127,8 @@ public class DataframeExplorer extends Application {
     }
 
     public void onActionLoadCSV(ActionEvent e) {
-        new FileChooserBuilder().title("Load CSV").extensions("CSV", "*.csv").onSelect(this::addStats)
-                .openFileAction(e);
+        new FileChooserBuilder().title("Load CSV").extensions("CSV", "*.csv", "*.xlsx", "*.xls")
+                .onSelect(this::addStats).openFileAction(e);
     }
 
     public void onActionSave(ActionEvent event) {
@@ -303,11 +304,13 @@ public class DataframeExplorer extends Application {
 
     private void readDataframe(File file, int maxSize) {
         DataframeBuilder builder = builderWithQuestions(file, questions);
-        Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
-        setDataframe(builder.dataframe());
-        RunnableEx.runInPlatform(() -> columns.setAll(entrySet));
-        builder.makeStats(progress.progressProperty());
-        if (getDataframe().getSize() <= maxSize) {
+        if (!ExcelService.isExcel(file)) {
+            Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
+            setDataframe(builder.dataframe());
+            RunnableEx.runInPlatform(() -> columns.setAll(entrySet));
+            builder.makeStats(progress.progressProperty());
+        }
+        if (ExcelService.isExcel(file) || getDataframe().getSize() <= maxSize) {
             setDataframe(builder.build());
             RunnableEx.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
         }
