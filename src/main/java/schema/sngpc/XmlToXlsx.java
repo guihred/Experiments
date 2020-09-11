@@ -22,7 +22,7 @@ public final class XmlToXlsx {
     }
 
     public static void convertXML2XLS(File file) {
-        Document parse = SupplierEx.remap(() -> DocumentHelper.getDoc(file), "ERROR PARSING " + file);
+        Document parse = DocumentHelper.getDoc(file);
         List<List<String>> arrayList = new ArrayList<>();
         foreach(parse.getElementsByTagName("Row"), xmlObject -> {
             List<String> arrayList2 = new ArrayList<>();
@@ -38,7 +38,7 @@ public final class XmlToXlsx {
 
         arrayList.forEach(l -> LOG.info("{}", l));
 
-        File outFile = ResourceFXUtils.getOutFile("xlsx/" + file.getName().replaceAll("xls", "xlsx"));
+        File outFile = ResourceFXUtils.getOutFile("xlsx/" + file.getName().replaceAll("\\.\\w+$", ".xlsx"));
 
         Map<String, FunctionEx<List<String>, Object>> mapa = new LinkedHashMap<>();
         for (int i = 0; i < arrayList.get(0).size(); i++) {

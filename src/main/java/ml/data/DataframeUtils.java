@@ -178,10 +178,7 @@ public class DataframeUtils extends DataframeML {
                     double co = computed;
                     RunnableEx.runInPlatform(() -> progress.set(co / size2));
                     List<String> line2 = CSVUtils.parseLine(nextLine);
-                    if (header.size() != line2.size()) {
-                        LOG.error("ERROR FIELDS COUNT");
-                        createNullRow(header, line2);
-                    }
+                    fixEmptyLine(header, line2);
 
                     if (filterOut(dataframeML, header, line2)) {
                         continue;
@@ -344,13 +341,7 @@ public class DataframeUtils extends DataframeML {
             return field;
         }
 
-        String number = field;
-        if (field.matches("\\d+\\.0+$") && currentFormat != Double.class) {
-            number = field.replaceAll("\\.0+", "");
-        }
-        if (field.matches("\"*\\d+,\\d+$")) {
-            number = field.replaceAll("[\",]", "");
-        }
+        String number = fixNumber(field, currentFormat);
 
         Object o = StringSigaUtils.tryAsNumber(dataframeML.getFormatMap(), header, currentFormat, number);
         if (o != null) {
@@ -417,6 +408,21 @@ public class DataframeUtils extends DataframeML {
         });
     }
 
+    private static void fixEmptyLine(List<String> header, List<String> line2) {
+        if (header.size() != line2.size()) {
+            LOG.error("ERROR FIELDS COUNT");
+            createNullRow(header, line2);
+        }
+    }
+
+    private static String fixNumber(String field, Class<?> currentFormat) {
+        if (field.matches("\\d+\\.0+$") && currentFormat != Double.class) {
+            return field.replaceAll("\\.0+", "");
+        }
+
+        return field.matches("\"*\\d+,\\d+$") ? field.replaceAll("[\",]", "") : field;
+    }
+
     private static List<String> getHeaders(Scanner scanner) {
         return CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
                 .map(c -> StringSigaUtils.fixEncoding(c).replaceAll("\\?", "")).collect(Collectors.toList());
@@ -429,10 +435,7 @@ public class DataframeUtils extends DataframeML {
     private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
         while (scanner.hasNext()) {
             List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
-            if (header.size() != line2.size()) {
-                LOG.error("ERROR FIELDS COUNT");
-                createNullRow(header, line2);
-            }
+            fixEmptyLine(header, line2);
             if (filterOut(dataframe, header, line2)) {
                 continue;
             }
@@ -441,14 +444,12 @@ public class DataframeUtils extends DataframeML {
                 String key = header.get(i);
                 String field = getFromList(i, line2);
                 Object tryNumber = tryNumber(dataframe, key, field);
-
                 categorizeIfCategorizable(dataframe, key, tryNumber);
                 tryNumber = mapIfMappable(dataframe, key, tryNumber);
-
                 dataframe.list(key).add(tryNumber);
             }
             if (dataframe.size > dataframe.maxSize) {
-                break;
+                return;
             }
         }
     }

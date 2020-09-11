@@ -2,7 +2,6 @@ package ethical.hacker;
 
 import extract.ImageLoader;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.Objects;
@@ -18,19 +17,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import utils.*;
 
 public final class DocumentHelper {
 
     private static final Logger LOG = HasLogging.log();
+
     private DocumentHelper() {
     }
+
     public static void addProperties(Object loadWorker, ListView<Text> value) {
         ClassReflectionUtils.allProperties(loadWorker, loadWorker.getClass()).forEach((s, prop) -> {
             Text e = new Text();
@@ -41,16 +40,18 @@ public final class DocumentHelper {
         value.getItems().sort(Comparator.comparing(Text::getText));
     }
 
-    public static Document getDoc(File file) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        dbf.setXIncludeAware(false);
-        dbf.setExpandEntityReferences(false);
-        DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-        return documentBuilder.parse(file);
+    public static Document getDoc(File file) {
+        return SupplierEx.remap(() -> {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setXIncludeAware(false);
+            dbf.setExpandEntityReferences(false);
+            DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
+            return documentBuilder.parse(file);
+        }, "ERROR PARSING " + file);
     }
 
     public static ObservableList<ImageView> getImgs(String url, Document doc) {
