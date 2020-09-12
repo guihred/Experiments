@@ -27,12 +27,13 @@ public enum PaintTools {
     PATTERN(new PatternTool()),
     BORDER(new BorderTool());
 
-    private PaintTool tool = new DummyTool();
+    private PaintTool tool = emptyTool();
 
 
     PaintTools(final PaintTool paintTool) {
         tool = paintTool;
     }
+
 
     public PaintTool getTool() {
         return tool;
@@ -40,6 +41,10 @@ public enum PaintTools {
 
     public String getTooltip() {
         return StringSigaUtils.splitMargeCamelCase(tool.getClass().getSimpleName().replaceAll("Tool", ""));
+    }
+
+    public static DummyTool emptyTool() {
+        return new DummyTool();
     }
 
 	public static AreaTool getSelectRectTool(PaintTool tool2, Group imageStack2) {

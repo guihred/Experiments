@@ -1,6 +1,6 @@
 package schema.sngpc;
 
-import ethical.hacker.DocumentHelper;
+import extract.DocumentHelper;
 import extract.ExcelService;
 import java.io.File;
 import java.lang.reflect.Method;

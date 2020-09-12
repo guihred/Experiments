@@ -1,8 +1,9 @@
 package ethical.hacker;
 
-import static ethical.hacker.DocumentHelper.addProperties;
-import static ethical.hacker.DocumentHelper.onDocumentChange;
+import static extract.DocumentHelper.addProperties;
+import static extract.DocumentHelper.onDocumentChange;
 
+import extract.DocumentHelper;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;

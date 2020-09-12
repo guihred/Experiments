@@ -4,6 +4,7 @@ import static simplebuilder.SimpleVBoxBuilder.newVBox;
 
 import extract.Music;
 import extract.MusicReader;
+import extract.QuickSortML;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +24,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import ml.data.QuickSortML;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.*;
 import utils.ClassReflectionUtils;

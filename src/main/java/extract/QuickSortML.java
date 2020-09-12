@@ -1,10 +1,9 @@
-package ml.data;
+package extract;
 
 import java.util.Comparator;
 import java.util.List;
 
 public class QuickSortML {
-
 
 	public static <T> boolean isSorted(List<T> a, Comparator<T> comp) {
         for (int i = 0; i < a.size() - 1; i++) {

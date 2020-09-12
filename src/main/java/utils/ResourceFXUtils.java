@@ -2,7 +2,6 @@ package utils;
 
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -10,7 +9,6 @@ import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -23,15 +21,11 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.shape.Mesh;
 import javax.swing.filechooser.FileSystemView;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 
 /**
  * @author Note Easy Methods to get a resource from the resources directory.
  */
 public final class ResourceFXUtils {
-
-    private static final Logger LOGGER = HasLogging.log();
 
     private static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
             "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
@@ -157,18 +151,9 @@ public final class ResourceFXUtils {
     }
 
     public static int getYearCreation(Path path) {
-        try {
-            BasicFileAttributes readAttributes = Files.readAttributes(path, BasicFileAttributes.class);
-            Instant l = readAttributes.creationTime().toInstant();
-            return ZonedDateTime.ofInstant(l, ZoneId.systemDefault()).getYear();
-        } catch (IOException e) {
-            LOGGER.trace("", e);
-            return ZonedDateTime.now().getYear();
-        }
-    }
+        return SupplierEx.getFirst(() -> Files.readAttributes(path, BasicFileAttributes.class).creationTime()
+                .toInstant().atZone(ZoneId.systemDefault()).getYear(), () -> ZonedDateTime.now().getYear());
 
-    public static boolean hasExtension(Path e, String... other) {
-        return Stream.of(other).anyMatch(ex -> StringUtils.endsWithIgnoreCase(e.toString(), ex));
     }
 
     public static Mesh importStlMesh(File file) {
@@ -194,12 +179,11 @@ public final class ResourceFXUtils {
     }
 
     public static void runOnFiles(File userFolder, ConsumerEx<File> run) {
-
-        try (Stream<Path> s = Files.list(userFolder.toPath())) {
-            s.forEach(ConsumerEx.makeConsumer(e -> run.accept(e.toFile())));
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
+        RunnableEx.run(() -> {
+            try (Stream<Path> s = Files.list(userFolder.toPath())) {
+                s.forEach(ConsumerEx.makeConsumer(e -> run.accept(e.toFile())));
+            }
+        });
     }
 
     public static String toExternalForm(String arquivo) {
@@ -212,12 +196,8 @@ public final class ResourceFXUtils {
     }
 
     public static String toFullPath(String arquivo) {
-        try {
-            return URLDecoder.decode(getClassLoader().getResource(arquivo).getFile(), "UTF-8");
-        } catch (Exception e) {
-            LOGGER.trace("File Error:" + arquivo, e);
-            return SupplierEx.get(() -> URLDecoder.decode(new File(arquivo).getAbsolutePath(), "UTF-8"));
-        }
+        return SupplierEx.getFirst(() -> URLDecoder.decode(getClassLoader().getResource(arquivo).getFile(), "UTF-8"),
+                () -> URLDecoder.decode(new File(arquivo).getAbsolutePath(), "UTF-8"));
     }
 
     public static Path toPath(String arquivo) {
@@ -235,7 +215,6 @@ public final class ResourceFXUtils {
     public static URL toURL(String arquivo) {
         return getClassLoader().getResource(arquivo);
     }
-
 
     private static ClassLoader getClassLoader() {
         return Thread.currentThread().getContextClassLoader();

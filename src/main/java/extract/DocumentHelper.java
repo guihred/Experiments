@@ -1,6 +1,5 @@
-package ethical.hacker;
+package extract;
 
-import extract.ImageLoader;
 import java.io.File;
 import java.net.URL;
 import java.util.Comparator;

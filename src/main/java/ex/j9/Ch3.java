@@ -2,6 +2,7 @@ package ex.j9;
 
 import static java.util.stream.Collectors.toList;
 
+import extract.QuickSortML;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.*;
@@ -9,7 +10,6 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import ml.data.QuickSortML;
 import org.slf4j.Logger;
 import utils.HasLogging;
 

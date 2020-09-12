@@ -12,7 +12,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TableView;
-import ml.data.QuickSortML;
 
 public final class FilesComparatorHelper {
 	private static final List<String> STYLE_CLASSES = Arrays.asList("", "vermelho", "amarelo");
