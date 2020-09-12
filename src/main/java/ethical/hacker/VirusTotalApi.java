@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import fxml.utils.JsonExtractor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +24,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
-import schema.sngpc.JsonExtractor;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public final class VirusTotalApi {
     private static final String MALICIOUS_POSITIVE_REGEX = "malicious=([^0]\\d*)";

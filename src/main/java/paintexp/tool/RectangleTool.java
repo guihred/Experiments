@@ -1,6 +1,6 @@
 package paintexp.tool;
 
-import static utils.SupplierEx.orElse;
+import static utils.ex.SupplierEx.orElse;
 
 import java.util.HashMap;
 import java.util.List;

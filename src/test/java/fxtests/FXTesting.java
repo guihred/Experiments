@@ -8,10 +8,10 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.CommonsFX;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class FXTesting implements HasLogging {
     private static final String TIME_TOOK_FORMAT = "{} took {}";
@@ -22,7 +22,7 @@ public class FXTesting implements HasLogging {
 
     protected void testApplications(List<Class<? extends Application>> applicationClasses) {
 
-        ResourceFXUtils.initializeFX();
+        CommonsFX.initializeFX();
         List<Object> testedApps = Collections.synchronizedList(new ArrayList<>());
         long currentTimeMillis = System.currentTimeMillis();
         for (Class<? extends Application> class1 : applicationClasses) {

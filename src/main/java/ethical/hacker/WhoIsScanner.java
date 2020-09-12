@@ -28,6 +28,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.ConsumerEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class WhoIsScanner {
     private static final String SANS_API_URL = "http://isc.sans.edu/api/ip/";
@@ -54,7 +58,7 @@ public class WhoIsScanner {
 
     public Document evaluateURL(String url) throws Exception {
         String screenshotsFolder = "screenshots/";
-        File htmlFile = ResourceFXUtils
+        File htmlFile = FileTreeWalker
                 .getFirstFileMatch(ResourceFXUtils.getOutFile("screenshots"),
                         p -> p.getName(p.getNameCount() - 1).toString().startsWith(name + ".html"))
                 .stream().max(Comparator.comparing(p -> ResourceFXUtils.computeAttributes(p.toFile()).size()))
@@ -132,7 +136,7 @@ public class WhoIsScanner {
         List<String> tables = ExtractUtils.getTables(renderPage);
         File outFile = ResourceFXUtils.getOutFile(screenshotsFolder + name + ".txt");
         Files.write(outFile.toPath(), tables, StandardCharsets.UTF_8);
-        List<Path> firstFileMatch = ResourceFXUtils.getFirstFileMatch(ResourceFXUtils.getOutFile("screenshots"),
+        List<Path> firstFileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile("screenshots"),
                 p -> p.getName(p.getNameCount() - 1).toString().startsWith(name));
         String text = Stream.of(subFolder).map(renderPage::select).map(Elements::text).filter(StringUtils::isNotBlank)
                 .findFirst().orElse("");

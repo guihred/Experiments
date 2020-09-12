@@ -2,7 +2,7 @@ package japstudy;
 
 
 import static utils.CommonsFX.onCloseWindow;
-import static utils.RunnableEx.runIf;
+import static utils.ex.RunnableEx.runIf;
 
 import java.util.Random;
 import javafx.application.Application;

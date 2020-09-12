@@ -12,7 +12,7 @@ import com.aspose.imaging.imageoptions.JpegOptions;
 import com.aspose.imaging.imageoptions.PngOptions;
 import com.aspose.imaging.imageoptions.TiffOptions;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class ImageLoading {
     private static final Logger LOG = HasLogging.log();

@@ -7,7 +7,7 @@ import java.io.IOException;
 import ml.Word2VecExample;
 import ml.WordSuggetionApp;
 import org.junit.Test;
-import utils.ConsumerEx;
+import utils.ex.ConsumerEx;
 
 public class FXWordToVecTest extends AbstractTestExecution {
     @Test

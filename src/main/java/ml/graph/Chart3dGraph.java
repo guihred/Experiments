@@ -23,9 +23,9 @@ import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.slf4j.Logger;
 import utils.Axis;
-import utils.HasLogging;
 import utils.ImageFXUtils;
 import utils.RotateUtils;
+import utils.ex.HasLogging;
 
 public class Chart3dGraph extends Application {
 

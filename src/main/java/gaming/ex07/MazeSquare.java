@@ -9,7 +9,7 @@ import javafx.geometry.BoundingBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Line;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class MazeSquare extends BorderPane {
     public static final double SQUARE_SIZE = 20;

@@ -18,8 +18,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import utils.DrawOnPoint;
 import utils.PixelatedImageView;
-import utils.SupplierEx;
 import utils.ZoomableScrollPane;
+import utils.ex.SupplierEx;
 
 public class PaintModel {
     private static final int MAX_VERSIONS = 50;

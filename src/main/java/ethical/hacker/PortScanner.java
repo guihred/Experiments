@@ -12,7 +12,7 @@ import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
 import utils.ExtractUtils;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class PortScanner {
 

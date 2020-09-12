@@ -1,6 +1,6 @@
 package extract;
 
-import static utils.RunnableEx.ignore;
+import static utils.ex.RunnableEx.ignore;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -18,7 +18,7 @@ import javafx.scene.image.ImageView;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class ImageLoader {
     private static final Logger LOG = HasLogging.log();

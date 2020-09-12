@@ -12,7 +12,7 @@ import java.util.function.UnaryOperator;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import utils.ResourceFXUtils;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class DataframeBuilder extends DataframeML {
     private final DataframeML dataframeML = new DataframeML();

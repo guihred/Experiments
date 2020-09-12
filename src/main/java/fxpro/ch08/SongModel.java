@@ -16,9 +16,9 @@ import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ImageFXUtils;
-import utils.RunnableEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public final class SongModel {
 

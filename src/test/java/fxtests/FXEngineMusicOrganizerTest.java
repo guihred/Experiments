@@ -24,6 +24,10 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.util.WaitForAsyncUtils;
 import utils.*;
+import utils.ex.ConsumerEx;
+import utils.ex.HasLogging;
+import utils.ex.PredicateEx;
+import utils.ex.RunnableEx;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
@@ -31,9 +35,9 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
     @Test
     public void splitAudio() {
         File userFolder = ResourceFXUtils.getUserFolder("Music");
-        List<Path> videos = ResourceFXUtils.getPathByExtension(userFolder, ".mp4", ".wma", ".webm");
+        List<Path> videos = FileTreeWalker.getPathByExtension(userFolder, ".mp4", ".wma", ".webm");
         if (videos.isEmpty()) {
-            List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".mp4",
+            List<Path> pathByExtension = FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".mp4",
                 ".wma", ".webm");
             if (!pathByExtension.isEmpty()) {
                 Path randomItem = randomItem(pathByExtension);
@@ -141,7 +145,7 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
 
     private Path getRandomSong() {
         File outFile = ResourceFXUtils.getUserFolder("Music");
-        Path randomSong = randomItem(ResourceFXUtils.getPathByExtension(outFile, "mp3"));
+        Path randomSong = randomItem(FileTreeWalker.getPathByExtension(outFile, "mp3"));
         getLogger().info("{} from {}", randomSong, HasLogging.getCurrentLine(1));
         return randomSong;
     }

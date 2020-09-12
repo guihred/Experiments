@@ -14,6 +14,9 @@ import ex.j9.ch4.LineCh4;
 import ex.j9.ch4.PointCh4;
 import extract.QuickSortML;
 import extract.WikiImagesUtils;
+import fxml.utils.JsonExtractor;
+import fxml.utils.TermFrequency;
+import fxml.utils.TermFrequencyIndex;
 import image.ImageCreating;
 import image.ImageLoading;
 import japstudy.HiraganaMaker;
@@ -32,8 +35,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import others.*;
 import pdfreader.Speaker;
-import schema.sngpc.JsonExtractor;
 import utils.*;
+import utils.ex.HasLogging;
 
 @SuppressWarnings("static-method")
 public class IndependentTest {
@@ -111,9 +114,8 @@ public class IndependentTest {
 
     @Test
     public void testDisplayErrors() {
-        measureTime("StatsLogAccess.displayErrors", () -> {
-            StatsLogAccess.displayErrors().forEach(l -> LOGGER.info("{}", l));
-        });
+        measureTime("StatsLogAccess.displayErrors",
+                () -> StatsLogAccess.displayErrors().forEach(l -> LOGGER.info("{}", l)));
     }
 
     @Test
@@ -158,8 +160,8 @@ public class IndependentTest {
         String dataDir = userFolder + "\\";
         File createTempFile = File.createTempFile("created", ".jpg", ResourceFXUtils.getOutFile());
         String nameFile = createTempFile.toPath().toString();
-        String svgFile = ResourceFXUtils.getFirstPathByExtension(userFolder.getParentFile(), ".svg").toString();
-        String pngFile = ResourceFXUtils.getFirstPathByExtension(userFolder.getParentFile(), ".png").toString();
+        String svgFile = FileTreeWalker.getFirstPathByExtension(userFolder.getParentFile(), ".svg").toString();
+        String pngFile = FileTreeWalker.getFirstPathByExtension(userFolder.getParentFile(), ".png").toString();
         measureTime("ImageCreating.creating", () -> ImageCreating.creating(nameFile));
         measureTime("ImageLoading.convertSVG", () -> ImageLoading.convertSVG(dataDir, svgFile));
         measureTime("ImageLoading.binarize", () -> ImageLoading.binarize(dataDir, nameFile));

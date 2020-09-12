@@ -1,9 +1,9 @@
 package contest;
 
 import static utils.CommonsFX.onCloseWindow;
-import static utils.RunnableEx.runNewThread;
-import static utils.SupplierEx.getIgnore;
-import static utils.SupplierEx.orElse;
+import static utils.ex.RunnableEx.runNewThread;
+import static utils.ex.SupplierEx.getIgnore;
+import static utils.ex.SupplierEx.orElse;
 
 import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
@@ -27,6 +27,7 @@ import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
 import utils.*;
+import utils.ex.SupplierEx;
 
 public class QuadrixCrawler extends Application {
 
@@ -92,7 +93,7 @@ public class QuadrixCrawler extends Application {
         }
         int level = tree.getTreeItemLevel(newValue);
         SimpleStringProperty domain = new SimpleStringProperty(QuadrixHelper.QUADRIX_DOMAIN);
-        RunnableEx.runInPlatform(() -> {
+        CommonsFX.runInPlatform(() -> {
             URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
             domain.set(url2.getProtocol() + "://" + url2.getHost());
             Document doc = QuadrixHelper.getDocumentCookies(url2);

@@ -1,7 +1,7 @@
 package ml.data;
 
-import static utils.SupplierEx.get;
-import static utils.SupplierEx.orElse;
+import static utils.ex.SupplierEx.get;
+import static utils.ex.SupplierEx.orElse;
 
 import com.google.common.util.concurrent.Atomics;
 import java.io.File;
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class JavaFileDependency {
     private static final String IMPORT_REGEX =

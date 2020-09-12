@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import simplebuilder.SimpleButtonBuilder;
 import utils.CommonsFX;
 import utils.ExtractUtils;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class TableVisualizationExample extends TableVisualizationVar {
 

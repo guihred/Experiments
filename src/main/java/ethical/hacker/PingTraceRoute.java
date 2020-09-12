@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class PingTraceRoute {
     private static final Logger LOG = HasLogging.log();

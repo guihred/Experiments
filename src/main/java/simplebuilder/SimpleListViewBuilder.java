@@ -8,8 +8,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
-import utils.ConsumerEx;
-import utils.FunctionEx;
+import utils.ex.ConsumerEx;
+import utils.ex.FunctionEx;
 
 public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, SimpleListViewBuilder<T>> {
 

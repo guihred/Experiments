@@ -11,7 +11,7 @@ import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 /**
  *

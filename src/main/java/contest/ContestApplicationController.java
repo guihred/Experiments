@@ -3,7 +3,7 @@ package contest;
 import static contest.ContestHelper.*;
 import static java.lang.String.format;
 import static simplebuilder.SimpleListViewBuilder.newCellFactory;
-import static utils.FunctionEx.mapIf;
+import static utils.ex.FunctionEx.mapIf;
 
 import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;

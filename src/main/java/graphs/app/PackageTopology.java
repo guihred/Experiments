@@ -15,7 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ml.data.JavaFileDependency;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class PackageTopology extends BaseTopology {
 

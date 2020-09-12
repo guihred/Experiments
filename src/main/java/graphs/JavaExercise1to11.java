@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class JavaExercise1to11 {
 

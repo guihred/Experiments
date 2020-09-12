@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -18,6 +17,9 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class ConsoleUtils {
     private static final int WAIT_INTERVAL_MILLIS = 5_000; // 5 SECONDS
@@ -36,10 +38,10 @@ public final class ConsoleUtils {
             while (PROCESSES.values().stream().anyMatch(e -> !e)) {
                 long count = PROCESSES.values().stream().filter(e -> !e).count();
                 double newValue = (n - count) / n;
-                Platform.runLater(() -> progress.set(newValue));
+                CommonsFX.runInPlatform(() -> progress.set(newValue));
                 RunnableEx.ignore(() -> Thread.sleep(500));
             }
-            Platform.runLater(() -> progress.set(1));
+            CommonsFX.runInPlatform(() -> progress.set(1));
         });
         return progress;
     }

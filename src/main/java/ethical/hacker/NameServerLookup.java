@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class NameServerLookup {
 	private static final Logger LOG = HasLogging.log();

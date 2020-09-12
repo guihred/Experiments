@@ -1,6 +1,6 @@
 package extract;
 
-import static utils.RunnableEx.run;
+import static utils.ex.RunnableEx.run;
 
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
@@ -25,9 +25,9 @@ import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public final class MusicReader {
     private static final Logger LOG = HasLogging.log();

@@ -27,9 +27,10 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.*;
 import utils.ClassReflectionUtils;
+import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class MusicOrganizer extends Application {
 
@@ -165,7 +166,7 @@ public class MusicOrganizer extends Application {
         return new FileChooserBuilder().name("Carregar _Vídeos").title("Carregar Pasta de Músicas")
                 .onSelect(selectedFile -> {
                     ObservableList<Music> videos = FXCollections.observableArrayList();
-                    ResourceFXUtils.getPathByExtensionAsync(selectedFile, v -> videos.add(new Music(v.toFile())),
+                    FileTreeWalker.getPathByExtensionAsync(selectedFile, v -> videos.add(new Music(v.toFile())),
                             ".mp4", ".wma", ".webm", ".wav");
                     configurarFiltroRapido(filterField, musicasTable, videos);
                 }).buildOpenDirectoryButton();

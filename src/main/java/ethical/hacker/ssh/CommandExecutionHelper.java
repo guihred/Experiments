@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
 import org.apache.sshd.server.command.AbstractCommandSupport;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 /**
  * @author <a href="mailto:dev@mina.apache.org">Apache MINA SSHD Project</a>

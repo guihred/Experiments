@@ -5,8 +5,8 @@ import java.util.Map;
 import ml.data.CSVUtils;
 import ml.data.DataframeML;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 
 public final class CatanLogger {
     private static final Logger LOGGER = HasLogging.log();

@@ -20,7 +20,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleSequentialTransitionBuilder;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class PhotoViewerHelper {
 	private static final int DURATION_MILLIS = 500;

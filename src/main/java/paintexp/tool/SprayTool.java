@@ -12,8 +12,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
 import simplebuilder.SimpleSliderBuilder;
-import utils.HasLogging;
 import utils.PixelHelper;
+import utils.ex.HasLogging;
 
 public class SprayTool extends PaintTool {
 

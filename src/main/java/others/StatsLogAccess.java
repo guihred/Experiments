@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public final class StatsLogAccess {
     public static final Logger LOG = HasLogging.log();
@@ -24,7 +24,8 @@ public final class StatsLogAccess {
             File file = new File("target/errors.log");
             try (BufferedReader scanner = Files.newBufferedReader(file.toPath(), StandardCharsets.ISO_8859_1)) {
                 Map<String,
-                        Long> collect2 = scanner.lines().filter(l -> !l.matches("\tat (sun|java|org|com|javafx)\\..+"))
+                        Long> collect2 =
+                                scanner.lines().filter(l -> !l.matches("\tat (sun|java|javax|org|com|javafx)\\..+"))
                                 .filter(l -> l.matches("\tat .+?\\(.+\\)"))
                                 .map(l -> l.replaceAll("\tat (.+?\\(.+\\))", "$1"))
                                 .collect(Collectors.groupingBy(e -> e, Collectors.counting()));

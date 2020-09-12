@@ -20,6 +20,7 @@ import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.junit.Test;
 import utils.*;
+import utils.ex.RunnableEx;
 
 public class FXHackTest extends AbstractTestExecution {
     // @Test
@@ -73,7 +74,7 @@ public class FXHackTest extends AbstractTestExecution {
         File userFolder = ResourceFXUtils.getUserFolder("Music");
         measureTime("HashVerifier.listNotRepeatedFiles", () -> HashVerifier
                 .listNotRepeatedFiles(new File(userFolder, "PalavraCantada"), new File(userFolder, "Bita")));
-        Path firstMp3 = ResourceFXUtils.getFirstPathByExtension(userFolder, ".mp3");
+        Path firstMp3 = FileTreeWalker.getFirstPathByExtension(userFolder, ".mp3");
         measureTime("HashVerifier.getMD5Hash", () -> HashVerifier.getMD5Hash(firstMp3));
         measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstMp3));
         measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstMp3));
@@ -146,7 +147,7 @@ public class FXHackTest extends AbstractTestExecution {
     @Test
     public void verifyHashDigest() {
         Path firstPathByExtension = measureTime("ResourceFXUtils.getFirstPathByExtension",
-                () -> ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
+                () -> FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
         measureTime("HashVerifier.getMD5Hash", () -> HashVerifier.getMD5Hash(firstPathByExtension));
         measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstPathByExtension));
         measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
@@ -171,7 +172,7 @@ public class FXHackTest extends AbstractTestExecution {
         File downloads = ResourceFXUtils.getUserFolder("Downloads");
         interactNoWait(() -> show.chooseDirectory(downloads));
         interactNoWait(RunnableEx.make(() -> {
-            File userFolder = ResourceFXUtils.getFirstPathByExtension(downloads, ".exe").toFile();
+            File userFolder = FileTreeWalker.getFirstPathByExtension(downloads, ".exe").toFile();
             show.chooseExeFile(userFolder);
         }));
     }
@@ -179,7 +180,7 @@ public class FXHackTest extends AbstractTestExecution {
     @Test
     public void verifyVirusTotalApi() {
         Path firstPathByExtension = measureTime("ResourceFXUtils.getFirstPathByExtension",
-                () -> ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
+                () -> FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
         measureTime("VirusTotalApi.getFilesInformation", () -> VirusTotalApi.getFilesInformation(firstPathByExtension));
         measureTime("VirusTotalApi.getIpInformation", () -> VirusTotalApi.getIpInformation("111.229.255.22"));
         measureTime("VirusTotalApi.getIpTotalInfo", () -> VirusTotalApi.getIpTotalInfo("23.95.188.163"));

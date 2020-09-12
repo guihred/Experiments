@@ -9,52 +9,19 @@ import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener.Change;
-import javafx.collections.ObservableList;
-import javafx.embed.swing.JFXPanel;
 import javafx.scene.shape.Mesh;
 import javax.swing.filechooser.FileSystemView;
+import utils.ex.ConsumerEx;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 /**
  * @author Note Easy Methods to get a resource from the resources directory.
  */
 public final class ResourceFXUtils {
 
-    private static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
-            "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
-            "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
-            "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char",
-            "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
-            "float", "native", "super", "while");
-
     private ResourceFXUtils() {
-    }
-
-    public static double clamp(double value, double min, double max) {
-        if (Double.compare(value, min) < 0) {
-            return min;
-        }
-        if (Double.compare(value, max) > 0) {
-            return max;
-        }
-        return value;
-    }
-
-    public static int clamp(int value, int min, int max) {
-        if (Double.compare(value, min) < 0) {
-            return min;
-        }
-        if (Double.compare(value, max) > 0) {
-            return max;
-        }
-        return value;
     }
 
     public static BasicFileAttributes computeAttributes(File v) {
@@ -63,25 +30,6 @@ public final class ResourceFXUtils {
 
     public static URL convertToURL(File arquivo) {
         return SupplierEx.get(() -> arquivo.toURI().toURL());
-    }
-
-    public static List<Path> getFirstFileMatch(File dir, PredicateEx<Path> other) {
-        return SupplierEx.get(() -> {
-            if (!dir.exists()) {
-                return Collections.emptyList();
-            }
-            try (Stream<Path> walk = Files.walk(dir.toPath(), 20)) {
-                return walk.filter(PredicateEx.makeTest(other)).collect(Collectors.toList());
-            }
-        }, Collections.emptyList());
-    }
-
-    public static Path getFirstPathByExtension(File dir, String... other) {
-        return getPathByExtension(dir, other).stream().findFirst().orElse(null);
-    }
-
-    public static List<String> getJavaKeywords() {
-        return JAVA_KEYWORDS;
     }
 
     public static File getOutFile() {
@@ -106,54 +54,9 @@ public final class ResourceFXUtils {
         return file2;
     }
 
-    public static List<Path> getPathByExtension(File start, String... other) {
-        return SupplierEx.get(() -> {
-            if (!start.exists()) {
-                return Collections.emptyList();
-            }
-            List<Path> pathList = new ArrayList<>();
-            FileTreeWalker.walk(start, pathList, other);
-            return pathList;
-        }, Collections.emptyList());
-    }
-
-    public static ObservableList<Path> getPathByExtensionAsync(File start, ConsumerEx<Path> onPathFound,
-            String... other) {
-        return SupplierEx.get(() -> {
-            if (!start.exists()) {
-                return FXCollections.emptyObservableList();
-            }
-            ObservableList<Path> pathList = FXCollections.observableArrayList();
-            pathList.addListener((Change<? extends Path> c) -> {
-                while (c.next()) {
-                    for (Path path : c.getAddedSubList()) {
-                        ConsumerEx.makeConsumer(onPathFound).accept(path);
-                    }
-                }
-            });
-            RunnableEx.runNewThread(() -> FileTreeWalker.walk(start, pathList, other));
-            return pathList;
-        }, FXCollections.emptyObservableList());
-    }
-
-    public static Path getRandomPathByExtension(File dir, String... other) {
-        List<Path> pathByExtension = getPathByExtension(dir, other);
-        if (pathByExtension.isEmpty()) {
-            return null;
-        }
-
-        return pathByExtension.get(new Random().nextInt(pathByExtension.size()));
-    }
-
     public static File getUserFolder(String dir) {
         String path = FileSystemView.getFileSystemView().getHomeDirectory().getPath();
         return new File(new File(path).getParentFile(), dir);
-    }
-
-    public static int getYearCreation(Path path) {
-        return SupplierEx.getFirst(() -> Files.readAttributes(path, BasicFileAttributes.class).creationTime()
-                .toInstant().atZone(ZoneId.systemDefault()).getYear(), () -> ZonedDateTime.now().getYear());
-
     }
 
     public static Mesh importStlMesh(File file) {
@@ -171,11 +74,6 @@ public final class ResourceFXUtils {
         StlMeshImporter importer = new StlMeshImporter();
         importer.read(file);
         return importer.getImport();
-    }
-
-    public static void initializeFX() {
-        Platform.setImplicitExit(false);
-        new JFXPanel().toString();
     }
 
     public static void runOnFiles(File userFolder, ConsumerEx<File> run) {

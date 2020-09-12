@@ -41,9 +41,9 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleConverter;
 import simplebuilder.SimpleListViewBuilder;
-import utils.HasLogging;
 import utils.HibernateUtil;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 
 public class ContestQuestionEditingDisplay extends Application {
     private static final Logger LOG = HasLogging.log();

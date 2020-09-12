@@ -6,7 +6,7 @@ import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class DataframeStatisticAccumulator {
     /**

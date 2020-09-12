@@ -8,6 +8,7 @@ import java.util.Map;
 import ml.data.*;
 import org.junit.Test;
 import org.nd4j.linalg.io.Assert;
+import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
@@ -29,7 +30,7 @@ public class DataframeMLTest {
     @Test
     public void testExcelData() {
         Path firstPathByExtension =
-                ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getOutFile().getParentFile(), ".xls");
+                FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile().getParentFile(), ".xls");
         DataframeML readExcel = measureTime("ExcelDataReader.readExcel",
                 () -> ExcelDataReader.readExcel(firstPathByExtension.toFile()));
         measureTime("DataframeUtils.toString", () -> DataframeUtils.toString(readExcel));
@@ -42,7 +43,7 @@ public class DataframeMLTest {
                         .builder(
                                 new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Palo Alto] - Threat.csv"))
                         .makeStats());
-        Path randomPathByExtension = ResourceFXUtils.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".csv");
+        Path randomPathByExtension = FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".csv");
         measureTime("DataframeUtils.makeStats",
                 () -> DataframeBuilder.builder(randomPathByExtension.toFile()).makeStats());
     }

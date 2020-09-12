@@ -8,7 +8,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.util.Callback;
-import utils.ConsumerEx;
+import utils.ex.ConsumerEx;
 
 public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, SimpleTreeViewBuilder<T>> {
     private TreeView<T> treeView;

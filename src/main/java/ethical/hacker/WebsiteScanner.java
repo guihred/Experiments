@@ -16,6 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.ConsumerEx;
+import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public class WebsiteScanner {
     private static final Logger LOG = HasLogging.log();
@@ -98,7 +102,7 @@ public class WebsiteScanner {
                 List<String> links = getLinks(ip);
                 LOG.info("{} Found {} ", ip, links);
                 websiteRoutes.get(ip).addAll(links);
-                RunnableEx.runInPlatform(() -> run.accept(ip, links));
+                CommonsFX.runInPlatform(() -> run.accept(ip, links));
                 if (allHosts().size() < getSize()) {
                     for (int i = 0; i < links.size(); i++) {
                         String ip2 = links.get(i);

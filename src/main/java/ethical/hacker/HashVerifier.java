@@ -12,8 +12,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
+import utils.FileTreeWalker;
+import utils.ex.HasLogging;
 
 public final class HashVerifier {
     private static final Logger LOG = HasLogging.log();
@@ -48,9 +48,9 @@ public final class HashVerifier {
         ObservableList<Entry<Path, Path>> notRepeatedEntries = FXCollections.observableArrayList();
         Map<String, Path> fileMap = new ConcurrentHashMap<>();
         
-        ResourceFXUtils.getPathByExtensionAsync(file, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
+        FileTreeWalker.getPathByExtensionAsync(file, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
                 ".mp3");
-        ResourceFXUtils.getPathByExtensionAsync(file2, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
+        FileTreeWalker.getPathByExtensionAsync(file2, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
                 ".mp3");
         return notRepeatedEntries;
     }
@@ -60,7 +60,7 @@ public final class HashVerifier {
         List<Entry<Path, Path>> repeatedEntries = new ArrayList<>();
         Map<String, Path> fileMap = new LinkedHashMap<>();
 
-        ResourceFXUtils.getPathByExtensionAsync(file, path -> {
+        FileTreeWalker.getPathByExtensionAsync(file, path -> {
             String sha256Hash = getSha256Hash(path);
             Path put = fileMap.put(sha256Hash, path);
             if (put != null) {

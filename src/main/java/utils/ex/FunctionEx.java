@@ -1,4 +1,4 @@
-package utils;
+package utils.ex;
 
 import java.util.Objects;
 import java.util.function.Function;

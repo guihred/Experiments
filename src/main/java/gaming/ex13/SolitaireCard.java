@@ -1,6 +1,6 @@
 package gaming.ex13;
 
-import static utils.FunctionEx.mapIf;
+import static utils.ex.FunctionEx.mapIf;
 
 import javafx.beans.NamedArg;
 import javafx.beans.property.BooleanProperty;

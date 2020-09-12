@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.function.DoubleBinaryOperator;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class ElementWiseOp {
 	private static final Logger LOGGER = HasLogging.log();

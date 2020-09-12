@@ -11,7 +11,7 @@ import ml.data.CoverageUtils;
 import org.junit.Test;
 import utils.BaseEntity;
 import utils.ClassReflectionUtils;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class ClassReflectionTest extends AbstractTestExecution {
     @Test

@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public abstract class TableVisualizationVar extends Application implements HasLogging {
     protected static final String MENU_ITEM_B = "MenuItem B";

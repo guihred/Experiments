@@ -8,8 +8,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 import org.apache.commons.lang3.StringUtils;
-import utils.FunctionEx;
+import utils.DateFormatUtils;
 import utils.ResourceFXUtils;
+import utils.ex.FunctionEx;
 
 public class Music {
     private StringProperty album = new SimpleStringProperty("");
@@ -84,7 +85,7 @@ public class Music {
         if (StringUtils.isNumeric(ano.get())) {
             return Integer.parseInt(ano.get());
         }
-        return ResourceFXUtils.getYearCreation(arquivo.toPath());
+        return DateFormatUtils.getYearCreation(arquivo.toPath());
     }
 
     public File getArquivo() {

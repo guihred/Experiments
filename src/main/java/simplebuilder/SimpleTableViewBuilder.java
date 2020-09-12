@@ -23,9 +23,9 @@ import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
-import utils.ConsumerEx;
-import utils.FunctionEx;
-import utils.RunnableEx;
+import utils.ex.ConsumerEx;
+import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>, SimpleTableViewBuilder<T>> {
 

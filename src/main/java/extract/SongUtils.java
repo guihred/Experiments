@@ -1,7 +1,7 @@
 package extract;
 
-import static utils.RunnableEx.ignore;
-import static utils.RunnableEx.runIf;
+import static utils.ex.RunnableEx.ignore;
+import static utils.ex.RunnableEx.runIf;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -20,7 +20,7 @@ import simplebuilder.SimpleSliderBuilder;
 import utils.ConsoleUtils;
 import utils.DateFormatUtils;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public final class SongUtils {
 

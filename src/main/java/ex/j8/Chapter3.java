@@ -2,7 +2,7 @@ package ex.j8;
 
 import java.util.List;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class Chapter3 {
 	private static final Logger LOGGER = HasLogging.log();

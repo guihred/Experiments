@@ -14,9 +14,10 @@ import javafx.scene.paint.Color;
 import javax.imageio.ImageIO;
 import net.sourceforge.tess4j.Tesseract;
 import utils.DrawOnPoint;
+import utils.FileTreeWalker;
 import utils.PixelHelper;
 import utils.ResourceFXUtils;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public final class ImageCracker {
     private static final Tesseract INSTANCE = getInstance();
@@ -39,7 +40,7 @@ public final class ImageCracker {
     }
 
     public static Map<File, String> crackImages(File imageFile) {
-        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(imageFile, ".png", ".PNG");
+        List<Path> pathByExtension = FileTreeWalker.getPathByExtension(imageFile, ".png", ".PNG");
         return pathByExtension.stream().map(Path::toFile)
                 .collect(Collectors.toMap(e -> e, ImageCracker::crackImage));
     }

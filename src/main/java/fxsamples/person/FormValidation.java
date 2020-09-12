@@ -22,7 +22,7 @@ import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
 import utils.CommonsFX;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class FormValidation extends Application {
     private static final int WIDTH = 320;

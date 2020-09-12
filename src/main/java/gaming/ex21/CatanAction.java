@@ -1,6 +1,6 @@
 package gaming.ex21;
 
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public enum CatanAction {
     EXCHANGE,

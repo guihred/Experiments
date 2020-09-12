@@ -7,7 +7,7 @@ import javafx.geometry.VerticalDirection;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import org.junit.Test;
-import utils.ConsumerEx;
+import utils.ex.ConsumerEx;
 
 public class FXStageControlTest extends AbstractTestExecution {
     @Test

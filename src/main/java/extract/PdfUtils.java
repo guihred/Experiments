@@ -1,11 +1,9 @@
 package extract;
 
-import static utils.RunnableEx.ignore;
-import static utils.RunnableEx.remap;
-import static utils.RunnableEx.runInPlatform;
 import static utils.StringSigaUtils.removeMathematicalOperators;
-import static utils.SupplierEx.get;
-import static utils.SupplierEx.remap;
+import static utils.ex.RunnableEx.ignore;
+import static utils.ex.SupplierEx.get;
+import static utils.ex.SupplierEx.remap;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -33,8 +31,10 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class PdfUtils {
 
@@ -76,7 +76,7 @@ public final class PdfUtils {
     public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
             Property<Number> progress) {
         Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
-        RunnableEx.run(() -> remap(() -> {
+        RunnableEx.run(() -> RunnableEx.remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
                     COSDocument cosDoc = parseAndGet(source);
                     PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -87,11 +87,11 @@ public final class PdfUtils {
                     images.put(i, pageImages);
                     double current = i;
                     if (progress != null) {
-                        runInPlatform(() -> progress.setValue(current / (nPag - start)));
+                        CommonsFX.runInPlatform(() -> progress.setValue(current / (nPag - start)));
                     }
                 }
                 if (progress != null) {
-                    runInPlatform(() -> progress.setValue(1));
+                    CommonsFX.runInPlatform(() -> progress.setValue(1));
                 }
             }
         }, ERROR_IN_FILE + file));
@@ -99,7 +99,7 @@ public final class PdfUtils {
     }
 
     public static String[] getAllLines(File file) {
-        return remap(() -> {
+        return SupplierEx.remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
                     COSDocument cosDoc = PdfUtils.parseAndGet(source);
                     PDDocument pdDoc = new PDDocument(cosDoc)) {
@@ -173,11 +173,11 @@ public final class PdfUtils {
 
                 if (progress != null) {
                     int j = i;
-                    runInPlatform(() -> progress.setValue(j / pdfInfo.getNumberOfPages()));
+                    CommonsFX.runInPlatform(() -> progress.setValue(j / pdfInfo.getNumberOfPages()));
                 }
             }
             if (progress != null) {
-                runInPlatform(() -> progress.setValue(1));
+                CommonsFX.runInPlatform(() -> progress.setValue(1));
             }
             pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages());
             pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages(), pdfInfo.getProgress()));
@@ -212,7 +212,7 @@ public final class PdfUtils {
             PDFTextStripper pdfStripper = new PDFTextStripper() {
                 @Override
                 protected void writeString(String text1, List<TextPosition> textPositions) {
-                    remap(() -> super.writeString(text1, textPositions), "ERRO WRITING");
+                    RunnableEx.remap(() -> super.writeString(text1, textPositions), "ERRO WRITING");
                     onTextPosition.accept(text1, textPositions);
                 }
             };

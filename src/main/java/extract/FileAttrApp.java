@@ -25,7 +25,7 @@ import simplebuilder.SimpleTreeViewBuilder;
 import utils.ExtractUtils;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class FileAttrApp extends Application {
     private Map<File, BasicFileAttributes> attrMap = new LinkedHashMap<>();

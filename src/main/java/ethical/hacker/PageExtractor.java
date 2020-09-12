@@ -34,6 +34,8 @@ import paintexp.PrintConfig;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleButtonBuilder;
 import utils.*;
+import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
 
 public class PageExtractor extends Application {
 
@@ -51,7 +53,7 @@ public class PageExtractor extends Application {
         Button buildOpenDirectoryButton = new FileChooserBuilder()
 
                 .name("Load HTMLs").onSelect(file -> {
-                    List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(file, ".html");
+                    List<Path> pathByExtension = FileTreeWalker.getPathByExtension(file, ".html");
                     paginatedTableView.setListSize(pathByExtension.size());
                     value.setAll(pathByExtension.stream().map(Path::toFile)
                             .map(FunctionEx.makeFunction(f -> Jsoup.parse(f, StandardCharsets.UTF_8.displayName())))

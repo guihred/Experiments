@@ -27,7 +27,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.*;
 import utils.CommonsFX;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class CSSStylingExample extends Application {
     private static final String EMPHASIZED_TEXT_CLASS = "emphasized-text";

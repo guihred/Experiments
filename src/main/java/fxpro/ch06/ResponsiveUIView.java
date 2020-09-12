@@ -10,7 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public final class ResponsiveUIView {
 

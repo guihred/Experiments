@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import simplebuilder.SimpleTreeViewBuilder;
 import utils.CommonsFX;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class WebScannerApplication extends Application {
     private static final String TITLE = "title";

@@ -17,6 +17,10 @@ import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class DataframeUtils extends DataframeML {
 
@@ -170,14 +174,14 @@ public class DataframeUtils extends DataframeML {
             dataframeML.file = csvFile;
             long computed = 0;
             long size2 = ResourceFXUtils.computeAttributes(csvFile).size();
-            RunnableEx.runInPlatform(() -> progress.set(0));
+            CommonsFX.runInPlatform(() -> progress.set(0));
             try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
                 List<String> header = addHeaders(dataframeML, scanner);
                 while (scanner.hasNext()) {
                     String nextLine = scanner.nextLine();
                     computed += nextLine.getBytes().length;
                     double co = computed;
-                    RunnableEx.runInPlatform(() -> progress.set(co / size2));
+                    CommonsFX.runInPlatform(() -> progress.set(co / size2));
                     List<String> line2 = CSVUtils.parseLine(nextLine);
                     fixEmptyLine(header, line2);
 
@@ -199,7 +203,7 @@ public class DataframeUtils extends DataframeML {
                         break;
                     }
                 }
-                RunnableEx.runInPlatform(() -> progress.set(1));
+                CommonsFX.runInPlatform(() -> progress.set(1));
                 return dataframeML.stats;
             }
         });

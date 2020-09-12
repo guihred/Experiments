@@ -2,7 +2,7 @@ package fxpro.ch06;
 
 import javafx.collections.MapChangeListener;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 class MyListenerMapExamples implements MapChangeListener<String, Integer> {
 

@@ -1,7 +1,7 @@
 package simplebuilder;
 
 import static utils.ClassReflectionUtils.invoke;
-import static utils.FunctionEx.makeFunction;
+import static utils.ex.FunctionEx.makeFunction;
 
 import java.util.HashMap;
 import java.util.Map;

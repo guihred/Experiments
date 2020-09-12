@@ -35,6 +35,10 @@ import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import utils.*;
+import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class DataframeExplorer extends Application {
     private static final int MAX_ELEMENTS = 1000;
@@ -95,7 +99,7 @@ public class DataframeExplorer extends Application {
                             headersCombo.getSelectionModel().selectedItemProperty()));
         }).converter(QuestionType::getSign);
         SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove);
-        dataframe.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> {
+        dataframe.addListener((ob, old, val) -> CommonsFX.runInPlatform(() -> {
             String format = String.format("Dataframe Explorer (%s)",
                     FunctionEx.mapIf(getDataframe(), d -> d.getFile().getName(), ""));
             ((Stage) questionsList.getScene().getWindow()).setTitle(format);
@@ -178,7 +182,7 @@ public class DataframeExplorer extends Application {
             LOG.info("File {} STARTING", file.getName());
             if (getDataframe() != null && !file.equals(getDataframe().getFile())) {
                 setDataframe(null);
-                RunnableEx.runInPlatformSync(() -> {
+                CommonsFX.runInPlatformSync(() -> {
                     questions.clear();
                     barChart.setData(FXCollections.emptyObservableList());
                     pieChart.setData(FXCollections.emptyObservableList());
@@ -213,7 +217,7 @@ public class DataframeExplorer extends Application {
         RunnableEx.runNewThread(() -> {
             Set<String> unique = val.getValue().getUnique();
             return unique.isEmpty() || !unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
-        }, e -> RunnableEx.runInPlatform(() -> fillIP.setDisable(e)));
+        }, e -> CommonsFX.runInPlatform(() -> fillIP.setDisable(e)));
         ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
         ObservableList<PieChart.Data> pieData = ListHelper.mapping(barList,
                 e -> new PieChart.Data(String.format("(%d) %s", e.getYValue().intValue(), e.getXValue()),
@@ -312,14 +316,14 @@ public class DataframeExplorer extends Application {
         if (!ExcelService.isExcel(file)) {
             Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
             setDataframe(builder.dataframe());
-            RunnableEx.runInPlatform(() -> columns.setAll(entrySet));
+            CommonsFX.runInPlatform(() -> columns.setAll(entrySet));
             builder.makeStats(progress.progressProperty());
         }
         if (ExcelService.isExcel(file) || getDataframe().getSize() <= maxSize) {
             setDataframe(builder.build());
-            RunnableEx.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
+            CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
         }
-        RunnableEx.runInPlatform(() -> columns.setAll(SupplierEx
+        CommonsFX.runInPlatform(() -> columns.setAll(SupplierEx
                 .orElse(getDataframe().getStats(), () -> DataframeUtils.makeStats(getDataframe())).entrySet()));
         LOG.info("File {} READ", file.getName());
     }
@@ -364,7 +368,7 @@ public class DataframeExplorer extends Application {
     private static void addToList(ObservableList<XYChart.Data<String, Number>> dataList,
             List<XYChart.Data<String, Number>> arrayList2, XYChart.Data<String, Number> others,
             Function<XYChart.Data<String, Number>, Double> keyExtractor) {
-        RunnableEx.runInPlatformSync(() -> {
+        CommonsFX.runInPlatformSync(() -> {
             if (dataList.size() >= MAX_ELEMENTS / 4) {
                 others.setYValue(
                         keyExtractor.apply(others) + arrayList2.stream().mapToDouble(keyExtractor::apply).sum());

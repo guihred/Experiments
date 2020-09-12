@@ -10,8 +10,8 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javax.swing.JFileChooser;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.RunnableEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public final class Chapter1 {
 

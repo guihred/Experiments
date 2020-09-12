@@ -27,7 +27,7 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 @SuppressWarnings({ "unused", "static-method" })
 public abstract class PaintTool extends Group {

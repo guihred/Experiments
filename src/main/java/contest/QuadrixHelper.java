@@ -4,11 +4,11 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static simplebuilder.SimpleDialogBuilder.bindWindow;
-import static utils.RunnableEx.run;
-import static utils.RunnableEx.runNewThread;
 import static utils.StringSigaUtils.decodificar;
-import static utils.SupplierEx.getIgnore;
-import static utils.SupplierEx.orElse;
+import static utils.ex.RunnableEx.run;
+import static utils.ex.RunnableEx.runNewThread;
+import static utils.ex.SupplierEx.getIgnore;
+import static utils.ex.SupplierEx.orElse;
 
 import contest.db.Organization;
 import extract.PdfUtils;
@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.*;
 
 public final class QuadrixHelper {
 

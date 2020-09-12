@@ -23,8 +23,8 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
 import simplebuilder.SimpleDialogBuilder;
-import utils.HasLogging;
 import utils.Xform;
+import utils.ex.HasLogging;
 
 public class QuartoLauncher extends Application {
 

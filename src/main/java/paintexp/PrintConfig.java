@@ -38,9 +38,10 @@ import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
+import utils.FileTreeWalker;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class PrintConfig extends Application {
 
@@ -77,7 +78,7 @@ public class PrintConfig extends Application {
     public PrintConfig() {
 
         images.add(new Image(
-                ResourceFXUtils.getFirstPathByExtension(new File("src").getAbsoluteFile(), ".png").toUri().toString()));
+                FileTreeWalker.getFirstPathByExtension(new File("src").getAbsoluteFile(), ".png").toUri().toString()));
     }
 
     public PrintConfig(Image image) {
@@ -121,7 +122,7 @@ public class PrintConfig extends Application {
     public void loadImagesDir(ActionEvent event) {
         new FileChooserBuilder().title("Choose Image").extensions("Image", "*.png", "*.jpg", "*.jpeg")
                 .onSelect(file -> {
-                    List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(file, ".png", ".jpg", ".jpeg");
+                    List<Path> pathByExtension = FileTreeWalker.getPathByExtension(file, ".png", ".jpg", ".jpeg");
                     if (!pathByExtension.isEmpty()) {
                         images.clear();
                         for (Path f : pathByExtension) {

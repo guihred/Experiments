@@ -15,10 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 import javax.net.ssl.*;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class InstallCert {
     private static final Logger LOG = HasLogging.log();

@@ -7,6 +7,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
+import utils.ex.HasLogging;
 
 public final class MouseInScreenHandler implements EventHandler<MouseEvent> {
     private static final Logger LOG = HasLogging.log();

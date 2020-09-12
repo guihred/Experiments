@@ -28,9 +28,9 @@ import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleConverter;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ClassReflectionUtils;
-import utils.FunctionEx;
 import utils.StringSigaUtils;
-import utils.SupplierEx;
+import utils.ex.FunctionEx;
+import utils.ex.SupplierEx;
 
 public final class PaintToolHelper {
     private PaintToolHelper() {

@@ -16,8 +16,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.RunnableEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
 

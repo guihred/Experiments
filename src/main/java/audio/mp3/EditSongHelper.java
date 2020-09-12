@@ -1,7 +1,7 @@
 package audio.mp3;
 
 import static utils.CommonsFX.createField;
-import static utils.RunnableEx.run;
+import static utils.ex.RunnableEx.run;
 
 import extract.ImageLoader;
 import extract.Music;
@@ -31,6 +31,9 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.StageHelper;
 import utils.*;
+import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public final class EditSongHelper {
     private static final Logger LOG = HasLogging.log();
@@ -71,11 +74,11 @@ public final class EditSongHelper {
             mediaPlayer.get().getTotalDuration().multiply(finalSlider.getValue()));
         progressIndicator.progressProperty().bind(progress);
         progressIndicator.setVisible(true);
-        RunnableEx.runInPlatform(() -> SongUtils.stopAndDispose(mediaPlayer.get()));
+        CommonsFX.runInPlatform(() -> SongUtils.stopAndDispose(mediaPlayer.get()));
         progress.addListener((v, o, n) -> {
             if (n.intValue() == 1) {
                 RunnableEx.run(() -> Thread.sleep(1500));
-                RunnableEx.runInPlatform(() -> {
+                CommonsFX.runInPlatform(() -> {
                     run(() -> {
 
                         MusicReader.saveMetadata(selectedItem, outFile);
@@ -127,7 +130,7 @@ public final class EditSongHelper {
             if (n.intValue() != 1) {
                 return;
             }
-            RunnableEx.runInPlatform(() -> {
+            CommonsFX.runInPlatform(() -> {
                 mediaPlayer.set(new MediaPlayer(new Media(file.toURI().toString())));
                 mediaPlayer.get().totalDurationProperty().addListener(b -> {
                     SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer.get());

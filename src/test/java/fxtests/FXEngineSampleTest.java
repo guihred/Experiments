@@ -28,7 +28,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class FXEngineSampleTest extends AbstractTestExecution {
     @Test

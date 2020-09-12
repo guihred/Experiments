@@ -6,7 +6,7 @@ import graphs.entities.GraphModelAlgorithms;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class LayerSplitter {
     private static final Logger LOG = HasLogging.log();

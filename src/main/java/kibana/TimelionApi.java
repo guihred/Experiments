@@ -1,5 +1,6 @@
 package kibana;
 
+import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +13,9 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import org.apache.commons.lang3.StringUtils;
-import schema.sngpc.JsonExtractor;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public final class TimelionApi extends KibanaApi {
 
@@ -58,7 +58,7 @@ public final class TimelionApi extends KibanaApi {
         return SupplierEx.get(() -> {
             Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
                     timelineUsers, filterMap, time);
-            RunnableEx.runInPlatform(() -> convertToSeries(series, access(policiesSearch, "sheet")));
+            CommonsFX.runInPlatform(() -> convertToSeries(series, access(policiesSearch, "sheet")));
             return series;
         }, FXCollections.emptyObservableList());
     }
@@ -91,9 +91,7 @@ public final class TimelionApi extends KibanaApi {
                         java.getData().add(new XYChart.Data<>(access2, access3));
                     });
                     return java;
-                }).collect(Collectors.toCollection(() -> {
-                    return series;
-                }));
+                }).collect(Collectors.toCollection(() -> series));
     }
 
 }

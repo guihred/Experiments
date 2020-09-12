@@ -17,8 +17,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 
 public class GlobeSphereApp extends Application {
 

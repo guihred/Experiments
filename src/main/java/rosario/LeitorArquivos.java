@@ -24,10 +24,11 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class LeitorArquivos {
     private static final Color RED_COLOR = new Color(1.0F, 0.2F, 0.2F);
@@ -76,7 +77,7 @@ public final class LeitorArquivos {
 
     public static ObservableList<List<String>> getListExcel(File selectedFile, String sheetName) {
         ObservableList<List<String>> list = FXCollections.observableArrayList();
-        RunnableEx.runInPlatform(() -> {
+        CommonsFX.runInPlatform(() -> {
             try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
                 Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
                 Sheet sheetAt = sheetName == null ? workbook.getSheetAt(0) : workbook.getSheet(sheetName);

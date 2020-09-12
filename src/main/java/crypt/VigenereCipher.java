@@ -2,7 +2,7 @@ package crypt;
 
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class VigenereCipher {
     private static final Logger LOGGER = HasLogging.log();

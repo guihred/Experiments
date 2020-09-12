@@ -26,7 +26,7 @@ import simplebuilder.SimpleTreeViewBuilder;
 import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.HibernateUtil;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class IadesCrawler extends Application {
     private static final String DOMAIN = "http://www.iades.com.br";
@@ -106,7 +106,7 @@ public class IadesCrawler extends Application {
             return;
         }
         int level = treeView1.getTreeItemLevel(newValue);
-        RunnableEx.runInPlatform(() -> {
+        CommonsFX.runInPlatform(() -> {
             URL url2 = new URL(url);
             currentDomain.set(url2.getProtocol() + "://" + url2.getHost());
             Document doc = ExtractUtils.getDocument(url);

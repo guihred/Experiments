@@ -1,6 +1,6 @@
 package utils;
 
-import static utils.SupplierEx.getIgnore;
+import static utils.ex.SupplierEx.getIgnore;
 
 import java.lang.Character.UnicodeBlock;
 import java.net.URLDecoder;
@@ -19,6 +19,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.swing.text.MaskFormatter;
 import org.apache.commons.lang3.StringUtils;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public class StringSigaUtils extends StringUtils {
     private static final int BYTES_IN_A_KILOBYTE = 1024;

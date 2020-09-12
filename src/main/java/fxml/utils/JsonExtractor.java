@@ -1,6 +1,6 @@
-package schema.sngpc;
+package fxml.utils;
 
-import static utils.RunnableEx.remap;
+import static utils.ex.RunnableEx.remap;
 
 import java.io.File;
 import java.io.IOException;

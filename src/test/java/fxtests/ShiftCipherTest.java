@@ -9,8 +9,8 @@ import crypt.VigenereXORCipher;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.RunnableEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 @SuppressWarnings("static-method")
 public final class ShiftCipherTest {

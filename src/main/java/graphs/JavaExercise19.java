@@ -1,7 +1,7 @@
 package graphs;
 
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class JavaExercise19 {
     private static final Logger LOG = HasLogging.log();

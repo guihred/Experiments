@@ -1,7 +1,7 @@
 package crypt;
 
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class VigenereCCipher {
     private static final int NUMBER_OF_LETTERS = 26;

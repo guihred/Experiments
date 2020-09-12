@@ -16,7 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import utils.CommonsFX;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class TicTacToeLauncher extends Application {
 

@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.function.Predicate;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class Chapter5 {
     private static final Logger LOGGER = HasLogging.log();

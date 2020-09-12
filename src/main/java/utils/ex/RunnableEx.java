@@ -1,7 +1,5 @@
-package utils;
+package utils.ex;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import javafx.application.Platform;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
 
@@ -73,21 +71,6 @@ public interface RunnableEx {
     static <T> void runIf(T length, ConsumerEx<T> func) {
         if (length != null) {
             ConsumerEx.makeConsumer(func).accept(length);
-        }
-    }
-
-    static void runInPlatform(RunnableEx run) {
-        Platform.runLater(make(run));
-    }
-
-    static void runInPlatformSync(RunnableEx run) {
-        AtomicBoolean a = new AtomicBoolean(false);
-        Platform.runLater(() -> {
-            run(run);
-            a.set(true);
-        });
-        while (!a.get()) {
-            // DOES NOTHING
         }
     }
 

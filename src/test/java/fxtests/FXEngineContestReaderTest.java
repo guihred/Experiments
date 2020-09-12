@@ -19,10 +19,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
-import utils.HasLogging;
-import utils.HibernateUtil;
-import utils.ResourceFXUtils;
+import utils.*;
+import utils.ex.HasLogging;
 
 @SuppressWarnings("static-method")
 public class FXEngineContestReaderTest extends AbstractTestExecution {
@@ -40,7 +38,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
 
     @Before
     public void start() {
-        ResourceFXUtils.initializeFX();
+        CommonsFX.initializeFX();
         HibernateUtil.getSessionFactory();
         HibernateUtil.setShutdownEnabled(false);
     }
@@ -49,7 +47,7 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
         List<File> listFiles = Arrays
             .asList(ResourceFXUtils.getOutFile().listFiles(f -> f.isDirectory() && f.getName().matches("\\d+")));
         for (File file : listFiles) {
-            File firstPdf = ResourceFXUtils.getFirstPathByExtension(file, "pdf").toFile();
+            File firstPdf = FileTreeWalker.getFirstPathByExtension(file, "pdf").toFile();
             IadesHelper.getContestQuestions(firstPdf, Organization.IADES,
                 reader -> addToInvalidFiles(invalidFiles, firstPdf, reader));
         }

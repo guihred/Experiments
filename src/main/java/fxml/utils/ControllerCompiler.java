@@ -1,4 +1,4 @@
-package schema.sngpc;
+package fxml.utils;
 
 import static java.util.Collections.singletonList;
 
@@ -16,8 +16,8 @@ import java.util.Locale;
 import javax.tools.*;
 import org.slf4j.Logger;
 import sun.misc.Unsafe;
-import utils.HasLogging;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 @SuppressWarnings("restriction")
 public final class ControllerCompiler {

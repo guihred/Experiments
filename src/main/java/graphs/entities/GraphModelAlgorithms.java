@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.DisjSets;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class GraphModelAlgorithms {
 
@@ -170,10 +170,10 @@ public final class GraphModelAlgorithms {
             cell.addText(String.format(Locale.US, "%.9f", pageRank[i]));
         }
         double[] rank = pageRank;
-        List<String> collect = IntStream.range(0, pageRank.length)
+        String collect = IntStream.range(0, pageRank.length)
                 .boxed().sorted(Comparator.comparing(e -> -rank[e]))
                 .map(allCells::get).map(Cell::getCellId)
-                .collect(Collectors.toList());
+                .collect(Collectors.joining("\n\t", "\n\t", ""));
 
         LOG.info("ORDERED PAGE RANK = {}", collect);
 

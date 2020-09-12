@@ -10,7 +10,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class HeatGraph extends Canvas {
     private static final int CANVAS_SIZE = 550;

@@ -1,4 +1,4 @@
-package utils;
+package utils.ex;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;

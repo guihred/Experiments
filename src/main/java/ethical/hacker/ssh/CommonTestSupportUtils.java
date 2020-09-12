@@ -19,7 +19,7 @@ import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.ValidateUtils;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.assertj.core.api.exception.RuntimeIOException;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public final class CommonTestSupportUtils {
     /**

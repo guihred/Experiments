@@ -12,7 +12,9 @@ import java.util.stream.Stream;
 import javafx.beans.NamedArg;
 import javafx.beans.Observable;
 import javafx.beans.property.Property;
+import javafx.beans.value.WritableValue;
 import org.junit.Ignore;
+import utils.ex.*;
 
 public final class ClassReflectionUtils {
     private static final String PROPERTY_REGEX = "(\\w+)Property";
@@ -23,6 +25,13 @@ public final class ClassReflectionUtils {
             ImmutableMap.of(int.class, 0, float.class, 0F, double.class, 0., boolean.class, true);
 
     private ClassReflectionUtils() {
+    }
+
+    public static Object mapProperty(Object e) {
+        if (e instanceof WritableValue<?>) {
+            return ((WritableValue<?>) e).getValue();
+        }
+        return e;
     }
 
     public static List<Class<?>> allClasses(Class<?> targetClass) {

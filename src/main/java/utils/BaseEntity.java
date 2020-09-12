@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.beans.value.WritableValue;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public abstract class BaseEntity implements Serializable, HasLogging {
 
@@ -58,13 +59,6 @@ public abstract class BaseEntity implements Serializable, HasLogging {
             return e.get(ob);
         });
 
-    }
-
-    public static Object mapProperty(Object e) {
-        if (e instanceof WritableValue<?>) {
-            return ((WritableValue<?>) e).getValue();
-        }
-        return e;
     }
 
     private static boolean isFieldOk(Field e) {

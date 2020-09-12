@@ -1,9 +1,9 @@
-package schema.sngpc;
+package fxml.utils;
 
 import static java.util.stream.Collectors.joining;
-import static utils.RunnableEx.remap;
 import static utils.TreeElement.compareTree;
 import static utils.TreeElement.displayMissingElement;
+import static utils.ex.RunnableEx.remap;
 
 import com.google.common.util.concurrent.Atomics;
 import java.io.File;
@@ -19,6 +19,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public final class FXMLCreatorHelper {
     private static final Logger LOG = HasLogging.log();
@@ -51,7 +53,7 @@ public final class FXMLCreatorHelper {
 
     public static List<Class<?>> testApplications(List<Class<? extends Application>> asList, boolean close,
         List<Class<? extends Application>> differentTree) {
-        ResourceFXUtils.initializeFX();
+        CommonsFX.initializeFX();
         List<Class<?>> errorClasses = new ArrayList<>();
         for (Class<? extends Application> class1 : asList) {
             List<Stage> stages = new ArrayList<>();

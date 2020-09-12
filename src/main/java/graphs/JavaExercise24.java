@@ -2,7 +2,7 @@ package graphs;
 
 import java.util.Arrays;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 /**
  * 24. Hash Problem. An array of data contains not more than 500 positive

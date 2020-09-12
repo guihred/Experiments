@@ -1,6 +1,6 @@
 package ethical.hacker;
 
-import static utils.RunnableEx.make;
+import static utils.ex.RunnableEx.make;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -10,8 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.RunnableEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 /**
  * Run a simple task once every second, starting 3 seconds from now. Cancel the

@@ -16,8 +16,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.RunnableEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public class NetworkTopology extends BaseTopology {
 

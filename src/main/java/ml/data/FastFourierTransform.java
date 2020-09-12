@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 import org.apache.commons.math3.complex.Complex;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class FastFourierTransform {
 	private static final Logger LOGGER = HasLogging.log();

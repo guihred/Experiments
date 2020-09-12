@@ -1,7 +1,7 @@
 package extract;
 
 import static org.apache.commons.io.FileUtils.contentEquals;
-import static utils.PredicateEx.makeTest;
+import static utils.ex.PredicateEx.makeTest;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -22,10 +22,10 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 /**
  * This is an example on how to get the x/y coordinates of image locations.

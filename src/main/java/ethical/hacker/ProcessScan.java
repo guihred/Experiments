@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class ProcessScan {
 

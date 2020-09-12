@@ -1,6 +1,6 @@
 package ex.j9.ch4;
 
-import static utils.FunctionEx.mapIf;
+import static utils.ex.FunctionEx.mapIf;
 
 public class RectangleCh4 extends ShapeCh4 {
 

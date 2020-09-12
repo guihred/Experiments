@@ -1,26 +1,34 @@
-package others;
+package fxml.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
+import utils.ex.HasLogging;
 
 public final class TermFrequency {
     private static final Logger LOGGER = HasLogging.log();
 
     private static final Map<File, Map<String, Long>> MAPA_DOCUMENTOS = new HashMap<>();
 
+    public static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
+    "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
+    "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
+    "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char",
+    "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
+    "float", "native", "super", "while");
+
     private TermFrequency() {
+    }
+
+    public static List<String> getJavaKeywords() {
+        return JAVA_KEYWORDS;
     }
 
     public static void displayTermFrequency() {
@@ -55,7 +63,7 @@ public final class TermFrequency {
                     Stream.of(StringSigaUtils.splitCamelCase(readLine)).parallel()
                         .map(String::toLowerCase)
                         .filter(e -> !StringUtils.isNumeric(e))
-                        .filter(t -> !ResourceFXUtils.getJavaKeywords().contains(t))
+                        .filter(t -> !TermFrequency.getJavaKeywords().contains(t))
                         .reduce(map, TermFrequency::reduceToMap, (m1, m2) -> m1);
                 }
             } while (readLine != null);

@@ -22,7 +22,7 @@ import paintexp.tool.PaintModel;
 import paintexp.tool.PaintToolHelper;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
-import utils.FunctionEx;
+import utils.ex.FunctionEx;
 
 public class EffectsController {
     @FXML

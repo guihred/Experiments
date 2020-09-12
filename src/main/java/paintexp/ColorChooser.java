@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import utils.CommonsFX;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class ColorChooser extends Application {
 

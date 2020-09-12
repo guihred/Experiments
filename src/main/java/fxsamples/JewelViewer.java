@@ -14,6 +14,8 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public class JewelViewer extends Application {
     private static final Logger LOGGER = HasLogging.log();

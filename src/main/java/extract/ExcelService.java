@@ -17,6 +17,10 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class ExcelService {
 
@@ -54,7 +58,7 @@ public final class ExcelService {
 
     public static ObservableList<String> getSheetsExcel(File selectedFile) {
         ObservableList<String> list = FXCollections.observableArrayList();
-        RunnableEx.runInPlatform(() -> {
+        CommonsFX.runInPlatform(() -> {
             try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
                     Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
                 int numberOfSheets = workbook.getNumberOfSheets();

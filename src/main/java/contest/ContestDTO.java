@@ -6,7 +6,7 @@ import java.util.List;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class ContestDTO implements HasLogging {
     protected static final String CONHECIMENTO = "C(?i)ONHECIMENTO.*|L[íi]ngua.*";

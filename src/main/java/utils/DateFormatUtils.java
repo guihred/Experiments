@@ -1,9 +1,7 @@
 package utils;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.nio.file.Path;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
@@ -11,6 +9,7 @@ import java.time.format.SignStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
+import utils.ex.SupplierEx;
 
 public final class DateFormatUtils {
     public static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
@@ -19,6 +18,12 @@ public final class DateFormatUtils {
         .appendValue(ChronoField.MILLI_OF_SECOND, 2, 3, SignStyle.NEVER).toFormatter();
 
     private DateFormatUtils() {
+    }
+
+    public static int getYearCreation(Path path) {
+        return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime()
+                .toInstant().atZone(ZoneId.systemDefault()).getYear(), () -> ZonedDateTime.now().getYear());
+    
     }
 
     public static LocalDate epochSecondToLocalDate(String asText) {

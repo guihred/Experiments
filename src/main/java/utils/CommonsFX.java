@@ -7,9 +7,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.transformation.FilteredList;
+import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -21,6 +24,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import utils.ex.PredicateEx;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class CommonsFX {
 
@@ -28,6 +34,26 @@ public final class CommonsFX {
     private static final String CSS_DIR = "css/";
 
     private CommonsFX() {
+    }
+
+    public static void initializeFX() {
+        Platform.setImplicitExit(false);
+        new JFXPanel().toString();
+    }
+
+    public static void runInPlatformSync(RunnableEx run) {
+        AtomicBoolean a = new AtomicBoolean(false);
+        Platform.runLater(() -> {
+            RunnableEx.run(run);
+            a.set(true);
+        });
+        while (!a.get()) {
+            // DOES NOTHING
+        }
+    }
+
+    public static void runInPlatform(RunnableEx run) {
+        Platform.runLater(RunnableEx.make(run));
     }
 
     public static void addCSS(Scene value, String css) {

@@ -1,10 +1,10 @@
 
-package schema.sngpc;
+package fxml.utils;
 
-import static schema.sngpc.XMLExtractor.exportToExcel;
-import static schema.sngpc.XMLExtractor.newMap;
-import static schema.sngpc.XMLExtractor.onSelectTreeItem;
-import static schema.sngpc.XMLExtractor.readXMLFile;
+import static fxml.utils.XMLExtractor.exportToExcel;
+import static fxml.utils.XMLExtractor.newMap;
+import static fxml.utils.XMLExtractor.onSelectTreeItem;
+import static fxml.utils.XMLExtractor.readXMLFile;
 
 import java.io.File;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
 import utils.CommonsFX;
-import utils.ResourceFXUtils;
+import utils.FileTreeWalker;
 
 public class XmlViewer extends Application {
     @FXML
@@ -45,7 +45,7 @@ public class XmlViewer extends Application {
                 readXMLFile(tree, allItems, val);
             }
         });
-        File file = ResourceFXUtils.getFirstPathByExtension(new File("").getAbsoluteFile(), ".xml").toFile();
+        File file = FileTreeWalker.getFirstPathByExtension(new File("").getAbsoluteFile(), ".xml").toFile();
         fileProp.set(file);
     }
 

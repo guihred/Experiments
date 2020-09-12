@@ -25,10 +25,10 @@ import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.FunctionEx;
-import utils.PredicateEx;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.ex.FunctionEx;
+import utils.ex.PredicateEx;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class PaginatedTableView extends VBox {
     private final IntegerProperty pageSize = new SimpleIntegerProperty(20);

@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.function.BiPredicate;
 import org.apache.commons.lang3.StringUtils;
 import utils.ClassReflectionUtils;
-import utils.PredicateEx;
+import utils.ex.PredicateEx;
 
 public enum QuestionType {
     EQ("==", (ob1, ob2) -> Objects.equals(ob1, ob2) || Objects.equals(ob1, Objects.toString(ob2)), String.class,

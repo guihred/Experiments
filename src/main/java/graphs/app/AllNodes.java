@@ -2,7 +2,7 @@ package graphs.app;
 
 import static java.util.stream.Collectors.toCollection;
 import static utils.CommonsFX.newFastFilter;
-import static utils.PredicateEx.makeTest;
+import static utils.ex.PredicateEx.makeTest;
 
 import java.util.Arrays;
 import java.util.HashMap;

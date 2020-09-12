@@ -1,6 +1,6 @@
 package simplebuilder;
 
-import static utils.RunnableEx.runIf;
+import static utils.ex.RunnableEx.runIf;
 
 import com.google.common.io.Files;
 import java.io.File;
@@ -18,6 +18,9 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import utils.*;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class StageHelper {
 

@@ -29,7 +29,7 @@ import simplebuilder.SimpleTextBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class StageControlExample extends Application {
 

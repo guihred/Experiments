@@ -1,7 +1,7 @@
 
 package ml.data;
 
-import static utils.PredicateEx.makeTest;
+import static utils.ex.PredicateEx.makeTest;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -15,9 +15,10 @@ import java.util.stream.Collectors;
 import javafx.application.Application;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public final class CoverageUtils {
     private static final String CLASS = "CLASS";
@@ -66,7 +67,7 @@ public final class CoverageUtils {
     }
 
     public static File getCoverageFile() {
-        return ResourceFXUtils.getPathByExtension(new File("target/site/"), ".csv").stream().map(Path::toFile)
+        return FileTreeWalker.getPathByExtension(new File("target/site/"), ".csv").stream().map(Path::toFile)
             .filter(e -> ResourceFXUtils.computeAttributes(e).size() > 0L)
             .max(Comparator.comparing(e -> ResourceFXUtils.computeAttributes(e).size())).orElse(null);
     }

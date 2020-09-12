@@ -15,6 +15,8 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javax.imageio.ImageIO;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class ImageFXUtils {
     private static boolean showImage = true;
@@ -32,7 +34,7 @@ public final class ImageFXUtils {
             for (int y = 0; y < height; y++) {
                 float value = noise[x][y];
                 double gray = ImageFXUtils.normalizeValue(value, -.5, .5, 0., 1.);
-                gray = ResourceFXUtils.clamp(gray, 0, 1);
+                gray = DrawOnPoint.clamp(gray, 0, 1);
                 Color color = Color.RED.interpolate(Color.YELLOW, gray);
                 pw.setColor(x, y, color);
             }

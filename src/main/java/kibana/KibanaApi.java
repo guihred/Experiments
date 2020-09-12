@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import ethical.hacker.InstallCert;
 import ethical.hacker.VirusTotalApi;
+import fxml.utils.JsonExtractor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +29,9 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
-import schema.sngpc.JsonExtractor;
 import utils.*;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public class KibanaApi {
     private static final Logger LOG = HasLogging.log();

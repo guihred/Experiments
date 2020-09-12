@@ -5,7 +5,7 @@ import javax.speech.Central;
 import javax.speech.EngineStateError;
 import javax.speech.synthesis.Synthesizer;
 import javax.speech.synthesis.SynthesizerModeDesc;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public enum Speaker {
     SPEAKER;

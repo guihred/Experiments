@@ -13,8 +13,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import utils.ClassReflectionUtils;
 import utils.CustomList;
-import utils.HasLogging;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public class CustomListUnitTest {
 

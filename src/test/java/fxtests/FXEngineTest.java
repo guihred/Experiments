@@ -3,6 +3,8 @@ package fxtests;
 import ex.j8.Chapter4;
 import extract.FileAttrApp;
 import fractal.LeafFractalApp;
+import fxml.utils.JsonViewer;
+import fxml.utils.XmlViewer;
 import graphs.app.AllApps;
 import java.io.File;
 import java.nio.file.Path;
@@ -21,11 +23,10 @@ import ml.*;
 import ml.graph.Chart3dGraph;
 import ml.graph.MapGraph;
 import org.junit.Test;
-import schema.sngpc.JsonViewer;
-import schema.sngpc.XmlViewer;
+import utils.FileTreeWalker;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class FXEngineTest extends AbstractTestExecution {
 
@@ -70,7 +71,7 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyJsonViewer() {
         JsonViewer show = show(JsonViewer.class);
-        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".json").stream()
+        List<Path> pathByExtension = FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".json").stream()
                 .limit(10).collect(Collectors.toList());
         show.addFile(pathByExtension.stream().map(Path::toFile).toArray(File[]::new));
 

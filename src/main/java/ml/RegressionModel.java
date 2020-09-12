@@ -15,7 +15,7 @@ import javafx.scene.chart.XYChart.Series;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.QRDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class RegressionModel {
 

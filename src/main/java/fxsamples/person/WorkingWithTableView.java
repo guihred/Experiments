@@ -1,6 +1,6 @@
 package fxsamples.person;
 
-import static utils.FunctionEx.mapIf;
+import static utils.ex.FunctionEx.mapIf;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;

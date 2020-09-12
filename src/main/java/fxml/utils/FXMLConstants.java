@@ -1,4 +1,4 @@
-package schema.sngpc;
+package fxml.utils;
 
 import static java.util.stream.Collectors.joining;
 import static utils.ResourceFXUtils.getOutFile;

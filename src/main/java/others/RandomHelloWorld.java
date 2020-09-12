@@ -2,7 +2,7 @@ package others;
 
 import java.util.Random;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class RandomHelloWorld {
 

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import org.slf4j.Logger;
+import utils.ex.HasLogging;
 
 /**
  * The Class MatrixSolver.

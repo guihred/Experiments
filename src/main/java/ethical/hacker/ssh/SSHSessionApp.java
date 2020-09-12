@@ -21,8 +21,8 @@ import javafx.stage.Stage;
 import org.apache.sshd.server.SshServer;
 import simplebuilder.SimpleButtonBuilder;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
 import utils.StringSigaUtils;
+import utils.ex.RunnableEx;
 
 public class SSHSessionApp extends Application {
     private Button serverButton;

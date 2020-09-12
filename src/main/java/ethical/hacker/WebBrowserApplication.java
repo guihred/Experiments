@@ -36,8 +36,8 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import utils.CommonsFX;
 import utils.ExtractUtils;
-import utils.HasLogging;
-import utils.RunnableEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public class WebBrowserApplication extends Application {
     private static final Logger LOG = HasLogging.log();

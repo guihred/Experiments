@@ -8,6 +8,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 @SuppressWarnings("static-method")
 public class BaseDAO implements HasLogging {

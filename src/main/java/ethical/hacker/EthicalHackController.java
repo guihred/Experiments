@@ -20,6 +20,8 @@ import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
+import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public class EthicalHackController extends EthicalHackApp {
 
@@ -94,7 +96,7 @@ public class EthicalHackController extends EthicalHackApp {
             String text = address.getText();
             for (String ip : text.split("[\\s,;]+")) {
                 Map<String, String> nsInformation = PingTraceRoute.getInformation(ip);
-                RunnableEx.runInPlatform(() -> {
+                CommonsFX.runInPlatform(() -> {
                     if (items.isEmpty()) {
                         Set<String> keySet = nsInformation.keySet();
                         EthicalHackApp.addColumns(commonTable, keySet);
@@ -150,7 +152,7 @@ public class EthicalHackController extends EthicalHackApp {
                 List<String> keySet = addedSubList.stream().flatMap(e -> e.keySet().stream()).distinct()
                         .sorted(Comparator.comparing(e -> -asList.indexOf(e))).collect(Collectors.toList());
                 if (items.isEmpty()) {
-                    RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(commonTable, keySet));
+                    CommonsFX.runInPlatform(() -> EthicalHackApp.addColumns(commonTable, keySet));
                 }
                 items.addAll(addedSubList);
             }

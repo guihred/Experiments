@@ -19,7 +19,7 @@ import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 import org.slf4j.Logger;
 import utils.CommonsFX;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class MultiLineGraph extends Canvas {
     private static final Logger LOG = HasLogging.log();

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class ExcelDataReader extends DataframeUtils {
 

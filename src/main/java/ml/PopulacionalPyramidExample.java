@@ -22,7 +22,7 @@ import ml.graph.PopulacionalGraph;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.ImageFXUtils;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class PopulacionalPyramidExample extends Application {
 

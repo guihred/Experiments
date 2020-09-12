@@ -22,6 +22,10 @@ import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 import utils.*;
+import utils.ex.ConsumerEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractTestExecution extends ApplicationTest implements HasLogging {
@@ -59,7 +63,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
     @Override
     public void start(Stage stage) throws Exception {
-        ResourceFXUtils.initializeFX();
+        CommonsFX.initializeFX();
         currentStage = stage != null ? stage : new Stage();
         currentStage.setX(0);
         currentStage.setY(0);

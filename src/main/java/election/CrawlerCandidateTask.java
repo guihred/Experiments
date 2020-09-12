@@ -6,8 +6,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
-import utils.HasLogging;
 import utils.StringSigaUtils;
+import utils.ex.HasLogging;
 
 public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
 

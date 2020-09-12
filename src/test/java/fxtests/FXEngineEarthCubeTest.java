@@ -17,13 +17,13 @@ import javafx.scene.input.KeyCode;
 import ml.data.CoverageUtils;
 import org.junit.Test;
 import simplebuilder.StageHelper;
-import utils.ResourceFXUtils;
+import utils.FileTreeWalker;
 
 public class FXEngineEarthCubeTest extends AbstractTestExecution {
     @Test
     public void testDisplayCSSStyler() throws Throwable {
         showNewStage(randomItem(CoverageUtils.getClasses(Application.class)), () -> {
-            String[] list = ResourceFXUtils.getPathByExtension(new File("src/main/resources/"), ".css").stream()
+            String[] list = FileTreeWalker.getPathByExtension(new File("src/main/resources/"), ".css").stream()
                     .map(e -> e.toFile().getName()).toArray(String[]::new);
             interactNoWait(() -> StageHelper.displayCSSStyler(lookup(".root").query().getScene(), randomItem(list)));
             tryClickButtons();

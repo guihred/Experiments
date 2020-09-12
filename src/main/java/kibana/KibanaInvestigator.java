@@ -18,6 +18,8 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
+import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public class KibanaInvestigator extends Application {
     private static final int WIDTH = 600;
@@ -47,10 +49,10 @@ public class KibanaInvestigator extends Application {
             String text = networkAddress.getText();
             if (StringUtils.isNotBlank(text)) {
                 String[] split = text.split("[,\n\t; ]+");
-                RunnableEx.runInPlatform(() -> progressIndicator.setProgress(0));
+                CommonsFX.runInPlatform(() -> progressIndicator.setProgress(0));
                 for (String ip : split) {
                     Map<String, String> nsInformation = KibanaApi.kibanaFullScan(ip);
-                    RunnableEx.runInPlatform(() -> {
+                    CommonsFX.runInPlatform(() -> {
                         progressIndicator.setProgress(progressIndicator.getProgress() + 1. / split.length);
                         if (commonTable.getColumns().isEmpty()) {
                             EthicalHackApp.addColumns(commonTable, nsInformation.keySet());
@@ -58,7 +60,7 @@ public class KibanaInvestigator extends Application {
                         items.add(nsInformation);
                     });
                 }
-                RunnableEx.runInPlatform(() -> progressIndicator.setProgress(1));
+                CommonsFX.runInPlatform(() -> progressIndicator.setProgress(1));
             }
         });
     }

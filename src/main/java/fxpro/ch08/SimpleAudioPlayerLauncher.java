@@ -31,6 +31,9 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class SimpleAudioPlayerLauncher extends Application {
     private static final Logger LOGGER = HasLogging.log();
@@ -139,7 +142,7 @@ public class SimpleAudioPlayerLauncher extends Application {
 
     private static Path getRandomSong() {
         File outFile = ResourceFXUtils.getUserFolder("Music");
-        List<Path> pathByExtension = ResourceFXUtils.getPathByExtension(outFile, "mp3");
+        List<Path> pathByExtension = FileTreeWalker.getPathByExtension(outFile, "mp3");
         Collections.shuffle(pathByExtension);
         return pathByExtension.remove(0);
     }

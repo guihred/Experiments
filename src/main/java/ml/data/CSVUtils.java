@@ -1,7 +1,7 @@
 package ml.data;
 
-import static utils.FunctionEx.makeFunction;
 import static utils.ResourceFXUtils.getOutFile;
+import static utils.ex.FunctionEx.makeFunction;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class CSVUtils {
 

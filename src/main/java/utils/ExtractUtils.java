@@ -28,6 +28,7 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
+import utils.ex.*;
 
 public final class ExtractUtils {
     public static final String PROXY_PORT = "3128";
@@ -41,7 +42,7 @@ public final class ExtractUtils {
     private static final String PROXY_ADDRESS = getProxyAddress();
     private static final boolean IS_PROXIED = PROXY_ADDRESS != null;
     public static final Path PHANTOM_JS =
-            ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
+            FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
 
     private ExtractUtils() {
     }

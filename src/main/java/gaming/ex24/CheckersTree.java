@@ -2,7 +2,7 @@ package gaming.ex24;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class CheckersTree {
 

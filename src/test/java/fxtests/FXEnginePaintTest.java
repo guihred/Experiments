@@ -35,6 +35,8 @@ import paintexp.tool.AreaTool;
 import paintexp.tool.PaintTool;
 import paintexp.tool.PaintTools;
 import utils.*;
+import utils.ex.ConsumerEx;
+import utils.ex.RunnableEx;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXEnginePaintTest extends AbstractTestExecution {
@@ -225,7 +227,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 if (i == 1 && j == 2) {
                     interact(() -> {
                         List<Path> pathByExtension =
-                                ResourceFXUtils.getPathByExtension(ResourceFXUtils.getOutFile(), ".png");
+                                FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".png");
                         if (!pathByExtension.isEmpty()) {
                             Map<DataFormat, Object> content = FXCollections.observableHashMap();
                             Path path = randomItem(pathByExtension);

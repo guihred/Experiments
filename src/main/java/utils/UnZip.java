@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public final class UnZip {
     public static final String ZIPPED_FILE_FOLDER = ResourceFXUtils.getOutFile().getParent();

@@ -18,9 +18,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import simplebuilder.SimpleDialogBuilder;
-import utils.ConsumerEx;
 import utils.ExtractUtils;
 import utils.ResourceFXUtils;
+import utils.ex.ConsumerEx;
 
 public final class MusicHandler implements EventHandler<MouseEvent> {
     private final TableView<Music> musicaTable;

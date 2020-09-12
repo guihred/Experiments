@@ -8,8 +8,8 @@ import com.aspose.imaging.shapes.PolygonShape;
 import com.aspose.imaging.shapes.RectangleShape;
 import com.aspose.imaging.sources.FileCreateSource;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 
 public class ImageCreating {
     private static final int BITS_PER_PIXEL = 24;

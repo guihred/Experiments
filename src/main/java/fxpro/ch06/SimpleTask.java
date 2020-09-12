@@ -3,7 +3,7 @@ package fxpro.ch06;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.concurrent.Task;
 import org.assertj.core.api.exception.RuntimeIOException;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class SimpleTask extends Task<String> {
 

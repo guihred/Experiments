@@ -2,6 +2,7 @@
 package utils;
 
 import java.util.*;
+import utils.ex.PredicateEx;
 
 public class CustomList<T> extends LinkedHashSet<T> implements List<T> {
 

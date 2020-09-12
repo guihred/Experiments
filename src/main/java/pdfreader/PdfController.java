@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTimelineBuilder;
 import utils.*;
+import utils.ex.RunnableEx;
 
 public class PdfController extends Application {
 
@@ -136,7 +137,7 @@ public class PdfController extends Application {
                 Bindings.createStringBinding(this::getPageLines, pdfInfo.getLines(), pdfInfo.getSkipLines(),
                         pdfInfo.lineIndexProperty());
         InvalidationListener listener =
-                (Observable o) -> RunnableEx
+                (Observable o) -> CommonsFX
                         .runInPlatform(() -> {
                             currentLines.getEngine().loadContent(createStringBinding.get());
                             RunnableEx.ignore(() -> currentLines.getEngine()

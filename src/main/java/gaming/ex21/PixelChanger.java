@@ -10,8 +10,8 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.PixelHelper;
+import utils.ex.HasLogging;
 
 public class PixelChanger implements PixelReader {
 

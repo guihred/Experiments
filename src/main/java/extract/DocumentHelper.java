@@ -20,6 +20,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import utils.*;
+import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class DocumentHelper {
 
@@ -68,11 +72,11 @@ public final class DocumentHelper {
         if (doc != null) {
             RunnableEx.runNewThread(() -> {
                 ObservableList<String> links = getLinks(url, doc);
-                RunnableEx.runInPlatform(() -> linksList2.setItems(links));
+                CommonsFX.runInPlatform(() -> linksList2.setItems(links));
             });
             RunnableEx.runNewThread(() -> {
                 ObservableList<ImageView> imgs = getImgs(url, doc);
-                RunnableEx.runInPlatform(() -> imageList2.setItems(imgs));
+                CommonsFX.runInPlatform(() -> imageList2.setItems(imgs));
             });
         }
     }

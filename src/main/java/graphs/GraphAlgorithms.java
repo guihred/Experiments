@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import utils.DisjSets;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class GraphAlgorithms {
 	private static final Logger LOGGER = HasLogging.log();

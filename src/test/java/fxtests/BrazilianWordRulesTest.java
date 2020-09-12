@@ -18,8 +18,8 @@ import neuro.BrazilianWordSyllableSplitter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 
 @SuppressWarnings("static-method")
 public class BrazilianWordRulesTest {

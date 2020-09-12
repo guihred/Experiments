@@ -32,6 +32,9 @@ import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
+import utils.ex.HasLogging;
+import utils.ex.PredicateEx;
+import utils.ex.RunnableEx;
 
 public class FilesComparator extends Application {
 
@@ -60,7 +63,7 @@ public class FilesComparator extends Application {
         updateProgress(0);
         new Thread(() -> {
             LOG.info("Scanning {}", file);
-            List<Path> find = ResourceFXUtils.getPathByExtension(file, ".mp3");
+            List<Path> find = FileTreeWalker.getPathByExtension(file, ".mp3");
             find.stream().map(Path::toFile).forEach(musicas::add);
 
             double d = 1.0 / find.size();
@@ -163,7 +166,7 @@ public class FilesComparator extends Application {
     }
 
     private void updateProgress(double a) {
-        RunnableEx.runInPlatform(() -> progress.setProgress(a));
+        CommonsFX.runInPlatform(() -> progress.setProgress(a));
     }
 
     public static void main(String[] args) {

@@ -6,6 +6,7 @@ import ethical.hacker.PCapReader;
 import extract.DocumentHelper;
 import extract.ExcelService;
 import extract.WordService;
+import fxml.utils.XmlToXlsx;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
@@ -24,8 +25,9 @@ import org.testfx.util.WaitForAsyncUtils;
 import org.w3c.dom.Document;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
-import schema.sngpc.XmlToXlsx;
 import utils.*;
+import utils.ex.ConsumerEx;
+import utils.ex.FunctionEx;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXFileReadersTest extends AbstractTestExecution {
@@ -210,7 +212,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
     public void testRar() {
         measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
         File userFolder = ResourceFXUtils.getOutFile().getParentFile();
-        ResourceFXUtils.getPathByExtension(userFolder, "rar").stream().map(FunctionEx.makeFunction(e -> {
+        FileTreeWalker.getPathByExtension(userFolder, "rar").stream().map(FunctionEx.makeFunction(e -> {
             Path name = e.getName(e.getNameCount() - 1);
             File outFile = ResourceFXUtils.getOutFile(name.toString());
             ExtractUtils.copy(e, outFile);

@@ -1,4 +1,4 @@
-package others;
+package fxml.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,9 +11,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
+import utils.ex.HasLogging;
 
 public final class TermFrequencyIndex {
     private static final Logger LOGGER = HasLogging.log();
@@ -192,7 +192,7 @@ public final class TermFrequencyIndex {
         try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
 
             entrySet.forEach(e -> {
-                if (!ResourceFXUtils.getJavaKeywords().contains(e.getKey())) {
+                if (!TermFrequency.getJavaKeywords().contains(e.getKey())) {
                     out.println(e.getKey() + "={");
                     e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));
                     out.println("}");

@@ -1,6 +1,7 @@
 package fxtests;
 
 import ethical.hacker.WebScannerApplication;
+import fxml.utils.FXMLCreatorHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,9 +12,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.testfx.util.WaitForAsyncUtils;
-import schema.sngpc.FXMLCreatorHelper;
-import utils.HasLogging;
 import utils.HibernateUtil;
+import utils.ex.HasLogging;
 
 @SuppressWarnings("static-method")
 public final class FXMLCreatorTest {

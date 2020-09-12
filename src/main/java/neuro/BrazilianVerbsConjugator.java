@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 
 /**
  * The Class BrazilianVerbsConjugator.

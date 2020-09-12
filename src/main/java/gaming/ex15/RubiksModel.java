@@ -15,7 +15,7 @@ import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class RubiksModel {
 	public static final int CUBE_COMPLEXITY = 3;

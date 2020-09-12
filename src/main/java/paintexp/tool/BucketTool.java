@@ -19,7 +19,7 @@ import simplebuilder.SimpleSliderBuilder;
 import utils.CustomList;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class BucketTool extends PaintTool {
 

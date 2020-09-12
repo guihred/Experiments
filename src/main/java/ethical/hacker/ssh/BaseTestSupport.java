@@ -1,12 +1,12 @@
 package ethical.hacker.ssh;
 
-import static utils.HasLogging.getCurrentClass;
+import static utils.ex.HasLogging.getCurrentClass;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.common.util.net.SshdSocketAddress;
 import org.apache.sshd.server.SshServer;
-import utils.HasLogging;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public class BaseTestSupport {
 

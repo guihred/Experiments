@@ -4,7 +4,7 @@ import java.util.stream.Stream;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 class MyListenerMethodsExamples implements ListChangeListener<String> {
 

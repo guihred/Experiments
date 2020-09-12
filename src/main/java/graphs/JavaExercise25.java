@@ -1,7 +1,7 @@
 package graphs;
 
 import java.util.Locale;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 /**
  * 25. The Quadratic Equation Problem Write a program which solves quadratic

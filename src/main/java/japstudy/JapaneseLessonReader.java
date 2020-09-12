@@ -12,9 +12,9 @@ import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.HibernateUtil;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 
 public final class JapaneseLessonReader {
     private static final String JAP_REGEX = ".*([\u2E80-\u6FFF]+.*)$";

@@ -9,8 +9,8 @@ import javafx.scene.input.KeyCode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import utils.CommonsFX;
 import utils.HibernateUtil;
-import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
 public class FXHibernateTest extends AbstractTestExecution {
@@ -24,7 +24,7 @@ public class FXHibernateTest extends AbstractTestExecution {
 
     @Before
     public void start() {
-        ResourceFXUtils.initializeFX();
+        CommonsFX.initializeFX();
         HibernateUtil.getSessionFactory();
         HibernateUtil.setShutdownEnabled(false);
     }

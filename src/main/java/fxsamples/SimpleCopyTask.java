@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 import javafx.concurrent.Task;
 import utils.ExtractUtils;
-import utils.ResourceFXUtils;
+import utils.FileTreeWalker;
 
 public final class SimpleCopyTask extends Task<Boolean> {
     private final int numFiles;
@@ -24,7 +24,7 @@ public final class SimpleCopyTask extends Task<Boolean> {
         for (long i = 0; i < numFiles; i++) {
             long elapsedTime = System.currentTimeMillis();
 
-            List<Path> pathByExtension2 = ResourceFXUtils.getPathByExtension(getOutFile(), ".txt");
+            List<Path> pathByExtension2 = FileTreeWalker.getPathByExtension(getOutFile(), ".txt");
             File file = pathByExtension2.get(rnd.nextInt(pathByExtension2.size())).toFile();
             File outFile = getOutFile("resultado2.txt");
             copyFile(file.getAbsolutePath(), outFile.getAbsolutePath());

@@ -20,9 +20,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
-import utils.HasLogging;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class WikiImagesUtils {
 

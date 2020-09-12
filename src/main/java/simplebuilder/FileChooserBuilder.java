@@ -1,6 +1,6 @@
 package simplebuilder;
 
-import static utils.RunnableEx.runIf;
+import static utils.ex.RunnableEx.runIf;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -13,10 +13,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import utils.ConsumerEx;
-import utils.FunctionEx;
-import utils.HasLogging;
-import utils.SupplierEx;
+import utils.ex.ConsumerEx;
+import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public class FileChooserBuilder {
     private static final Map<String, File> LAST_FILES = new LinkedHashMap<>();

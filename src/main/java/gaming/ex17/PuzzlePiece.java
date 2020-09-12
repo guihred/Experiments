@@ -7,7 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Path;
 import simplebuilder.SimplePathBuilder;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class PuzzlePiece extends Group {
     private PuzzlePath down = PuzzlePath.STRAIGHT;

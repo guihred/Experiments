@@ -8,7 +8,7 @@ package fxpro.ch03;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class SimplePropertyBindExample {
 

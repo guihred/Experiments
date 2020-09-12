@@ -1,6 +1,6 @@
 package furigana;
 
-import static utils.FunctionEx.makeFunction;
+import static utils.ex.FunctionEx.makeFunction;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,6 +25,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.*;
 
 public class CrawlerFuriganaTask extends CrawlerTask {
 

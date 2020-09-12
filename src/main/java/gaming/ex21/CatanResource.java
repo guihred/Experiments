@@ -1,6 +1,6 @@
 package gaming.ex21;
 
-import static utils.FunctionEx.mapIf;
+import static utils.ex.FunctionEx.mapIf;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

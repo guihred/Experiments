@@ -26,9 +26,9 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.*;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public final class Chapter4 {
     private Chapter4() {

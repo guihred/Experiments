@@ -7,8 +7,8 @@ import java.nio.file.Files;
 import java.util.stream.Stream;
 import javafx.beans.NamedArg;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 
 public class WordTopology extends BaseTopology {
 

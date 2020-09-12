@@ -15,6 +15,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public class TaskProgressView {
     private Button cancelButton = new Button("Cancel");

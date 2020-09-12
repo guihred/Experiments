@@ -1,6 +1,6 @@
 package utils;
 
-import static utils.FunctionEx.makeFunction;
+import static utils.ex.FunctionEx.makeFunction;
 
 import java.io.File;
 import java.util.Comparator;
@@ -15,6 +15,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public final class ImageTableCell<T> extends TableCell<T, String> {
 

@@ -1,6 +1,6 @@
 package graphs.app;
 
-import static utils.RunnableEx.runIf;
+import static utils.ex.RunnableEx.runIf;
 
 import graphs.entities.CellType;
 import graphs.entities.Edge;

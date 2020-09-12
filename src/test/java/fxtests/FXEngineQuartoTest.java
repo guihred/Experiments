@@ -7,7 +7,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.MouseButton;
 import org.junit.Test;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class FXEngineQuartoTest extends AbstractTestExecution {
 

@@ -1,6 +1,5 @@
 package utils;
 
-import static utils.ResourceFXUtils.clamp;
 
 import com.sun.javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.beans.NamedArg;
@@ -51,8 +50,8 @@ public class ZoomableScrollPane extends ScrollPane {
         Bounds boundsInLocal = zoomGroup.getBoundsInLocal();
         double a = x / boundsInLocal.getWidth();
         double b = y / boundsInLocal.getHeight();
-        setHvalue(clamp(a, getHmin(), getHmax()));
-        setVvalue(clamp(b, getVmin(), getVmax()));
+        setHvalue(DrawOnPoint.clamp(a, getHmin(), getHmax()));
+        setVvalue(DrawOnPoint.clamp(b, getVmin(), getVmax()));
         scrollEvent.consume();
     }
 

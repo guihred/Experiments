@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.LocalTime;
 import org.slf4j.Logger;
+import utils.ex.HasLogging;
 
 public final class UnRar {
     private static final String UNRAR_FILE = "\"C:\\Program Files (x86)\\WinRAR\\UnRAR.exe\"";

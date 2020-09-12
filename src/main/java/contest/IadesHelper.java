@@ -22,6 +22,8 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public final class IadesHelper {
     private static final String VERMELHO = "vermelho";
@@ -143,7 +145,7 @@ public final class IadesHelper {
         File file2 = getPDF(number, file);
         getContestQuestions(file2, Organization.IADES, entities -> {
             saveQuestions(concurso, vaga, linksFound, number, entities);
-            RunnableEx.runInPlatform(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
+            CommonsFX.runInPlatform(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
         });
     }
 
@@ -164,8 +166,8 @@ public final class IadesHelper {
     }
 
     private static Path getFirstPDF(File file, String number) {
-        return ResourceFXUtils.getFirstFileMatch(file, path -> nameMatches(number, path)).stream().findFirst()
-            .orElseGet(() -> ResourceFXUtils.getFirstPathByExtension(file, ".pdf"));
+        return FileTreeWalker.getFirstFileMatch(file, path -> nameMatches(number, path)).stream().findFirst()
+            .orElseGet(() -> FileTreeWalker.getFirstPathByExtension(file, ".pdf"));
     }
 
     private static boolean hasItKeyword(String e) {

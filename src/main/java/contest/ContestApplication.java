@@ -2,7 +2,7 @@ package contest;
 
 import static utils.CommonsFX.onCloseWindow;
 import static utils.ResourceFXUtils.convertToURL;
-import static utils.SupplierEx.get;
+import static utils.ex.SupplierEx.get;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

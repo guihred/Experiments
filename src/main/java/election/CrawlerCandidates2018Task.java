@@ -9,8 +9,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.DateFormatUtils;
 import utils.ExtractUtils;
-import utils.HasLogging;
 import utils.StringSigaUtils;
+import utils.ex.HasLogging;
 
 public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
 

@@ -5,7 +5,7 @@ import static others.Values.*;
 
 import java.util.Collection;
 import java.util.Map;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public enum MachineState {
     ERROR(of()),

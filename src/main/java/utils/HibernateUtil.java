@@ -3,6 +3,7 @@ package utils;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
+import utils.ex.HasLogging;
 
 public final class HibernateUtil {
 

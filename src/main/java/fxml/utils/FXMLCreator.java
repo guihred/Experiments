@@ -1,13 +1,12 @@
-package schema.sngpc;
+package fxml.utils;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static utils.BaseEntity.mapProperty;
 import static utils.ClassReflectionUtils.*;
 import static utils.ResourceFXUtils.getOutFile;
-import static utils.RunnableEx.make;
 import static utils.StringSigaUtils.changeCase;
 import static utils.TreeElement.getDifferences;
+import static utils.ex.RunnableEx.make;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +19,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class FXMLCreator {
     private static final String FX_REFERENCE = "fx:reference";
@@ -148,7 +150,7 @@ public final class FXMLCreator {
 
     private String newName(Object f) {
         if (hasField(f.getClass(), "id")) {
-            Object fieldValue = mapProperty(getFieldValue(f, "id"));
+            Object fieldValue = ClassReflectionUtils.mapProperty(getFieldValue(f, "id"));
             String id = Objects.toString(fieldValue, "").replaceAll("[\\W_]", "");
             if (StringUtils.isNotBlank(id)) {
                 String string = Character.isLowerCase(id.charAt(0)) ? id : changeCase(id);
@@ -156,7 +158,7 @@ public final class FXMLCreator {
                     return changeCase(f.getClass().getSimpleName()) + string;
                 }
                 if (referencedNodes.values().stream().anyMatch(string::equals)
-                    || ResourceFXUtils.getJavaKeywords().contains(string)) {
+                    || TermFrequency.getJavaKeywords().contains(string)) {
                     return string + referencedNodes.size();
                 }
                 return string;
@@ -178,7 +180,7 @@ public final class FXMLCreator {
             return;
         }
         if (isSuitableAsAttribute(fieldName, fieldValue, parent)) {
-            Object mapProperty2 = mapProperty(fieldValue);
+            Object mapProperty2 = ClassReflectionUtils.mapProperty(fieldValue);
             element.setAttribute(fieldName, mapProperty2 + "");
             return;
         }
@@ -381,7 +383,7 @@ public final class FXMLCreator {
             differences.forEach((k, v) -> {
                 if (v != null && hasClass(FXMLConstants.getAttributeClasses(), v.getClass())
                     && hasField(targetClass, k)) {
-                    Object mapProperty2 = mapProperty(v);
+                    Object mapProperty2 = ClassReflectionUtils.mapProperty(v);
                     String value = mapProperty2 + "";
                     createElement.setAttribute(k, value.replaceAll("\\.0$", ""));
                 }

@@ -22,9 +22,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.ConsumerEx;
-import utils.HasLogging;
 import utils.ResourceFXUtils;
+import utils.ex.ConsumerEx;
+import utils.ex.HasLogging;
 
 @SuppressWarnings({ "unused", "static-method" })
 public class JsoupExample {

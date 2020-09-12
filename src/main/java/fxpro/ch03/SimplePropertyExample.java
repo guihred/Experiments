@@ -16,7 +16,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import org.slf4j.Logger;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public final class SimplePropertyExample {
 	private static final String SETTING_PROPERTY = "Calling intProperty.set({}).";

@@ -4,11 +4,11 @@ import static java.util.stream.Collectors.toCollection;
 import static ml.data.JavaFileDependency.getAllFileDependencies;
 import static utils.ClassReflectionUtils.getInstance;
 import static utils.CommonsFX.newFastFilter;
-import static utils.FunctionEx.apply;
 import static utils.HibernateUtil.shutdown;
-import static utils.PredicateEx.makeTest;
-import static utils.RunnableEx.make;
-import static utils.RunnableEx.run;
+import static utils.ex.FunctionEx.apply;
+import static utils.ex.PredicateEx.makeTest;
+import static utils.ex.RunnableEx.make;
+import static utils.ex.RunnableEx.run;
 
 import ethical.hacker.ssh.PrintTextStream;
 import java.io.PrintStream;

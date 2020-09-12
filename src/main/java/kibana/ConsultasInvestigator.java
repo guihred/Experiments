@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import ethical.hacker.EthicalHackApp;
 import ethical.hacker.WhoIsScanner;
 import extract.ExcelService;
+import fxml.utils.JsonExtractor;
 import gaming.ex21.ListHelper;
 import java.io.File;
 import java.time.Instant;
@@ -28,9 +29,11 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
-import schema.sngpc.JsonExtractor;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
+import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class ConsultasInvestigator extends Application {
     private static final String MDC_UID_KEYWORD = "mdc.uid.keyword";
@@ -98,7 +101,7 @@ public class ConsultasInvestigator extends Application {
             if (items.isEmpty()) {
                 return;
             }
-            RunnableEx.runInPlatform(() -> progress.setProgress(0));
+            CommonsFX.runInPlatform(() -> progress.setProgress(0));
             WhoIsScanner whoIsScanner = new WhoIsScanner();
             for (Map<String, String> map : items) {
                 Map<String, String> ipInformation = whoIsScanner.getIpInformation(map.get("key"));
@@ -106,18 +109,18 @@ public class ConsultasInvestigator extends Application {
                 map.put("Owner", getFirst(ipInformation, "as_owner", "asname"));
                 map.put("Country", getFirst(ipInformation, "country", "ascountry"));
                 if (progress.getProgress() == 0) {
-                    RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, map.keySet()));
+                    CommonsFX.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, map.keySet()));
                 }
-                RunnableEx.runInPlatform(() -> progress.setProgress(progress.getProgress() + 1. / items.size()));
+                CommonsFX.runInPlatform(() -> progress.setProgress(progress.getProgress() + 1. / items.size()));
             }
-            RunnableEx.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, items.get(0).keySet()));
-            RunnableEx.runInPlatform(() -> progress.setProgress(1));
+            CommonsFX.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, items.get(0).keySet()));
+            CommonsFX.runInPlatform(() -> progress.setProgress(1));
         });
     }
 
     public void onActionKibanaScan() {
         RunnableEx.runNewThread(() -> {
-            RunnableEx.runInPlatform(() -> progress.setProgress(0));
+            CommonsFX.runInPlatform(() -> progress.setProgress(0));
             for (QueryObjects queryObjects : queryList) {
                 RunnableEx.measureTime(queryObjects.getQueryFile(), () -> {
                     if (queryObjects.getLineChart() == null) {
@@ -127,9 +130,9 @@ public class ConsultasInvestigator extends Application {
                     makeTimelionQuery(queryObjects);
                 });
 
-                RunnableEx.runInPlatform(() -> progress.setProgress(progress.getProgress() + 1. / queryList.size()));
+                CommonsFX.runInPlatform(() -> progress.setProgress(progress.getProgress() + 1. / queryList.size()));
             }
-            RunnableEx.runInPlatform(() -> progress.setProgress(1));
+            CommonsFX.runInPlatform(() -> progress.setProgress(1));
         });
     }
 
@@ -231,12 +234,12 @@ public class ConsultasInvestigator extends Application {
     }
 
     private void makeKibanaQuery(QueryObjects queryObjects) {
-        RunnableEx.runInPlatform(() -> queryObjects.getItems().clear());
+        CommonsFX.runInPlatform(() -> queryObjects.getItems().clear());
         Map<String, String> nsInformation =
                 KibanaApi.makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + queryObjects.getQueryFile()),
                         days.getSelectionModel().getSelectedItem(), filter, queryObjects.getParams());
         List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
-        RunnableEx.runInPlatform(() -> {
+        CommonsFX.runInPlatform(() -> {
             if (queryObjects.getTable().getColumns().isEmpty()) {
                 EthicalHackApp.addColumns(queryObjects.getTable(),
                         remap.stream().flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList()));
@@ -247,7 +250,7 @@ public class ConsultasInvestigator extends Application {
 
     private void makeTimelionQuery(QueryObjects queryObjects) {
         ObservableList<Series<Number, Number>> data = queryObjects.getSeries();
-        RunnableEx.runInPlatformSync(() -> {
+        CommonsFX.runInPlatformSync(() -> {
             data.clear();
             queryObjects.getLineChart().getYAxis().setAutoRanging(true);
         });

@@ -1,8 +1,8 @@
 
-package schema.sngpc;
+package fxml.utils;
 
-import static schema.sngpc.JsonExtractor.newMap;
-import static schema.sngpc.JsonExtractor.readJsonFile;
+import static fxml.utils.JsonExtractor.newMap;
+import static fxml.utils.JsonExtractor.readJsonFile;
 import static simplebuilder.SimpleButtonBuilder.newButton;
 
 import extract.ExcelService;
@@ -28,10 +28,11 @@ import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import utils.FunctionEx;
+import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
-import utils.RunnableEx;
+import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public class JsonViewer extends Application {
     private static final int MAX_COLUMNS = 6;
@@ -41,7 +42,7 @@ public class JsonViewer extends Application {
     private List<String> lastSelected = new ArrayList<>();
 
     public void addFile(File... filesToAdd) {
-        RunnableEx.runInPlatform(() -> {
+        CommonsFX.runInPlatform(() -> {
             for (File file : filesToAdd) {
                 if (!files.contains(file)) {
                     files.add(file);
@@ -92,7 +93,7 @@ public class JsonViewer extends Application {
         SplitPane splitPane = new SplitPane(tree, sideTable);
         SimpleComboBoxBuilder<File> onChange = new SimpleComboBoxBuilder<File>().items(files).converter(File::getName)
                 .onChange((old, val) -> fileProp.set(val));
-        fileProp.addListener((ob, old, val) -> RunnableEx.runInPlatform(() -> {
+        fileProp.addListener((ob, old, val) -> CommonsFX.runInPlatform(() -> {
             if (val != null) {
                 List<Integer> arrayList = getSelectionOrder();
                 readJsonFile(tree, val);

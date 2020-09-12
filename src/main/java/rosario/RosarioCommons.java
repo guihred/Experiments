@@ -3,7 +3,7 @@ package rosario;
 import static extract.ExcelService.isExcel;
 import static rosario.LeitorArquivos.*;
 import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
-import static utils.RunnableEx.runIf;
+import static utils.ex.RunnableEx.runIf;
 
 import extract.ExcelService;
 import java.awt.Desktop;
@@ -27,8 +27,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
-import utils.RunnableEx;
-import utils.SupplierEx;
+import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class RosarioCommons {
     private static final String FX_BACKGROUND_COLOR_LIGHTCORAL = "-fx-background-color:lightcoral";

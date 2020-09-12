@@ -1,7 +1,7 @@
 package utils;
 
 
-import static utils.RunnableEx.runIf;
+import static utils.ex.RunnableEx.runIf;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +19,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+import utils.ex.ConsumerEx;
+import utils.ex.RunnableEx;
 
 public final class RotateUtils {
     private static final double CAMERA_MODIFIER = 50.0;
@@ -121,7 +123,7 @@ public final class RotateUtils {
             } else {
                 scale *= DELTA;
             }
-            scale = ResourceFXUtils.clamp(scale, MIN_SCALE, MAX_SCALE);
+            scale = DrawOnPoint.clamp(scale, MIN_SCALE, MAX_SCALE);
             control.setScaleX(scale);
             control.setScaleY(scale);
             event.consume();

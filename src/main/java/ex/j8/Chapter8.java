@@ -23,6 +23,9 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.HasLogging;
+import utils.ex.PredicateEx;
+import utils.ex.RunnableEx;
 
 public final class Chapter8 {
 

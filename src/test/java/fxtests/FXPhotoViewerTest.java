@@ -4,7 +4,7 @@ import fxsamples.PhotoViewer;
 import java.util.Set;
 import javafx.scene.Node;
 import org.junit.Test;
-import utils.ConsumerEx;
+import utils.ex.ConsumerEx;
 
 public class FXPhotoViewerTest extends AbstractTestExecution {
 

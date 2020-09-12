@@ -28,8 +28,8 @@ import ml.graph.TimelineGraph;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
-import utils.HasLogging;
 import utils.ImageFXUtils;
+import utils.ex.HasLogging;
 
 public class TimelineExample extends Application {
 

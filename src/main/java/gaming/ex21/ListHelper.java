@@ -14,8 +14,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import simplebuilder.SimpleButtonBuilder;
-import utils.ConsumerEx;
-import utils.FunctionEx;
+import utils.ex.ConsumerEx;
+import utils.ex.FunctionEx;
 
 public final class ListHelper {
     private ListHelper() {

@@ -16,8 +16,8 @@ import ml.data.Country;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.RotateUtils;
+import utils.ex.HasLogging;
 
 public class WorldMapGraph2 extends WorldMapGraph {
     private static final Logger LOG = HasLogging.log();

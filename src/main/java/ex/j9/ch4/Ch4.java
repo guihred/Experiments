@@ -1,6 +1,6 @@
 package ex.j9.ch4;
 
-import static utils.FunctionEx.makeFunction;
+import static utils.ex.FunctionEx.makeFunction;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.HasLogging;
-import utils.SupplierEx;
+import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public class Ch4 {
     /**

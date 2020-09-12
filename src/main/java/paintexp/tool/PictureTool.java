@@ -29,8 +29,8 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
-import utils.FunctionEx;
-import utils.RunnableEx;
+import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public class PictureTool extends PaintTool {
 

@@ -1,6 +1,6 @@
 package fxsamples;
 
-import static utils.RunnableEx.runIf;
+import static utils.ex.RunnableEx.runIf;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;

@@ -15,6 +15,10 @@ import org.junit.runners.MethodSorters;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import utils.*;
+import utils.ex.ConsumerEx;
+import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 @SuppressWarnings("static-method")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

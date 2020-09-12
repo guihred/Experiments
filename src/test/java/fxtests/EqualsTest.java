@@ -36,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import others.HuffmanTree;
 import utils.ClassReflectionUtils;
+import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
 
 @SuppressWarnings("static-method")
@@ -65,7 +66,7 @@ public class EqualsTest extends AbstractTestExecution {
     @Test
     public void testPdfImage() {
         measureTime("PdfImage.equals", () -> {
-            Path firstPathByExtension = ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getOutFile(), "png");
+            Path firstPathByExtension = FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getOutFile(), "png");
             PdfImage pdfImage = new PdfImage();
             File file = firstPathByExtension.toFile();
             pdfImage.appendImage("");

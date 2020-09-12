@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import utils.CommonsFX;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 /**
  *

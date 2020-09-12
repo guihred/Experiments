@@ -10,6 +10,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
 
 public class VideoApplication extends Application {
@@ -17,9 +18,9 @@ public class VideoApplication extends Application {
     public void start(Stage stage) throws Exception {
 
         // goes to user Directory
-        Path f = ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getOutFile(), ".mp4");
+        Path f = FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getOutFile(), ".mp4");
         if (f == null) {
-            f = ResourceFXUtils.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Music"), ".mp4");
+            f = FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Music"), ".mp4");
         }
         // Converts media to string URL
         Media media = new Media(f.toFile().toURI().toURL().toString());

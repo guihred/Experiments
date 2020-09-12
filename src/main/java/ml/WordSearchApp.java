@@ -31,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.ResourceFXUtils;
-import utils.SupplierEx;
+import utils.ex.SupplierEx;
 
 public class WordSearchApp extends Application {
 

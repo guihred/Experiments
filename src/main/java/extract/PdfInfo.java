@@ -1,6 +1,6 @@
 package extract;
 
-import static utils.FunctionEx.mapIf;
+import static utils.ex.FunctionEx.mapIf;
 
 import java.io.File;
 import java.util.List;

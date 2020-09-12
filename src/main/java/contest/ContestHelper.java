@@ -1,8 +1,8 @@
 package contest;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static utils.FunctionEx.mapIf;
 import static utils.StringSigaUtils.putNumbers;
+import static utils.ex.FunctionEx.mapIf;
 
 import contest.db.Contest;
 import contest.db.ContestQuestion;

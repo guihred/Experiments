@@ -1,7 +1,7 @@
 package ml;
 
 
-import static utils.SupplierEx.nonNull;
+import static utils.ex.SupplierEx.nonNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import ml.data.AutocompleteField;
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
-import utils.RunnableEx;
+import utils.ex.RunnableEx;
 
 public class AutoCompleteTextField extends AutocompleteField {
     private Word2Vec word2Vec;

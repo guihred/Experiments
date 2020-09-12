@@ -8,9 +8,9 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
-import utils.HasLogging;
 import utils.HibernateUtil;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 
 public class JapanRefactoring {
     private static final Logger LOG = HasLogging.log();

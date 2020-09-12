@@ -7,6 +7,26 @@ import javafx.scene.paint.Color;
 public interface DrawOnPoint {
 	void draw(int x, int y);
 
+    static int clamp(int value, int min, int max) {
+        if (Double.compare(value, min) < 0) {
+            return min;
+        }
+        if (Double.compare(value, max) > 0) {
+            return max;
+        }
+        return value;
+    }
+
+    static double clamp(double value, double min, double max) {
+        if (Double.compare(value, min) < 0) {
+            return min;
+        }
+        if (Double.compare(value, max) > 0) {
+            return max;
+        }
+        return value;
+    }
+
     static WritableImage drawTransparentPattern(int size) {
         WritableImage transparentPattern = new WritableImage(size, size);
 

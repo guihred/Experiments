@@ -13,7 +13,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.shape.Circle;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
-import utils.HasLogging;
+import utils.ex.HasLogging;
 
 public class SVGChanger {
 	private static final Logger LOG = HasLogging.log();
