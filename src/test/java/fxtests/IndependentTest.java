@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import others.*;
 import pdfreader.Speaker;
+import schema.sngpc.JsonExtractor;
 import utils.*;
 
 @SuppressWarnings("static-method")
@@ -168,6 +169,12 @@ public class IndependentTest {
         measureTime("ImageLoading.exporting", () -> ImageLoading.exporting(dataDir, nameFile));
         measureTime("ImageLoading.grayScale", () -> ImageLoading.grayScale(dataDir, nameFile));
         measureTime("ImageLoading.grayScaling", () -> ImageLoading.grayScaling(dataDir, nameFile));
+    }
+
+    public void testJsonExtractor() {
+
+        measureTime("JsonExtractor.toObject",
+                () -> JsonExtractor.toObject(ResourceFXUtils.toFile("kibana/fields.json"), "index", "fields"));
     }
 
     @Test

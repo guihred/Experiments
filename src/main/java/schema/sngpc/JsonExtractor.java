@@ -15,7 +15,6 @@ import org.nd4j.shade.jackson.databind.JsonNode;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
 import simplebuilder.SimpleTextBuilder;
 import utils.DateFormatUtils;
-import utils.ResourceFXUtils;
 
 public final class JsonExtractor {
 
@@ -77,11 +76,6 @@ public final class JsonExtractor {
         return jsonNode.asText();
     }
 
-    public static void main(String[] args) throws IOException {
-
-        Object makeMapFromJsonFile = toObject(ResourceFXUtils.toFile("kibana/fields.json"), "index", "fields");
-        System.out.println(makeMapFromJsonFile);
-    }
 
     public static Map<String, String> makeMapFromJsonFile(File outFile, String... a) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();

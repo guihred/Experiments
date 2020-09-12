@@ -2,6 +2,7 @@ package ethical.hacker;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -10,10 +11,22 @@ public class SitePage {
     private String title;
     private final String url;
     private List<String> links;
+
     private File print;
 
     public SitePage(String url) {
         this.url = url;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        SitePage other = (SitePage) obj;
+        return Objects.equals(other.url, url);
     }
 
     public List<String> getLinks() {
@@ -30,6 +43,11 @@ public class SitePage {
 
     public String getUrl() {
         return url;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url);
     }
 
     public void setLinks(List<String> links) {

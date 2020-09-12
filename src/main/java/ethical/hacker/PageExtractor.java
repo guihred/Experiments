@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -67,8 +68,7 @@ public class PageExtractor extends Application {
                 buildOpenDirectoryButton,
                 new FileChooserBuilder().name("Export Excel").title("Export Excel").extensions("Excel", "*.xlsx")
                         .onSelect(file -> exportExcel(value, paginatedTableView, columnMap, file)).buildSaveButton(),
-                new FileChooserBuilder().name("Export PDF").title("Export PDF").extensions("PDF", "*.pdf")
-                        .onSelect(file -> exportPDF(paginatedTableView, file)).buildSaveButton()
+                SimpleButtonBuilder.newButton("Export PDF", e -> exportPDF(paginatedTableView, e))
 
         )
 
@@ -116,7 +116,7 @@ public class PageExtractor extends Application {
         ExcelService.getExcel(collect, mapa, file);
     }
 
-    private static void exportPDF(PaginatedTableView paginatedTableView, File file) {
+    private static void exportPDF(PaginatedTableView paginatedTableView, ActionEvent e0) {
         List<List<Object>> elements = paginatedTableView.getElements();
         List<String> columns = paginatedTableView.getColumns();
         List<Image> collect =
@@ -129,6 +129,7 @@ public class PageExtractor extends Application {
         PrintConfig printConfig = new PrintConfig(collect);
         printConfig.show();
         printConfig.setLinesColumns(columns.size(), 1);
+        printConfig.printToPDF(e0);
 
     }
 

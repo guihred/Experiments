@@ -20,6 +20,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -132,15 +133,16 @@ public class PrintConfig extends Application {
                 }).openDirectoryAction(event);
     }
 
-    public void printToPDF() {
-        RunnableEx.run(() -> {
-            File outputFile = generatePDF();
+    public void printToPDF(Event e) {
+        new FileChooserBuilder().name("Export PDF").title("Export PDF").extensions("PDF", "*.pdf").onSelect(file -> {
+            File outputFile = generatePDF(file);
             ImageFXUtils.openInDesktop(outputFile);
-        });
-        StageHelper.closeStage(panel);
+            StageHelper.closeStage(panel);
+        }).saveFileAction(e);
+
     }
 
-    public void setLinesColumns(Integer lines,Integer columns) {
+    public void setLinesColumns(Integer lines, Integer columns) {
         linesPerPage.getSelectionModel().select(lines);
         columnsPerPage.getSelectionModel().select(columns);
     }
@@ -173,6 +175,7 @@ public class PrintConfig extends Application {
             changeConfig();
         }
     }
+
     private void addToCurrentPage(int add) {
         double lines = linesPerPage.getSelectionModel().getSelectedItem().doubleValue();
         double columns = columnsPerPage.getSelectionModel().getSelectedItem().doubleValue();
@@ -240,7 +243,7 @@ public class PrintConfig extends Application {
         return child;
     }
 
-    private File generatePDF() throws IOException {
+    private File generatePDF(File outputFile) throws IOException {
         Integer lines = linesPerPage.getSelectionModel().getSelectedItem();
         Integer columns = columnsPerPage.getSelectionModel().getSelectedItem();
         List<BufferedImage> panelImages = new ArrayList<>();
@@ -250,7 +253,6 @@ public class PrintConfig extends Application {
                     ImageFXUtils.toBufferedImage(panel, panel.getWidth(), panel.getHeight(), quality.getValue());
             panelImages.add(bimg);
         }
-        File outputFile = ResourceFXUtils.getOutFile("oi2" + images.hashCode() + ".pdf");
         PdfUtils.createPDFFromImage(outputFile, panelImages.toArray(new BufferedImage[0]));
         return outputFile;
     }

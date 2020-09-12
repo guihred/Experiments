@@ -94,7 +94,9 @@ public class FileChooserBuilder {
                 SupplierEx.nonNull(fileChooser.getInitialDirectory(), LAST_FILES.get(evocationLine)));
         List<File> fileChosen =
                 fileChooser.showOpenMultipleDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
-        LAST_FILES.put(evocationLine, fileChosen.stream().findFirst().map(File::getParentFile).orElse(null));
+        if (!fileChosen.isEmpty()) {
+            LAST_FILES.put(evocationLine, fileChosen.stream().findFirst().map(File::getParentFile).orElse(null));
+        }
         runIf(fileChosen, onSelect0);
     }
 

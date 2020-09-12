@@ -15,7 +15,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
@@ -49,8 +48,7 @@ public final class DocumentHelper {
             dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             dbf.setXIncludeAware(false);
             dbf.setExpandEntityReferences(false);
-            DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-            return documentBuilder.parse(file);
+            return dbf.newDocumentBuilder().parse(file);
         }, "ERROR PARSING " + file);
     }
 
@@ -92,10 +90,7 @@ public final class DocumentHelper {
     }
 
     private static Property<String> getDomain(String url) {
-        return new SimpleStringProperty(SupplierEx.getIgnore(() -> {
-            URL url2 = new URL(url);
-            return url2.getHost();
-        }, url));
+        return new SimpleStringProperty(SupplierEx.getIgnore(() -> new URL(url).getHost(), url));
     }
 
 }

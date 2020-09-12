@@ -61,10 +61,6 @@ public class WebScannerApplication extends Application {
             }
             image.setImage(new Image(value.getPrint().toURI().toURL().toExternalForm()));
         }).build();
-
-
-
-
     }
 
     public void onKeyReleasedUrlField(KeyEvent e) {

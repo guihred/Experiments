@@ -78,10 +78,10 @@ public class ConsultasInvestigator extends Application {
         configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count);
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
         configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^[^\\/\\d].+");
-        // configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS,
-        // timelineUsuarios, uidCombo);
+         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS,
+         timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
-        configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value");
+         configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value");
         filterText.textProperty().bind(Bindings.createStringBinding(
                 () -> filter.entrySet().stream().map(Objects::toString).collect(Collectors.joining("\n")), filter));
     }
