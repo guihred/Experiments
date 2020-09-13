@@ -55,10 +55,10 @@ public class PaintController {
 
     public BooleanBinding containsSelectedArea() {
         return Bindings.createBooleanBinding(
-            () -> Stream.of(PaintTools.values()).map(PaintTools::getTool).filter(AreaTool.class::isInstance)
-                .map(AreaTool.class::cast)
-                .anyMatch(e -> paintModel.getImageStack().getChildren().contains(e.getArea())),
-            paintModel.getImageStack().getChildren());
+                () -> Stream.of(PaintTools.values()).map(PaintTools::getTool).filter(AreaTool.class::isInstance)
+                        .map(AreaTool.class::cast)
+                        .anyMatch(e -> paintModel.getImageStack().getChildren().contains(e.getArea())),
+                paintModel.getImageStack().getChildren());
     }
 
     public AreaTool getCurrentSelectTool() {
@@ -92,8 +92,8 @@ public class PaintController {
         double x = e.getX();
         double y = e.getY();
         paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
-        paintModel.getImageSize()
-                .setText(String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
+        paintModel.getImageSize().setText(
+                String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
 
         PaintTool paintTool = getTool();
         if (paintTool != null) {

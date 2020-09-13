@@ -49,6 +49,46 @@ public class RectangleTool extends PaintTool {
     }
 
     @Override
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
+        double x = e.getX();
+        double y = e.getY();
+        dragTo(e, x, y);
+    }
+
+    @Override
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (!children.contains(getArea())) {
+            children.add(getArea());
+        }
+        getArea().setManaged(false);
+        initialX = e.getX();
+        getArea().setLayoutX(initialX);
+        initialY = e.getY();
+        getArea().setLayoutY(initialY);
+        getArea().setWidth(1);
+        getArea().setHeight(1);
+        getArea().setStroke(Color.TRANSPARENT);
+        getArea().setFill(Color.TRANSPARENT);
+        if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
+            getArea().setFill(model.getBackColor());
+        }
+        if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
+            getArea().setStroke(model.getFrontColor());
+        }
+
+    }
+
+    @Override
+    public void onMouseReleased(final PaintModel model) {
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (getArea().getWidth() > 2 && children.contains(getArea())) {
+            model.takeSnapshot(area);
+        }
+        children.remove(getArea());
+    }
+
+    @Override
     public void onSelected(final PaintModel model) {
         Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
         rectangle.setStroke(Color.GRAY);
@@ -94,46 +134,6 @@ public class RectangleTool extends PaintTool {
             getArea().setWidth(max);
             getArea().setHeight(max);
         }
-    }
-
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
-        double x = e.getX();
-        double y = e.getY();
-        dragTo(e, x, y);
-    }
-
-    @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (!children.contains(getArea())) {
-            children.add(getArea());
-        }
-        getArea().setManaged(false);
-        initialX = e.getX();
-        getArea().setLayoutX(initialX);
-        initialY = e.getY();
-        getArea().setLayoutY(initialY);
-        getArea().setWidth(1);
-        getArea().setHeight(1);
-        getArea().setStroke(Color.TRANSPARENT);
-        getArea().setFill(Color.TRANSPARENT);
-        if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
-            getArea().setFill(model.getBackColor());
-        }
-        if (option == FillOption.STROKE || option == FillOption.STROKE_FILL) {
-            getArea().setStroke(model.getFrontColor());
-        }
-
-    }
-
-    @Override
-    protected void onMouseReleased(final PaintModel model) {
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (getArea().getWidth() > 2 && children.contains(getArea())) {
-            model.takeSnapshot(area);
-        }
-        children.remove(getArea());
     }
 
 }

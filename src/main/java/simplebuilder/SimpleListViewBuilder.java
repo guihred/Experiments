@@ -1,12 +1,19 @@
 package simplebuilder;
 
-import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
@@ -14,7 +21,6 @@ import utils.ex.FunctionEx;
 public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, SimpleListViewBuilder<T>> {
 
     private ListView<T> table;
-    private Map<KeyCode, ConsumerEx<T>> mapKey = new EnumMap<>(KeyCode.class);
 
     public SimpleListViewBuilder() {
         super(new ListView<T>());
@@ -51,10 +57,12 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     }
 
     public SimpleListViewBuilder<T> onKey(KeyCode code, ConsumerEx<T> object) {
-        mapKey.put(code, object);
-        table.setOnKeyReleased(e -> {
-            if (mapKey.containsKey(e.getCode())) {
-                ConsumerEx.makeConsumer(mapKey.get(e.getCode())).accept(table.getSelectionModel().getSelectedItem());
+        SimpleNodeBuilder.onKeyReleased(table, e -> {
+            if (code == e.getCode()) {
+                List<T> selectedItem = table.getSelectionModel().getSelectedItems();
+                for (T t : selectedItem) {
+                    ConsumerEx.accept(object, t);
+                }
             }
         });
 
@@ -68,23 +76,33 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return this;
     }
 
-    public static <C> Callback<ListView<C>, ListCell<C>> newCellFactory(final BiConsumer<C, ListCell<C>> value) {
-        return p -> new ListCell<C>() {
-            @Override
-            protected void updateItem(final C item, final boolean empty) {
-                super.updateItem(item, empty);
-                value.accept(getItem(), this);
-            }
+    public static <T> void copyContent(ListView<T> table, KeyEvent ev) {
+        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
+            List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices().isEmpty()
+                    ? IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList())
+                    : table.getSelectionModel().getSelectedIndices();
+            CustomListCell<T> call = getCustomList(table);
+            String collect = selectedItems.stream().map(l -> {
+                T t = table.getItems().get(l);
+                call.updateItem(t, false);
+                return Objects.toString(call.getText());
+            }).collect(Collectors.joining("\n"));
+            Map<DataFormat, Object> content = FXCollections.observableHashMap();
+            content.put(DataFormat.PLAIN_TEXT, collect);
+            Clipboard.getSystemClipboard().setContent(content);
+        }
+    }
 
-        };
+    public static <C> Callback<ListView<C>, ListCell<C>> newCellFactory(final BiConsumer<C, ListCell<C>> value) {
+        return p -> new CustomListCell<>(value);
     }
 
     public static <C> Callback<ListView<C>, ListCell<C>> newCellFactory(final FunctionEx<C, String> func) {
         return newCellFactory((t, cell) -> cell.setText(FunctionEx.apply(func, t)));
     }
 
-    public static <V>SimpleListViewBuilder<V> of(ListView<V> o) {
-        return new SimpleListViewBuilder<>(o); 
+    public static <V> SimpleListViewBuilder<V> of(ListView<V> o) {
+        return new SimpleListViewBuilder<>(o);
     }
 
     public static <C> void onDoubleClick(ListView<C> table2, final ConsumerEx<C> object) {
@@ -94,19 +112,38 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
                 ConsumerEx.makeConsumer(object).accept(selectedItem);
             }
         });
-        if (table2.getOnKeyReleased() == null) {
-            table2.setOnKeyReleased(e -> {
-                if (e.getCode() == KeyCode.ENTER) {
-                    C selectedItem = table2.getSelectionModel().getSelectedItem();
-                    ConsumerEx.makeConsumer(object).accept(selectedItem);
-                }
-            });
-        }
+        SimpleNodeBuilder.onKeyReleased(table2, e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                C selectedItem = table2.getSelectionModel().getSelectedItem();
+                ConsumerEx.makeConsumer(object).accept(selectedItem);
+            }
+        });
     }
 
     public static <T> void onSelect(ListView<T> table, final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+    }
+
+    private static <T> CustomListCell<T> getCustomList(ListView<T> table) {
+        ListCell<T> call2 = table.getCellFactory().call(table);
+        if (call2 instanceof CustomListCell) {
+            return (CustomListCell<T>) call2;
+        }
+        table.setCellFactory(newCellFactory((T t) -> Objects.toString(t)));
+        return (CustomListCell<T>) table.getCellFactory().call(table);
+    }
+
+    private static final class CustomListCell<C> extends ListCell<C> {
+        private final BiConsumer<C, ListCell<C>> value;
+        private CustomListCell(BiConsumer<C, ListCell<C>> value) {
+            this.value = value;
+        }
+        @Override
+        public void updateItem(final C item, final boolean empty) {
+            super.updateItem(item, empty);
+            value.accept(getItem(), this);
+        }
     }
 
 }

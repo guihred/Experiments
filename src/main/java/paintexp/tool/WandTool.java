@@ -91,6 +91,15 @@ public class WandTool extends AreaTool {
     }
 
     @Override
+    public void onMouseReleased(PaintModel model) {
+        if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
+            && imageSelected != null) {
+            model.getImageStack().getChildren().remove(getArea());
+        }
+        getArea().setStroke(Color.BLUE);
+    }
+
+    @Override
     public void onSelected(final PaintModel model) {
         if (thresholdSlider == null) {
             SimpleSliderBuilder.onChange(getThresholdSlider(),
@@ -188,15 +197,6 @@ public class WandTool extends AreaTool {
                 }
             });
         }
-    }
-
-    @Override
-    protected void onMouseReleased(PaintModel model) {
-        if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
-            && imageSelected != null) {
-            model.getImageStack().getChildren().remove(getArea());
-        }
-        getArea().setStroke(Color.BLUE);
     }
 
     protected void repositionImage(final PaintModel model) {

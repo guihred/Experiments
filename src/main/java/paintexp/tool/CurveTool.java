@@ -72,26 +72,7 @@ public class CurveTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(PaintModel model) {
-        stage = 0;
-        getLine().setStartX(-1);
-        getLine().setControlX1(-1);
-        getLine().setControlX2(-1);
-        getLine().setStartY(-1);
-        getLine().setEndX(-1);
-        getLine().setEndY(-1);
-        getLine().setControlY1(-1);
-        getLine().setControlY2(-1);
-
-        model.getToolOptions().getChildren().clear();
-        model.getToolOptions().getChildren()
-                .add(PaintTool.propertiesPane(getLine(), "fill", "stroke", "startX", "startY", "endX", "endY",
-                        "controlX1", "controlY1", "controlX2", "controlY2"));
-
-    }
-
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
         if (stage == 0) {
             getLine().setEndX(e.getX());
             getLine().setEndY(e.getY());
@@ -107,7 +88,7 @@ public class CurveTool extends PaintTool {
     }
 
     @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         getLine().setStroke(model.getFrontColor());
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getLine())) {
@@ -126,7 +107,7 @@ public class CurveTool extends PaintTool {
     }
 
     @Override
-    protected void onMouseReleased(final PaintModel model) {
+    public void onMouseReleased(final PaintModel model) {
 
         ObservableList<Node> children = model.getImageStack().getChildren();
         if ((size() >= 2 || !children.contains(getLine())) && stage == 2) {
@@ -134,6 +115,25 @@ public class CurveTool extends PaintTool {
             model.createImageVersion();
         }
         stage = ++stage % 3;
+    }
+
+    @Override
+    public void onSelected(PaintModel model) {
+        stage = 0;
+        getLine().setStartX(-1);
+        getLine().setControlX1(-1);
+        getLine().setControlX2(-1);
+        getLine().setStartY(-1);
+        getLine().setEndX(-1);
+        getLine().setEndY(-1);
+        getLine().setControlY1(-1);
+        getLine().setControlY2(-1);
+
+        model.getToolOptions().getChildren().clear();
+        model.getToolOptions().getChildren()
+                .add(PaintTool.propertiesPane(getLine(), "fill", "stroke", "startX", "startY", "endX", "endY",
+                        "controlX1", "controlY1", "controlX2", "controlY2"));
+
     }
 
     private double size() {

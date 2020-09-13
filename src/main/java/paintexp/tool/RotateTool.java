@@ -44,17 +44,7 @@ public class RotateTool extends AreaTool {
     }
 
     @Override
-    protected void addRect(final PaintModel model) {
-        super.addRect(model);
-        if (!model.getImageStack().getChildren().containsAll(getCircles(model))) {
-            model.getImageStack().getChildren().addAll(getCircles(model));
-        }
-        getArea().setRotate(0);
-        dragged = false;
-    }
-
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
         if (!dragged) {
             super.onMouseDragged(e, model);
         } else {
@@ -65,16 +55,26 @@ public class RotateTool extends AreaTool {
     }
 
     @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         if (!dragged) {
             super.onMousePressed(e, model);
         }
     }
 
     @Override
-    protected void onMouseReleased(final PaintModel model) {
+    public void onMouseReleased(final PaintModel model) {
         super.onMouseReleased(model);
 
+        dragged = false;
+    }
+
+    @Override
+    protected void addRect(final PaintModel model) {
+        super.addRect(model);
+        if (!model.getImageStack().getChildren().containsAll(getCircles(model))) {
+            model.getImageStack().getChildren().addAll(getCircles(model));
+        }
+        getArea().setRotate(0);
         dragged = false;
     }
 

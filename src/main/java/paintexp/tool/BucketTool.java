@@ -41,6 +41,16 @@ public class BucketTool extends PaintTool {
     }
 
     @Override
+    public void onMouseDragged(MouseEvent e, PaintModel model) {
+        onMouseClicked(e, model);
+    }
+
+    @Override
+    public void onMousePressed(MouseEvent e, PaintModel model) {
+        onMouseClicked(e, model);
+    }
+
+    @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
 
@@ -56,16 +66,6 @@ public class BucketTool extends PaintTool {
         toGo.add(index(initX, initY));
         PixelHelper pixel = new PixelHelper();
         RunnableEx.ignore(() -> updateColor(originalColor, frontColor, pixelReader, model, toGo, pixel));
-    }
-
-    @Override
-    protected void onMouseDragged(MouseEvent e, PaintModel model) {
-        onMouseClicked(e, model);
-    }
-
-    @Override
-    protected void onMousePressed(MouseEvent e, PaintModel model) {
-        onMouseClicked(e, model);
     }
 
     private void addIfNotIn(final Collection<Integer> toGo, final int e) {

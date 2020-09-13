@@ -31,7 +31,7 @@ public class LineTool extends PaintTool {
     }
 
     @Override
-    protected void onMouseDragged(final MouseEvent e, PaintModel model) {
+    public void onMouseDragged(final MouseEvent e, PaintModel model) {
         getLine().setEndX(e.getX());
         getLine().setEndY(e.getY());
         if (e.isShiftDown()) {
@@ -49,7 +49,7 @@ public class LineTool extends PaintTool {
     }
 
     @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         getLine().setStroke(model.getFrontColor());
         model.getImageStack().getChildren().add(getLine());
         getLine().setStartX(e.getX());
@@ -58,7 +58,7 @@ public class LineTool extends PaintTool {
     }
 
     @Override
-    protected void onMouseReleased(final PaintModel model) {
+    public void onMouseReleased(final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (size() > 2) {
             RectBuilder.build().startX(line.getStartX()).startY(line.getStartY()).endX(line.getEndX())

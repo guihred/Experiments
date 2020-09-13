@@ -29,21 +29,24 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ExtractUtils;
+import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public class KibanaApi {
     private static final Logger LOG = HasLogging.log();
 
-    private static final ImmutableMap<String, String> GET_HEADERS = ImmutableMap.<String, String>builder()
-            .put("Content-Type", "application/json")
-            .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0")
-            .put("Accept", "text/plain, */*; q=0.01").put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3")
-            .put("Accept-Encoding", "gzip, deflate, br").put("kbn-version", "6.6.2")
-            .put("Origin", "https://n321p000124.fast.prevnet").put("DNT", "1").put("Connection", "keep-alive")
-            .put("Referer", "https://n321p000124.fast.prevnet/app/kibana")
-            .put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization()).build();
+    private static final ImmutableMap<String,
+            String> GET_HEADERS = ImmutableMap.<String, String>builder().put("Content-Type", "application/json")
+                    .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0")
+                    .put("Accept", "text/plain, */*; q=0.01")
+                    .put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3")
+                    .put("Accept-Encoding", "gzip, deflate, br").put("kbn-version", "6.6.2")
+                    .put("Origin", "https://n321p000124.fast.prevnet").put("DNT", "1").put("Connection", "keep-alive")
+                    .put("Referer", "https://n321p000124.fast.prevnet/app/kibana")
+                    .put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization()).build();
 
     protected KibanaApi() {
     }
@@ -83,7 +86,8 @@ public class KibanaApi {
         return fullScan;
     }
 
-    public static Map<String, String> makeKibanaSearch(File file, int days, Map<String,String> search, String... params) {
+    public static Map<String, String> makeKibanaSearch(File file, int days, Map<String, String> search,
+            String... params) {
         return makeKibanaSearch(file, "", days, search, params);
     }
 
@@ -100,11 +104,11 @@ public class KibanaApi {
         }, Collections.emptyMap());
     }
 
-    public static Map<String, String> makeKibanaSearch(File file,String index, int days, Map<String,String> search, String... params) {
+    public static Map<String, String> makeKibanaSearch(File file, String index, int days, Map<String, String> search,
+            String... params) {
         return SupplierEx.get(() -> {
             String values = search.values().stream().collect(Collectors.joining());
-            File outFile = newJsonFile(
-                    file.getName().replaceAll("\\.json", "") +values +days);
+            File outFile = newJsonFile(file.getName().replaceAll("\\.json", "") + values + days);
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
@@ -112,14 +116,12 @@ public class KibanaApi {
                         .entrySet().stream().map(e -> String
                                 .format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
                         .collect(Collectors.joining("\n"));
-                getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path="+index
-                        + "_search&method=POST",
-                        getContent(file, keywords , gte, lte), outFile);
+                getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=" + index + "_search&method=POST",
+                        getContent(file, keywords, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, Collections.emptyMap());
     }
-
 
     public static Map<String, String> makeKibanaSearch(String file, String query, String... params) {
         return makeKibanaSearch(ResourceFXUtils.toFile(file), 1, query, params);

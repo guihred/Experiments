@@ -76,23 +76,8 @@ public class TextTool extends PaintTool {
         takeSnapshot(model);
     }
 
-    public void onOptionsChanged() {
-        FontWeight weight = bold.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL;
-        FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
-        double size = fontSize.getSelectionModel().getSelectedItem();
-        text.setFont(Font.font(fontFamily.getSelectionModel().getSelectedItem(), weight, posture, size));
-        PaintToolHelper.addOptionsAccordingly(effects.getSelectionModel().getSelectedItem(),
-            effectsOptions.getChildren(), maxMap, effects.getItems());
-    }
-
     @Override
-    public void onSelected(final PaintModel model) {
-        model.getToolOptions().getChildren().clear();
-        model.getToolOptions().getChildren().addAll(options);
-    }
-
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
         double x = e.getX();
         double y = e.getY();
         double width = model.getImage().getWidth();
@@ -108,7 +93,7 @@ public class TextTool extends PaintTool {
     }
 
     @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         if (model.getImageStack().getChildren().contains(area)) {
             if (CommonsFX.containsMouse(area, e)) {
                 moving = true;
@@ -127,7 +112,7 @@ public class TextTool extends PaintTool {
     }
 
     @Override
-    protected void onMouseReleased(final PaintModel model) {
+    public void onMouseReleased(final PaintModel model) {
         if (area.getWidth() < 2 && model.getImageStack().getChildren().contains(area)) {
             model.getImageStack().getChildren().remove(area);
         }
@@ -135,6 +120,21 @@ public class TextTool extends PaintTool {
         moving = false;
         textArea.requestFocus();
         area.setStroke(Color.BLUE);
+    }
+
+    public void onOptionsChanged() {
+        FontWeight weight = bold.isSelected() ? FontWeight.BOLD : FontWeight.NORMAL;
+        FontPosture posture = italic.isSelected() ? FontPosture.ITALIC : FontPosture.REGULAR;
+        double size = fontSize.getSelectionModel().getSelectedItem();
+        text.setFont(Font.font(fontFamily.getSelectionModel().getSelectedItem(), weight, posture, size));
+        PaintToolHelper.addOptionsAccordingly(effects.getSelectionModel().getSelectedItem(),
+            effectsOptions.getChildren(), maxMap, effects.getItems());
+    }
+
+    @Override
+    public void onSelected(final PaintModel model) {
+        model.getToolOptions().getChildren().clear();
+        model.getToolOptions().getChildren().addAll(options);
     }
 
     private void addRect(final PaintModel model) {

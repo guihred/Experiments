@@ -95,29 +95,7 @@ public class PolygonTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(final PaintModel model) {
-        Shape icon2 = copyIcon(createIcon(), getArea());
-        icon2.strokeProperty().bind(model.frontColorProperty());
-        icon2.setFill(Color.TRANSPARENT);
-        Shape icon3 = copyIcon(createIcon(), getArea());
-        icon3.setStroke(Color.TRANSPARENT);
-        icon3.fillProperty().bind(model.backColorProperty());
-        Shape icon4 = copyIcon(createIcon(), getArea());
-        icon4.strokeProperty().bind(model.frontColorProperty());
-        icon4.fillProperty().bind(model.backColorProperty());
-        List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
-                .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
-                .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
-                .select(option).getTogglesAs(Node.class);
-        model.getToolOptions().getChildren().clear();
-        model.getToolOptions().getChildren().addAll(togglesAs);
-        FlowPane flowPane = propertiesPane(getArea(), "fill", "stroke");
-        model.getToolOptions().getChildren().addAll(flowPane);
-
-    }
-
-    @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getArea())) {
             children.add(getArea());
@@ -141,6 +119,28 @@ public class PolygonTool extends PaintTool {
         if (option == FillOption.FILL || option == FillOption.STROKE_FILL) {
             getArea().setFill(model.getBackColor());
         }
+    }
+
+    @Override
+    public void onSelected(final PaintModel model) {
+        Shape icon2 = copyIcon(createIcon(), getArea());
+        icon2.strokeProperty().bind(model.frontColorProperty());
+        icon2.setFill(Color.TRANSPARENT);
+        Shape icon3 = copyIcon(createIcon(), getArea());
+        icon3.setStroke(Color.TRANSPARENT);
+        icon3.fillProperty().bind(model.backColorProperty());
+        Shape icon4 = copyIcon(createIcon(), getArea());
+        icon4.strokeProperty().bind(model.frontColorProperty());
+        icon4.fillProperty().bind(model.backColorProperty());
+        List<Node> togglesAs = new SimpleToggleGroupBuilder().addToggle(icon2, FillOption.STROKE)
+                .addToggle(icon3, FillOption.FILL).addToggle(icon4, FillOption.STROKE_FILL)
+                .onChange((o, old, newV) -> option = newV == null ? FillOption.STROKE : (FillOption) newV.getUserData())
+                .select(option).getTogglesAs(Node.class);
+        model.getToolOptions().getChildren().clear();
+        model.getToolOptions().getChildren().addAll(togglesAs);
+        FlowPane flowPane = propertiesPane(getArea(), "fill", "stroke");
+        model.getToolOptions().getChildren().addAll(flowPane);
+
     }
 
     private void onMouseExited(final PaintModel model) {

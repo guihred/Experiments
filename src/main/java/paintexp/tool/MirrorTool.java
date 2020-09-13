@@ -49,13 +49,7 @@ public class MirrorTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(final PaintModel model) {
-        addSlider(model, "Length", getLengthSlider(), length);
-        addSlider(model, "Opacity", getOpacitySlider(), opacity);
-    }
-
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
         int y2 = (int) e.getY();
         int x2 = (int) e.getX();
         onMouseMoved(e, model);
@@ -71,7 +65,7 @@ public class MirrorTool extends PaintTool {
     }
 
     @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         int y2 = (int) e.getY();
         int x2 = (int) e.getX();
         if (withinImage(x2, y2, model.getImage())) {
@@ -85,7 +79,13 @@ public class MirrorTool extends PaintTool {
     }
 
     @Override
-    protected void simpleHandleEvent(MouseEvent e, PaintModel model) {
+    public void onSelected(final PaintModel model) {
+        addSlider(model, "Length", getLengthSlider(), length);
+        addSlider(model, "Opacity", getOpacitySlider(), opacity);
+    }
+
+    @Override
+    public void simpleHandleEvent(MouseEvent e, PaintModel model) {
         if (MouseEvent.MOUSE_MOVED.equals(e.getEventType())) {
             onMouseMoved(e, model);
         }

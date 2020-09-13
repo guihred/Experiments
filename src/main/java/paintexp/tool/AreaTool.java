@@ -101,6 +101,49 @@ public abstract class AreaTool extends PaintTool {
     }
 
     @Override
+    public void onMouseDragged(MouseEvent e, PaintModel model) {
+        double x = e.getX();
+        double y = e.getY();
+        double width = model.getImage().getWidth();
+        double height = model.getImage().getHeight();
+        if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
+            getArea().setLayoutX(Math.max(x - dragX, -width / 4));
+            getArea().setLayoutY(Math.max(y - dragY, -height / 4));
+            return;
+        }
+        dragTo(getWithinRange(x, 0, width), getWithinRange(y, 0, height));
+    }
+
+    @Override
+public void onMousePressed(MouseEvent e, PaintModel model) {
+        if (model.getImageStack().getChildren().contains(getArea())) {
+            if (CommonsFX.containsMouse(area, e)) {
+                createSelectedImage(model);
+                dragX = e.getX() - getArea().getLayoutX();
+                dragY = e.getY() - getArea().getLayoutY();
+                return;
+            }
+            if (imageSelected != null) {
+                setIntoImage(model);
+            }
+        }
+        initialX = e.getX();
+        initialY = e.getY();
+        addRect(model);
+    }
+
+    @Override
+    public void onMouseReleased(PaintModel model) {
+        if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
+            && imageSelected != null) {
+            model.getImageStack().getChildren().remove(getArea());
+        } else {
+            createSelectedImage(model);
+        }
+        getArea().setStroke(Color.BLUE);
+    }
+
+    @Override
     public void onSelected(PaintModel model) {
         model.getToolOptions().getChildren().clear();
 
@@ -186,49 +229,6 @@ public abstract class AreaTool extends PaintTool {
         }
         model.getScrollPane().setHvalue(hvalue);
         model.getScrollPane().setVvalue(vvalue);
-    }
-
-    @Override
-    protected void onMouseDragged(MouseEvent e, PaintModel model) {
-        double x = e.getX();
-        double y = e.getY();
-        double width = model.getImage().getWidth();
-        double height = model.getImage().getHeight();
-        if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-            getArea().setLayoutX(Math.max(x - dragX, -width / 4));
-            getArea().setLayoutY(Math.max(y - dragY, -height / 4));
-            return;
-        }
-        dragTo(getWithinRange(x, 0, width), getWithinRange(y, 0, height));
-    }
-
-    @Override
-    protected void onMousePressed(MouseEvent e, PaintModel model) {
-        if (model.getImageStack().getChildren().contains(getArea())) {
-            if (CommonsFX.containsMouse(area, e)) {
-                createSelectedImage(model);
-                dragX = e.getX() - getArea().getLayoutX();
-                dragY = e.getY() - getArea().getLayoutY();
-                return;
-            }
-            if (imageSelected != null) {
-                setIntoImage(model);
-            }
-        }
-        initialX = e.getX();
-        initialY = e.getY();
-        addRect(model);
-    }
-
-    @Override
-    protected void onMouseReleased(PaintModel model) {
-        if (getArea().getWidth() < 2 && model.getImageStack().getChildren().contains(getArea())
-            && imageSelected != null) {
-            model.getImageStack().getChildren().remove(getArea());
-        } else {
-            createSelectedImage(model);
-        }
-        getArea().setStroke(Color.BLUE);
     }
 
     protected void setIntoImage(PaintModel model) {

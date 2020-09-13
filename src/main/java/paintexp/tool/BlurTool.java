@@ -35,15 +35,7 @@ public class BlurTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(final PaintModel model) {
-        model.getToolOptions().setSpacing(5);
-        addSlider(model, "Length", getLengthSlider(), length);
-        length.addListener((o, old, value) -> colors = new Color[value.intValue() * value.intValue() * 4]);
-
-    }
-
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
         int y2 = (int) e.getY();
         int x2 = (int) e.getX();
         if (withinImage(x2, y2, model.getImage())) {
@@ -55,10 +47,18 @@ public class BlurTool extends PaintTool {
     }
 
     @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         y = (int) e.getY();
         x = (int) e.getX();
         drawBlur(x, y, model);
+    }
+
+    @Override
+    public void onSelected(final PaintModel model) {
+        model.getToolOptions().setSpacing(5);
+        addSlider(model, "Length", getLengthSlider(), length);
+        length.addListener((o, old, value) -> colors = new Color[value.intValue() * value.intValue() * 4]);
+
     }
 
     private void drawBlur(final int centerX, final int centerY, final PaintModel model) {

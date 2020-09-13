@@ -36,12 +36,13 @@
 								<FXCollections fx:factory="observableArrayList">
 									<QuestionType fx:value="EQ" />
 									<QuestionType fx:value="NE" />
+									<QuestionType fx:value="IN" />
+									<QuestionType fx:value="CONTAINS" />
+									<QuestionType fx:value="LIKE" />
 									<QuestionType fx:value="GE" />
 									<QuestionType fx:value="LE" />
 									<QuestionType fx:value="LT" />
 									<QuestionType fx:value="GT" />
-									<QuestionType fx:value="CONTAINS" />
-									<QuestionType fx:value="LIKE" />
 								</FXCollections>
 							</items>
 						</ComboBox>

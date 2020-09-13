@@ -14,9 +14,9 @@ public enum QuestionType {
     NE("!=", (ob1, ob2) -> !Objects.equals(ob1, ob2) && !Objects.equals(ob1, Objects.toString(ob2)), String.class,
             Number.class),
     CONTAINS("contains",
-            (ob1, ob2) -> ob2 instanceof Collection ? ((Collection<?>) ob2).contains(ob1)
-                    : StringUtils.containsIgnoreCase(Objects.toString(ob1), Objects.toString(ob2)),
+            (ob1, ob2) -> StringUtils.containsIgnoreCase(Objects.toString(ob1), Objects.toString(ob2)),
             String.class),
+    IN("in", (ob1, ob2) -> ((Collection<?>) ob2).contains(ob1), String.class, Number.class),
     LIKE("like", (ob1, ob) -> PredicateEx.test(s -> s.matches(Objects.toString(ob)), Objects.toString(ob1)),
             String.class),
     GE(">=", (ob1, ob) -> ob1 >= ob),
@@ -41,10 +41,6 @@ public enum QuestionType {
         classes = clazz;
     }
 
-    QuestionType(String sign, Class<?>... clazz) {
-        this.sign = sign;
-        classes = clazz;
-    }
 
     public boolean execute(Object t, Object u) {
         return test.test(t, u);

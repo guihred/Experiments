@@ -194,10 +194,22 @@ public class DataframeExplorer extends Application {
         Entry<String, DataframeStatisticAccumulator> selectedItem = getSelected(headersCombo);
         if (type != null && selectedItem != null) {
             String colName = selectedItem.getKey();
-            Object tryNumber = DataframeUtils.tryNumber(getDataframe(), colName, text.getText());
+            String text2 = text.getText();
+            Object tryNumber = getQueryObject(type, colName, text2);
             Question question = new Question(colName, tryNumber, type);
             questions.add(question);
         }
+    }
+
+    private Object getQueryObject(QuestionType type, String colName, String text2) {
+        if (type == QuestionType.IN) {
+            List<Object> arrayList = new ArrayList<>();
+            for (String string : text2.split("[,; \t\n]+")) {
+                arrayList.add(DataframeUtils.tryNumber(getDataframe(), colName, string));
+            }
+            return arrayList;
+        }
+        return DataframeUtils.tryNumber(getDataframe(), colName, text2);
     }
 
     private void interruptCurrentThread() {

@@ -96,6 +96,35 @@ public class BrushTool extends PaintTool {
         PaintTool.handleSlider(e, lengthSlider.valueProperty(), lengthSlider);
     }
 
+    @Override
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
+        int y2 = (int) e.getY();
+        int x2 = (int) e.getX();
+        if (pressed && withinImage(x2, y2, model.getImage())) {
+            RectBuilder.build().startX(x).startY(y).endX(x2).endY(y2).drawLine(model.getImage(),
+                (x3, y3) -> drawUponOption(e, model, x3, y3, false));
+
+            y = (int) e.getY();
+            x = (int) e.getX();
+        }
+        onMouseMoved(e);
+    }
+
+    @Override
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
+        y = (int) e.getY();
+        x = (int) e.getX();
+        model.createImageVersion();
+        drawUponOption(e, model, x, y, true);
+        pressed = true;
+    }
+
+    @Override
+    public void onMouseReleased(final PaintModel model) {
+        pressed = false;
+        model.createImageVersion();
+    }
+
     @SuppressWarnings("unused")
     public void onOptionChange(ObservableValue<? extends Toggle> v, Toggle old, Toggle newV) {
         option = newV == null ? BrushOption.CIRCLE : (BrushOption) newV.getUserData();
@@ -109,41 +138,12 @@ public class BrushTool extends PaintTool {
 
     }
 
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
-        int y2 = (int) e.getY();
-        int x2 = (int) e.getX();
-        if (pressed && withinImage(x2, y2, model.getImage())) {
-            RectBuilder.build().startX(x).startY(y).endX(x2).endY(y2).drawLine(model.getImage(),
-                (x3, y3) -> drawUponOption(e, model, x3, y3, false));
-
-            y = (int) e.getY();
-            x = (int) e.getX();
-        }
-        onMouseMoved(e);
-    }
-
     protected void onMouseMoved(final MouseEvent e) {
         getMouseCursorMap().get(option).setLayoutX(e.getX());
         getMouseCursorMap().get(option).setLayoutY(e.getY());
         if (option == BrushOption.LINE_SW_NE) {
             getMouseCursorMap().get(option).setLayoutY(e.getY() - lengthSlider.valueProperty().get());
         }
-    }
-
-    @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
-        y = (int) e.getY();
-        x = (int) e.getX();
-        model.createImageVersion();
-        drawUponOption(e, model, x, y, true);
-        pressed = true;
-    }
-
-    @Override
-    protected void onMouseReleased(final PaintModel model) {
-        pressed = false;
-        model.createImageVersion();
     }
 
     private void drawCircleOption(final PaintModel model, final int x2, final int y2, final double r, final Color color,

@@ -94,14 +94,14 @@ public final class VirusTotalApi {
 
     public static File[] getUrlInformation(String url) throws IOException {
 
-        String string = SupplierEx.getIgnore(() -> tryToCreateUrl(url), "http://" + url + "/");
+        String string = SupplierEx.getFirst(() -> tryToCreateUrl(url),
+                () -> url.contains("/") ? "https://" + url : "http://" + url + "/");
 
         File outFile = newJsonFile(string);
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/urls/" + HashVerifier.getSha256Hash(string), outFile);
         }
         String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile);
-        LOG.info(displayJsonFromFile);
         Matcher matcher = Pattern.compile(MALICIOUS_POSITIVE_REGEX).matcher(displayJsonFromFile);
         List<String> malicious = new ArrayList<>();
         while (matcher.find()) {
@@ -126,7 +126,7 @@ public final class VirusTotalApi {
     }
 
     private static File newJsonFile(String string) {
-        String replaceAll = string.replaceAll("[:/]+", "_");
+        String replaceAll = string.replaceAll("[:/\\?]+", "_");
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
     }
 

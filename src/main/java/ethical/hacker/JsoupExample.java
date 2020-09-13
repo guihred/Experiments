@@ -31,7 +31,8 @@ public class JsoupExample {
     private static final String MOZILLA = "Mozilla";
     private static final String ABOUT_HTML = "About.html";
     private static final String USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
+            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                    + "Chrome/51.0.2704.103 Safari/537.36";
 
     private static final Logger log = HasLogging.log();
 

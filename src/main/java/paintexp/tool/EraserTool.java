@@ -77,12 +77,7 @@ public class EraserTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(final PaintModel model) {
-        addSlider(model, "Length", getLengthSlider(model), length);
-    }
-
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
         int w = (int) getArea().getWidth();
         WritableImage image = model.getImage();
         double x = getWithinRange(e.getX(), -w, image.getWidth() + w);
@@ -103,7 +98,7 @@ public class EraserTool extends PaintTool {
     }
 
     @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         double w = getArea().getWidth();
         WritableImage image = model.getImage();
         int x = (int) getWithinRange(e.getX(), -w, image.getWidth() + w);
@@ -118,6 +113,11 @@ public class EraserTool extends PaintTool {
         getArea().setLayoutY(y - w);
         lastX = (int) (x - w);
         lastY = (int) (y - w);
+    }
+
+    @Override
+    public void onSelected(final PaintModel model) {
+        addSlider(model, "Length", getLengthSlider(model), length);
     }
 
     private Slider getLengthSlider(final PaintModel model) {
@@ -151,8 +151,8 @@ public class EraserTool extends PaintTool {
         Color color = new Color(invert.getRed(), invert.getGreen(), invert.getBlue(), 1);
         getArea().setStroke(color);
         WritableImage image = model.getImage();
-        int x = (int) getWithinRange(e.getX(), -w, image.getWidth() + w);
-        int y = (int) getWithinRange(e.getY(), -w, image.getHeight() + w);
+        double x = getWithinRange(e.getX(), -w, image.getWidth() + w);
+        double y = getWithinRange(e.getY(), -w, image.getHeight() + w);
         getArea().setLayoutX(x - w);
         getArea().setLayoutY(y - w);
     }

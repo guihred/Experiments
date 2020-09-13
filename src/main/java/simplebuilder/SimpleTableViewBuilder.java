@@ -85,11 +85,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public SimpleTableViewBuilder<T> copiable() {
-        EventHandler<? super KeyEvent> onKeyReleased = node.getOnKeyReleased();
-        node.setOnKeyReleased(e -> {
-            RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
-            copyContent(node, e);
-        });
+        onKeyReleased(e -> copyContent(node, e));
         return this;
     }
 
@@ -138,11 +134,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public SimpleTableViewBuilder<T> savable() {
-        EventHandler<? super KeyEvent> onKeyReleased = node.getOnKeyReleased();
-        node.setOnKeyReleased(e -> {
-            RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
-            saveContent(node, e);
-        });
+        onKeyReleased(e -> saveContent(node, e));
         return this;
     }
 

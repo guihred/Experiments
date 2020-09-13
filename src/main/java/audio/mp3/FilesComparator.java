@@ -31,7 +31,9 @@ import org.slf4j.Logger;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.*;
+import utils.CommonsFX;
+import utils.ExtractUtils;
+import utils.FileTreeWalker;
 import utils.ex.HasLogging;
 import utils.ex.PredicateEx;
 import utils.ex.RunnableEx;
@@ -104,17 +106,17 @@ public class FilesComparator extends Application {
     private ObservableValue<File> addTable(HBox root, String nome, String title, ObservableList<File> items1,
             ObservableList<File> items2, ObjectProperty<File> dir) {
         TableView<File> table1 =
-                new SimpleTableViewBuilder<File>().items(items1).multipleSelection()
-                .addColumn(nome, (s, c) -> {
+                new SimpleTableViewBuilder<File>().items(items1).multipleSelection().addColumn(nome, (s, c) -> {
                     c.setText(toFileString(s));
                     String itemClass = getItemClass(items2, s, c.getStyleClass(), fileMap);
                     c.getStyleClass().add(itemClass);
                 }).onDoubleClick(e -> MusicHandler.handleMousePressed(MusicReader.readTags(e))).prefWidthColumns(1)
-                .prefWidth(root.widthProperty().divide(2)).prefHeight(root.heightProperty()).build();
+                        .prefWidth(root.widthProperty().divide(2)).prefHeight(root.heightProperty()).build();
 
         table1.setId(nome);
         directoryMap.put(nome, dir);
-        Button files1 = new FileChooserBuilder().name(nome).title("Carregar Pasta de Músicas").onSelect(selectedFile -> addSongsToTable(table1, selectedFile)).buildOpenDirectoryButton();
+        Button files1 = new FileChooserBuilder().name(nome).title("Carregar Pasta de Músicas")
+                .onSelect(selectedFile -> addSongsToTable(table1, selectedFile)).buildOpenDirectoryButton();
         Button copyButton = SimpleButtonBuilder.newButton(title, e -> copy(dir, table1, items2));
         Button deleteButton = SimpleButtonBuilder.newButton("X", e -> delete(table1));
         Text text = new Text("");

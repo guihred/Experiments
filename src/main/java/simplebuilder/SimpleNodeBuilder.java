@@ -9,6 +9,7 @@ import javafx.scene.effect.Effect;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import utils.ex.RunnableEx;
 
 @SuppressWarnings("unchecked")
 public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> implements SimpleBuilder<T> {
@@ -59,7 +60,7 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
     }
 
     public Z onKeyReleased(final EventHandler<? super KeyEvent> value) {
-        node.setOnKeyReleased(value);
+        onKeyReleased(node, value);
         return (Z) this;
     }
 
@@ -148,6 +149,14 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
     public Z visible(ObservableValue<? extends Boolean> value) {
         node.visibleProperty().bind(value);
         return (Z) this;
+    }
+
+    public static void onKeyReleased(Node node,final EventHandler<? super KeyEvent> value) {
+        EventHandler<? super KeyEvent> onKeyReleased = node.getOnKeyReleased();
+        node.setOnKeyReleased(e -> {
+            RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
+            value.handle(e);
+        });
     }
 
 }

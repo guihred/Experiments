@@ -7,17 +7,14 @@ import java.util.Map;
 import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
-import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -29,8 +26,7 @@ import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
 import utils.ex.RunnableEx;
 
-@SuppressWarnings({ "unused", "static-method" })
-public abstract class PaintTool extends Group {
+public abstract class PaintTool extends Group implements CommonTool {
     @FXML
     private Node icon;
 
@@ -44,7 +40,15 @@ public abstract class PaintTool extends Group {
         }
     }
 
-    public VBox addSlider(final PaintModel model, String string, Slider lengthSlider2) {
+    public Node getIcon() {
+        return icon;
+    }
+
+    public void setIcon(Node icon) {
+        this.icon = icon;
+    }
+
+    public static VBox addSlider(final PaintModel model, String string, Slider lengthSlider2) {
         Text text = new Text();
         text.textProperty().bind(lengthSlider2.valueProperty().asString(string + " %.0f"));
         VBox e = new VBox(text, lengthSlider2);
@@ -52,7 +56,7 @@ public abstract class PaintTool extends Group {
         return e;
     }
 
-    public VBox addSlider(final PaintModel model, String string, Slider slider, DoubleExpression prop) {
+    public static VBox addSlider(final PaintModel model, String string, Slider slider, DoubleExpression prop) {
         Text text = new Text();
         text.textProperty().bind(prop.divide(slider.getMax()).multiply(100).asString(string + " %.0f%%"));
         VBox e = new VBox(text, slider);
@@ -60,77 +64,12 @@ public abstract class PaintTool extends Group {
         return e;
     }
 
-    public VBox addSlider(final PaintModel model, String string, Slider lengthSlider2, IntegerProperty prop) {
+    public static VBox addSlider(final PaintModel model, String string, Slider lengthSlider2, IntegerProperty prop) {
         Text text = new Text();
         text.textProperty().bind(prop.asString(string + " %d"));
         VBox e = new VBox(text, lengthSlider2);
         model.getToolOptions().getChildren().add(e);
         return e;
-    }
-
-    public abstract Node createIcon();
-
-    public Node getIcon() {
-        return icon;
-    }
-
-    public Cursor getMouseCursor() {
-        return Cursor.DEFAULT;
-    }
-
-    public void handleEvent(MouseEvent e, PaintModel model) {
-        simpleHandleEvent(e, model);
-        EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            model.createImageVersion();
-        }
-    }
-
-    public void handleKeyEvent(KeyEvent e, PaintModel paintModel) {
-        // DOES NOTHING
-    }
-
-    public void onDeselected(PaintModel model) {
-        // DOES NOTHING
-    }
-
-    public void onSelected(PaintModel model) {
-        // DOES NOTHING
-    }
-
-    public void onSelected(PaintTool old, PaintModel model) {
-        onSelected(model);
-    }
-
-    public void setIcon(Node icon) {
-        this.icon = icon;
-    }
-
-    protected void onMouseDragged(MouseEvent e, PaintModel model) {
-        // DOES NOTHING
-
-    }
-
-    protected void onMousePressed(MouseEvent e, PaintModel model) {
-        // DOES NOTHING
-    }
-
-    protected void onMouseReleased(PaintModel model) {
-        model.createImageVersion();
-        // DOES NOTHING
-    }
-
-    protected void simpleHandleEvent(MouseEvent e, PaintModel model) {
-        EventType<? extends MouseEvent> eventType = e.getEventType();
-        if (MouseEvent.MOUSE_PRESSED.equals(eventType)) {
-            onMousePressed(e, model);
-        }
-        if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
-            onMouseDragged(e, model);
-        }
-        if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
-            onMouseReleased(model);
-        }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -149,7 +88,6 @@ public abstract class PaintTool extends Group {
 
     public static ImageView getIconByURL(String src) {
         return getIconByURL(src, 30);
-
     }
 
     public static ImageView getIconByURL(String src, double width) {

@@ -108,6 +108,64 @@ public class PictureTool extends PaintTool {
     }
 
     @Override
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
+        double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
+        double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
+        double intendedW = Math.max(1, Math.abs(initialX - x));
+        double intendedH = Math.max(1, Math.abs(initialY - y));
+        double min = Math.min(x, initialX);
+        double min2 = Math.min(y, initialY);
+        Bounds bounds = area.getBoundsInParent();
+        double width = bounds.getWidth();
+        double height = bounds.getHeight();
+        area.setScaleX(area.getScaleX() * intendedW / width);
+        area.setScaleY(area.getScaleY() * intendedH / height);
+        if (e.isShiftDown()) {
+            double max = Math.max(area.getScaleX(), area.getScaleY());
+            area.setScaleX(max);
+            area.setScaleY(max);
+        }
+        bounds = area.getBoundsInParent();
+        double minX = bounds.getMinX();
+        double minY = bounds.getMinY();
+        double a = min - minX;
+        double b = min2 - minY;
+        area.setLayoutX(area.getLayoutX() + a);
+        area.setLayoutY(area.getLayoutY() + b);
+
+    }
+
+    @Override
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (!children.contains(getArea())) {
+            children.add(getArea());
+            area.setStroke(Color.BLACK);
+            getArea().setManaged(false);
+            getArea().setFill(Color.TRANSPARENT);
+        }
+
+        initialX = (int) e.getX();
+        getArea().setLayoutX(initialX);
+        getArea().setScaleX(1. / 10);
+        getArea().setScaleY(1. / 10);
+        initialY = (int) e.getY();
+        getArea().setLayoutY(initialY);
+        getArea().setStroke(option.isStroke() ? model.getFrontColor() : Color.TRANSPARENT);
+        getArea().setFill(option.isFill() ? model.getBackColor() : Color.TRANSPARENT);
+    }
+
+    @Override
+    public void onMouseReleased(final PaintModel model) {
+
+        ObservableList<Node> children = model.getImageStack().getChildren();
+        if (children.contains(getArea())) {
+            model.takeSnapshot(area);
+        }
+        children.remove(getArea());
+    }
+
+    @Override
     public void onSelected(final PaintModel model) {
         model.getToolOptions().getChildren().clear();
         if (icon2 == null) {
@@ -153,64 +211,6 @@ public class PictureTool extends PaintTool {
             ObservableList<Node> children = picturePane.getChildren();
             children.add(children.size() - 1, addToggle);
         }).bindWindow(picturePane).displayDialog();
-    }
-
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
-        double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
-        double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
-        double intendedW = Math.max(1, Math.abs(initialX - x));
-        double intendedH = Math.max(1, Math.abs(initialY - y));
-        double min = Math.min(x, initialX);
-        double min2 = Math.min(y, initialY);
-        Bounds bounds = area.getBoundsInParent();
-        double width = bounds.getWidth();
-        double height = bounds.getHeight();
-        area.setScaleX(area.getScaleX() * intendedW / width);
-        area.setScaleY(area.getScaleY() * intendedH / height);
-        if (e.isShiftDown()) {
-            double max = Math.max(area.getScaleX(), area.getScaleY());
-            area.setScaleX(max);
-            area.setScaleY(max);
-        }
-        bounds = area.getBoundsInParent();
-        double minX = bounds.getMinX();
-        double minY = bounds.getMinY();
-        double a = min - minX;
-        double b = min2 - minY;
-        area.setLayoutX(area.getLayoutX() + a);
-        area.setLayoutY(area.getLayoutY() + b);
-
-    }
-
-    @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (!children.contains(getArea())) {
-            children.add(getArea());
-            area.setStroke(Color.BLACK);
-            getArea().setManaged(false);
-            getArea().setFill(Color.TRANSPARENT);
-        }
-
-        initialX = (int) e.getX();
-        getArea().setLayoutX(initialX);
-        getArea().setScaleX(1. / 10);
-        getArea().setScaleY(1. / 10);
-        initialY = (int) e.getY();
-        getArea().setLayoutY(initialY);
-        getArea().setStroke(option.isStroke() ? model.getFrontColor() : Color.TRANSPARENT);
-        getArea().setFill(option.isFill() ? model.getBackColor() : Color.TRANSPARENT);
-    }
-
-    @Override
-    protected void onMouseReleased(final PaintModel model) {
-
-        ObservableList<Node> children = model.getImageStack().getChildren();
-        if (children.contains(getArea())) {
-            model.takeSnapshot(area);
-        }
-        children.remove(getArea());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

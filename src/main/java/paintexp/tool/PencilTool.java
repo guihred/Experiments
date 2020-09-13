@@ -28,7 +28,7 @@ public class PencilTool extends PaintTool {
     }
 
     @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
         WritableImage image = model.getImage();
         int x2 = (int) getWithinRange(e.getX(), 0, image.getWidth());
         int y2 = (int) getWithinRange(e.getY(), 0, image.getHeight());
@@ -42,7 +42,7 @@ public class PencilTool extends PaintTool {
     }
 
     @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         WritableImage image = model.getImage();
         x = (int) getWithinRange(e.getX(), 0, image.getWidth());
         y = (int) getWithinRange(e.getY(), 0, image.getHeight());
@@ -54,13 +54,13 @@ public class PencilTool extends PaintTool {
     }
 
     @Override
-    protected void onMouseReleased(PaintModel model) {
+    public void onMouseReleased(PaintModel model) {
         super.onMouseReleased(model);
         clicked = false;
     }
 
     @Override
-    protected void simpleHandleEvent(MouseEvent e, PaintModel model) {
+    public void simpleHandleEvent(MouseEvent e, PaintModel model) {
         super.simpleHandleEvent(e, model);
         if (MouseEvent.MOUSE_EXITED.equals(e.getEventType()) && clicked) {
             onMouseDragged(e, model);

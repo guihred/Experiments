@@ -84,7 +84,7 @@ public class MusicOrganizer extends Application {
                 .addColumn("Image", music -> view(SupplierEx.nonNull(music.getImage(), DEFAULT_VIEW)))
                 .addColumn("Título", "titulo").addColumn("Artista", "artista").addColumn("Álbum", "album")
                 .addColumn("Pasta", "pasta").addColumn("Gênero", "genero").addColumn("LastModified", "lastModified")
-                .sortable(true).multipleSelection().equalColumns().build();
+                .sortable(true).multipleSelection().equalColumns().copiable().build();
         simpleTableViewBuilder.onSortClicked(columnName -> {
             ObservableList<Music> items2 = SupplierEx.nonNull(musicas, musicaTable.getItems());
             Comparator<Music> comparing = Comparator.comparing(e -> comparing(e,
@@ -94,7 +94,7 @@ public class MusicOrganizer extends Application {
         });
         MusicHandler value = new MusicHandler(musicaTable);
         musicaTable.setOnMousePressed(value);
-        musicaTable.setOnKeyReleased(value::handle);
+        SimpleNodeBuilder.onKeyReleased(musicaTable, value::handle);
         return musicaTable;
     }
 

@@ -57,7 +57,8 @@ public class TimelionDisplay extends Application {
 
             @Override
             public String toString(Number object) {
-                return Instant.ofEpochMilli(object.longValue()).atZone(ZoneId.systemDefault()).toLocalDateTime().toString();
+                return Instant.ofEpochMilli(object.longValue()).atZone(ZoneId.systemDefault()).toLocalDateTime()
+                        .toString();
             }
         });
         LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);

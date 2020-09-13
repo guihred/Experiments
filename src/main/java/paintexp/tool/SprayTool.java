@@ -44,6 +44,29 @@ public class SprayTool extends PaintTool {
     }
 
     @Override
+    public void onMouseDragged(final MouseEvent e, final PaintModel model) {
+        centerX = (int) e.getX();
+        centerY = (int) e.getY();
+    }
+
+    @Override
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
+        centerX = (int) e.getX();
+        centerY = (int) e.getY();
+        pressed = true;
+        paintModel = model;
+        frontColor = PixelHelper.toArgb(model.getFrontColor());
+        pixelReader = model.getImage().getPixelReader();
+        animationTimer.start();
+    }
+
+    @Override
+    public void onMouseReleased(final PaintModel model) {
+        pressed = false;
+        animationTimer.stop();
+    }
+
+    @Override
     public void onSelected(final PaintModel model) {
         addSlider(model, "Length", getLengthSlider(), length);
     }
@@ -68,29 +91,6 @@ public class SprayTool extends PaintTool {
                 LOG.trace("", e);
             }
         } while (argb != frontColor && nTries++ < 10);
-    }
-
-    @Override
-    protected void onMouseDragged(final MouseEvent e, final PaintModel model) {
-        centerX = (int) e.getX();
-        centerY = (int) e.getY();
-    }
-
-    @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
-        centerX = (int) e.getX();
-        centerY = (int) e.getY();
-        pressed = true;
-        paintModel = model;
-        frontColor = PixelHelper.toArgb(model.getFrontColor());
-        pixelReader = model.getImage().getPixelReader();
-        animationTimer.start();
-    }
-
-    @Override
-    protected void onMouseReleased(final PaintModel model) {
-        pressed = false;
-        animationTimer.stop();
     }
 
     private Slider getLengthSlider() {

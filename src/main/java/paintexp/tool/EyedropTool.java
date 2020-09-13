@@ -47,13 +47,7 @@ public class EyedropTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(PaintTool oldTool, PaintModel model) {
-        old = oldTool;
-        model.getToolOptions().getChildren().add(getArea());
-    }
-
-    @Override
-    protected void onMousePressed(final MouseEvent e, final PaintModel model) {
+    public void onMousePressed(final MouseEvent e, final PaintModel model) {
         int y = (int) e.getY();
         int x = (int) e.getX();
         if (withinImage(x, y, model.getImage())) {
@@ -66,6 +60,12 @@ public class EyedropTool extends PaintTool {
             }
             model.toolProperty().set(old);
         }
+    }
+
+    @Override
+    public void onSelected(PaintTool oldTool, PaintModel model) {
+        old = oldTool;
+        model.getToolOptions().getChildren().add(getArea());
     }
 
     private void onMouseMoved(final MouseEvent e, final PaintModel model) {
