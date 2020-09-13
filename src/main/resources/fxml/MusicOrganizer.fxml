@@ -6,7 +6,7 @@
 <?import audio.mp3.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.cell.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="audio.mp3.MusicOrganizer"
+<VBox xmlns:fx="http://javafx.com/fxml" 
 	styleClass="root">
 	<children>
 		<Label text="Lista Músicas" textFill="0x333333ff" />

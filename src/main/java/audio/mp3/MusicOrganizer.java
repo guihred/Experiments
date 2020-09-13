@@ -43,8 +43,6 @@ public class MusicOrganizer extends Application {
     @FXML
     private ProgressIndicator progress;
     @FXML
-    private VBox root;
-    @FXML
     private TableColumn<Music, ImageView> imageColumn;
     private ObservableList<Music> musicas = FXCollections.observableArrayList();
 
@@ -56,9 +54,8 @@ public class MusicOrganizer extends Application {
         MusicHandler musicHandler = new MusicHandler(musicaTable);
         imageColumn.setCellValueFactory(
                 m -> new SimpleObjectProperty<>(view(SupplierEx.nonNull(m.getValue().getImage(), DEFAULT_VIEW))));
-        SimpleTableViewBuilder.of(musicaTable).sortable(true).multipleSelection().equalColumns()
-                .copiable().onMousePressed(musicHandler).onKeyReleased(musicHandler::handle)
-                .onSortClicked(this::sortBy);
+        SimpleTableViewBuilder.of(musicaTable).sortable(true).multipleSelection().equalColumns().copiable()
+                .onMousePressed(musicHandler).onKeyReleased(musicHandler::handle).onSortClicked(this::sortBy);
         configurarFiltroRapido(filterText, musicaTable, FXCollections.observableArrayList());
         consertarMusicas.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> musicaTable.getItems().stream().anyMatch(Music::isNotMP3), musicaTable.getItems()));
@@ -88,9 +85,7 @@ public class MusicOrganizer extends Application {
     public void start(Stage primaryStage) {
         final int HEIGHT = 250;
         final int WIDTH = 600;
-
-        CommonsFX.loadFXML("Organizador de Músicas", "MusicOrganizer.fxml", primaryStage, WIDTH, HEIGHT);
-
+        CommonsFX.loadFXML("Organizador de Músicas", "MusicOrganizer.fxml", this, primaryStage, WIDTH, HEIGHT);
     }
 
     private void sortBy(Entry<String, SortType> columnName) {
