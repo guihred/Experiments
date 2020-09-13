@@ -24,7 +24,7 @@ public class ImageCrackerApp extends Application {
     private Map<File, String> crackImages;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("Image Cracker");
         HBox root = new HBox();
 

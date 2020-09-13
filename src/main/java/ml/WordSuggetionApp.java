@@ -10,17 +10,18 @@ import javafx.stage.Stage;
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
+import utils.ex.SupplierEx;
 
 public class WordSuggetionApp extends Application {
 
     @Override
-    public void start(Stage theStage) throws Exception {
+    public void start(Stage theStage) {
         theStage.setTitle("Word Suggestion Example");
 
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root);
         theStage.setScene(theScene);
-        Word2Vec word2Vec = Word2VecExample.createWord2Vec();
+        Word2Vec word2Vec = SupplierEx.get(() -> Word2VecExample.createWord2Vec());
         VocabCache<VocabWord> vocab = word2Vec.getVocab();
         Collection<String> words = vocab.words();
         SortedSet<String> entrySet = new TreeSet<>(words);

@@ -33,7 +33,7 @@ public class CheckersLauncher extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Checkes", "CheckersLauncher.fxml", this, primaryStage);
 
     }

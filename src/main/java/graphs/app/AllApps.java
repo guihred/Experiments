@@ -26,11 +26,12 @@ import javafx.stage.Stage;
 import ml.data.JavaFileDependency;
 import simplebuilder.SimpleListViewBuilder;
 import utils.ExtractUtils;
+import utils.ex.SupplierEx;
 
 public class AllApps extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         TextArea right = new TextArea("");
         right.setEditable(false);
         ExtractUtils.insertProxyConfig();
@@ -40,7 +41,8 @@ public class AllApps extends Application {
                 .filter(makeTest(e -> e.getMethod("main", String[].class) != null))
                 .collect(toCollection(FXCollections::observableArrayList));
         PrintStream out = System.out;
-        System.setOut(new PrintTextStream(out, true, "UTF-8", right.textProperty()));
+        System.setOut(SupplierEx.remap(() -> new PrintTextStream(out, true, "UTF-8", right.textProperty()),
+                "ERROR CREATING STREAM"));
         TextField resultsFilter = new TextField();
         ListView<Class<?>> build = new SimpleListViewBuilder<Class<?>>().onDoubleClick(AllApps::invoke)
                 .items(newFastFilter(resultsFilter, items.filtered(e -> true))).build();

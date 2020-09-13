@@ -33,7 +33,10 @@ import org.slf4j.Logger;
 import paintexp.PrintConfig;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleButtonBuilder;
-import utils.*;
+import utils.ExtractUtils;
+import utils.FileTreeWalker;
+import utils.ImageFXUtils;
+import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 
@@ -42,7 +45,7 @@ public class PageExtractor extends Application {
     private static final Logger LOG = HasLogging.log();
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("Page Extractor");
         HBox root = new HBox();
         ExtractUtils.insertProxyConfig();

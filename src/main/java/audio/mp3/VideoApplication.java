@@ -15,7 +15,7 @@ import utils.ResourceFXUtils;
 
 public class VideoApplication extends Application {
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
 
         // goes to user Directory
         Path f = FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getOutFile(), ".mp4");
@@ -23,7 +23,7 @@ public class VideoApplication extends Application {
             f = FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Music"), ".mp4");
         }
         // Converts media to string URL
-        Media media = new Media(f.toFile().toURI().toURL().toString());
+        Media media = new Media(ResourceFXUtils.convertToURL(f.toFile()).toString());
         MediaPlayer player = new MediaPlayer(media);
         MediaView viewer = new MediaView(player);
 

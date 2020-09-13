@@ -28,9 +28,12 @@ import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import ml.graph.DataframeExplorer;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.*;
+import utils.CommonsFX;
+import utils.ImageFXUtils;
+import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
@@ -75,16 +78,16 @@ public class ConsultasInvestigator extends Application {
 
     @FXML
     private LineChart<Number, Number> timelineIPs;
+    private DataframeExplorer dataframeExplorer;
 
     public void initialize() {
         String count = "doc_count";
         configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count);
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
         configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^[^\\/\\d].+");
-         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS,
-         timelineUsuarios, uidCombo);
+        configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
-         configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value");
+        // configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value");
         filterText.textProperty().bind(Bindings.createStringBinding(
                 () -> filter.entrySet().stream().map(Objects::toString).collect(Collectors.joining("\n")), filter));
     }
@@ -139,7 +142,8 @@ public class ConsultasInvestigator extends Application {
     public void onExportExcel() {
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
         Map<String, List<Map<String, String>>> collect =
-                queryList.stream().collect(Collectors.toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
+                queryList.stream().filter(e -> e.getTable() != null)
+                        .collect(Collectors.toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
         List<String> collect2 =
                 queryList.stream().filter(e -> e.getTable() != null).flatMap(e -> e.getTable().getColumns().stream())
                         .map(TableColumn<Map<String, String>, ?>::getText).distinct().collect(Collectors.toList());
@@ -149,6 +153,19 @@ public class ConsultasInvestigator extends Application {
         File outFile = ResourceFXUtils.getOutFile("xlsx/investigation.xlsx");
         ExcelService.getExcel(collect, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
+    }
+
+    public void onOpenDataframe() {
+        RunnableEx.run(() -> {
+            if (dataframeExplorer == null) {
+                dataframeExplorer = new DataframeExplorer();
+                dataframeExplorer.show();
+            }
+            String collect = filter.values().stream().map(Objects::toString).collect(Collectors.joining());
+            File ev = ResourceFXUtils.getOutFile("csv/" + consultasTable.getId() + collect + ".csv");
+            SimpleTableViewBuilder.saveToFile(consultasTable, ev);
+            dataframeExplorer.addStats(ev);
+        });
     }
 
     @Override

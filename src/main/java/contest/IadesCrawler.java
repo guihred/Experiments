@@ -47,7 +47,7 @@ public class IadesCrawler extends Application {
     private SimpleStringProperty currentDomain = new SimpleStringProperty(DOMAIN);
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         ExtractUtils.insertProxyConfig();
         CommonsFX.loadFXML("IADES Crawler", "IadesCrawler.fxml", this, primaryStage);
         createSplitTreeListDemoNode();

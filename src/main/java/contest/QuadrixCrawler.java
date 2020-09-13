@@ -26,7 +26,9 @@ import org.jsoup.nodes.Document;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import utils.*;
+import utils.CommonsFX;
+import utils.ExtractUtils;
+import utils.HibernateUtil;
 import utils.ex.SupplierEx;
 
 public class QuadrixCrawler extends Application {
@@ -68,7 +70,7 @@ public class QuadrixCrawler extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         ExtractUtils.insertProxyConfig();
         CommonsFX.loadFXML("Quadrix Crawler", "QuadrixCrawler.fxml", this, primaryStage);
         onCloseWindow(primaryStage, HibernateUtil::shutdown);

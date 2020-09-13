@@ -141,6 +141,7 @@
 				<Button onAction="#onActionFillIP" text="Fill IP" />
 				<Button onAction="#onActionClear" text="Clear" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
+				<Button onAction="#onOpenDataframe" text="Open Dataframe" />
 				<ProgressIndicator fx:id="progress"
 					VBox.vgrow="ALWAYS" minHeight="40.0" minWidth="40.0" progress="0.0" />
 			</children>

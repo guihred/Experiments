@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.testfx.api.FxRobotInterface;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
-import utils.*;
+import utils.CommonsFX;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -62,7 +62,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         return SupplierEx.get(()->super.moveTo(bounds));
     }
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         CommonsFX.initializeFX();
         currentStage = stage != null ? stage : new Stage();
         currentStage.setX(0);

@@ -121,7 +121,7 @@ public class PlayingAudio extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         mainStage = primaryStage;
         CommonsFX.loadFXML("Playing Audio", "PlayingAudio.fxml", this, primaryStage, 500, 500);
         onCloseWindow(primaryStage, () -> SongUtils.stopAndDispose(mediaPlayer));

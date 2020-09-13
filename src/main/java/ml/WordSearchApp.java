@@ -39,20 +39,21 @@ public class WordSearchApp extends Application {
     private Pattern compile = Pattern.compile("");
 
     @Override
-    public void start(Stage theStage) throws Exception {
+    public void start(Stage theStage) {
         theStage.setTitle("Word Search Example");
         BorderPane root = new BorderPane();
         Scene theScene = new Scene(root);
         theStage.setScene(theScene);
 
-        ObservableMap<String, Set<String>> wordMap = FXCollections.observableMap(createMap());
+        ObservableMap<String, Set<String>> wordMap = FXCollections.observableMap(SupplierEx.get(() -> createMap()));
 
         ListView<String> listView = new ListView<>();
 
         VBox filters = new VBox();
         TextField filterField = new TextField();
 
-        List<String> allLines = getLines(ResourceFXUtils.toURI("pt_PT.dic")).collect(Collectors.toList());
+        List<String> allLines =
+                SupplierEx.get(() -> getLines(ResourceFXUtils.toURI("pt_PT.dic")).collect(Collectors.toList()));
         FilteredList<String> lines = FXCollections.observableArrayList(allLines).filtered(e -> true);
         filterField.textProperty().addListener((o, old, value) -> {
             compile = SupplierEx.getIgnore(() -> Pattern.compile(value), compile);

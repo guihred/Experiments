@@ -26,7 +26,7 @@ import utils.ExtractUtils;
 public class AllNodes extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         Map<Class<?>, Node> hashMap = new HashMap<>();
 
         Text right = new Text("");

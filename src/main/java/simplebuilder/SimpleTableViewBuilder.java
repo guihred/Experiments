@@ -1,5 +1,7 @@
 package simplebuilder;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
@@ -225,22 +227,26 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         if (ev.isControlDown() && ev.getCode() == KeyCode.S) {
             new FileChooserBuilder().initialFilename(Objects.toString(table.getId(), "table") + ".csv")
                     .extensions("CSV", "*.csv").onSelect(f -> {
-                        List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
-                        if (selectedItems.isEmpty()) {
-                            selectedItems =
-                                    IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
-                        }
-
-                        String collect2 = table.getColumns().stream().map(TableColumn<T, ?>::getText)
-                                .collect(Collectors.joining("\",\"", "\"", "\""));
-                        String collect = selectedItems.stream()
-                                .map(l -> table.getColumns().stream().map(e -> Objects.toString(e.getCellData(l), ""))
-                                        .collect(Collectors.joining("\",\"", "\"", "\"")))
-                                .collect(Collectors.joining("\n"));
-                        Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
+                        saveToFile(table, f);
                     }).saveFileAction(ev);
 
         }
+    }
+
+    public static <T> void saveToFile(TableView<T> table, File f) throws IOException {
+        List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
+        if (selectedItems.isEmpty()) {
+            selectedItems =
+                    IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
+        }
+
+        String collect2 = table.getColumns().stream().map(TableColumn<T, ?>::getText)
+                .collect(Collectors.joining("\",\"", "\"", "\""));
+        String collect = selectedItems.stream()
+                .map(l -> table.getColumns().stream().map(e -> Objects.toString(e.getCellData(l), ""))
+                        .collect(Collectors.joining("\",\"", "\"", "\"")))
+                .collect(Collectors.joining("\n"));
+        Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
     }
 
     public static <S, T> Callback<TableColumn<T, S>, TableCell<T, S>> setFormat(FunctionEx<S, String> func) {

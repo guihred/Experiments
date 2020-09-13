@@ -34,7 +34,9 @@ import org.slf4j.Logger;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.CommonsFX;
+import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -70,6 +72,25 @@ public class DataframeExplorer extends Application {
     @FXML
     private BarChart<String, Number> barChart;
     private Thread currentThread;
+
+    public void addStats(File file) {
+        interruptCurrentThread();
+        currentThread = RunnableEx.runNewThread(() -> {
+            LOG.info("File {} STARTING", file.getName());
+            if (getDataframe() != null && !file.equals(getDataframe().getFile())) {
+                setDataframe(null);
+                CommonsFX.runInPlatformSync(() -> {
+                    questions.clear();
+                    barChart.setData(FXCollections.emptyObservableList());
+                    pieChart.setData(FXCollections.emptyObservableList());
+                    lineChart.setData(FXCollections.emptyObservableList());
+                });
+            }
+            int maxSize = MAX_ELEMENTS;
+            readDataframe(file, maxSize);
+            currentThread = null;
+        });
+    }
 
     public DataframeML getDataframe() {
         return dataframe.get();
@@ -158,11 +179,14 @@ public class DataframeExplorer extends Application {
         this.dataframe.set(dataframe);
     }
 
+    public void show() throws Exception {
+        start(new Stage());
+    }
+
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Dataframe Explorer", "DataframeExplorer.fxml", this, primaryStage);
         CommonsFX.addCSS(primaryStage.getScene(), "progressLoader.css");
-
     }
 
     private void addQuestion() {
@@ -174,25 +198,6 @@ public class DataframeExplorer extends Application {
             Question question = new Question(colName, tryNumber, type);
             questions.add(question);
         }
-    }
-
-    private void addStats(File file) {
-        interruptCurrentThread();
-        currentThread = RunnableEx.runNewThread(() -> {
-            LOG.info("File {} STARTING", file.getName());
-            if (getDataframe() != null && !file.equals(getDataframe().getFile())) {
-                setDataframe(null);
-                CommonsFX.runInPlatformSync(() -> {
-                    questions.clear();
-                    barChart.setData(FXCollections.emptyObservableList());
-                    pieChart.setData(FXCollections.emptyObservableList());
-                    lineChart.setData(FXCollections.emptyObservableList());
-                });
-            }
-            int maxSize = MAX_ELEMENTS;
-            readDataframe(file, maxSize);
-            currentThread = null;
-        });
     }
 
     private void interruptCurrentThread() {
