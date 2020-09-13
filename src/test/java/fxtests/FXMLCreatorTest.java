@@ -1,7 +1,9 @@
 package fxtests;
 
-import ethical.hacker.WebScannerApplication;
+import audio.mp3.MusicOrganizer;
+import ethical.hacker.PageExtractor;
 import fxml.utils.FXMLCreatorHelper;
+import fxml.utils.JsonViewer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,8 +30,9 @@ public final class FXMLCreatorTest {
     }
 
     @Test
-	public  void testClassesNotClose() {
-        List<Class<? extends Application>> classes = Arrays.asList(WebScannerApplication.class);
+    public void testClassesNotClose() {
+        List<Class<? extends Application>> classes =
+                Arrays.asList(JsonViewer.class, MusicOrganizer.class, PageExtractor.class);
         FXMLCreatorHelper.testApplications(classes, true);
     }
 
@@ -39,8 +42,8 @@ public final class FXMLCreatorTest {
 
     private static void testApplications(List<Class<? extends Application>> classes) {
         List<Class<? extends Application>> differentTree = new ArrayList<>();
-		List<Class<?>> testApplications = FXMLCreatorHelper.testApplications(classes, true, differentTree);
-		WaitForAsyncUtils.waitForFxEvents();
+        List<Class<?>> testApplications = FXMLCreatorHelper.testApplications(classes, true, differentTree);
+        WaitForAsyncUtils.waitForFxEvents();
         if (testApplications.isEmpty()) {
             LOG.info("All classes successfull");
         } else {

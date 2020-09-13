@@ -113,7 +113,6 @@ public final class PaintToolHelper {
         if (value instanceof String) {
             TextField e = new TextField();
             bindBidirectional(e.textProperty(), property);
-
             effectsOptions.add(e);
             return;
         }

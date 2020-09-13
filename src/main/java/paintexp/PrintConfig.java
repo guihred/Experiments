@@ -28,11 +28,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
@@ -103,7 +99,6 @@ public class PrintConfig extends Application {
         changeConfig();
         qualityText.textProperty().bind(Bindings.format(Locale.ENGLISH, "Print Quality %.1f", quality.valueProperty()));
         page.textProperty().bind(currentPage.add(1).asString());
-        panel.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
     public void loadImages(ActionEvent event) {

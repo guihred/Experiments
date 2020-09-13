@@ -13,10 +13,13 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.Background?>
 <HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" spacing="20">
 
 	<fx:define>
 		<ToggleGroup fx:id="printType" onSelectedToggleChange="#toggleChanged" />
+		<Insets fx:id="empty" topRightBottomLeft="0" />
+		<CornerRadii fx:id="emptyRadii" radius="0"/>
 	</fx:define>
 
 	<padding>
@@ -88,7 +91,8 @@
 				<CheckBox text="Repeat" fx:id="repeat" onAction="#changeConfig" />
 				<CheckBox text="Vertical" fx:id="vertical" onAction="#changeConfig" />
 				<CheckBox text="Unaltered" fx:id="unaltered" onAction="#changeConfig" />
-				<CheckBox text="Center" fx:id="center" selected="true" onAction="#changeConfig" />
+				<CheckBox text="Center" fx:id="center" selected="true"
+					onAction="#changeConfig" />
 				<Button text="_Print To PDF" onAction="#printToPDF" />
 				<Button text="_Load Images" onAction="#loadImages" />
 				<Button text="_Load Images Directory" onAction="#loadImagesDir" />
@@ -104,6 +108,14 @@
 		<GridPane fx:id="panel" styleClass="whitePane"
 			gridLinesVisible="true" prefWidth="400" prefHeight="565.7" minWidth="400"
 			minHeight="565.7" maxWidth="400" maxHeight="565.7">
+			<background>
+				<Background>
+					<fills>
+						<BackgroundFill fill="WHITE" radii="$emptyRadii" insets="$empty"/>
+					</fills>
+				</Background>
+			</background>
+
 		</GridPane>
 
 	</children>

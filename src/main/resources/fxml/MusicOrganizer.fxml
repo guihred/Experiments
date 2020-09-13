@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import audio.mp3.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.cell.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="audio.mp3.MusicOrganizer"
+	styleClass="root">
+	<children>
+		<Label text="Lista Músicas" textFill="0x333333ff" />
+		<HBox>
+			<children>
+				<Button alignment="CENTER" onAction="#onActionCarregarMusicas"
+					text="Carregar _Musicas" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" onAction="#onActionCarregarVideos"
+					text="Carregar _Vídeos" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="consertarMusicas" onAction="#onActionConsertarMusicas"
+					text="_Consertar Musicas" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<TextField fx:id="filterText">
+					<padding>
+						<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
+					</padding>
+				</TextField>
+				<ProgressIndicator fx:id="progress" minHeight="40.0"
+					minWidth="40.0" progress="0.0" />
+			</children>
+		</HBox>
+		<TableView fx:id="musicaTable" VBox.vgrow="ALWAYS"
+			HBox.hgrow="ALWAYS" prefHeight="220.0" prefWidth="590.0">
+			<columns>
+				<TableColumn fx:id="imageColumn" text="Image" />
+				<TableColumn text="Título">
+					<cellValueFactory>
+						<PropertyValueFactory property="titulo" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Artista">
+					<cellValueFactory>
+						<PropertyValueFactory property="artista" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Álbum">
+					<cellValueFactory>
+						<PropertyValueFactory property="album" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Pasta">
+					<cellValueFactory>
+						<PropertyValueFactory property="pasta" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="Gênero">
+					<cellValueFactory>
+						<PropertyValueFactory property="genero" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn text="LastModified">
+					<cellValueFactory>
+						<PropertyValueFactory property="lastModified" />
+					</cellValueFactory>
+				</TableColumn>
+			</columns>
+			<padding>
+				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+			</padding>
+		</TableView>
+	</children>
+</VBox>
