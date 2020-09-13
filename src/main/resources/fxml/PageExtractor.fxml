@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.layout.*?><?import ml.data.*?><?import javafx.scene.text.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.geometry.*?><?import javafx.collections.*?><?import java.lang.*?><?import javafx.scene.shape.*?>
+<HBox xmlns:fx="http://javafx.com/fxml" 
+	styleClass="root">
+	<children>
+		<VBox>
+			<children>
+				<Text text="Name" />
+				<TextField fx:id="columnName">
+				</TextField>
+				<Text text="Selector" />
+				<TextField fx:id="selector" />
+				<Button alignment="CENTER" onAction="#onActionAddTextField"
+					text="Add Text Field" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" onAction="#onActionAddHTMLField"
+					text="Add _HTML Field" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" onAction="#onActionLoadHTMLs"
+					text="Load HTMLs" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" onAction="#onActionExportExcel"
+					text="Export Excel" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" onAction="#onActionExportPDF"
+					text="Export PDF" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+			</children>
+		</VBox>
+		<PaginatedTableView HBox.hgrow="ALWAYS" fx:id="paginatedTableView" />
+	</children>
+</HBox>

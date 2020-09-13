@@ -11,16 +11,12 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.data.PaginatedTableView;
@@ -32,58 +28,59 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import paintexp.PrintConfig;
 import simplebuilder.FileChooserBuilder;
-import simplebuilder.SimpleButtonBuilder;
-import utils.ExtractUtils;
-import utils.FileTreeWalker;
-import utils.ImageFXUtils;
-import utils.ResourceFXUtils;
+import utils.*;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 
 public class PageExtractor extends Application {
 
     private static final Logger LOG = HasLogging.log();
+    @FXML
+    private TextField selector;
+    @FXML
+    private PaginatedTableView paginatedTableView;
+
+    @FXML
+    private TextField columnName;
+    private ObservableList<Document> value;
+    private Map<String, String> columnMap;
+
+    public void initialize() {
+        ExtractUtils.insertProxyConfig();
+        columnMap = new HashMap<>();
+        value = FXCollections.observableArrayList();
+    }
+
+    public void onActionAddHTMLField() {
+        addHTMLField(value, paginatedTableView, selector, columnName, columnMap);
+    }
+
+    public void onActionAddTextField() {
+        addTextField(value, paginatedTableView, selector, columnName, columnMap);
+    }
+
+    public void onActionExportExcel(ActionEvent e) {
+        new FileChooserBuilder().name("Export Excel").title("Export Excel").extensions("Excel", "*.xlsx")
+                .onSelect(file -> exportExcel(value, paginatedTableView, columnMap, file)).saveFileAction(e);
+    }
+
+    public void onActionExportPDF(ActionEvent e) {
+        exportPDF(paginatedTableView, e);
+    }
+
+    public void onActionLoadHTMLs(ActionEvent e) {
+        new FileChooserBuilder().name("Load HTMLs").onSelect(file -> {
+            List<Path> pathByExtension = FileTreeWalker.getPathByExtension(file, ".html");
+            paginatedTableView.setListSize(pathByExtension.size());
+            value.setAll(pathByExtension.stream().map(Path::toFile)
+                    .map(FunctionEx.makeFunction(f -> Jsoup.parse(f, StandardCharsets.UTF_8.displayName())))
+                    .collect(Collectors.toList()));
+        }).title("HTML to LOAD").openDirectoryAction(e);
+    }
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Page Extractor");
-        HBox root = new HBox();
-        ExtractUtils.insertProxyConfig();
-
-        ObservableList<Document> value = FXCollections.observableArrayList();
-        PaginatedTableView paginatedTableView = new PaginatedTableView();
-
-        Button buildOpenDirectoryButton = new FileChooserBuilder()
-
-                .name("Load HTMLs").onSelect(file -> {
-                    List<Path> pathByExtension = FileTreeWalker.getPathByExtension(file, ".html");
-                    paginatedTableView.setListSize(pathByExtension.size());
-                    value.setAll(pathByExtension.stream().map(Path::toFile)
-                            .map(FunctionEx.makeFunction(f -> Jsoup.parse(f, StandardCharsets.UTF_8.displayName())))
-                            .collect(Collectors.toList()));
-                }).title("HTML to LOAD").buildOpenDirectoryButton();
-        TextField selector = new TextField();
-        TextField columnName = new TextField();
-        Map<String, String> columnMap = new HashMap<>();
-        root.getChildren().add(new VBox(new Text("Name"), columnName, new Text("Selector"), selector,
-                SimpleButtonBuilder.newButton("Add Text Field",
-                        e -> addTextField(value, paginatedTableView, selector, columnName, columnMap)),
-                SimpleButtonBuilder.newButton("Add _HTML Field",
-                        e -> addHTMLField(value, paginatedTableView, selector, columnName, columnMap)),
-                buildOpenDirectoryButton,
-                new FileChooserBuilder().name("Export Excel").title("Export Excel").extensions("Excel", "*.xlsx")
-                        .onSelect(file -> exportExcel(value, paginatedTableView, columnMap, file)).buildSaveButton(),
-                SimpleButtonBuilder.newButton("Export PDF", e -> exportPDF(paginatedTableView, e))
-
-        )
-
-        );
-        HBox.setHgrow(paginatedTableView, Priority.ALWAYS);
-        root.getChildren().add(paginatedTableView);
-
-        primaryStage.setScene(new Scene(root));
-
-        primaryStage.show();
+        CommonsFX.loadFXML("Page Extractor", "PageExtractor.fxml", this, primaryStage);
     }
 
     public static void main(String[] args) {
@@ -124,13 +121,11 @@ public class PageExtractor extends Application {
     private static void exportPDF(PaginatedTableView paginatedTableView, ActionEvent e0) {
         List<List<Object>> elements = paginatedTableView.getElements();
         List<String> columns = paginatedTableView.getColumns();
-        List<Image> collect =
-                elements.stream()
-                        .flatMap(list -> list.stream()
-                                .map(e -> e instanceof ImageView ? ((ImageView) e).getImage()
-                                        : ImageFXUtils.toImage(new Text(Objects.toString(e)))))
-                        .flatMap(PageExtractor::splitImage)
-                        .collect(Collectors.toList());
+        List<Image> collect = elements.stream()
+                .flatMap(list -> list.stream()
+                        .map(e -> e instanceof ImageView ? ((ImageView) e).getImage()
+                                : ImageFXUtils.toImage(new Text(Objects.toString(e)))))
+                .flatMap(PageExtractor::splitImage).collect(Collectors.toList());
         PrintConfig printConfig = new PrintConfig(collect);
         printConfig.show();
         printConfig.setLinesColumns(columns.size(), 1);
