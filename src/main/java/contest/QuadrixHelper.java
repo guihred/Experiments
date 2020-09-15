@@ -28,7 +28,7 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ExtractUtils;
 import utils.ex.*;
 
 public final class QuadrixHelper {
@@ -90,14 +90,14 @@ public final class QuadrixHelper {
             return Collections.emptyList();
         }
         return document.select("a").stream().filter(e -> IadesHelper.hasFileExtension(e.text()))
-            .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), addQuadrixDomain(e.attr("href")))))
+                .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), addQuadrixDomain(e.attr("abs:href")))))
             .filter(Objects::nonNull).collect(toList());
     }
 
     public static List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url,
         Property<String> domain, int level, ObservableList<Concurso> concursos, Set<String> links) {
         List<SimpleEntry<String, String>> allLinks = doc.select("a").stream()
-            .map(l -> new AbstractMap.SimpleEntry<>(l.text(), ExtractUtils.addDomain(domain, l.attr("href"))))
+                .map(l -> new AbstractMap.SimpleEntry<>(l.text(), ExtractUtils.addDomain(domain, l.attr("abs:href"))))
             .filter(t -> !"#".equals(t.getValue()) && isNotBlank(t.getKey())).filter(t -> links.add(t.getValue()))
             .collect(toList());
         List<Map.Entry<String, String>> linksFound = allLinks.stream().filter(t -> isValidLink(level, t)).distinct()

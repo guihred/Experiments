@@ -87,7 +87,7 @@ public final class ExtractUtils {
 
     public static void copy(Reader inputStream, File outFile) throws IOException {
         try (FileOutputStream fileOutputStream = new FileOutputStream(outFile)) {
-            IOUtils.copy(inputStream, fileOutputStream);
+            IOUtils.copy(inputStream, fileOutputStream, StandardCharsets.UTF_8);
         }
     }
 
@@ -210,9 +210,7 @@ public final class ExtractUtils {
         System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
         System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
         boolean b = true;
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> {
-            return b;
-        });
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
         if (isNotProxied()) {
             return;
         }

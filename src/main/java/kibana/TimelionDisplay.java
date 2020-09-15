@@ -31,7 +31,7 @@ import utils.ex.RunnableEx;
 
 public class TimelionDisplay extends Application {
 
-    Map<String, String> filter = new HashMap<>();
+    private Map<String, String> filter = new HashMap<>();
 
     @Override
     public void start(Stage primaryStage) {

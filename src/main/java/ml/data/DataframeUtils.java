@@ -8,6 +8,8 @@ import static utils.StringSigaUtils.intFormating;
 import extract.QuickSortML;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
@@ -410,11 +412,12 @@ public class DataframeUtils extends DataframeML {
         long computed = 0;
         long size2 = ResourceFXUtils.computeAttributes(csvFile).size();
         CommonsFX.runInPlatform(() -> progress.set(0));
-        try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
+        Charset charsetName = StandardCharsets.UTF_8;
+        try (Scanner scanner = new Scanner(csvFile, charsetName.displayName())) {
             List<String> header = addHeaders(dataframeML, scanner);
             while (scanner.hasNext()) {
                 String nextLine = scanner.nextLine();
-                computed += nextLine.getBytes().length;
+                computed += nextLine.getBytes(charsetName).length;
                 double co = computed;
                 CommonsFX.runInPlatform(() -> progress.set(co / size2));
                 List<String> line2 = CSVUtils.parseLine(nextLine);

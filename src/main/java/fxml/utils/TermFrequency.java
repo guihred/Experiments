@@ -17,18 +17,14 @@ public final class TermFrequency {
 
     private static final Map<File, Map<String, Long>> MAPA_DOCUMENTOS = new HashMap<>();
 
-    public static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
-    "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
-    "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
-    "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char",
-    "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
-    "float", "native", "super", "while");
+    private static final List<String> JAVA_KEYWORDS = Arrays.asList("abstract", "continue", "for", "new", "switch",
+            "assert", "default", "false", "true", "goto", "package", "synchronized", "boolean", "do", "if", "private",
+            "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws",
+            "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char",
+            "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const",
+            "float", "native", "super", "while");
 
     private TermFrequency() {
-    }
-
-    public static List<String> getJavaKeywords() {
-        return JAVA_KEYWORDS;
     }
 
     public static void displayTermFrequency() {
@@ -38,8 +34,8 @@ public final class TermFrequency {
             try {
                 Map<File, Map<String, Long>> mapa = getMapaDocumentos(file, ".java");
                 mapa.forEach((k, v) -> v.entrySet().stream()
-                    .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-                    .forEach(p -> LOGGER.trace("{},{}={}", k.getName(), p.getKey(), p.getValue())));
+                        .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                        .forEach(p -> LOGGER.trace("{},{}={}", k.getName(), p.getKey(), p.getValue())));
             } catch (Exception e) {
                 LOGGER.debug("", e);
             }
@@ -60,11 +56,10 @@ public final class TermFrequency {
             do {
                 readLine = buff.readLine();
                 if (readLine != null) {
-                    Stream.of(StringSigaUtils.splitCamelCase(readLine)).parallel()
-                        .map(String::toLowerCase)
-                        .filter(e -> !StringUtils.isNumeric(e))
-                        .filter(t -> !TermFrequency.getJavaKeywords().contains(t))
-                        .reduce(map, TermFrequency::reduceToMap, (m1, m2) -> m1);
+                    Stream.of(StringSigaUtils.splitCamelCase(readLine)).parallel().map(String::toLowerCase)
+                            .filter(e -> !StringUtils.isNumeric(e))
+                            .filter(t -> !TermFrequency.getJavaKeywords().contains(t))
+                            .reduce(map, TermFrequency::reduceToMap, (m1, m2) -> m1);
                 }
             } while (readLine != null);
         } catch (Exception e) {
@@ -81,6 +76,10 @@ public final class TermFrequency {
             }
         }
         return Math.log(MAPA_DOCUMENTOS.size() / idf);
+    }
+
+    public static List<String> getJavaKeywords() {
+        return JAVA_KEYWORDS;
     }
 
     public static Map<File, Map<String, Long>> getMapaDocumentos(File file, String suffix) {

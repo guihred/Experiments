@@ -7,9 +7,9 @@ import static utils.ex.SupplierEx.remap;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -131,8 +131,9 @@ public final class PdfUtils {
         return readFile(pdfInfo, file1, null);
     }
 
-    public static PdfInfo readText(File file1) throws FileNotFoundException {
-        PrintStream out = new PrintStream(ResourceFXUtils.getOutFile(file1.getName().replaceAll("\\.pdf", ".txt")));
+    public static PdfInfo readText(File file1) throws IOException {
+        PrintStream out = new PrintStream(ResourceFXUtils.getOutFile(file1.getName().replaceAll("\\.pdf", ".txt")),
+                StandardCharsets.UTF_8.displayName());
         return readFile(new PdfInfo(), file1, out);
     }
 

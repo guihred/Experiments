@@ -72,7 +72,7 @@ public class IadesCrawler extends Application {
 
     private List<Map.Entry<String, String>> getLinks(Document doc, Map.Entry<String, String> url, int level) {
         List<Map.Entry<String, String>> linksFound = doc.select("a").stream()
-                .map(l -> new SimpleEntry<>(l.text(), addDomain(currentDomain, l.attr("href"))))
+                .map(l -> new SimpleEntry<>(l.text(), addDomain(currentDomain, l.attr("abs:href"))))
                 .filter(t -> !"#".equals(t.getValue()))
                 .filter(t -> StringUtils.isNotBlank(t.getKey()) && !t.getKey().matches("\\d+\\..*"))
                 .filter(t -> level < 1 || t.getKey().contains("Provas") || t.getKey().contains("Gabarito"))

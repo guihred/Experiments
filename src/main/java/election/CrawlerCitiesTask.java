@@ -39,7 +39,7 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
             Elements select = parse.select(".lista-estados .custom li");
             for (Element element : select) {
                 Element link = element.select("a").first();
-                String href = link.attr("href");
+                String href = link.attr("abs:href");
                 String eleitores = element.select("span").first().text().replaceAll("\\D", "");
                 Cidade cidade = new Cidade();
                 cidade.setHref(href);

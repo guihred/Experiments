@@ -68,7 +68,7 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
                     candidato.setEstado(estadosMap.getOrDefault(es, "BR"));
                     candidato.setCargo(cargo);
                     candidato.setFotoUrl(element.select("img").attr("src"));
-                    String href = element.attr("href");
+                    String href = element.attr("abs:href");
                     candidato.setHref(href);
                     candidato.setNome(element.select(".candidate-name").text());
                     String text = element.select(".candidate-name").text();

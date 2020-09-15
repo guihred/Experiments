@@ -35,7 +35,7 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
                     candidato.setEstado(cidade.getEstado());
                     candidato.setCargo(element.select(".cargo").text());
                     candidato.setFotoUrl(element.select("img").attr("src"));
-                    candidato.setHref(element.select(".nome").attr("href"));
+                    candidato.setHref(element.select(".nome").attr("abs:href"));
                     candidato.setNome(element.select(".nome").text());
                     String text = element.select(".nome span").text();
                     candidato.setNumero(StringSigaUtils.convertNumerico(text));

@@ -32,7 +32,7 @@ public class StringSigaUtils extends StringUtils {
     private static final List<Class<?>> FORMAT_HIERARCHY =
             Arrays.asList(String.class, Integer.class, Long.class, Double.class);
     public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
-    public static final Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> FORMAT_HIERARCHY_MAP =
+    private static final Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> FORMAT_HIERARCHY_MAP =
             formatHierarchy();
 
     public static String changeCase(String simpleName) {

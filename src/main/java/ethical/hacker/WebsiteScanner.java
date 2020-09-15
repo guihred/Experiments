@@ -15,7 +15,8 @@ import javafx.collections.ObservableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
-import utils.*;
+import utils.CommonsFX;
+import utils.ExtractUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
@@ -118,7 +119,7 @@ public class WebsiteScanner {
     public static List<String> getLinks(String url, Document document) throws MalformedURLException {
         URL url2 = new URL(url);
         SimpleStringProperty currentDomain = new SimpleStringProperty(url2.getProtocol() + "://" + url2.getHost());
-        return document.select("a").stream().map(e -> e.attr("href"))
+        return document.select("a").stream().map(e -> e.attr("abs:href"))
                 .filter(StringUtils::isNotBlank).filter(s -> !s.contains("#"))
                 .map(e -> ExtractUtils.addDomain(currentDomain, e)).filter(s -> !Objects.equals(s, url)).distinct()
                 .collect(Collectors.toList());
