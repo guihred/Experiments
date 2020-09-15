@@ -7,15 +7,6 @@ import org.assertj.core.api.exception.RuntimeIOException;
 public interface RunnableEx {
     void run() throws Exception;
 
-    public static void measureTime(String name, RunnableEx runnable) {
-        long currentTimeMillis = System.currentTimeMillis();
-        run(runnable);
-        long currentTimeMillis2 = System.currentTimeMillis();
-        long arg2 = currentTimeMillis2 - currentTimeMillis;
-        String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
-        HasLogging.log(1).info("{} took {}", name, formatDuration);
-    }
-
     static void ignore(RunnableEx run) {
         try {
             run.run();
@@ -43,6 +34,15 @@ public interface RunnableEx {
                 ConsumerEx.makeConsumer(onError).accept(e);
             }
         };
+    }
+
+    static void measureTime(String name, RunnableEx runnable) {
+        long currentTimeMillis = System.currentTimeMillis();
+        run(runnable);
+        long currentTimeMillis2 = System.currentTimeMillis();
+        long arg2 = currentTimeMillis2 - currentTimeMillis;
+        String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
+        HasLogging.log(1).info("{} took {}", name, formatDuration);
     }
 
     static RuntimeIOException newException(String onError, Throwable e) {

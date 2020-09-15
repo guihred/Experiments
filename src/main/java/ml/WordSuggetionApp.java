@@ -21,7 +21,7 @@ public class WordSuggetionApp extends Application {
         FlowPane root = new FlowPane();
         Scene theScene = new Scene(root);
         theStage.setScene(theScene);
-        Word2Vec word2Vec = SupplierEx.get(() -> Word2VecExample.createWord2Vec());
+        Word2Vec word2Vec = SupplierEx.get(Word2VecExample::createWord2Vec);
         VocabCache<VocabWord> vocab = word2Vec.getVocab();
         Collection<String> words = vocab.words();
         SortedSet<String> entrySet = new TreeSet<>(words);

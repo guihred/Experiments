@@ -130,7 +130,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         if (call2 instanceof CustomListCell) {
             return (CustomListCell<T>) call2;
         }
-        table.setCellFactory(newCellFactory((T t) -> Objects.toString(t)));
+        table.setCellFactory(newCellFactory(t -> Objects.toString(t)));
         return (CustomListCell<T>) table.getCellFactory().call(table);
     }
 

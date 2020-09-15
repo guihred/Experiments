@@ -45,7 +45,8 @@ public class WordSearchApp extends Application {
         Scene theScene = new Scene(root);
         theStage.setScene(theScene);
 
-        ObservableMap<String, Set<String>> wordMap = FXCollections.observableMap(SupplierEx.get(() -> createMap()));
+        ObservableMap<String, Set<String>> wordMap =
+                FXCollections.observableMap(SupplierEx.get(WordSearchApp::createMap));
 
         ListView<String> listView = new ListView<>();
 

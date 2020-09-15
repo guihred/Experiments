@@ -74,37 +74,7 @@ public final class XMLExtractor {
 
 
 
-    public static Document newDocument() throws ParserConfigurationException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-        return documentBuilder.newDocument();
-    }
-
-    public static Map.Entry<String, String> newEntry(String key, String value) {
-        return new AbstractMap.SimpleEntry<>(key, value);
-    }
-
-    public static Map<String, String> newMap(String key, String value) {
-        return new SimpleMap(key, value);
-    }
-
-    public static void readXMLFile(TreeView<Map<String, String>> build,
-            Map<Node, TreeItem<Map<String, String>>> allItems, File file) {
-        remap(() -> tryToRead(build, allItems, file), "ERROR READING");
-    }
-
-    public static void saveToFile(Document document, File file) throws TransformerException {
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        DOMSource domSource = new DOMSource(document);
-        StreamResult streamResult = new StreamResult(file);
-        transformer.transform(domSource, streamResult);
-    }
-
-    protected static void exportToExcel(TreeView<Map<String, String>> tree, File file) {
+    public static void exportToExcel(TreeView<Map<String, String>> tree, File file) {
         TreeItem<Map<String, String>> selectedItem = tree.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             return;
@@ -123,7 +93,22 @@ public final class XMLExtractor {
         ImageFXUtils.openInDesktop(outFile);
     }
 
-    protected static void onSelectTreeItem(ObservableList<Map<String, String>> list,
+    public static Document newDocument() throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+        return documentBuilder.newDocument();
+    }
+
+    public static Map.Entry<String, String> newEntry(String key, String value) {
+        return new AbstractMap.SimpleEntry<>(key, value);
+    }
+
+    public static Map<String, String> newMap(String key, String value) {
+        return new SimpleMap(key, value);
+    }
+
+    public static void onSelectTreeItem(ObservableList<Map<String, String>> list,
             TableView<Map<String, String>> sideTable, TreeItem<Map<String, String>> newValue) {
         list.clear();
         sideTable.getColumns().clear();
@@ -164,8 +149,19 @@ public final class XMLExtractor {
         }
     }
 
-    protected static Collector<String, ?, Map<String, String>> toLinkedHashMap2() {
-        return Collectors.toMap(e -> e, e -> e, (a, b) -> a + "\n" + b, LinkedHashMap::new);
+    public static void readXMLFile(TreeView<Map<String, String>> build,
+            Map<Node, TreeItem<Map<String, String>>> allItems, File file) {
+        remap(() -> tryToRead(build, allItems, file), "ERROR READING");
+    }
+
+    public static void saveToFile(Document document, File file) throws TransformerException {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        DOMSource domSource = new DOMSource(document);
+        StreamResult streamResult = new StreamResult(file);
+        transformer.transform(domSource, streamResult);
     }
 
     private static void addColumns(TableView<Map<String, String>> tableView, Collection<String> keySet) {
@@ -191,9 +187,6 @@ public final class XMLExtractor {
         return e.getChildren().stream().anyMatch(TreeItem<Map<String, String>>::isLeaf);
     }
 
-
-
-
     private static List<Map<String, String>> getFinalList(TreeItem<Map<String, String>> selectedItem) {
         ObservableList<TreeItem<Map<String, String>>> lista = FXCollections.observableArrayList();
         lista.add(selectedItem);
@@ -213,6 +206,9 @@ public final class XMLExtractor {
         finalList.removeIf(Map<String, String>::isEmpty);
         return finalList;
     }
+
+
+
 
     private static Object getValue(Map<String, String> i, int j) {
         int k = 0;
@@ -246,6 +242,10 @@ public final class XMLExtractor {
     private static Collector<Map.Entry<String, String>, ?, Map<String, String>> toLinkedHashMap() {
         return Collectors.toMap(Map.Entry<String, String>::getKey, Map.Entry<String, String>::getValue,
                 (a, b) -> a + "\n" + b, LinkedHashMap::new);
+    }
+
+    private static Collector<String, ?, Map<String, String>> toLinkedHashMap2() {
+        return Collectors.toMap(e -> e, e -> e, (a, b) -> a + "\n" + b, LinkedHashMap::new);
     }
 
     private static Map<String, String> toMap(TreeItem<Map<String, String>> treeItem) {

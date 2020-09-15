@@ -31,7 +31,8 @@ public final class StatsLogAccess {
                                 .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
                 return collect2.entrySet().stream().sorted(
-                        Comparator.comparing((Entry<String, Long> e) -> -e.getValue()).thenComparing(e -> e.getKey()))
+                        Comparator.comparing((Entry<String, Long> e) -> -e.getValue())
+                                .thenComparing(Entry<String, Long>::getKey))
                         .collect(Collectors.toList());
             }
         });
