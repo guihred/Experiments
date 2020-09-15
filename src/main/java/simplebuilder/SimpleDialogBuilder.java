@@ -52,11 +52,6 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
         return stage;
     }
 
-    public SimpleDialogBuilder node(Node button) {
-        group.getChildren().add(button);
-        return this;
-    }
-
     public SimpleDialogBuilder button(String buttonMsg, Runnable c) {
         Button button = newButton(buttonMsg, a -> {
             c.run();
@@ -78,8 +73,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
                 if (n.intValue() == 1) {
                     Platform.runLater(stage::close);
                     RunnableEx.ignore(() -> {
-                        final int millis = 3000;
-                        Thread.sleep(millis);
+                        RunnableEx.sleepSeconds(3);
                         run.run();
                     });
                 }
@@ -105,6 +99,11 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
 
     public SimpleDialogBuilder height(double value) {
         stage.setHeight(value);
+        return this;
+    }
+
+    public SimpleDialogBuilder node(Node button) {
+        group.getChildren().add(button);
         return this;
     }
 

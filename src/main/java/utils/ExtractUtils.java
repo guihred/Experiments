@@ -256,14 +256,11 @@ public final class ExtractUtils {
             ghostDriver.setLogLevel(Level.OFF);
             ghostDriver.manage().window().maximize();
             ghostDriver.get(url);
-            RunnableEx.run(() -> cookies
-                    .forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v))));
-
-            RunnableEx.run(() -> Thread.sleep(500));
+            RunnableEx.run(() -> cookies.forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v))));
+            RunnableEx.sleepSeconds(.5);
             String pageSource = ghostDriver.getPageSource();
-
             for (int i = 0; StringUtils.isNotBlank(loadingStr) && pageSource.contains(loadingStr) && i < 10; i++) {
-                RunnableEx.run(() -> Thread.sleep(5000));
+                RunnableEx.sleepSeconds(5);
                 pageSource = ghostDriver.getPageSource();
             }
             for (ConsumerEx<PhantomJSDriver> consumerEx : onload) {

@@ -22,7 +22,6 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public final class ConsoleUtils {
-    private static final int WAIT_INTERVAL_MILLIS = 5_000; // 5 SECONDS
     public static final int PROCESS_MAX_TIME_LIMIT = 120_000; // 2 MINUTES
     private static final String ACTIVE_FLAG = "active";
     private static final Logger LOGGER = HasLogging.log();
@@ -39,7 +38,7 @@ public final class ConsoleUtils {
                 long count = PROCESSES.values().stream().filter(e -> !e).count();
                 double newValue = (n - count) / n;
                 CommonsFX.runInPlatform(() -> progress.set(newValue));
-                RunnableEx.ignore(() -> Thread.sleep(500));
+                RunnableEx.sleepSeconds(0.5);
             }
             CommonsFX.runInPlatform(() -> progress.set(1));
         });
@@ -139,7 +138,7 @@ public final class ConsoleUtils {
         LOGGER.info(EXECUTING, cmd);
         PROCESSES.put(cmd, false);
         RunnableEx.runNewThread(() -> {
-            RunnableEx.ignore(() -> Thread.sleep(100));
+            RunnableEx.sleepSeconds(0.1);
             Process p = newProcess(cmd);
             try (BufferedReader in2 = new BufferedReader(
                 new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
@@ -174,7 +173,7 @@ public final class ConsoleUtils {
                     .map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
                 String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
                 LOGGER.debug("Running {} processes {}", processes.size(), formated);
-                Thread.sleep(WAIT_INTERVAL_MILLIS);
+                RunnableEx.sleepSeconds(5);
                 if (System.currentTimeMillis() - currentTimeMillis > PROCESS_MAX_TIME_LIMIT) {
                     PROCESSES.keySet().stream().forEach(k -> PROCESSES.put(k, true));
                     LOGGER.error("Processes \"{}\" taking too long", formated);

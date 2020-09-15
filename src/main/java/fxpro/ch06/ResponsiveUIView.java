@@ -14,7 +14,6 @@ import utils.ex.RunnableEx;
 
 public final class ResponsiveUIView {
 
-    private static final int WAIT_TIME_MILLIS = 3000;
     private static final int SIZE = 200;
     private HBox buttonHBox;
     private Button changeFillButton;
@@ -48,7 +47,7 @@ public final class ResponsiveUIView {
             Paint fillPaint = model.getFillPaint().get();
             model.getFillPaint().set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
             new Thread(RunnableEx.make(() -> {
-                Thread.sleep(WAIT_TIME_MILLIS);
+                RunnableEx.sleepSeconds(3);
                 Platform.runLater(() -> {
                     Rectangle rect = rectangle;
                     double newArcSize = rect.getArcHeight() < 20 ? 30 : 0;

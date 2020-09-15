@@ -7,6 +7,7 @@ import static utils.StringSigaUtils.intFormating;
 
 import extract.QuickSortML;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
@@ -16,7 +17,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
 import org.slf4j.Logger;
-import utils.*;
+import utils.CommonsFX;
+import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -170,43 +173,7 @@ public class DataframeUtils extends DataframeML {
 
     public static Map<String, DataframeStatisticAccumulator> makeStats(File csvFile, DataframeML dataframeML,
             DoubleProperty progress) {
-        return SupplierEx.get(() -> {
-            dataframeML.file = csvFile;
-            long computed = 0;
-            long size2 = ResourceFXUtils.computeAttributes(csvFile).size();
-            CommonsFX.runInPlatform(() -> progress.set(0));
-            try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
-                List<String> header = addHeaders(dataframeML, scanner);
-                while (scanner.hasNext()) {
-                    String nextLine = scanner.nextLine();
-                    computed += nextLine.getBytes().length;
-                    double co = computed;
-                    CommonsFX.runInPlatform(() -> progress.set(co / size2));
-                    List<String> line2 = CSVUtils.parseLine(nextLine);
-                    fixEmptyLine(header, line2);
-
-                    if (filterOut(dataframeML, header, line2)) {
-                        continue;
-                    }
-                    dataframeML.size++;
-
-                    for (int i = 0; i < header.size(); i++) {
-                        String key = header.get(i);
-                        String field = getFromList(i, line2);
-                        Object tryNumber = tryNumber(dataframeML, key, field);
-                        categorizeIfCategorizable(dataframeML, key, tryNumber);
-                        tryNumber = mapIfMappable(dataframeML, key, tryNumber);
-                        DataframeStatisticAccumulator acc = dataframeML.stats.get(key);
-                        acc.accept(tryNumber);
-                    }
-                    if (dataframeML.size > dataframeML.maxSize) {
-                        break;
-                    }
-                }
-                CommonsFX.runInPlatform(() -> progress.set(1));
-                return dataframeML.stats;
-            }
-        });
+        return SupplierEx.get(() -> mkStats(csvFile, dataframeML, progress));
     }
 
     public static DataframeML readCSV(File csvFile, DataframeML dataframeML) {
@@ -435,6 +402,44 @@ public class DataframeUtils extends DataframeML {
 
     private static int len(String k, Class<? extends Comparable<?>> class1) {
         return Math.max(1, class1 == String.class ? k.length() * 2 : k.length());
+    }
+
+    private static Map<String, DataframeStatisticAccumulator> mkStats(File csvFile, DataframeML dataframeML,
+            DoubleProperty progress) throws FileNotFoundException {
+        dataframeML.file = csvFile;
+        long computed = 0;
+        long size2 = ResourceFXUtils.computeAttributes(csvFile).size();
+        CommonsFX.runInPlatform(() -> progress.set(0));
+        try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
+            List<String> header = addHeaders(dataframeML, scanner);
+            while (scanner.hasNext()) {
+                String nextLine = scanner.nextLine();
+                computed += nextLine.getBytes().length;
+                double co = computed;
+                CommonsFX.runInPlatform(() -> progress.set(co / size2));
+                List<String> line2 = CSVUtils.parseLine(nextLine);
+                fixEmptyLine(header, line2);
+                if (filterOut(dataframeML, header, line2)) {
+                    continue;
+                }
+                dataframeML.size++;
+
+                for (int i = 0; i < header.size(); i++) {
+                    String key = header.get(i);
+                    String field = getFromList(i, line2);
+                    Object tryNumber = tryNumber(dataframeML, key, field);
+                    categorizeIfCategorizable(dataframeML, key, tryNumber);
+                    tryNumber = mapIfMappable(dataframeML, key, tryNumber);
+                    DataframeStatisticAccumulator acc = dataframeML.stats.get(key);
+                    acc.accept(tryNumber);
+                }
+                if (dataframeML.size > dataframeML.maxSize) {
+                    break;
+                }
+            }
+            CommonsFX.runInPlatform(() -> progress.set(1));
+            return dataframeML.stats;
+        }
     }
 
     private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {

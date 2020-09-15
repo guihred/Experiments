@@ -313,10 +313,10 @@ public class JsoupExample {
     public static class ReadAllLinks {
 
         private Set<String> uniqueURL = new HashSet<>();
-        private String my_site;
+        private String mySite;
 
         public void getLinks(URL url) throws IOException {
-            my_site = url.getHost();
+            mySite = url.getHost();
             getLinks(url.toString());
         }
 
@@ -330,7 +330,7 @@ public class JsoupExample {
 
             links.stream().map(link -> link.attr("abs:href")).forEachOrdered(ConsumerEx.makeConsumer(thisUrl -> {
                 boolean add = uniqueURL.add(thisUrl);
-                if (add && thisUrl.contains(my_site)) {
+                if (add && thisUrl.contains(mySite)) {
                     log.info("{}", thisUrl);
                     getLinks(thisUrl);
                 }

@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,29 +44,12 @@ public class WebScannerApplication extends Application {
             if (treeItem == null) {
                 return;
             }
-            SitePage value = treeItem.getValue();
-            if (StringUtils.isBlank(value.getTitle())) {
-                String text = value.getUrl();
-                URL url = new URL(text);
-                String sha256Hash = HashVerifier.getSha256Hash(url.getPath());
-                Document evaluateURL = whoIsScanner.name(url.getHost() + sha256Hash).waitStr("Loading").subFolder(TITLE)
-                        .evaluateURL(url.toString());
-                List<String> urlLinks = WebsiteScanner.getLinks(url.toString(), evaluateURL);
-                links.addAll(urlLinks);
-                SitePage sitePage = value;
-                sitePage.setPrint(whoIsScanner.getPrint());
-                sitePage.setLinks(urlLinks);
-                sitePage.setTitle(evaluateURL.select(TITLE).text());
-
-                addItemChildren(sitePage, treeItem);
-            }
-            image.setImage(new Image(value.getPrint().toURI().toURL().toExternalForm()));
-        }).build();
+            onSelectItem(treeItem, treeItem.getValue());
+        });
     }
 
     public void onKeyReleasedUrlField(KeyEvent e) {
         RunnableEx.run(() -> {
-
             if (e.getCode() == KeyCode.ENTER) {
                 addCookies();
                 String text = urlField.getText();
@@ -103,6 +87,24 @@ public class WebScannerApplication extends Application {
                 .addAll(sitePage.getLinks().stream()
                         .filter(t -> !links.contains(t))
                         .map(l -> new TreeItem<>(new SitePage(l))).collect(Collectors.toList()));
+    }
+
+    private void onSelectItem(TreeItem<SitePage> treeItem, SitePage value) throws MalformedURLException, Exception {
+        if (StringUtils.isBlank(value.getTitle())) {
+            String text = value.getUrl();
+            URL url = new URL(text);
+            String sha256Hash = HashVerifier.getSha256Hash(url.getPath());
+            Document evaluateURL = whoIsScanner.name(url.getHost() + sha256Hash).waitStr("Loading").subFolder(TITLE)
+                    .evaluateURL(url.toString());
+            List<String> urlLinks = WebsiteScanner.getLinks(url.toString(), evaluateURL);
+            links.addAll(urlLinks);
+            SitePage sitePage = value;
+            sitePage.setPrint(whoIsScanner.getPrint());
+            sitePage.setLinks(urlLinks);
+            sitePage.setTitle(evaluateURL.select(TITLE).text());
+            addItemChildren(sitePage, treeItem);
+        }
+        image.setImage(new Image(value.getPrint().toURI().toURL().toExternalForm()));
     }
 
     private TreeItem<SitePage> toTreeItem(SitePage sitePage) {

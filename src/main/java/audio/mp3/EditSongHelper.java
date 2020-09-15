@@ -30,7 +30,9 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.StageHelper;
-import utils.*;
+import utils.CommonsFX;
+import utils.ExtractUtils;
+import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -77,10 +79,9 @@ public final class EditSongHelper {
         CommonsFX.runInPlatform(() -> SongUtils.stopAndDispose(mediaPlayer.get()));
         progress.addListener((v, o, n) -> {
             if (n.intValue() == 1) {
-                RunnableEx.run(() -> Thread.sleep(1500));
+                RunnableEx.sleepSeconds(2);
                 CommonsFX.runInPlatform(() -> {
                     run(() -> {
-
                         MusicReader.saveMetadata(selectedItem, outFile);
                         File arquivo = selectedItem.getArquivo();
                         ExtractUtils.copy(outFile, arquivo);

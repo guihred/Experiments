@@ -92,8 +92,9 @@ public class PaintController {
         double x = e.getX();
         double y = e.getY();
         paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
-        paintModel.getImageSize().setText(
-                String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight()));
+        String imageSize =
+                String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight());
+        paintModel.getImageSize().setText(imageSize);
 
         PaintTool paintTool = getTool();
         if (paintTool != null) {

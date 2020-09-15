@@ -84,4 +84,8 @@ public interface RunnableEx {
 
         return RunnableEx.runNewThread(() -> onEnd.accept(run.get()));
     }
+
+    static void sleepSeconds(double seconds) {
+        RunnableEx.run(() -> Thread.sleep((long) (seconds * 1000)));
+    }
 }

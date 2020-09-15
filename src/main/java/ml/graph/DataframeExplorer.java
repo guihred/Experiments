@@ -134,7 +134,6 @@ public class DataframeExplorer extends Application {
     public void onActionFillIP() {
         currentThread = RunnableEx.runNewThread(() -> {
             LOG.info("FILLING {} IPS", getDataframe().getFile().getName());
-
             Entry<String, DataframeStatisticAccumulator> selectedItem =
                     columnsList.getSelectionModel().getSelectedItem();
             if (selectedItem == null) {

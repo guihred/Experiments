@@ -118,7 +118,7 @@ public final class Chapter1 {
     public static void ex6() {
         new Thread(RunnableEx.make(() -> {
             LOGGER.trace("Zzzz!!");
-            Thread.sleep(1000);
+            RunnableEx.sleepSeconds(1);
             LOGGER.trace("!!!!");
         })).start();
     }
