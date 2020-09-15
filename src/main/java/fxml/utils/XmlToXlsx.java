@@ -13,7 +13,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -74,10 +76,9 @@ public final class XmlToXlsx {
         foreach(xmlObject.getChildNodes(), item -> {
             String nodeName = item.getNodeName();
             Map<String, Object> attributeMap = attributeMap(item);
-            Optional<String> findFirst =
-                    attributeMap.keySet().stream().filter(e -> collect.containsKey(e + nodeName)).findFirst();
-            if (collect.containsKey(nodeName) || findFirst.isPresent()) {
-                setField(ob, collect, item, nodeName, attributeMap, findFirst, supplierMap);
+            if (collect.containsKey(nodeName)
+                    || attributeMap.keySet().stream().anyMatch(e -> collect.containsKey(e + nodeName))) {
+                setField(ob, collect, item, nodeName, attributeMap, supplierMap);
             }
         });
         Map<String, Object> attributeMap = attributeMap(xmlObject);
@@ -136,7 +137,9 @@ public final class XmlToXlsx {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static void setField(Object ob, Map<String, Method> collect, Node item, String nodeName,
-            Map<String, Object> attributeMap, Optional<String> findFirst, Map<Class<?>, SupplierEx<?>> supplierMap) {
+            Map<String, Object> attributeMap, Map<Class<?>, SupplierEx<?>> supplierMap) {
+        Optional<String> findFirst =
+                attributeMap.keySet().stream().filter(e -> collect.containsKey(e + nodeName)).findFirst();
         Method method = findFirst.map(e -> collect.get(e + nodeName)).orElse(collect.get(nodeName));
         Class setterType = method.getParameters()[0].getType();
         if (setterType.isEnum()) {

@@ -9,8 +9,9 @@ import io.pkts.protocol.Protocol;
 import java.io.File;
 import java.io.IOException;
 
-public class PCapReader {
-
+public final class PCapReader {
+    private PCapReader() {
+    }
 
     public static void readPCAPngFile(File file) throws IOException {
         final Pcap pcap = Pcap.openStream(file);

@@ -310,7 +310,7 @@ public class JsoupExample {
         }
     }
 
-    public class ReadAllLinks {
+    public static class ReadAllLinks {
 
         private Set<String> uniqueURL = new HashSet<>();
         private String my_site;
