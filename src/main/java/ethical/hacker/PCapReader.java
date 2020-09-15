@@ -24,14 +24,14 @@ public final class PCapReader {
                 TCPPacket tcpPacket = (TCPPacket) packet.getPacket(Protocol.TCP);
                 Buffer buffer1 = tcpPacket.getPayload();
                 if (buffer1 != null) {
-                    LOG.info("TCP: " + buffer1);
+                    LOG.info("TCP: {}", buffer1);
                 }
             } else if (packet.hasProtocol(Protocol.UDP)) {
 
                 UDPPacket udpPacket = (UDPPacket) packet.getPacket(Protocol.UDP);
                 Buffer buffer2 = udpPacket.getPayload();
                 if (buffer2 != null) {
-                    LOG.info("UDP: " + buffer2);
+                    LOG.info("UDP: {}", buffer2);
                 }
             }
             return true;

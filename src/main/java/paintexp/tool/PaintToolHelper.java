@@ -95,41 +95,12 @@ public final class PaintToolHelper {
         VBox vBox = new VBox(text2);
         options.add(vBox);
         ObservableList<Node> effectsOptions = vBox.getChildren();
-        if (value instanceof Number) {
-            double value3 = ((Number) value).doubleValue();
-            Double max = maxMap.computeIfAbsent(fieldName, v -> getMax(value3));
-            SimpleSliderBuilder builder = new SimpleSliderBuilder(0, max, value3);
-            bindBidirectional(builder.build().valueProperty(), property);
-            effectsOptions.add(builder.build());
+        Node simpleObjectOption = simpleObjectOption(maxMap, fieldName, property, value);
+        if (simpleObjectOption != null) {
+            effectsOptions.add(simpleObjectOption);
             return;
         }
-        if (value instanceof Boolean) {
-            CheckBox e = new CheckBox();
-            e.setSelected((boolean) value);
-            bindBidirectional(e.selectedProperty(), property);
-            effectsOptions.add(e);
-            return;
-        }
-        if (value instanceof String) {
-            TextField e = new TextField();
-            bindBidirectional(e.textProperty(), property);
-            effectsOptions.add(e);
-            return;
-        }
-        if (value instanceof Color) {
-            ColorPicker colorPicker = new ColorPicker((Color) value);
-            bindBidirectional(colorPicker.valueProperty(), property);
-            effectsOptions.add(colorPicker);
-            return;
-        }
-        if (value instanceof Enum<?>) {
-            Enum<?> value3 = (Enum<?>) value;
-            ComboBox comboBox = new ComboBox<>(FXCollections.observableArrayList(value3.getClass().getEnumConstants()));
-            comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, val) -> property.setValue(val));
-            comboBox.setValue(value3);
-            effectsOptions.add(comboBox);
-            return;
-        }
+
         if (value != null && ClassReflectionUtils.hasSetterMethods(value.getClass(), "color")) {
             Map<String, Property> properties = ClassReflectionUtils.properties(value, value.getClass());
             Property colorProperty = properties.get("color");
@@ -225,6 +196,43 @@ public final class PaintToolHelper {
             return changeCase + " " + value2.getValue();
         }
         return changeCase;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static Node simpleObjectOption(Map<String, Double> maxMap, String fieldName, Property property,
+            Object value) {
+        if (value instanceof Number) {
+            double value3 = ((Number) value).doubleValue();
+            Double max = maxMap.computeIfAbsent(fieldName, v -> getMax(value3));
+            SimpleSliderBuilder builder = new SimpleSliderBuilder(0, max, value3);
+            bindBidirectional(builder.build().valueProperty(), property);
+            return builder.build();
+        }
+        if (value instanceof Boolean) {
+            CheckBox e = new CheckBox();
+            e.setSelected((boolean) value);
+            bindBidirectional(e.selectedProperty(), property);
+            return e;
+        }
+        if (value instanceof String) {
+            TextField e = new TextField();
+            bindBidirectional(e.textProperty(), property);
+            return e;
+        }
+        if (value instanceof Color) {
+            ColorPicker colorPicker = new ColorPicker((Color) value);
+            bindBidirectional(colorPicker.valueProperty(), property);
+            return colorPicker;
+        }
+        if (value instanceof Enum<?>) {
+            Enum<?> value3 = (Enum<?>) value;
+            ComboBox<Enum<?>> comboBox =
+                    new ComboBox<>(FXCollections.observableArrayList(value3.getClass().getEnumConstants()));
+            comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, val) -> property.setValue(val));
+            comboBox.setValue(value3);
+            return comboBox;
+        }
+        return null;
     }
 
 }

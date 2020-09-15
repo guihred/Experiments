@@ -27,7 +27,7 @@ import utils.ex.HasLogging;
 public final class JsoupExample {
     private static final String USER_AGENT =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0";
-    private static final Logger log = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
     private JsoupExample() {
     }
@@ -125,10 +125,10 @@ public final class JsoupExample {
         String bodyFragment = "<div><a href=\"/documentation\">Stack Overflow Documentation</a></div>";
         Document doc = Jsoup.parseBodyFragment(bodyFragment);
         String link = doc.select("div > a").first().attr("href");
-        log.info("{}", link);
+        LOG.info("{}", link);
         doc = Jsoup.parseBodyFragment(bodyFragment, "http://stackoverflow.com");
         link = doc.select("div > a").first().absUrl("href");
-        log.info("{}", link);
+        LOG.info("{}", link);
     }
 
     public static void filterMailToLinks() throws IOException {
@@ -144,8 +144,8 @@ public final class JsoupExample {
         for (Element e : elements) {
             links.add(e.attr("href"));
         }
-        log.info("{}", emails);
-        log.info("{}", links);
+        LOG.info("{}", emails);
+        LOG.info("{}", links);
     }
 
     // Below is an example request that will log you into the GitHub website
@@ -172,7 +172,7 @@ public final class JsoupExample {
         Response homePage = Jsoup.connect(LOGIN_ACTION_URL).cookies(cookies).data(formData)
                 .method(Connection.Method.POST).userAgent(USER_AGENT).execute();
         String html = homePage.parse().html();
-        log.info("{}", html);
+        LOG.info("{}", html);
     }
 
     // Parsing JavaScript Generated Page with Jsoup and HtmUnit About.html - source
@@ -184,7 +184,7 @@ public final class JsoupExample {
             for (Element col : row.select("td")) {
                 // print results
                 String ownText = col.ownText();
-                log.info("{}", ownText);
+                LOG.info("{}", ownText);
             }
         }
     }
@@ -201,7 +201,7 @@ public final class JsoupExample {
             for (Element col : row.select("td")) {
                 // print results
                 String ownText = col.ownText();
-                log.info("{}", ownText);
+                LOG.info("{}", ownText);
             }
         }
         // clean up resources
@@ -217,7 +217,7 @@ public final class JsoupExample {
         Document doc = Jsoup.parse(html);
         // Get document title
         String title = doc.select("head > title").first().text();
-        log.info("{}", title); // Hello world!
+        LOG.info("{}", title); // Hello world!
         // Get all paragraphs except from the first
         // Same as
         Elements otherParagraphs = doc.select("p");
@@ -229,10 +229,10 @@ public final class JsoupExample {
         // You can also select within elements, e.g. anchors with a href attribute
         // within the third paragraph.
         Element link = thirdParagraph.select("a[href]").first();
-        log.info("link {}", link);
+        LOG.info("link {}", link);
         // or the first <h1> element in the document body
         Element headline = doc.select("body").first().select("h1").first();
-        log.info("headline {}", headline);
+        LOG.info("headline {}", headline);
     }
 
 
@@ -259,7 +259,7 @@ public final class JsoupExample {
             links.stream().map(link -> link.attr("abs:href")).forEachOrdered(ConsumerEx.makeConsumer(thisUrl -> {
                 boolean add = uniqueURL.add(thisUrl);
                 if (add && thisUrl.contains(mySite)) {
-                    log.info("{}", thisUrl);
+                    LOG.info("{}", thisUrl);
                     getLinks(thisUrl);
                 }
             }));

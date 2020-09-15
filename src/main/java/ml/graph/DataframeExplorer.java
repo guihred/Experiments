@@ -178,7 +178,7 @@ public class DataframeExplorer extends Application {
         this.dataframe.set(dataframe);
     }
 
-    public void show() throws Exception {
+    public void show() {
         start(new Stage());
     }
 

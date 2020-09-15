@@ -48,7 +48,6 @@ public class TimelionDisplay extends Application {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setAutoRanging(true);
         xAxis.setForceZeroInRange(false);
-        NumberAxis yAxis = new NumberAxis();
         xAxis.setTickLabelFormatter(new StringConverter<Number>() {
             @Override
             public Number fromString(String string) {
@@ -61,7 +60,7 @@ public class TimelionDisplay extends Application {
                         .toString();
             }
         });
-        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, new NumberAxis());
         ObservableList<Series<Number, Number>> timelionFullScan = FXCollections.observableArrayList();
 
         ObservableList<String> mapping = ListHelper.mapping(timelionFullScan, Series<Number, Number>::getName);

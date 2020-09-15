@@ -17,17 +17,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import ml.data.DataframeBuilder;
-import ml.data.DataframeML;
-import ml.data.DataframeStatisticAccumulator;
-import ml.data.DataframeUtils;
+import ml.data.*;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ExtractUtils;
+import utils.FileTreeWalker;
+import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -77,7 +76,7 @@ public class WhoIsScanner {
     }
 
     public Map<String, String> getIpInformation(String ip) {
-        Map<String, String> ipInformation = getIpInformation(this,ip);
+        Map<String, String> ipInformation = getIpInformation(this, ip);
         LOG.info("{}", ipInformation);
         return ipInformation;
     }
@@ -122,11 +121,11 @@ public class WhoIsScanner {
     }
 
     private Document reloadIfExists(String ip) throws IOException {
-        String scanIP = SANS_API_URL + ip;
         File outFile = ResourceFXUtils.getOutFile("xml/" + ip + ".xml");
         if (outFile.exists()) {
             return Jsoup.parse(outFile, StandardCharsets.UTF_8.name());
         }
+        String scanIP = SANS_API_URL + ip;
         Document document = ExtractUtils.getDocument(scanIP, cookies);
         Files.write(outFile.toPath(), Arrays.asList(document.outerHtml()), StandardCharsets.UTF_8);
         return document;
@@ -141,14 +140,12 @@ public class WhoIsScanner {
         String text = Stream.of(subFolder).map(renderPage::select).map(Elements::text).filter(StringUtils::isNotBlank)
                 .findFirst().orElse("");
         firstFileMatch.forEach(ConsumerEx.make(p -> {
-            File out1File = ResourceFXUtils
-                    .getOutFile(
-                            screenshotsFolder + text.replaceAll("[\\| :\\\\]+", "_").trim() + "/"
-                                    + p.toFile().getName());
             if (StringUtils.isBlank(text)) {
                 Files.delete(p);
                 return;
             }
+            File out1File = ResourceFXUtils.getOutFile(
+                    screenshotsFolder + text.replaceAll("[\\| :\\\\]+", "_").trim() + "/" + p.toFile().getName());
             if (out1File.getName().endsWith(".png")) {
                 print = out1File;
             }
@@ -159,8 +156,7 @@ public class WhoIsScanner {
         }, (path, ex) -> LOG.error("ERROR COPYING {}", path, ex)));
     }
 
-    public static Document evaluateURL(String url, String name, String waitStr, String... subFolder)
-            throws Exception {
+    public static Document evaluateURL(String url, String name, String waitStr, String... subFolder) throws Exception {
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         return whoIsScanner.name(name).waitStr(waitStr).subFolder(subFolder).evaluateURL(url);
     }
@@ -178,20 +174,16 @@ public class WhoIsScanner {
         DataframeUtils.crossFeatureObject(dataframe, "Rede",
                 e -> ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)).get("network"),
                 ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, "Owner",
-                e -> {
-                    Map<String, String> first =
-                            ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip));
-                    return first.getOrDefault("as_owner", first.get("asname"));
-                },
-                ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, "Country",
-                e -> {
-                    Map<String, String> first =
-                            ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip));
-                    return first.getOrDefault("country", first.get("ascountry"));
-                },
-                ipColumn);
+        DataframeUtils.crossFeatureObject(dataframe, "Owner", e -> {
+            Map<String, String> first =
+                    ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip));
+            return first.getOrDefault("as_owner", first.get("asname"));
+        }, ipColumn);
+        DataframeUtils.crossFeatureObject(dataframe, "Country", e -> {
+            Map<String, String> first =
+                    ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip));
+            return first.getOrDefault("country", first.get("ascountry"));
+        }, ipColumn);
         return dataframe;
     }
 
@@ -200,6 +192,7 @@ public class WhoIsScanner {
         String ipColumn = getIPColumn(builder);
         return fillIPInformation(builder, ipColumn);
     }
+
     public static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String ip) {
         if (ip.matches("^10\\..+")) {
             Map<String, String> hashMap = new HashMap<>();
@@ -213,7 +206,7 @@ public class WhoIsScanner {
         return SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(ip), () -> whoIsScanner.whoIsScan(ip));
     }
 
-    public static String getLastNumberField(DataframeML dataframe) {
+    public static String getLastNumberField(BaseDataframe dataframe) {
         List<String> numberCols =
                 dataframe.getFormatMap().entrySet().stream().filter(e -> Number.class.isAssignableFrom(e.getValue()))
                         .map(Entry<String, Class<? extends Comparable<?>>>::getKey).collect(Collectors.toList());
@@ -221,8 +214,7 @@ public class WhoIsScanner {
     }
 
     public static String getReverseDNS(String ip) throws UnknownHostException {
-        InetAddress ia =
-        toInetAddress(ip);
+        InetAddress ia = toInetAddress(ip);
         return ia.getCanonicalHostName();
 
     }

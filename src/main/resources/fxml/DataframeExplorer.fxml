@@ -52,7 +52,7 @@
 							</padding>
 						</AutocompleteField>
 						<Button alignment="CENTER" fx:id="add" id="Add" onAction="#onActionAdd"
-							text="+" HBox.hgrow="ALWAYS" textFill="0x333333ff" minWidth="40">
+							text="+" HBox.hgrow="ALWAYS" textFill="0x333333ff" minWidth="30">
 							<padding>
 								<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 							</padding>

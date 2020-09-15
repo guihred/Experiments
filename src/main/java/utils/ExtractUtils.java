@@ -194,7 +194,7 @@ public final class ExtractUtils {
         return LOGIN;
     }
 
-    public static List<String> getTables(Document renderPage) {
+    public static List<String> getTables(Element renderPage) {
         Elements select = renderPage.select("table");
         List<String> arrayList = new ArrayList<>();
         for (Element table : select) {

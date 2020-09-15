@@ -87,7 +87,7 @@ public class ConsultasInvestigator extends Application {
         configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^[^\\/\\d].+");
         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
-        // configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value");
+        // configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value")
         filterText.textProperty().bind(Bindings.createStringBinding(
                 () -> filter.entrySet().stream().map(Objects::toString).collect(Collectors.joining("\n")), filter));
     }
@@ -159,11 +159,11 @@ public class ConsultasInvestigator extends Application {
         RunnableEx.run(() -> {
             if (dataframeExplorer == null) {
                 dataframeExplorer = new DataframeExplorer();
-                dataframeExplorer.show();
             }
-            String collect = filter.values().stream().map(Objects::toString).collect(Collectors.joining());
+            String collect = filter.values().stream().collect(Collectors.joining());
             File ev = ResourceFXUtils.getOutFile("csv/" + consultasTable.getId() + collect + ".csv");
             SimpleTableViewBuilder.saveToFile(consultasTable, ev);
+            dataframeExplorer.show();
             dataframeExplorer.addStats(ev);
         });
     }

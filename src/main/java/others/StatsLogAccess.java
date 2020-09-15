@@ -14,7 +14,7 @@ import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class StatsLogAccess {
-    public static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
     private StatsLogAccess() {
     }
