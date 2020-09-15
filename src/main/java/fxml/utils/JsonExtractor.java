@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,29 @@ import utils.DateFormatUtils;
 public final class JsonExtractor {
 
     private JsonExtractor() {
+    }
+
+    public static boolean splitList(List<Map<String, String>> list, Map<String, String> newItem) {
+        long count = newItem.values().stream().filter(Objects::nonNull).mapToInt(e -> e.split("\n").length)
+                .filter(i -> i > 1).distinct().count();
+        if (count != 1) {
+            return false;
+        }
+        Set<Entry<String, String>> entrySet = newItem.entrySet();
+        list.clear();
+        for (Entry<String, String> entry : entrySet) {
+            List<Map<String, String>> collect = Stream.of(entry.getValue().split("\n"))
+                    .map(e -> newMap(entry.getKey(), e)).collect(Collectors.toList());
+            if (!list.isEmpty()) {
+                for (int i = 0; i < list.size(); i++) {
+                    Map<String, String> map = list.get(i);
+                    map.putAll(collect.get(i));
+                }
+                continue;
+            }
+            list.addAll(collect);
+        }
+        return true;
     }
 
     public static void addValue(JsonNode item, TreeItem<Map<String, String>> e) {

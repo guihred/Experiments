@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.geometry.*?><?import simplebuilder.*?><?import fxml.utils.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="fxml.utils.JsonViewer"
+	minHeight="400.0" minWidth="400.0">
+	<children>
+		<HBox>
+			<children>
+				<Button alignment="CENTER" fx:id="importJson" id="Import Json"
+					onAction="#onActionImportJson" text="Import Json" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="exportExcel" id="Export excel"
+					onAction="#onActionExportExcel" text="Export Excel" textFill="0x333333ff">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<ComboBox fx:id="comboBox3">
+					<converter>
+						<SimpleConverter name="name" />
+					</converter>
+				</ComboBox>
+			</children>
+		</HBox>
+		<SplitPane fx:id="splitPane0" VBox.vgrow="ALWAYS">
+			<items>
+				<TreeView fx:id="tree" prefHeight="400.0" VBox.vgrow="ALWAYS">
+					<root>
+						<TreeItem>
+							<value>
+								<SimpleMap />
+							</value>
+						</TreeItem>
+					</root>
+				</TreeView>
+				<TableView fx:id="sideTable" prefHeight="400.0" />
+			</items>
+			<padding>
+				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+			</padding>
+		</SplitPane>
+	</children>
+</VBox>

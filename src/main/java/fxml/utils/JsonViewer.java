@@ -3,25 +3,20 @@ package fxml.utils;
 
 import static fxml.utils.JsonExtractor.newMap;
 import static fxml.utils.JsonExtractor.readJsonFile;
-import static simplebuilder.SimpleButtonBuilder.newButton;
 
 import extract.ExcelService;
 import java.io.File;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
@@ -38,10 +33,16 @@ public class JsonViewer extends Application {
     private static final int MAX_COLUMNS = 6;
     private ObjectProperty<File> fileProp = new SimpleObjectProperty<>();
     private ObservableList<File> files = FXCollections.observableArrayList();
+    @FXML
     private TreeView<Map<String, String>> tree;
     private List<String> lastSelected = new ArrayList<>();
+    @FXML
+    private TableView<Map<String, String>> sideTable;
+    @FXML
+    private ComboBox<File> comboBox3;
 
     public void addFile(File... filesToAdd) {
+
         CommonsFX.runInPlatform(() -> {
             for (File file : filesToAdd) {
                 if (!files.contains(file)) {
@@ -62,36 +63,13 @@ public class JsonViewer extends Application {
         return files;
     }
 
-    public void setFile(File filesToAdd) {
-        fileProp.set(filesToAdd);
-    }
-
-    public void setLast() {
-        if (!files.isEmpty()) {
-            fileProp.set(files.get(files.size() - 1));
-        }
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Json Viewer");
-        primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
-        primaryStage.show();
-    }
-
-    private Parent createSplitTreeListDemoNode() {
+    public void initialize() {
         ObservableList<Map<String, String>> list = FXCollections.observableArrayList();
-        TableView<Map<String, String>> sideTable =
-                new SimpleTableViewBuilder<Map<String, String>>().items(list).copiable().savable().multipleSelection()
-                        .build();
-        tree = new SimpleTreeViewBuilder<Map<String, String>>().root(newMap("Root", null))
+        SimpleTableViewBuilder.of(sideTable).items(list).copiable().savable().multipleSelection();
+        SimpleTreeViewBuilder.of(tree).root(newMap("Root", null))
                 .onSelect(newValue -> onSelectTreeItem(list, sideTable, newValue)).build();
-        Button importJsonButton = new FileChooserBuilder().name("Import Json").title("Import Json")
-                .extensions("Json", "*.json").onSelect(fileProp::set)
-        .buildOpenButton();
-        Button exportExcel = newButton("Export excel", e -> exportToExcel(sideTable, fileProp.get()));
-        SplitPane splitPane = new SplitPane(tree, sideTable);
-        SimpleComboBoxBuilder<File> onChange = new SimpleComboBoxBuilder<File>().items(files).converter(File::getName)
+        SimpleComboBoxBuilder<File> onChange =
+                SimpleComboBoxBuilder.of(comboBox3).items(files)
                 .onChange((old, val) -> fileProp.set(val));
         fileProp.addListener((ob, old, val) -> CommonsFX.runInPlatform(() -> {
             if (val != null) {
@@ -104,11 +82,32 @@ public class JsonViewer extends Application {
                 onChange.select(val);
             }
         }));
-        VBox vBox = new VBox(new HBox(importJsonButton, exportExcel, onChange.build()), splitPane);
-        vBox.setMinSize(400, 400);
-        tree.prefHeightProperty().bind(vBox.heightProperty());
-        sideTable.prefHeightProperty().bind(vBox.heightProperty());
-        return vBox;
+    }
+
+    public void onActionExportExcel() {
+        exportToExcel(sideTable, fileProp.get());
+    }
+
+    public void onActionImportJson(ActionEvent e) {
+        new FileChooserBuilder().name("Import Json").title("Import Json").extensions("Json", "*.json")
+                .onSelect(fileProp::set).openFileAction(e);
+    }
+
+
+
+    public void setFile(File filesToAdd) {
+        fileProp.set(filesToAdd);
+    }
+
+    public void setLast() {
+        if (!files.isEmpty()) {
+            fileProp.set(files.get(files.size() - 1));
+        }
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        CommonsFX.loadFXML("Json Viewer", "JsonViewer.fxml", primaryStage);
     }
 
     private List<Integer> getSelectionOrder() {
@@ -131,7 +130,6 @@ public class JsonViewer extends Application {
 
     private void selectSame(List<Integer> arrayList) {
         RunnableEx.run(() -> {
-
             TreeItem<Map<String, String>> root = tree.getRoot();
             for (int i = 0; i < lastSelected.size(); i++) {
                 Integer integer = arrayList.get(i % arrayList.size());
@@ -212,7 +210,7 @@ public class JsonViewer extends Application {
         if (newValue.isLeaf()) {
             addColumns(sideTable, newValue.getValue().keySet());
             list.add(newValue.getValue());
-            splitList(list, newValue.getValue());
+            JsonExtractor.splitList(list, newValue.getValue());
             changeDisplayIfTooBig(list, sideTable);
             return;
         }
@@ -242,28 +240,5 @@ public class JsonViewer extends Application {
         }
         changeDisplayIfTooBig(list, sideTable);
 
-    }
-
-    private static boolean splitList(ObservableList<Map<String, String>> list, Map<String, String> newItem) {
-        long count = newItem.values().stream().filter(Objects::nonNull).mapToInt(e -> e.split("\n").length)
-                .filter(i -> i > 1).distinct().count();
-        if (count != 1) {
-            return false;
-        }
-        Set<Entry<String, String>> entrySet = newItem.entrySet();
-        list.clear();
-        for (Entry<String, String> entry : entrySet) {
-            List<Map<String, String>> collect = Stream.of(entry.getValue().split("\n"))
-                    .map(e -> newMap(entry.getKey(), e)).collect(Collectors.toList());
-            if (!list.isEmpty()) {
-                for (int i = 0; i < list.size(); i++) {
-                    Map<String, String> map = list.get(i);
-                    map.putAll(collect.get(i));
-                }
-                continue;
-            }
-            list.addAll(collect);
-        }
-        return true;
     }
 }
