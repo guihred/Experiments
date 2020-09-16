@@ -43,7 +43,9 @@ public class ExcelDataReader extends DataframeUtils {
 
     private static Map<String, Object> addHeaders(Map<String, Object> data, Sheet sheet,
             List<CellRangeAddress> mergedRegions, List<Integer> collect, int cellIndex) {
-        data.put("ano", sheet.getSheetName());
+        if (sheet.getWorkbook().getNumberOfSheets() > 1) {
+            data.put("Sheet", sheet.getSheetName());
+        }
         List<CellRangeAddress> headers = mergedRegions.stream().filter(e -> collect.stream().anyMatch(e::containsRow))
                 .filter(e -> e.containsColumn(cellIndex)).collect(Collectors.toList());
         for (int i = 0; i < headers.size(); i++) {

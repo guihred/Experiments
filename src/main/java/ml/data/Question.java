@@ -6,6 +6,7 @@ public class Question {
     private final Object ob;
     private QuestionType type = QuestionType.EQ;
     private double infoGain;
+    private boolean not = false;
 
     public Question(String colName, Object ob, QuestionType type) {
         this.colName = colName;
@@ -14,7 +15,8 @@ public class Question {
     }
 
     public boolean answer(Object ob1) {
-        return type.execute(ob1, ob);
+        boolean execute = type.execute(ob1, ob);
+        return not ? !execute : execute;
     }
 
     public String getColName() {
@@ -29,9 +31,15 @@ public class Question {
         this.infoGain = infoGain;
     }
 
+    public boolean toggleNot() {
+        not = !not;
+        return not;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s %s %s", getColName(), type.getSign(), ob instanceof String ? "\"" + ob + "\"" : ob);
+        String string = not ? "%s not %s %s" : "%s %s %s";
+        return String.format(string, getColName(), type.getSign(), ob instanceof String ? "\"" + ob + "\"" : ob);
     }
 
 }

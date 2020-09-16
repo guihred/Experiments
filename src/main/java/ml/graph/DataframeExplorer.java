@@ -86,8 +86,7 @@ public class DataframeExplorer extends Application {
                     lineChart.setData(FXCollections.emptyObservableList());
                 });
             }
-            int maxSize = MAX_ELEMENTS;
-            readDataframe(file, maxSize);
+            readDataframe(file, MAX_ELEMENTS);
             currentThread = null;
         });
     }
@@ -102,7 +101,8 @@ public class DataframeExplorer extends Application {
         barChart.managedProperty().bind(barChart.visibleProperty());
         pieChart.managedProperty().bind(pieChart.visibleProperty());
         columns.addListener(this::onColumnsChange);
-        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen);
+        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen).onKey(KeyCode.DELETE,
+                columns::remove);
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
         pieChart.visibleProperty().bind(pieChart.titleProperty().isNotEmpty());
@@ -119,7 +119,8 @@ public class DataframeExplorer extends Application {
                             () -> isTypeDisabled(q, headersCombo.getSelectionModel().getSelectedItem()),
                             headersCombo.getSelectionModel().selectedItemProperty()));
         }).converter(QuestionType::getSign);
-        SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove);
+        SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove)
+                .onKey(KeyCode.MINUS, this::toggleQuestion).onKey(KeyCode.SUBTRACT, this::toggleQuestion);
         dataframe.addListener((ob, old, val) -> CommonsFX.runInPlatform(() -> {
             String format = String.format("Dataframe Explorer (%s)",
                     FunctionEx.mapIf(getDataframe(), d -> d.getFile().getName(), ""));
@@ -148,8 +149,7 @@ public class DataframeExplorer extends Application {
             File outFile = ResourceFXUtils.getOutFile("csv/" + getDataframe().getFile().getName());
             LOG.info("File {} SAVING IN", outFile);
             DataframeUtils.save(getDataframe(), outFile);
-            int maxSize = MAX_ELEMENTS;
-            readDataframe(outFile, maxSize);
+            readDataframe(outFile, MAX_ELEMENTS);
             LOG.info("File {} IPS FILLED", getDataframe().getFile().getName());
             currentThread = null;
         });
@@ -286,7 +286,7 @@ public class DataframeExplorer extends Application {
             List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
             if (!getDataframe().isLoaded()) {
                 Map<Integer, Map<String, Object>> cache = new HashMap<>();
-                List<String> asList = Arrays.asList("Header", "Format", "Count", "Max", "Mean", "Min", "Median25",
+                List<String> asList = Arrays.asList("Header", "Count", "Max", "Mean", "Min", "Median25",
                         "Median50", "Median75", "Sum");
                 for (String key : asList) {
                     dataTable.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
@@ -342,6 +342,12 @@ public class DataframeExplorer extends Application {
         CommonsFX.runInPlatform(() -> columns.setAll(SupplierEx
                 .orElse(getDataframe().getStats(), () -> DataframeUtils.makeStats(getDataframe())).entrySet()));
         LOG.info("File {} READ", file.getName());
+    }
+
+    private void toggleQuestion(Question t) {
+        questions.remove(t);
+        t.toggleNot();
+        questions.add(t);
     }
 
     public static void main(String[] args) {

@@ -27,7 +27,6 @@ public class ImageCrackerApp extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Image Cracker");
         HBox root = new HBox();
-
         ObservableList<File> value = FXCollections.observableArrayList();
         PaginatedTableView paginatedTableView = new PaginatedTableView();
         paginatedTableView.addColumn("Name", i -> value.get(i).getName());
@@ -41,12 +40,11 @@ public class ImageCrackerApp extends Application {
                 }).title("Images to LOAD").buildOpenDirectoryButton();
         root.getChildren().add(new VBox(buildOpenDirectoryButton, new FileChooserBuilder().name("Export Excel")
                 .title("Export Excel").extensions("Excel", "*.xlsx").onSelect(file -> {
-                    List<Integer> items = paginatedTableView.getFilteredItems();
                     Map<String, FunctionEx<Integer, Object>> mapa = new LinkedHashMap<>();
-                    List<Integer> collect = items;
                     mapa.put("Name", i -> value.get(i).getName());
                     mapa.put("Read", i -> crackImages.get(value.get(i)));
-                    ExcelService.getExcel(collect, mapa, file);
+                    List<Integer> items = paginatedTableView.getFilteredItems();
+                    ExcelService.getExcel(items, mapa, file);
                 }).buildSaveButton()));
         HBox.setHgrow(paginatedTableView, Priority.ALWAYS);
         root.getChildren().add(paginatedTableView);
