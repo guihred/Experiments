@@ -22,11 +22,9 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import ml.data.*;
@@ -34,6 +32,7 @@ import org.slf4j.Logger;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
+import simplebuilder.SimpleTableViewBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
@@ -62,6 +61,8 @@ public class DataframeExplorer extends Application {
     private final ObjectProperty<DataframeML> dataframe = new SimpleObjectProperty<>();
     @FXML
     private PaginatedTableView dataTable;
+    @FXML
+    private TableView<XYChart.Data<String, Number>> histogram;
     @FXML
     private ProgressIndicator progress;
     @FXML
@@ -100,9 +101,19 @@ public class DataframeExplorer extends Application {
         lineChart.managedProperty().bind(lineChart.visibleProperty());
         barChart.managedProperty().bind(barChart.visibleProperty());
         pieChart.managedProperty().bind(pieChart.visibleProperty());
+        histogram.getColumns().get(0).textProperty().bind(barChart.titleProperty());
+
         columns.addListener(this::onColumnsChange);
+        SimpleTableViewBuilder.of(histogram).multipleSelection().equalColumns().copiable().savable()
+                .onKey(KeyCode.ADD, list -> addQuestion(list, true))
+                .onKey(KeyCode.SUBTRACT, list -> addQuestion(list, false));
         SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen).onKey(KeyCode.DELETE,
-                columns::remove);
+                columns::remove).addContextMenu("_Split", e -> {
+                    Entry<String, DataframeStatisticAccumulator> selectedItem =
+                            columnsList.getSelectionModel().getSelectedItem();
+                    int indexOf = dataframe.get().cols().indexOf(selectedItem.getKey());
+                    CSVUtils.splitFile(dataframe.get().getFile(), indexOf);
+                });
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
         pieChart.visibleProperty().bind(pieChart.titleProperty().isNotEmpty());
@@ -200,6 +211,23 @@ public class DataframeExplorer extends Application {
         }
     }
 
+    private void addQuestion(List<Data<String, Number>> list, boolean add) {
+        if (list.isEmpty()) {
+            return;
+        }
+        QuestionType type = list.size() == 1 ? QuestionType.EQ : QuestionType.IN;
+        String collect = list.stream().map(Data<String, Number>::getXValue).collect(Collectors.joining(";"));
+        Entry<String, DataframeStatisticAccumulator> selectedItem =
+                columns.stream().filter(e -> e.getKey().equals(barChart.getTitle())).findFirst().orElse(null);
+        if (type != null && selectedItem != null) {
+            String colName = selectedItem.getKey();
+            String text2 = collect;
+            Object tryNumber = getQueryObject(type, colName, text2);
+            Question question = new Question(colName, tryNumber, type, !add);
+            questions.add(question);
+        }
+    }
+
     private Object getQueryObject(QuestionType type, String colName, String text2) {
         if (type == QuestionType.IN) {
             List<Object> arrayList = new ArrayList<>();
@@ -238,6 +266,7 @@ public class DataframeExplorer extends Application {
         ObservableList<PieChart.Data> pieData = ListHelper.mapping(barList,
                 e -> new PieChart.Data(String.format("(%d) %s", e.getYValue().intValue(), e.getXValue()),
                         e.getYValue().doubleValue()));
+        histogram.setItems(barList);
         Class<? extends Comparable<?>> format = val.getValue().getFormat();
         if (format == String.class) {
             Map<String, Integer> countMap = val.getValue().getCountMap();
@@ -397,7 +426,7 @@ public class DataframeExplorer extends Application {
                     dataList.add(others);
                 }
             } else {
-                arrayList2.sort(Comparator.comparing(keyExtractor));
+                arrayList2.sort(Comparator.comparing(keyExtractor).reversed());
                 dataList.addAll(arrayList2);
             }
         });

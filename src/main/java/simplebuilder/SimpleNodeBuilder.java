@@ -1,22 +1,45 @@
 package simplebuilder;
 
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.effect.Effect;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 @SuppressWarnings("unchecked")
 public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> implements SimpleBuilder<T> {
     protected T node;
+    private ContextMenu contextMenu;
 
     public SimpleNodeBuilder(final T shape) {
         this.node = shape;
+    }
+
+    public Z addContextMenu(String text, EventHandler<ActionEvent> value) {
+        contextMenu = SupplierEx.nonNull(contextMenu, new ContextMenu());
+        MenuItem item = new MenuItem(text);
+        item.setOnAction(actionEvent -> {
+            value.handle(actionEvent);
+            contextMenu.hide();
+        });
+        EventHandler<? super MouseEvent> onMousePressed = node.getOnMousePressed();
+        node.setOnMousePressed(e -> {
+            RunnableEx.runIf(onMousePressed, h -> h.handle(e));
+            if (e.isSecondaryButtonDown()) {
+                contextMenu.show(node, e.getScreenX(), e.getScreenY());
+            }
+        });
+        contextMenu.getItems().add(item);
+        return (Z) this;
     }
 
     @Override
@@ -151,7 +174,7 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
         return (Z) this;
     }
 
-    public static void onKeyReleased(Node node,final EventHandler<? super KeyEvent> value) {
+    public static void onKeyReleased(Node node, final EventHandler<? super KeyEvent> value) {
         EventHandler<? super KeyEvent> onKeyReleased = node.getOnKeyReleased();
         node.setOnKeyReleased(e -> {
             RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));

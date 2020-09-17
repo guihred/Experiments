@@ -70,6 +70,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
 
     }
 
+
     public SimpleListViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));

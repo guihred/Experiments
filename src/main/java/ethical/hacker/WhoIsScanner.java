@@ -33,6 +33,8 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class WhoIsScanner {
+    private static final String REVERSE_DNS = "HostName";
+
     private static final String SANS_API_URL = "http://isc.sans.edu/api/ip/";
 
     public static final String IP_REGEX = "^\\d+\\.\\d+\\.\\d+\\.\\d+$";
@@ -170,20 +172,23 @@ public class WhoIsScanner {
         DataframeML dataframe = builder.build();
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         ObservableMap<String, Map<String, String>> ipInfo = FXCollections.observableHashMap();
-        ipInfo.addListener((Change<? extends String, ? extends Map<String, String>> e) -> count.set(e.getMap().size()));
+        ipInfo.addListener((Change<? extends String, ? extends Map<String, String>> e) -> count
+                .set(count.get() + e.getValueAdded().size()));
         DataframeUtils.crossFeatureObject(dataframe, "Rede",
                 e -> ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)).get("network"),
                 ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, "Owner", e -> {
-            Map<String, String> first =
-                    ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip));
-            return first.getOrDefault("as_owner", first.get("asname"));
+            return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)), "asname",
+                    "as_owner");
         }, ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, "Country", e -> {
-            Map<String, String> first =
-                    ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip));
-            return first.getOrDefault("country", first.get("ascountry"));
+            return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)), "country",
+                    "ascountry");
         }, ipColumn);
+        DataframeUtils.crossFeatureObject(dataframe, REVERSE_DNS,
+                e -> getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)),
+                        REVERSE_DNS),
+                ipColumn);
         return dataframe;
     }
 
@@ -197,13 +202,16 @@ public class WhoIsScanner {
         if (ip.matches("^10\\..+")) {
             Map<String, String> hashMap = new HashMap<>();
             InetAddress ia = SupplierEx.get(() -> toInetAddress(ip));
-            hashMap.put("CanonicalHostName", ia.getCanonicalHostName());
-            hashMap.put("HostAddress", ia.getHostAddress());
-            hashMap.put("HostName", ia.getHostName());
+            hashMap.put(REVERSE_DNS, ia.getCanonicalHostName());
             return hashMap;
         }
-
-        return SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(ip), () -> whoIsScanner.whoIsScan(ip));
+        Map<String, String> first =
+                SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(ip), () -> whoIsScanner.whoIsScan(ip));
+        if (ip.matches("^200\\..+")) {
+            InetAddress ia = SupplierEx.get(() -> toInetAddress(ip));
+            first.put(REVERSE_DNS, ia.getCanonicalHostName());
+        }
+        return first;
     }
 
     public static String getLastNumberField(BaseDataframe dataframe) {
@@ -265,6 +273,11 @@ public class WhoIsScanner {
     private static String getIPColumn(DataframeBuilder builder) {
         return builder.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
                 .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
+    }
+
+    private static String getKey(Map<String, String> first, String... keys) {
+        return Stream.of(keys).map(first::get).filter(Objects::nonNull).findFirst().orElse(null);
+
     }
 
     private static InetAddress toInetAddress(String ip) throws UnknownHostException {

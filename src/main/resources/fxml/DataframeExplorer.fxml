@@ -2,6 +2,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.event.*?>
+<?import javafx.scene.control.cell.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.geometry.*?>
@@ -69,27 +70,46 @@
 		<TabPane fx:id="tabPane0" tabMaxHeight="22.0" HBox.hgrow="ALWAYS"
 			tabMinHeight="22.0">
 			<tabs>
+				<Tab text="Data Table">
+					<content>
+						<PaginatedTableView fx:id="dataTable" />
+					</content>
+				</Tab>
 				<Tab text="Pie Chart">
 					<content>
-						<PieChart fx:id="pieChart" legendVisible="false" animated="false">
+						<PieChart fx:id="pieChart" legendVisible="false"
+							animated="false">
 						</PieChart>
+					</content>
+				</Tab>
+				<Tab text="Histogram">
+					<content>
+						<TableView fx:id="histogram">
+							<columns>
+								<TableColumn text="Name">
+									<cellValueFactory>
+										<PropertyValueFactory property="xValue" />
+									</cellValueFactory>
+								</TableColumn>
+								<TableColumn text="Value">
+									<cellValueFactory>
+										<PropertyValueFactory property="yValue" />
+									</cellValueFactory>
+								</TableColumn>
+							</columns>
+						</TableView>
 					</content>
 				</Tab>
 				<Tab text="Bar Chart">
 					<content>
 						<BarChart fx:id="barChart" visible="false" categoryGap="0">
 							<xAxis>
-								<CategoryAxis />
+								<CategoryAxis side="LEFT" />
 							</xAxis>
 							<yAxis>
-								<NumberAxis />
+								<NumberAxis side="BOTTOM" />
 							</yAxis>
 						</BarChart>
-					</content>
-				</Tab>
-				<Tab text="Data Table">
-					<content>
-						<PaginatedTableView fx:id="dataTable" />
 					</content>
 				</Tab>
 				<Tab text="Line Chart">
@@ -97,10 +117,10 @@
 						<LineChart fx:id="lineChart" verticalGridLinesVisible="false"
 							legendSide="RIGHT" visible="false">
 							<yAxis>
-								<NumberAxis side="LEFT" tickUnit="10.0" upperBound="100.0" />
+								<NumberAxis side="BOTTOM" tickUnit="10.0" upperBound="100.0" />
 							</yAxis>
 							<xAxis>
-								<NumberAxis side="BOTTOM" tickUnit="10.0" upperBound="100.0" />
+								<NumberAxis side="LEFT" tickUnit="10.0" upperBound="100.0" />
 							</xAxis>
 						</LineChart>
 					</content>

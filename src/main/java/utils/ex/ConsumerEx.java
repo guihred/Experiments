@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 public interface ConsumerEx<T> {
     void accept(T t) throws Exception;
 
-    static <M>void accept(ConsumerEx<M> run, M t) {
+    static <M> void accept(ConsumerEx<M> run, M t) {
         ConsumerEx.makeConsumer(run).accept(t);
     }
 

@@ -109,6 +109,18 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public SimpleTableViewBuilder<T> onKey(KeyCode code, ConsumerEx<List<T>> object) {
+        SimpleNodeBuilder.onKeyReleased(node, e -> {
+            if (code == e.getCode()) {
+                List<T> selectedItem = node.getSelectionModel().getSelectedItems();
+                ConsumerEx.accept(object, selectedItem);
+            }
+        });
+
+        return this;
+
+    }
+
     public SimpleTableViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         node.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
@@ -228,15 +240,13 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public static <T> void saveToFile(TableView<T> table, File f) throws IOException {
         List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
         if (selectedItems.isEmpty()) {
-            selectedItems =
-                    IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
+            selectedItems = IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
         }
 
         String collect2 = table.getColumns().stream().map(TableColumn<T, ?>::getText)
                 .collect(Collectors.joining("\",\"", "\"", "\""));
-        String collect = selectedItems.stream()
-                .map(l -> table.getColumns().stream().map(e -> Objects.toString(e.getCellData(l), ""))
-                        .collect(Collectors.joining("\",\"", "\"", "\"")))
+        String collect = selectedItems.stream().map(l -> table.getColumns().stream()
+                .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\",\"", "\"", "\"")))
                 .collect(Collectors.joining("\n"));
         Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
     }

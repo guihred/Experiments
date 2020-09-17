@@ -16,6 +16,13 @@ public class Question {
         this.type = type;
     }
 
+    public Question(String colName, Object ob, QuestionType type, boolean not) {
+        this.colName = colName;
+        this.ob = ob;
+        this.type = type;
+        this.not = not;
+    }
+
     public boolean answer(Object ob1) {
         boolean execute = type.execute(ob1, ob);
         return not ? !execute : execute;
