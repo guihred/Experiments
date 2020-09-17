@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Side;
@@ -22,6 +23,8 @@ public class AutocompleteField extends TextField {
     private boolean popupHidden;
     private String textOccurenceStyle = "-fx-font-weight: bold; -fx-fill: red;";
     protected int maxEntries = 10;
+
+    private String wordSeparator = " ";
 
     public AutocompleteField() {
         filteredEntries.addAll(entries);
@@ -45,6 +48,10 @@ public class AutocompleteField extends TextField {
         return textOccurenceStyle;
     }
 
+    public String getWordSeparator() {
+        return wordSeparator;
+    }
+
     public boolean isCaseSensitive() {
         return caseSensitive;
     }
@@ -57,7 +64,7 @@ public class AutocompleteField extends TextField {
         this.caseSensitive = caseSensitive;
     }
 
-    public void  setEntries(Collection<? extends String> c) {
+    public void setEntries(Collection<? extends String> c) {
         entries.clear();
         entries.addAll(c);
     }
@@ -74,9 +81,13 @@ public class AutocompleteField extends TextField {
         this.textOccurenceStyle = textOccurenceStyle;
     }
 
+    public void setWordSeparator(String wordSeparator) {
+        this.wordSeparator = wordSeparator;
+    }
+
     protected Collection<String> searchResult(String s) {
-        return entries.stream().filter(m -> StringUtils.contains(m, s))
-                .limit(maxEntries + 1L).collect(Collectors.toList());
+        return entries.stream().filter(m -> StringUtils.contains(m, s)).limit(maxEntries + 1L)
+                .collect(Collectors.toList());
     }
 
     private void addSearches(LinkedList<String> searchResult, String text) {
@@ -123,13 +134,15 @@ public class AutocompleteField extends TextField {
             return;
         }
         entriesPopup.hide();
-        if (text.contains(" ")) {
-            String[] split = text.split(" ");
+        if (text.contains(wordSeparator)) {
+            String[] split = text.split(wordSeparator);
             if (split.length > 0) {
                 String s = split[split.length - 1];
+                String collect = Stream.of(split).limit(split.length - 1L).collect(Collectors.joining(wordSeparator));
+
                 Collection<String> wordsNearestSum = searchResult(s);
-                searchResult.addAll(wordsNearestSum.stream().filter(e -> !s.equals(e)).map(e -> text + " " + e)
-                        .collect(Collectors.toList()));
+                searchResult.addAll(wordsNearestSum.stream().filter(e -> !s.equals(e))
+                        .map(e -> collect + wordSeparator + e).collect(Collectors.toList()));
                 filteredEntries.clear();
                 filteredEntries.addAll(searchResult);
                 if (!isPopupHidden()) {

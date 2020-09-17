@@ -46,13 +46,13 @@
 								</FXCollections>
 							</items>
 						</ComboBox>
-						<AutocompleteField fx:id="text" >
+						<AutocompleteField fx:id="text" wordSeparator=",">
 							<padding>
 								<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
 							</padding>
 						</AutocompleteField>
 						<Button alignment="CENTER" fx:id="add" id="Add" onAction="#onActionAdd"
-							text="+" HBox.hgrow="ALWAYS" textFill="0x333333ff" minWidth="30">
+							text="+" HBox.hgrow="ALWAYS" textFill="0x333333ff" minWidth="35">
 							<padding>
 								<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 							</padding>

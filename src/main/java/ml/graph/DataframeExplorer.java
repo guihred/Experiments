@@ -203,7 +203,7 @@ public class DataframeExplorer extends Application {
     private Object getQueryObject(QuestionType type, String colName, String text2) {
         if (type == QuestionType.IN) {
             List<Object> arrayList = new ArrayList<>();
-            for (String string : text2.split("[,; \t\n]+")) {
+            for (String string : text2.split("[,;\t\n]+")) {
                 arrayList.add(DataframeUtils.tryNumber(getDataframe(), colName, string));
             }
             return arrayList;
@@ -286,8 +286,8 @@ public class DataframeExplorer extends Application {
             List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
             if (!getDataframe().isLoaded()) {
                 Map<Integer, Map<String, Object>> cache = new HashMap<>();
-                List<String> asList = Arrays.asList("Header", "Count", "Max", "Mean", "Min", "Median25",
-                        "Median50", "Median75", "Sum");
+                List<String> asList = Arrays.asList("Header", "Mean", "Max", "Min", "Distinct", "Median25", "Median50",
+                        "Median75", "Sum");
                 for (String key : asList) {
                     dataTable.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
                 }
@@ -345,9 +345,8 @@ public class DataframeExplorer extends Application {
     }
 
     private void toggleQuestion(Question t) {
-        questions.remove(t);
         t.toggleNot();
-        questions.add(t);
+        questions.set(questions.indexOf(t), t);
     }
 
     public static void main(String[] args) {

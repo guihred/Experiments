@@ -1,6 +1,8 @@
 
 package ml.data;
 
+import java.util.Objects;
+
 public class Question {
     private final String colName;
     private final Object ob;
@@ -19,12 +21,34 @@ public class Question {
         return not ? !execute : execute;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Question other = (Question) obj;
+        return Objects.equals(colName, other.colName) && Objects.equals(not, other.not) && Objects.equals(ob, other.ob)
+                && Objects.equals(type, other.type);
+
+    }
+
     public String getColName() {
         return colName;
     }
 
     public double getInfoGain() {
         return infoGain;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(colName, ob, type, not);
     }
 
     public void setInfoGain(double infoGain) {

@@ -97,6 +97,10 @@ public class DataframeStatisticAccumulator {
         return countMap;
     }
 
+    public int getDistinct() {
+        return distinct;
+    }
+
     public Class<? extends Comparable<?>> getFormat() {
         return formatMap.get(header);
     }
