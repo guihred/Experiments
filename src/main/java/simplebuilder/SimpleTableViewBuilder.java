@@ -230,9 +230,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public static <T> void saveContent(TableView<T> table, KeyEvent ev) {
         if (ev.isControlDown() && ev.getCode() == KeyCode.S) {
             new FileChooserBuilder().initialFilename(Objects.toString(table.getId(), "table") + ".csv")
-                    .extensions("CSV", "*.csv").onSelect(f -> {
-                        saveToFile(table, f);
-                    }).saveFileAction(ev);
+                    .extensions("CSV", "*.csv").onSelect(f -> saveToFile(table, f)).saveFileAction(ev);
 
         }
     }

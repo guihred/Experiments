@@ -8,7 +8,7 @@ public class Question {
     private final Object ob;
     private QuestionType type = QuestionType.EQ;
     private double infoGain;
-    private boolean not = false;
+    private boolean not;
 
     public Question(String colName, Object ob, QuestionType type) {
         this.colName = colName;

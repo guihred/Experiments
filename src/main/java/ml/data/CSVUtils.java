@@ -108,9 +108,7 @@ public class CSVUtils {
     public static String[] getDataframeCSVs() {
         File file = getOutFile();
         String regex = "WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv";
-        List<Path> list = FileTreeWalker.getFirstFileMatch(file, name -> {
-            return name.getFileName().toString().matches(regex);
-        });
+        List<Path> list = FileTreeWalker.getFirstFileMatch(file, path -> path.getFileName().toString().matches(regex));
         if (!list.isEmpty()) {
             return list.stream().map(e -> file.toPath().relativize(e)).map(Path::toString).toArray(String[]::new);
         }
@@ -153,14 +151,10 @@ public class CSVUtils {
         Map<String, Writer> writersBytype = new HashMap<>();
         RunnableEx.run(() -> {
             try (Scanner scanner = new Scanner(source, StandardCharsets.UTF_8.displayName())) {
-                String firstLine = null;
+                String firstLine = scanner.nextLine();
                 while (scanner.hasNext()) {
                     String nextLine = scanner.nextLine();
                     List<String> parseLine = CSVUtils.parseLine(nextLine);
-                    if (firstLine == null) {
-                        firstLine = nextLine;
-                        continue;
-                    }
                     if (parseLine.size() > columnIndex) {
                         final String fline = firstLine;
                         String string = parseLine.get(columnIndex);
@@ -169,7 +163,6 @@ public class CSVUtils {
                     }
                 }
                 writersBytype.values().forEach(ConsumerEx.makeConsumer(Writer::close));
-
             }
             LOGGER.info("FILE {} WAS SPLIT", source);
         });

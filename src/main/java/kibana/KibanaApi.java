@@ -36,6 +36,8 @@ import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public class KibanaApi {
+    private static final int WAIT_TIME = 100_000;
+
     private static final Logger LOG = HasLogging.log();
 
     private static final ImmutableMap<String,
@@ -162,7 +164,7 @@ public class KibanaApi {
         ExtractUtils.insertProxyConfig();
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
-        get.setConfig(RequestConfig.custom().setSocketTimeout(100000).build());
+        get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());
         get.setEntity(new StringEntity(content, ContentType.APPLICATION_JSON));
         GET_HEADERS.forEach(get::addHeader);
         HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {

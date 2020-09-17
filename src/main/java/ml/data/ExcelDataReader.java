@@ -14,9 +14,6 @@ import utils.ex.RunnableEx;
 
 public class ExcelDataReader extends DataframeUtils {
     private static final Logger LOG = HasLogging.log();
-    public static void main(String[] args) {
-        readExcel(new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\export.xls"));
-    }
 
     public static DataframeML readExcel(DataframeML dataframeML2, File excelFile) {
         LOG.info("READING {}", excelFile);

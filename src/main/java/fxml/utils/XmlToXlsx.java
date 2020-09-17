@@ -5,8 +5,8 @@ import extract.ExcelService;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.ObjIntConsumer;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
@@ -94,15 +94,15 @@ public final class XmlToXlsx {
         return hashMap;
     }
 
-    private static void foreach(NodeList childNodes, BiConsumer<Node, Integer> cons) {
-        for (int j = 0; j < childNodes.getLength(); j++) {
-            cons.accept(childNodes.item(j), j);
-        }
-    }
-
     private static void foreach(NodeList childNodes, Consumer<Node> cons) {
         for (int j = 0; j < childNodes.getLength(); j++) {
             cons.accept(childNodes.item(j));
+        }
+    }
+
+    private static void foreach(NodeList childNodes, ObjIntConsumer<Node> cons) {
+        for (int j = 0; j < childNodes.getLength(); j++) {
+            cons.accept(childNodes.item(j), j);
         }
     }
 

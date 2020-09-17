@@ -57,7 +57,7 @@ public class WhoIsScanner {
         return this;
     }
 
-    public Document evaluateURL(String url) throws Exception {
+    public Document evaluateURL(String url) throws IOException {
         String screenshotsFolder = "screenshots/";
         File htmlFile = FileTreeWalker
                 .getFirstFileMatch(ResourceFXUtils.getOutFile("screenshots"),
@@ -158,7 +158,8 @@ public class WhoIsScanner {
         }, (path, ex) -> LOG.error("ERROR COPYING {}", path, ex)));
     }
 
-    public static Document evaluateURL(String url, String name, String waitStr, String... subFolder) throws Exception {
+    public static Document evaluateURL(String url, String name, String waitStr, String... subFolder)
+            throws IOException {
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         return whoIsScanner.name(name).waitStr(waitStr).subFolder(subFolder).evaluateURL(url);
     }
@@ -177,14 +178,14 @@ public class WhoIsScanner {
         DataframeUtils.crossFeatureObject(dataframe, "Rede",
                 e -> ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)).get("network"),
                 ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, "Owner", e -> {
-            return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)), "asname",
-                    "as_owner");
-        }, ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, "Country", e -> {
-            return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)), "country",
-                    "ascountry");
-        }, ipColumn);
+        DataframeUtils.crossFeatureObject(dataframe, "Owner",
+                e -> getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)), "asname",
+                        "as_owner"),
+                ipColumn);
+        DataframeUtils.crossFeatureObject(dataframe, "Country",
+                e -> getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)),
+                        "country", "ascountry"),
+                ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, REVERSE_DNS,
                 e -> getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)),
                         REVERSE_DNS),

@@ -245,7 +245,7 @@ public final class ExtractUtils {
 
     @SafeVarargs
     public static Document renderPage(String url, Map<String, String> cookies, String loadingStr,
-            ConsumerEx<PhantomJSDriver>... onload) throws Exception {
+            ConsumerEx<PhantomJSDriver>... onload) {
         PhantomJSDriverService createDefaultService =
                 new PhantomJSDriverService.Builder().usingPhantomJSExecutable(ExtractUtils.PHANTOM_JS.toFile())
                         .usingAnyFreePort().withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log")).build();
@@ -262,7 +262,7 @@ public final class ExtractUtils {
                 pageSource = ghostDriver.getPageSource();
             }
             for (ConsumerEx<PhantomJSDriver> consumerEx : onload) {
-                consumerEx.accept(ghostDriver);
+                ConsumerEx.accept(consumerEx, ghostDriver);
             }
             Set<Cookie> cookies2 = ghostDriver.manage().getCookies();
             for (Cookie cookie : cookies2) {
@@ -274,8 +274,7 @@ public final class ExtractUtils {
         }
     }
 
-    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr, File outFile)
-            throws Exception {
+    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr, File outFile) {
         return renderPage(url, cookies, loadingStr, driver -> copy(driver.getScreenshotAs(OutputType.FILE), outFile));
     }
 

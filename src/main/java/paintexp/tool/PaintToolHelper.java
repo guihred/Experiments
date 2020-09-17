@@ -131,7 +131,6 @@ public final class PaintToolHelper {
         Text text2 = new Text(changeCase);
         VBox vBox = new VBox(text2);
         children.add(vBox);
-        ObservableList<Node> effectsOptions = vBox.getChildren();
         ObservableList<ObservableList<Double>> observableArrayList = FXCollections.observableArrayList();
         observableArrayList.add(FXCollections.observableArrayList(1.));
         observableArrayList.add(FXCollections.observableArrayList(1., 1.));
@@ -151,7 +150,7 @@ public final class PaintToolHelper {
                 }).build();
         selectedItem.strokeWidthProperty().addListener((ob, old, val) -> property
                 .setAll(comboBox.getValue().stream().map(e -> e * val.doubleValue()).collect(Collectors.toList())));
-        effectsOptions.add(comboBox);
+        vBox.getChildren().add(comboBox);
     }
 
     private static <T> void bindBidirectional(Property<T> prop1, Property<T> prop2) {

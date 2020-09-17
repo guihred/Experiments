@@ -245,7 +245,6 @@ public class DataframeExplorer extends Application {
                 LOG.info("STOPPING THREAD");
                 currentThread.interrupt();
                 setDataframe(null);
-
             }
         });
     }
@@ -470,7 +469,10 @@ public class DataframeExplorer extends Application {
         }
         ObservableList<T> columns = headersCombo.getItems();
         int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
-        return columns.isEmpty() || selectedIndex < 0 ? null : columns.get(selectedIndex % columns.size());
+        if (!columns.isEmpty() && selectedIndex >= 0) {
+            return columns.get(selectedIndex % columns.size());
+        }
+        return null;
     }
 
     private static Object getStatAt(List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList,
