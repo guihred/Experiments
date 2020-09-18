@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -52,20 +51,6 @@ public abstract class EthicalHackApp extends Application {
 
     protected EthicalHackApp() {
     }
-
-    public static void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder,
-        final Collection<String> keySet) {
-        simpleTableViewBuilder.getColumns().clear();
-        keySet.forEach(key -> {
-            TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
-            column.setSortable(true);
-            column.setCellValueFactory(
-                    param -> new SimpleStringProperty(param.getValue().getOrDefault(key, "-")));
-            column.prefWidthProperty().bind(simpleTableViewBuilder.widthProperty().divide(keySet.size()).add(-5));
-            simpleTableViewBuilder.getColumns().add(column);
-        });
-    }
-
 
     public static synchronized void updateItem(ObservableList<Map<String, String>> items,
         ObservableMap<String, Set<String>> count1, String primaryKey, String targetKey,

@@ -15,12 +15,10 @@ import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
 import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
-import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
 public class EthicalHackController extends EthicalHackApp {
@@ -55,7 +53,7 @@ public class EthicalHackController extends EthicalHackApp {
         items.addAll(currentTasks);
         Set<String> keySet =
                 items.stream().flatMap(m -> m.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new));
-        EthicalHackApp.addColumns(commonTable, keySet);
+        SimpleTableViewBuilder.addColumns(commonTable, keySet);
     }
 
     public void onActionDNSLookup() {
@@ -63,7 +61,7 @@ public class EthicalHackController extends EthicalHackApp {
         Map<String, String> nsInformation = NameServerLookup.getNSInformation(dns.getText());
         items.add(nsInformation);
         Set<String> keySet = nsInformation.keySet();
-        EthicalHackApp.addColumns(commonTable, keySet);
+        SimpleTableViewBuilder.addColumns(commonTable, keySet);
     }
 
     public void onActionIps(ActionEvent event) {
@@ -77,7 +75,7 @@ public class EthicalHackController extends EthicalHackApp {
         items.addAll(currentTasks);
         Set<String> keySet =
                 items.stream().flatMap(m -> m.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new));
-        EthicalHackApp.addColumns(commonTable, keySet);
+        SimpleTableViewBuilder.addColumns(commonTable, keySet);
     }
 
     public void onActionNetworkInformation() {
@@ -86,7 +84,7 @@ public class EthicalHackController extends EthicalHackApp {
         items.addAll(nsInformation);
         Set<String> keySet = nsInformation.stream().flatMap(m -> m.keySet().stream())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-        EthicalHackApp.addColumns(commonTable, keySet);
+        SimpleTableViewBuilder.addColumns(commonTable, keySet);
     }
 
     public void onActionPingTrace() {
@@ -99,7 +97,7 @@ public class EthicalHackController extends EthicalHackApp {
                 CommonsFX.runInPlatform(() -> {
                     if (items.isEmpty()) {
                         Set<String> keySet = nsInformation.keySet();
-                        EthicalHackApp.addColumns(commonTable, keySet);
+                        SimpleTableViewBuilder.addColumns(commonTable, keySet);
                     }
                     items.add(nsInformation);
                 });
@@ -110,7 +108,7 @@ public class EthicalHackController extends EthicalHackApp {
 
     public void onActionPortScan() {
         items.clear();
-        EthicalHackApp.addColumns(commonTable, Arrays.asList("Host", "Ports", "Route", "OS"));
+        SimpleTableViewBuilder.addColumns(commonTable, Arrays.asList("Host", "Ports", "Route", "OS"));
         RunnableEx.runNewThread(() -> {
             progressIndicator.setVisible(true);
             ObservableMap<String, List<String>> scanNetworkOpenPorts =
@@ -137,7 +135,7 @@ public class EthicalHackController extends EthicalHackApp {
         new WebsiteScanner(100, 20).getLinkNetwork(text,
                 ip -> items.add(ClassReflectionUtils.getDescriptionMap(new URL(ip), new HashMap<>())));
         List<String> fields = Arrays.asList("Protocol", "Host", "Path", "Query", "File");
-        EthicalHackApp.addColumns(commonTable, fields);
+        SimpleTableViewBuilder.addColumns(commonTable, fields);
     }
 
     public void onActionWhoIs() {
@@ -152,7 +150,7 @@ public class EthicalHackController extends EthicalHackApp {
                 List<String> keySet = addedSubList.stream().flatMap(e -> e.keySet().stream()).distinct()
                         .sorted(Comparator.comparing(e -> -asList.indexOf(e))).collect(Collectors.toList());
                 if (items.isEmpty()) {
-                    CommonsFX.runInPlatform(() -> EthicalHackApp.addColumns(commonTable, keySet));
+                    CommonsFX.runInPlatform(() -> SimpleTableViewBuilder.addColumns(commonTable, keySet));
                 }
                 items.addAll(addedSubList);
             }
@@ -160,14 +158,8 @@ public class EthicalHackController extends EthicalHackApp {
     }
 
     public void onExportExcel() {
-        Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
-        ObservableList<TableColumn<Map<String, String>, ?>> columns = commonTable.getColumns();
-        for (TableColumn<Map<String, String>, ?> tableColumn : columns) {
-            String text = tableColumn.getText();
-            mapa.put(text, t -> t.getOrDefault(text, ""));
-        }
         File outFile = ResourceFXUtils.getOutFile("xlsx/hackResult.xlsx");
-        ExcelService.getExcel(items, mapa, outFile);
+        ExcelService.getExcel(items, outFile);
         ImageFXUtils.openInDesktop(outFile);
     }
 
@@ -175,6 +167,7 @@ public class EthicalHackController extends EthicalHackApp {
     public void start(final Stage primaryStage) {
         CommonsFX.loadFXML("Ethical Hack App", "EthicalHackApp.fxml", this, primaryStage, WIDTH, WIDTH);
     }
+
 
     public static CheckBox getCheckBox(List<Integer> checkedPorts, Map<Integer, CheckBox> checkbox,
             Entry<Integer, String> e) {

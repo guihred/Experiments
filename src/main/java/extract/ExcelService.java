@@ -16,7 +16,8 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
-import utils.*;
+import utils.CommonsFX;
+import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -39,6 +40,16 @@ public final class ExcelService {
         RunnableEx.run(() -> makeExcelWithReplace(arquivo, map, outStream));
     }
 
+    public static void getExcel(List<Map<String, String>> items2, File outFile) {
+        Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
+        List<String> columns =
+                items2.stream().flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList());
+        for (String tableColumn : columns) {
+            String text = tableColumn;
+            mapa.put(text, t -> t.getOrDefault(text, ""));
+        }
+        ExcelService.getExcel(items2, mapa, outFile);
+    }
     public static <T> void getExcel(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, File file) {
         RunnableEx.run(() -> makeExcelList(lista, mapa, file));
     }

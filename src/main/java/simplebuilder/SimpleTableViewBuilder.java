@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -159,6 +160,19 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public SimpleTableViewBuilder<T> sortable(boolean value) {
         node.getColumns().forEach(e -> e.setSortable(value));
         return this;
+    }
+
+    public static void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder,
+        final Collection<String> keySet) {
+        simpleTableViewBuilder.getColumns().clear();
+        keySet.forEach(key -> {
+            TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
+            column.setSortable(true);
+            column.setCellValueFactory(
+                    param -> new SimpleStringProperty(param.getValue().getOrDefault(key, "-")));
+            column.prefWidthProperty().bind(simpleTableViewBuilder.widthProperty().divide(keySet.size()).add(-5));
+            simpleTableViewBuilder.getColumns().add(column);
+        });
     }
 
     public static <T> void copyContent(TableView<T> table, KeyEvent ev) {

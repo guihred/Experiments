@@ -1,7 +1,6 @@
 package kibana;
 
 import com.google.common.collect.ImmutableMap;
-import ethical.hacker.EthicalHackApp;
 import ethical.hacker.WhoIsScanner;
 import extract.ExcelService;
 import fxml.utils.JsonExtractor;
@@ -111,11 +110,11 @@ public class ConsultasInvestigator extends Application {
                 map.put("Owner", getFirst(ipInformation, "as_owner", "asname"));
                 map.put("Country", getFirst(ipInformation, "country", "ascountry"));
                 if (progress.getProgress() == 0) {
-                    CommonsFX.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, map.keySet()));
+                    CommonsFX.runInPlatform(() -> SimpleTableViewBuilder.addColumns(consultasTable, map.keySet()));
                 }
                 CommonsFX.runInPlatform(() -> progress.setProgress(progress.getProgress() + 1. / items.size()));
             }
-            CommonsFX.runInPlatform(() -> EthicalHackApp.addColumns(consultasTable, items.get(0).keySet()));
+            CommonsFX.runInPlatform(() -> SimpleTableViewBuilder.addColumns(consultasTable, items.get(0).keySet()));
             CommonsFX.runInPlatform(() -> progress.setProgress(1));
         });
     }
@@ -257,7 +256,7 @@ public class ConsultasInvestigator extends Application {
         List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
         CommonsFX.runInPlatform(() -> {
             if (queryObjects.getTable().getColumns().isEmpty()) {
-                EthicalHackApp.addColumns(queryObjects.getTable(),
+                SimpleTableViewBuilder.addColumns(queryObjects.getTable(),
                         remap.stream().flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList()));
             }
             queryObjects.getItems().addAll(remap);

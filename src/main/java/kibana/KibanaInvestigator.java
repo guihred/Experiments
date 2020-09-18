@@ -3,22 +3,24 @@ package kibana;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
-import ethical.hacker.EthicalHackApp;
 import ethical.hacker.TracerouteScanner;
 import extract.ExcelService;
 import java.io.File;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.*;
-import utils.ex.FunctionEx;
+import utils.CommonsFX;
+import utils.ImageFXUtils;
+import utils.ResourceFXUtils;
 import utils.ex.RunnableEx;
 
 public class KibanaInvestigator extends Application {
@@ -55,7 +57,7 @@ public class KibanaInvestigator extends Application {
                     CommonsFX.runInPlatform(() -> {
                         progressIndicator.setProgress(progressIndicator.getProgress() + 1. / split.length);
                         if (commonTable.getColumns().isEmpty()) {
-                            EthicalHackApp.addColumns(commonTable, nsInformation.keySet());
+                            SimpleTableViewBuilder.addColumns(commonTable, nsInformation.keySet());
                         }
                         items.add(nsInformation);
                     });
@@ -66,14 +68,8 @@ public class KibanaInvestigator extends Application {
     }
 
     public void onExportExcel() {
-        Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
-        ObservableList<TableColumn<Map<String, String>, ?>> columns = commonTable.getColumns();
-        for (TableColumn<Map<String, String>, ?> tableColumn : columns) {
-            String text = tableColumn.getText();
-            mapa.put(text, t -> t.getOrDefault(text, "-"));
-        }
         File outFile = ResourceFXUtils.getOutFile("xlsx/kibana.xlsx");
-        ExcelService.getExcel(items, mapa, outFile);
+        ExcelService.getExcel(items, outFile);
         ImageFXUtils.openInDesktop(outFile);
     }
 
