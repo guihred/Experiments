@@ -2,6 +2,7 @@ package furigana;
 
 import static utils.ex.FunctionEx.makeFunction;
 
+import extract.JsoupUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ExtractUtils;
+import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.*;
 import utils.fx.CrawlerTask;
 
@@ -183,10 +186,10 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private Document createDocument(String currentWord, char currentLetter) throws IOException {
         if (repeatCharacters.contains(currentLetter)) {
-            return ExtractUtils.getDocument(
+            return JsoupUtils.getDocument(
                     URL_BASE + StringSigaUtils.codificar(currentWord + currentWord.charAt(currentWord.length() - 1)));
         }
-        return ExtractUtils.getDocument(URL_BASE + StringSigaUtils.codificar(currentWord));
+        return JsoupUtils.getDocument(URL_BASE + StringSigaUtils.codificar(currentWord));
     }
 
     private void log(String a, String b) {
@@ -297,7 +300,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private static String getOnReadings(String currentWord) throws IOException {
         String url = URL_BASE + URLEncoder.encode(currentWord, "UTF-8");
-        Document parse = ExtractUtils.getDocument(url);
+        Document parse = JsoupUtils.getDocument(url);
         Optional<Element> firstRepresentation = parse.select(".concept_light-representation ").stream()
                 .filter(element -> element.select(".text").first().text().equals(currentWord)).findFirst();
         if (firstRepresentation.isPresent() && currentWord.length() > 1) {

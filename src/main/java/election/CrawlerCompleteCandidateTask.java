@@ -1,5 +1,6 @@
 package election;
 
+import extract.JsoupUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -7,7 +8,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.DateFormatUtils;
-import utils.ExtractUtils;
 import utils.ex.HasLogging;
 
 public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Integer> {
@@ -33,7 +33,7 @@ public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Intege
     private void extractCandidateInfo(Candidato candidato) {
         for (int tried = 0; tried < 3; tried++) {
             try {
-                Document parse = ExtractUtils.getDocument("https://www.todapolitica.com" + candidato.getHref());
+                Document parse = JsoupUtils.getDocument("https://www.todapolitica.com" + candidato.getHref());
                 Elements select = parse.select(".info-candidato");
                 Elements children = select.first().children();
                 String nomeCompleto = children.get(0).child(1).text();

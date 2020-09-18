@@ -1,11 +1,11 @@
 package election;
 
+import extract.JsoupUtils;
 import java.util.List;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 
@@ -26,7 +26,7 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
         while (true) {
             try {
                 String url = "https://www.todapolitica.com" + cidade.getHref() + i + "/";
-                Document parse = ExtractUtils.getDocument(url);
+                Document parse = JsoupUtils.getDocument(url);
 
                 Elements select = parse.select(".cr-js");
                 for (Element element : select) {

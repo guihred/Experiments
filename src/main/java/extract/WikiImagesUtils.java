@@ -71,7 +71,7 @@ public final class WikiImagesUtils {
 
     private static List<String> readPage(String urlString) {
         return SupplierEx.remap(() -> {
-            Document parse = ExtractUtils.getDocument(urlString);
+            Document parse = JsoupUtils.getDocument(urlString);
             LOG.info("READING PAGE {}", urlString);
             Elements kun = parse.select("img");
 

@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import extract.JsoupUtils;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -84,7 +85,7 @@ public class WebsiteScanner {
     }
 
     private List<String> getLinks(String url) throws IOException {
-        Document document = ExtractUtils.getDocument(url, cookies);
+        Document document = JsoupUtils.getDocument(url, cookies);
         return getLinks(url, document).stream().limit(linkMax).collect(Collectors.toList());
     }
 

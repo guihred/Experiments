@@ -1,6 +1,7 @@
 package election;
 
 import com.google.common.collect.ImmutableMap;
+import extract.JsoupUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
@@ -8,7 +9,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.DateFormatUtils;
-import utils.ExtractUtils;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 
@@ -57,7 +57,7 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
         int i = 1;
         while (true) {
             try {
-                Document parse = ExtractUtils.getDocument(getUrl(estado, i));
+                Document parse = JsoupUtils.getDocument(getUrl(estado, i));
 
                 Elements select = parse.select(".card-candidate-results");
                 boolean umEleito = false;
@@ -79,7 +79,7 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
                     boolean equals = "Eleito".equals(text2);
                     umEleito |= equals;
                     candidato.setEleito(equals);
-                    Document detailsDocument = ExtractUtils.getDocument(ELEICOES_2018_URL + href);
+                    Document detailsDocument = JsoupUtils.getDocument(ELEICOES_2018_URL + href);
                     Map<String, String> fields = new HashMap<>();
                     Elements children = detailsDocument.select(".info-candidato").first().children();
                     String nomeCompleto = children.get(0).child(1).text();

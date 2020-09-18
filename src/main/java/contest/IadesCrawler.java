@@ -4,6 +4,7 @@ import static contest.IadesHelper.saveContestValues;
 import static utils.CommonsFX.onCloseWindow;
 import static utils.ExtractUtils.addDomain;
 
+import extract.JsoupUtils;
 import java.net.URL;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
@@ -109,7 +110,7 @@ public class IadesCrawler extends Application {
         CommonsFX.runInPlatform(() -> {
             URL url2 = new URL(url);
             currentDomain.set(url2.getProtocol() + "://" + url2.getHost());
-            Document doc = ExtractUtils.getDocument(url);
+            Document doc = JsoupUtils.getDocument(url);
             List<Entry<String, String>> l = getLinks(doc, entry, level);
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
             l.stream().sorted(Comparator.comparing(Entry<String, String>::getKey))

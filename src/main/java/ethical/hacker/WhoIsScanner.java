@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import extract.JsoupUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -129,13 +130,13 @@ public class WhoIsScanner {
             return Jsoup.parse(outFile, StandardCharsets.UTF_8.name());
         }
         String scanIP = SANS_API_URL + ip;
-        Document document = ExtractUtils.getDocument(scanIP, cookies);
+        Document document = JsoupUtils.getDocument(scanIP, cookies);
         Files.write(outFile.toPath(), Arrays.asList(document.outerHtml()), StandardCharsets.UTF_8);
         return document;
     }
 
     private void repositionFiles(String screenshotsFolder, Document renderPage) throws IOException {
-        List<String> tables = ExtractUtils.getTables(renderPage);
+        List<String> tables = JsoupUtils.getTables(renderPage);
         File outFile = ResourceFXUtils.getOutFile(screenshotsFolder + name + ".txt");
         Files.write(outFile.toPath(), tables, StandardCharsets.UTF_8);
         List<Path> firstFileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile("screenshots"),

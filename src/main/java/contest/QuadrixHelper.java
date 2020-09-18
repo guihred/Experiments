@@ -11,6 +11,7 @@ import static utils.ex.SupplierEx.getIgnore;
 import static utils.ex.SupplierEx.orElse;
 
 import contest.db.Organization;
+import extract.JsoupUtils;
 import extract.PdfUtils;
 import java.io.File;
 import java.io.IOException;
@@ -68,7 +69,7 @@ public final class QuadrixHelper {
     }
 
     public static Document getDocumentCookies(URL url2) throws IOException {
-        return ExtractUtils.getDocument(url2.toExternalForm(), COOKIES);
+        return JsoupUtils.getDocument(url2.toExternalForm(), COOKIES);
     }
 
     public static File getFileFromPage(String text, String url3) throws IOException {
@@ -76,7 +77,7 @@ public final class QuadrixHelper {
         if (!text.endsWith(".pdf")) {
             return ExtractUtils.getFile(text, url3);
         }
-        String fileParameter = decodificar(ExtractUtils.executeRequest(url3, COOKIES).url().getQuery().split("=")[1]);
+        String fileParameter = decodificar(JsoupUtils.executeRequest(url3, COOKIES).url().getQuery().split("=")[1]);
         return SupplierEx
             .makeSupplier(() -> ExtractUtils.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
             .get();
@@ -85,7 +86,7 @@ public final class QuadrixHelper {
     public static List<File> getFilesFromPage(Entry<String, String> link) {
         String url = link.getValue();
         URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(addQuadrixDomain(url)));
-        Document document = SupplierEx.getIgnore(() -> ExtractUtils.getDocument(url2.toExternalForm(), COOKIES));
+        Document document = SupplierEx.getIgnore(() -> JsoupUtils.getDocument(url2.toExternalForm(), COOKIES));
         if (document == null) {
             return Collections.emptyList();
         }

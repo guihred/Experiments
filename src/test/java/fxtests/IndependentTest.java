@@ -5,7 +5,6 @@ import static fxtests.FXTesting.runInTime;
 import static java.util.stream.Collectors.toList;
 
 import cubesystem.ElementWiseOp;
-import ethical.hacker.JsoupExample;
 import ex.j9.Ch1;
 import ex.j9.Ch3;
 import ex.j9.Employee;
@@ -13,6 +12,7 @@ import ex.j9.ch4.Ch4;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.LineCh4;
 import ex.j9.ch4.PointCh4;
+import extract.JsoupUtils;
 import extract.QuickSortML;
 import extract.WikiImagesUtils;
 import fxml.utils.JsonExtractor;
@@ -186,26 +186,26 @@ public class IndependentTest {
         String ABOUT_HTML = "About.html";
         File file = ResourceFXUtils.toFile(ABOUT_HTML);
         URL url = ResourceFXUtils.convertToURL(file);
-        measureTime("JsoupExample.displayAllElements", () -> JsoupExample.displayAllElements(file));
+        measureTime("JsoupExample.displayAllElements", () -> JsoupUtils.displayAllElements(file));
         measureTime("JsoupExample.displayAllElementsWithOutline",
-                () -> JsoupExample.displayAllElementsWithOutline(file));
-        measureTime("JsoupExample.extractDataFromHTML", () -> JsoupExample.extractDataFromHTML(file));
+                () -> JsoupUtils.displayAllElementsWithOutline(file));
+        measureTime("JsoupExample.extractDataFromHTML", () -> JsoupUtils.extractDataFromHTML(file));
         measureTime("JsoupExample.extractingJavaScriptDataWithJsoup",
-                () -> JsoupExample.extractingJavaScriptDataWithJsoup());
-        measureTime("JsoupExample.extractTwitterMarkup", () -> JsoupExample.extractTwitterMarkup());
-        measureTime("JsoupExample.extractURL", () -> JsoupExample.extractURL("http://stackoverflow.com"));
-        measureTime("JsoupExample.extractURLPartialHTML", () -> JsoupExample.extractURLPartialHTML());
-        measureTime("JsoupExample.filterMailToLinks", () -> JsoupExample.filterMailToLinks());
+                () -> JsoupUtils.extractingJavaScriptDataWithJsoup());
+        measureTime("JsoupExample.extractTwitterMarkup", () -> JsoupUtils.extractTwitterMarkup());
+        measureTime("JsoupExample.extractURL", () -> JsoupUtils.extractURL("http://stackoverflow.com"));
+        measureTime("JsoupExample.extractURLPartialHTML", () -> JsoupUtils.extractURLPartialHTML());
+        measureTime("JsoupExample.filterMailToLinks", () -> JsoupUtils.filterMailToLinks());
         final String username = "guih.red@gmail.com";
         final String pass = "";
-        measureTime("JsoupExample.normalParse", () -> JsoupExample.normalParse(file));
-        measureTime("JsoupExample.renderedInTheBrowser", () -> JsoupExample.renderedInTheBrowser(url));
-        measureTime("JsoupExample.selectingElements", () -> JsoupExample.selectingElements());
+        measureTime("JsoupExample.normalParse", () -> JsoupUtils.normalParse(file));
+        measureTime("JsoupExample.renderedInTheBrowser", () -> JsoupUtils.renderedInTheBrowser(url));
+        measureTime("JsoupExample.selectingElements", () -> JsoupUtils.selectingElements());
         String url1 = "yourWebsite.com/loginUrl";
         String value = "yourUsername";
         String value2 = "yourPassword";
-        measureTime("JsoupExample.simpleAuthentication", () -> JsoupExample.simpleAuthentication(url1, value, value2));
-        measureTime("JsoupExample.loginGitHub", () -> JsoupExample.loginGitHub(username, pass));
+        measureTime("JsoupExample.simpleAuthentication", () -> JsoupUtils.simpleAuthentication(url1, value, value2));
+        measureTime("JsoupExample.loginGitHub", () -> JsoupUtils.loginGitHub(username, pass));
 
     }
 

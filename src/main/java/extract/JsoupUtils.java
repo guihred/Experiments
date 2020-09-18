@@ -1,4 +1,4 @@
-package ethical.hacker;
+package extract;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -16,20 +16,21 @@ import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
-
-public final class JsoupExample {
+public final class JsoupUtils {
     private static final String USER_AGENT =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0";
     private static final Logger LOG = HasLogging.log();
 
-    private JsoupExample() {
+    private JsoupUtils() {
     }
 
     public static String displayAllElements(File file) throws IOException {
@@ -43,6 +44,18 @@ public final class JsoupExample {
         Document doc = Jsoup.parse(html);
         doc.outputSettings().outline(true);
         return doc.html();
+    }
+
+    public static Response executeRequest(String url, Map<String, String> cookies) throws IOException {
+        Connection connect = HttpConnection.connect(url);
+        if (!ExtractUtils.isNotProxied()) {
+            addProxyAuthorization(connect);
+        }
+        connect.timeout(ExtractUtils.HUNDRED_SECONDS);
+        connect.cookies(cookies);
+        connect.ignoreContentType(true);
+        connect.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
+        return connect.execute();
     }
 
     // A simple authentication POST request with Jsoup
@@ -148,6 +161,35 @@ public final class JsoupExample {
         LOG.info("{}", links);
     }
 
+    public static Document getDocument(final String url) throws IOException {
+        Connection connect = Jsoup.connect(url);
+        if (!ExtractUtils.isNotProxied()) {
+            addProxyAuthorization(connect);
+        }
+        return connect
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0")
+                .get();
+    }
+
+    public static Document getDocument(String url, Map<String, String> cookies) throws IOException {
+        Response execute = executeRequest(url, cookies);
+        Map<String, String> cookies2 = execute.cookies();
+        cookies.putAll(cookies2);
+        return execute.parse();
+    }
+
+    public static List<String> getTables(Element renderPage) {
+        Elements select = renderPage.select("table");
+        List<String> arrayList = new ArrayList<>();
+        for (Element table : select) {
+            String collect = table.children().stream().flatMap(tbody -> tbody.children().stream())
+                    .map(tr -> tr.children().stream().map(Element::text).collect(Collectors.joining("\t")))
+                    .collect(Collectors.joining("\n"));
+            arrayList.add(collect);
+        }
+        return arrayList;
+    }
+
     // Below is an example request that will log you into the GitHub website
     // # Constants used in this example
     public static void loginGitHub(String username, String pass) throws IOException {
@@ -235,10 +277,14 @@ public final class JsoupExample {
         LOG.info("headline {}", headline);
     }
 
-
     public static Response simpleAuthentication(String url, String value, String value2) throws IOException {
         return Jsoup.connect(url).userAgent(USER_AGENT).data("username", value).data("pass" + "word", value2)
                 .method(Method.POST).execute();
+    }
+
+
+    private static void addProxyAuthorization(Connection connect) {
+        connect.header("Proxy-Authorization", "Basic " + ExtractUtils.getEncodedAuthorization());
     }
 
     public static class ReadAllLinks {

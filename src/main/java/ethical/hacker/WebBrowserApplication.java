@@ -4,6 +4,7 @@ import static extract.DocumentHelper.addProperties;
 import static extract.DocumentHelper.onDocumentChange;
 
 import extract.DocumentHelper;
+import extract.JsoupUtils;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -134,7 +135,7 @@ public class WebBrowserApplication extends Application {
         LOG.error("ERROR LOADING {}", url, newException);
         RunnableEx.runNewThread(() -> {
 
-            Response executeRequest = ExtractUtils.executeRequest(url, cookies);
+            Response executeRequest = JsoupUtils.executeRequest(url, cookies);
             String body = executeRequest.body();
             String contentType = executeRequest.contentType();
             if (contentType.contains("html")) {

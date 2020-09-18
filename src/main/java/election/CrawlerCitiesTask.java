@@ -1,12 +1,12 @@
 package election;
 
+import extract.JsoupUtils;
 import java.util.Arrays;
 import java.util.List;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 
@@ -33,7 +33,8 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
 
     private void crawlThroughSite(String estado, String letter) {
         try {
-            Document parse = ExtractUtils
+            Document parse =
+                    JsoupUtils
                 .getDocument("https://www.todapolitica.com/eleicoes-2016/" + estado + "/" + letter + "/");
 
             Elements select = parse.select(".lista-estados .custom li");

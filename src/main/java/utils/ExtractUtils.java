@@ -5,22 +5,12 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.IOUtils;
-import org.jsoup.Connection;
-import org.jsoup.Connection.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.helper.HttpConnection;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
 import utils.ex.PredicateEx;
@@ -28,7 +18,7 @@ import utils.ex.SupplierEx;
 
 public final class ExtractUtils {
     public static final String PROXY_PORT = "3128";
-    private static final int HUNDRED_SECONDS = 100_000;
+    public static final int HUNDRED_SECONDS = 100_000;
     private static final Logger LOG = HasLogging.log();
 
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
@@ -95,17 +85,6 @@ public final class ExtractUtils {
         copy(new File(src), new File(dest));
     }
 
-    public static Response executeRequest(String url, Map<String, String> cookies) throws IOException {
-        Connection connect = HttpConnection.connect(url);
-        if (!isNotProxied()) {
-            addProxyAuthorization(connect);
-        }
-        connect.timeout(HUNDRED_SECONDS);
-        connect.cookies(cookies);
-        connect.ignoreContentType(true);
-        connect.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
-        return connect.execute();
-    }
 
     public static File extractURL(String url) {
         return SupplierEx.get(() -> {
@@ -131,22 +110,6 @@ public final class ExtractUtils {
         });
     }
 
-    public static Document getDocument(final String url) throws IOException {
-        Connection connect = Jsoup.connect(url);
-        if (!isNotProxied()) {
-            addProxyAuthorization(connect);
-        }
-        return connect
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0")
-                .get();
-    }
-
-    public static Document getDocument(String url, Map<String, String> cookies) throws IOException {
-        Response execute = executeRequest(url, cookies);
-        Map<String, String> cookies2 = execute.cookies();
-        cookies.putAll(cookies2);
-        return execute.parse();
-    }
 
     public static String getEncodedAuthorization() {
         return Base64.getEncoder()
@@ -190,17 +153,6 @@ public final class ExtractUtils {
         return LOGIN;
     }
 
-    public static List<String> getTables(Element renderPage) {
-        Elements select = renderPage.select("table");
-        List<String> arrayList = new ArrayList<>();
-        for (Element table : select) {
-            String collect = table.children().stream().flatMap(tbody -> tbody.children().stream())
-                    .map(tr -> tr.children().stream().map(Element::text).collect(Collectors.joining("\t")))
-                    .collect(Collectors.joining("\n"));
-            arrayList.add(collect);
-        }
-        return arrayList;
-    }
 
     public static void insertProxyConfig() {
         System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
@@ -243,9 +195,6 @@ public final class ExtractUtils {
         con.addRequestProperty("Proxy-Authorization", "Basic " + getEncodedAuthorization());
     }
 
-    private static void addProxyAuthorization(Connection connect) {
-        connect.header("Proxy-Authorization", "Basic " + getEncodedAuthorization());
-    }
 
     private static String getProxyAddress() {
         final int timeout = 5000;
