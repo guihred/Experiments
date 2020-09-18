@@ -44,7 +44,7 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
 
     public SimpleTreeViewBuilder<T> onSelect(ConsumerEx<TreeItem<T>> consume) {
         treeView.getSelectionModel().selectedItemProperty()
-                .addListener((ob, old, n) -> ConsumerEx.makeConsumer(consume).accept(n));
+                .addListener((ob, old, n) -> ConsumerEx.accept(consume, n));
         return this;
     }
 

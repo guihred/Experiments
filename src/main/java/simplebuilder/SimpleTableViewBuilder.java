@@ -127,13 +127,14 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> onSortClicked(ConsumerEx<Entry<String, SortType>> c) {
+    public SimpleTableViewBuilder<T> onSortClicked(ConsumerEx<Entry<String, Boolean>> c) {
         node.setSortPolicy((TableView<T> o) -> {
             ObservableList<TableColumn<T, ?>> sortOrder = o.getSortOrder();
             if (!sortOrder.isEmpty()) {
                 TableColumn<T, ?> tableColumn = sortOrder.get(0);
                 SortType sortType = tableColumn.getSortType();
-                ConsumerEx.makeConsumer(c).accept(new AbstractMap.SimpleEntry<>(tableColumn.getText(), sortType));
+                ConsumerEx.accept(c,
+                        new AbstractMap.SimpleEntry<>(tableColumn.getText(), sortType == SortType.ASCENDING));
             }
             return true;
         });
@@ -200,7 +201,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table2.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
                 T selectedItem = table2.getSelectionModel().getSelectedItem();
-                ConsumerEx.makeConsumer(object).accept(selectedItem);
+                ConsumerEx.accept(object, selectedItem);
             }
         });
         EventHandler<? super KeyEvent> onKeyReleased = table2.getOnKeyReleased();
@@ -208,7 +209,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
             if (e.getCode() == KeyCode.ENTER) {
                 T selectedItem = table2.getSelectionModel().getSelectedItem();
-                ConsumerEx.makeConsumer(object).accept(selectedItem);
+                ConsumerEx.accept(object, selectedItem);
             }
         });
     }

@@ -14,7 +14,6 @@ import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.ComboBox;
@@ -72,12 +71,7 @@ public class DataframeExplorer extends ExplorerVariables {
                 .onKey(KeyCode.ADD, list -> addQuestion(list, true))
                 .onKey(KeyCode.SUBTRACT, list -> addQuestion(list, false));
         SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen)
-                .onKey(KeyCode.DELETE, columns::remove).addContextMenu("_Split", e -> {
-                    Entry<String, DataframeStatisticAccumulator> selectedItem =
-                            columnsList.getSelectionModel().getSelectedItem();
-                    int indexOf = getDataframe().cols().indexOf(selectedItem.getKey());
-                    CSVUtils.splitFile(getDataframe().getFile(), indexOf);
-                });
+                .onKey(KeyCode.DELETE, columns::remove).addContextMenu("_Split", e -> splitByColumn());
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
         pieChart.visibleProperty().bind(pieChart.titleProperty().isNotEmpty());
@@ -187,12 +181,12 @@ public class DataframeExplorer extends ExplorerVariables {
     private void addToBarChart(DataframeML dataframeML, Entry<String, DataframeStatisticAccumulator> old,
             Entry<String, DataframeStatisticAccumulator> val, String name) {
 
-        ObservableList<XYChart.Data<Number, Number>> data = FXCollections.observableArrayList();
+        ObservableList<Data<Number, Number>> data = FXCollections.observableArrayList();
         String x = old.getKey();
         String y = val.getKey();
-        Map<Object, XYChart.Data<Number, Number>> linkedHashMap = new LinkedHashMap<>();
+        Map<Object, Data<Number, Number>> linkedHashMap = new LinkedHashMap<>();
         dataframeML.forEachRow(map -> {
-            XYChart.Data<Number, Number> e = new XYChart.Data<>((Number) map.get(x), (Number) map.get(y));
+            Data<Number, Number> e = new Data<>((Number) map.get(x), (Number) map.get(y));
             if (name != null) {
                 linkedHashMap.merge(map.get(name), e, (o, n) -> {
                     n.setXValue(o.getXValue().doubleValue() + n.getXValue().doubleValue());
@@ -248,7 +242,7 @@ public class DataframeExplorer extends ExplorerVariables {
             Set<String> unique = val.getValue().getUnique();
             return unique.isEmpty() || !unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
         }, e -> CommonsFX.runInPlatform(() -> fillIP.setDisable(e)));
-        ObservableList<XYChart.Data<String, Number>> barList = FXCollections.observableArrayList();
+        ObservableList<Data<String, Number>> barList = FXCollections.observableArrayList();
         ObservableList<PieChart.Data> pieData = ListHelper.mapping(barList,
                 e -> new PieChart.Data(String.format("(%d) %s", e.getYValue().intValue(), e.getXValue()),
                         e.getYValue().doubleValue()));
@@ -357,6 +351,13 @@ public class DataframeExplorer extends ExplorerVariables {
         LOG.info("File {} READ", file.getName());
     }
 
+    private void splitByColumn() {
+        Entry<String, DataframeStatisticAccumulator> selectedItem =
+                columnsList.getSelectionModel().getSelectedItem();
+        int indexOf = getDataframe().cols().indexOf(selectedItem.getKey());
+        CSVUtils.splitFile(getDataframe().getFile(), indexOf);
+    }
+
     private void toggleQuestion(Question t) {
         t.toggleNot();
         questions.set(questions.indexOf(t), t);
@@ -366,9 +367,8 @@ public class DataframeExplorer extends ExplorerVariables {
         launch(args);
     }
 
-    private static void addToList(ObservableList<XYChart.Data<String, Number>> dataList,
-            List<XYChart.Data<String, Number>> array, XYChart.Data<String, Number> others,
-            Function<XYChart.Data<String, Number>, Double> keyExtractor) {
+    private static void addToList(ObservableList<Data<String, Number>> dataList, List<Data<String, Number>> array,
+            Data<String, Number> others, Function<Data<String, Number>, Double> keyExtractor) {
         CommonsFX.runInPlatformSync(() -> {
             if (dataList.size() >= MAX_ELEMENTS / 4) {
                 others.setYValue(keyExtractor.apply(others) + array.stream().mapToDouble(keyExtractor::apply).sum());
@@ -382,15 +382,15 @@ public class DataframeExplorer extends ExplorerVariables {
         });
     }
 
-    private static <T extends Number> void addToPieChart(ObservableList<XYChart.Data<String, Number>> bar2List,
+    private static <T extends Number> void addToPieChart(ObservableList<Data<String, Number>> bar2List,
             Collection<Entry<String, T>> countMap) {
         RunnableEx.runNewThread(() -> {
-            List<XYChart.Data<String, Number>> barList = Collections.synchronizedList(new ArrayList<>());
-            XYChart.Data<String, Number> others = new XYChart.Data<>("Others", 0);
+            List<Data<String, Number>> barList = Collections.synchronizedList(new ArrayList<>());
+            Data<String, Number> others = new Data<>("Others", 0);
             countMap.forEach(entry -> {
                 String k = entry.getKey();
                 Number v = entry.getValue();
-                barList.add(new XYChart.Data<>(k, v));
+                barList.add(new Data<>(k, v));
                 if (barList.size() % (MAX_ELEMENTS / 10) == 0) {
                     addToList(bar2List, new ArrayList<>(barList), others, m -> m.getYValue().doubleValue());
                     barList.clear();
@@ -400,7 +400,7 @@ public class DataframeExplorer extends ExplorerVariables {
         });
     }
 
-    private static <T extends Number> void addToPieChart(ObservableList<XYChart.Data<String, Number>> barList,
+    private static <T extends Number> void addToPieChart(ObservableList<Data<String, Number>> barList,
             Map<String, T> countMap) {
         addToPieChart(barList, countMap.entrySet());
     }

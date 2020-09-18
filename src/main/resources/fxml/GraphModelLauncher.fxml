@@ -19,8 +19,10 @@
 	<fx:define>
 		<Graph fx:id="graph" />
 		<Timeline fx:id="timeline" cycleCount="-1" />
-
 	</fx:define>
+	<center>
+	   <fx:reference source="graph.scrollPane" />
+	</center>
 	<left>
 		<VBox>
 			<children>

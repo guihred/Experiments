@@ -94,7 +94,7 @@ public final class FileTreeWalker implements FileVisitor<Path> {
             pathList.addListener((Change<? extends Path> c) -> {
                 while (c.next()) {
                     for (Path path : c.getAddedSubList()) {
-                        ConsumerEx.makeConsumer(onPathFound).accept(path);
+                        ConsumerEx.accept(onPathFound, path);
                     }
                 }
             });

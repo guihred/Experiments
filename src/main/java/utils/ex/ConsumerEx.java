@@ -1,5 +1,6 @@
 package utils.ex;
 
+import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -9,6 +10,10 @@ public interface ConsumerEx<T> {
 
     static <M> void accept(ConsumerEx<M> run, M t) {
         ConsumerEx.makeConsumer(run).accept(t);
+    }
+
+    static <M> void foreach(Collection<M> collection,ConsumerEx<M> run) {
+        collection.forEach(ConsumerEx.makeConsumer(run));
     }
 
     static <M> Consumer<M> ignore(ConsumerEx<M> run) {
@@ -30,7 +35,6 @@ public interface ConsumerEx<T> {
             }
         };
     }
-
     static <M> Consumer<M> makeConsumer(ConsumerEx<M> run) {
         return o -> {
             try {

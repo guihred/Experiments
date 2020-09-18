@@ -12,60 +12,62 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.TableColumn.SortType;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
-import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleTableViewBuilder;
+import utils.CommonsFX;
 import utils.ex.FunctionEx;
 import utils.ex.PredicateEx;
 import utils.ex.RunnableEx;
-import utils.ex.SupplierEx;
 
 public final class PaginatedTableView extends VBox {
-    private final IntegerProperty pageSize = new SimpleIntegerProperty(20);
-    private TableView<Integer> table = new TableView<>();
-    private Pagination pagination = new Pagination(pageSize.get(), 0);
-    private IntegerProperty maxSize = new SimpleIntegerProperty(0);
-    private FilteredList<Integer> filteredItems;
+
+    @FXML
+    private IntegerProperty pageSize;
+    @FXML
+    private TableView<Integer> table;
+
+    @FXML
+    private Pagination pagination;
+
+    @FXML
+    private IntegerProperty maxSize;
+
     private ObservableList<Integer> items;
-    private TextField textField = new TextField();
+
+    private FilteredList<Integer> filteredItems;
+
+    @FXML
+    private ComboBox<Integer> pageSizeCombo;
+    @FXML
+    private TextField textField;
 
     public PaginatedTableView() {
+        CommonsFX.loadRoot("PaginatedTableView.fxml", this);
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         pagination.currentPageIndexProperty().addListener(ob -> updateItems());
         pageSize.addListener(ob -> updateItems());
-        ComboBox<Integer> pageSizeCombo = new SimpleComboBoxBuilder<Integer>().items(10, 20, 50, 100)
-                .onChange((old, val) -> pageSize.set(SupplierEx.nonNull(val, old))).select((Integer) 10).build();
+        pageSizeCombo.valueProperty().bindBidirectional(pageSize.asObject());
         maxSize.addListener((ob, o, n) -> {
             updateItems();
-            updatePageSizeCombo(pageSizeCombo, n);
+            updatePageSizeCombo(n);
         });
         pagination.setPageCount(0);
-        TableColumn<Integer, Number> e2 = new TableColumn<>("Nº");
-        e2.setCellValueFactory(m -> new SimpleObjectProperty<>(m.getValue()));
-        table.getColumns().add(e2);
         pagination.pageCountProperty().bind(
                 Bindings.createIntegerBinding(this::getPageCount, maxSize, pageSize, pageSizeCombo.itemsProperty()));
-        VBox.setVgrow(table, Priority.ALWAYS);
         updateItems();
-        getChildren().add(table);
         textField.textProperty().addListener(
                 (ob, o, n) -> RunnableEx.runIf(filteredItems, i -> i.setPredicate(e -> containsString(n, e))));
         SimpleTableViewBuilder.of(table).copiable().savable()
                 .onSortClicked(e -> RunnableEx.runIf(items,
                         i -> table.getColumns().stream().filter(c -> c.getText().equals(e.getKey())).findFirst()
                                 .ifPresent(col -> items.sort(getComparator(col, e)))));
-
-        getChildren().add(new HBox(pageSizeCombo, pagination, textField));
     }
 
     public <T> void addColumn(String name, FunctionEx<Integer, T> func) {
@@ -126,20 +128,11 @@ public final class PaginatedTableView extends VBox {
         table.setItems(filteredItems);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static Comparator<Integer> getComparator(TableColumn<Integer, ?> col, Entry<String, SortType> e) {
-        Comparator<Integer> comparing = Comparator.comparing(m -> {
-            Object cellData = col.getCellData(m);
-            return (Comparable) (cellData instanceof Comparable ? cellData : Objects.toString(cellData));
-        });
-        return e.getValue() == SortType.ASCENDING ? comparing : comparing.reversed();
-    }
-
-    private static void updatePageSizeCombo(ComboBox<Integer> build, Number n) {
+    private void updatePageSizeCombo(Number n) {
         ObservableList<Integer> value = FXCollections.observableArrayList();
         double doubleValue = n.doubleValue();
         double ceil = Math.ceil(Math.log10(doubleValue));
-        Integer selectedItem = build.getSelectionModel().getSelectedItem();
+        Integer selectedItem = pageSizeCombo.getSelectionModel().getSelectedItem();
         for (int i = 1; i <= ceil; i++) {
             if (value.isEmpty() || doubleValue > value.get(value.size() - 1)) {
                 value.add((int) Math.pow(10, i));
@@ -151,8 +144,16 @@ public final class PaginatedTableView extends VBox {
                 value.add((int) Math.pow(10, i) * 5);
             }
         }
-        build.setItems(value);
-        build.getSelectionModel().select(selectedItem);
+        pageSizeCombo.setItems(value);
+        pageSizeCombo.getSelectionModel().select(selectedItem);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static Comparator<Integer> getComparator(TableColumn<Integer, ?> col, Entry<String, Boolean> e) {
+        Comparator<Integer> comparing =
+                Comparator.comparing(m -> (Comparable) (col.getCellData(m) instanceof Comparable ? col.getCellData(m)
+                        : Objects.toString(col.getCellData(m))));
+        return e.getValue() ? comparing : comparing.reversed();
     }
 
 }

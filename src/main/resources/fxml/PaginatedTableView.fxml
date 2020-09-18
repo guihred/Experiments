@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import ml.data.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.collections.*?>
+<?import java.lang.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.beans.property.SimpleIntegerProperty?>
+
+<fx:root type="ml.data.PaginatedTableView" xmlns:fx="http://javafx.com/fxml">
+    <fx:define>
+        <SimpleIntegerProperty fx:id="maxSize" value="${0}" />
+        <SimpleIntegerProperty fx:id="pageSize"  >
+            <value><Integer fx:value="20" /></value>
+        </SimpleIntegerProperty>
+    </fx:define>
+
+	<children>
+		<TableView VBox.vgrow="ALWAYS" fx:id="table">
+			<columns>
+				<TableColumn fx:id="tableColumn4" text="Nº" />
+			</columns>
+			<padding>
+				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+			</padding>
+		</TableView>
+		<HBox>
+			<children>
+				<ComboBox fx:id="pageSizeCombo">
+					<items>
+						<FXCollections fx:factory="observableArrayList">
+							<Integer fx:value="10" />
+							<Integer fx:value="20" />
+							<Integer fx:value="50" />
+							<Integer fx:value="100" />
+						</FXCollections>
+					</items>
+					<value>
+						<Integer fx:value="10" />
+					</value>
+				</ComboBox>
+				<Pagination fx:id="pagination" pageCount="0">
+					<clip>
+						<Rectangle height="56.0" width="79.0" />
+					</clip>
+				</Pagination>
+				<TextField fx:id="textField">
+					<padding>
+						<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
+					</padding>
+				</TextField>
+			</children>
+		</HBox>
+	</children>
+</fx:root>

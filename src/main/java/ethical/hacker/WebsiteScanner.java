@@ -66,7 +66,7 @@ public class WebsiteScanner {
     }
 
     public ObservableMap<String, List<String>> getLinkNetwork(String url, ConsumerEx<String> run) {
-        return getLinkNetwork(url, (page, links) -> ConsumerEx.makeConsumer(run).accept(page));
+        return getLinkNetwork(url, (page, links) -> ConsumerEx.accept(run, page));
     }
 
     public ObservableMap<String, List<String>> getLinkNetwork(String url, RunnableEx run) {

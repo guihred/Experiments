@@ -27,13 +27,6 @@ public final class ClassReflectionUtils {
     private ClassReflectionUtils() {
     }
 
-    public static Object mapProperty(Object e) {
-        if (e instanceof WritableValue<?>) {
-            return ((WritableValue<?>) e).getValue();
-        }
-        return e;
-    }
-
     public static List<Class<?>> allClasses(Class<?> targetClass) {
 
         List<Class<?>> classes = new ArrayList<>();
@@ -58,8 +51,7 @@ public final class ClassReflectionUtils {
                 .filter(t -> (Observable) SupplierEx.getIgnore(() -> t.invoke(o, args)) != null)
                 .sorted(Comparator.comparing(t -> t.getName().replaceAll(PROPERTY_REGEX, "$1")))
                 .collect(Collectors.toMap(t -> t.getName().replaceAll(PROPERTY_REGEX, "$1"),
-                        FunctionEx.makeFunction(t -> (Observable) invoke(o, t)),
-                        (u, v) -> u, LinkedHashMap::new));
+                        FunctionEx.makeFunction(t -> (Observable) invoke(o, t)), (u, v) -> u, LinkedHashMap::new));
     }
 
     public static List<Method> getAllMethodsRecursive(Class<?> targetClass) {
@@ -132,8 +124,7 @@ public final class ClassReflectionUtils {
         return getGetterMethodsRecursive(object.getClass(), 10).stream().
 
                 filter(e -> invoke(object, e) != null)
-                .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase, e -> invoke(object, e),
-                        (u, v) -> v));
+                .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase, e -> invoke(object, e), (u, v) -> v));
     }
 
     public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
@@ -272,10 +263,16 @@ public final class ClassReflectionUtils {
         if (namedArgsMap.containsKey(fieldName)) {
             return typesFit(fieldValue, namedArgsMap.get(fieldName));
         }
-        return PredicateEx
-                .test((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass()).stream()
-                        .filter(m -> m.getParameterCount() == 1)
-                        .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m)), fieldName);
+        return PredicateEx.test((String f) -> ClassReflectionUtils.getAllMethodsRecursive(parent.getClass()).stream()
+                .filter(m -> m.getParameterCount() == 1)
+                .anyMatch(m -> getFieldNameCase(m).equals(f) && parameterTypesMatch(fieldValue, m)), fieldName);
+    }
+
+    public static Object mapProperty(Object e) {
+        if (e instanceof WritableValue<?>) {
+            return ((WritableValue<?>) e).getValue();
+        }
+        return e;
     }
 
     @SuppressWarnings("rawtypes")
@@ -319,7 +316,7 @@ public final class ClassReflectionUtils {
         invokedObjects.add(obj);
         List<Method> infoMethod = getGetterMethods(class1, getterMethods);
         StringBuilder description = new StringBuilder("\n");
-        infoMethod.forEach(ConsumerEx.makeConsumer((Method method) -> {
+        ConsumerEx.foreach(infoMethod, method -> {
             Object invoke = method.invoke(obj);
             // To Avoid infinite loop
             if (isRecursiveCall(class1, invoke)) {
@@ -339,7 +336,7 @@ public final class ClassReflectionUtils {
                 description.append(invoke);
             }
             description.append("\n");
-        }));
+        });
         return description.toString();
     }
 

@@ -23,7 +23,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.*;
-import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -207,7 +206,7 @@ public class ConsultasInvestigator extends Application {
                     Comparator.comparing(m -> StringUtils.isNumeric(m.get(e.getKey()))
                             ? String.format("%09d", Long.valueOf(m.get(e.getKey())))
                             : Objects.toString(m.get(e.getKey()), ""));
-            ipItems2.sort(e.getValue() == SortType.DESCENDING ? comparing.reversed() : comparing);
+            ipItems2.sort(e.getValue() ? comparing : comparing.reversed());
         })
 
         ;

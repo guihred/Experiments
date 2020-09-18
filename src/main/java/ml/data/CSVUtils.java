@@ -162,7 +162,7 @@ public class CSVUtils {
                                 .append(nextLine + "\n");
                     }
                 }
-                writersBytype.values().forEach(ConsumerEx.makeConsumer(Writer::close));
+                ConsumerEx.foreach(writersBytype.values(), Writer::close);
             }
             LOGGER.info("FILE {} WAS SPLIT", source);
         });

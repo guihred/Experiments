@@ -33,21 +33,18 @@ public class AllNodes extends Application {
         ExtractUtils.insertProxyConfig();
         primaryStage.setTitle("All Nodes");
         ObservableList<Class<?>> items = CoverageUtils.getClasses(Node.class, Arrays.asList("com.")).stream()
-                .filter(Objects::nonNull)
-                .filter(e -> !Cell.class.isAssignableFrom(e))
+                .filter(Objects::nonNull).filter(e -> !Cell.class.isAssignableFrom(e))
                 .filter(makeTest(ClassReflectionUtils::isClassPublic))
-            .collect(toCollection(FXCollections::observableArrayList));
+                .collect(toCollection(FXCollections::observableArrayList));
         TextField resultsFilter = new TextField();
         ScrollPane right2 = new ScrollPane(right);
         ListView<Class<?>> build = new SimpleListViewBuilder<Class<?>>()
                 .onSelect((old, t) -> right2.setContent(hashMap.computeIfAbsent(t, AllNodes::createInstance)))
-            .items(newFastFilter(resultsFilter, items.filtered(e -> true))).build();
+                .items(newFastFilter(resultsFilter, items.filtered(e -> true))).build();
         right2.setPrefSize(100, 100);
         right2.vmaxProperty().addListener(e -> right2.setVvalue(right2.getVmax()));
 
-        primaryStage
-            .setScene(new Scene(
-                        new VBox(new Text("Filter"), resultsFilter, new SplitPane(build, right2))));
+        primaryStage.setScene(new Scene(new VBox(new Text("Filter"), resultsFilter, new SplitPane(build, right2))));
         primaryStage.show();
     }
 
@@ -58,7 +55,7 @@ public class AllNodes extends Application {
     private static Node createInstance(Class<?> appClass) {
         Node instanceNull = (Node) ClassReflectionUtils.getInstanceNull(appClass);
         if (instanceNull instanceof Pane) {
-            ((Pane) instanceNull).getChildren().addAll(new Text("1"),new Text("2"),new Text("3"));
+            ((Pane) instanceNull).getChildren().addAll(new Text("1"), new Text("2"), new Text("3"));
         }
 
         return instanceNull;

@@ -31,7 +31,7 @@ public interface RunnableEx {
                 run.run();
             } catch (Throwable e) {
                 HasLogging.log(1).trace("", e);
-                ConsumerEx.makeConsumer(onError).accept(e);
+                ConsumerEx.accept(onError, e);
             }
         };
     }
@@ -70,7 +70,7 @@ public interface RunnableEx {
 
     static <T> void runIf(T length, ConsumerEx<T> func) {
         if (length != null) {
-            ConsumerEx.makeConsumer(func).accept(length);
+            ConsumerEx.accept(func, length);
         }
     }
 

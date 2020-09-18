@@ -1,33 +1,26 @@
 package audio.mp3;
 
-import static simplebuilder.SimpleVBoxBuilder.newVBox;
-
 import extract.Music;
 import extract.MusicReader;
 import extract.QuickSortML;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import simplebuilder.*;
+import simplebuilder.FileChooserBuilder;
+import simplebuilder.SimpleTableViewBuilder;
 import utils.*;
 import utils.ex.SupplierEx;
 
@@ -52,8 +45,8 @@ public class MusicOrganizer extends Application {
 
     public void initialize() {
         MusicHandler musicHandler = new MusicHandler(musicaTable);
-        imageColumn.setCellValueFactory(
-                m -> new SimpleObjectProperty<>(view(SupplierEx.nonNull(m.getValue().getImage(), DEFAULT_VIEW))));
+        imageColumn.setCellValueFactory(m -> new SimpleObjectProperty<>(
+                MusicHandler.view(SupplierEx.nonNull(m.getValue().getImage(), DEFAULT_VIEW))));
         SimpleTableViewBuilder.of(musicaTable).sortable(true).multipleSelection().equalColumns().copiable()
                 .onMousePressed(musicHandler).onKeyReleased(musicHandler::handle).onSortClicked(this::sortBy);
         configurarFiltroRapido(filterText, musicaTable, FXCollections.observableArrayList());
@@ -78,7 +71,7 @@ public class MusicOrganizer extends Application {
     }
 
     public void onActionConsertarMusicas() {
-        fixSongs(musicaTable);
+        MusicHandler.fixSongs(musicaTable);
     }
 
     @Override
@@ -88,12 +81,11 @@ public class MusicOrganizer extends Application {
         CommonsFX.loadFXML("Organizador de Músicas", "MusicOrganizer.fxml", this, primaryStage, WIDTH, HEIGHT);
     }
 
-    private void sortBy(Entry<String, SortType> columnName) {
+    private void sortBy(Entry<String, Boolean> columnName) {
         ObservableList<Music> items2 = SupplierEx.nonNull(musicas, musicaTable.getItems());
         Comparator<Music> comparing = Comparator.comparing(
                 e -> comparing(e, StringSigaUtils.removerDiacritico(StringSigaUtils.changeCase(columnName.getKey()))));
-        SortType value = columnName.getValue();
-        QuickSortML.sort(items2, value == SortType.ASCENDING ? comparing : comparing.reversed());
+        QuickSortML.sort(items2, columnName.getValue() ? comparing : comparing.reversed());
     }
 
     public static void main(String[] args) {
@@ -116,49 +108,6 @@ public class MusicOrganizer extends Application {
 
     private static Image defaultView() {
         return new Image(ResourceFXUtils.toExternalForm("fb.jpg"));
-    }
-
-    private static void fixSongs(TableView<Music> musicasTable) {
-        ObservableList<Music> items = musicasTable.getItems();
-        Optional<Music> findFirst = items.stream().filter(m -> StringUtils.isBlank(m.getArtista())
-                || StringUtils.isBlank(m.getAlbum()) || m.getTitulo().contains("-")).findFirst();
-        if (!findFirst.isPresent()) {
-            return;
-        }
-        Music music = findFirst.get();
-        VBox vBox = new VBox(10);
-        vBox.setPadding(new Insets(10));
-        List<String> fields = ClassReflectionUtils.getFields(Music.class);
-        for (String name : fields) {
-            Object fieldValue = ClassReflectionUtils.getFieldValue(music, name);
-            if (fieldValue instanceof StringProperty) {
-                StringProperty a = (StringProperty) fieldValue;
-                TextField textField = new TextField();
-                textField.textProperty().bindBidirectional(a);
-                vBox.getChildren().add(newVBox(StringSigaUtils.changeCase(name), textField));
-            }
-        }
-        if (StringUtils.isBlank(music.getAlbum())) {
-            music.setAlbum(music.getPasta());
-        }
-        Image imageData = music.getImage();
-        if (imageData != null) {
-            vBox.getChildren().addAll(view(imageData));
-        }
-        vBox.getChildren().add(SimpleButtonBuilder.newButton("_Fix", f -> {
-            MusicReader.saveMetadata(music);
-            StageHelper.closeStage(vBox);
-        }));
-        new SimpleDialogBuilder().text("Fix Fields").node(vBox).bindWindow(musicasTable).displayDialog();
-
-    }
-
-    private static ImageView view(Image music) {
-        ImageView imageView = new ImageView(music);
-        final int prefWidth = 50;
-        imageView.setFitWidth(prefWidth);
-        imageView.setPreserveRatio(true);
-        return imageView;
     }
 
 }

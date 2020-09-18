@@ -15,7 +15,6 @@ import javafx.geometry.Bounds;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
@@ -57,8 +56,6 @@ public class GraphMain extends Application {
 
     @FXML
     private MethodsTopology methodsTopology;
-    @FXML
-    private BorderPane borderPane;
 
     @FXML
     private Timeline timeline;
@@ -66,7 +63,6 @@ public class GraphMain extends Application {
     public void initialize() {
 
         convergeLayout.addEventHandler(timeline);
-        borderPane.setCenter(graph.getScrollPane());
         bindTopology(networkField, networkTopology, networkTopology.networkAddressProperty());
         bindTopology(websiteField, websiteTopology, websiteTopology.websiteProperty());
         packageSelect.managedProperty().bind(packageSelect.visibleProperty());

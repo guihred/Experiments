@@ -110,13 +110,13 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         table2.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
                 C selectedItem = table2.getSelectionModel().getSelectedItem();
-                ConsumerEx.makeConsumer(object).accept(selectedItem);
+                ConsumerEx.accept(object, selectedItem);
             }
         });
         SimpleNodeBuilder.onKeyReleased(table2, e -> {
             if (e.getCode() == KeyCode.ENTER) {
                 C selectedItem = table2.getSelectionModel().getSelectedItem();
-                ConsumerEx.makeConsumer(object).accept(selectedItem);
+                ConsumerEx.accept(object, selectedItem);
             }
         });
     }
