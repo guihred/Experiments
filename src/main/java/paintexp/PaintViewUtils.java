@@ -23,7 +23,7 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import simplebuilder.StageHelper;
 import utils.ImageFXUtils;
-import utils.PixelatedImageView;
+import utils.fx.PixelatedImageView;
 
 public final class PaintViewUtils {
     private static final String PERCENTAGE_FIELD = "Percentage";

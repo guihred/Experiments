@@ -14,8 +14,8 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import utils.MouseInScreenHandler;
 import utils.ResourceFXUtils;
+import utils.fx.MouseInScreenHandler;
 
 public class Labyrinth3DMouseControl extends Application implements CommomLabyrinth {
 

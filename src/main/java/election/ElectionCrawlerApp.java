@@ -6,7 +6,7 @@ import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.stage.Stage;
 import utils.HibernateUtil;
-import utils.TaskProgressView;
+import utils.fx.TaskProgressView;
 
 public class ElectionCrawlerApp extends Application {
 

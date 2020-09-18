@@ -1,20 +1,19 @@
 
 package utils;
 
-import gui.ava.html.image.generator.HtmlImageGenerator;
-import java.awt.Dimension;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -22,13 +21,10 @@ import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
-import utils.ex.*;
+import utils.ex.HasLogging;
+import utils.ex.PredicateEx;
+import utils.ex.SupplierEx;
 
 public final class ExtractUtils {
     public static final String PROXY_PORT = "3128";
@@ -240,51 +236,6 @@ public final class ExtractUtils {
                 return true;
             }
         }, ip0);
-
-    }
-
-    @SafeVarargs
-    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr,
-            ConsumerEx<PhantomJSDriver>... onload) {
-        PhantomJSDriverService createDefaultService =
-                new PhantomJSDriverService.Builder().usingPhantomJSExecutable(ExtractUtils.PHANTOM_JS.toFile())
-                        .usingAnyFreePort().withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log")).build();
-        PhantomJSDriver ghostDriver = new PhantomJSDriver(createDefaultService, DesiredCapabilities.firefox());
-        try {
-            ghostDriver.setLogLevel(Level.OFF);
-            ghostDriver.manage().window().maximize();
-            ghostDriver.get(url);
-            RunnableEx.run(() -> cookies.forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v))));
-            RunnableEx.sleepSeconds(.5);
-            String pageSource = ghostDriver.getPageSource();
-            for (int i = 0; StringUtils.isNotBlank(loadingStr) && pageSource.contains(loadingStr) && i < 10; i++) {
-                RunnableEx.sleepSeconds(5);
-                pageSource = ghostDriver.getPageSource();
-            }
-            for (ConsumerEx<PhantomJSDriver> consumerEx : onload) {
-                ConsumerEx.accept(consumerEx, ghostDriver);
-            }
-            Set<Cookie> cookies2 = ghostDriver.manage().getCookies();
-            for (Cookie cookie : cookies2) {
-                cookies.put(cookie.getName(), cookie.getValue());
-            }
-            return Jsoup.parse(ghostDriver.getPageSource());
-        } finally {
-            ghostDriver.quit();
-        }
-    }
-
-    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr, File outFile) {
-        return renderPage(url, cookies, loadingStr, driver -> copy(driver.getScreenshotAs(OutputType.FILE), outFile));
-    }
-
-    public static void saveHtmlImage(String html, File file) {
-        HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
-        Dimension dim = imageGenerator.getDefaultSize();
-        dim.setSize(Math.min(800, dim.getWidth()), dim.getHeight());
-        imageGenerator.setSize(dim);
-        imageGenerator.loadHtml(html);
-        imageGenerator.saveAsImage(file);
 
     }
 

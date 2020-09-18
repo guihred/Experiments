@@ -1,6 +1,5 @@
-package utils;
+package simplebuilder;
 
-import gaming.ex21.Deal;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -14,7 +13,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import simplebuilder.SimpleButtonBuilder;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 
@@ -43,19 +41,19 @@ public final class ListHelper {
 
     }
 
-    public static VBox newDeal(VBox vBox, ObservableList<Deal> deal, Predicate<? super Deal> disableIf,
-            Consumer<Deal> onAction, Observable... a) {
-        deal.addListener((ListChangeListener<Deal>) c -> {
+    public static <T extends Node> VBox newDeal(VBox vBox, ObservableList<T> deal, Predicate<? super T> disableIf,
+            Consumer<T> onAction, Observable... a) {
+        deal.addListener((ListChangeListener<T>) c -> {
             while (c.next()) {
-                List<? extends Deal> addedSubList = c.getAddedSubList();
-                for (Deal deal1 : addedSubList) {
+                List<? extends T> addedSubList = c.getAddedSubList();
+                for (T deal1 : addedSubList) {
                     final Node graphic = deal1;
                     Button dealButton = SimpleButtonBuilder.newButton(graphic, "", e -> onAction.accept(deal1));
                     dealButton.getStyleClass().add("accept-deal");
                     dealButton.disableProperty().bind(Bindings.createBooleanBinding(() -> disableIf.test(deal1), a));
                     vBox.getChildren().add(dealButton);
                 }
-                for (Deal deal2 : c.getRemoved()) {
+                for (T deal2 : c.getRemoved()) {
                     vBox.getChildren().removeIf(e -> e instanceof Button && deal2.equals(((Button) e).getGraphic()));
                 }
             }

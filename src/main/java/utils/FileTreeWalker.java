@@ -26,7 +26,7 @@ public final class FileTreeWalker implements FileVisitor<Path> {
     private final List<Path> pathList;
     private final String[] other;
 
-    FileTreeWalker(List<Path> pathList, String[] other) {
+    private FileTreeWalker(List<Path> pathList, String[] other) {
         this.pathList = pathList;
         this.other = other;
     }

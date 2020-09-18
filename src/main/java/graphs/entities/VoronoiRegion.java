@@ -9,12 +9,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import utils.MatrixSolver;
+import utils.RotateUtils;
 
 public class VoronoiRegion extends Group {
 
 	public VoronoiRegion(Ponto p, List<Triangle> triangles) {
         Comparator<double[]> comparator = Comparator
-                .comparing((double[] pon) -> Edge.getAngulo(pon[0], pon[1], x(p.getC()), y(p.getC())));
+                .comparing((double[] pon) -> RotateUtils.getAngle(pon[0], pon[1], x(p.getC()), y(p.getC())));
         List<double[]> centerPoints = triangles.stream()
             .map(t -> centerCircle(t.getA().getC(), t.getB().getC(), t.getC().getC())).collect(Collectors.toList());
 		for (double[] es : centerPoints) {
@@ -44,7 +45,7 @@ public class VoronoiRegion extends Group {
 				double avgx = centerPoints.stream().mapToDouble(e -> e[0]).average().getAsDouble();
 				double avgy = centerPoints.stream().mapToDouble(e -> e[1]).average().getAsDouble();
 				Comparator<double[]> comparing = Comparator
-						.comparing((double[] pon) -> Edge.getAngulo(pon[0], pon[1], avgx, avgy));
+						.comparing((double[] pon) -> RotateUtils.getAngle(pon[0], pon[1], avgx, avgy));
 				array = centerPoints.stream().sorted(comparing).flatMap((double[] t) -> Stream.of(cen(t)))
 						.mapToDouble(d -> d).toArray();
 				polygon = new Polygon(array);

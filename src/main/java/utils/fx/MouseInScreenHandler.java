@@ -1,4 +1,4 @@
-package utils;
+package utils.fx;
 
 import java.awt.Robot;
 import javafx.application.Platform;

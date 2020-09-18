@@ -15,6 +15,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
@@ -29,6 +30,14 @@ public final class RotateUtils {
 
     private RotateUtils() {
 
+    }
+    public static double getAngle(Line line) {
+        return getAngle(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
+    }
+    public static double getAngle(final double ax, final double ay, final double bx, final double by) {
+        double a = ax - bx;
+        double b = ay - by;
+        return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
     }
     public static List<Circle> createDraggableRectangle(final Rectangle rect) {
         final double handleRadius = 5;

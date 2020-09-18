@@ -17,9 +17,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import utils.DrawOnPoint;
-import utils.PixelatedImageView;
-import utils.ZoomableScrollPane;
 import utils.ex.SupplierEx;
+import utils.fx.PixelatedImageView;
+import utils.fx.ZoomableScrollPane;
 
 public class PaintModel {
     private static final int MAX_VERSIONS = 50;

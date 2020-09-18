@@ -14,7 +14,7 @@ import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.Xform;
+import utils.fx.Xform;
 
 public class XylophoneApp extends Application {
 

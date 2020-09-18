@@ -16,6 +16,7 @@ import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
+import utils.fx.PixelatedImageView;
 
 public final class PaintFileUtils {
     private static final Logger LOG = HasLogging.log();

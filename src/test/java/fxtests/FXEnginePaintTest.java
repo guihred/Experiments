@@ -37,6 +37,7 @@ import paintexp.tool.PaintTools;
 import utils.*;
 import utils.ex.ConsumerEx;
 import utils.ex.RunnableEx;
+import utils.fx.ZoomableScrollPane;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXEnginePaintTest extends AbstractTestExecution {

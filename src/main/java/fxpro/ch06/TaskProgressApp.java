@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.stage.Stage;
-import utils.TaskProgressView;
+import utils.fx.TaskProgressView;
 
 public class TaskProgressApp extends Application {
 

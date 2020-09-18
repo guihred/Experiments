@@ -22,10 +22,10 @@ import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.slf4j.Logger;
-import utils.Axis;
 import utils.ImageFXUtils;
 import utils.RotateUtils;
 import utils.ex.HasLogging;
+import utils.fx.Axis;
 
 public class Chart3dGraph extends Application {
 

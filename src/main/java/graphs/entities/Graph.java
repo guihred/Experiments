@@ -6,7 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import utils.ZoomableScrollPane;
+import utils.fx.ZoomableScrollPane;
 public class Graph {
 
 	private Group canvas;

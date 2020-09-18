@@ -22,8 +22,8 @@ import javafx.scene.text.Text;
 import ml.graph.PieGraph;
 import utils.ClassReflectionUtils;
 import utils.DateFormatUtils;
-import utils.ImageTableCell;
 import utils.StringSigaUtils;
+import utils.fx.ImageTableCell;
 
 public final class CandidatoHelper {
     private static final int RELEVANT_FIELD_THRESHOLD = 410;

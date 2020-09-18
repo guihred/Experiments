@@ -1,4 +1,4 @@
-package utils;
+package utils.fx;
 
 
 import com.sun.javafx.scene.control.skin.ScrollPaneSkin;
@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.transform.Scale;
+import utils.DrawOnPoint;
 
 public class ZoomableScrollPane extends ScrollPane {
     protected static final double DELTA_ZOOM = 0.1;

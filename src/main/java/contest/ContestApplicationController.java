@@ -25,7 +25,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import utils.ImageTableCell;
+import utils.fx.ImageTableCell;
 
 public class ContestApplicationController {
     private static final String ERRADO = "errado";

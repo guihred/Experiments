@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.scene.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import utils.MouseInScreenHandler;
+import utils.fx.MouseInScreenHandler;
 
 public class RubiksCubeLauncher extends Application {
 	private RubiksModel model = new RubiksModel();

@@ -7,8 +7,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.shape.Rectangle;
 import paintexp.tool.*;
-import utils.PixelatedImageView;
-import utils.ZoomableScrollPane;
+import utils.fx.PixelatedImageView;
+import utils.fx.ZoomableScrollPane;
 
 public final class PaintEditUtils {
     private PaintEditUtils() {

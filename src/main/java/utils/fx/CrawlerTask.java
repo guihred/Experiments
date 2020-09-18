@@ -1,4 +1,4 @@
-package utils;
+package utils.fx;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

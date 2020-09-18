@@ -34,6 +34,7 @@ import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTimelineBuilder;
 import utils.*;
 import utils.ex.RunnableEx;
+import utils.fx.ImageTableCell;
 
 public class PdfController extends Application {
 

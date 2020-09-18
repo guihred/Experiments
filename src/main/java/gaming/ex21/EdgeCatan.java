@@ -1,6 +1,5 @@
 package gaming.ex21;
 
-import graphs.entities.Edge;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -12,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import simplebuilder.SimpleFadeTransitionBuilder;
+import utils.RotateUtils;
 
 public class EdgeCatan extends Group {
 
@@ -92,7 +92,7 @@ public class EdgeCatan extends Group {
         element.setLayoutX(-element.getImage().getWidth() / 2);
         element.setLayoutY(-element.getImage().getHeight() / 2);
         fadeOut(true);
-        double angulo = Edge.getAngulo(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
+        double angulo = RotateUtils.getAngle(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
         element.setRotate(Math.toDegrees(angulo) - 90);
         this.element = element;
     }

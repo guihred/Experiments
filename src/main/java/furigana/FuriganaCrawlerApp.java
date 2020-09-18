@@ -5,7 +5,7 @@ import static utils.CommonsFX.onCloseWindow;
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.stage.Stage;
-import utils.TaskProgressView;
+import utils.fx.TaskProgressView;
 
 public class FuriganaCrawlerApp extends Application {
 

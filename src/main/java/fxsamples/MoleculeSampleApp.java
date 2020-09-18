@@ -20,7 +20,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.Xform;
+import utils.fx.Xform;
 
 /**
  * MoleculeSampleApp

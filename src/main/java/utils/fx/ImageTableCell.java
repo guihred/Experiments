@@ -1,4 +1,4 @@
-package utils;
+package utils.fx;
 
 import static utils.ex.FunctionEx.makeFunction;
 
@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
+import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 

@@ -1,4 +1,4 @@
-package utils;
+package utils.fx;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Group;

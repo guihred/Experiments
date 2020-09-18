@@ -16,9 +16,9 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import utils.Axis;
 import utils.ImageFXUtils;
 import utils.RotateUtils;
+import utils.fx.Axis;
 
 public class Chart3dDemo extends Application {
 

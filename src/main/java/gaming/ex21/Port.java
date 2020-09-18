@@ -1,6 +1,5 @@
 package gaming.ex21;
 
-import graphs.entities.Edge;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,6 +19,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import simplebuilder.SimpleTextBuilder;
+import utils.RotateUtils;
 
 public class Port extends Group {
 
@@ -146,7 +146,7 @@ public class Port extends Group {
 				final double radius = CatanResource.RADIUS * Math.sqrt(3) / 4;
 				double x = points.stream().mapToDouble(SettlePoint::getLayoutX).average().orElse(0);
 				double y = points.stream().mapToDouble(SettlePoint::getLayoutY).average().orElse(0);
-				double angulo = Math.PI / 2 - Edge.getAngulo(radius * 3, radius * 3 * 9 / 10, x, y);
+				double angulo = Math.PI / 2 - RotateUtils.getAngle(radius * 3, radius * 3 * 9 / 10, x, y);
 				double m = Math.sin(angulo) * radius;
 				double n = Math.cos(angulo) * radius;
 				port.relocate(x + m - CatanResource.RADIUS / 2., y + n - CatanResource.RADIUS / 2.);

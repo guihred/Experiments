@@ -1,4 +1,4 @@
-package utils;
+package utils.fx;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;

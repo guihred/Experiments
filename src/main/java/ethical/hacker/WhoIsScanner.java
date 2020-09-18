@@ -26,6 +26,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.FileTreeWalker;
+import utils.PhantomJSUtils;
 import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
@@ -67,7 +68,7 @@ public class WhoIsScanner {
         Document renderPage;
         if (!htmlFile.exists() || containsWait(htmlFile)) {
             print = ResourceFXUtils.getOutFile(screenshotsFolder + name + ".png");
-            renderPage = ExtractUtils.renderPage(url, cookies, waitStr, print);
+            renderPage = PhantomJSUtils.renderPage(url, cookies, waitStr, print);
             Files.write(htmlFile.toPath(), renderPage.outerHtml().getBytes(StandardCharsets.UTF_8));
         } else {
             renderPage = Jsoup.parse(htmlFile, StandardCharsets.UTF_8.name());

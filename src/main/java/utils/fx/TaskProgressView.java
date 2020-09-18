@@ -1,4 +1,4 @@
-package utils;
+package utils.fx;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.beans.binding.Bindings;

@@ -25,8 +25,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
+import simplebuilder.ListHelper;
 import simplebuilder.SimpleComboBoxBuilder;
-import utils.ListHelper;
 import utils.ex.RunnableEx;
 
 public class TimelionDisplay extends Application {

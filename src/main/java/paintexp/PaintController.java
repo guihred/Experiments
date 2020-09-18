@@ -19,8 +19,8 @@ import paintexp.tool.AreaTool;
 import paintexp.tool.PaintModel;
 import paintexp.tool.PaintTool;
 import paintexp.tool.PaintTools;
-import utils.PixelatedImageView;
-import utils.ZoomableScrollPane;
+import utils.fx.PixelatedImageView;
+import utils.fx.ZoomableScrollPane;
 
 public class PaintController {
 

@@ -26,6 +26,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.*;
 import utils.ex.*;
+import utils.fx.CrawlerTask;
 
 public class CrawlerFuriganaTask extends CrawlerTask {
 

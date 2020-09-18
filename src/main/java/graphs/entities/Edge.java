@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import utils.RotateUtils;
 
 public class Edge extends Group implements Comparable<Edge> {
 
@@ -97,7 +98,7 @@ public class Edge extends Group implements Comparable<Edge> {
     }
 
     public final double getAngulo() {
-        return getAngulo(line);
+        return RotateUtils.getAngle(line);
     }
 
     public double getModulo() {
@@ -138,16 +139,6 @@ public class Edge extends Group implements Comparable<Edge> {
     @Override
     public String toString() {
         return source + "->" + target + "(" + valor + ")";
-    }
-
-    public static double getAngulo(final double ax, final double ay, final double bx, final double by) {
-        double a = ax - bx;
-        double b = ay - by;
-        return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
-    }
-
-    public static double getAngulo(Line line) {
-        return getAngulo(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
     }
 
 }

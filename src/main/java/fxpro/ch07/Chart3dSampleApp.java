@@ -14,7 +14,7 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.stage.Stage;
-import utils.Xform;
+import utils.fx.Xform;
 
 public class Chart3dSampleApp extends Application {
     private static final int DEPTH = 300;

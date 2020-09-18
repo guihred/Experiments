@@ -3,9 +3,9 @@ package election;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import utils.CrawlerTask;
 import utils.ExtractUtils;
 import utils.HibernateUtil;
+import utils.fx.CrawlerTask;
 
 public abstract class CommonCrawlerTask<T> extends CrawlerTask {
     private static final int MAX_THREAD_COUNT = 10;

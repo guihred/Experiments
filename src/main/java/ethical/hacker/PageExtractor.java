@@ -140,7 +140,7 @@ public class PageExtractor extends Application {
                 select.stream().map(Element::html).filter(StringUtils::isNotBlank).collect(Collectors.joining("\n"));
         String format = String.format("<!DOCTYPE html><html><body>%s</body></html>", collect);
         File outFile = ResourceFXUtils.getOutFile("png/" + (text + i).replaceAll("[ #,\\.]+", "-") + ".png");
-        ExtractUtils.saveHtmlImage(format, outFile);
+        PhantomJSUtils.saveHtmlImage(format, outFile);
         return new ImageView(ResourceFXUtils.convertToURL(outFile).toExternalForm());
     }
 

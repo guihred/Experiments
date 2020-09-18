@@ -1,6 +1,5 @@
 package paintexp.tool;
 
-import graphs.entities.Edge;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -8,6 +7,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import simplebuilder.SimpleLineBuilder;
+import utils.RotateUtils;
 
 public class LineTool extends PaintTool {
 
@@ -35,7 +35,7 @@ public class LineTool extends PaintTool {
         getLine().setEndX(e.getX());
         getLine().setEndY(e.getY());
         if (e.isShiftDown()) {
-            double angulo = -Math.PI / 2 - Edge.getAngulo(getLine());
+            double angulo = -Math.PI / 2 - RotateUtils.getAngle(getLine());
             final double ang = 2 * Math.PI / 8;
             long round = Math.round(angulo / ang);
             double size = size();
