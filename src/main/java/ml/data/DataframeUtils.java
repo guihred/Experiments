@@ -89,7 +89,8 @@ public class DataframeUtils extends DataframeML {
                 .map(FunctionEx.makeFunction(mapper)).collect(Collectors.toList());
         dataframe.getDataframe().put(header, (List) mappedColumn);
         dataframe.putFormat(header,
-                (Class<? extends Comparable<?>>) mappedColumn.stream().findFirst().map(T::getClass).orElse(null));
+                (Class<? extends Comparable<?>>) mappedColumn.stream().filter(Objects::nonNull).findFirst()
+                        .map(T::getClass).orElse(null));
         return mappedColumn;
     }
 

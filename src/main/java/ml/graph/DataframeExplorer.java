@@ -2,29 +2,22 @@ package ml.graph;
 
 import ethical.hacker.WhoIsScanner;
 import extract.ExcelService;
-import gaming.ex21.ListHelper;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import ml.data.*;
@@ -35,43 +28,18 @@ import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
+import utils.ListHelper;
 import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
-public class DataframeExplorer extends Application {
+public class DataframeExplorer extends ExplorerVariables {
     private static final int MAX_ELEMENTS = 1000;
     private static final Logger LOG = HasLogging.log();
-    @FXML
-    private ComboBox<Entry<String, DataframeStatisticAccumulator>> headersCombo;
-    @FXML
-    private ListView<Entry<String, DataframeStatisticAccumulator>> columnsList;
-    @FXML
-    private AutocompleteField text;
-    @FXML
-    private Button fillIP;
-    @FXML
-    private ListView<Question> questionsList;
-    @FXML
-    private ComboBox<QuestionType> questType;
     private ObservableList<Entry<String, DataframeStatisticAccumulator>> columns = FXCollections.observableArrayList();
     private ObservableList<Question> questions = FXCollections.observableArrayList();
-    private final ObjectProperty<DataframeML> dataframe = new SimpleObjectProperty<>();
-    @FXML
-    private PaginatedTableView dataTable;
-    @FXML
-    private TableView<XYChart.Data<String, Number>> histogram;
-    @FXML
-    private ProgressIndicator progress;
-    @FXML
-    private LineChart<Number, Number> lineChart;
-    @FXML
-    private PieChart pieChart;
-
-    @FXML
-    private BarChart<String, Number> barChart;
     private Thread currentThread;
 
     public void addStats(File file) {
@@ -92,10 +60,6 @@ public class DataframeExplorer extends Application {
         });
     }
 
-    public DataframeML getDataframe() {
-        return dataframe.get();
-    }
-
     public void initialize() {
         questions.addListener(this::onQuestionsChange);
         lineChart.managedProperty().bind(lineChart.visibleProperty());
@@ -107,12 +71,12 @@ public class DataframeExplorer extends Application {
         SimpleTableViewBuilder.of(histogram).multipleSelection().equalColumns().copiable().savable()
                 .onKey(KeyCode.ADD, list -> addQuestion(list, true))
                 .onKey(KeyCode.SUBTRACT, list -> addQuestion(list, false));
-        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen).onKey(KeyCode.DELETE,
-                columns::remove).addContextMenu("_Split", e -> {
+        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen)
+                .onKey(KeyCode.DELETE, columns::remove).addContextMenu("_Split", e -> {
                     Entry<String, DataframeStatisticAccumulator> selectedItem =
                             columnsList.getSelectionModel().getSelectedItem();
-                    int indexOf = dataframe.get().cols().indexOf(selectedItem.getKey());
-                    CSVUtils.splitFile(dataframe.get().getFile(), indexOf);
+                    int indexOf = getDataframe().cols().indexOf(selectedItem.getKey());
+                    CSVUtils.splitFile(getDataframe().getFile(), indexOf);
                 });
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
@@ -132,11 +96,6 @@ public class DataframeExplorer extends Application {
         }).converter(QuestionType::getSign);
         SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove)
                 .onKey(KeyCode.MINUS, this::toggleQuestion).onKey(KeyCode.SUBTRACT, this::toggleQuestion);
-        dataframe.addListener((ob, old, val) -> CommonsFX.runInPlatform(() -> {
-            String format = String.format("Dataframe Explorer (%s)",
-                    FunctionEx.mapIf(getDataframe(), d -> d.getFile().getName(), ""));
-            ((Stage) questionsList.getScene().getWindow()).setTitle(format);
-        }));
     }
 
     public void onActionAdd() {
@@ -173,20 +132,17 @@ public class DataframeExplorer extends Application {
 
     public void onActionSave(ActionEvent event) {
         if (getDataframe() != null) {
-            new FileChooserBuilder().title("Save File").initialDir(getDataframe().getFile().getParentFile())
-                    .initialFilename(getDataframe().getFile().getName()).extensions("Data", "*.csv")
-                    .onSelect(outFile -> RunnableEx.runNewThread(() -> {
-                        if (!getDataframe().isLoaded()) {
-                            readDataframe(getDataframe().getFile(), getDataframe().getSize());
-                        }
-                        DataframeUtils.save(getDataframe(), outFile);
-                        LOG.info("{} SAVED", outFile);
-                    })).saveFileAction(event);
+            FileChooserBuilder chooser = new FileChooserBuilder();
+            chooser.title("Save File").initialDir(getDataframe().getFile().getParentFile())
+                    .initialFilename(getDataframe().getFile().getName()).extensions("Data", "*.csv");
+            chooser.onSelect(outFile -> RunnableEx.runNewThread(() -> {
+                if (!getDataframe().isLoaded()) {
+                    readDataframe(getDataframe().getFile(), getDataframe().getSize());
+                }
+                DataframeUtils.save(getDataframe(), outFile);
+                LOG.info("{} SAVED", outFile);
+            })).saveFileAction(event);
         }
-    }
-
-    public void setDataframe(DataframeML dataframe) {
-        this.dataframe.set(dataframe);
     }
 
     public void show() {
@@ -228,6 +184,38 @@ public class DataframeExplorer extends Application {
         }
     }
 
+    private void addToBarChart(DataframeML dataframeML, Entry<String, DataframeStatisticAccumulator> old,
+            Entry<String, DataframeStatisticAccumulator> val, String name) {
+
+        ObservableList<XYChart.Data<Number, Number>> data = FXCollections.observableArrayList();
+        String x = old.getKey();
+        String y = val.getKey();
+        Map<Object, XYChart.Data<Number, Number>> linkedHashMap = new LinkedHashMap<>();
+        dataframeML.forEachRow(map -> {
+            XYChart.Data<Number, Number> e = new XYChart.Data<>((Number) map.get(x), (Number) map.get(y));
+            if (name != null) {
+                linkedHashMap.merge(map.get(name), e, (o, n) -> {
+                    n.setXValue(o.getXValue().doubleValue() + n.getXValue().doubleValue());
+                    n.setYValue(o.getYValue().doubleValue() + n.getYValue().doubleValue());
+                    return n;
+                });
+                e.setExtraValue(map.get(name));
+            }
+            data.add(e);
+        });
+
+        Series<Number, Number> a = new Series<>();
+        ObservableList<Series<Number, Number>> value = FXCollections.observableArrayList();
+        if (name != null) {
+            a.setName(name);
+        }
+        value.add(a);
+        lineChart.getXAxis().setLabel(old.getKey());
+        lineChart.getYAxis().setLabel(val.getKey());
+        a.setData(data);
+        lineChart.setData(value);
+    }
+
     private Object getQueryObject(QuestionType type, String colName, String text2) {
         if (type == QuestionType.IN) {
             List<Object> arrayList = new ArrayList<>();
@@ -249,7 +237,6 @@ public class DataframeExplorer extends Application {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void onColumnChosen(Entry<String, DataframeStatisticAccumulator> old,
             Entry<String, DataframeStatisticAccumulator> val) {
         if (val == null) {
@@ -271,38 +258,36 @@ public class DataframeExplorer extends Application {
             Map<String, Integer> countMap = val.getValue().getCountMap();
             barChart.setTitle(val.getKey());
             pieChart.setTitle(val.getKey());
-            barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+            barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
             pieChart.setData(pieData);
             addToPieChart(barList, countMap);
             return;
         }
         if (!getDataframe().isLoaded()) {
             Map<String, Integer> countMap = val.getValue().getCountMap();
-            barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+            barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
             pieChart.setData(pieData);
             addToPieChart(barList, countMap);
             return;
         }
 
         if (old != null && old.getValue().getFormat() != String.class) {
-            addToBarChart(lineChart, getDataframe(), old, val, barChart.getTitle());
+            addToBarChart(getDataframe(), old, val, barChart.getTitle());
             if (barChart.getTitle() != null) {
                 String key = val.getKey();
                 String title = barChart.getTitle();
-                List<Entry<String, Number>> collect = toPie(getDataframe(), title, key);
-                barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+                barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
                 pieChart.setData(pieData);
-                addToPieChart(barList, collect);
+                addToPieChart(barList, toPie(getDataframe(), title, key));
             }
             return;
         }
         if (barChart.getTitle() != null) {
-            barChart.setData(FXCollections.observableArrayList(new Series<>(val.getKey(), barList)));
+            barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
             pieChart.setData(pieData);
             String title = barChart.getTitle();
             String key = val.getKey();
-            List<Entry<String, Number>> collect = toPie(getDataframe(), title, key);
-            addToPieChart(barList, collect);
+            addToPieChart(barList, toPie(getDataframe(), title, key));
         }
     }
 
@@ -381,52 +366,18 @@ public class DataframeExplorer extends Application {
         launch(args);
     }
 
-    private static void addToBarChart(LineChart<Number, Number> lineChart, DataframeML dataframe,
-            Entry<String, DataframeStatisticAccumulator> old, Entry<String, DataframeStatisticAccumulator> val,
-            String name) {
-
-        ObservableList<XYChart.Data<Number, Number>> data = FXCollections.observableArrayList();
-        String x = old.getKey();
-        String y = val.getKey();
-        Map<Object, XYChart.Data<Number, Number>> linkedHashMap = new LinkedHashMap<>();
-        dataframe.forEachRow(map -> {
-            XYChart.Data<Number, Number> e = new XYChart.Data<>((Number) map.get(x), (Number) map.get(y));
-            if (name != null) {
-                linkedHashMap.merge(map.get(name), e, (o, n) -> {
-                    n.setXValue(o.getXValue().doubleValue() + n.getXValue().doubleValue());
-                    n.setYValue(o.getYValue().doubleValue() + n.getYValue().doubleValue());
-                    return n;
-                });
-                e.setExtraValue(map.get(name));
-            }
-            data.add(e);
-        });
-
-        Series<Number, Number> a = new Series<>();
-        ObservableList<Series<Number, Number>> value = FXCollections.observableArrayList();
-        if (name != null) {
-            a.setName(name);
-        }
-        value.add(a);
-        lineChart.getXAxis().setLabel(old.getKey());
-        lineChart.getYAxis().setLabel(val.getKey());
-        a.setData(data);
-        lineChart.setData(value);
-    }
-
     private static void addToList(ObservableList<XYChart.Data<String, Number>> dataList,
-            List<XYChart.Data<String, Number>> arrayList2, XYChart.Data<String, Number> others,
+            List<XYChart.Data<String, Number>> array, XYChart.Data<String, Number> others,
             Function<XYChart.Data<String, Number>, Double> keyExtractor) {
         CommonsFX.runInPlatformSync(() -> {
             if (dataList.size() >= MAX_ELEMENTS / 4) {
-                others.setYValue(
-                        keyExtractor.apply(others) + arrayList2.stream().mapToDouble(keyExtractor::apply).sum());
+                others.setYValue(keyExtractor.apply(others) + array.stream().mapToDouble(keyExtractor::apply).sum());
                 if (!dataList.contains(others)) {
                     dataList.add(others);
                 }
             } else {
-                arrayList2.sort(Comparator.comparing(keyExtractor).reversed());
-                dataList.addAll(arrayList2);
+                array.sort(Comparator.comparing(keyExtractor).reversed());
+                dataList.addAll(array);
             }
         });
     }

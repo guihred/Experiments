@@ -11,6 +11,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import utils.CommonsFX;
+import utils.ListHelper;
 
 public class CatanAppMain extends Application {
     @FXML

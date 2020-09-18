@@ -1,5 +1,6 @@
-package gaming.ex21;
+package utils;
 
+import gaming.ex21.Deal;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;

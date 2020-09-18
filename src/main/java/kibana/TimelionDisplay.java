@@ -1,6 +1,5 @@
 package kibana;
 
-import gaming.ex21.ListHelper;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,6 +26,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleComboBoxBuilder;
+import utils.ListHelper;
 import utils.ex.RunnableEx;
 
 public class TimelionDisplay extends Application {

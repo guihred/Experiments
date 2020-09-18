@@ -176,7 +176,8 @@ public class WhoIsScanner {
         ipInfo.addListener((Change<? extends String, ? extends Map<String, String>> e) -> count
                 .set(count.get() + e.getValueAdded().size()));
         DataframeUtils.crossFeatureObject(dataframe, "Rede",
-                e -> ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)).get("network"),
+                e -> ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip))
+                        .getOrDefault("network", ""),
                 ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, "Owner",
                 e -> getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)), "asname",
