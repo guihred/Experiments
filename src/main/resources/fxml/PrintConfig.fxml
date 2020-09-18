@@ -79,7 +79,7 @@
 				<Slider fx:id="vgap" max="0.5" min="0.0" value="0.0"
 					onValueChange="#valueChanged" blockIncrement="0.01" />
 				<Text text="Print Quality" fx:id="qualityText" />
-				<Slider fx:id="quality" max="8" min="0.1" value="8"
+				<Slider fx:id="quality" max="8" min="0.1" value="4"
 					onValueChange="#valueChanged" blockIncrement="0.01" />
 
 				<Text text="Print Type" />

@@ -1,6 +1,7 @@
 package ethical.hacker;
 
 import extract.ExcelService;
+import extract.PrintConfig;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -26,7 +27,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import paintexp.PrintConfig;
 import simplebuilder.FileChooserBuilder;
 import utils.*;
 import utils.ex.FunctionEx;

@@ -1,8 +1,7 @@
-package paintexp;
+package extract;
 
 import static java.lang.Math.nextDown;
 
-import extract.PdfUtils;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

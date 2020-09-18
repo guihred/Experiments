@@ -1,5 +1,6 @@
 package paintexp;
 
+import extract.PrintConfig;
 import java.io.File;
 import java.io.FileInputStream;
 import javafx.embed.swing.SwingFXUtils;
@@ -11,7 +12,6 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import paintexp.tool.PaintModel;
 import simplebuilder.FileChooserBuilder;
-import utils.*;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
