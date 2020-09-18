@@ -1,4 +1,4 @@
-package ml.data;
+package utils;
 
 import static utils.ResourceFXUtils.getOutFile;
 import static utils.ex.FunctionEx.makeFunction;
@@ -11,11 +11,11 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.slf4j.Logger;
-import utils.FileTreeWalker;
-import utils.ResourceFXUtils;
-import utils.UnZip;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -81,6 +81,20 @@ public class CSVUtils {
             curVal = getCurrentVal(result, curVal, chars, chars[i]);
         }
         return curVal;
+    }
+
+    public static <T> void saveToFile(TableView<T> table, File f) throws IOException {
+        List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
+        if (selectedItems.isEmpty()) {
+            selectedItems = IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
+        }
+    
+        String collect2 = table.getColumns().stream().map(TableColumn<T, ?>::getText)
+                .collect(Collectors.joining("\",\"", "\"", "\""));
+        String collect = selectedItems.stream().map(l -> table.getColumns().stream()
+                .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\",\"", "\"", "\"")))
+                .collect(Collectors.joining("\n"));
+        Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
     }
 
     public static void appendLine(File file, Map<String, Object> rowMap) {

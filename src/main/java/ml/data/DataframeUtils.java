@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
 import org.slf4j.Logger;
+import utils.CSVUtils;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;

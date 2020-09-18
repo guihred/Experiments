@@ -17,11 +17,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import ml.data.CSVUtils;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleComboBoxBuilder;
+import utils.CSVUtils;
 import utils.StringSigaUtils;
 
 public class RegressionChartExample extends Application {

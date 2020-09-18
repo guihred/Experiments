@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import kibana.KibanaApi;
-import ml.data.CSVUtils;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;

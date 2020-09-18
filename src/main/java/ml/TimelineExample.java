@@ -21,13 +21,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import ml.data.CSVUtils;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.graph.TimelineGraph;
 import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
+import utils.CSVUtils;
 import utils.ImageFXUtils;
 import utils.ex.HasLogging;
 

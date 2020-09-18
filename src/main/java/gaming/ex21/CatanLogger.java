@@ -2,9 +2,9 @@ package gaming.ex21;
 
 import java.io.File;
 import java.util.Map;
-import ml.data.CSVUtils;
 import ml.data.DataframeML;
 import org.slf4j.Logger;
+import utils.CSVUtils;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 

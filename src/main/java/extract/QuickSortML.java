@@ -2,10 +2,20 @@ package extract;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
+import javafx.scene.control.TableColumn;
 
 public class QuickSortML {
 
-	public static <T> boolean isSorted(List<T> a, Comparator<T> comp) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+    public static Comparator<Integer> getComparator(TableColumn<Integer, ?> col, Entry<String, Boolean> e) {
+        Comparator<Integer> comparing =
+                Comparator.comparing(m -> (Comparable) (col.getCellData(m) instanceof Comparable ? col.getCellData(m)
+                        : Objects.toString(col.getCellData(m))));
+        return e.getValue() ? comparing : comparing.reversed();
+    }
+    public static <T> boolean isSorted(List<T> a, Comparator<T> comp) {
         for (int i = 0; i < a.size() - 1; i++) {
             if (comp.compare(a.get(i), a.get(i + 1)) > 0) {
                 return false;

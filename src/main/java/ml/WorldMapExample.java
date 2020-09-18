@@ -10,7 +10,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import ml.data.CSVUtils;
 import ml.data.Country;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
@@ -20,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CSVUtils;
 
 public class WorldMapExample extends Application {
 

@@ -29,6 +29,7 @@ import ml.graph.DataframeExplorer;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.ListHelper;
 import simplebuilder.SimpleTableViewBuilder;
+import utils.CSVUtils;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
@@ -160,7 +161,7 @@ public class ConsultasInvestigator extends Application {
             }
             String collect = filter.values().stream().collect(Collectors.joining());
             File ev = ResourceFXUtils.getOutFile("csv/" + consultasTable.getId() + collect + ".csv");
-            SimpleTableViewBuilder.saveToFile(consultasTable, ev);
+            CSVUtils.saveToFile(consultasTable, ev);
             dataframeExplorer.show();
             dataframeExplorer.addStats(ev);
         });

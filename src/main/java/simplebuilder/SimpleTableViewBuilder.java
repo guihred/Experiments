@@ -1,31 +1,24 @@
 package simplebuilder;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.*;
 import javafx.scene.control.TableColumn.SortType;
-import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
+import utils.CSVUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
@@ -36,6 +29,11 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public SimpleTableViewBuilder() {
         super(new TableView<T>());
+    }
+
+    public <V> SimpleTableViewBuilder<T> addClosableColumn(String name, FunctionEx<T, V> func) {
+        addClosableColumn(node, name, func);
+        return this;
     }
 
     public SimpleTableViewBuilder<T> addColumn(final String columnName,
@@ -162,6 +160,16 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public static <T,V> void addClosableColumn(TableView<T> node,String name, FunctionEx<T, V> func) {
+        TableColumn<T, V> e2 = new TableColumn<>(name);
+        Hyperlink value = new Hyperlink("X");
+        value.setOnAction(e -> node.getColumns().remove(e2));
+        value.setStyle("-fx-text-fill: red;");
+        e2.setGraphic(value);
+        e2.setCellValueFactory(m -> new SimpleObjectProperty<>(FunctionEx.apply(func, m.getValue())));
+        node.getColumns().add(e2);
+    }
+
     public static void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder,
         final Collection<String> keySet) {
         simpleTableViewBuilder.getColumns().clear();
@@ -245,23 +253,9 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public static <T> void saveContent(TableView<T> table, KeyEvent ev) {
         if (ev.isControlDown() && ev.getCode() == KeyCode.S) {
             new FileChooserBuilder().initialFilename(Objects.toString(table.getId(), "table") + ".csv")
-                    .extensions("CSV", "*.csv").onSelect(f -> saveToFile(table, f)).saveFileAction(ev);
+                    .extensions("CSV", "*.csv").onSelect(f -> CSVUtils.saveToFile(table, f)).saveFileAction(ev);
 
         }
-    }
-
-    public static <T> void saveToFile(TableView<T> table, File f) throws IOException {
-        List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
-        if (selectedItems.isEmpty()) {
-            selectedItems = IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
-        }
-
-        String collect2 = table.getColumns().stream().map(TableColumn<T, ?>::getText)
-                .collect(Collectors.joining("\",\"", "\"", "\""));
-        String collect = selectedItems.stream().map(l -> table.getColumns().stream()
-                .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\",\"", "\"", "\"")))
-                .collect(Collectors.joining("\n"));
-        Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
     }
 
     public static <S, T> Callback<TableColumn<T, S>, TableCell<T, S>> setFormat(FunctionEx<S, String> func) {

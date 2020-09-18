@@ -4,15 +4,13 @@ import static java.util.stream.DoubleStream.concat;
 import static java.util.stream.DoubleStream.of;
 import static simplebuilder.SimpleTableViewBuilder.prefWidthColumns;
 
-import java.util.Comparator;
+import extract.QuickSortML;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -67,17 +65,11 @@ public final class PaginatedTableView extends VBox {
         SimpleTableViewBuilder.of(table).copiable().savable()
                 .onSortClicked(e -> RunnableEx.runIf(items,
                         i -> table.getColumns().stream().filter(c -> c.getText().equals(e.getKey())).findFirst()
-                                .ifPresent(col -> items.sort(getComparator(col, e)))));
+                                .ifPresent(col -> items.sort(QuickSortML.getComparator(col, e)))));
     }
 
     public <T> void addColumn(String name, FunctionEx<Integer, T> func) {
-        TableColumn<Integer, T> e2 = new TableColumn<>(name);
-        Hyperlink value = new Hyperlink("X");
-        value.setOnAction(e -> table.getColumns().remove(e2));
-        value.setStyle("-fx-text-fill: red;");
-        e2.setGraphic(value);
-        e2.setCellValueFactory(m -> new SimpleObjectProperty<>(FunctionEx.apply(func, m.getValue())));
-        table.getColumns().add(e2);
+        SimpleTableViewBuilder.addClosableColumn(table, name, func);
         updateItems();
     }
 
@@ -146,14 +138,6 @@ public final class PaginatedTableView extends VBox {
         }
         pageSizeCombo.setItems(value);
         pageSizeCombo.getSelectionModel().select(selectedItem);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static Comparator<Integer> getComparator(TableColumn<Integer, ?> col, Entry<String, Boolean> e) {
-        Comparator<Integer> comparing =
-                Comparator.comparing(m -> (Comparable) (col.getCellData(m) instanceof Comparable ? col.getCellData(m)
-                        : Objects.toString(col.getCellData(m))));
-        return e.getValue() ? comparing : comparing.reversed();
     }
 
 }
