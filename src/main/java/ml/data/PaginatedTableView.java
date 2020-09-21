@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -42,19 +43,22 @@ public final class PaginatedTableView extends VBox {
     private FilteredList<Integer> filteredItems;
 
     @FXML
-    private ComboBox<Integer> pageSizeCombo;
+    private TableColumn<Integer, Number> numberColumn;
+    @FXML
+    private ComboBox<Number> pageSizeCombo;
     @FXML
     private TextField textField;
 
     public PaginatedTableView() {
         CommonsFX.loadRoot("PaginatedTableView.fxml", this);
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        numberColumn.setCellValueFactory(s -> new SimpleIntegerProperty(s.getValue()));
         pagination.currentPageIndexProperty().addListener(ob -> updateItems());
         pageSize.addListener(ob -> updateItems());
-        pageSizeCombo.valueProperty().bindBidirectional(pageSize.asObject());
+        pageSizeCombo.valueProperty().bindBidirectional(pageSize);
         maxSize.addListener((ob, o, n) -> {
             updateItems();
-            updatePageSizeCombo(n);
+            updatePageSizeCombo(n.intValue());
         });
         pagination.setPageCount(0);
         pagination.pageCountProperty().bind(
@@ -108,7 +112,8 @@ public final class PaginatedTableView extends VBox {
     }
 
     private int getPageCount() {
-        return maxSize.get() / pageSize.get() + (int) Math.signum(maxSize.get() % pageSize.get());
+        int size = Math.max(pageSize.get(), 10);
+        return maxSize.get() / size + (int) Math.signum(maxSize.get() % size);
     }
 
     private void updateItems() {
@@ -120,24 +125,27 @@ public final class PaginatedTableView extends VBox {
         table.setItems(filteredItems);
     }
 
-    private void updatePageSizeCombo(Number n) {
-        ObservableList<Integer> value = FXCollections.observableArrayList();
-        double doubleValue = n.doubleValue();
-        double ceil = Math.ceil(Math.log10(doubleValue));
-        Integer selectedItem = pageSizeCombo.getSelectionModel().getSelectedItem();
+    private void updatePageSizeCombo(int n) {
+        ObservableList<Number> value = FXCollections.observableArrayList();
+        double ceil = Math.ceil(Math.log10(n));
+        Integer selectedItem = pageSizeCombo.getSelectionModel().getSelectedItem().intValue();
         for (int i = 1; i <= ceil; i++) {
-            if (value.isEmpty() || doubleValue > value.get(value.size() - 1)) {
+            if (value.isEmpty() || n > last(value)) {
                 value.add((int) Math.pow(10, i));
             }
-            if (doubleValue > value.get(value.size() - 1)) {
+            if (n > last(value)) {
                 value.add((int) (Math.pow(10, i) * 2.5));
             }
-            if (doubleValue > value.get(value.size() - 1)) {
+            if (n > last(value)) {
                 value.add((int) Math.pow(10, i) * 5);
             }
         }
         pageSizeCombo.setItems(value);
         pageSizeCombo.getSelectionModel().select(selectedItem);
+    }
+
+    private static int last(ObservableList<Number> value) {
+        return value.get(value.size() - 1).intValue();
     }
 
 }

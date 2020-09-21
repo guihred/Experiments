@@ -81,7 +81,7 @@ public final class VirusTotalApi {
     }
 
     public static Map<String, String> getIpTotalInfo(String ip) {
-        return SupplierEx.get(() -> {
+        return SupplierEx.getHandle(() -> {
 
             File outFile = newJsonFile(ip);
             if (!outFile.exists()) {
@@ -89,7 +89,7 @@ public final class VirusTotalApi {
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, "as_owner", "country", 
                     LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "network");
-        });
+        }, null, e -> LOG.info("ERROR SEARCHING {} {}", ip, e.getMessage()));
     }
 
     public static File[] getUrlInformation(String url) throws IOException {

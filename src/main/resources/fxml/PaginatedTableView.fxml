@@ -12,17 +12,19 @@
 <?import javafx.beans.property.SimpleIntegerProperty?>
 
 <fx:root type="ml.data.PaginatedTableView" xmlns:fx="http://javafx.com/fxml">
-    <fx:define>
-        <SimpleIntegerProperty fx:id="maxSize" value="${0}" />
-        <SimpleIntegerProperty fx:id="pageSize"  >
-            <value><Integer fx:value="20" /></value>
-        </SimpleIntegerProperty>
-    </fx:define>
+	<fx:define>
+		<SimpleIntegerProperty fx:id="maxSize" value="${0}" />
+		<SimpleIntegerProperty fx:id="pageSize">
+			<value>
+				<Integer fx:value="25" />
+			</value>
+		</SimpleIntegerProperty>
+	</fx:define>
 
 	<children>
 		<TableView VBox.vgrow="ALWAYS" fx:id="table">
 			<columns>
-				<TableColumn fx:id="tableColumn4" text="Nº" />
+				<TableColumn fx:id="numberColumn" text="Nº" />
 			</columns>
 			<padding>
 				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
