@@ -222,7 +222,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
     @Test
     public void testXmlToXlsx() {
-        File file = new File("C:\\Users\\guigu\\Downloads\\export.xls");
+        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Referencias\\Aplicativos.xls");
         measureTime("XmlToXlsx.convertXML2XLS", () -> XmlToXlsx.convertXML2XLS(file));
     }
 

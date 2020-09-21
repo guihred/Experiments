@@ -28,7 +28,7 @@ import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
 public abstract class ExplorerVariables extends Application {
-    protected static final int MAX_ELEMENTS = 1000;
+    protected static final int MAX_ELEMENTS = 10000;
     @FXML
     protected ComboBox<Entry<String, DataframeStatisticAccumulator>> headersCombo;
     @FXML
