@@ -20,7 +20,7 @@ import utils.ex.SupplierEx;
 public final class TimelionApi extends KibanaApi {
 
     public static final String TIMELINE_USERS =
-            ".es(index=inss-*-prod*,split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
+            ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\",split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
     public static final String TIMELINE_IPS =
             ".es(index=*apache-prod*,q=\\\"dtptype:nginx OR dtptype:apache OR dtptype:varnish\\\","
                     + "split= clientip.keyword:12).label('$1','.*>.*:(.*)>.*')";

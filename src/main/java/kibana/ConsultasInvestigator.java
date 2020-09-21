@@ -103,7 +103,7 @@ public class ConsultasInvestigator extends Application {
             if (items.isEmpty()) {
                 return;
             }
-            CommonsFX.runInPlatform(() -> progress.setProgress(0));
+            setProgress(0);
             WhoIsScanner whoIsScanner = new WhoIsScanner();
             for (Map<String, String> map : items) {
                 Map<String, String> ipInformation = whoIsScanner.getIpInformation(map.get("key"));
@@ -113,16 +113,16 @@ public class ConsultasInvestigator extends Application {
                 if (progress.getProgress() == 0) {
                     CommonsFX.runInPlatform(() -> SimpleTableViewBuilder.addColumns(consultasTable, map.keySet()));
                 }
-                CommonsFX.runInPlatform(() -> progress.setProgress(progress.getProgress() + 1. / items.size()));
+                addProgress(1. / items.size());
             }
             CommonsFX.runInPlatform(() -> SimpleTableViewBuilder.addColumns(consultasTable, items.get(0).keySet()));
-            CommonsFX.runInPlatform(() -> progress.setProgress(1));
+            setProgress(1);
         });
     }
 
     public void onActionKibanaScan() {
         RunnableEx.runNewThread(() -> {
-            CommonsFX.runInPlatform(() -> progress.setProgress(0));
+            setProgress(0);
             for (QueryObjects queryObjects : queryList) {
                 RunnableEx.measureTime(queryObjects.getQueryFile(), () -> {
                     if (queryObjects.getLineChart() == null) {
@@ -132,9 +132,9 @@ public class ConsultasInvestigator extends Application {
                     makeTimelionQuery(queryObjects);
                 });
 
-                CommonsFX.runInPlatform(() -> progress.setProgress(progress.getProgress() + 1. / queryList.size()));
+                addProgress(1. / queryList.size());
             }
-            CommonsFX.runInPlatform(() -> progress.setProgress(1));
+            setProgress(1);
         });
     }
 
@@ -182,6 +182,10 @@ public class ConsultasInvestigator extends Application {
             fields.getItems().addAll(collect);
             return makeMapFromJsonFile.values().stream().collect(Collectors.toList());
         });
+    }
+
+    private void addProgress(double d) {
+        CommonsFX.runInPlatform(() -> progress.setProgress(progress.getProgress()+d));
     }
 
     private QueryObjects configureTable(String userNameQuery, String queryFile,
@@ -278,6 +282,10 @@ public class ConsultasInvestigator extends Application {
         });
 
         TimelionApi.timelionScan(data, queryObjects.getQueryFile(), filter, "now-d");
+    }
+
+    private void setProgress(double d) {
+        CommonsFX.runInPlatform(() -> progress.setProgress(d));
     }
 
     public static void main(String[] args) {
