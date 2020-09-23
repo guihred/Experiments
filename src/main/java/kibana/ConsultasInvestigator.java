@@ -18,6 +18,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
@@ -65,7 +67,8 @@ public class ConsultasInvestigator extends Application {
     private TableView<Map<String, String>> consultasTable;
     @FXML
     private TableView<Map<String, String>> pathsTable;
-
+    @FXML
+    private TabPane tabPane0;
     private List<QueryObjects> queryList = new ArrayList<>();
     private ObservableMap<String, String> filter = FXCollections.observableHashMap();
     @FXML
@@ -86,7 +89,9 @@ public class ConsultasInvestigator extends Application {
         configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^[^\\/\\d].+");
         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
-        // configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value")
+        configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value").setGroup("[^\\d].+")
+                .setAllowEmpty(false);
+
         filterText.textProperty().bind(Bindings.createStringBinding(
                 () -> filter.entrySet().stream().map(Objects::toString).collect(Collectors.joining("\n")), filter));
     }
@@ -140,9 +145,8 @@ public class ConsultasInvestigator extends Application {
 
     public void onExportExcel() {
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
-        Map<String, List<Map<String, String>>> collect =
-                queryList.stream().filter(e -> e.getTable() != null)
-                        .collect(Collectors.toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
+        Map<String, List<Map<String, String>>> collect = queryList.stream().filter(e -> e.getTable() != null)
+                .collect(Collectors.toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
         List<String> collect2 =
                 queryList.stream().filter(e -> e.getTable() != null).flatMap(e -> e.getTable().getColumns().stream())
                         .map(TableColumn<Map<String, String>, ?>::getText).distinct().collect(Collectors.toList());
@@ -156,12 +160,21 @@ public class ConsultasInvestigator extends Application {
 
     public void onOpenDataframe() {
         RunnableEx.run(() -> {
+            String collect = filter.values().stream().collect(Collectors.joining());
+            Tab n = tabPane0.getSelectionModel().getSelectedItem();
+            if (n == null) {
+                return;
+            }
             if (dataframeExplorer == null) {
                 dataframeExplorer = new DataframeExplorer();
             }
-            String collect = filter.values().stream().collect(Collectors.joining());
-            File ev = ResourceFXUtils.getOutFile("csv/" + consultasTable.getId() + collect + ".csv");
-            CSVUtils.saveToFile(consultasTable, ev);
+            Parent content = (Parent) n.getContent();
+            Node lookup = content.lookup("TableView");
+            QueryObjects orElse =
+                    queryList.stream().filter(e -> e.getTable() == lookup).findFirst().orElse(queryList.get(0));
+            TableView<Map<String, String>> table = orElse.getTable();
+            File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + collect + ".csv");
+            CSVUtils.saveToFile(table, ev);
             dataframeExplorer.show();
             dataframeExplorer.addStats(ev);
         });
@@ -185,7 +198,7 @@ public class ConsultasInvestigator extends Application {
     }
 
     private void addProgress(double d) {
-        CommonsFX.runInPlatform(() -> progress.setProgress(progress.getProgress()+d));
+        CommonsFX.runInPlatform(() -> progress.setProgress(progress.getProgress() + d));
     }
 
     private QueryObjects configureTable(String userNameQuery, String queryFile,
@@ -254,11 +267,15 @@ public class ConsultasInvestigator extends Application {
     }
 
     private void makeKibanaQuery(QueryObjects queryObjects) {
-        CommonsFX.runInPlatform(() -> queryObjects.getItems().clear());
+        if (filter.isEmpty() && !queryObjects.isAllowEmpty()) {
+            CommonsFX.runInPlatform(() -> queryObjects.getItems().clear());
+            return;
+        }
         Map<String, String> nsInformation =
                 KibanaApi.makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + queryObjects.getQueryFile()),
                         days.getSelectionModel().getSelectedItem(), filter, queryObjects.getParams());
         List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
+        CommonsFX.runInPlatform(() -> queryObjects.getItems().clear());
         CommonsFX.runInPlatform(() -> {
             if (queryObjects.getTable().getColumns().isEmpty()) {
                 SimpleTableViewBuilder.addColumns(queryObjects.getTable(),

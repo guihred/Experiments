@@ -23,7 +23,7 @@ public final class TimelionApi extends KibanaApi {
             ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\",split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
     public static final String TIMELINE_IPS =
             ".es(index=*apache-prod*,q=\\\"dtptype:nginx OR dtptype:apache OR dtptype:varnish\\\","
-                    + "split= clientip.keyword:12).label('$1','.*>.*:(.*)>.*')";
+                    + "split=clientip.keyword:12).label('$1','.*>.*:(.*)>.*')";
 
     private TimelionApi() {
     }
@@ -37,10 +37,10 @@ public final class TimelionApi extends KibanaApi {
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String keywords = search
                         .entrySet().stream().map(e -> String
-                                .format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
+                                .format("{\"match_phrase\":{\"%s\":{\"query\":\"%s\"}}},", e.getKey(), e.getValue()))
                         .collect(Collectors.joining("\n"));
                 String content = getContent(file, timelionQuery, keywords, time);
-                getFromURL("https://n321p000124.fast.prevnet/api/timelion/run", content, outFile);
+                getFromURLJson("https://n321p000124.fast.prevnet/api/timelion/run", content, outFile);
             }
             return JsonExtractor.toObject(outFile);
         });

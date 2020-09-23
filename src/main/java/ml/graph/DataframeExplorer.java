@@ -143,7 +143,11 @@ public class DataframeExplorer extends ExplorerVariables {
     }
 
     public void show() {
-        start(new Stage());
+        if (barChart != null) {
+            start((Stage) barChart.getScene().getWindow());
+        } else {
+            start(new Stage());
+        }
     }
 
     @Override

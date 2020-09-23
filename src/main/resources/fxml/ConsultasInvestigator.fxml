@@ -16,7 +16,7 @@
 	</padding>
 	<children>
 
-		<TabPane fx:id="tabPane0" tabMaxHeight="22.0" HBox.hgrow="ALWAYS"
+		<TabPane fx:id="tabPane0" tabMaxHeight="22.0" HBox.hgrow="ALWAYS" 
 			tabMinHeight="22.0">
 			<tabs>
 				<Tab closable="false" text="Usuários x Número consultas">

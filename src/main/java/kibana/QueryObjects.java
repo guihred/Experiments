@@ -11,6 +11,7 @@ import javafx.scene.control.TableView;
 
 class QueryObjects {
     private final String query;
+    private boolean allowEmpty = true;
 
     private String queryFile;
     private String[] params;
@@ -68,7 +69,16 @@ class QueryObjects {
         return table;
     }
 
-    public void setGroup(String group) {
+    public boolean isAllowEmpty() {
+        return allowEmpty;
+    }
+
+    public void setAllowEmpty(boolean allowEmpty) {
+        this.allowEmpty = allowEmpty;
+    }
+
+    public QueryObjects setGroup(String group) {
         this.group = group;
+        return this;
     }
 }

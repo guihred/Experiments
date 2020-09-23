@@ -40,22 +40,22 @@ public class KibanaApi {
 
     private static final Logger LOG = HasLogging.log();
 
-    private static final ImmutableMap<String,
-            String> GET_HEADERS = ImmutableMap.<String, String>builder().put("Content-Type", "application/json")
-                    .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0")
-                    .put("Accept", "text/plain, */*; q=0.01")
-                    .put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3")
-                    .put("Accept-Encoding", "gzip, deflate, br").put("kbn-version", "6.6.2")
-                    .put("Origin", "https://n321p000124.fast.prevnet").put("DNT", "1").put("Connection", "keep-alive")
-                    .put("Referer", "https://n321p000124.fast.prevnet/app/kibana")
-                    .put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization()).build();
+    private static final Map<String, String> GET_HEADERS = ImmutableMap.<String, String>builder()
 
+            .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0")
+            .put("Accept", "application/json, text/plain, */*")
+            .put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3").put("Accept-Encoding", "gzip, deflate, br")
+            .put("kbn-version", "6.6.2")
+            .put("Origin", "https://n321p000124.fast.prevnet").put("DNT", "1")
+            .put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization()).put("Connection", "keep-alive")
+            .put("Referer", "https://n321p000124.fast.prevnet/app/kibana").put("Cookie", "io=3PIP6uXMWNC7_9EfAAAE")
+            .build();
     protected KibanaApi() {
     }
 
     public static String getContent(File file, Object... params) {
         return SupplierEx.remap(() -> String.format(Files.toString(file, StandardCharsets.UTF_8), params),
-                "ERROR IN FILE " + file);
+                "ERROR IN FILE " + file).replaceAll("[\n\t]", "");
     }
 
     public static Map<String, String> kibanaFullScan(String query) {
@@ -90,16 +90,16 @@ public class KibanaApi {
 
     public static Map<String, String> makeKibanaSearch(File file, int days, Map<String, String> search,
             String... params) {
-        return makeKibanaSearch(file, "", days, search, params);
+        return makeNewKibanaSearch(file, "", days, search, params);
     }
 
     public static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
         return SupplierEx.get(() -> {
-            File outFile = newJsonFile(query + file.getName().replaceAll("\\.json", "") + days);
+            File outFile = newJsonFile(query + removeExtension(file) + days);
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
-                getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
+                getFromURLJson("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
                         getContent(file, query, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
@@ -110,7 +110,7 @@ public class KibanaApi {
             String... params) {
         return SupplierEx.get(() -> {
             String values = search.values().stream().collect(Collectors.joining());
-            File outFile = newJsonFile(file.getName().replaceAll("\\.json", "") + values + days);
+            File outFile = newJsonFile(removeExtension(file) + values + days);
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
@@ -118,7 +118,8 @@ public class KibanaApi {
                         .entrySet().stream().map(e -> String
                                 .format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
                         .collect(Collectors.joining("\n"));
-                getFromURL("https://n321p000124.fast.prevnet/api/console/proxy?path=" + index + "_search&method=POST",
+                getFromURLJson(
+                        "https://n321p000124.fast.prevnet/api/console/proxy?path=" + index + "_search&method=POST",
                         getContent(file, keywords, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
@@ -127,6 +128,26 @@ public class KibanaApi {
 
     public static Map<String, String> makeKibanaSearch(String file, String query, String... params) {
         return makeKibanaSearch(ResourceFXUtils.toFile(file), 1, query, params);
+    }
+
+    public static Map<String, String> makeNewKibanaSearch(File file, String index, int days, Map<String, String> search,
+            String... params) {
+        return SupplierEx.get(() -> {
+            String values = search.values().stream().collect(Collectors.joining());
+            File outFile = newJsonFile(removeExtension(file) + values + days);
+            if (!outFile.exists() || oneDayModified(outFile)) {
+            String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
+            String lte = Objects.toString(Instant.now().toEpochMilli());
+            String keywords = search.entrySet().stream().map(
+                    e -> String.format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
+                    .collect(Collectors.joining("\n"));
+            getFromURL(
+                    "https://n321p000124.fast.prevnet/elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true"
+                            + index,
+                    getContent(file, keywords, gte, lte), outFile);
+            }
+            return JsonExtractor.makeMapFromJsonFile(outFile, params);
+        }, Collections.emptyMap());
     }
 
     public static List<Map<String, String>> remap(Map<String, String> ob, String regex) {
@@ -143,30 +164,54 @@ public class KibanaApi {
             int j = i;
             List<String> collect2 =
                     collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
-            Map<String, String> newMap;
             if (collect2.get(0).matches(regex) || reference == null) {
                 reference = new LinkedHashMap<>();
-                newMap = reference;
+                Map<String, String> m = reference;
+                IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, m, k));
             } else {
-                newMap = new LinkedHashMap<>(reference);
+                Map<String, String> newMap = new LinkedHashMap<>(reference);
                 newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
                         .map(Entry<String, String>::getKey).orElse(null));
+                IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, newMap, k));
+                if (!Objects.equals(reference.keySet(), newMap.keySet())) {
+                    finalList.add(newMap);
+                }
             }
 
-            Map<String, String> m = newMap;
-            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, m, k));
-            finalList.add(newMap);
         }
         return finalList;
     }
 
-    protected static void getFromURL(String url, String content, File outFile) throws IOException {
+    protected static void getFromURL(String url, String cont, File outFile) throws IOException {
+        ExtractUtils.insertProxyConfig();
+        HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
+        HttpPost get = new HttpPost(url);
+        String content = cont.replaceAll("[\n\t]+", "").replaceFirst("\\}\\{", "}\n{") + "\n";
+        get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());
+        get.setEntity(new StringEntity(
+                StringSigaUtils.fixEncoding(content, StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1),
+                ContentType.create("application/x-ndjson")));
+        GET_HEADERS.forEach(get::addHeader);
+        get.addHeader("Content-Type", "application/x-ndjson");
+        LOG.info("Request \n\t{} \n{} \n\t{} \n\t{} ", url, content, get.getAllHeaders(), outFile.getName());
+        HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
+            InstallCert.installCertificate(url);
+            return client.execute(get);
+        });
+        HttpEntity entity = response.getEntity();
+        BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
+        ExtractUtils.copy(rd, outFile);
+    }
+
+    protected static void getFromURLJson(String url, String content, File outFile) throws IOException {
         ExtractUtils.insertProxyConfig();
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
         get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());
         get.setEntity(new StringEntity(content, ContentType.APPLICATION_JSON));
+        get.addHeader("Content-Type", "application/json; charset=utf-8");
         GET_HEADERS.forEach(get::addHeader);
+        LOG.info("Request \n\t{} \n{} \n\t{} \n\t{} ", url, content, get.getAllHeaders(), outFile.getName());
         HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
             InstallCert.installCertificate(url);
             return client.execute(get);
@@ -207,6 +252,9 @@ public class KibanaApi {
             int k) {
         int l = 0;
         for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
+            if (Objects.equals(linkedHashMap.get(keys.get(k) + l), collect2.get(k))) {
+                return;
+            }
             if (!linkedHashMap.get(keys.get(k) + l).matches(regex)) {
                 break;
             }
@@ -230,5 +278,9 @@ public class KibanaApi {
             arrayList.add(linkedHashMap);
         }
         return arrayList;
+    }
+
+    private static String removeExtension(File file) {
+        return file.getName().replaceAll("\\.json", "");
     }
 }
