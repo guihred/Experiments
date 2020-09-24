@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -169,9 +170,7 @@ public abstract class ExplorerVariables extends Application {
                 addedSubList.forEach(entry -> dataTable.addColumn(entry.getKey(),
                         i -> getDataframe().getDataframe().get(entry.getKey()).get(i)));
                 dataTable.setListSize(getDataframe().getSize());
-                double[] array = addedSubList.stream()
-                        .mapToDouble(
-                                e -> Math.max(Objects.toString(e.getValue().getTop()).length(), e.getKey().length()))
+                double[] array = addedSubList.stream().mapToDouble(e -> Math.max(getTopLength(e), e.getKey().length()))
                         .toArray();
                 dataTable.setColumnsWidth(array);
 
@@ -253,6 +252,11 @@ public abstract class ExplorerVariables extends Application {
             Map<Integer, Map<String, Object>> cache, String key, Integer i) {
         return cache.computeIfAbsent(i, k -> ClassReflectionUtils.getGetterMap(addedSubList.get(k).getValue()))
                 .get(key);
+    }
+
+    private static int getTopLength(Entry<String, DataframeStatisticAccumulator> e) {
+        String string = Objects.toString(e.getValue().getTop(), "");
+        return Stream.of(string.split("\n")).mapToInt(s -> s.length()).max().orElse(string.length());
     }
 
     private static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {

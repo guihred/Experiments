@@ -87,6 +87,15 @@ public class StringSigaUtils extends StringUtils {
         return String.format(floatFormating(length), mean);
     }
 
+    public static Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> formatHierarchy() {
+        Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put(Integer.class, Integer::valueOf);
+        linkedHashMap.put(int.class, Integer::parseInt);
+        linkedHashMap.put(Long.class, Long::valueOf);
+        linkedHashMap.put(Double.class, Double::valueOf);
+        return linkedHashMap;
+    }
+
     public static String formating(String s) {
         if (StringUtils.isBlank(s)) {
             return "%s\t";
@@ -195,6 +204,14 @@ public class StringSigaUtils extends StringUtils {
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 
+    public static String replaceAll(String nome,String regex) {
+        String collect = IntStream.rangeClosed(1, Pattern.compile(regex).matcher(nome).groupCount())
+                .mapToObj(i -> "$" + i)
+                .collect(Collectors.joining());
+
+        return nome.replaceAll(regex, collect);
+    }
+
     public static String retirarMascara(String valor) {
         if (StringUtils.isNotBlank(valor)) {
             return valor.replaceAll("[./-]", "");
@@ -210,7 +227,7 @@ public class StringSigaUtils extends StringUtils {
         return readLine.split(REGEX_CAMEL_CASE);
     }
 
-    public static String splitMargeCamelCase(String readLine) {
+    public static String splitMergeCamelCase(String readLine) {
         return Stream.of(readLine.split(StringSigaUtils.REGEX_CAMEL_CASE)).collect(Collectors.joining(" "));
     }
 
@@ -290,14 +307,6 @@ public class StringSigaUtils extends StringUtils {
             mask.setValueContainsLiteralCharacters(false);
             return mask.valueToString(valor);
         }, valor);
-    }
-
-    private static Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> formatHierarchy() {
-        Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> linkedHashMap = new LinkedHashMap<>();
-        linkedHashMap.put(Integer.class, Integer::valueOf);
-        linkedHashMap.put(Long.class, Long::valueOf);
-        linkedHashMap.put(Double.class, Double::valueOf);
-        return linkedHashMap;
     }
 
     private static boolean hasBom(byte[] input) {

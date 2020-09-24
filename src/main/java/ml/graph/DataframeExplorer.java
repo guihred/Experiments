@@ -38,7 +38,6 @@ public class DataframeExplorer extends ExplorerVariables {
     private ObservableList<Entry<String, DataframeStatisticAccumulator>> columns = FXCollections.observableArrayList();
     private ObservableList<Question> questions = FXCollections.observableArrayList();
 
-
     public void addStats(File file) {
         interruptCurrentThread();
         currentThread = RunnableEx.runNewThread(() -> {
@@ -66,7 +65,15 @@ public class DataframeExplorer extends ExplorerVariables {
                 .onKey(KeyCode.ADD, list -> addQuestion(list, true))
                 .onKey(KeyCode.SUBTRACT, list -> addQuestion(list, false));
         SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen)
-                .onKey(KeyCode.DELETE, columns::remove).addContextMenu("_Split", e -> splitByColumn());
+                .onKey(KeyCode.DELETE, t -> {
+                    columns.remove(t);
+                    getDataframe().removeCol(t.getKey());
+                }).addContextMenu("_Split", e -> splitByColumn())
+                .addContextMenu("Add Mapping", e0 -> {
+                    String[] dependencies = columnsList.getSelectionModel().getSelectedItems().stream()
+                            .map(Entry<String, DataframeStatisticAccumulator>::getKey).toArray(String[]::new);
+                    Mapping.showDialog(barChart, dependencies, getDataframe(), f -> readDataframe(f, MAX_ELEMENTS));
+                });
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
         pieChart.visibleProperty().bind(pieChart.titleProperty().isNotEmpty());
@@ -173,8 +180,6 @@ public class DataframeExplorer extends ExplorerVariables {
         }
     }
 
-
-
     private void onQuestionsChange(Change<? extends Question> c) {
         while (c.next()) {
             if (getDataframe() != null) {
@@ -244,7 +249,6 @@ public class DataframeExplorer extends ExplorerVariables {
         }
         return null;
     }
-
 
     private static Boolean isTypeDisabled(QuestionType q, Entry<String, DataframeStatisticAccumulator> it) {
         return it == null || q == null || !q.matchesClass(it.getValue().getFormat());

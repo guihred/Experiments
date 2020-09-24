@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -84,14 +85,29 @@ public class DataframeUtils extends DataframeML {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> List<T> crossFeatureObject(DataframeML dataframe, String header, DoubleProperty progress,
+            FunctionEx<Object[], T> mapper, String... dependent) {
+        AtomicInteger count = new AtomicInteger(0);
+        List<T> mappedColumn = IntStream.range(0, dataframe.size)
+                .mapToObj(i -> toArray(dataframe, i, dependent)).map(FunctionEx.makeFunction(mapper))
+                .peek(i -> CommonsFX
+                        .runInPlatform(() -> progress.set(count.getAndIncrement() / (double) dataframe.size)))
+                .collect(Collectors.toList());
+        dataframe.getDataframe().put(header, (List) mappedColumn);
+        dataframe.putFormat(header, (Class<? extends Comparable<?>>) mappedColumn.stream().filter(Objects::nonNull)
+                .findFirst().map(T::getClass).orElse(null));
+        CommonsFX.runInPlatform(() -> progress.set(1));
+        return mappedColumn;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> List<T> crossFeatureObject(DataframeML dataframe, String header, FunctionEx<Object[], T> mapper,
             String... dependent) {
         List<T> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
                 .map(FunctionEx.makeFunction(mapper)).collect(Collectors.toList());
         dataframe.getDataframe().put(header, (List) mappedColumn);
-        dataframe.putFormat(header,
-                (Class<? extends Comparable<?>>) mappedColumn.stream().filter(Objects::nonNull).findFirst()
-                        .map(T::getClass).orElse(null));
+        dataframe.putFormat(header, (Class<? extends Comparable<?>>) mappedColumn.stream().filter(Objects::nonNull)
+                .findFirst().map(T::getClass).orElse(null));
         return mappedColumn;
     }
 
@@ -264,7 +280,9 @@ public class DataframeUtils extends DataframeML {
         dataframe.forEach((s, l) -> {
             maxFormatMap.put(s, s.length());
             Class<? extends Comparable<?>> format2 = dataframe.getFormat(s);
-            l.stream().limit(max).forEach(e -> maxFormatMap.merge(s,
+            l.stream().limit(max)
+                    .forEach(
+                            e -> maxFormatMap.merge(s,
                                     format2 == Double.class ? Objects.toString(e).replaceAll("\\.\\d+$", "").length()
                                             : Objects.toString(e).length(),
                                     (t, u) -> Integer.min(Integer.max(t, u), 30)));
@@ -375,7 +393,7 @@ public class DataframeUtils extends DataframeML {
     }
 
     private static boolean filterOut(DataframeML dataframeML, List<String> header, List<String> line2) {
-        return IntStream.range(0, header.size()).anyMatch(i -> {
+        return line2.isEmpty() || IntStream.range(0, header.size()).anyMatch(i -> {
             String key = header.get(i);
             String field = getFromList(i, line2);
             Object tryNumber = tryNumber(dataframeML, key, field);
@@ -388,6 +406,22 @@ public class DataframeUtils extends DataframeML {
             LOG.error("ERROR FIELDS COUNT");
             createNullRow(header, line2);
         }
+    }
+
+    private static long fixMultipleLines(Scanner scanner, CSVUtils defaultCSVUtils, List<String> line2) {
+        long co = 0;
+        while (defaultCSVUtils.isInQuotes() && scanner.hasNext()) {
+            String nextLine = scanner.nextLine();
+            co += nextLine.getBytes(StandardCharsets.UTF_8).length;
+            List<String> fields = defaultCSVUtils.getFields(nextLine);
+            int last = line2.size() - 1;
+            if (fields.isEmpty()) {
+                continue;
+            }
+            line2.set(last, line2.get(last) + "\n" + fields.remove(0));
+            line2.addAll(fields);
+        }
+        return co;
     }
 
     private static String fixNumber(String field, Class<?> currentFormat) {
@@ -415,8 +449,11 @@ public class DataframeUtils extends DataframeML {
         CommonsFX.runInPlatform(() -> progress.set(0));
         try (Scanner scanner = new Scanner(csvFile, StandardCharsets.UTF_8.displayName())) {
             List<String> header = addHeaders(dataframeML, scanner);
+            CSVUtils defaultCSVUtils = CSVUtils.defaultCSVUtils();
             while (scanner.hasNext()) {
-                computed = runLine(dataframeML, header, progress, scanner.nextLine(), computed, size2);
+                computed += runLine(dataframeML, header, scanner, defaultCSVUtils);
+                double co = computed;
+                CommonsFX.runInPlatform(() -> progress.set(co / size2));
                 if (dataframeML.size > dataframeML.maxSize) {
                     break;
                 }
@@ -427,12 +464,14 @@ public class DataframeUtils extends DataframeML {
     }
 
     private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
+        CSVUtils defaultCSVUtils = CSVUtils.defaultCSVUtils();
         while (scanner.hasNext()) {
-            List<String> line2 = CSVUtils.parseLine(scanner.nextLine());
-            fixEmptyLine(header, line2);
+            List<String> line2 = defaultCSVUtils.getFields(scanner.nextLine());
+            fixMultipleLines(scanner, defaultCSVUtils, line2);
             if (filterOut(dataframe, header, line2)) {
                 continue;
             }
+            fixEmptyLine(header, line2);
             dataframe.size++;
             for (int i = 0; i < header.size(); i++) {
                 String key = header.get(i);
@@ -448,10 +487,12 @@ public class DataframeUtils extends DataframeML {
         }
     }
 
-    private static long runLine(DataframeML dataframeML, List<String> header, DoubleProperty progress, String nextLine,
-            long computed, double totalSize) {
-        List<String> line2 = CSVUtils.parseLine(nextLine);
-        fixEmptyLine(header, line2);
+    private static long runLine(DataframeML dataframeML, List<String> header, Scanner scanner,
+            CSVUtils defaultCSVUtils) {
+        String nextLine = scanner.nextLine();
+        long co = nextLine.getBytes(StandardCharsets.UTF_8).length;
+        List<String> line2 = defaultCSVUtils.getFields(nextLine);
+        co += fixMultipleLines(scanner, defaultCSVUtils, line2);
         if (!filterOut(dataframeML, header, line2)) {
             dataframeML.size++;
             for (int i = 0; i < header.size(); i++) {
@@ -464,8 +505,7 @@ public class DataframeUtils extends DataframeML {
                 acc.accept(tryNumber);
             }
         }
-        long co = computed + nextLine.getBytes(StandardCharsets.UTF_8).length;
-        CommonsFX.runInPlatform(() -> progress.set(co / totalSize));
+        fixEmptyLine(header, line2);
         return co;
     }
 

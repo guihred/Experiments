@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import kibana.KibanaApi;
+import ml.data.Mapping;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -84,7 +85,6 @@ public class FXFileReadersTest extends AbstractTestExecution {
                 ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
 
     }
-
 
     @Test
     public void testExcelService2() {
@@ -181,30 +181,35 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
     @Test
     public void testLoadKibanaApi() {
-        measureTime("ExcelService.getExcel",()->ExcelService.getExcel(ResourceFXUtils.toFile("Lista de IP da Caixa.xlsx"), (List<Object> l) -> {
-            if (l.isEmpty()) {
-                return null;
-            }
-            long count = l.stream().filter(Objects::nonNull).count();
-            if (count != 1) {
-                return null;
-            }
-            String string = convert(l.get(0));
-            if (string.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
-                Map<String, String> kibanaFullScan = KibanaApi.kibanaFullScan(string);
-                List<String> collect = kibanaFullScan.values().stream().collect(Collectors.toList());
-                collect.add(1, "Guilherme");
-                return collect;
-            }
-            return null;
-        }, ResourceFXUtils.getOutFile("apiResult2.xlsx"))
-                );
+        measureTime("ExcelService.getExcel",
+                () -> ExcelService.getExcel(ResourceFXUtils.toFile("Lista de IP da Caixa.xlsx"), (List<Object> l) -> {
+                    if (l.isEmpty()) {
+                        return null;
+                    }
+                    long count = l.stream().filter(Objects::nonNull).count();
+                    if (count != 1) {
+                        return null;
+                    }
+                    String string = convert(l.get(0));
+                    if (string.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
+                        Map<String, String> kibanaFullScan = KibanaApi.kibanaFullScan(string);
+                        List<String> collect = kibanaFullScan.values().stream().collect(Collectors.toList());
+                        collect.add(1, "Guilherme");
+                        return collect;
+                    }
+                    return null;
+                }, ResourceFXUtils.getOutFile("apiResult2.xlsx")));
+    }
+
+    @Test
+    public void testMapping() {
+        measureTime("Mapping.getMethods", () -> Mapping.getMethods());
     }
 
     @Test
     public void testPCapReader() {
         File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\CiscoCNNA\\one.pcapng");
-        measureTime("PCapReader.readPCAPngFile", () ->PCapReader.readPCAPngFile(file));
+        measureTime("PCapReader.readPCAPngFile", () -> PCapReader.readPCAPngFile(file));
     }
 
     @Test

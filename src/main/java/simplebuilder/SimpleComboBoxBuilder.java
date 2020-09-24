@@ -19,34 +19,35 @@ import utils.ex.FunctionEx;
 
 public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, SimpleComboBoxBuilder<T>> {
 
-    protected ComboBox<T> comboBox;
 
     public SimpleComboBoxBuilder() {
         super(new ComboBox<>());
-        comboBox = region;
+    }
 
+    public SimpleComboBoxBuilder(Collection<T> value) {
+        super(new ComboBox<T>());
+        items(value);
     }
 
     private SimpleComboBoxBuilder(ComboBox<T> combo) {
         super(combo);
-        comboBox = region;
     }
 
     public SimpleComboBoxBuilder<T> cellFactory(BiConsumer<T, ListCell<T>> value2) {
-        comboBox.setCellFactory(SimpleListViewBuilder.newCellFactory(value2));
+        region.setCellFactory(SimpleListViewBuilder.newCellFactory(value2));
         return this;
     }
 
     public SimpleComboBoxBuilder<T> converter(FunctionEx<T, String> func) {
-        comboBox.setConverter(new SimpleConverter<>(FunctionEx.makeFunction(func)));
+        region.setConverter(new SimpleConverter<>(FunctionEx.makeFunction(func)));
         return this;
     }
 
     public SimpleComboBoxBuilder<T> items(Collection<T> value) {
         if (value instanceof ObservableList) {
-            comboBox.setItems((ObservableList<T>) value);
+            region.setItems((ObservableList<T>) value);
         } else {
-            comboBox.setItems(FXCollections.observableArrayList(value));
+            region.setItems(FXCollections.observableArrayList(value));
         }
         return this;
     }
@@ -57,35 +58,35 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
     }
 
     public SimpleComboBoxBuilder<T> onChange(BiConsumer<T, T> obj) {
-        comboBox.getSelectionModel().selectedItemProperty()
+        region.getSelectionModel().selectedItemProperty()
                 .addListener((ob, old, newValue) -> obj.accept(old, newValue));
         return this;
     }
 
     public SimpleComboBoxBuilder<T> onSelect(Consumer<T> obj) {
-        comboBox.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> obj.accept(newValue));
+        region.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> obj.accept(newValue));
         return this;
     }
 
     public SimpleComboBoxBuilder<T> select(int index) {
-        comboBox.getSelectionModel().select(index);
+        region.getSelectionModel().select(index);
         return this;
     }
 
     public SimpleComboBoxBuilder<T> select(T obj) {
-        comboBox.getSelectionModel().select(obj);
+        region.getSelectionModel().select(obj);
         return this;
     }
 
     public SimpleComboBoxBuilder<T> selectedItem(Property<T> val) {
-        comboBox.getSelectionModel().select(val.getValue());
-        val.bind(comboBox.getSelectionModel().selectedItemProperty());
+        region.getSelectionModel().select(val.getValue());
+        val.bind(region.getSelectionModel().selectedItemProperty());
         return this;
 
     }
 
     public SimpleComboBoxBuilder<T> tooltip(String text) {
-        comboBox.setTooltip(new Tooltip(text));
+        region.setTooltip(new Tooltip(text));
         return this;
     }
 

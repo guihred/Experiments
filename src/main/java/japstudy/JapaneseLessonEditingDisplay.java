@@ -126,7 +126,7 @@ public class JapaneseLessonEditingDisplay extends Application {
     public void start(Stage primaryStage) {
         stage = primaryStage;
         CommonsFX.loadFXML(
-            StringSigaUtils.splitMargeCamelCase(getClass().getSimpleName()),
+            StringSigaUtils.splitMergeCamelCase(getClass().getSimpleName()),
             "JapaneseLessonEditingDisplay.fxml", this, stage);
         stage.getScene().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {

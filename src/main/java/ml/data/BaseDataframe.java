@@ -2,8 +2,8 @@ package ml.data;
 
 import java.io.File;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 public class BaseDataframe {
@@ -13,7 +13,7 @@ public class BaseDataframe {
     protected final Map<String, List<Object>> dataframe = new LinkedHashMap<>();
     protected Map<String, Set<String>> categories = new LinkedHashMap<>();
     protected final Map<String, Class<? extends Comparable<?>>> formatMap = new LinkedHashMap<>();
-    protected Map<String, Function<Object, Object>> mapping = new LinkedHashMap<>();
+    protected Map<String, UnaryOperator<Object>> mapping = new LinkedHashMap<>();
     protected int size;
     protected File file;
 

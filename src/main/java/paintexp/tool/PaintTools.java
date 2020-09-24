@@ -40,7 +40,7 @@ public enum PaintTools {
     }
 
     public String getTooltip() {
-        return StringSigaUtils.splitMargeCamelCase(tool.getClass().getSimpleName().replaceAll("Tool", ""));
+        return StringSigaUtils.splitMergeCamelCase(tool.getClass().getSimpleName().replaceAll("Tool", ""));
     }
 
     public static DummyTool emptyTool() {

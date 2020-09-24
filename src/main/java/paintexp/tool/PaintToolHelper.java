@@ -88,7 +88,7 @@ public final class PaintToolHelper {
             return;
         }
 
-        String changeCase = StringSigaUtils.splitMargeCamelCase(StringSigaUtils.changeCase(fieldName));
+        String changeCase = StringSigaUtils.splitMergeCamelCase(StringSigaUtils.changeCase(fieldName));
         Text text2 = new Text(changeCase);
         text2.textProperty().bind(Bindings.createStringBinding(() -> propValue(property, changeCase), property));
 
@@ -127,7 +127,7 @@ public final class PaintToolHelper {
 
     private static void addStrokeArray(Shape selectedItem, ObservableList<Node> children, String key,
             ObservableList<Double> property) {
-        String changeCase = StringSigaUtils.splitMargeCamelCase(StringSigaUtils.changeCase(key));
+        String changeCase = StringSigaUtils.splitMergeCamelCase(StringSigaUtils.changeCase(key));
         Text text2 = new Text(changeCase);
         VBox vBox = new VBox(text2);
         children.add(vBox);

@@ -174,25 +174,17 @@ public class WhoIsScanner {
         builder.filter(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(IP_REGEX));
         DataframeML dataframe = builder.build();
         WhoIsScanner whoIsScanner = new WhoIsScanner();
-        ObservableMap<String, Map<String, String>> ipInfo = FXCollections.observableHashMap();
-        ipInfo.addListener((Change<? extends String, ? extends Map<String, String>> e) -> count
+        ObservableMap<String, Map<String, String>> ipInfoCache = FXCollections.observableHashMap();
+        ipInfoCache.addListener((Change<? extends String, ? extends Map<String, String>> e) -> count
                 .set(count.get() + e.getValueAdded().size()));
-        DataframeUtils.crossFeatureObject(dataframe, "Rede",
-                e -> ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip))
-                        .getOrDefault("network", ""),
+        DataframeUtils.crossFeatureObject(dataframe, "Rede", e -> getFromCache(whoIsScanner, ipInfoCache, e, "network"),
                 ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, "Owner",
-                e -> getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)), "asname",
-                        "as_owner"),
-                ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, "Country",
-                e -> getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)),
-                        "country", "ascountry"),
-                ipColumn);
+                e -> getFromCache(whoIsScanner, ipInfoCache, e, "asname", "as_owner"), ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, REVERSE_DNS,
-                e -> getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)),
-                        REVERSE_DNS),
-                ipColumn);
+                e -> getFromCache(whoIsScanner, ipInfoCache, e, REVERSE_DNS), ipColumn);
+        DataframeUtils.crossFeatureObject(dataframe, "Country",
+                e -> getFromCache(whoIsScanner, ipInfoCache, e, "country", "ascountry"), ipColumn);
         return dataframe;
     }
 
@@ -211,7 +203,7 @@ public class WhoIsScanner {
         }
         Map<String, String> first =
                 SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(ip), () -> whoIsScanner.whoIsScan(ip));
-        if (ip.matches("^200\\..+")) {
+        if (ip.matches("^200\\.152\\..+")) {
             InetAddress ia = SupplierEx.get(() -> toInetAddress(ip));
             first.put(REVERSE_DNS, ia.getCanonicalHostName());
         }
@@ -272,6 +264,11 @@ public class WhoIsScanner {
         dataframe.removeCol("filters");
         return DataframeUtils.toString(dataframe, 30);
 
+    }
+
+    private static String getFromCache(WhoIsScanner whoIsScanner, ObservableMap<String, Map<String, String>> ipInfo,
+            Object[] e, String... string) {
+        return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)), string);
     }
 
     private static String getIPColumn(DataframeBuilder builder) {

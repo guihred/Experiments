@@ -37,6 +37,21 @@ public class CSVUtils {
         this.customQuote = customQuote;
     }
 
+    public  List<String> getFields(String cvsLine) {
+        List<String> result = new ArrayList<>();
+        // if empty, return!
+        if (cvsLine == null || cvsLine.isEmpty()) {
+            return result;
+        }
+        StringBuilder curVal = getField(cvsLine, result);
+        result.add(curVal.toString());
+        return result;
+    }
+
+    public boolean isInQuotes() {
+        return inQuotes;
+    }
+
     private StringBuilder getCurrentVal(List<String> result, StringBuilder curVal, char[] chars, char ch) {
         if (!inQuotes) {
             if (ch != customQuote) {
@@ -83,20 +98,6 @@ public class CSVUtils {
         return curVal;
     }
 
-    public static <T> void saveToFile(TableView<T> table, File f) throws IOException {
-        List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
-        if (selectedItems.isEmpty()) {
-            selectedItems = IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
-        }
-    
-        String collect2 = table.getColumns().stream().map(TableColumn<T, ?>::getText)
-                .collect(Collectors.joining("\",\"", "\"", "\""));
-        String collect = selectedItems.stream().map(l -> table.getColumns().stream()
-                .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\",\"", "\"", "\"")))
-                .collect(Collectors.joining("\n"));
-        Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
-    }
-
     public static void appendLine(File file, Map<String, Object> rowMap) {
         boolean exists = file.exists();
         String csvHeader = rowMap.keySet().stream().collect(Collectors.joining(",", "", ""));
@@ -117,6 +118,13 @@ public class CSVUtils {
         } catch (Exception e1) {
             LOGGER.error("{}", e1);
         }
+    }
+
+    public static CSVUtils defaultCSVUtils() {
+        char customQuote =  DEFAULT_QUOTE ;
+        char separators =  DEFAULT_SEPARATOR ;
+        return new CSVUtils(separators, customQuote);
+        
     }
 
     public static String[] getDataframeCSVs() {
@@ -159,6 +167,20 @@ public class CSVUtils {
         StringBuilder curVal = new CSVUtils(separators, customQuote).getField(cvsLine, result);
         result.add(curVal.toString());
         return result;
+    }
+
+    public static <T> void saveToFile(TableView<T> table, File f) throws IOException {
+        List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
+        if (selectedItems.isEmpty()) {
+            selectedItems = IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
+        }
+
+        String collect2 = table.getColumns().stream().map(TableColumn<T, ?>::getText)
+                .collect(Collectors.joining("\",\"", "\"", "\""));
+        String collect = selectedItems.stream().map(l -> table.getColumns().stream()
+                .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\",\"", "\"", "\"")))
+                .collect(Collectors.joining("\n"));
+        Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
     }
 
     public static void splitFile(File source, int columnIndex) {
