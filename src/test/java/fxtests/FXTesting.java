@@ -26,20 +26,19 @@ public class FXTesting implements HasLogging {
         List<Object> testedApps = Collections.synchronizedList(new ArrayList<>());
         long currentTimeMillis = System.currentTimeMillis();
         for (Class<? extends Application> class1 : applicationClasses) {
-            Platform.runLater(() -> {
-                try {
-                    getLogger().info("TESTING " + class1.getSimpleName());
-                    Application newInstance = class1.newInstance();
-                    Stage primaryStage = new Stage();
-                    newInstance.start(primaryStage);
-                    primaryStage.close();
-                    getLogger().info("ENDED " + class1.getSimpleName());
-                    testedApps.add(newInstance);
-                } catch (Exception e) {
-                    getLogger().error("", e);
-                    setClass(class1, e);
-                }
-            });
+            Platform.runLater(RunnableEx.make(() -> {
+                getLogger().info("TESTING " + class1.getSimpleName());
+
+                Application newInstance = class1.newInstance();
+                Stage primaryStage = new Stage();
+                newInstance.start(primaryStage);
+                primaryStage.close();
+                getLogger().info("ENDED " + class1.getSimpleName());
+                testedApps.add(newInstance);
+            }, e -> {
+                getLogger().error("", e);
+                setClass(class1, e);
+            }));
         }
         int size = testedApps.size();
         while (testedApps.size() + exceptionMap.size() < applicationClasses.size()) {

@@ -30,6 +30,7 @@ import javafx.util.StringConverter;
 import ml.graph.DataframeExplorer;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.ListHelper;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CSVUtils;
 import utils.CommonsFX;
@@ -80,7 +81,6 @@ public class ConsultasInvestigator extends Application {
 
     @FXML
     private LineChart<Number, Number> timelineIPs;
-    private DataframeExplorer dataframeExplorer;
 
     public void initialize() {
         String count = "doc_count";
@@ -160,23 +160,19 @@ public class ConsultasInvestigator extends Application {
 
     public void onOpenDataframe() {
         RunnableEx.run(() -> {
-            String collect = filter.values().stream().collect(Collectors.joining());
             Tab n = tabPane0.getSelectionModel().getSelectedItem();
             if (n == null) {
                 return;
-            }
-            if (dataframeExplorer == null) {
-                dataframeExplorer = new DataframeExplorer();
             }
             Parent content = (Parent) n.getContent();
             Node lookup = content.lookup("TableView");
             QueryObjects orElse =
                     queryList.stream().filter(e -> e.getTable() == lookup).findFirst().orElse(queryList.get(0));
             TableView<Map<String, String>> table = orElse.getTable();
+            String collect = filter.values().stream().collect(Collectors.joining());
             File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + collect + ".csv");
             CSVUtils.saveToFile(table, ev);
-            dataframeExplorer.show();
-            dataframeExplorer.addStats(ev);
+            new SimpleDialogBuilder().bindWindow(tabPane0).show(DataframeExplorer.class).addStats(ev);
         });
     }
 

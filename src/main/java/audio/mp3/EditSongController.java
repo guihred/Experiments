@@ -117,9 +117,6 @@ public class EditSongController extends Application {
         EditSongHelper.splitAudio(mediaPlayer, selectedItem.getArquivo(), currentSlider, startTime);
     }
 
-    public void show() {
-        start(new Stage());
-    }
 
     @Override
     public void start(Stage primaryStage) {

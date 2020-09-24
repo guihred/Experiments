@@ -17,9 +17,9 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
 import paintexp.tool.PaintToolHelper;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ex.FunctionEx;
@@ -71,14 +71,13 @@ public class EffectsController {
     public void show(PaintController paintController1, PaintModel paintModel1) {
         paintController = paintController1;
         paintModel = paintModel1;
-        Stage stage = new Stage();
-        stage.setAlwaysOnTop(true);
-        CommonsFX.loadFXML("Add Effect", "Effects.fxml", this, stage);
+        new SimpleDialogBuilder().bindWindow(paintModel1.getImageSize()).title("Add Effect")
+                .node(CommonsFX.loadParent("Effects.fxml", this)).displayDialog();
     }
 
     public static ObservableList<Effect> getEffects(ObservableList<Effect> observableList) {
         return observableList.stream().map(FunctionEx.makeFunction(e -> e.getClass().newInstance()))
-                    .filter(Objects::nonNull).collect(Collectors.toCollection(FXCollections::observableArrayList));
+                .filter(Objects::nonNull).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
 }

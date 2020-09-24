@@ -2,7 +2,6 @@ package contest;
 
 import static java.util.stream.Stream.of;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
-import static simplebuilder.SimpleDialogBuilder.bindWindow;
 import static utils.StringSigaUtils.removerDiacritico;
 
 import contest.db.ContestQuestion;
@@ -18,10 +17,13 @@ import javafx.beans.Observable;
 import javafx.beans.property.Property;
 import javafx.scene.Node;
 import javafx.scene.control.Labeled;
-import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.*;
+import simplebuilder.SimpleDialogBuilder;
+import utils.CommonsFX;
+import utils.ExtractUtils;
+import utils.FileTreeWalker;
+import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
@@ -145,7 +147,8 @@ public final class IadesHelper {
         File file2 = getPDF(number, file);
         getContestQuestions(file2, Organization.IADES, entities -> {
             saveQuestions(concurso, vaga, linksFound, number, entities);
-            CommonsFX.runInPlatform(() -> new ContestApplication(entities).start(bindWindow(new Stage(), vagasView)));
+            CommonsFX.runInPlatform(
+                    () -> new SimpleDialogBuilder().bindWindow(vagasView).show(ContestApplication.class, entities));
         });
     }
 

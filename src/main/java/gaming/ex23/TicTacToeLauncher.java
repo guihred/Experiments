@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -44,7 +43,7 @@ public class TicTacToeLauncher extends Application {
             currentPlayer++;
             boolean verifyWin = TicTacToeHelper.verifyWin(squares, gridPane);
             if (!verifyWin) {
-                Platform.runLater(this::runAI);
+                CommonsFX.runInPlatform(this::runAI);
             }
         }
     }
@@ -64,7 +63,7 @@ public class TicTacToeLauncher extends Application {
         int action = makeDecision.getAction();
         if (action < squares.size() && squares.get(action).getState() == TicTacToePlayer.NONE) {
             squares.get(action).setState(x);
-            TicTacToeHelper.verifyWin(squares, gridPane, () -> Platform.runLater(this::runAI));
+            TicTacToeHelper.verifyWin(squares, gridPane, () -> CommonsFX.runInPlatform(this::runAI));
         } else {
             HasLogging.log().error("ERROR IN LOGIC");
         }

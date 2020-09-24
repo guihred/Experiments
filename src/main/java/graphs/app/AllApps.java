@@ -2,19 +2,16 @@ package graphs.app;
 
 import static java.util.stream.Collectors.toCollection;
 import static ml.data.JavaFileDependency.getAllFileDependencies;
-import static utils.ClassReflectionUtils.getInstance;
 import static utils.CommonsFX.newFastFilter;
 import static utils.HibernateUtil.shutdown;
 import static utils.ex.FunctionEx.apply;
 import static utils.ex.PredicateEx.makeTest;
-import static utils.ex.RunnableEx.make;
 import static utils.ex.RunnableEx.run;
 
 import ethical.hacker.ssh.PrintTextStream;
 import java.io.PrintStream;
 import java.util.Objects;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.data.JavaFileDependency;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import utils.ExtractUtils;
 import utils.ex.SupplierEx;
@@ -69,12 +67,10 @@ public class AllApps extends Application {
         launch(args);
     }
 
+    @SuppressWarnings("unchecked")
     private static void invoke(Class<?> appClass) {
         if (Application.class.isAssignableFrom(appClass)) {
-            Platform.runLater(make(() -> {
-                Application a = (Application) getInstance(appClass);
-                a.start(new Stage());
-            }));
+            new SimpleDialogBuilder().show((Class<? extends Application>) appClass);
             return;
         }
         run(() -> appClass.getMethod("main", String[].class).invoke(null, new Object[] { new String[0] }));

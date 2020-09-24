@@ -28,6 +28,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import simplebuilder.FileChooserBuilder;
+import simplebuilder.SimpleDialogBuilder;
 import utils.*;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
@@ -126,8 +127,9 @@ public class PageExtractor extends Application {
                         .map(e -> e instanceof ImageView ? ((ImageView) e).getImage()
                                 : ImageFXUtils.toImage(new Text(Objects.toString(e)))))
                 .flatMap(PageExtractor::splitImage).collect(Collectors.toList());
-        PrintConfig printConfig = new PrintConfig(collect);
-        printConfig.show();
+
+        PrintConfig printConfig =
+                new SimpleDialogBuilder().bindWindow(paginatedTableView).show(PrintConfig.class, collect);
         printConfig.setLinesColumns(columns.size(), 1);
         printConfig.printToPDF(e0);
 

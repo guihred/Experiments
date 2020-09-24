@@ -1,7 +1,9 @@
 package simplebuilder;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
-import javafx.application.Platform;
+import javafx.application.Application;
 import javafx.beans.binding.DoubleExpression;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,19 +18,24 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.slf4j.Logger;
+import utils.ClassReflectionUtils;
+import utils.CommonsFX;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
 
     private static final Logger LOG = HasLogging.log();
+    private static final Map<String, Stage> MAPPED_STAGES = new HashMap<>();
 
-    private Stage stage = new Stage();
+    private final Stage stage;
     private VBox group = new VBox(5);
 
     private Node node;
 
     public SimpleDialogBuilder() {
+        stage = MAPPED_STAGES.computeIfAbsent(HasLogging.getCurrentLine(1), s -> new Stage());
         group.setAlignment(Pos.CENTER);
     }
 
@@ -41,7 +48,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     public SimpleDialogBuilder bindWindow(Window window) {
         window.showingProperty().addListener((ob, old, n) -> {
             if (!n) {
-                Platform.runLater(stage::close);
+                CommonsFX.runInPlatform(stage::close);
             }
         });
         return this;
@@ -71,7 +78,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
             progressIndicator.progressProperty().bind(progress);
             progress.addListener((v, o, n) -> {
                 if (n.intValue() == 1) {
-                    Platform.runLater(stage::close);
+                    CommonsFX.runInPlatform(stage::close);
                     RunnableEx.ignore(() -> {
                         RunnableEx.sleepSeconds(3);
                         run.run();
@@ -112,8 +119,30 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
         return this;
     }
 
+    public <T extends Application> T show(Class<T> app, Object... o) {
+        return SupplierEx.get(() -> {
+            T newInstance = ClassReflectionUtils.getInstance(app, o);
+            newInstance.start(stage);
+            return newInstance;
+        });
+
+    }
+
+    public <T extends Application> T show(T newInstance) {
+        return SupplierEx.get(() -> {
+            newInstance.start(stage);
+            return newInstance;
+        });
+
+    }
+
     public SimpleDialogBuilder text(String text) {
         group.getChildren().add(new Text(text));
+        return this;
+    }
+
+    public SimpleDialogBuilder title(String title) {
+        stage.setTitle(title);
         return this;
     }
 
@@ -122,7 +151,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
         if (window == null) {
             stage.showingProperty().addListener((ob, old, n) -> {
                 if (n) {
-                    Platform.runLater(stage::close);
+                    CommonsFX.runInPlatform(stage::close);
                 }
             });
             return stage;
@@ -130,7 +159,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
 
         window.showingProperty().addListener((ob, old, n) -> {
             if (!n) {
-                Platform.runLater(stage::close);
+                CommonsFX.runInPlatform(stage::close);
             }
         });
         return stage;

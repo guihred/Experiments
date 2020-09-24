@@ -13,9 +13,9 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
 import paintexp.tool.RectBuilder;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
@@ -57,8 +57,11 @@ public class AdjustImageController {
     public void adjustColors(PaintModel paintModel1, PaintController paintController1) {
         paintModel = paintModel1;
         paintController = paintController1;
-        CommonsFX.loadFXML("Adjust Image", "AdjustImage.fxml", this, new Stage());
+
+        new SimpleDialogBuilder().bindWindow(paintModel1.getImageSize()).title("Adjust Image")
+                .node(CommonsFX.loadParent("AdjustImage.fxml", this)).displayDialog();
     }
+
     public void initialize() {
         WritableImage original = paintController.getSelectedImage();
         PixelReader reader = original.getPixelReader();

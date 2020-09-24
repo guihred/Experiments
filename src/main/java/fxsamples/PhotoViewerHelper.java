@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.animation.Animation;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -20,6 +19,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleSequentialTransitionBuilder;
+import utils.CommonsFX;
 import utils.ex.RunnableEx;
 
 public class PhotoViewerHelper {
@@ -109,7 +109,7 @@ public class PhotoViewerHelper {
             @Override
 			public Boolean call() {
                 Image image = new Image(url, false);
-                Platform.runLater(() -> {
+                CommonsFX.runInPlatform(() -> {
                     // New code:
                     transitionByFading(image, currentImageView2);
                     progressIndicator2.setVisible(false);

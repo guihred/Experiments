@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -239,7 +238,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     private void resetStage() {
-        Platform.runLater(() -> {
+        CommonsFX.runInPlatform(() -> {
             currentStage.setResizable(true);
             currentStage.setMaximized(false);
             currentStage.setAlwaysOnTop(false);

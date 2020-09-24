@@ -4,7 +4,6 @@ import static utils.DrawOnPoint.withinImage;
 
 import java.util.Collection;
 import java.util.List;
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
@@ -16,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CommonsFX;
 import utils.CustomList;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
@@ -102,7 +102,7 @@ public class BucketTool extends PaintTool {
         int frontColor =
                 PixelHelper.toArgb(e.getButton() == MouseButton.PRIMARY ? model.getFrontColor() : model.getBackColor());
         if (originalColor != frontColor) {
-            Platform.runLater(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
+            CommonsFX.runInPlatform(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
         }
     }
 

@@ -40,7 +40,7 @@ public enum MachineState {
 
 }
 
-class Values {
+final class Values {
     protected static final String APP_ACTIVE_OPEN = "APP_ACTIVE_OPEN";
     protected static final String APP_CLOSE = "APP_CLOSE";
     protected static final String APP_TIMEOUT = "APP_TIMEOUT";

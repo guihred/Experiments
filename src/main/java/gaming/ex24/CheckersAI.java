@@ -5,15 +5,11 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import javafx.application.Platform;
 import simplebuilder.SimpleDialogBuilder;
+import utils.CommonsFX;
 
 public final class CheckersAI {
     private CheckersAI() {
-    }
-
-    public static boolean isGameOver(Collection<CheckersSquare> squares) {
-        return squares.stream().map(CheckersSquare::getState).distinct().count() < 3;
     }
 
     public static void displayDialog(AtomicInteger currentPlayer, List<CheckersSquare> squares) {
@@ -23,6 +19,10 @@ public final class CheckersAI {
             CheckersHelper.reset(squares);
             runIfAI(squares, currentPlayer);
         }).bindWindow(squares.get(0)).displayDialog();
+    }
+
+    public static boolean isGameOver(Collection<CheckersSquare> squares) {
+        return squares.stream().map(CheckersSquare::getState).distinct().count() < 3;
     }
 
     public static boolean onClick(AtomicInteger currentPlayer, List<CheckersSquare> squares, CheckersSquare target) {
@@ -69,7 +69,7 @@ public final class CheckersAI {
             if (CheckersAI.isGameOver(squares)) {
                 return;
             }
-            Platform.runLater(() -> runAI(squares, currentPlayer));
+            CommonsFX.runInPlatform(() -> runAI(squares, currentPlayer));
         }
     }
 

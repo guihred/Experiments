@@ -141,8 +141,16 @@ public final class ClassReflectionUtils {
         return getters;
     }
 
-    public static <T> T getInstance(Class<T> cl) {
-        return SupplierEx.remap(cl::newInstance, "ERROR IN INSTANTIATION");
+    public static <T> T getInstance(Class<T> cl, Object... o) {
+
+        return SupplierEx.remap(() -> {
+            if (o.length <= 0) {
+                Class<?>[] array = Stream.of(o).map(Object::getClass).toArray(Class<?>[]::new);
+                Constructor<T> constructor = cl.getConstructor(array);
+                return constructor.newInstance(o);
+            }
+            return cl.newInstance();
+        }, "ERROR IN INSTANTIATION");
     }
 
     @SuppressWarnings("unchecked")

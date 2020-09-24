@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,17 +32,18 @@ import utils.ex.SupplierEx;
  *
  */
 public final class Mapping {
-    private static List<Method> METHODS;
+    private static List<Method> methods;
 
     private Mapping() {
     }
+
     public static List<Method> getMethods() {
         List<Class<?>> allowedTypes = Arrays.asList(Double.class, String.class, Integer.class, Long.class, int.class,
                 Object.class, long.class, double.class);
         List<Class<?>> returnTypes = Arrays.asList(Double.class, String.class, Integer.class, Long.class, int.class,
                 Object.class, long.class, double.class, Map.class, List.class, Collection.class, String[].class);
-        return SupplierEx.orElse(METHODS,
-                () -> METHODS = JavaFileDependency.getAllFileDependencies().stream()
+        return SupplierEx.orElse(methods,
+                () -> methods = JavaFileDependency.getAllFileDependencies().stream()
                         .map(JavaFileDependency::getFullName).filter(s -> !s.startsWith("fxtests"))
                         .filter(s -> !s.contains("HibernateUtil")).map(makeFunction(Class::forName))
                         .flatMap(e -> ClassReflectionUtils.getAllMethodsRecursive(e, 2).stream()
@@ -68,33 +70,36 @@ public final class Mapping {
         for (String string : dependencies) {
             dialog.text(string + " (" + dataframe.getFormat(string).getSimpleName() + ")");
         }
+        dialog.node(build).node(vBox)
+                .button("Add", () -> addMapping(dependencies, dataframe, vBox, build, button), () -> {
+                    File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
+                    DataframeUtils.save(dataframe, outFile);
+                    ConsumerEx.accept(run, outFile);
+                }).displayDialog();
+    }
 
-        dialog.node(build).node(vBox).button("Add", () -> {
-            Method method = build.getSelectionModel().getSelectedItem();
-            SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
-            Object[] ob = new Object[method.getParameterCount()];
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            for (int i = 0; i < parameterTypes.length; i++) {
-                if (i >= dependencies.length) {
-                    TextField node = (TextField) vBox.getChildren().get(i - dependencies.length);
-                    Object tryAsNumber = StringSigaUtils.formatHierarchy().getOrDefault(parameterTypes[i], e -> e)
-                            .apply(node.getText());
-                    ob[i] = tryAsNumber;
-                }
+    private static DoubleExpression addMapping(String[] dependencies, DataframeML dataframe, VBox vBox,
+            ComboBox<Method> build, TextField button) {
+        Method method = build.getSelectionModel().getSelectedItem();
+        SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
+        Object[] ob = new Object[method.getParameterCount()];
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        for (int i = 0; i < parameterTypes.length; i++) {
+            if (i >= dependencies.length) {
+                TextField node = (TextField) vBox.getChildren().get(i - dependencies.length);
+                Object tryAsNumber =
+                        StringSigaUtils.formatHierarchy().getOrDefault(parameterTypes[i], e -> e).apply(node.getText());
+                ob[i] = tryAsNumber;
             }
-            runNewThread(() -> DataframeUtils.crossFeatureObject(dataframe, button.getText(), progress, o -> {
-                for (int i = 0; i < o.length; i++) {
-                    ob[i] = o[i];
-                }
-                return method.invoke(null, ob);
-            }, dependencies));
+        }
+        runNewThread(() -> DataframeUtils.crossFeatureObject(dataframe, button.getText(), progress, o -> {
+            for (int i = 0; i < o.length; i++) {
+                ob[i] = o[i];
+            }
+            return method.invoke(null, ob);
+        }, dependencies));
 
-            return progress;
-        }, () -> {
-            File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
-            DataframeUtils.save(dataframe, outFile);
-            ConsumerEx.accept(run, outFile);
-        }).displayDialog();
+        return progress;
     }
 
     private static void adjustToMethod(String[] dependencies, VBox vBox, Method n) {

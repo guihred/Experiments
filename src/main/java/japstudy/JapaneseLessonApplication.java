@@ -34,11 +34,11 @@ public class JapaneseLessonApplication extends Application {
     }
 
     @Override
-	public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) {
         final int width = 600;
         final int height = 250;
         CommonsFX.loadFXML("Japanese Lesson Table Displayer", "JapaneseLessonApplication.fxml", this, primaryStage,
-            width, height);
+                width, height);
         primaryStage.getScene().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.SHIFT) {
                 editItem(tableView1);
@@ -55,11 +55,8 @@ public class JapaneseLessonApplication extends Application {
     }
 
     private void showEditingDiplay(JapaneseLesson selectedItem) {
-        JapaneseLessonEditingDisplay japaneseLessonEditingDisplay = new JapaneseLessonEditingDisplay();
-        Stage primaryStage = new Stage();
-        SimpleDialogBuilder.bindWindow(primaryStage, tableView1);
-        japaneseLessonEditingDisplay.start(primaryStage);
-        japaneseLessonEditingDisplay.setCurrent(selectedItem);
+        new SimpleDialogBuilder().bindWindow(tableView1).show(JapaneseLessonEditingDisplay.class)
+                .setCurrent(selectedItem);
     }
 
     public static void main(String[] args) {

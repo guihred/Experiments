@@ -205,10 +205,10 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String replaceAll(String nome, String regex) {
-        String collect = IntStream.rangeClosed(1, Pattern.compile(regex).matcher(nome).groupCount())
-                .mapToObj(i -> "$" + i).collect(Collectors.joining());
-
-        return nome.replaceAll(regex, collect);
+        return SupplierEx.get(
+                () -> nome.replaceAll(regex, IntStream.rangeClosed(1, Pattern.compile(regex).matcher(nome).groupCount())
+                        .mapToObj(i -> "$" + i).collect(Collectors.joining())),
+                nome);
     }
 
     public static String retirarMascara(String valor) {

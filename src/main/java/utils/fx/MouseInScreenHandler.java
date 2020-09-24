@@ -1,12 +1,12 @@
 package utils.fx;
 
 import java.awt.Robot;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
+import utils.CommonsFX;
 import utils.ex.HasLogging;
 
 public final class MouseInScreenHandler implements EventHandler<MouseEvent> {
@@ -28,11 +28,11 @@ public final class MouseInScreenHandler implements EventHandler<MouseEvent> {
 		double width = sc.getWidth();
 		if ((int) mousePosX == (int) width - 1) {
 			// Reached right edge of the screen
-            Platform.runLater(() -> moveMouseLeft(me));
+            CommonsFX.runInPlatform(() -> moveMouseLeft(me));
 		}
 		if (mousePosX <= 5) {
 			// Reached left edge of the screen
-            Platform.runLater(() -> moveMouseRight(me, width));
+            CommonsFX.runInPlatform(() -> moveMouseRight(me, width));
 		}
 
 		double mouseDeltaX = mousePosX - mouseOldX;

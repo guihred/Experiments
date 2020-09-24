@@ -102,7 +102,8 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         }
         Music music = songs.get(0);
         if (!music.isNotMP3()) {
-            new EditSongController(music).show();
+            new SimpleDialogBuilder().show(EditSongController.class,music);
+            
             return;
         }
         SimpleDialogBuilder dialog = new SimpleDialogBuilder();

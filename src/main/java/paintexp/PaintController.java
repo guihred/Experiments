@@ -19,6 +19,7 @@ import paintexp.tool.AreaTool;
 import paintexp.tool.PaintModel;
 import paintexp.tool.PaintTool;
 import paintexp.tool.PaintTools;
+import simplebuilder.SimpleDialogBuilder;
 import utils.fx.PixelatedImageView;
 import utils.fx.ZoomableScrollPane;
 
@@ -153,7 +154,7 @@ public class PaintController {
                 }
             });
             dialog.setOnSave(() -> rectangle.setFill(dialog.getCurrentColor()));
-            dialog.show();
+            new SimpleDialogBuilder().bindWindow(getTool()).show(dialog);
         } else if (MouseButton.PRIMARY == e.getButton()) {
             paintModel.setFrontColor((Color) rectangle.getFill());
         } else {

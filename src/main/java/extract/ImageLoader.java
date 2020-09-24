@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -17,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.ex.HasLogging;
 
@@ -28,8 +28,9 @@ public class ImageLoader {
     private void addImages(ObservableList<Node> children, String text1) {
         text = text1;
         ObservableList<String> images = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
-        images.addListener((Change<? extends String> c) -> Platform.runLater(() -> addImages(children, text1, c)));
-        Platform.runLater(() -> {
+        images.addListener(
+                (Change<? extends String> c) -> CommonsFX.runInPlatform(() -> addImages(children, text1, c)));
+        CommonsFX.runInPlatform(() -> {
             children.clear();
             LOG.trace("CLEARING IMAGES");
         });

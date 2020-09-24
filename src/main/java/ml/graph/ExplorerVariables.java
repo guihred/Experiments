@@ -256,7 +256,7 @@ public abstract class ExplorerVariables extends Application {
 
     private static int getTopLength(Entry<String, DataframeStatisticAccumulator> e) {
         String string = Objects.toString(e.getValue().getTop(), "");
-        return Stream.of(string.split("\n")).mapToInt(s -> s.length()).max().orElse(string.length());
+        return Stream.of(string.split("\n")).mapToInt(String::length).max().orElse(string.length());
     }
 
     private static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {

@@ -36,7 +36,6 @@ import utils.CommonsFX;
 import utils.FileTreeWalker;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
-import utils.ex.RunnableEx;
 
 public class PrintConfig extends Application {
 
@@ -140,10 +139,6 @@ public class PrintConfig extends Application {
     public void setLinesColumns(Integer lines, Integer columns) {
         linesPerPage.getSelectionModel().select(lines);
         columnsPerPage.getSelectionModel().select(columns);
-    }
-
-    public void show() {
-        RunnableEx.run(() -> start(new Stage()));
     }
 
     @Override

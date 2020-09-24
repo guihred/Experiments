@@ -45,11 +45,11 @@ public class KibanaApi {
             .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0")
             .put("Accept", "application/json, text/plain, */*")
             .put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3").put("Accept-Encoding", "gzip, deflate, br")
-            .put("kbn-version", "6.6.2")
-            .put("Origin", "https://n321p000124.fast.prevnet").put("DNT", "1")
+            .put("kbn-version", "6.6.2").put("Origin", "https://n321p000124.fast.prevnet").put("DNT", "1")
             .put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization()).put("Connection", "keep-alive")
             .put("Referer", "https://n321p000124.fast.prevnet/app/kibana").put("Cookie", "io=3PIP6uXMWNC7_9EfAAAE")
             .build();
+
     protected KibanaApi() {
     }
 
@@ -94,7 +94,7 @@ public class KibanaApi {
     }
 
     public static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
-        return SupplierEx.get(() -> {
+        return SupplierEx.getHandle(() -> {
             File outFile = newJsonFile(query + removeExtension(file) + days);
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
@@ -103,7 +103,8 @@ public class KibanaApi {
                         getContent(file, query, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
-        }, Collections.emptyMap());
+        }, Collections.emptyMap(),
+                e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
     }
 
     public static Map<String, String> makeKibanaSearch(File file, String index, int days, Map<String, String> search,
@@ -136,15 +137,16 @@ public class KibanaApi {
             String values = search.values().stream().collect(Collectors.joining());
             File outFile = newJsonFile(removeExtension(file) + values + days);
             if (!outFile.exists() || oneDayModified(outFile)) {
-            String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
-            String lte = Objects.toString(Instant.now().toEpochMilli());
-            String keywords = search.entrySet().stream().map(
-                    e -> String.format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
-                    .collect(Collectors.joining("\n"));
-            getFromURL(
-                    "https://n321p000124.fast.prevnet/elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true"
-                            + index,
-                    getContent(file, keywords, gte, lte), outFile);
+                String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
+                String lte = Objects.toString(Instant.now().toEpochMilli());
+                String keywords = search
+                        .entrySet().stream().map(e -> String
+                                .format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
+                        .collect(Collectors.joining("\n"));
+                getFromURL(
+                        "https://n321p000124.fast.prevnet/"
+                                + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true" + index,
+                        getContent(file, keywords, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, Collections.emptyMap());

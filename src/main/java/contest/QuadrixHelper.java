@@ -3,7 +3,6 @@ package contest;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static simplebuilder.SimpleDialogBuilder.bindWindow;
 import static utils.StringSigaUtils.decodificar;
 import static utils.ex.RunnableEx.run;
 import static utils.ex.RunnableEx.runNewThread;
@@ -22,13 +21,13 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
-import javafx.stage.Stage;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
+import simplebuilder.SimpleDialogBuilder;
+import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.ex.*;
 
@@ -62,7 +61,7 @@ public final class QuadrixHelper {
                     }
                 }
                 if (e2.getVagas().isEmpty()) {
-                    Platform.runLater(() -> concursos.remove(e2));
+                    CommonsFX.runInPlatform(() -> concursos.remove(e2));
                 }
             }
         });
@@ -152,7 +151,8 @@ public final class QuadrixHelper {
 
         IadesHelper.getContestQuestions(file2, Organization.QUADRIX, entities -> {
             saveQuadrixQuestions(concurso, value, linksFound, number, entities);
-            Platform.runLater(() -> new ContestApplication(entities).start(bindWindow(new Stage(), listBuilder)));
+            CommonsFX.runInPlatform(
+                    () -> new SimpleDialogBuilder().bindWindow(listBuilder).show(ContestApplication.class, entities));
         });
     }
 
@@ -183,7 +183,7 @@ public final class QuadrixHelper {
 
     private static void addVaga(Concurso e2, String vaga) {
         if (isNotBlank(vaga) && !vaga.matches("\\d+:") && !e2.getVagas().contains(vaga)) {
-            Platform.runLater(() -> {
+            CommonsFX.runInPlatform(() -> {
                 if (!e2.getVagas().contains(vaga)) {
                     e2.getVagas().add(vaga);
                 }

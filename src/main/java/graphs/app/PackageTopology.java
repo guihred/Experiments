@@ -37,8 +37,7 @@ public class PackageTopology extends BaseTopology {
         Map<String, Map<String, Long>> packageDependencyMap =
                 createFileDependencyMap(allFileDependencies, chosenPackageName);
         List<String> collect = packageDependencyMap.entrySet().stream()
-                .flatMap(e -> Stream.concat(Stream.of(e.getKey()), e.getValue().keySet().stream()))
-                .distinct()
+                .flatMap(e -> Stream.concat(Stream.of(e.getKey()), e.getValue().keySet().stream())).distinct()
                 .collect(Collectors.toList());
         for (String packageName : collect) {
             graph.getModel().addCell(packageName, CellType.RECTANGLE);
@@ -65,12 +64,8 @@ public class PackageTopology extends BaseTopology {
     }
 
     public static Map<String, Map<String, Long>> createFileDependencyMap(Collection<JavaFileDependency> javaFiles) {
-        // List<String> classesNames =
-        // javaFiles.stream().map(JavaFileDependency::getName).sorted()
-        // .collect(Collectors.toList());
-        return javaFiles.stream().collect(Collectors.toMap(JavaFileDependency::getFullName, k -> k.getClasses().stream()
-                // .filter(classesNames::contains)
-                .collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
+        return javaFiles.stream().collect(Collectors.toMap(JavaFileDependency::getFullName,
+                k -> k.getClasses().stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
     }
 
     public static Map<String, Map<String, Long>> createFileDependencyMap(Collection<JavaFileDependency> allFiles,
@@ -78,7 +73,6 @@ public class PackageTopology extends BaseTopology {
         return allFiles.stream().filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
                 .collect(Collectors.toMap(JavaFileDependency::getFullName, k -> convertToMap(allFiles, k)));
     }
-
 
     public static void printDependencyMap(Map<String, Map<String, Long>> packageDependencyMap) {
         List<String> packNames = packageDependencyMap.keySet().stream()

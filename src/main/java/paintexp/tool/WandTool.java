@@ -5,7 +5,6 @@ import static utils.DrawOnPoint.withinImage;
 
 import java.util.Arrays;
 import java.util.List;
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
@@ -20,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CommonsFX;
 import utils.CustomList;
 import utils.PixelHelper;
 
@@ -178,7 +178,7 @@ public class WandTool extends AreaTool {
 
     protected void onChangeSlider(final PaintModel model) {
         if (model.getImageStack().getChildren().contains(getArea()) && imageSelected != null) {
-            Platform.runLater(() -> {
+            CommonsFX.runInPlatform(() -> {
                 repositionImage(model);
                 getArea().setLayoutX(initialX);
                 getArea().setLayoutY(initialY);
@@ -241,7 +241,7 @@ public class WandTool extends AreaTool {
             getArea().setScaleY(1);
             getArea().setWidth(0);
             getArea().setHeight(0);
-            Platform.runLater(() -> {
+            CommonsFX.runInPlatform(() -> {
                 setImage(model);
                 if (clickedX != initialX) {
                     initialX = clickedX;

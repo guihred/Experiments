@@ -19,7 +19,6 @@ import utils.ex.FunctionEx;
 
 public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, SimpleComboBoxBuilder<T>> {
 
-
     public SimpleComboBoxBuilder() {
         super(new ComboBox<>());
     }
@@ -43,7 +42,7 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         return this;
     }
 
-    public SimpleComboBoxBuilder<T> items(Collection<T> value) {
+    public final SimpleComboBoxBuilder<T> items(Collection<T> value) {
         if (value instanceof ObservableList) {
             region.setItems((ObservableList<T>) value);
         } else {
@@ -58,8 +57,7 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
     }
 
     public SimpleComboBoxBuilder<T> onChange(BiConsumer<T, T> obj) {
-        region.getSelectionModel().selectedItemProperty()
-                .addListener((ob, old, newValue) -> obj.accept(old, newValue));
+        region.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> obj.accept(old, newValue));
         return this;
     }
 

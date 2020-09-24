@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,6 +23,7 @@ import javafx.scene.image.WritableImage;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
@@ -81,15 +81,15 @@ public final class MusicReader {
                     Files.find(file.toPath(), 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
                 List<Path> allSongs = find.collect(Collectors.toList());
                 double size = allSongs.size();
-                Platform.runLater(() -> progress.set(0));
+                CommonsFX.runInPlatform(() -> progress.set(0));
                 for (int i = 0; i < allSongs.size(); i++) {
                     Path path = allSongs.get(i);
                     int j = i;
-                    Platform.runLater(() -> progress.set(j / size));
+                    CommonsFX.runInPlatform(() -> progress.set(j / size));
                     Music readTags = readTags(path.toFile());
-                    Platform.runLater(() -> musicas.add(readTags));
+                    CommonsFX.runInPlatform(() -> musicas.add(readTags));
                 }
-                Platform.runLater(() -> progress.set(1));
+                CommonsFX.runInPlatform(() -> progress.set(1));
             }
         });
         return musicas;

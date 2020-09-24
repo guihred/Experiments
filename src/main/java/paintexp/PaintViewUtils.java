@@ -2,7 +2,6 @@ package paintexp;
 
 import java.util.List;
 import javafx.geometry.Bounds;
-import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -13,13 +12,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import paintexp.tool.AreaTool;
 import paintexp.tool.PaintModel;
 import paintexp.tool.RectBuilder;
 import simplebuilder.SimpleButtonBuilder;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import simplebuilder.StageHelper;
 import utils.ImageFXUtils;
@@ -97,9 +96,7 @@ public final class PaintViewUtils {
             StageHelper.closeStage(root);
             paintModel.createImageVersion();
         }));
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.show();
+        new SimpleDialogBuilder().bindWindow(paintModel.getImageStack()).node(root).displayDialog();
     }
 
     private static void changeIfDifferent(final TextField field, final String toBeValue) {

@@ -1,6 +1,5 @@
 package fxpro.ch06;
 
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import utils.CommonsFX;
 import utils.ex.RunnableEx;
 
 public final class ResponsiveUIView {
@@ -46,18 +46,18 @@ public final class ResponsiveUIView {
         changeFillButton.setOnAction(actionEvent -> {
             Paint fillPaint = model.getFillPaint().get();
             model.getFillPaint().set(fillPaint.equals(Color.LIGHTGRAY) ? Color.GRAY : Color.LIGHTGRAY);
-            new Thread(RunnableEx.make(() -> {
+            RunnableEx.runNewThread(() -> {
                 RunnableEx.sleepSeconds(3);
-                Platform.runLater(() -> {
+                CommonsFX.runInPlatform(() -> {
                     Rectangle rect = rectangle;
                     double newArcSize = rect.getArcHeight() < 20 ? 30 : 0;
                     rect.setArcWidth(newArcSize);
                     rect.setArcHeight(newArcSize);
                 });
-            })).start();
+            });
         });
         changeStrokeButton.setOnAction(e -> model.getStrokePaint()
-            .set(model.getStrokePaint().get().equals(Color.DARKGRAY) ? Color.BLACK : Color.DARKGRAY));
+                .set(model.getStrokePaint().get().equals(Color.DARKGRAY) ? Color.BLACK : Color.DARKGRAY));
     }
 
 }

@@ -17,7 +17,6 @@ import java.util.function.ObjIntConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -41,6 +40,7 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleConverter;
 import simplebuilder.SimpleListViewBuilder;
+import utils.CommonsFX;
 import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
@@ -54,9 +54,8 @@ public class ContestQuestionEditingDisplay extends Application {
 
     public ContestQuestionEditingDisplay() {
         instance = IadesHelper.getContestQuestions(
-            ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"),
-            Organization.IADES,
-            r -> Platform.runLater(() -> current.set(0)));
+                ResourceFXUtils.toFile("102 - Analista de Tecnologia da Informacao - Tipo D.pdf"), Organization.IADES,
+                r -> CommonsFX.runInPlatform(() -> current.set(0)));
         lessons = instance.getListQuestions();
     }
 
@@ -113,17 +112,17 @@ public class ContestQuestionEditingDisplay extends Application {
         save.disableProperty().bind(current.lessThan(0));
         Button next = SimpleButtonBuilder.newButton("_Next", e -> nextLesson());
         next.disableProperty()
-            .bind(current.greaterThanOrEqualTo(Bindings.createIntegerBinding(() -> lessons.size() - 1, lessons))
-                .or(current.lessThan(0)));
+                .bind(current.greaterThanOrEqualTo(Bindings.createIntegerBinding(() -> lessons.size() - 1, lessons))
+                        .or(current.lessThan(0)));
 
         final int width = 600;
         primaryStage.setWidth(width);
 
         primaryStage.centerOnScreen();
         Scene value = new Scene(new HBox(
-            new VBox(newVBox("Number", number), newVBox("Subject", subject), newVBox("Questions", question),
-                newVBox("Options", optionsListView), new HBox(previous, next, save)),
-            newVBox("Image", image, newImage)));
+                new VBox(newVBox("Number", number), newVBox("Subject", subject), newVBox("Questions", question),
+                        newVBox("Options", optionsListView), new HBox(previous, next, save)),
+                newVBox("Image", image, newImage)));
         primaryStage.setScene(value);
         value.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
@@ -137,18 +136,19 @@ public class ContestQuestionEditingDisplay extends Application {
 
     private ListView<ContestQuestionAnswer> newOptionListView() {
         ListView<ContestQuestionAnswer> listView = new SimpleListViewBuilder<ContestQuestionAnswer>().items(options)
-            .fixedCellSize(Region.USE_COMPUTED_SIZE)
-            .cellFactory(ChoiceBoxListCell.forListView(new SimpleConverter<ContestQuestionAnswer>("answer"), options))
-            .onSelect((v, n) -> {
-                if (n != null) {
-                    options.forEach(e -> e.setCorrect(false));
-                    n.setCorrect(true);
-                }
-            }).build();
+                .fixedCellSize(Region.USE_COMPUTED_SIZE)
+                .cellFactory(
+                        ChoiceBoxListCell.forListView(new SimpleConverter<ContestQuestionAnswer>("answer"), options))
+                .onSelect((v, n) -> {
+                    if (n != null) {
+                        options.forEach(e -> e.setCorrect(false));
+                        n.setCorrect(true);
+                    }
+                }).build();
         options.addListener((Change<? extends ContestQuestionAnswer> c) -> {
             c.next();
-            ContestQuestionAnswer orElse = c.getAddedSubList().stream().filter(ContestQuestionAnswer::getCorrect)
-                .findAny().orElse(null);
+            ContestQuestionAnswer orElse =
+                    c.getAddedSubList().stream().filter(ContestQuestionAnswer::getCorrect).findAny().orElse(null);
             listView.getSelectionModel().select(orElse);
         });
         return listView;
@@ -170,9 +170,9 @@ public class ContestQuestionEditingDisplay extends Application {
             LOG.trace(instance.getContest().toSQL());
             LOG.trace(lessons.stream().map(ContestQuestion::toSQL).collect(Collectors.joining("\n")));
             LOG.trace(lessons.stream().flatMap(e -> e.getOptions().stream()).map(ContestQuestionAnswer::toSQL)
-                .collect(Collectors.joining("\n")));
+                    .collect(Collectors.joining("\n")));
             LOG.trace(instance.getContestTexts().stream().filter(e -> StringUtils.isNotBlank(e.getText()))
-                .map(ContestText::toSQL).collect(Collectors.joining("\n")));
+                    .map(ContestText::toSQL).collect(Collectors.joining("\n")));
         }
         instance.saveAll();
 
@@ -199,9 +199,9 @@ public class ContestQuestionEditingDisplay extends Application {
 
     private static void setImage(VBox newImage, String image) {
         if (image != null) {
-            List<ImageView> images = Stream.of(image.split(";"))
-                .map(i -> new ImageView(convertToURL(new File(i)).toString()))
-                .peek(e -> e.prefWidth(newImage.getWidth())).collect(Collectors.toList());
+            List<ImageView> images =
+                    Stream.of(image.split(";")).map(i -> new ImageView(convertToURL(new File(i)).toString()))
+                            .peek(e -> e.prefWidth(newImage.getWidth())).collect(Collectors.toList());
             newImage.getChildren().setAll(images);
         } else if (!newImage.getChildren().isEmpty()) {
             newImage.getChildren().clear();

@@ -9,7 +9,6 @@ import static extract.SongUtils.seekAndUpdatePosition;
 import static extract.SongUtils.updatePositionSlider;
 
 import extract.SongUtils;
-import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.event.ActionEvent;
@@ -32,6 +31,7 @@ import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleSliderBuilder;
+import utils.CommonsFX;
 
 public class PlayerControlView extends BaseSongView {
 
@@ -190,7 +190,7 @@ public class PlayerControlView extends BaseSongView {
 
         @Override
         public void invalidated(Observable observable) {
-            Platform.runLater(() -> {
+            CommonsFX.runInPlatform(() -> {
                 final MediaPlayer mediaPlayer = songModel.getMediaPlayer();
                 final Duration currentTime = mediaPlayer.getCurrentTime();
                 currentTimeLabel.setText(SongUtils.formatDuration(currentTime));
@@ -202,7 +202,7 @@ public class PlayerControlView extends BaseSongView {
     private class StatusListener implements InvalidationListener {
         @Override
         public void invalidated(Observable observable) {
-            Platform.runLater(() -> updateStatus(songModel.getMediaPlayer().getStatus()));
+            CommonsFX.runInPlatform(() -> updateStatus(songModel.getMediaPlayer().getStatus()));
         }
     }
 

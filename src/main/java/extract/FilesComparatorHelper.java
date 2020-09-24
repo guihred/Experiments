@@ -7,11 +7,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TableView;
+import utils.CommonsFX;
 
 public final class FilesComparatorHelper {
 	private static final List<String> STYLE_CLASSES = Arrays.asList("", "vermelho", "amarelo");
@@ -52,7 +52,7 @@ public final class FilesComparatorHelper {
 
     @SuppressWarnings("unchecked")
     public static void updateCells(TableView<File> table1) {
-        Platform.runLater(() -> {
+        CommonsFX.runInPlatform(() -> {
             Parent root = table1.getScene().getRoot();
             for (Node cell : root.lookupAll(".cell")) {
 				cell.getStyleClass().removeAll(STYLE_CLASSES);

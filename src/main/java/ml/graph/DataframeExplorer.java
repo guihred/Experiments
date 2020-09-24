@@ -64,16 +64,14 @@ public class DataframeExplorer extends ExplorerVariables {
         SimpleTableViewBuilder.of(histogram).multipleSelection().equalColumns().copiable().savable()
                 .onKey(KeyCode.ADD, list -> addQuestion(list, true))
                 .onKey(KeyCode.SUBTRACT, list -> addQuestion(list, false));
-        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen)
-                .onKey(KeyCode.DELETE, t -> {
-                    columns.remove(t);
-                    getDataframe().removeCol(t.getKey());
-                }).addContextMenu("_Split", e -> splitByColumn())
-                .addContextMenu("Add Mapping", e0 -> {
-                    String[] dependencies = columnsList.getSelectionModel().getSelectedItems().stream()
-                            .map(Entry<String, DataframeStatisticAccumulator>::getKey).toArray(String[]::new);
-                    Mapping.showDialog(barChart, dependencies, getDataframe(), f -> readDataframe(f, MAX_ELEMENTS));
-                });
+        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen).onKey(KeyCode.DELETE, t -> {
+            columns.remove(t);
+            getDataframe().removeCol(t.getKey());
+        }).addContextMenu("_Split", e -> splitByColumn())
+                .addContextMenu("Add Mapping",
+                        e0 -> Mapping.showDialog(barChart, columnsList.getSelectionModel().getSelectedItems().stream()
+                                .map(Entry<String, DataframeStatisticAccumulator>::getKey).toArray(String[]::new),
+                                getDataframe(), f -> readDataframe(f, MAX_ELEMENTS)));
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
         pieChart.visibleProperty().bind(pieChart.titleProperty().isNotEmpty());
@@ -146,14 +144,6 @@ public class DataframeExplorer extends ExplorerVariables {
                 DataframeUtils.save(getDataframe(), outFile);
                 LOG.info("{} SAVED", outFile);
             })).saveFileAction(event);
-        }
-    }
-
-    public void show() {
-        if (barChart != null) {
-            start((Stage) barChart.getScene().getWindow());
-        } else {
-            start(new Stage());
         }
     }
 

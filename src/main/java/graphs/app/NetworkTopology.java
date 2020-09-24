@@ -7,7 +7,6 @@ import graphs.entities.CellType;
 import graphs.entities.Graph;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.NamedArg;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,6 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
+import utils.CommonsFX;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
@@ -102,12 +102,12 @@ public class NetworkTopology extends BaseTopology {
             synchronized (scanPossibleOSes) {
                 scanPossibleOSes.putAll(scanOSes);
             }
-            Platform.runLater(this::execute);
+            CommonsFX.runInPlatform(this::execute);
         };
     }
 
     private void scanOSes(final Change<? extends String, ? extends List<String>> change) {
-        Platform.runLater(this::execute);
+        CommonsFX.runInPlatform(this::execute);
         String ip = change.getKey();
         if (!change.wasRemoved()) {
             RunnableEx.runNewThread(() -> {

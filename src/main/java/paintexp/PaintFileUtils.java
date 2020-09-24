@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import paintexp.tool.PaintModel;
 import simplebuilder.FileChooserBuilder;
+import simplebuilder.SimpleDialogBuilder;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -63,7 +64,7 @@ public final class PaintFileUtils {
     }
 
     public static void print(PaintModel paintModel) {
-        new PrintConfig(paintModel.getImage()).show();
+        new SimpleDialogBuilder().bindWindow(paintModel.getImageStack()).show(PrintConfig.class, paintModel.getImage());
     }
 
     public static void saveAsFile(ActionEvent primaryStage, PaintModel paintModel) {

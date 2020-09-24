@@ -217,7 +217,8 @@ public class JavaFileDependency {
 
     }
 
-    public static List<JavaFileDependency> getJavaFileDependencies( List<JavaFileDependency> allFileDependencies,String packName) {
+    public static List<JavaFileDependency> getJavaFileDependencies(List<JavaFileDependency> allFileDependencies,
+            String packName) {
         return allFileDependencies.stream()
                 .filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
                 .collect(Collectors.toList());
@@ -225,7 +226,7 @@ public class JavaFileDependency {
 
     public static List<JavaFileDependency> getJavaFileDependencies(String packName) {
         List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
-        return getJavaFileDependencies(allFileDependencies,packName);
+        return getJavaFileDependencies(allFileDependencies, packName);
     }
 
     private static void appendToMap(Map<String, List<String>> methodMap, AtomicReference<String> method,

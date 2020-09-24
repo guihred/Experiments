@@ -9,13 +9,13 @@ import extract.MusicReader;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.MapChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import org.slf4j.Logger;
+import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -124,7 +124,7 @@ public final class SongModel {
             final Media media = new Media(url);
             media.getMetadata()
                 .addListener((MapChangeListener<String, Object>) ch -> handleMetadata(ch.getKey(), ch.getValueAdded()));
-            Platform.runLater(() -> tryGetAlbumCover(url));
+            CommonsFX.runInPlatform(() -> tryGetAlbumCover(url));
             mediaPlayer.setValue(new MediaPlayer(media));
             mediaPlayer.getValue().volumeProperty().set(0);
             mediaPlayer.get()

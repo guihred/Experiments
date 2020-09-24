@@ -18,7 +18,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.CommonsFX;
+import utils.ExtractUtils;
+import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
@@ -63,7 +66,7 @@ public final class FXMLCreatorHelper {
                 LOG.error("", error);
                 errorClasses.add(class1);
                 if (close) {
-                    Platform.runLater(() -> stages.forEach(Stage::close));
+                    CommonsFX.runInPlatform(() -> stages.forEach(Stage::close));
                 }
             }).run();
 
