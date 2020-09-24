@@ -7,10 +7,9 @@ import static utils.ex.RunnableEx.runNewThread;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -31,12 +30,16 @@ import utils.ex.SupplierEx;
  * @author guigu
  *
  */
-public class Mapping {
+public final class Mapping {
     private static List<Method> METHODS;
 
+    private Mapping() {
+    }
     public static List<Method> getMethods() {
-        List<Class<?>> allowedTypes =
-                Arrays.asList(Double.class, String.class, Integer.class, Long.class, int.class, Object.class);
+        List<Class<?>> allowedTypes = Arrays.asList(Double.class, String.class, Integer.class, Long.class, int.class,
+                Object.class, long.class, double.class);
+        List<Class<?>> returnTypes = Arrays.asList(Double.class, String.class, Integer.class, Long.class, int.class,
+                Object.class, long.class, double.class, Map.class, List.class, Collection.class, String[].class);
         return SupplierEx.orElse(METHODS,
                 () -> METHODS = JavaFileDependency.getAllFileDependencies().stream()
                         .map(JavaFileDependency::getFullName).filter(s -> !s.startsWith("fxtests"))
@@ -45,7 +48,7 @@ public class Mapping {
                                 .filter(m -> Modifier.isStatic(m.getModifiers()))
                                 .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getParameterCount() > 0)
                                 .filter(m -> Stream.of(m.getParameterTypes()).allMatch(allowedTypes::contains))
-                                .filter(m -> allowedTypes.contains(m.getReturnType())))
+                                .filter(m -> returnTypes.contains(m.getReturnType())))
                         .distinct().sorted(Comparator.comparing((Method m) -> m.getDeclaringClass().getSimpleName())
                                 .thenComparing(Method::getName))
                         .collect(Collectors.toList()));
@@ -53,8 +56,8 @@ public class Mapping {
 
     public static void showDialog(Node barChart, String[] dependencies, DataframeML dataframe, ConsumerEx<File> run) {
         List<Class<?>> allowedTypes = Stream.of(dependencies).map(dataframe::getFormat).collect(Collectors.toList());
-        ObservableList<Method> methods2 = FXCollections.observableArrayList(Mapping.getMethods())
-                .filtered(m -> Stream.of(m.getParameterTypes()).anyMatch(allowedTypes::contains));
+        ObservableList<Method> methods2 =
+                FXCollections.observableArrayList(Mapping.getMethods()).filtered(m -> isAllowed(allowedTypes, m));
         VBox vBox = new VBox();
 
         ComboBox<Method> build = new SimpleComboBoxBuilder<>(methods2).select(0).converter(Mapping::methodName)
@@ -74,9 +77,8 @@ public class Mapping {
             for (int i = 0; i < parameterTypes.length; i++) {
                 if (i >= dependencies.length) {
                     TextField node = (TextField) vBox.getChildren().get(i - dependencies.length);
-                    Object tryAsNumber =
-                            StringSigaUtils.formatHierarchy().getOrDefault(parameterTypes[i], e -> e)
-                                    .apply(node.getText());
+                    Object tryAsNumber = StringSigaUtils.formatHierarchy().getOrDefault(parameterTypes[i], e -> e)
+                            .apply(node.getText());
                     ob[i] = tryAsNumber;
                 }
             }
@@ -86,6 +88,7 @@ public class Mapping {
                 }
                 return method.invoke(null, ob);
             }, dependencies));
+
             return progress;
         }, () -> {
             File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
@@ -105,10 +108,17 @@ public class Mapping {
         }
     }
 
+    private static boolean isAllowed(List<Class<?>> allowedTypes, Method m) {
+        Class<?>[] parameterTypes = m.getParameterTypes();
+        return IntStream.range(0, allowedTypes.size())
+                .allMatch(i -> i < parameterTypes.length && (allowedTypes.get(i) == parameterTypes[i]
+                        || parameterTypes[i].isAssignableFrom(allowedTypes.get(i))));
+    }
+
     private static String methodName(Method m) {
         return String.format("%s %s.%s(%s)", m.getReturnType().getSimpleName(), m.getDeclaringClass().getSimpleName(),
                 m.getName(),
-                Stream.of(m.getParameterTypes()).map(e -> e.getSimpleName()).collect(Collectors.joining(",")));
+                Stream.of(m.getParameterTypes()).map(Class::getSimpleName).collect(Collectors.joining(",")));
     }
 
 }

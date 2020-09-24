@@ -88,14 +88,23 @@ public class DataframeUtils extends DataframeML {
     public static <T> List<T> crossFeatureObject(DataframeML dataframe, String header, DoubleProperty progress,
             FunctionEx<Object[], T> mapper, String... dependent) {
         AtomicInteger count = new AtomicInteger(0);
-        List<T> mappedColumn = IntStream.range(0, dataframe.size)
-                .mapToObj(i -> toArray(dataframe, i, dependent)).map(FunctionEx.makeFunction(mapper))
+        List<T> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
+                .map(FunctionEx.makeFunction(mapper))
                 .peek(i -> CommonsFX
                         .runInPlatform(() -> progress.set(count.getAndIncrement() / (double) dataframe.size)))
                 .collect(Collectors.toList());
-        dataframe.getDataframe().put(header, (List) mappedColumn);
-        dataframe.putFormat(header, (Class<? extends Comparable<?>>) mappedColumn.stream().filter(Objects::nonNull)
-                .findFirst().map(T::getClass).orElse(null));
+        Class<? extends Comparable<?>> columnFormat = (Class<? extends Comparable<?>>) mappedColumn.stream()
+                .filter(Objects::nonNull).findFirst().map(T::getClass).orElse(null);
+        if (columnFormat != null && columnFormat.isArray()) {
+            crossArrayFeature(dataframe, header, mappedColumn, columnFormat);
+        } else if (columnFormat != null && Collection.class.isAssignableFrom(columnFormat)) {
+            crossCollectionFeature(dataframe, header, mappedColumn);
+        } else if (columnFormat != null && Map.class.isAssignableFrom(columnFormat)) {
+            crossMapFeature(dataframe, header, mappedColumn);
+        } else {
+            dataframe.getDataframe().put(header, (List) mappedColumn);
+            dataframe.putFormat(header, columnFormat);
+        }
         CommonsFX.runInPlatform(() -> progress.set(1));
         return mappedColumn;
     }
@@ -392,6 +401,46 @@ public class DataframeUtils extends DataframeML {
         dataframe.size--;
     }
 
+    @SuppressWarnings("unchecked")
+    private static <T> void crossArrayFeature(DataframeML dataframe, String header, List<T> mappedColumn,
+            Class<? extends Comparable<?>> orElse) {
+        List<Object[]> m = (List<Object[]>) mappedColumn;
+        int max = m.stream().mapToInt(e -> e.length).max().orElse(1);
+        for (int j = 0; j < max; j++) {
+            int i = j;
+            dataframe.getDataframe().put(header + j,
+                    m.stream().map(c -> c != null && i < c.length ? c[i] : null).collect(Collectors.toList()));
+            dataframe.putFormat(header + j, (Class<? extends Comparable<?>>) orElse.getComponentType());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> void crossCollectionFeature(DataframeML dataframe, String header, List<T> mappedColumn) {
+        List<Collection<?>> m = (List<Collection<?>>) mappedColumn;
+        int max = m.stream().mapToInt(e -> e != null ? e.size() : 0).max().orElse(1);
+        for (int j = 0; j < max; j++) {
+            int i1 = j;
+            List<Object> collect = m.stream().map(c -> c != null ? c.stream().skip(i1).findFirst().orElse(null) : null)
+                    .collect(Collectors.toList());
+            dataframe.getDataframe().put(header + j, collect);
+            dataframe.putFormat(header + j, (Class<? extends Comparable<?>>) collect.stream().filter(Objects::nonNull)
+                    .findFirst().map(Object::getClass).orElse(null));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> void crossMapFeature(DataframeML dataframe, String header, List<T> mappedColumn) {
+        List<Map<?, ?>> m = (List<Map<?, ?>>) mappedColumn;
+        List<Object> max = m.stream().flatMap(e -> e != null ? e.keySet().stream() : Stream.empty())
+                .distinct().collect(Collectors.toList());
+        for (Object i1 : max) {
+            List<Object> collect = m.stream().map(c -> c != null ? c.get(i1) : null).collect(Collectors.toList());
+            dataframe.getDataframe().put(header + i1, collect);
+            dataframe.putFormat(header + i1, (Class<? extends Comparable<?>>) collect.stream()
+                    .filter(Objects::nonNull).findFirst().map(Object::getClass).orElse(null));
+        }
+    }
+
     private static boolean filterOut(DataframeML dataframeML, List<String> header, List<String> line2) {
         return line2.isEmpty() || IntStream.range(0, header.size()).anyMatch(i -> {
             String key = header.get(i);
@@ -512,7 +561,7 @@ public class DataframeUtils extends DataframeML {
     private static Object[] toArray(DataframeML dataframe, int i, String... dependent) {
         Object[] d = new Object[dependent.length];
         for (int j = 0; j < dependent.length; j++) {
-            d[j] = dataframe.getDataframe().get(dependent[j]).get(i);
+            d[j] = dataframe.getAt(dependent[j], i);
         }
         return d;
     }

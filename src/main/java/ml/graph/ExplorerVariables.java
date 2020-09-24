@@ -168,7 +168,7 @@ public abstract class ExplorerVariables extends Application {
                 dataTable.setColumnsWidth(array);
             } else {
                 addedSubList.forEach(entry -> dataTable.addColumn(entry.getKey(),
-                        i -> getDataframe().getDataframe().get(entry.getKey()).get(i)));
+                        i -> getDataframe().getAt(entry.getKey(), i)));
                 dataTable.setListSize(getDataframe().getSize());
                 double[] array = addedSubList.stream().mapToDouble(e -> Math.max(getTopLength(e), e.getKey().length()))
                         .toArray();

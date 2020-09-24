@@ -204,10 +204,9 @@ public class StringSigaUtils extends StringUtils {
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 
-    public static String replaceAll(String nome,String regex) {
+    public static String replaceAll(String nome, String regex) {
         String collect = IntStream.rangeClosed(1, Pattern.compile(regex).matcher(nome).groupCount())
-                .mapToObj(i -> "$" + i)
-                .collect(Collectors.joining());
+                .mapToObj(i -> "$" + i).collect(Collectors.joining());
 
         return nome.replaceAll(regex, collect);
     }
@@ -229,6 +228,17 @@ public class StringSigaUtils extends StringUtils {
 
     public static String splitMergeCamelCase(String readLine) {
         return Stream.of(readLine.split(StringSigaUtils.REGEX_CAMEL_CASE)).collect(Collectors.joining(" "));
+    }
+
+    public static long strToFileSize(String sizeInBytes) {
+        if (isBlank(sizeInBytes) || sizeInBytes.matches("0+") || !sizeInBytes.matches("(?i)[\\d\\.]+(B|KB|MB|GB|TB)")) {
+            return 0;
+        }
+        String[] split = sizeInBytes.split("(?<=[\\d\\.]+)(?=[A-Z]+)");
+        Double integer = Double.valueOf(split[0]);
+        int indexOf = Arrays.asList(SIZES).indexOf(split[1].toUpperCase());
+        double pow = Math.pow(BYTES_IN_A_KILOBYTE, indexOf);
+        return (long) (pow * integer);
     }
 
     public static String substituirNaoNumeros(String numero) {

@@ -53,6 +53,10 @@ public class BaseDataframe {
         return Objects.equals(file, other.file);
     }
 
+    public Object getAt(String header, int i) {
+        return dataframe.get(header).get(i);
+    }
+
     public Map<String, List<Object>> getDataframe() {
         return dataframe;
     }
