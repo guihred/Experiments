@@ -52,5 +52,4 @@ public abstract class CrawlerTask extends Task<String> {
         updateProgress(i, total);
     }
 
-    
 }

@@ -3,6 +3,7 @@ package utils.fx;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -34,12 +35,12 @@ public class TaskProgressView {
     private Label value = new Label();
     private Label workDone = new Label();
 
-    public TaskProgressView(Worker<String> worker) {
+    public TaskProgressView(Task<String> worker) {
         this(worker, new AtomicBoolean(false));
         exceptionButton.setVisible(false);
     }
 
-    public TaskProgressView(Worker<String> worker, AtomicBoolean shouldThrow) {
+    public TaskProgressView(Task<String> worker, AtomicBoolean shouldThrow) {
         final int barMinWidth = 250;
         progressBar.setMinWidth(barMinWidth);
         progressBar.progressProperty().bind(worker.progressProperty());
@@ -101,16 +102,18 @@ public class TaskProgressView {
         buttonPane.setPadding(new Insets(10, 10, 10, 10));
         buttonPane.setSpacing(10);
         buttonPane.setAlignment(Pos.CENTER);
-        scene = new Scene(new BorderPane(centerPane, topPane, null, buttonPane, null));
         hookupEvents(worker, shouldThrow);
+        scene = new Scene(new BorderPane(centerPane, topPane, null, buttonPane, null));
     }
 
     public Scene getScene() {
         return scene;
     }
 
-    private void hookupEvents(Worker<String> worker, AtomicBoolean shouldThrow) {
-        startButton.setOnAction(actionEvent -> RunnableEx.runNewThread(worker::getValue));
+    private void hookupEvents(Task<String> worker, AtomicBoolean shouldThrow) {
+        startButton.setOnAction(actionEvent -> RunnableEx.runNewThread(() -> {
+            worker.run();
+        }));
         cancelButton.setOnAction(actionEvent -> worker.cancel());
         exceptionButton.setOnAction(actionEvent -> shouldThrow.getAndSet(true));
     }

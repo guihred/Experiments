@@ -3,20 +3,20 @@ package election;
 import static utils.CommonsFX.onCloseWindow;
 
 import javafx.application.Application;
-import javafx.concurrent.Worker;
+import javafx.concurrent.Task;
 import javafx.stage.Stage;
 import utils.HibernateUtil;
 import utils.fx.TaskProgressView;
 
 public class ElectionCrawlerApp extends Application {
 
-    public final Worker<String> worker;
+    public final Task<String> worker;
 
     public ElectionCrawlerApp() {
         worker = new CrawlerCandidates2018Task();
     }
 
-    public ElectionCrawlerApp(Worker<String> worker) {
+    public ElectionCrawlerApp(Task<String> worker) {
         this.worker = worker;
     }
 

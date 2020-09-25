@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.toCollection;
 import static ml.data.JavaFileDependency.getAllFileDependencies;
 import static utils.CommonsFX.newFastFilter;
 import static utils.HibernateUtil.shutdown;
-import static utils.ex.FunctionEx.apply;
 import static utils.ex.PredicateEx.makeTest;
 import static utils.ex.RunnableEx.run;
 
@@ -24,6 +23,7 @@ import ml.data.JavaFileDependency;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import utils.ExtractUtils;
+import utils.ex.FunctionEx;
 import utils.ex.SupplierEx;
 
 public class AllApps extends Application {
@@ -35,7 +35,7 @@ public class AllApps extends Application {
         ExtractUtils.insertProxyConfig();
         primaryStage.setTitle("All Apps");
         ObservableList<Class<?>> items = getAllFileDependencies().stream().map(JavaFileDependency::getFullName)
-                .map(a -> apply(Class::forName, a)).filter(Objects::nonNull)
+                .map(FunctionEx.ignore(Class::forName)).filter(Objects::nonNull)
                 .filter(makeTest(e -> e.getMethod("main", String[].class) != null))
                 .collect(toCollection(FXCollections::observableArrayList));
         PrintStream out = System.out;
