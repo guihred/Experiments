@@ -27,8 +27,6 @@ public final class ExtractUtils {
     private static final String PASS = "15-juuGO";
     private static final String PROXY_ADDRESS = getProxyAddress();
     private static final boolean IS_PROXIED = PROXY_ADDRESS != null;
-    public static final Path PHANTOM_JS =
-            FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
 
     private ExtractUtils() {
     }
@@ -85,7 +83,6 @@ public final class ExtractUtils {
         copy(new File(src), new File(dest));
     }
 
-
     public static File extractURL(String url) {
         return SupplierEx.get(() -> {
             String file = new URL(url).getFile();
@@ -109,7 +106,6 @@ public final class ExtractUtils {
             return outFile;
         });
     }
-
 
     public static String getEncodedAuthorization() {
         return Base64.getEncoder()
@@ -153,7 +149,6 @@ public final class ExtractUtils {
         return LOGIN;
     }
 
-
     public static void insertProxyConfig() {
         System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
         System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
@@ -194,7 +189,6 @@ public final class ExtractUtils {
     private static void addBasicAuthorization(HttpURLConnection con) {
         con.addRequestProperty("Proxy-Authorization", "Basic " + getEncodedAuthorization());
     }
-
 
     private static String getProxyAddress() {
         final int timeout = 5000;

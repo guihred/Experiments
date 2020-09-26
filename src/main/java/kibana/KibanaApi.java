@@ -2,13 +2,10 @@ package kibana;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
-import ethical.hacker.InstallCert;
 import ethical.hacker.VirusTotalApi;
 import fxml.utils.JsonExtractor;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
@@ -19,24 +16,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
+import utils.PhantomJSUtils;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public class KibanaApi {
-    private static final int WAIT_TIME = 100_000;
 
     private static final Logger LOG = HasLogging.log();
 
@@ -185,42 +173,16 @@ public class KibanaApi {
     }
 
     protected static void getFromURL(String url, String cont, File outFile) throws IOException {
-        ExtractUtils.insertProxyConfig();
-        HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
-        HttpPost get = new HttpPost(url);
         String content = cont.replaceAll("[\n\t]+", "").replaceFirst("\\}\\{", "}\n{") + "\n";
-        get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());
-        get.setEntity(new StringEntity(
-                StringSigaUtils.fixEncoding(content, StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1),
-                ContentType.create("application/x-ndjson")));
-        GET_HEADERS.forEach(get::addHeader);
-        get.addHeader("Content-Type", "application/x-ndjson");
-        LOG.info("Request \n\t{} \n{} \n\t{} \n\t{} ", url, content, get.getAllHeaders(), outFile.getName());
-        HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
-            InstallCert.installCertificate(url);
-            return client.execute(get);
-        });
-        HttpEntity entity = response.getEntity();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
-        ExtractUtils.copy(rd, outFile);
+        Map<String, String> hashMap = new HashMap<>(GET_HEADERS);
+        hashMap.put("Content-Type", "application/x-ndjson");
+        PhantomJSUtils.postNdJson(url, content, hashMap, outFile);
     }
 
     protected static void getFromURLJson(String url, String content, File outFile) throws IOException {
-        ExtractUtils.insertProxyConfig();
-        HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
-        HttpPost get = new HttpPost(url);
-        get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());
-        get.setEntity(new StringEntity(content, ContentType.APPLICATION_JSON));
-        get.addHeader("Content-Type", "application/json; charset=utf-8");
-        GET_HEADERS.forEach(get::addHeader);
-        LOG.info("Request \n\t{} \n{} \n\t{} \n\t{} ", url, content, get.getAllHeaders(), outFile.getName());
-        HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
-            InstallCert.installCertificate(url);
-            return client.execute(get);
-        });
-        HttpEntity entity = response.getEntity();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
-        ExtractUtils.copy(rd, outFile);
+        Map<String, String> hashMap = new HashMap<>(GET_HEADERS);
+        hashMap.put("Content-Type", "application/json; charset=utf-8");
+        PhantomJSUtils.postJson(url, content, hashMap, outFile);
     }
 
     protected static File newJsonFile(String string) {

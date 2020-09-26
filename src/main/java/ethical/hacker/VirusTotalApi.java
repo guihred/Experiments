@@ -1,29 +1,17 @@
 package ethical.hacker;
 
 import fxml.utils.JsonExtractor;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
+import utils.PhantomJSUtils;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
@@ -115,14 +103,9 @@ public final class VirusTotalApi {
     }
 
     private static void getFromURL(String url, File outFile) throws IOException {
-        HttpClient client = HttpClientBuilder.create().build();
-        HttpGet post = new HttpGet(url);
-        post.addHeader("x-apikey", VIRUSTOTAL_APIKEY);
-        HttpResponse response = client.execute(post);
-        HttpEntity entity = response.getEntity();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
-        List<String> collect = rd.lines().collect(Collectors.toList());
-        Files.write(outFile.toPath(), collect);
+        Map<String, String> hashMap = new HashMap<>();
+        hashMap.put("x-apikey", VIRUSTOTAL_APIKEY);
+        PhantomJSUtils.makeGet(url, hashMap, outFile);
     }
 
     private static File newJsonFile(String string) {
