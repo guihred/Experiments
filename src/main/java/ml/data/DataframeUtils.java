@@ -30,7 +30,7 @@ import utils.ex.SupplierEx;
 
 public class DataframeUtils extends DataframeML {
 
-    private static final Logger LOG = HasLogging.log();
+    public static final Logger LOG = HasLogging.log();
 
     protected DataframeUtils() {
     }
@@ -371,12 +371,6 @@ public class DataframeUtils extends DataframeML {
         }
     }
 
-    protected static void createNullRow(List<String> header, List<String> line2) {
-        if (line2.size() < header.size()) {
-            long maxSize2 = header.size() - (long) line2.size();
-            line2.addAll(Stream.generate(() -> "").limit(maxSize2).collect(Collectors.toList()));
-        }
-    }
 
     protected static void createNullRow(List<String> header, Map<String, Object> line2) {
         header.stream().filter(e -> !line2.containsKey(e)).forEach(e -> line2.put(e, null));
@@ -450,28 +444,6 @@ public class DataframeUtils extends DataframeML {
         });
     }
 
-    private static void fixEmptyLine(List<String> header, List<String> line2) {
-        if (header.size() != line2.size()) {
-            LOG.error("ERROR FIELDS COUNT");
-            createNullRow(header, line2);
-        }
-    }
-
-    private static long fixMultipleLines(Scanner scanner, CSVUtils defaultCSVUtils, List<String> line2) {
-        long co = 0;
-        while (defaultCSVUtils.isInQuotes() && scanner.hasNext()) {
-            String nextLine = scanner.nextLine();
-            co += nextLine.getBytes(StandardCharsets.UTF_8).length;
-            List<String> fields = defaultCSVUtils.getFields(nextLine);
-            int last = line2.size() - 1;
-            if (fields.isEmpty()) {
-                continue;
-            }
-            line2.set(last, line2.get(last) + "\n" + fields.remove(0));
-            line2.addAll(fields);
-        }
-        return co;
-    }
 
     private static String fixNumber(String field, Class<?> currentFormat) {
         if (field.matches("\\d+\\.0+$") && currentFormat != Double.class) {
@@ -482,7 +454,8 @@ public class DataframeUtils extends DataframeML {
     }
 
     private static List<String> getHeaders(Scanner scanner) {
-        return CSVUtils.parseLine(scanner.nextLine()).stream().map(e -> e.replaceAll("\"", ""))
+        String nextLine = scanner.nextLine();
+        return CSVUtils.parseLine(nextLine).stream().map(e -> e.replaceAll("\"", ""))
                 .map(c -> StringSigaUtils.fixEncoding(c).replaceAll("\\?", "")).collect(Collectors.toList());
     }
 
@@ -516,11 +489,11 @@ public class DataframeUtils extends DataframeML {
         CSVUtils defaultCSVUtils = CSVUtils.defaultCSVUtils();
         while (scanner.hasNext()) {
             List<String> line2 = defaultCSVUtils.getFields(scanner.nextLine());
-            fixMultipleLines(scanner, defaultCSVUtils, line2);
+            CSVUtils.fixMultipleLines(scanner, defaultCSVUtils, line2);
             if (filterOut(dataframe, header, line2)) {
                 continue;
             }
-            fixEmptyLine(header, line2);
+            CSVUtils.fixEmptyLine(header, line2);
             dataframe.size++;
             for (int i = 0; i < header.size(); i++) {
                 String key = header.get(i);
@@ -541,7 +514,7 @@ public class DataframeUtils extends DataframeML {
         String nextLine = scanner.nextLine();
         long co = nextLine.getBytes(StandardCharsets.UTF_8).length;
         List<String> line2 = defaultCSVUtils.getFields(nextLine);
-        co += fixMultipleLines(scanner, defaultCSVUtils, line2);
+        co += CSVUtils.fixMultipleLines(scanner, defaultCSVUtils, line2);
         if (!filterOut(dataframeML, header, line2)) {
             dataframeML.size++;
             for (int i = 0; i < header.size(); i++) {
@@ -554,7 +527,7 @@ public class DataframeUtils extends DataframeML {
                 acc.accept(tryNumber);
             }
         }
-        fixEmptyLine(header, line2);
+        CSVUtils.fixEmptyLine(header, line2);
         return co;
     }
 

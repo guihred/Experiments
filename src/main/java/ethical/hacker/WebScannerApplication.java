@@ -27,6 +27,8 @@ public class WebScannerApplication extends Application {
     @FXML
     private TextField cookieField;
     @FXML
+    private TextField loadingStr;
+    @FXML
     private SplitPane splitPane0;
     @FXML
     private ScrollPane scrollPane1;
@@ -55,7 +57,8 @@ public class WebScannerApplication extends Application {
                 String text = urlField.getText();
                 URL url = new URL(text);
                 String sha256Hash = HashVerifier.getSha256Hash(url.getPath());
-                Document evaluateURL = whoIsScanner.name(url.getHost() + sha256Hash).waitStr("Loading").subFolder(TITLE)
+                Document evaluateURL = whoIsScanner.name(url.getHost() + sha256Hash).waitStr(loadingStr.getText())
+                        .subFolder(TITLE)
                         .evaluateURL(url.toString());
                 List<String> urlLinks = WebsiteScanner.getLinks(url.toString(), evaluateURL);
                 links.addAll(urlLinks);
@@ -75,18 +78,20 @@ public class WebScannerApplication extends Application {
     }
 
     private void addCookies() {
-        String[] split = cookieField.getText().split("; ");
-        for (String string3 : split) {
-            String[] split2 = string3.split("=");
-            whoIsScanner.cookie(split2[0], split2[1]);
+        String text = cookieField.getText();
+        if (StringUtils.isNotBlank(text)) {
+
+            String[] split = text.split("; ");
+            for (String string3 : split) {
+                String[] split2 = string3.split("=");
+                whoIsScanner.cookie(split2[0], split2[1]);
+            }
         }
     }
 
     private void addItemChildren(SitePage sitePage, TreeItem<SitePage> treeItem) {
-        treeItem.getChildren()
-                .addAll(sitePage.getLinks().stream()
-                        .filter(t -> !links.contains(t))
-                        .map(l -> new TreeItem<>(new SitePage(l))).collect(Collectors.toList()));
+        treeItem.getChildren().addAll(sitePage.getLinks().stream().filter(t -> !links.contains(t))
+                .map(l -> new TreeItem<>(new SitePage(l))).collect(Collectors.toList()));
     }
 
     private void onSelectItem(TreeItem<SitePage> treeItem, SitePage value) throws IOException {

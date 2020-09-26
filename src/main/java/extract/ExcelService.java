@@ -50,6 +50,7 @@ public final class ExcelService {
         }
         ExcelService.getExcel(items2, mapa, outFile);
     }
+
     public static <T> void getExcel(List<T> lista, Map<String, FunctionEx<T, Object>> mapa, File file) {
         RunnableEx.run(() -> makeExcelList(lista, mapa, file));
     }
@@ -88,7 +89,6 @@ public final class ExcelService {
     public static boolean isExcel(File file) {
         return file.getName().endsWith("xlsx") || file.getName().endsWith("xls");
     }
-
 
     private static void alterarValorCell(Map<Object, Object> map, Sheet sheet, Row row, Cell c) {
         if (c.getCellTypeEnum() == CellType.NUMERIC) {
@@ -150,6 +150,18 @@ public final class ExcelService {
         }
     }
 
+    private static boolean createHeader(Row row2, Set<String> keySet) {
+        boolean addHeader = !keySet.stream().allMatch(StringUtils::isNumeric);
+        if (addHeader) {
+            int j = 0;
+            for (String titulo : keySet) {
+                row2.createCell(j, CellType.STRING).setCellValue(titulo);
+                j++;
+            }
+        }
+        return addHeader;
+    }
+
     private static Object getCellValue(Cell cell) {
         CellType cellTypeEnum = cell.getCellTypeEnum();
         switch (cellTypeEnum) {
@@ -179,17 +191,14 @@ public final class ExcelService {
             SXSSFSheet sheetAt = xssfWorkbook.createSheet();
             sheetAt.trackAllColumnsForAutoSizing();
             Row row2 = sheetAt.createRow(0);
-            List<String> keySet = new ArrayList<>(fields.keySet());
-            for (int i = 0; i < keySet.size(); i++) {
-                row2.createCell(i, CellType.STRING).setCellValue(keySet.get(i));
-            }
+            boolean addHeader = createHeader(row2, fields.keySet());
             Map<Class<?>, CellStyle> styleMap = styleMap(xssfWorkbook);
             final int step = 100;
             int i = 0;
             for (List<T> apply = lista.apply(0, step); !apply.isEmpty(); i += step, apply = lista.apply(i, step)) {
                 for (int j = 0; j < apply.size(); j++) {
                     T entidade = apply.get(j);
-                    Row row = sheetAt.createRow(i + 1 + j);
+                    Row row = sheetAt.createRow(i + (addHeader ? 1 : 0) + j);
                     int k = 0;
                     for (FunctionEx<T, Object> campoFunction : fields.values()) {
                         Object campo = FunctionEx.makeFunction(campoFunction).apply(entidade);
@@ -212,14 +221,7 @@ public final class ExcelService {
             Sheet sheetAt = workbook.createSheet();
             Row row2 = sheetAt.createRow(0);
             Set<String> keySet = mapa.keySet();
-            boolean addHeader = !keySet.stream().allMatch(StringUtils::isNumeric);
-            if (addHeader) {
-                int j = 0;
-                for (String titulo : keySet) {
-                    row2.createCell(j, CellType.STRING).setCellValue(titulo);
-                    j++;
-                }
-            }
+            boolean addHeader = createHeader(row2, keySet);
             Map<Class<?>, CellStyle> formatMap = styleMap(workbook);
 
             for (int i = 0; i < lista.size(); i++) {
@@ -333,14 +335,7 @@ public final class ExcelService {
                 Sheet sheetAt = workbook.createSheet(entry.getKey());
                 Row row2 = sheetAt.createRow(0);
                 Set<String> keySet = mapa.keySet();
-                boolean addHeader = !keySet.stream().allMatch(StringUtils::isNumeric);
-                if (addHeader) {
-                    int j = 0;
-                    for (String titulo : keySet) {
-                        row2.createCell(j, CellType.STRING).setCellValue(titulo);
-                        j++;
-                    }
-                }
+                boolean addHeader = createHeader(row2, keySet);
                 Map<Class<?>, CellStyle> formatMap = styleMap(workbook);
 
                 for (int i = 0; i < entry.getValue().size(); i++) {

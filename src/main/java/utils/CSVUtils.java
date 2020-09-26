@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.apache.commons.io.output.FileWriterWithEncoding;
@@ -37,7 +38,7 @@ public class CSVUtils {
         this.customQuote = customQuote;
     }
 
-    public  List<String> getFields(String cvsLine) {
+    public List<String> getFields(String cvsLine) {
         List<String> result = new ArrayList<>();
         // if empty, return!
         if (cvsLine == null || cvsLine.isEmpty()) {
@@ -120,11 +121,41 @@ public class CSVUtils {
         }
     }
 
+    public static void createNullRow(List<String> header, List<String> line2) {
+        if (line2.size() < header.size()) {
+            long maxSize2 = header.size() - (long) line2.size();
+            line2.addAll(Stream.generate(() -> "").limit(maxSize2).collect(Collectors.toList()));
+        }
+    }
+
     public static CSVUtils defaultCSVUtils() {
-        char customQuote =  DEFAULT_QUOTE ;
-        char separators =  DEFAULT_SEPARATOR ;
+        char customQuote = DEFAULT_QUOTE;
+        char separators = DEFAULT_SEPARATOR;
         return new CSVUtils(separators, customQuote);
-        
+
+    }
+
+    public static void fixEmptyLine(List<String> header, List<String> line2) {
+        if (header.size() != line2.size()) {
+            LOGGER.error("ERROR FIELDS COUNT");
+            createNullRow(header, line2);
+        }
+    }
+
+    public static long fixMultipleLines(Scanner scanner, CSVUtils defaultCSVUtils, List<String> line2) {
+        long co = 0;
+        while (defaultCSVUtils.isInQuotes() && scanner.hasNext()) {
+            String nextLine = scanner.nextLine();
+            co += nextLine.getBytes(StandardCharsets.UTF_8).length;
+            List<String> fields = defaultCSVUtils.getFields(nextLine);
+            int last = line2.size() - 1;
+            if (fields.isEmpty()) {
+                continue;
+            }
+            line2.set(last, line2.get(last) + "\n" + fields.remove(0));
+            line2.addAll(fields);
+        }
+        return co;
     }
 
     public static String[] getDataframeCSVs() {
@@ -132,7 +163,8 @@ public class CSVUtils {
         String regex = "WDIData.+.csv|API_21_DS2_en_csv_v2_10576945.+.csv";
         List<Path> list = FileTreeWalker.getFirstFileMatch(file, path -> path.getFileName().toString().matches(regex));
         if (!list.isEmpty()) {
-            return list.stream().map(e -> file.toPath().relativize(e)).map(Path::toString).toArray(String[]::new);
+            return list.stream().map(e -> file.toPath().relativize(e)).map(Path::toString)
+                    .map(s -> s.replaceAll("\\\\", "/")).toArray(String[]::new);
         }
         File outFile = getOutFile("WDIData.csv");
         if (!outFile.exists()) {
@@ -141,7 +173,8 @@ public class CSVUtils {
         CSVUtils.splitFile(outFile.getAbsolutePath(), 3);
         CSVUtils.splitFile(getOutFile("API_21_DS2_en_csv_v2_10576945.csv").getAbsolutePath(), 3);
         return FileTreeWalker.getFirstFileMatch(file, name -> name.getFileName().toString().matches(regex)).stream()
-                .map(e -> file.toPath().relativize(e)).map(Path::toString).toArray(String[]::new);
+                .map(e -> file.toPath().relativize(e)).map(Path::toString).map(s -> s.replaceAll("\\\\", "/"))
+                .toArray(String[]::new);
     }
 
     public static void main(String[] args) {
@@ -192,9 +225,8 @@ public class CSVUtils {
                     String nextLine = scanner.nextLine();
                     List<String> parseLine = CSVUtils.parseLine(nextLine);
                     if (parseLine.size() > columnIndex) {
-                        final String fline = firstLine;
                         String string = parseLine.get(columnIndex);
-                        writersBytype.computeIfAbsent(string, makeFunction(s -> newWrite(source, fline, s)))
+                        writersBytype.computeIfAbsent(string, makeFunction(s -> newWrite(source, firstLine, s)))
                                 .append(nextLine + "\n");
                     }
                 }

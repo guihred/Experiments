@@ -12,10 +12,9 @@
 			<children>
 				<Text text="URL" />
 				<TextField fx:id="urlField" onKeyReleased="#onKeyReleasedUrlField">
-					<padding>
-						<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
-					</padding>
 				</TextField>
+				<Text text="Loading String" />
+				<TextField fx:id="loadingStr" text="Loading"/>
 				<Text text="Cookies" />
 				<TextField fx:id="cookieField" 
 				

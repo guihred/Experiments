@@ -30,9 +30,9 @@ public class RegressionChartExample extends Application {
     @Override
     public void start(Stage primaryStage) {
         String[] list = CSVUtils.getDataframeCSVs();
-        dataframe = DataframeBuilder.builder("out/" + list[0]).build();
+        dataframe = DataframeBuilder.build("out/" + list[0]);
 
-        String key = "Country Name";
+        String key = "Data Source";
         ObservableList<Series<Number, Number>> data = observableArrayList();
         LineChart<Number, Number> lineChart = lineChart(data, "");
         List<Object> list2 = dataframe.list(key);
