@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import utils.ex.RunnableEx;
 
 public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonBuilder> {
 
@@ -44,6 +45,13 @@ public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonB
         Button button = new Button(nome);
         button.setId(nome);
         button.setOnAction(onAction);
+        return button;
+    }
+
+    public static Button newButton(final String nome, final RunnableEx onAction) {
+        Button button = new Button(nome);
+        button.setId(nome);
+        button.setOnAction(e -> RunnableEx.run(onAction));
         return button;
     }
 }
