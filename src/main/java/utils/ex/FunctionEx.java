@@ -28,7 +28,7 @@ public interface FunctionEx<T, R> {
         return (A a) -> {
             try {
                 return run.apply(a);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 HasLogging.log(1).trace("", e);
                 return null;
             }
@@ -40,7 +40,7 @@ public interface FunctionEx<T, R> {
             try {
                 return run.apply(a);
             } catch (Exception e) {
-                HasLogging.log(1).error("", e);
+                HasLogging.log(1).error("ERRO IN {} - {}", a, e.getMessage());
                 return null;
             }
         };

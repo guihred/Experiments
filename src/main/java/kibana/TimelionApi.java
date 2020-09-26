@@ -13,12 +13,14 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class TimelionApi extends KibanaApi {
-
+    private static final Logger LOG = HasLogging.log();
     public static final String TIMELINE_USERS =
             ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\","
                     + "split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
@@ -57,12 +59,12 @@ public final class TimelionApi extends KibanaApi {
 
     public static ObservableList<Series<Number, Number>> timelionScan(ObservableList<Series<Number, Number>> series,
             String timelineUsers, Map<String, String> filterMap, String time) {
-        return SupplierEx.get(() -> {
+        return SupplierEx.getHandle(() -> {
             Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
                     timelineUsers, filterMap, time);
             CommonsFX.runInPlatform(() -> convertToSeries(series, access(policiesSearch, "sheet")));
             return series;
-        }, FXCollections.emptyObservableList());
+        }, FXCollections.emptyObservableList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
     }
 
     @SuppressWarnings("rawtypes")

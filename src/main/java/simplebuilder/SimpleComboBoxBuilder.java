@@ -5,7 +5,6 @@ import static simplebuilder.SimpleListViewBuilder.newCellFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
@@ -15,6 +14,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 import javafx.util.Callback;
+import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 
 public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, SimpleComboBoxBuilder<T>> {
@@ -61,8 +61,9 @@ public class SimpleComboBoxBuilder<T> extends SimpleRegionBuilder<ComboBox<T>, S
         return this;
     }
 
-    public SimpleComboBoxBuilder<T> onSelect(Consumer<T> obj) {
-        region.getSelectionModel().selectedItemProperty().addListener((ob, old, newValue) -> obj.accept(newValue));
+    public SimpleComboBoxBuilder<T> onSelect(ConsumerEx<T> obj) {
+        region.getSelectionModel().selectedItemProperty()
+                .addListener((ob, old, newValue) -> ConsumerEx.accept(obj, newValue));
         return this;
     }
 
