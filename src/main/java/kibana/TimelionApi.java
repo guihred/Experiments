@@ -21,9 +21,8 @@ import utils.ex.SupplierEx;
 
 public final class TimelionApi extends KibanaApi {
     private static final Logger LOG = HasLogging.log();
-    public static final String TIMELINE_USERS =
-            ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\","
-                    + "split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
+    public static final String TIMELINE_USERS = ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\","
+            + "split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
     public static final String TIMELINE_IPS =
             ".es(index=*apache-prod*,q=\\\"dtptype:nginx OR dtptype:apache OR dtptype:varnish\\\","
                     + "split=clientip.keyword:12).label('$1','.*>.*:(.*)>.*')";
@@ -38,9 +37,8 @@ public final class TimelionApi extends KibanaApi {
 
             File outFile = newJsonFile(replaceAll + Stream.of(values, time).collect(Collectors.joining()));
             if (!outFile.exists() || oneDayModified(outFile)) {
-                String keywords = search
-                        .entrySet().stream().map(e -> String
-                                .format("{\"match_phrase\":{\"%s\":{\"query\":\"%s\"}}},", e.getKey(), e.getValue()))
+                String keywords = search.entrySet().stream().map(
+                        e -> String.format("{\"match_phrase\":{\"%s\":{\"query\":\"%s\"}}},", e.getKey(), e.getValue()))
                         .collect(Collectors.joining("\n"));
                 String content = getContent(file, timelionQuery, keywords, time);
                 getFromURLJson("https://n321p000124.fast.prevnet/api/timelion/run", content, outFile);
@@ -62,36 +60,21 @@ public final class TimelionApi extends KibanaApi {
         return SupplierEx.getHandle(() -> {
             Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
                     timelineUsers, filterMap, time);
-            CommonsFX.runInPlatform(() -> convertToSeries(series, access(policiesSearch, "sheet")));
+            CommonsFX.runInPlatform(() -> convertToSeries(series, JsonExtractor.access(policiesSearch, "sheet")));
             return series;
         }, FXCollections.emptyObservableList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
-    }
-
-    @SuppressWarnings("rawtypes")
-    private static Object access(Object root, Object... param) {
-        Object o = root;
-        for (Object object : param) {
-            if (object instanceof String) {
-                o = ((Map) o).get(object);
-            }
-            if (object instanceof Integer) {
-                o = ((List) o).get(((Integer) object).intValue());
-            }
-        }
-        return o;
-
     }
 
     @SuppressWarnings({ "unchecked" })
     private static ObservableList<XYChart.Series<Number, Number>>
             convertToSeries(ObservableList<Series<Number, Number>> series, Object access) {
-        return ((List<Object>) access).stream().flatMap(e -> ((List<Object>) access(e, "list")).stream())
+        return ((List<Object>) access).stream().flatMap(e -> ((List<Object>) JsonExtractor.access(e, "list")).stream())
                 .map((Object o) -> {
                     XYChart.Series<Number, Number> java = new XYChart.Series<>();
-                    java.setName(Objects.toString(access(o, "label")));
-                    ((List<Object>) access(o, "data")).stream().forEach(f -> {
-                        Long access2 = Long.valueOf(Objects.toString(access(f, 0)));
-                        Long access3 = Long.valueOf(Objects.toString(access(f, 1)));
+                    java.setName(Objects.toString(JsonExtractor.access(o, "label")));
+                    ((List<Object>) JsonExtractor.access(o, "data")).stream().forEach(f -> {
+                        Long access2 = Long.valueOf(Objects.toString(JsonExtractor.access(f, 0)));
+                        Long access3 = Long.valueOf(Objects.toString(JsonExtractor.access(f, 1)));
                         java.getData().add(new XYChart.Data<>(access2, access3));
                     });
                     return java;

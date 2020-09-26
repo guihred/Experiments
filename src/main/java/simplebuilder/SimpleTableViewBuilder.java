@@ -170,14 +170,14 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         node.getColumns().add(e2);
     }
 
-    public static void addColumns(final TableView<Map<String, String>> simpleTableViewBuilder,
+    public static <T> void addColumns(final TableView<Map<String, T>> simpleTableViewBuilder,
         final Collection<String> keySet) {
         simpleTableViewBuilder.getColumns().clear();
         keySet.forEach(key -> {
-            TableColumn<Map<String, String>, String> column = new TableColumn<>(key);
+            TableColumn<Map<String, T>, String> column = new TableColumn<>(key);
             column.setSortable(true);
             column.setCellValueFactory(
-                    param -> new SimpleStringProperty(param.getValue().getOrDefault(key, "-")));
+                    param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
             column.prefWidthProperty().bind(simpleTableViewBuilder.widthProperty().divide(keySet.size()).add(-5));
             simpleTableViewBuilder.getColumns().add(column);
         });

@@ -30,7 +30,7 @@ import utils.ex.SupplierEx;
 
 public class DataframeUtils extends DataframeML {
 
-    public static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
     protected DataframeUtils() {
     }

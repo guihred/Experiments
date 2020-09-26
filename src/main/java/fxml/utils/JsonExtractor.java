@@ -22,6 +22,21 @@ public final class JsonExtractor {
     private JsonExtractor() {
     }
 
+    @SuppressWarnings("rawtypes")
+    public static Object access(Object root, Object... param) {
+        Object o = root;
+        for (Object object : param) {
+            if (object instanceof String) {
+                o = ((Map) o).get(object);
+            }
+            if (object instanceof Integer) {
+                o = ((List) o).get(((Integer) object).intValue());
+            }
+        }
+        return o;
+    
+    }
+
     public static boolean splitList(List<Map<String, String>> list, Map<String, String> newItem) {
         long count = newItem.values().stream().filter(Objects::nonNull).mapToInt(e -> e.split("\n").length)
                 .filter(i -> i > 1).distinct().count();

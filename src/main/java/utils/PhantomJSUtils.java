@@ -50,7 +50,8 @@ public final class PhantomJSUtils {
     private PhantomJSUtils() {
     }
 
-    public static void makeGet(String url, Map<String, String> headers, File outFile) throws IOException {
+
+    public static List<String> makeGet(String url, Map<String, String> headers, File outFile) throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet post = new HttpGet(url);
         headers.forEach(post::addHeader);
@@ -59,6 +60,7 @@ public final class PhantomJSUtils {
         BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
         List<String> collect = rd.lines().collect(Collectors.toList());
         Files.write(outFile.toPath(), collect);
+        return collect;
     }
 
     public static void postJson(String url, String content,Map<String, String> headers, File outFile) throws IOException {
