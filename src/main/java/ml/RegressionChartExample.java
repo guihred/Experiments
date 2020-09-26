@@ -32,7 +32,7 @@ public class RegressionChartExample extends Application {
         String[] list = CSVUtils.getDataframeCSVs();
         dataframe = DataframeBuilder.build("out/" + list[0]);
 
-        String key = "Data Source";
+        String key = "Country Name";
         ObservableList<Series<Number, Number>> data = observableArrayList();
         LineChart<Number, Number> lineChart = lineChart(data, "");
         List<Object> list2 = dataframe.list(key);
@@ -51,7 +51,7 @@ public class RegressionChartExample extends Application {
 
     private void onChangeFile(String key, LineChart<Number, Number> lineChart, ComboBox<Object> build,
         String datafile) {
-        dataframe = DataframeBuilder.builder("out/" + datafile).build();
+        dataframe = DataframeBuilder.build("out/" + datafile);
         onChangeCountry(dataframe, key, lineChart, dataframe.list(key), build.getSelectionModel().getSelectedItem());
     }
 
@@ -82,6 +82,7 @@ public class RegressionChartExample extends Application {
             collect.stream().map(Entry<String, Object>::getValue).collect(Collectors.toList()));
         Series<Number, Number> expected = regressionModel.getExpectedSeries();
         Series<Number, Number> polinominalSeries = regressionModel.getPolinominalSeries();
+
         data.setData(observableArrayList(series, expected, polinominalSeries));
         data.setTitle(rowMap.get("Indicator Name").toString());
 

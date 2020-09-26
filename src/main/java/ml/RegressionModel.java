@@ -33,7 +33,8 @@ public class RegressionModel {
     /**
      * Returns the {@code j}th regression coefficient.
      * 
-     * @param j the index
+     * @param j
+     *            the index
      * @return the {@code j}th regression coefficient
      */
 
@@ -54,15 +55,15 @@ public class RegressionModel {
 
     public Series<Number, Number> createSeries(String name, Collection<?> features1, Collection<?> target1) {
         features = features1.stream().map(Number.class::cast).filter(Objects::nonNull).map(Number::doubleValue)
-            .limit(MAX_SIZE).collect(Collectors.toList());
+                .limit(MAX_SIZE).collect(Collectors.toList());
         target = target1.stream().map(Number.class::cast).filter(Objects::nonNull).map(Number::doubleValue)
-            .limit(MAX_SIZE).collect(Collectors.toList());
+                .limit(MAX_SIZE).collect(Collectors.toList());
         i = 0;
         Series<Number, Number> series = new Series<>();
         series.setName(name);
 
         ObservableList<Data<Number, Number>> observableList = target.stream().map(this::mapToData)
-            .collect(Collectors.toCollection(FXCollections::observableArrayList));
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
         series.setData(observableList);
         linearRegression();
         return series;
@@ -82,15 +83,15 @@ public class RegressionModel {
             i = 0;
             series.setName("Linear");
             List<Data<Number, Number>> expectedPoints = IntStream.range(0, features.size())
-                .mapToObj(j -> toData(features.get(j), bestInitial + bestSlope * features.get(j)))
-                .collect(Collectors.toList());
+                    .mapToObj(j -> toData(features.get(j), bestInitial + bestSlope * features.get(j)))
+                    .collect(Collectors.toList());
             series.setData(FXCollections.observableArrayList(expectedPoints));
             return series;
         }));
     }
 
     public Series<Number, Number> getPolinominalSeries() {
-        return SupplierEx.orElse(polinominalSeries, () -> polinominalSeries = SupplierEx.get(() -> {
+        return SupplierEx.orElse(polinominalSeries, () -> polinominalSeries = SupplierEx.getIgnore(() -> {
             Series<Number, Number> series = new Series<>();
             i = 0;
             series.setName("Polinominal");
@@ -100,11 +101,11 @@ public class RegressionModel {
             DoubleUnaryOperator polynomialRegression = polynomialRegression(x, y, 3);
 
             List<Data<Number, Number>> expectedPoints = IntStream.range(0, features.size())
-                .mapToObj(j -> toData(features.get(j), polynomialRegression.applyAsDouble(features.get(j))))
-                .collect(Collectors.toList());
+                    .mapToObj(j -> toData(features.get(j), polynomialRegression.applyAsDouble(features.get(j))))
+                    .collect(Collectors.toList());
             series.setData(FXCollections.observableArrayList(expectedPoints));
             return series;
-        }));
+        }, new Series<>("Polinominal", FXCollections.emptyObservableList())));
     }
 
     public void linearRegression() {
@@ -221,7 +222,8 @@ public class RegressionModel {
      * Returns the expected response {@code y} given the value of the predictor
      * variable {@code x}.
      *
-     * @param x the value of the predictor variable
+     * @param x
+     *            the value of the predictor variable
      * @return the expected response {@code y} given the value of the predictor
      *         variable {@code x}
      */
