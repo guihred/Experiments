@@ -20,20 +20,17 @@ import utils.ex.FunctionEx;
 
 public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, SimpleListViewBuilder<T>> {
 
-    private ListView<T> table;
 
     public SimpleListViewBuilder() {
         super(new ListView<T>());
-        table = node;
     }
 
     private SimpleListViewBuilder(ListView<T> o) {
         super(o);
-        table = node;
     }
 
     public SimpleListViewBuilder<T> cellFactory(Callback<ListView<T>, ListCell<T>> value) {
-        table.setCellFactory(value);
+        node.setCellFactory(value);
         return this;
     }
 
@@ -42,24 +39,24 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     }
 
     public SimpleListViewBuilder<T> fixedCellSize(double value) {
-        table.setFixedCellSize(value);
+        node.setFixedCellSize(value);
         return this;
     }
 
     public SimpleListViewBuilder<T> items(final ObservableList<T> value) {
-        table.setItems(value);
+        node.setItems(value);
         return this;
     }
 
     public SimpleListViewBuilder<T> onDoubleClick(final ConsumerEx<T> object) {
-        onDoubleClick(table, object);
+        onDoubleClick(node, object);
         return this;
     }
 
     public SimpleListViewBuilder<T> onKey(KeyCode code, ConsumerEx<T> object) {
-        SimpleNodeBuilder.onKeyReleased(table, e -> {
+        SimpleNodeBuilder.onKeyReleased(node, e -> {
             if (code == e.getCode()) {
-                List<T> selectedItem = table.getSelectionModel().getSelectedItems();
+                List<T> selectedItem = node.getSelectionModel().getSelectedItems();
                 for (T t : selectedItem) {
                     ConsumerEx.accept(object, t);
                 }
@@ -72,7 +69,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
 
 
     public SimpleListViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
-        table.getSelectionModel().selectedItemProperty()
+        node.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
         return this;
     }

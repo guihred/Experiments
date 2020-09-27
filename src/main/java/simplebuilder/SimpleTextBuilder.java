@@ -12,70 +12,70 @@ public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilde
     }
 
     public SimpleTextBuilder font(final javafx.scene.text.Font x) {
-        shape.setFont(x);
+        node.setFont(x);
         return this;
     }
 
     public SimpleTextBuilder fontSmoothingType(final javafx.scene.text.FontSmoothingType x) {
-        shape.setFontSmoothingType(x);
+        node.setFontSmoothingType(x);
         return this;
     }
 
     public SimpleTextBuilder size(int size) {
-        Font font = shape.getFont();
-        shape.setFont(Font.font(font.getFamily(), size));
+        Font font = node.getFont();
+        node.setFont(Font.font(font.getFamily(), size));
         return this;
     }
 
     public SimpleTextBuilder strikethrough(final boolean x) {
-        shape.setStrikethrough(x);
+        node.setStrikethrough(x);
         return this;
     }
 
     public SimpleTextBuilder text(final java.lang.String x) {
-        shape.setText(x);
+        node.setText(x);
         return this;
     }
 
     public SimpleTextBuilder text(final ObservableValue<? extends String> x) {
-        shape.textProperty().bind(x);
+        node.textProperty().bind(x);
         return this;
     }
 
     public SimpleTextBuilder textAlignment(final javafx.scene.text.TextAlignment x) {
-        shape.setTextAlignment(x);
+        node.setTextAlignment(x);
         return this;
     }
 
     public SimpleTextBuilder textOrigin(final javafx.geometry.VPos x) {
-        shape.setTextOrigin(x);
+        node.setTextOrigin(x);
 
         return this;
     }
 
     public SimpleTextBuilder underline(final boolean x) {
-        shape.setUnderline(x);
+        node.setUnderline(x);
 
         return this;
     }
 
     public SimpleTextBuilder wrappingWidth(final double x) {
-        shape.setWrappingWidth(x);
+        node.setWrappingWidth(x);
         return this;
     }
 
     public SimpleTextBuilder wrappingWidth(final ObservableValue<? extends Number> x) {
-        shape.wrappingWidthProperty().bind(x);
+        node.wrappingWidthProperty().bind(x);
         return this;
     }
 
     public SimpleTextBuilder x(final double x) {
-        shape.setX(x);
+        node.setX(x);
 
         return this;
     }
     public SimpleTextBuilder y(final double x) {
-        shape.setY(x);
+        node.setY(x);
         return this;
     }
 

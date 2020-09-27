@@ -6,20 +6,18 @@ import javafx.scene.layout.Region;
 @SuppressWarnings("unchecked")
 public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> extends SimpleNodeBuilder<T, Z> {
 
-	protected T region;
 
 	public SimpleRegionBuilder(final T region) {
 		super(region);
-		this.region = region;
 	}
 
     public Z maxWidth(final double minWidth) {
-    	region.setMaxWidth(minWidth);
+        node.setMaxWidth(minWidth);
     	return (Z) this;
     }
 
 	public Z minWidth(final double minWidth) {
-        region.setMinWidth(minWidth);
+        node.setMinWidth(minWidth);
 	    return (Z) this;
     }
 
@@ -34,7 +32,7 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
 
 
     public Z scaleShape(final boolean value) {
-        region.setScaleShape(value);
+        node.setScaleShape(value);
         return (Z) this;
     }
 

@@ -5,21 +5,19 @@ import javafx.scene.shape.*;
 
 public class SimplePathBuilder extends SimpleShapeBuilder<Path, SimplePathBuilder> {
 
-    protected Path path;
 
     public SimplePathBuilder() {
         super(new Path());
-        path = shape;
     }
 
 
     public SimplePathBuilder add(Collection<PathElement> e) {
-        path.getElements().addAll(e);
+        node.getElements().addAll(e);
         return this;
     }
 
     public SimplePathBuilder add(PathElement e) {
-        path.getElements().add(e);
+        node.getElements().add(e);
         return this;
     }
 

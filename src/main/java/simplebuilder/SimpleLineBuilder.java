@@ -4,31 +4,29 @@ import javafx.scene.shape.Line;
 
 public class SimpleLineBuilder extends SimpleShapeBuilder<Line, SimpleLineBuilder> {
 
-	protected Line circle;
 
 	public SimpleLineBuilder() {
 		super(new Line());
-		circle = shape;
 	}
 
 
 	public SimpleLineBuilder endX(double d) {
-		circle.setEndX(d);
+        node.setEndX(d);
 		return this;
 	}
 
 	public SimpleLineBuilder endY(double d) {
-		circle.setEndY(d);
+        node.setEndY(d);
 		return this;
 	}
 
 	public SimpleLineBuilder startX(double d) {
-		circle.setStartX(d);
+        node.setStartX(d);
 		return this;
 	}
 
 	public SimpleLineBuilder startY(double d) {
-		circle.setStartY(d);
+        node.setStartY(d);
 		return this;
 	}
 

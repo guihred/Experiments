@@ -216,6 +216,8 @@ public class DataframeStatisticAccumulator {
         sum += o;
         min = Math.min(min, o);
         max = Math.max(max, o);
+        String string = n.doubleValue() % 1 == 0 ? String.format("%.0f", n.doubleValue()) : Objects.toString(n);
+        countMap.merge(string, 1, (a, b) -> a + b);
         Integer merge = distributionMap.merge(n, 1, (a, b) -> a + b);
         if (merge == 1) {
             distinct++;

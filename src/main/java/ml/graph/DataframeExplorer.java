@@ -67,11 +67,13 @@ public class DataframeExplorer extends ExplorerVariables {
         SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen).onKey(KeyCode.DELETE, t -> {
             columns.remove(t);
             getDataframe().removeCol(t.getKey());
-        }).addContextMenu("_Split", e -> splitByColumn())
+        })
+
+                .addContextMenu("_Split", e -> splitByColumn())
                 .addContextMenu("Add Mapping",
                         e0 -> Mapping.showDialog(barChart, columnsList.getSelectionModel().getSelectedItems().stream()
                                 .map(Entry<String, DataframeStatisticAccumulator>::getKey).toArray(String[]::new),
-                                getDataframe(), f -> readDataframe(f, MAX_ELEMENTS)));
+                                getDataframe(), this::addStats));
         lineChart.visibleProperty()
                 .bind(Bindings.createBooleanBinding(() -> !lineChart.getData().isEmpty(), lineChart.dataProperty()));
         pieChart.visibleProperty().bind(pieChart.titleProperty().isNotEmpty());

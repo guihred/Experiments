@@ -6,7 +6,6 @@ import static simplebuilder.SimpleTableViewBuilder.prefWidthColumns;
 
 import extract.QuickSortML;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.beans.binding.Bindings;
@@ -21,6 +20,7 @@ import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
+import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 import utils.ex.PredicateEx;
 import utils.ex.RunnableEx;
@@ -107,7 +107,8 @@ public final class PaginatedTableView extends VBox {
     }
 
     private boolean containsString(String n, Integer e) {
-        return StringUtils.isBlank(n) || table.getColumns().stream().map(c -> Objects.toString(c.getCellData(e), ""))
+        return StringUtils.isBlank(n)
+                || table.getColumns().stream().map(c -> StringSigaUtils.toStringSpecial(c.getCellData(e)))
                 .anyMatch(str -> StringUtils.containsIgnoreCase(str, n) || PredicateEx.test(s -> s.matches(n), str));
     }
 

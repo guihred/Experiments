@@ -30,7 +30,10 @@ import utils.ex.RunnableEx;
 
 public class SonarApi extends Application {
 
-    // private static final Logger LOG = HasLogging.log();
+    private static final String SONAR_API_ISSUES =
+            "http://localhost:9000/api/issues/search?componentKeys=Experiments%3AExperiments" + "&s=FILE_LINE"
+                    + "&resolved=false" + "&ps=100" + "&organization=default-organization"
+                    + "&facets=severities%2Ctypes%2Crules" + "&additionalFields=_all";
 
     private static final Map<String, String> GET_HEADERS = ImmutableMap.<String, String>builder()
 
@@ -44,31 +47,22 @@ public class SonarApi extends Application {
     public void start(Stage primaryStage) throws Exception {
         TextField filterField = new TextField();
         ObservableList<Map<String, Object>> fromURLJson = FXCollections.observableArrayList();
-        TableView<
-                Map<String,
-                        Object>> build =
-                                new SimpleTableViewBuilder<Map<String, Object>>().savable().copiable()
-                                        .items(CommonsFX.newFastFilter(filterField,
-                                                fromURLJson.filtered(s -> true)))
-                                        .build();
+        TableView<Map<String, Object>> build = new SimpleTableViewBuilder<Map<String, Object>>().savable().copiable()
+                .items(CommonsFX.newFastFilter(filterField, fromURLJson.filtered(s -> true))).build();
         HBox.setHgrow(build, Priority.ALWAYS);
         primaryStage.setTitle("Sonar API");
-        primaryStage.setScene(new Scene(new HBox(
-                new VBox(new Text("Filter"), filterField,
-                        SimpleButtonBuilder.newButton("Update", () -> {
-                            List<Map<String, Object>> newJson = getFromURLJson(
-                                    "http://localhost:9000/api/issues/search?componentKeys=Experiments%3AExperiments&s=FILE_LINE&resolved=false&ps=100&organization=default-organization&facets=severities%2Ctypes%2Crules&additionalFields=_all",
-                                    ResourceFXUtils.getOutFile("json/sonarRequest.json"));
-                            fromURLJson.addAll(newJson);
-                            SimpleTableViewBuilder.addColumns(build, newJson.get(0).keySet());
-                        }),
-                        SimpleButtonBuilder.newButton("Open Dataframe", e -> RunnableEx.run(() -> {
+        primaryStage.setScene(new Scene(
+                new HBox(new VBox(new Text("Filter"), filterField, SimpleButtonBuilder.newButton("Update", () -> {
+                    List<Map<String, Object>> newJson =
+                            getFromURLJson(SONAR_API_ISSUES, ResourceFXUtils.getOutFile("json/sonarRequest.json"));
+                    fromURLJson.addAll(newJson);
+                    SimpleTableViewBuilder.addColumns(build, newJson.get(0).keySet());
+                }), SimpleButtonBuilder.newButton("Open Dataframe", e -> RunnableEx.run(() -> {
                     TableView<Map<String, Object>> table = build;
                     File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + ".csv");
                     CSVUtils.saveToFile(table, ev);
                     new SimpleDialogBuilder().bindWindow(filterField).show(DataframeExplorer.class).addStats(ev);
-                }))
-                ), build)));
+                }))), build)));
         primaryStage.show();
     }
 

@@ -35,6 +35,17 @@ public class StringSigaUtils extends StringUtils {
     private static final Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> FORMAT_HIERARCHY_MAP =
             formatHierarchy();
 
+    public static Map<String, String> asMap(String line) {
+        return asMap(line, ":");
+    }
+
+    public static Map<String, String> asMap(String line, String separator) {
+        return Stream.of(lines(line)).filter(s -> s.contains(separator))
+                .collect(Collectors.toMap(s -> s.split(separator)[0],
+                        s -> Stream.of(s.split(separator)).skip(1).collect(Collectors.joining(separator)),
+                        (u, v) -> u + "\n" + v));
+    }
+
     public static String changeCase(String simpleName) {
         if (Character.isLowerCase(simpleName.charAt(0))) {
             return simpleName.substring(0, 1).toUpperCase() + simpleName.substring(1);
@@ -178,6 +189,10 @@ public class StringSigaUtils extends StringUtils {
         }
     }
 
+    public static String[] lines(String nome) {
+        return split(nome, "[\n\r]+");
+    }
+
     public static String putNumbers(List<String> map) {
         int orElse = map.stream().mapToInt(String::length).max().orElse(0);
         return IntStream.range(0, map.size()).mapToObj(i -> numberLines(map, orElse, i))
@@ -257,6 +272,14 @@ public class StringSigaUtils extends StringUtils {
 
     public static Integer toInteger(String numero) {
         return getIgnore(() -> Integer.valueOf(Objects.toString(numero, "").replaceAll("\\D", "")), 0);
+    }
+
+    public static String toStringSpecial(Object n) {
+        if (n instanceof Number) {
+            return ((Number) n).doubleValue() % 1 == 0 ? String.format("%.0f", ((Number) n).doubleValue())
+                    : Objects.toString(n);
+        }
+        return Objects.toString(n, "");
     }
 
     public static Object tryAsNumber(Map<String, Class<? extends Comparable<?>>> formatMap2, String header,

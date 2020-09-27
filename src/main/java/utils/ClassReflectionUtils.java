@@ -144,7 +144,7 @@ public final class ClassReflectionUtils {
     public static <T> T getInstance(Class<T> cl, Object... o) {
 
         return SupplierEx.remap(() -> {
-            if (o.length <= 0) {
+            if (o.length > 0) {
                 Class<?>[] array = Stream.of(o).map(Object::getClass).toArray(Class<?>[]::new);
                 Constructor<T> constructor = cl.getConstructor(array);
                 return constructor.newInstance(o);

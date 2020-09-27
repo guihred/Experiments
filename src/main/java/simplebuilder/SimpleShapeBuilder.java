@@ -11,61 +11,55 @@ import javafx.scene.shape.StrokeType;
 @SuppressWarnings("unchecked")
 public class SimpleShapeBuilder<T extends Shape, Z extends SimpleBuilder<T>> extends SimpleNodeBuilder<T, Z> {
 
-	protected T shape;
-
-	protected SimpleShapeBuilder(T shape) {
-		super(shape);
-		this.shape = shape;
-
-	}
-
+    protected SimpleShapeBuilder(T node) {
+        super(node);
+    }
 
     public Z fill(ObservableValue<? extends Paint> fill) {
-        shape.fillProperty().bind(fill);
-	    return (Z) this;
-	}
+        node.fillProperty().bind(fill);
+        return (Z) this;
+    }
 
     public Z fill(Paint lightblue) {
-		shape.setFill(lightblue);
-		return (Z) this;
-	}
+        node.setFill(lightblue);
+        return (Z) this;
+    }
 
     public Z smooth(boolean value) {
-        shape.setSmooth(value);
+        node.setSmooth(value);
         return (Z) this;
     }
 
     public Z stroke(Paint value) {
-        shape.setStroke(value);
+        node.setStroke(value);
         return (Z) this;
     }
 
-
-	public Z strokeDashArray(int... elements) {
-        shape.getStrokeDashArray().clear();
-        shape.getStrokeDashArray()
-                .addAll(IntStream.of(elements).mapToDouble(e -> e).boxed().toArray(Double[]::new));
+    public Z strokeDashArray(int... elements) {
+        node.getStrokeDashArray().clear();
+        node.getStrokeDashArray().addAll(IntStream.of(elements).mapToDouble(e -> e).boxed().toArray(Double[]::new));
         return (Z) this;
 
     }
-	public Z strokeLineCap(StrokeLineCap value) {
-		shape.setStrokeLineCap(value);
-		return (Z) this;
-	}
-	public Z strokeLineJoin(StrokeLineJoin value) {
-		shape.setStrokeLineJoin(value);
-		return (Z) this;
-	}
 
-	public Z strokeType(StrokeType value) {
-		shape.setStrokeType(value);
-		return (Z) this;
-	}
+    public Z strokeLineCap(StrokeLineCap value) {
+        node.setStrokeLineCap(value);
+        return (Z) this;
+    }
 
-	public Z strokeWidth(double value) {
-		shape.setStrokeWidth(value);
-		return (Z) this;
-	}
+    public Z strokeLineJoin(StrokeLineJoin value) {
+        node.setStrokeLineJoin(value);
+        return (Z) this;
+    }
 
+    public Z strokeType(StrokeType value) {
+        node.setStrokeType(value);
+        return (Z) this;
+    }
+
+    public Z strokeWidth(double value) {
+        node.setStrokeWidth(value);
+        return (Z) this;
+    }
 
 }

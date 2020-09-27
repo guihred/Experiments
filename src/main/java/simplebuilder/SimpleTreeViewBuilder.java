@@ -11,21 +11,13 @@ import javafx.util.Callback;
 import utils.ex.ConsumerEx;
 
 public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, SimpleTreeViewBuilder<T>> {
-    private TreeView<T> treeView;
 
     public SimpleTreeViewBuilder() {
         super(new TreeView<>());
-        treeView = region;
     }
 
     protected SimpleTreeViewBuilder(TreeView<T> tree) {
         super(tree);
-        treeView = tree;
-    }
-
-    @Override
-    public TreeView<T> build() {
-        return treeView;
     }
 
     public SimpleTreeViewBuilder<T> cellFactory(BiConsumer<T, TreeCell<T>> value) {
@@ -33,23 +25,23 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
     }
 
     public SimpleTreeViewBuilder<T> cellFactory(Callback<TreeView<T>, TreeCell<T>> value) {
-        treeView.setCellFactory(value);
+        node.setCellFactory(value);
         return this;
     }
 
     public SimpleTreeViewBuilder<T> editable(boolean value) {
-        treeView.setEditable(value);
+        node.setEditable(value);
         return this;
     }
 
     public SimpleTreeViewBuilder<T> onSelect(ConsumerEx<TreeItem<T>> consume) {
-        treeView.getSelectionModel().selectedItemProperty()
+        node.getSelectionModel().selectedItemProperty()
                 .addListener((ob, old, n) -> ConsumerEx.accept(consume, n));
         return this;
     }
 
     public SimpleTreeViewBuilder<T> root(T value) {
-        treeView.setRoot(new TreeItem<>(value));
+        node.setRoot(new TreeItem<>(value));
         return this;
     }
 

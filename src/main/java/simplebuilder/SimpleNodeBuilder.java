@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import java.lang.reflect.Method;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,6 +13,7 @@ import javafx.scene.effect.Effect;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import utils.ClassReflectionUtils;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
@@ -31,6 +33,13 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
             value.handle(actionEvent);
             contextMenu.hide();
         });
+        contextMenu.getItems().add(item);
+        if (ClassReflectionUtils.hasField(node.getClass(), "contextMenu")) {
+            Method setter = ClassReflectionUtils.getSetter(node.getClass(), "contextMenu");
+            ClassReflectionUtils.invoke(node, setter, contextMenu);
+            return (Z) this;
+        }
+
         EventHandler<? super MouseEvent> onMousePressed = node.getOnMousePressed();
         node.setOnMousePressed(e -> {
             RunnableEx.runIf(onMousePressed, h -> h.handle(e));
@@ -38,7 +47,6 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
                 contextMenu.show(node, e.getScreenX(), e.getScreenY());
             }
         });
-        contextMenu.getItems().add(item);
         return (Z) this;
     }
 
