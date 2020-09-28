@@ -17,7 +17,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import utils.*;
+import utils.ResourceFXUtils;
+import utils.TreeElement;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
@@ -40,7 +41,7 @@ public final class StageHelper {
         if (file.exists()) {
             RunnableEx.ignore(() -> scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString()));
         }
-        Button saveButton = SimpleButtonBuilder.newButton("_Save", e -> RunnableEx.run(() -> {
+        Button saveButton = SimpleButtonBuilder.newButton("_Save", () -> {
             try (PrintStream fileOutputStream = new PrintStream(file, StandardCharsets.UTF_8.name())) {
                 fileOutputStream.print(textArea.getText());
                 fileOutputStream.flush();
@@ -48,7 +49,7 @@ public final class StageHelper {
                 scene.getStylesheets().add(ResourceFXUtils.convertToURL(file).toString());
                 textArea.requestFocus();
             }
-        }));
+        });
         Stage stage2 = new SimpleDialogBuilder().node(new VBox(textArea, saveButton)).bindWindow(scene.getRoot())
                 .height(500).displayDialog();
         textArea.prefHeightProperty().bind(stage2.heightProperty().subtract(10));

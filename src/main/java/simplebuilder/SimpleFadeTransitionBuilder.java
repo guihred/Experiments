@@ -6,30 +6,28 @@ import javafx.util.Duration;
 
 public class SimpleFadeTransitionBuilder extends SimpleAnimationBuilder<FadeTransition, SimpleFadeTransitionBuilder> {
 
-	protected FadeTransition fadeTransition;
 
 	public SimpleFadeTransitionBuilder() {
 		super(new FadeTransition());
-		fadeTransition = animation;
 	}
 
 	public SimpleFadeTransitionBuilder duration(Duration value) {
-		fadeTransition.setDuration(value);
+        animation.setDuration(value);
 		return this;
 	}
 
 	public SimpleFadeTransitionBuilder fromValue(double value) {
-		fadeTransition.setFromValue(value);
+        animation.setFromValue(value);
 		return this;
 	}
 
 	public SimpleFadeTransitionBuilder node(Node highlight) {
-		fadeTransition.setNode(highlight);
+        animation.setNode(highlight);
 		return this;
 	}
 
 	public SimpleFadeTransitionBuilder toValue(double value) {
-		fadeTransition.setToValue(value);
+        animation.setToValue(value);
 		return this;
 	}
 

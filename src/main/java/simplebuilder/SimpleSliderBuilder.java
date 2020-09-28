@@ -27,8 +27,8 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
         return this;
     }
 
-    public SimpleSliderBuilder blocks(int i) {
-        blocks = i;
+    public SimpleSliderBuilder blocks(int nBlocks) {
+        blocks = nBlocks;
         node.setBlockIncrement((slider.getMax() - slider.getMin()) / blocks);
         return this;
     }

@@ -6,11 +6,14 @@ import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 
-public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
-    private MenuBar menuBar = new MenuBar();
+public class SimpleMenuBarBuilder extends SimpleNodeBuilder<MenuBar, SimpleMenuBarBuilder> {
     private Menu menu;
     private Menu subMenu;
     private ToggleGroup toggleGroup;
+
+    public SimpleMenuBarBuilder() {
+        super(new MenuBar());
+    }
 
     public SimpleMenuBarBuilder addCheckMenuItem(final String text) {
         CheckMenuItem item = new CheckMenuItem(text);
@@ -25,7 +28,7 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
 
     public SimpleMenuBarBuilder addMenu(final String text) {
         menu = new Menu(text);
-        menuBar.getMenus().add(menu);
+        node.getMenus().add(menu);
         return this;
     }
 
@@ -122,10 +125,6 @@ public class SimpleMenuBarBuilder implements SimpleBuilder<MenuBar> {
         return this;
     }
 
-    @Override
-    public MenuBar build() {
-        return menuBar;
-    }
 
 
 }

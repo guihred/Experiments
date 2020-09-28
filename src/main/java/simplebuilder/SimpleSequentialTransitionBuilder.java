@@ -12,18 +12,16 @@ import javafx.util.Duration;
 public class SimpleSequentialTransitionBuilder
         extends SimpleAnimationBuilder<SequentialTransition, SimpleSequentialTransitionBuilder> {
 
-    protected SequentialTransition sequentialTransition;
 
 	public SimpleSequentialTransitionBuilder() {
         super(new SequentialTransition());
-        sequentialTransition = animation;
 	}
 
     public SimpleSequentialTransitionBuilder addFadeTransition(double millis, Node node, double from, double to) {
         FadeTransition e = new FadeTransition(Duration.millis(millis), node);
         e.setFromValue(from);
         e.setToValue(to);
-        sequentialTransition.getChildren().add(e);
+        animation.getChildren().add(e);
         return this;
     }
 
@@ -33,7 +31,7 @@ public class SimpleSequentialTransitionBuilder
         e.setFromValue(from);
         e.setToValue(to);
         e.setOnFinished(value);
-        sequentialTransition.getChildren().add(e);
+        animation.getChildren().add(e);
         return this;
     }
 
@@ -46,7 +44,7 @@ public class SimpleSequentialTransitionBuilder
         tickerScroller.fromXProperty().bind(fromX);
         tickerScroller.toXProperty().bind(toX);
         // when ticker has finished, reset and replay ticker animation
-        sequentialTransition.getChildren().add(tickerScroller);
+        animation.getChildren().add(tickerScroller);
         return this;
     }
 

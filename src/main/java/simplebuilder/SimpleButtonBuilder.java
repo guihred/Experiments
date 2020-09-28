@@ -8,50 +8,48 @@ import utils.ex.RunnableEx;
 
 public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonBuilder> {
 
-    protected Button button;
 
 	public SimpleButtonBuilder() {
         super(new Button());
-        button = node;
 	}
 
 	public SimpleButtonBuilder onAction(EventHandler<ActionEvent> value) {
-        button.setOnAction(value);
+        node.setOnAction(value);
         return this;
     }
 
     public SimpleButtonBuilder text(String string) {
-        button.setText(string);
+        node.setText(string);
 		return this;
 	}
 
     public static Button newButton(final double layoutX, final double layoutY, final String nome,
         final EventHandler<ActionEvent> onAction) {
-        Button button = new Button(nome);
-        button.setLayoutX(layoutX);
-        button.setLayoutY(layoutY);
-        button.setOnAction(onAction);
-        return button;
+        Button node = new Button(nome);
+        node.setLayoutX(layoutX);
+        node.setLayoutY(layoutY);
+        node.setOnAction(onAction);
+        return node;
     }
 
     public static Button newButton(final Node graphic, final String id, final EventHandler<ActionEvent> onAction) {
-        Button button = new Button(null, graphic);
-        button.setId(id);
-        button.setOnAction(onAction);
-        return button;
+        Button node = new Button(null, graphic);
+        node.setId(id);
+        node.setOnAction(onAction);
+        return node;
     }
 
     public static Button newButton(final String nome, final EventHandler<ActionEvent> onAction) {
-        Button button = new Button(nome);
-        button.setId(nome);
-        button.setOnAction(onAction);
-        return button;
+        Button node = new Button(nome);
+        node.setId(nome);
+        node.setOnAction(onAction);
+        return node;
     }
 
     public static Button newButton(final String nome, final RunnableEx onAction) {
-        Button button = new Button(nome);
-        button.setId(nome);
-        button.setOnAction(e -> RunnableEx.run(onAction));
-        return button;
+        Button node = new Button(nome);
+        node.setId(nome);
+        node.setOnAction(e -> RunnableEx.run(onAction));
+        return node;
     }
 }

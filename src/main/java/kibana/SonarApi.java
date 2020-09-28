@@ -26,7 +26,6 @@ import utils.CSVUtils;
 import utils.CommonsFX;
 import utils.PhantomJSUtils;
 import utils.ResourceFXUtils;
-import utils.ex.RunnableEx;
 
 public class SonarApi extends Application {
 
@@ -36,7 +35,6 @@ public class SonarApi extends Application {
                     + "&facets=severities%2Ctypes%2Crules" + "&additionalFields=_all";
 
     private static final Map<String, String> GET_HEADERS = ImmutableMap.<String, String>builder()
-
             .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0")
             .put("Accept", "application/json").put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3")
             .put("Accept-Encoding", "gzip, deflate")
@@ -57,12 +55,12 @@ public class SonarApi extends Application {
                             getFromURLJson(SONAR_API_ISSUES, ResourceFXUtils.getOutFile("json/sonarRequest.json"));
                     fromURLJson.addAll(newJson);
                     SimpleTableViewBuilder.addColumns(build, newJson.get(0).keySet());
-                }), SimpleButtonBuilder.newButton("Open Dataframe", e -> RunnableEx.run(() -> {
+                }), SimpleButtonBuilder.newButton("Open Dataframe", () -> {
                     TableView<Map<String, Object>> table = build;
                     File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + ".csv");
                     CSVUtils.saveToFile(table, ev);
                     new SimpleDialogBuilder().bindWindow(filterField).show(DataframeExplorer.class).addStats(ev);
-                }))), build)));
+                })), build)));
         primaryStage.show();
     }
 

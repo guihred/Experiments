@@ -6,31 +6,29 @@ import javafx.scene.layout.FlowPane;
 
 public class SimpleFlowPaneBuilder extends SimplePaneBuilder<FlowPane, SimpleFlowPaneBuilder> {
 
-	protected FlowPane flowPane;
 
 	public SimpleFlowPaneBuilder() {
 		super(new FlowPane());
-		flowPane = node;
 	}
 
 	public SimpleFlowPaneBuilder columnHalignment(HPos left) {
-		flowPane.setColumnHalignment(left);
+        node.setColumnHalignment(left);
 		return this;
 	}
 
 	public SimpleFlowPaneBuilder hgap(double i) {
-		flowPane.setHgap(i);
+        node.setHgap(i);
 		return this;
 	}
 
 	public SimpleFlowPaneBuilder orientation(Orientation vertical) {
-		flowPane.setOrientation(vertical);
+        node.setOrientation(vertical);
 		return this;
 	}
 
 
 	public SimpleFlowPaneBuilder vgap(double i) {
-		flowPane.setVgap(i);
+        node.setVgap(i);
 		return this;
 	}
 

@@ -22,7 +22,6 @@ import org.apache.sshd.server.SshServer;
 import simplebuilder.SimpleButtonBuilder;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
-import utils.ex.RunnableEx;
 
 public class SSHSessionApp extends Application {
     private Button serverButton;
@@ -39,20 +38,18 @@ public class SSHSessionApp extends Application {
         TextField hostField = new TextField();
         TextField userField = new TextField();
         PasswordField passwordField = new PasswordField();
-        serverButton = SimpleButtonBuilder.newButton("Start Server", e -> {
+        serverButton = SimpleButtonBuilder.newButton("Start Server", () -> {
             server = BaseTestSupport.setupTestServer();
-            RunnableEx.run(() -> {
-                server.start();
-                portField.setText("" + server.getPort());
-                hostField.setText(BaseTestSupport.TEST_LOCALHOST);
-                userField.setText(BaseTestSupport.getCurrentTestName());
-                passwordField.setText(BaseTestSupport.getCurrentTestName());
-            });
+            server.start();
+            portField.setText("" + server.getPort());
+            hostField.setText(BaseTestSupport.TEST_LOCALHOST);
+            userField.setText(BaseTestSupport.getCurrentTestName());
+            passwordField.setText(BaseTestSupport.getCurrentTestName());
             serverButton.setDisable(true);
         });
 
         Text text2 = new Text();
-        Button clientButton = SimpleButtonBuilder.newButton("Start Client", e -> RunnableEx.run(() -> {
+        Button clientButton = SimpleButtonBuilder.newButton("Start Client", () -> {
             try (FileOutputStream fileOutputStream = new FileOutputStream(ResourceFXUtils.getOutFile("log/log.txt"));
                     PrintStream out = new PrintTextStream(fileOutputStream, true, StandardCharsets.UTF_8.displayName(),
                             text2.textProperty())) {
@@ -61,7 +58,7 @@ public class SSHSessionApp extends Application {
                         StringSigaUtils.toInteger(portField.getText()), userField.getText(), passwordField.getText(),
                         out);
             }
-        }));
+        });
 
         GridPane gridPane = new GridPane();
         gridPane.setVgap(5);

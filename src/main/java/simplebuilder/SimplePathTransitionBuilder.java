@@ -9,37 +9,35 @@ import javafx.util.Duration;
 
 public class SimplePathTransitionBuilder extends SimpleAnimationBuilder<PathTransition, SimplePathTransitionBuilder> {
 
-    protected PathTransition fadeTransition;
 
 	public SimplePathTransitionBuilder() {
         super(new PathTransition());
-		fadeTransition = animation;
 	}
 
     public SimplePathTransitionBuilder duration(Duration duration) {
-        fadeTransition.setDuration(duration);
+        animation.setDuration(duration);
         return this;
     }
 
 
 	public SimplePathTransitionBuilder interpolator(Interpolator value) {
-        fadeTransition.setInterpolator(value);
+        animation.setInterpolator(value);
         return this;
     }
 
 
     public SimplePathTransitionBuilder node(Node highlight) {
-		fadeTransition.setNode(highlight);
+        animation.setNode(highlight);
 		return this;
 	}
 
     public SimplePathTransitionBuilder orientation(OrientationType value) {
-        fadeTransition.setOrientation(value);
+        animation.setOrientation(value);
         return this;
     }
 
     public SimplePathTransitionBuilder path(Shape path) {
-        fadeTransition.setPath(path);
+        animation.setPath(path);
         return this;
     }
 

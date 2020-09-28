@@ -11,36 +11,33 @@ import javafx.util.Duration;
 
 public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, SimpleTimelineBuilder> {
 
-    protected Timeline timeline;
-
     public SimpleTimelineBuilder() {
         super(new Timeline());
-        timeline = animation;
     }
 
     public SimpleTimelineBuilder addKeyFrame(Duration time, EventHandler<ActionEvent> eventHandler) {
-        timeline.getKeyFrames().add(new KeyFrame(time, eventHandler));
+        animation.getKeyFrames().add(new KeyFrame(time, eventHandler));
         return this;
     }
 
     public <T> SimpleTimelineBuilder addKeyFrame(Duration time, WritableValue<T> target, T endValue) {
-        timeline.getKeyFrames().add(new KeyFrame(time, new KeyValue(target, endValue)));
+        animation.getKeyFrames().add(new KeyFrame(time, new KeyValue(target, endValue)));
         return this;
     }
 
     public <T> SimpleTimelineBuilder addKeyFrame(Duration time, WritableValue<T> target, T endValue,
-        Interpolator interpolator) {
-        timeline.getKeyFrames().add(new KeyFrame(time, new KeyValue(target, endValue, interpolator)));
+            Interpolator interpolator) {
+        animation.getKeyFrames().add(new KeyFrame(time, new KeyValue(target, endValue, interpolator)));
         return this;
     }
 
     public SimpleTimelineBuilder addKeyFrame(KeyFrame keyFrame) {
-        timeline.getKeyFrames().add(keyFrame);
+        animation.getKeyFrames().add(keyFrame);
         return this;
     }
 
     public SimpleTimelineBuilder keyFrames(KeyFrame... elements) {
-        timeline.getKeyFrames().setAll(elements);
+        animation.getKeyFrames().setAll(elements);
         return this;
     }
 

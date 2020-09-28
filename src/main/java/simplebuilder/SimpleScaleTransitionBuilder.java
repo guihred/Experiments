@@ -6,41 +6,35 @@ import javafx.scene.Node;
 import javafx.util.Duration;
 
 public class SimpleScaleTransitionBuilder
-    extends SimpleAnimationBuilder<ScaleTransition, SimpleScaleTransitionBuilder> {
+        extends SimpleAnimationBuilder<ScaleTransition, SimpleScaleTransitionBuilder> {
 
-    protected ScaleTransition fadeTransition;
-
-	public SimpleScaleTransitionBuilder() {
+    public SimpleScaleTransitionBuilder() {
         super(new ScaleTransition());
-		fadeTransition = animation;
-	}
+    }
 
     public SimpleScaleTransitionBuilder byX(double value) {
-        fadeTransition.setByX(value);
+        animation.setByX(value);
         return this;
     }
 
-
-	public SimpleScaleTransitionBuilder byY(double value) {
-        fadeTransition.setByY(value);
+    public SimpleScaleTransitionBuilder byY(double value) {
+        animation.setByY(value);
         return this;
     }
-
 
     public SimpleScaleTransitionBuilder duration(Duration duration) {
-        fadeTransition.setDuration(duration);
+        animation.setDuration(duration);
         return this;
     }
 
     public SimpleScaleTransitionBuilder interpolator(Interpolator duration) {
-        fadeTransition.setInterpolator(duration);
+        animation.setInterpolator(duration);
         return this;
     }
 
     public SimpleScaleTransitionBuilder node(Node highlight) {
-		fadeTransition.setNode(highlight);
-		return this;
-	}
-
+        animation.setNode(highlight);
+        return this;
+    }
 
 }

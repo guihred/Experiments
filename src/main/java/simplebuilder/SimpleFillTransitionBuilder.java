@@ -7,30 +7,28 @@ import javafx.util.Duration;
 
 public class SimpleFillTransitionBuilder extends SimpleAnimationBuilder<FillTransition, SimpleFillTransitionBuilder> {
 
-    protected FillTransition fillTransition;
 
 	public SimpleFillTransitionBuilder() {
         super(new FillTransition());
-        fillTransition = animation;
 	}
 
 	public SimpleFillTransitionBuilder duration(Duration value) {
-        fillTransition.setDuration(value);
+        animation.setDuration(value);
 		return this;
 	}
 
     public SimpleFillTransitionBuilder fromValue(Color value) {
-        fillTransition.setFromValue(value);
+        animation.setFromValue(value);
 		return this;
 	}
 
     public SimpleFillTransitionBuilder shape(Shape value) {
-        fillTransition.setShape(value);
+        animation.setShape(value);
 		return this;
 	}
 
     public SimpleFillTransitionBuilder toValue(Color value) {
-        fillTransition.setToValue(value);
+        animation.setToValue(value);
 		return this;
 	}
 
