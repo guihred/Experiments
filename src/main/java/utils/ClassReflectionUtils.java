@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.NamedArg;
 import javafx.beans.Observable;
@@ -141,12 +142,16 @@ public final class ClassReflectionUtils {
         return getters;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getInstance(Class<T> cl, Object... o) {
-
         return SupplierEx.remap(() -> {
             if (o.length > 0) {
-                Class<?>[] array = Stream.of(o).map(Object::getClass).toArray(Class<?>[]::new);
-                Constructor<T> constructor = cl.getConstructor(array);
+                List<Class<?>> allowedTypes = Stream.of(o).map(Object::getClass).collect(Collectors.toList());
+                Class<?>[] array = allowedTypes.toArray(new Class<?>[0]);
+                Constructor<T>[] constructors = (Constructor<T>[]) cl.getConstructors();
+                Constructor<T> constructor = SupplierEx.getFirst(() -> Stream.of(constructors)
+                        .filter(c -> isAllowed(allowedTypes, c.getParameterTypes())).findFirst().orElse(null),
+                        () -> cl.getConstructor(array));
                 return constructor.newInstance(o);
             }
             return cl.newInstance();
@@ -259,6 +264,12 @@ public final class ClassReflectionUtils {
         return getAllMethodsRecursive(ob.getClass()).stream().filter(e -> getFieldNameCase(e).equals(method))
                 .filter(m -> m.getParameterCount() == args.length).map(FunctionEx.makeFunction(m -> m.invoke(ob, args)))
                 .filter(Objects::nonNull).findFirst().orElse(null);
+    }
+
+    public static boolean isAllowed(List<Class<?>> allowedTypes, Class<?>[] parameterTypes) {
+        return IntStream.range(0, allowedTypes.size())
+                .allMatch(i -> i < parameterTypes.length && (allowedTypes.get(i) == parameterTypes[i]
+                        || parameterTypes[i].isAssignableFrom(allowedTypes.get(i))));
     }
 
     public static boolean isClassPublic(Class<? extends Object> class1) {

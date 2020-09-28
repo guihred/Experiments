@@ -149,7 +149,7 @@ public class ConsultasInvestigator extends Application {
                 .collect(Collectors.toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
         List<String> collect2 =
                 queryList.stream().filter(e -> e.getTable() != null).flatMap(e -> e.getTable().getColumns().stream())
-                        .map(TableColumn<Map<String, String>, ?>::getText).distinct().collect(Collectors.toList());
+                        .map(TableColumn::getText).distinct().collect(Collectors.toList());
         for (String text : collect2) {
             mapa.put(text, t -> t.getOrDefault(text, ""));
         }

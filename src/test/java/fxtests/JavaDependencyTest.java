@@ -14,7 +14,8 @@ import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.HibernateUtil;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
@@ -24,7 +25,7 @@ import utils.ex.RunnableEx;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JavaDependencyTest {
     private static final Logger LOG = HasLogging.log();
-    private static int NUMBER_TESTS = 10;
+    private static int NUMBER_TESTS = 3;
 
     @Test
     public void testTestUncoveredApps() {

@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -59,7 +58,7 @@ public final class Mapping {
     public static void showDialog(Node barChart, String[] dependencies, DataframeML dataframe, ConsumerEx<File> run) {
         List<Class<?>> allowedTypes = Stream.of(dependencies).map(dataframe::getFormat).collect(Collectors.toList());
         ObservableList<Method> methods2 =
-                FXCollections.observableArrayList(Mapping.getMethods()).filtered(m -> isAllowed(allowedTypes, m));
+                FXCollections.observableArrayList(Mapping.getMethods()).filtered(m -> ClassReflectionUtils.isAllowed(allowedTypes, m.getParameterTypes()));
         VBox vBox = new VBox();
 
         ComboBox<Method> build = new SimpleComboBoxBuilder<>(methods2).select(0).converter(Mapping::methodName)
@@ -111,13 +110,6 @@ public final class Mapping {
                 vBox.getChildren().add(textField);
             }
         }
-    }
-
-    private static boolean isAllowed(List<Class<?>> allowedTypes, Method m) {
-        Class<?>[] parameterTypes = m.getParameterTypes();
-        return IntStream.range(0, allowedTypes.size())
-                .allMatch(i -> i < parameterTypes.length && (allowedTypes.get(i) == parameterTypes[i]
-                        || parameterTypes[i].isAssignableFrom(allowedTypes.get(i))));
     }
 
     private static String methodName(Method m) {

@@ -84,7 +84,7 @@ public final class PaginatedTableView extends VBox {
     }
 
     public List<String> getColumns() {
-        return table.getColumns().stream().skip(1L).map(TableColumn<Integer, ?>::getText).collect(Collectors.toList());
+        return table.getColumns().stream().skip(1L).map(TableColumn::getText).collect(Collectors.toList());
 
     }
 

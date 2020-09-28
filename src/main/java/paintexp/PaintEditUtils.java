@@ -7,6 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.shape.Rectangle;
 import paintexp.tool.*;
+import utils.ImageFXUtils;
 import utils.fx.PixelatedImageView;
 import utils.fx.ZoomableScrollPane;
 
@@ -43,9 +44,7 @@ public final class PaintEditUtils {
             double width = image.getWidth();
             double height = image.getHeight();
             if (pastedImg.getWidth() > width || pastedImg.getHeight() > height) {
-                WritableImage writableImage = new WritableImage(pastedImg.getPixelReader(),
-                    (int) Math.max(pastedImg.getWidth(), width),
-                    (int) Math.max(pastedImg.getHeight(), height));
+                WritableImage writableImage = ImageFXUtils.copyImage(pastedImg, (int) width, (int) height);
                 SimplePixelReader.paintColor(writableImage, paintModel.getBackColor());
                 RectBuilder.copyImagePart(image, writableImage,
                         new Rectangle(width, height));

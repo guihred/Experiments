@@ -34,7 +34,9 @@ import paintexp.SimplePixelReader;
 import paintexp.tool.AreaTool;
 import paintexp.tool.PaintTool;
 import paintexp.tool.PaintTools;
-import utils.*;
+import utils.FileTreeWalker;
+import utils.ImageFXUtils;
+import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.RunnableEx;
 import utils.fx.ZoomableScrollPane;
@@ -180,6 +182,19 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         }
     }
 
+    private void addClipboarImage() {
+        interact(() -> {
+            List<Path> pathByExtension =
+                    FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".png");
+            if (!pathByExtension.isEmpty()) {
+                Map<DataFormat, Object> content = FXCollections.observableHashMap();
+                Path path = randomItem(pathByExtension);
+                content.put(DataFormat.FILES, Arrays.asList(path.toFile()));
+                Clipboard.getSystemClipboard().setContent(content);
+            }
+        });
+    }
+
     private void testAreaTools(List<KeyCode> testCodes) {
         boolean nextBoolean = random.nextBoolean();
         if (nextBoolean) {
@@ -205,6 +220,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 Stream.of(PaintTools.values()).map(PaintTools::getTool).collect(Collectors.toList());
 
         List<MenuButton> node = lookupList(MenuButton.class);
+        addClipboarImage();
         for (int i = 0; i < node.size(); i++) {
             MenuButton menuButton = node.get(i);
             ObservableList<MenuItem> items = menuButton.getItems();
@@ -221,25 +237,22 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 }
 
                 getLogger().info("FIRING {}", menu.getId());
-                if (i == 0 && items.size() == j + 1 || i == 0 && j > 0 && items.size() != j + 1) {
+                if (i == 0 && j > 0 && items.size() != j + 1) {
                     // OPEN and save as
-                    RunnableEx.runNewThread(this::typeInParallel);
+                    RunnableEx.runNewThread(() -> typeInParallel(TEST_FILE));
                 }
                 if (i == 1 && j == 2) {
-                    interact(() -> {
-                        List<Path> pathByExtension =
-                                FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".png");
-                        if (!pathByExtension.isEmpty()) {
-                            Map<DataFormat, Object> content = FXCollections.observableHashMap();
-                            Path path = randomItem(pathByExtension);
-                            content.put(DataFormat.FILES, Arrays.asList(path.toFile()));
-                            Clipboard.getSystemClipboard().setContent(content);
-                        }
-                    });
                     interact(menu::fire);
                 }
                 interactNoWait(RunnableEx.make(menu::fire));
+                if (i == 0 && items.size() == j + 1) {
+                    // PRINT
+                    tryClickOn(lookupFirst(Button.class));
+                    typeInParallel("test.pdf");
+                    type(KeyCode.ESCAPE);
+                }
                 if (i == 0 && j == 4) {
+                    lookup(Button.class).forEach(this::tryClickOn);
                     // Print
                     lookup(ComboBox.class).forEach(ConsumerEx.ignore(
                             m -> interactNoWait(() -> m.getSelectionModel().select(nextInt(m.getItems().size())))));
@@ -267,9 +280,10 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         }
     }
 
-    private void typeInParallel() {
-        sleep(2500);
-        type(typeText(TEST_FILE));
+    private void typeInParallel(String testFile) {
+        sleep(3500);
+        type(typeText(testFile));
+        type(KeyCode.ENTER);
         type(KeyCode.ENTER);
     }
 

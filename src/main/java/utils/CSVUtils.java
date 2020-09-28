@@ -208,8 +208,8 @@ public class CSVUtils {
             selectedItems = IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
         }
 
-        String collect2 = table.getColumns().stream().map(TableColumn<T, ?>::getText)
-                .collect(Collectors.joining("\",\"", "\"", "\""));
+        String collect2 =
+                table.getColumns().stream().map(TableColumn::getText).collect(Collectors.joining("\",\"", "\"", "\""));
         String collect = selectedItems.stream().map(l -> table.getColumns().stream()
                 .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\",\"", "\"", "\"")))
                 .collect(Collectors.joining("\n"));

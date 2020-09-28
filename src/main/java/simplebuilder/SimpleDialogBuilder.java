@@ -120,6 +120,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     }
 
     public <T extends Application> T show(Class<T> app, Object... o) {
+        LOG.info("DIALOG {} {}", HasLogging.getCurrentLine(1), app.getSimpleName());
         return SupplierEx.get(() -> {
             T newInstance = ClassReflectionUtils.getInstance(app, o);
             newInstance.start(stage);
@@ -129,6 +130,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     }
 
     public <T extends Application> T show(T newInstance) {
+        LOG.info("DIALOG {} {}", HasLogging.getCurrentLine(1), newInstance.getClass().getSimpleName());
         return SupplierEx.get(() -> {
             newInstance.start(stage);
             return newInstance;

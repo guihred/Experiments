@@ -16,6 +16,7 @@ import org.nd4j.shade.jackson.databind.JsonNode;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
 import simplebuilder.SimpleTextBuilder;
 import utils.DateFormatUtils;
+import utils.ex.FunctionEx;
 
 public final class JsonExtractor {
 
@@ -26,38 +27,18 @@ public final class JsonExtractor {
     public static Object access(Object root, Object... param) {
         Object o = root;
         for (Object object : param) {
-            if (object instanceof String) {
-                o = ((Map) o).get(object);
-            }
-            if (object instanceof Integer) {
-                o = ((List) o).get(((Integer) object).intValue());
-            }
+            o = FunctionEx.apply(ob -> {
+                if (object instanceof String) {
+                    return ((Map) ob).get(object);
+                }
+                if (object instanceof Integer) {
+                    return ((List) ob).get(((Integer) object).intValue());
+                }
+                return ob;
+            }, o, o);
         }
         return o;
-    
-    }
 
-    public static boolean splitList(List<Map<String, String>> list, Map<String, String> newItem) {
-        long count = newItem.values().stream().filter(Objects::nonNull).mapToInt(e -> e.split("\n").length)
-                .filter(i -> i > 1).distinct().count();
-        if (count != 1) {
-            return false;
-        }
-        Set<Entry<String, String>> entrySet = newItem.entrySet();
-        list.clear();
-        for (Entry<String, String> entry : entrySet) {
-            List<Map<String, String>> collect = Stream.of(entry.getValue().split("\n"))
-                    .map(e -> newMap(entry.getKey(), e)).collect(Collectors.toList());
-            if (!list.isEmpty()) {
-                for (int i = 0; i < list.size(); i++) {
-                    Map<String, String> map = list.get(i);
-                    map.putAll(collect.get(i));
-                }
-                continue;
-            }
-            list.addAll(collect);
-        }
-        return true;
     }
 
     public static void addValue(JsonNode item, TreeItem<Map<String, String>> e) {
@@ -115,7 +96,6 @@ public final class JsonExtractor {
         return jsonNode.asText();
     }
 
-
     public static Map<String, String> makeMapFromJsonFile(File outFile, String... a) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         // read JSON like DOM Parser
@@ -145,6 +125,29 @@ public final class JsonExtractor {
     public static void readJsonFile(TreeView<Map<String, String>> build, File file) {
         Map<JsonNode, TreeItem<Map<String, String>>> allItems = new HashMap<>();
         remap(() -> tryToRead(build, allItems, file), "ERROR READING");
+    }
+
+    public static boolean splitList(List<Map<String, String>> list, Map<String, String> newItem) {
+        long count = newItem.values().stream().filter(Objects::nonNull).mapToInt(e -> e.split("\n").length)
+                .filter(i -> i > 1).distinct().count();
+        if (count != 1) {
+            return false;
+        }
+        Set<Entry<String, String>> entrySet = newItem.entrySet();
+        list.clear();
+        for (Entry<String, String> entry : entrySet) {
+            List<Map<String, String>> collect = Stream.of(entry.getValue().split("\n"))
+                    .map(e -> newMap(entry.getKey(), e)).collect(Collectors.toList());
+            if (!list.isEmpty()) {
+                for (int i = 0; i < list.size(); i++) {
+                    Map<String, String> map = list.get(i);
+                    map.putAll(collect.get(i));
+                }
+                continue;
+            }
+            list.addAll(collect);
+        }
+        return true;
     }
 
     public static Object toObject(File file) throws IOException {

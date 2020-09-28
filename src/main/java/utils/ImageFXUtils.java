@@ -24,10 +24,24 @@ public final class ImageFXUtils {
     private ImageFXUtils() {
     }
 
+    public static WritableImage copyImage(Image selectedImage, int width, int height) {
+        int max = (int) Math.max(selectedImage.getWidth(), width);
+        int max2 = (int) Math.max(selectedImage.getHeight(), height);
+        WritableImage wr = new WritableImage(max, max2);
+        PixelWriter pixelWriter = wr.getPixelWriter();
+        PixelReader pixelReader = selectedImage.getPixelReader();
+        for (int i = 0; i < selectedImage.getWidth(); i++) {
+            for (int j = 0; j < selectedImage.getHeight(); j++) {
+                pixelWriter.setArgb(i, j, pixelReader.getArgb(i, j));
+            }
+        }
+        return wr;
+    }
+
     public static Image createImage(double size1, float[][] noise) {
         int width = (int) size1;
         int height = (int) size1;
-    
+
         WritableImage wr = new WritableImage(width, height);
         PixelWriter pw = wr.getPixelWriter();
         for (int x = 0; x < width; x++) {
@@ -44,12 +58,12 @@ public final class ImageFXUtils {
 
     public static WritableImage flip(Image selectedImage) {
         int height = (int) selectedImage.getHeight();
-    	int width = (int) selectedImage.getWidth();
+        int width = (int) selectedImage.getWidth();
         WritableImage writableImage = new WritableImage(height, width);
         PixelWriter pixelWriter = writableImage.getPixelWriter();
-    	PixelReader pixelReader = selectedImage.getPixelReader();
-    	for (int i = 0; i < selectedImage.getWidth(); i++) {
-    		for (int j = 0; j < selectedImage.getHeight(); j++) {
+        PixelReader pixelReader = selectedImage.getPixelReader();
+        for (int i = 0; i < selectedImage.getWidth(); i++) {
+            for (int j = 0; j < selectedImage.getHeight(); j++) {
                 pixelWriter.setArgb(height - j - 1, i, pixelReader.getArgb(i, j));
             }
         }
@@ -120,9 +134,8 @@ public final class ImageFXUtils {
 
     public static BufferedImage toBufferedImage(final Node canvas) {
         return ImageFXUtils.toBufferedImage(canvas, Math.max(100, canvas.getBoundsInLocal().getWidth()),
-                Math.max(100, canvas.getBoundsInLocal().getHeight()),
-                canvas.getScaleX());
-        
+                Math.max(100, canvas.getBoundsInLocal().getHeight()), canvas.getScaleX());
+
     }
 
     public static BufferedImage toBufferedImage(final Node canvas, final double w, final double h, final double scale) {
@@ -148,7 +161,7 @@ public final class ImageFXUtils {
             params.setTransform(new Scale(scale, scale));
             return canvas.snapshot(params, writableImage);
         });
-        
+
     }
 
     static double normalizeValue(double value, double min, double max, double newMin, double newMax) {

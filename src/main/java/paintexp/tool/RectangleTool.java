@@ -8,8 +8,6 @@ import java.util.Map;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.Slider;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -24,7 +22,6 @@ public class RectangleTool extends PaintTool {
     private double initialX;
     private double initialY;
     private FillOption option = FillOption.STROKE;
-    private Slider arcWidthSlider;
 
     @Override
     public Shape createIcon() {
@@ -33,19 +30,13 @@ public class RectangleTool extends PaintTool {
     }
 
     public Rectangle getArea() {
-        return orElse(area,
-                () -> area =
-                        new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).smooth(false).build());
+        return orElse(area, () -> area =
+                new SimpleRectangleBuilder().fill(Color.TRANSPARENT).stroke(Color.BLACK).smooth(false).build());
     }
 
     @Override
     public Cursor getMouseCursor() {
         return Cursor.DEFAULT;
-    }
-
-    @Override
-    public void handleKeyEvent(final KeyEvent e, final PaintModel paintModel) {
-        PaintTool.handleSlider(e, getArea().arcWidthProperty(), arcWidthSlider);
     }
 
     @Override
