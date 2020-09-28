@@ -17,8 +17,8 @@ public class ClassReflectionTest extends AbstractTestExecution {
     @Test
     public void testBaseEntityMethods() {
         List<Class<? extends BaseEntity>> classes = CoverageUtils.getClasses(BaseEntity.class);
-        List<? extends BaseEntity> entities = classes.stream().map(ClassReflectionUtils::getInstance)
-            .collect(Collectors.toList());
+        List<? extends BaseEntity> entities =
+                classes.stream().map(t -> ClassReflectionUtils.getInstance(t)).collect(Collectors.toList());
         for (BaseEntity e : entities) {
             getLogger().info("{} SQL = {}", e.getClass(), e.toSQL());
         }
@@ -35,8 +35,8 @@ public class ClassReflectionTest extends AbstractTestExecution {
         measureTime("getNamedArgs(" + clName + ")", () -> ClassReflectionUtils.getNamedArgs(cl));
         measureTime("getters(" + clName + ")", () -> ClassReflectionUtils.getters(cl));
         measureTime("isClassPublic(" + clName + ")", () -> ClassReflectionUtils.isClassPublic(cl));
-        List<Class<? extends Object>> testClasses = Arrays.asList(Double.class, String.class, Long.class, Integer.class,
-            Boolean.class, Enum.class);
+        List<Class<? extends Object>> testClasses =
+                Arrays.asList(Double.class, String.class, Long.class, Integer.class, Boolean.class, Enum.class);
         measureTime("hasClass(" + clName + ")", () -> ClassReflectionUtils.hasClass(testClasses, cl));
         Class<?> newClass2 = getClassInstance(cl, classes);
         clName = newClass2.getSimpleName();
@@ -47,7 +47,7 @@ public class ClassReflectionTest extends AbstractTestExecution {
         measureTime("properties(" + ob + "," + clName + ")", () -> ClassReflectionUtils.properties(ob, newClass2));
 
         List<Method> methods = measureTime("getGetterMethodsRecursive",
-            () -> ClassReflectionUtils.getGetterMethodsRecursive(newClass2));
+                () -> ClassReflectionUtils.getGetterMethodsRecursive(newClass2));
         measureTime("getFieldNameCase", () -> ClassReflectionUtils.getFieldNameCase(randomItem(methods)));
         measureTime("invoke", () -> ClassReflectionUtils.invoke(ob, randomItem(methods)));
 
@@ -65,8 +65,8 @@ public class ClassReflectionTest extends AbstractTestExecution {
     }
 
     private Class<?> getClassWithFields(Class<?> cl, List<Class<? extends Node>> classes) {
-        List<String> fields = measureTime("getFields(" + cl.getSimpleName() + ")",
-            () -> ClassReflectionUtils.getFields(cl));
+        List<String> fields =
+                measureTime("getFields(" + cl.getSimpleName() + ")", () -> ClassReflectionUtils.getFields(cl));
         Class<?> newClass = cl;
         while (fields.isEmpty()) {
             newClass = classes.remove(0);

@@ -26,8 +26,8 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.ListHelper;
+import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
-import utils.ex.RunnableEx;
 
 public class TimelionDisplay extends Application {
 
@@ -68,16 +68,18 @@ public class TimelionDisplay extends Application {
         FilteredList<Series<Number, Number>> filtered = timelionFullScan.filtered(e -> true);
         lineChart.setData(filtered);
         lineChart.setCreateSymbols(false);
-        lineChart.setAnimated(false);
         lineChart.setTitle(text);
+        lineChart.setAnimated(false);
         lineChart.setVerticalZeroLineVisible(false);
         mapping.add(0, "");
         ComboBox<String> comboBox = new SimpleComboBoxBuilder<String>().items(mapping).onChange(
                 (old, val) -> filtered.setPredicate(e -> StringUtils.isBlank(val) || Objects.equals(e.getName(), val)))
                 .build();
-        HBox content = new HBox(new VBox(new Text(keyword), comboBox), lineChart);
+        HBox content = new HBox(new VBox(new Text(keyword),
+                SimpleButtonBuilder.newButton("Update",
+                        e -> TimelionApi.timelionScan(timelionFullScan, timelineUsers, filter, "now-d")),
+                comboBox), lineChart);
         HBox.setHgrow(lineChart, Priority.ALWAYS);
-        RunnableEx.runNewThread(() -> TimelionApi.timelionScan(timelionFullScan, timelineUsers, filter, "now-d"));
         return new Tab(text, content);
     }
 

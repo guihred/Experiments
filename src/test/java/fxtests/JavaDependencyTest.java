@@ -25,7 +25,7 @@ import utils.ex.RunnableEx;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JavaDependencyTest {
     private static final Logger LOG = HasLogging.log();
-    private static int NUMBER_TESTS = 3;
+    private static int NUMBER_TESTS = 10;
 
     @Test
     public void testTestUncoveredApps() {

@@ -19,7 +19,7 @@ import utils.ex.SupplierEx;
 public class CustomListUnitTest {
 
     private static final Logger LOG = HasLogging.log();
-    Map<Class<?>, Object> parameter = new HashMap<>();
+    private Map<Class<?>, Object> parameter = new HashMap<>();
 
     @Test
     public void testCustomListImplementation() throws Exception {
@@ -164,7 +164,7 @@ public class CustomListUnitTest {
                 return new Object[] {};
             }
             if (m == Consumer.class) {
-                return (Consumer<Object>) t -> {
+                return (Consumer<Object>) (Object t) -> {
                     // DOES NOTHING
                 };
             }

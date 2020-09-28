@@ -23,7 +23,7 @@ import utils.*;
 import utils.ex.RunnableEx;
 
 public class FXHackTest extends AbstractTestExecution {
-    // @Test
+    @Test
     public void takeScreenshots() {
         List<String> asList = Arrays.asList("caged.maisemprego.mte.gov.br", "www3.dataprev.gov.br", "dataprev.gov.br",
                 "ppfacil.dataprev.gov.br", "caged.maisemprego.mte.gov.br", "vip-pgerid01.dataprev.gov.br",
@@ -49,23 +49,24 @@ public class FXHackTest extends AbstractTestExecution {
                 "pportalmaisemprego.dataprev.gov.br", "vip-psineaberto.dataprev.gov.br",
                 "mte-auto-atendimento.dataprev.gov.br", "mte-posto-atendimento.dataprev.gov.br");
         WhoIsScanner whoIsScanner = new WhoIsScanner();
-        for (String url : asList) {
-            measureTime("HashVerifier.renderPage", () -> {
-                RunnableEx.run(() -> whoIsScanner.name(url).waitStr("Please wait...")
-                        .subFolder("#gradeA", "#warningBox", "ratingTitle", "reportTitle").evaluateURL(
-                                "https://www.ssllabs.com/ssltest/analyze.html?d=" + url + "&ignoreMismatch=on&latest"));
-            });
-        }
+        String url = randomItem(asList);
+        measureTime("HashVerifier.renderPage", () -> {
+            RunnableEx.run(() -> whoIsScanner.name(url).waitStr("Please wait...")
+                    .subFolder("#gradeA", "#warningBox", "ratingTitle", "reportTitle").evaluateURL(
+                            "https://www.ssllabs.com/ssltest/analyze.html?d=" + url + "&ignoreMismatch=on&latest"));
+        });
     }
 
     @Test
     public void testFillIP() {
         File csvFile = new File(
                 "C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Acesso Web] Top Origens x URL Únicas acessadas.csv");
-        DataframeML dataframe = WhoIsScanner.fillIPInformation(csvFile);
-        String reorderAndLog = WhoIsScanner.reorderAndLog(dataframe, WhoIsScanner.getLastNumberField(dataframe));
-        getLogger().info("{}", reorderAndLog);
-        DataframeUtils.save(dataframe, ResourceFXUtils.getOutFile("csv/" + csvFile.getName()));
+        measureTime("WhoIsScanner.fillIPInformation", () -> {
+            DataframeML dataframe = WhoIsScanner.fillIPInformation(csvFile);
+            String reorderAndLog = WhoIsScanner.reorderAndLog(dataframe, WhoIsScanner.getLastNumberField(dataframe));
+            getLogger().info("{}", reorderAndLog);
+            DataframeUtils.save(dataframe, ResourceFXUtils.getOutFile("csv/" + csvFile.getName()));
+        });
 
     }
 
@@ -118,8 +119,8 @@ public class FXHackTest extends AbstractTestExecution {
 
     @Test
     public void testTimelionScan() {
-        measureTime("TimelionApi.timelionScan", () -> TimelionApi.timelionScan(FXCollections.observableArrayList(), TimelionApi.TIMELINE_USERS, new HashMap<>(),
-                "now-1d"));
+        measureTime("TimelionApi.timelionScan", () -> TimelionApi.timelionScan(FXCollections.observableArrayList(),
+                TimelionApi.TIMELINE_USERS, new HashMap<>(), "now-1d"));
     }
 
     @Test
@@ -151,7 +152,7 @@ public class FXHackTest extends AbstractTestExecution {
         measureTime("HashVerifier.getMD5Hash", () -> HashVerifier.getMD5Hash(firstPathByExtension));
         measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstPathByExtension));
         measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
-                measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
+        measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstPathByExtension));
     }
 
     @Test

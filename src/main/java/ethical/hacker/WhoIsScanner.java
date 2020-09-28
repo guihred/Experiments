@@ -212,7 +212,8 @@ public class WhoIsScanner {
 
     public static String getLastNumberField(BaseDataframe dataframe) {
         List<String> numberCols =
-                dataframe.getFormatMap().entrySet().stream().filter(e -> Number.class.isAssignableFrom(e.getValue()))
+                dataframe.getFormatMap().entrySet().stream().filter(e -> e.getValue() != null)
+                        .filter(e -> Number.class.isAssignableFrom(e.getValue()))
                         .map(Entry<String, Class<? extends Comparable<?>>>::getKey).collect(Collectors.toList());
         return numberCols.get(numberCols.size() - 1);
     }

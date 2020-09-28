@@ -1,13 +1,10 @@
 package graphs.app;
 
-import static java.util.stream.Collectors.toCollection;
-import static utils.CommonsFX.newFastFilter;
-import static utils.ex.PredicateEx.makeTest;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +18,10 @@ import javafx.stage.Stage;
 import ml.data.CoverageUtils;
 import simplebuilder.SimpleListViewBuilder;
 import utils.ClassReflectionUtils;
+import utils.CommonsFX;
 import utils.ExtractUtils;
+import utils.ex.PredicateEx;
+import utils.ex.RunnableEx;
 
 public class AllNodes extends Application {
 
@@ -32,15 +32,19 @@ public class AllNodes extends Application {
         Text right = new Text("");
         ExtractUtils.insertProxyConfig();
         primaryStage.setTitle("All Nodes");
-        ObservableList<Class<?>> items = CoverageUtils.getClasses(Node.class, Arrays.asList("com.")).stream()
-                .filter(Objects::nonNull).filter(e -> !Cell.class.isAssignableFrom(e))
-                .filter(makeTest(ClassReflectionUtils::isClassPublic))
-                .collect(toCollection(FXCollections::observableArrayList));
+        ObservableList<Class<?>> items = FXCollections.observableArrayList();
+        RunnableEx.runNewThread(() -> {
+
+            CoverageUtils.getClasses(Node.class, Arrays.asList("com.")).stream().filter(Objects::nonNull)
+                    .filter(e -> !Cell.class.isAssignableFrom(e))
+                    .filter(PredicateEx.makeTest(ClassReflectionUtils::isClassPublic))
+                    .collect(Collectors.toCollection(() -> items));
+        });
         TextField resultsFilter = new TextField();
         ScrollPane right2 = new ScrollPane(right);
         ListView<Class<?>> build = new SimpleListViewBuilder<Class<?>>()
                 .onSelect((old, t) -> right2.setContent(hashMap.computeIfAbsent(t, AllNodes::createInstance)))
-                .items(newFastFilter(resultsFilter, items.filtered(e -> true))).build();
+                .items(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true))).build();
         right2.setPrefSize(100, 100);
         right2.vmaxProperty().addListener(e -> right2.setVvalue(right2.getVmax()));
 

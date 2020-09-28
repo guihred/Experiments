@@ -32,6 +32,7 @@
 	<logger name="ch.qos.logback.classic" level="OFF" />
  	<logger name="com.github.junrar" level="OFF" /> 
 	<logger name="org.apache.pdfbox" level="OFF" />
+	<logger name="fxml.utils.FXMLCreator" level="OFF" />
 	<logger name="org.deeplearning4j.models" level="OFF" />
 	<logger name="org.nd4j" level="OFF" />
 

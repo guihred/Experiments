@@ -1,5 +1,7 @@
 package simplebuilder;
 
+import static utils.ex.FunctionEx.mapIf;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -149,7 +151,7 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     }
 
     public static Stage bindWindow(Stage stage, Node node1) {
-        Window window = node1.getScene().getWindow();
+        Window window = mapIf(mapIf(node1, Node::getScene), Scene::getWindow);
         if (window == null) {
             stage.showingProperty().addListener((ob, old, n) -> {
                 if (n) {
