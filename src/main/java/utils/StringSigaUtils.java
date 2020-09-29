@@ -2,6 +2,7 @@ package utils;
 
 import static utils.ex.SupplierEx.getIgnore;
 
+import com.google.common.collect.ImmutableMap;
 import java.lang.Character.UnicodeBlock;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -32,8 +33,8 @@ public class StringSigaUtils extends StringUtils {
     private static final List<Class<?>> FORMAT_HIERARCHY =
             Arrays.asList(String.class, Integer.class, Long.class, Double.class);
     public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
-    private static final Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> FORMAT_HIERARCHY_MAP =
-            formatHierarchy();
+    public static final ImmutableMap<Class<? extends Comparable<?>>, Function<String, ?>> FORMAT_HIERARCHY_MAP =
+            ImmutableMap.copyOf(formatHierarchy());
 
     public static Map<String, String> asMap(String line) {
         return asMap(line, ":");
@@ -96,15 +97,6 @@ public class StringSigaUtils extends StringUtils {
             return String.format(format, mean);
         }
         return String.format(floatFormating(length), mean);
-    }
-
-    public static Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> formatHierarchy() {
-        Map<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> linkedHashMap = new LinkedHashMap<>();
-        linkedHashMap.put(Integer.class, Integer::valueOf);
-        linkedHashMap.put(int.class, Integer::parseInt);
-        linkedHashMap.put(Long.class, Long::valueOf);
-        linkedHashMap.put(Double.class, Double::valueOf);
-        return linkedHashMap;
     }
 
     public static String formating(String s) {
@@ -284,9 +276,9 @@ public class StringSigaUtils extends StringUtils {
 
     public static Object tryAsNumber(Map<String, Class<? extends Comparable<?>>> formatMap2, String header,
             Class<?> currentFormat, String number) {
-        Set<Entry<Class<? extends Comparable<?>>, Function<String, Comparable<?>>>> entrySet =
+        Set<Entry<Class<? extends Comparable<?>>, Function<String, ?>>> entrySet =
                 FORMAT_HIERARCHY_MAP.entrySet();
-        for (Entry<Class<? extends Comparable<?>>, Function<String, Comparable<?>>> entry : entrySet) {
+        for (Entry<Class<? extends Comparable<?>>, Function<String, ?>> entry : entrySet) {
             try {
                 return tryNumber(formatMap2, entry.getKey(), currentFormat, number, header, entry.getValue());
             } catch (Exception e) {
@@ -298,9 +290,9 @@ public class StringSigaUtils extends StringUtils {
 
     public static Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,
             Class<? extends Comparable<?>> class1, Class<?> currentFormat, String number, String header,
-            Function<String, Comparable<?>> func) {
+            Function<String, ?> func) {
         if (FORMAT_HIERARCHY.indexOf(currentFormat) <= FORMAT_HIERARCHY.indexOf(class1)) {
-            Comparable<?> valueOf = func.apply(number);
+            Object valueOf = func.apply(number);
             if (currentFormat != class1) {
                 formatMap.put(header, class1);
             }
@@ -340,6 +332,15 @@ public class StringSigaUtils extends StringUtils {
             mask.setValueContainsLiteralCharacters(false);
             return mask.valueToString(valor);
         }, valor);
+    }
+
+    private static Map<Class<? extends Comparable<?>>, Function<String, ?>> formatHierarchy() {
+        Map<Class<? extends Comparable<?>>, Function<String, ?>> linkedHashMap = new LinkedHashMap<>();
+        linkedHashMap.put(Integer.class, Integer::valueOf);
+        linkedHashMap.put(int.class, Integer::parseInt);
+        linkedHashMap.put(Long.class, Long::valueOf);
+        linkedHashMap.put(Double.class, Double::valueOf);
+        return linkedHashMap;
     }
 
     private static boolean hasBom(byte[] input) {

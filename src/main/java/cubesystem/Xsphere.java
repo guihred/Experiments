@@ -33,6 +33,7 @@ package cubesystem;
 
 import static cubesystem.CubeXForm.copy;
 
+import javafx.beans.NamedArg;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
@@ -47,16 +48,20 @@ public class Xsphere extends Sphere {
     public Xsphere() {
         this(10, Color.WHITE);
     }
-    public Xsphere(double size, Color color) {
-        super(size);
+
+    public Xsphere(@NamedArg("radius") double radius, @NamedArg("color") Color color) {
+        super(radius);
         setMaterial(new PhongMaterial(color));
         getTransforms().addAll(rz, ry, rx);
     }
 
-	public Rotate getRx() {
+    public Color getColor() {
+        return ((PhongMaterial) getMaterial()).getDiffuseColor();
+    }
+
+    public Rotate getRx() {
 		return rx;
 	}
-
 	public Rotate getRy() {
 		return ry;
 	}
@@ -64,6 +69,10 @@ public class Xsphere extends Sphere {
 	public Rotate getRz() {
 		return rz;
 	}
+
+	public void setColor(Color color) {
+        setMaterial(new PhongMaterial(color));
+    }
 
     public void setRx(Rotate value) {
         copy(rx, value);

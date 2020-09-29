@@ -33,13 +33,10 @@ public class AllNodes extends Application {
         ExtractUtils.insertProxyConfig();
         primaryStage.setTitle("All Nodes");
         ObservableList<Class<?>> items = FXCollections.observableArrayList();
-        RunnableEx.runNewThread(() -> {
-
-            CoverageUtils.getClasses(Node.class, Arrays.asList("com.")).stream().filter(Objects::nonNull)
-                    .filter(e -> !Cell.class.isAssignableFrom(e))
-                    .filter(PredicateEx.makeTest(ClassReflectionUtils::isClassPublic))
-                    .collect(Collectors.toCollection(() -> items));
-        });
+        RunnableEx.runNewThread(() -> CoverageUtils.getClasses(Node.class, Arrays.asList("com.")).stream()
+                .filter(Objects::nonNull).filter(e -> !Cell.class.isAssignableFrom(e))
+                .filter(PredicateEx.makeTest(ClassReflectionUtils::isClassPublic))
+                .collect(Collectors.toCollection(() -> items)));
         TextField resultsFilter = new TextField();
         ScrollPane right2 = new ScrollPane(right);
         ListView<Class<?>> build = new SimpleListViewBuilder<Class<?>>()
@@ -61,7 +58,6 @@ public class AllNodes extends Application {
         if (instanceNull instanceof Pane) {
             ((Pane) instanceNull).getChildren().addAll(new Text("1"), new Text("2"), new Text("3"));
         }
-
         return instanceNull;
     }
 }

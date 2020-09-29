@@ -121,7 +121,7 @@ public class CSVUtils {
         }
     }
 
-    public static void createNullRow(List<String> header, List<String> line2) {
+    public static void createNullRow(Collection<String> header, Collection<String> line2) {
         if (line2.size() < header.size()) {
             long maxSize2 = header.size() - (long) line2.size();
             line2.addAll(Stream.generate(() -> "").limit(maxSize2).collect(Collectors.toList()));

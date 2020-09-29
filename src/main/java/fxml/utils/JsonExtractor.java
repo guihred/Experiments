@@ -23,22 +23,26 @@ public final class JsonExtractor {
     private JsonExtractor() {
     }
 
-    @SuppressWarnings("rawtypes")
-    public static Object access(Object root, Object... param) {
+    public static <T>T access(Object root,Class<T> cl, Object... param) {
         Object o = root;
         for (Object object : param) {
             o = FunctionEx.apply(ob -> {
                 if (object instanceof String) {
-                    return ((Map) ob).get(object);
+                    return ((Map<?,?>) ob).get(object);
                 }
                 if (object instanceof Integer) {
-                    return ((List) ob).get(((Integer) object).intValue());
+                    return ((List<?>) ob).get(((Integer) object).intValue());
                 }
                 return ob;
             }, o, o);
         }
-        return o;
+        return cl.cast(o);
+    }
 
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> accessList(Object root, Object... param) {
+        return access(root, List.class, param);
     }
 
     public static void addValue(JsonNode item, TreeItem<Map<String, String>> e) {

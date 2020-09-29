@@ -92,11 +92,14 @@ public final class Mapping {
             if (i >= dependencies.length) {
                 TextField node = (TextField) vBox.getChildren().get(i - dependencies.length);
                 Object tryAsNumber =
-                        StringSigaUtils.formatHierarchy().getOrDefault(parameterTypes[i], e -> e).apply(node.getText());
+                        StringSigaUtils.FORMAT_HIERARCHY_MAP.getOrDefault(parameterTypes[i], e -> e)
+                                .apply(node.getText());
                 ob[i] = tryAsNumber;
             }
         }
-        LOG.info("RUNNING {} {} {}", method, Arrays.toString(ob), Arrays.toString(dependencies));
+        String params = Arrays.toString(ob);
+        String strDepen = Arrays.toString(dependencies);
+        LOG.info("RUNNING {} {} {}", method, params, strDepen);
         runNewThread(() -> DataframeUtils.crossFeatureObject(dataframe, button.getText(), progress, o -> {
             for (int i = 0; i < o.length; i++) {
                 ob[i] = o[i];

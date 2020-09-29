@@ -16,6 +16,7 @@ import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
+import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 
@@ -134,7 +135,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         if (call2 instanceof CustomListCell) {
             return (CustomListCell<T>) call2;
         }
-        table.setCellFactory(newCellFactory(t -> Objects.toString(t)));
+        table.setCellFactory(newCellFactory(StringSigaUtils::toStringSpecial));
         return (CustomListCell<T>) table.getCellFactory().call(table);
     }
 

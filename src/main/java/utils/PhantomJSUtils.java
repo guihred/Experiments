@@ -63,7 +63,8 @@ public final class PhantomJSUtils {
         return collect;
     }
 
-    public static void postJson(String url, String content,Map<String, String> headers, File outFile) throws IOException {
+    public static void postJson(String url, String content, Map<String, String> headers, File outFile)
+            throws IOException {
         ExtractUtils.insertProxyConfig();
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);

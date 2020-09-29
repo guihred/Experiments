@@ -1,9 +1,7 @@
 package fxtests;
 
-import audio.mp3.MusicOrganizer;
-import ethical.hacker.PageExtractor;
+import cubesystem.SphereSystemApp;
 import fxml.utils.FXMLCreatorHelper;
-import fxml.utils.JsonViewer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,8 +30,9 @@ public final class FXMLCreatorTest {
     @Test
     public void testClassesNotClose() {
         List<Class<? extends Application>> classes =
-                Arrays.asList(JsonViewer.class, MusicOrganizer.class, PageExtractor.class);
-        FXMLCreatorHelper.testApplications(classes, true);
+                Arrays.asList(SphereSystemApp.class);
+        FXMLCreatorHelper.testApplications(classes, false);
+
     }
 
     private static <T> String classNames(List<Class<? extends T>> testApplications) {

@@ -5,7 +5,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
@@ -60,21 +59,22 @@ public final class TimelionApi extends KibanaApi {
         return SupplierEx.getHandle(() -> {
             Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
                     timelineUsers, filterMap, time);
-            CommonsFX.runInPlatform(() -> convertToSeries(series, JsonExtractor.access(policiesSearch, "sheet")));
+            CommonsFX.runInPlatform(
+                    () -> convertToSeries(series, JsonExtractor.accessList(policiesSearch, "sheet")));
             return series;
         }, FXCollections.emptyObservableList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
     }
 
-    @SuppressWarnings({ "unchecked" })
     private static ObservableList<XYChart.Series<Number, Number>>
-            convertToSeries(ObservableList<Series<Number, Number>> series, Object access) {
-        return ((List<Object>) access).stream().flatMap(e -> ((List<Object>) JsonExtractor.access(e, "list")).stream())
+            convertToSeries(ObservableList<Series<Number, Number>> series, List<?> access) {
+        return access.stream()
+                .flatMap(e -> JsonExtractor.accessList(e, "list").stream())
                 .map((Object o) -> {
                     XYChart.Series<Number, Number> java = new XYChart.Series<>();
-                    java.setName(Objects.toString(JsonExtractor.access(o, "label")));
-                    ((List<Object>) JsonExtractor.access(o, "data")).stream().forEach(f -> {
-                        Long access2 = Long.valueOf(Objects.toString(JsonExtractor.access(f, 0)));
-                        Long access3 = Long.valueOf(Objects.toString(JsonExtractor.access(f, 1)));
+                    java.setName(JsonExtractor.access(o, String.class, "label"));
+                    JsonExtractor.accessList(o, "data").stream().forEach(f -> {
+                        Long access2 = Long.valueOf(JsonExtractor.access(f, String.class, 0));
+                        Long access3 = Long.valueOf(JsonExtractor.access(f, String.class, 1));
                         java.getData().add(new XYChart.Data<>(access2, access3));
                     });
                     return java;
