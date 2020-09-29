@@ -128,11 +128,9 @@ public class PrintConfig extends Application {
     }
 
     public void printToPDF(Event e) {
-        new FileChooserBuilder().name("Export PDF").title("Export PDF").extensions("PDF", "*.pdf").onSelect(file -> {
-            File outputFile = generatePDF(file);
-            ImageFXUtils.openInDesktop(outputFile);
-            StageHelper.closeStage(panel);
-        }).saveFileAction(e);
+        new FileChooserBuilder().name("Export PDF").title("Export PDF").extensions("PDF", "*.pdf")
+                .onSelect(this::generatePDF).saveFileAction(e);
+        StageHelper.closeStage(panel);
 
     }
 

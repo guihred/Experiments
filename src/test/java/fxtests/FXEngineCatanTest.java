@@ -193,10 +193,10 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         cardsToSelect.sort(Comparator.comparing((CatanCard c) -> matches(btn, c))
                 .thenComparing(c -> orderByResources(cardsToSelect, c)));
         cardsToSelect.removeIf(CatanCard::isSelected);
-        if ((random.nextBoolean() || btn != null) && !cardsToSelect.isEmpty()) {
+        if ((nextBoolean() || btn != null) && !cardsToSelect.isEmpty()) {
             targetPos(Pos.TOP_CENTER);
             clickOn(cardsToSelect.remove(0));
-            if (random.nextBoolean() && !cardsToSelect.isEmpty()
+            if (nextBoolean() && !cardsToSelect.isEmpty()
                     && allCards.stream().filter(CatanCard::isSelected).count() < 4) {
                 clickOn(cardsToSelect.remove(0));
             }
@@ -205,6 +205,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
         }
         return false;
     }
+
 
     private boolean clickCities(final List<City> cities) {
         List<City> notClickedVillages = lookupList(City.class, t -> !cities.contains(t));

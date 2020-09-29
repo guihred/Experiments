@@ -2,39 +2,37 @@
 package ethical.hacker;
 
 import io.pkts.Pcap;
-import io.pkts.buffer.Buffer;
 import io.pkts.packet.TCPPacket;
 import io.pkts.packet.UDPPacket;
 import io.pkts.protocol.Protocol;
 import java.io.File;
 import java.io.IOException;
-import org.slf4j.Logger;
-import utils.ex.HasLogging;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import utils.ClassReflectionUtils;
 
 public final class PCapReader {
-    private static final Logger LOG = HasLogging.log();
 
     private PCapReader() {
     }
 
-    public static void readPCAPngFile(File file) throws IOException {
+    public static List<Map<String, String>> readPCAPngFile(File file) throws IOException {
         final Pcap pcap = Pcap.openStream(file);
+        List<Map<String, String>> packets = new ArrayList<>();
         pcap.loop(packet -> {
             if (packet.hasProtocol(Protocol.TCP)) {
                 TCPPacket tcpPacket = (TCPPacket) packet.getPacket(Protocol.TCP);
-                Buffer buffer1 = tcpPacket.getPayload();
-                if (buffer1 != null) {
-                    LOG.info("TCP: {}", buffer1);
-                }
+                Map<String, String> description = ClassReflectionUtils.getDescriptionRecursive(tcpPacket);
+                packets.add(description);
             } else if (packet.hasProtocol(Protocol.UDP)) {
 
                 UDPPacket udpPacket = (UDPPacket) packet.getPacket(Protocol.UDP);
-                Buffer buffer2 = udpPacket.getPayload();
-                if (buffer2 != null) {
-                    LOG.info("UDP: {}", buffer2);
-                }
+                Map<String, String> description = ClassReflectionUtils.getDescriptionRecursive(udpPacket);
+                packets.add(description);
             }
             return true;
         });
+        return packets;
     }
 }

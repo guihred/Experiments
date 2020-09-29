@@ -60,6 +60,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     public FxRobotInterface moveTo(Node bounds) {
         return SupplierEx.get(()->super.moveTo(bounds));
     }
+
     @Override
     public void start(Stage stage) {
         CommonsFX.initializeFX();
@@ -67,7 +68,6 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         currentStage.setX(0);
         currentStage.setY(0);
     }
-
     @Override
     public void stop() {
         interact(() -> currentStage.close());
@@ -130,6 +130,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         }
     }
 
+    protected boolean nextBoolean() {
+        return random.nextBoolean();
+    }
+
     protected int nextInt(int bound) {
         return random.nextInt(bound);
     }
@@ -168,7 +172,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     protected void selectComboItems(ComboBox<?> e, int max) {
         for (int i = 0; i < max && i < e.getItems().size(); i++) {
             int j = i;
-            interact(() -> e.getSelectionModel().select(j));
+            interact(RunnableEx.make(() -> e.getSelectionModel().select(j)));
         }
     }
 

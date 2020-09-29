@@ -182,30 +182,32 @@ public class IndependentTest {
     }
 
     @Test
-    public void testJsoupExample() {
+    public void testJsoupUtils() {
         String ABOUT_HTML = "About.html";
         File file = ResourceFXUtils.toFile(ABOUT_HTML);
         URL url = ResourceFXUtils.convertToURL(file);
-        measureTime("JsoupExample.displayAllElements", () -> JsoupUtils.displayAllElements(file));
-        measureTime("JsoupExample.displayAllElementsWithOutline",
+        measureTime("JsoupUtils.displayAllElements", () -> JsoupUtils.displayAllElements(file));
+        measureTime("JsoupUtils.displayAllElementsWithOutline",
                 () -> JsoupUtils.displayAllElementsWithOutline(file));
-        measureTime("JsoupExample.extractDataFromHTML", () -> JsoupUtils.extractDataFromHTML(file));
-        measureTime("JsoupExample.extractingJavaScriptDataWithJsoup",
+        measureTime("JsoupUtils.extractDataFromHTML", () -> JsoupUtils.extractDataFromHTML(file));
+        measureTime("JsoupUtils.extractingJavaScriptDataWithJsoup",
                 () -> JsoupUtils.extractingJavaScriptDataWithJsoup());
-        measureTime("JsoupExample.extractTwitterMarkup", () -> JsoupUtils.extractTwitterMarkup());
-        measureTime("JsoupExample.extractURL", () -> JsoupUtils.extractURL("http://stackoverflow.com"));
-        measureTime("JsoupExample.extractURLPartialHTML", () -> JsoupUtils.extractURLPartialHTML());
-        measureTime("JsoupExample.filterMailToLinks", () -> JsoupUtils.filterMailToLinks());
-        final String username = "guih.red@gmail.com";
-        final String pass = "";
-        measureTime("JsoupExample.normalParse", () -> JsoupUtils.normalParse(file));
-        measureTime("JsoupExample.renderedInTheBrowser", () -> JsoupUtils.renderedInTheBrowser(url));
-        measureTime("JsoupExample.selectingElements", () -> JsoupUtils.selectingElements());
-        String url1 = "yourWebsite.com/loginUrl";
-        String value = "yourUsername";
-        String value2 = "yourPassword";
-        measureTime("JsoupExample.simpleAuthentication", () -> JsoupUtils.simpleAuthentication(url1, value, value2));
-        measureTime("JsoupExample.loginGitHub", () -> JsoupUtils.loginGitHub(username, pass));
+        measureTime("JsoupUtils.extractTwitterMarkup", () -> JsoupUtils.extractTwitterMarkup());
+        measureTime("JsoupUtils.extractURL", () -> JsoupUtils.extractURL("http://stackoverflow.com"));
+        measureTime("JsoupUtils.extractURLPartialHTML", () -> JsoupUtils.extractURLPartialHTML());
+        measureTime("JsoupUtils.filterMailToLinks", () -> JsoupUtils.filterMailToLinks());
+        measureTime("JsoupUtils.normalParse", () -> JsoupUtils.normalParse(file));
+        measureTime("JsoupUtils.renderedInTheBrowser", () -> JsoupUtils.renderedInTheBrowser(url));
+        measureTime("JsoupUtils.selectingElements", () -> JsoupUtils.selectingElements());
+        // final String username = "guih.red@gmail.com";
+        // final String pass = "";
+        // String url1 = "yourWebsite.com/loginUrl";
+        // String value = "yourUsername";
+        // String value2 = "yourPassword";
+        // measureTime("JsoupUtils.simpleAuthentication", () ->
+        // JsoupUtils.simpleAuthentication(url1, value, value2));
+        // measureTime("JsoupUtils.loginGitHub", () ->
+        // JsoupUtils.loginGitHub(username, pass));
 
     }
 

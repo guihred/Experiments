@@ -117,7 +117,7 @@ public class FXEngineTest extends AbstractTestExecution {
     @Test
     public void verifyScrollWorldMaps() {
         measureTime("Test.verifyScroll", () -> verifyAndRun(() -> {
-            ImageFXUtils.setShowImage(random.nextBoolean());
+            ImageFXUtils.setShowImage(nextBoolean());
             lookup(".root").queryAll().forEach(t -> {
                 moveTo(t);
                 scroll(2, VerticalDirection.DOWN);

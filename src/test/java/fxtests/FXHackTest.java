@@ -94,6 +94,21 @@ public class FXHackTest extends AbstractTestExecution {
     }
 
     @Test
+    public void testPageExtractor() {
+        PageExtractor show = show(PageExtractor.class);
+        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Referencias\\screenshots");
+        interactNoWait(() -> show.loadHTMLFiles(file));
+        lookup(TextField.class).stream().limit(2).forEach(e -> {
+            tryClickOn(e);
+            write("title");
+        });
+        lookup(".button").queryAll().forEach(t -> {
+            tryClickOn(t);
+            type(KeyCode.ESCAPE);
+        });
+    }
+
+    @Test
     public void testPortServices() {
         measureTime("PortServices.loadServiceNames", () -> PortServices.loadServiceNames());
         measureTime("PortServices.getServiceByPort", () -> PortServices.getServiceByPort(80));
@@ -132,6 +147,17 @@ public class FXHackTest extends AbstractTestExecution {
         sleep(2000);
         clickOn(lookupFirst(Button.class));
         sleep(1000);
+    }
+
+    @Test
+    public void testWebScannerApplication() {
+        show(WebScannerApplication.class);
+        lookup(TextField.class).stream().limit(1).forEach(e -> {
+            tryClickOn(e);
+            write("https://google.com/");
+            type(KeyCode.ENTER);
+        });
+
     }
 
     @Test

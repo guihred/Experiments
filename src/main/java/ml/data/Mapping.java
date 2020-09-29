@@ -18,12 +18,14 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import utils.ClassReflectionUtils;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
+import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 /**
@@ -32,6 +34,8 @@ import utils.ex.SupplierEx;
  */
 public final class Mapping {
     private static List<Method> methods;
+
+    private static final Logger LOG = HasLogging.log();
 
     private Mapping() {
     }
@@ -57,12 +61,13 @@ public final class Mapping {
 
     public static void showDialog(Node barChart, String[] dependencies, DataframeML dataframe, ConsumerEx<File> run) {
         List<Class<?>> allowedTypes = Stream.of(dependencies).map(dataframe::getFormat).collect(Collectors.toList());
-        ObservableList<Method> methods2 =
-                FXCollections.observableArrayList(Mapping.getMethods()).filtered(m -> ClassReflectionUtils.isAllowed(allowedTypes, m.getParameterTypes()));
+        ObservableList<Method> methods2 = FXCollections.observableArrayList(Mapping.getMethods())
+                .filtered(m -> ClassReflectionUtils.isAllowed(allowedTypes, m.getParameterTypes()));
         VBox vBox = new VBox();
 
-        ComboBox<Method> build = new SimpleComboBoxBuilder<>(methods2).select(0).converter(Mapping::methodName)
-                .onChange((old, method) -> adjustToMethod(dependencies, vBox, method)).build();
+        ComboBox<Method> build =
+                new SimpleComboBoxBuilder<>(methods2).id("methodCombo").select(0).converter(Mapping::methodName)
+                        .onChange((old, method) -> adjustToMethod(dependencies, vBox, method)).build();
 
         TextField button = new TextField(Stream.of(dependencies).collect(Collectors.joining("_")) + 1);
         SimpleDialogBuilder dialog = new SimpleDialogBuilder().bindWindow(barChart).node(button);
@@ -91,6 +96,7 @@ public final class Mapping {
                 ob[i] = tryAsNumber;
             }
         }
+        LOG.info("RUNNING {} {} {}", method, Arrays.toString(ob), Arrays.toString(dependencies));
         runNewThread(() -> DataframeUtils.crossFeatureObject(dataframe, button.getText(), progress, o -> {
             for (int i = 0; i < o.length; i++) {
                 ob[i] = o[i];

@@ -26,8 +26,8 @@ public final class FXEngineSolitaireTest extends AbstractTestExecution {
         Set<Node> queryAll = lookup(DotsSquare.class).stream().limit(20).collect(Collectors.toSet());
         for (Node next : queryAll) {
             drag(next, MouseButton.PRIMARY);
-            int a = random.nextBoolean() ? 1 : -1;
-            if (random.nextBoolean()) {
+            int a = nextBoolean() ? 1 : -1;
+            if (nextBoolean()) {
                 moveBy(a * DotsSquare.SQUARE_SIZE, 0);
             } else {
                 moveBy(0, a * DotsSquare.SQUARE_SIZE);
@@ -43,7 +43,7 @@ public final class FXEngineSolitaireTest extends AbstractTestExecution {
             if (cardStack.getCards().isEmpty()) {
                 continue;
             }
-            if (!random.nextBoolean()) {
+            if (!nextBoolean()) {
                 randomDrag(cardStack, 100);
             } else {
                 clickOn(cardStack);

@@ -64,13 +64,11 @@ public class DataframeExplorer extends ExplorerVariables {
         SimpleTableViewBuilder.of(histogram).multipleSelection().equalColumns().copiable().savable()
                 .onKey(KeyCode.ADD, list -> addQuestion(list, true))
                 .onKey(KeyCode.SUBTRACT, list -> addQuestion(list, false));
-        SimpleListViewBuilder.of(columnsList).items(columns).onSelect(this::onColumnChosen).onKey(KeyCode.DELETE, t -> {
-            columns.remove(t);
-            getDataframe().removeCol(t.getKey());
-        })
-
-                .addContextMenu("_Split", e -> splitByColumn())
-                .addContextMenu("Add Mapping",
+        SimpleListViewBuilder.of(columnsList).items(columns).multipleSelection().onSelect(this::onColumnChosen)
+                .onKey(KeyCode.DELETE, t -> {
+                    columns.remove(t);
+                    getDataframe().removeCol(t.getKey());
+                }).addContextMenu("_Split", e -> splitByColumn()).addContextMenu("Add Mapping",
                         e0 -> Mapping.showDialog(barChart, columnsList.getSelectionModel().getSelectedItems().stream()
                                 .map(Entry<String, DataframeStatisticAccumulator>::getKey).toArray(String[]::new),
                                 getDataframe(), this::addStats));
@@ -139,14 +137,35 @@ public class DataframeExplorer extends ExplorerVariables {
             FileChooserBuilder chooser = new FileChooserBuilder();
             chooser.title("Save File").initialDir(getDataframe().getFile().getParentFile())
                     .initialFilename(getDataframe().getFile().getName()).extensions("Data", "*.csv");
-            chooser.onSelect(outFile -> RunnableEx.runNewThread(() -> {
-                if (!getDataframe().isLoaded()) {
-                    readDataframe(getDataframe().getFile(), getDataframe().getSize());
-                }
-                DataframeUtils.save(getDataframe(), outFile);
-                LOG.info("{} SAVED", outFile);
-            })).saveFileAction(event);
+            chooser.onSelect(this::save).saveFileAction(event);
         }
+    }
+
+    public void readDataframe(File file, int maxSize) {
+        DataframeBuilder builder = builderWithQuestions(file, questions);
+        if (!ExcelService.isExcel(file)) {
+            Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
+            setDataframe(builder.dataframe());
+            CommonsFX.runInPlatform(() -> columns.setAll(entrySet));
+            builder.makeStats(progress.progressProperty());
+        }
+        if (ExcelService.isExcel(file) || getDataframe().getSize() <= maxSize) {
+            setDataframe(builder.build());
+            CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
+        }
+        CommonsFX.runInPlatform(() -> columns.setAll(SupplierEx
+                .orElse(getDataframe().getStats(), () -> DataframeUtils.makeStats(getDataframe())).entrySet()));
+        LOG.info("File {} READ", file.getName());
+    }
+
+    public Thread save(File outFile) {
+        return RunnableEx.runNewThread(() -> {
+            if (!getDataframe().isLoaded()) {
+                readDataframe(getDataframe().getFile(), getDataframe().getSize());
+            }
+            DataframeUtils.save(getDataframe(), outFile);
+            LOG.info("{} SAVED", outFile);
+        });
     }
 
     @Override
@@ -187,23 +206,6 @@ public class DataframeExplorer extends ExplorerVariables {
                 }
             }
         }
-    }
-
-    private void readDataframe(File file, int maxSize) {
-        DataframeBuilder builder = builderWithQuestions(file, questions);
-        if (!ExcelService.isExcel(file)) {
-            Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
-            setDataframe(builder.dataframe());
-            CommonsFX.runInPlatform(() -> columns.setAll(entrySet));
-            builder.makeStats(progress.progressProperty());
-        }
-        if (ExcelService.isExcel(file) || getDataframe().getSize() <= maxSize) {
-            setDataframe(builder.build());
-            CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
-        }
-        CommonsFX.runInPlatform(() -> columns.setAll(SupplierEx
-                .orElse(getDataframe().getStats(), () -> DataframeUtils.makeStats(getDataframe())).entrySet()));
-        LOG.info("File {} READ", file.getName());
     }
 
     private void splitByColumn() {

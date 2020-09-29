@@ -94,6 +94,16 @@ public final class ClassReflectionUtils {
 
     }
 
+    public static Map<String,String> getDescriptionRecursive(Object targetClass) {
+        List<Method> getterMethodsRecursive = getGetterMethodsRecursive(targetClass.getClass(), 10);
+        Map<String,String> linkedHashMap = new LinkedHashMap<>();
+        for (Method method : getterMethodsRecursive) {
+            Object invoke = invoke(targetClass, method);
+            linkedHashMap.put(ClassReflectionUtils.getFieldName(method), StringSigaUtils.toStringSpecial(invoke));
+        }
+        return linkedHashMap;
+    }
+
     public static Map<String, Object> getFieldMap(Object ob, Class<?> cl) {
         return ClassReflectionUtils.getGetterMethodsRecursive(cl).stream()
                 .filter(e -> ClassReflectionUtils.invoke(ob, e) != null)

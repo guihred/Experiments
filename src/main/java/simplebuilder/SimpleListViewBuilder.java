@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
@@ -45,6 +46,11 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
 
     public SimpleListViewBuilder<T> items(final ObservableList<T> value) {
         node.setItems(value);
+        return this;
+    }
+
+    public SimpleListViewBuilder<T> multipleSelection() {
+        node.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         return this;
     }
 

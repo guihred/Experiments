@@ -18,7 +18,6 @@ public class WordCountTest {
 		expectedWordCount.put("two", 1);
 		expectedWordCount.put("red", 1);
 		expectedWordCount.put("blue", 1);
-
         Map<String, Integer> actualWordCount = WordCount.phrase("one fish two fish red fish blue fish");
         assertEquals("", expectedWordCount, actualWordCount);
 	}

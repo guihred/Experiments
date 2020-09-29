@@ -120,7 +120,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         int bound = (int) (stack.getBoundsInParent().getWidth() / 3);
         List<KeyCode> testCodes = Arrays.asList(DELETE, V, C, X, A, RIGHT, LEFT, DOWN, UP, ADD, SUBTRACT);
         if (!colors.isEmpty()) {
-            RunnableEx.ignore(() -> doubleClickOn(colors.remove(random.nextInt(colors.size())), MouseButton.PRIMARY));
+            RunnableEx.ignore(() -> doubleClickOn(colors.remove(nextInt(colors.size())), MouseButton.PRIMARY));
             tryClickButtons();
         }
         List<String> collect = queryAll.stream().map(e -> e.getUserData()).map(e -> e.getClass().getSimpleName())
@@ -137,7 +137,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             }
             getLogger().info("Testing {} ", simpleName);
             if (!colors.isEmpty()) {
-                tryClickOn(colors.remove(random.nextInt(colors.size())), getRandMouseButton(5));
+                tryClickOn(colors.remove(nextInt(colors.size())), getRandMouseButton(5));
             }
             clickOn(next);
             lookup("#tools .slider").queryAll().forEach(f -> {
@@ -196,7 +196,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     }
 
     private void testAreaTools(List<KeyCode> testCodes) {
-        boolean nextBoolean = random.nextBoolean();
+        boolean nextBoolean = nextBoolean();
         if (nextBoolean) {
             press(KeyCode.CONTROL);
         }
@@ -228,7 +228,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 clickOn(randomItem(areaTools));
                 MenuItem menu = items.get(j);
                 moveTo(stack);
-                if (random.nextBoolean()) {
+                if (nextBoolean()) {
                     double bound2 = stack.getBoundsInParent().getWidth();
                     moveBy(-bound2 / 4, -bound2 / 4);
                     drag(MouseButton.PRIMARY);
@@ -253,7 +253,6 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 }
                 if (i == 0 && j == 4) {
                     lookup(Button.class).forEach(this::tryClickOn);
-                    // Print
                     lookup(ComboBox.class).forEach(ConsumerEx.ignore(
                             m -> interactNoWait(() -> m.getSelectionModel().select(nextInt(m.getItems().size())))));
                     lookup(Button.class).forEach(this::tryClickOn);
@@ -262,7 +261,7 @@ public class FXEnginePaintTest extends AbstractTestExecution {
                 lookup(".text-field").queryAll().forEach(e -> {
                     clickOn(e);
                     eraseText(3);
-                    write("" + (random.nextInt(120) + 20));
+                    write("" + (nextInt(120) + 20));
                 });
                 lookup("Resize").queryAll().forEach(this::clickOn);
                 lookup(".slider").queryAll().forEach(ConsumerEx.ignore(m -> {

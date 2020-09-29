@@ -300,7 +300,8 @@ public class DataframeUtils extends DataframeML {
         dataframe.forEach((s, l) -> str.append(StringSigaUtils.format(maxFormatMap.get(s), s)));
         str.append("\n");
         dataframe.getFormatMap()
-                .forEach((s, l) -> str.append(StringSigaUtils.format(maxFormatMap.get(s), l.getSimpleName())));
+                .forEach((s, l) -> str.append(
+                        StringSigaUtils.format(maxFormatMap.get(s), FunctionEx.mapIf(l, Class::getSimpleName))));
         str.append("\n");
         for (int i = 0; i < Math.min(dataframe.size, max); i++) {
             int j = i;

@@ -52,6 +52,14 @@ public class PageExtractor extends Application {
         value = FXCollections.observableArrayList();
     }
 
+    public void loadHTMLFiles(File file) {
+        List<Path> pathByExtension = FileTreeWalker.getPathByExtension(file, ".html");
+        paginatedTableView.setListSize(pathByExtension.size());
+        value.setAll(pathByExtension.stream().map(Path::toFile)
+                .map(FunctionEx.makeFunction(f -> Jsoup.parse(f, StandardCharsets.UTF_8.displayName())))
+                .collect(Collectors.toList()));
+    }
+
     public void onActionAddHTMLField() {
         addHTMLField(value, paginatedTableView, selector, columnName, columnMap);
     }
@@ -70,13 +78,8 @@ public class PageExtractor extends Application {
     }
 
     public void onActionLoadHTMLs(ActionEvent e) {
-        new FileChooserBuilder().name("Load HTMLs").onSelect(file -> {
-            List<Path> pathByExtension = FileTreeWalker.getPathByExtension(file, ".html");
-            paginatedTableView.setListSize(pathByExtension.size());
-            value.setAll(pathByExtension.stream().map(Path::toFile)
-                    .map(FunctionEx.makeFunction(f -> Jsoup.parse(f, StandardCharsets.UTF_8.displayName())))
-                    .collect(Collectors.toList()));
-        }).title("HTML to LOAD").openDirectoryAction(e);
+        new FileChooserBuilder().name("Load HTMLs").onSelect(this::loadHTMLFiles).title("HTML to LOAD")
+                .openDirectoryAction(e);
     }
 
     @Override

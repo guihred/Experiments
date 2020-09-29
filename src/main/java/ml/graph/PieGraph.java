@@ -52,8 +52,9 @@ public class PieGraph extends Canvas {
             drawGraph();
         });
         widthProperty().addListener(listener);
-        widthProperty().bind(Bindings.selectDouble(sceneProperty(), "width").divide(3 / 2.));
-        heightProperty().bind(Bindings.selectDouble(sceneProperty(), "height"));
+        Bindings.selectDouble(sceneProperty(), "width").divide(3 / 2.)
+                .addListener((ob, o, n) -> setWidth(n.doubleValue()));
+        Bindings.selectDouble(sceneProperty(), "height").addListener((ob, o, n) -> setHeight(n.doubleValue()));
 
     }
 

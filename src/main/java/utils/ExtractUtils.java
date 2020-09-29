@@ -1,11 +1,13 @@
 
 package utils;
 
+//import com.google.common.base.Objects;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.Property;
@@ -53,9 +55,11 @@ public final class ExtractUtils {
     }
 
     public static void copy(File input, File outFile) throws IOException {
-        HasLogging.log(1).info("COPYING {}->{}", input, outFile);
-        try (FileInputStream inputStream = new FileInputStream(input)) {
-            ExtractUtils.copy(inputStream, outFile);
+        if (!Objects.equals(outFile, input)) {
+            HasLogging.log(1).info("COPYING {}->{}", input, outFile);
+            try (FileInputStream inputStream = new FileInputStream(input)) {
+                ExtractUtils.copy(inputStream, outFile);
+            }
         }
     }
 

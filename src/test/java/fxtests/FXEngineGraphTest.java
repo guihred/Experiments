@@ -45,7 +45,7 @@ public class FXEngineGraphTest extends AbstractTestExecution {
     @Test
 	public void verifyAllTopologies() {
 		show(GraphMain.class);
-        // RandomTopology GridLayout CircleTopology
+        // RandomTopology GridLayout CircleTopology WordTopology
         List<ComboBox<?>> queryButtons = Stream.of("#selectLayout", "#topologySelect")
             .map(e -> lookup(e).queryComboBox())
             .collect(Collectors.toList());

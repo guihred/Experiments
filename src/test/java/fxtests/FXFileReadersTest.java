@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import kibana.KibanaApi;
-import ml.data.Mapping;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -182,7 +181,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
     @Test
     public void testLoadKibanaApi() {
         measureTime("ExcelService.getExcel",
-                () -> ExcelService.getExcel(ResourceFXUtils.toFile("Lista de IP da Caixa.xlsx"), (List<Object> l) -> {
+                () -> ExcelService.getExcel(ResourceFXUtils.toFile("Lista de IP da Caixa.xls"), (List<Object> l) -> {
                     if (l.isEmpty()) {
                         return null;
                     }
@@ -201,14 +200,10 @@ public class FXFileReadersTest extends AbstractTestExecution {
                 }, ResourceFXUtils.getOutFile("apiResult2.xlsx")));
     }
 
-    @Test
-    public void testMapping() {
-        measureTime("Mapping.getMethods", () -> Mapping.getMethods());
-    }
 
     @Test
     public void testPCapReader() {
-        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\CiscoCNNA\\one.pcapng");
+        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\CiscoCNNA\\two.pcap");
         measureTime("PCapReader.readPCAPngFile", () -> PCapReader.readPCAPngFile(file));
     }
 

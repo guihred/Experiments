@@ -64,7 +64,7 @@ public class FXEngineQuartoTest extends AbstractTestExecution {
 
 	private void randButton(double width, double height) {
 
-		boolean bigRadius = random.nextBoolean();
+        boolean bigRadius = nextBoolean();
 		double angle = randAngle(bigRadius ? 12 : 4);
 
 		double x = Math.cos(angle) * width / 7 / (bigRadius ? 1 : 2) + width / 2;
