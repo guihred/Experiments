@@ -2,6 +2,7 @@ package fxtests;
 
 import static javafx.scene.input.KeyCode.*;
 
+import extract.PrintConfig;
 import java.io.File;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
@@ -59,7 +60,6 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         }
         tryClickButtons();
     }
-
     @Test
     public void testLinePencilTool() {
         show(PaintMain.class);
@@ -89,6 +89,23 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
         ImageFXUtils.setShowImage(false);
         testMenus(stack);
+    }
+
+    @Test
+    public void testPrintConfig() {
+        show(PrintConfig.class);
+        lookupList(Control.class, e -> !(e instanceof Button)).forEach(t -> {
+            tryClickOn(t);
+            sleep(500);
+            type(KeyCode.ENTER);
+        });
+    }
+
+    @Test
+    public void testPrintConfig2() {
+        PrintConfig show = show(PrintConfig.class);
+        show.addFiles(FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".png", "jpg", ".jpeg").stream()
+                .map(e -> e.toFile()).collect(Collectors.toList()));
     }
 
     @Test

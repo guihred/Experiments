@@ -25,6 +25,7 @@ import ml.data.*;
 import simplebuilder.ListHelper;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
+import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
@@ -189,8 +190,10 @@ public abstract class ExplorerVariables extends Application {
             Data<Number, Number> e = new Data<>((Number) map.get(x), (Number) map.get(y));
             if (name != null) {
                 linkedHashMap.merge(map.get(name), e, (o, n) -> {
-                    n.setXValue(o.getXValue().doubleValue() + n.getXValue().doubleValue());
-                    n.setYValue(o.getYValue().doubleValue() + n.getYValue().doubleValue());
+                    n.setXValue(StringSigaUtils.toInteger(o.getXValue()).doubleValue()
+                            + StringSigaUtils.toInteger(n.getXValue()).doubleValue());
+                    n.setYValue(StringSigaUtils.toInteger(o.getYValue()).doubleValue()
+                            + StringSigaUtils.toInteger(n.getYValue()).doubleValue());
                     return n;
                 });
                 e.setExtraValue(map.get(name));

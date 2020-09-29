@@ -5,7 +5,6 @@ import static java.lang.Math.nextDown;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +64,7 @@ public class PrintConfig extends Application {
     @FXML
     private Text qualityText;
     private IntegerProperty currentPage = new SimpleIntegerProperty(0);
-
+    private boolean closeOnPrint = false;
     @FXML
     private Slider vgap;
 
@@ -77,10 +76,20 @@ public class PrintConfig extends Application {
 
     public PrintConfig(Image image) {
         images.add(image);
+        closeOnPrint = true;
     }
 
     public PrintConfig(List<Image> image) {
         images.addAll(image);
+    }
+
+    public void addFiles(List<File> f) {
+        if (!f.isEmpty()) {
+            images.clear();
+            images.addAll(f.stream().map(ResourceFXUtils::convertToURL).map(e -> new Image(e.toExternalForm()))
+                    .collect(Collectors.toList()));
+            changeConfig();
+        }
     }
 
     public void addPage() {
@@ -102,35 +111,24 @@ public class PrintConfig extends Application {
     public void loadImages(ActionEvent event) {
         FileChooserBuilder chooser =
                 new FileChooserBuilder().title("Choose Image").extensions("Image", "*.png", "*.jpg", "*.jpeg");
-        chooser.openFileMultipleAction(f -> {
-            if (!f.isEmpty()) {
-                images.clear();
-                images.addAll(f.stream().map(ResourceFXUtils::convertToURL).map(e -> new Image(e.toExternalForm()))
-                        .collect(Collectors.toList()));
-                changeConfig();
-            }
-        }, event);
+        chooser.openFileMultipleAction(this::addFiles, event);
     }
 
     public void loadImagesDir(ActionEvent event) {
         new FileChooserBuilder().title("Choose Image").extensions("Image", "*.png", "*.jpg", "*.jpeg")
                 .onSelect(file -> {
                     List<Path> pathByExtension = FileTreeWalker.getPathByExtension(file, ".png", ".jpg", ".jpeg");
-                    if (!pathByExtension.isEmpty()) {
-                        images.clear();
-                        for (Path f : pathByExtension) {
-                            URL e = ResourceFXUtils.convertToURL(f.toFile());
-                            images.add(new Image(e.toExternalForm()));
-                        }
-                        changeConfig();
-                    }
+                    addFiles(pathByExtension.stream().map(Path::toFile).collect(Collectors.toList()));
                 }).openDirectoryAction(event);
     }
 
     public void printToPDF(Event e) {
         new FileChooserBuilder().name("Export PDF").title("Export PDF").extensions("PDF", "*.pdf")
+                .initialFilename("oi" + images.hashCode() + ".pdf")
                 .onSelect(this::generatePDF).saveFileAction(e);
-        StageHelper.closeStage(panel);
+        if (closeOnPrint) {
+            StageHelper.closeStage(panel);
+        }
 
     }
 

@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
@@ -103,7 +104,8 @@ public class FileChooserBuilder {
     public void saveFileAction(Event e) {
         Node target = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
         fileChooser.setInitialDirectory(
-                SupplierEx.nonNull(fileChooser.getInitialDirectory(), LAST_FILES.get(evocationLine)));
+                SupplierEx.nonNull(fileChooser.getInitialDirectory(), LAST_FILES.get(evocationLine),
+                        ResourceFXUtils.getOutFile()));
 
         File fileChosen = fileChooser.showSaveDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
         LAST_FILES.put(evocationLine, FunctionEx.mapIf(fileChosen, File::getParentFile));

@@ -17,6 +17,7 @@ import javax.tools.*;
 import org.slf4j.Logger;
 import sun.misc.Unsafe;
 import utils.ex.HasLogging;
+import utils.ex.PredicateEx;
 import utils.ex.SupplierEx;
 
 @SuppressWarnings("restriction")
@@ -106,13 +107,7 @@ public final class ControllerCompiler {
     }
 
     private static boolean isClassExistent(String fullClassName) {
-        try {
-            Class.forName(fullClassName);
-            return true;
-        } catch (ClassNotFoundException e) {
-            LOG.trace("CLASS NOT FOUND", e);
-            return false;
-        }
+        return PredicateEx.test(s -> Class.forName(s) != null, fullClassName);
     }
 
     private static String setJavaHomeProperty() {

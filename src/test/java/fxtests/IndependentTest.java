@@ -262,11 +262,10 @@ public class IndependentTest {
 
     @Test
     public void testStringSiga() {
-        List<String> asList = Arrays.asList("32154", null, "私は寿司が好きです。", "");
+        List<String> asList = Arrays.asList("32154", null, "私は寿司が好きです。", "", "4GB");
         for (String nome : asList) {
             measureTime("StringSigaUtils.codificar", () -> StringSigaUtils.codificar(nome));
             measureTime("StringSigaUtils.decodificar", () -> StringSigaUtils.decodificar(nome));
-            measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
             measureTime("StringSigaUtils.fixEncoding", () -> StringSigaUtils.fixEncoding(nome));
             measureTime("StringSigaUtils.getApenasNumeros", () -> StringSigaUtils.getApenasNumeros(nome));
             measureTime("StringSigaUtils.getApenasNumerosInt", () -> StringSigaUtils.getApenasNumerosInt(nome));
@@ -280,7 +279,28 @@ public class IndependentTest {
             measureTime("StringSigaUtils.removerDiacritico", () -> StringSigaUtils.removerDiacritico(nome));
             measureTime("StringSigaUtils.retirarMascara", () -> StringSigaUtils.retirarMascara(nome));
             measureTime("StringSigaUtils.substituirNaoNumeros", () -> StringSigaUtils.substituirNaoNumeros(nome));
-            measureTime("StringSigaUtils.toInteger", () -> StringSigaUtils.toInteger(nome));
+            Integer measureTime2 = measureTime("StringSigaUtils.toInteger", () -> StringSigaUtils.toInteger(nome));
+            measureTime("StringSigaUtils.asMap", () -> StringSigaUtils.asMap(nome));
+            measureTime("StringSigaUtils.changeCase", () -> StringSigaUtils.changeCase(nome));
+            measureTime("StringSigaUtils.convertNumerico", () -> StringSigaUtils.convertNumerico(nome));
+            measureTime("StringSigaUtils.floatFormating", () -> StringSigaUtils.floatFormating(measureTime2));
+            measureTime("StringSigaUtils.format", () -> StringSigaUtils.format(measureTime2, nome));
+            measureTime("StringSigaUtils.formating", () -> StringSigaUtils.formating(nome));
+            measureTime("StringSigaUtils.getFileSize", () -> StringSigaUtils.getFileSize(nome));
+            measureTime("StringSigaUtils.getLinks", () -> StringSigaUtils.getLinks(nome));
+            measureTime("StringSigaUtils.intFormating", () -> StringSigaUtils.intFormating(measureTime2));
+            measureTime("StringSigaUtils.intValue", () -> StringSigaUtils.intValue(nome));
+            measureTime("StringSigaUtils.lines", () -> StringSigaUtils.lines(nome));
+            measureTime("StringSigaUtils.putNumbers", () -> StringSigaUtils.putNumbers(asList));
+            measureTime("StringSigaUtils.removeMathematicalOperators",
+                    () -> StringSigaUtils.removeMathematicalOperators(nome));
+            measureTime("StringSigaUtils.removeNotPrintable", () -> StringSigaUtils.removeNotPrintable(nome));
+            measureTime("StringSigaUtils.replaceAll", () -> StringSigaUtils.replaceAll(nome, ".+"));
+            measureTime("StringSigaUtils.simNao", () -> StringSigaUtils.simNao(nome == null));
+            measureTime("StringSigaUtils.splitCamelCase", () -> StringSigaUtils.splitCamelCase(nome));
+            measureTime("StringSigaUtils.splitMergeCamelCase", () -> StringSigaUtils.splitMergeCamelCase(nome));
+            measureTime("StringSigaUtils.strToFileSize", () -> StringSigaUtils.strToFileSize(nome));
+            measureTime("StringSigaUtils.toStringSpecial", () -> StringSigaUtils.toStringSpecial(nome));
         }
     }
 

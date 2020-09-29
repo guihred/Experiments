@@ -47,19 +47,22 @@ public class StringSigaUtils extends StringUtils {
                         (u, v) -> u + "\n" + v));
     }
 
-    public static String changeCase(String simpleName) {
-        if (Character.isLowerCase(simpleName.charAt(0))) {
-            return simpleName.substring(0, 1).toUpperCase() + simpleName.substring(1);
+    public static String changeCase(String str) {
+        if (isBlank(str)) {
+            return "";
         }
-        return simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1);
+        if (Character.isLowerCase(str.charAt(0))) {
+            return str.substring(0, 1).toUpperCase() + str.substring(1);
+        }
+        return str.substring(0, 1).toLowerCase() + str.substring(1);
     }
 
     public static String codificar(String nome) {
         return getIgnore(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
 
-    public static Integer convertNumerico(final String eleitores) {
-        String replaceAll = eleitores.replaceAll("\\D", "");
+    public static Integer convertNumerico(final String nome) {
+        String replaceAll = Objects.toString(nome, "").replaceAll("\\D", "");
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
     }
 
@@ -92,11 +95,13 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String format(int length, Object mean) {
+        int max = Math.max(length, 1);
+
         if (!(mean instanceof Double)) {
-            String format = "\t%" + length + "s";
+            String format = "\t%" + max + "s";
             return String.format(format, mean);
         }
-        return String.format(floatFormating(length), mean);
+        return String.format(floatFormating(max), mean);
     }
 
     public static String formating(String s) {
@@ -154,13 +159,13 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String getFileSize(String sizeInBytes) {
-        return SupplierEx.get(() -> getFileSize(Double.valueOf(sizeInBytes).longValue()));
+        return SupplierEx.getIgnore(() -> getFileSize(Double.valueOf(sizeInBytes).longValue()), sizeInBytes);
     }
 
     public static List<String> getLinks(String content) {
         List<String> links = new ArrayList<>();
         Pattern p = Pattern.compile("(?i)href=\"http://(.*?)\"");
-        Matcher m = p.matcher(content);
+        Matcher m = p.matcher(Objects.toString(content, ""));
         while (m.find()) {
             links.add(m.group(1));
         }
@@ -173,7 +178,7 @@ public class StringSigaUtils extends StringUtils {
 
     public static Integer intValue(String v) {
         try {
-            return Integer.valueOf(v.replaceAll("\\D", ""));
+            return Integer.valueOf(Objects.toString(v, "").replaceAll("\\D", ""));
         } catch (NumberFormatException e) {
             HasLogging.log(1).trace("NUMBER NOT PARSED", e);
             HasLogging.log(1).error("NUMBER NOT PARSED \"{}\" {}", v, HasLogging.getCurrentLine(1));
@@ -182,16 +187,17 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String[] lines(String nome) {
-        return split(nome, "[\n\r]+");
+        return split(Objects.toString(nome, ""), "[\n\r]+");
     }
 
     public static String putNumbers(List<String> map) {
-        int orElse = map.stream().mapToInt(String::length).max().orElse(0);
+        int orElse = map.stream().map(v -> Objects.toString(v, "")).mapToInt(String::length).max().orElse(0);
         return IntStream.range(0, map.size()).mapToObj(i -> numberLines(map, orElse, i))
                 .collect(Collectors.joining("\n"));
     }
 
-    public static String removeMathematicalOperators(String s) {
+    public static String removeMathematicalOperators(String v) {
+        String s = Objects.toString(v, "");
         if (s.codePoints().mapToObj(UnicodeBlock::of).anyMatch(b -> b == UnicodeBlock.MATHEMATICAL_OPERATORS)) {
             return s.replaceAll("[\u2200-\u22FF]", "?");
         }
@@ -199,7 +205,8 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String removeNotPrintable(String s) {
-        String fixEncoding = fixEncoding(s.replaceAll("\t", " "), StandardCharsets.UTF_8, Charset.forName("CESU-8"));
+        String fixEncoding = fixEncoding(Objects.toString(s, "").replaceAll("\t", " "), StandardCharsets.UTF_8,
+                Charset.forName("CESU-8"));
         if (fixEncoding == null) {
             return null;
         }
@@ -212,7 +219,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String replaceAll(String nome, String regex) {
-        return SupplierEx.get(
+        return SupplierEx.getIgnore(
                 () -> nome.replaceAll(regex, IntStream.rangeClosed(1, Pattern.compile(regex).matcher(nome).groupCount())
                         .mapToObj(i -> "$" + i).collect(Collectors.joining())),
                 nome);
@@ -230,11 +237,12 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String[] splitCamelCase(String readLine) {
-        return readLine.split(REGEX_CAMEL_CASE);
+        return Objects.toString(readLine, "").split(REGEX_CAMEL_CASE);
     }
 
     public static String splitMergeCamelCase(String readLine) {
-        return Stream.of(readLine.split(StringSigaUtils.REGEX_CAMEL_CASE)).collect(Collectors.joining(" "));
+        return Stream.of(Objects.toString(readLine, "").split(StringSigaUtils.REGEX_CAMEL_CASE))
+                .collect(Collectors.joining(" "));
     }
 
     public static long strToFileSize(String sizeInBytes) {
@@ -348,9 +356,9 @@ public class StringSigaUtils extends StringUtils {
     }
 
     private static String justified(List<String> map, int maxLetters, int i) {
-        String str = map.get(i);
+        String str = Objects.toString(map.get(i), "");
         int diff = maxLetters - str.length();
-        if (i == 0 || paragraphEnd(map.get(i - 1))) {
+        if (i == 0 || paragraphEnd(Objects.toString(map.get(i - 1), ""))) {
             return leftPad(addSpaces(str, Math.max(diff - 8, 0)), maxLetters, "");
         }
         if (diff >= maxLetters / 2 || paragraphEnd(str)) {

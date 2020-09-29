@@ -95,10 +95,10 @@ public class CubeNode extends Parent {
 
         getChildren().addAll(rearFace, topFace, leftFace, rightFace, bottomFace, frontFace);
 
-        Rotate xRotate = new SimpleRotateBuilder().axis(Rotate.X_AXIS).pivotX(CubeFace.EDGE_LENGTH * 0.5)
-            .pivotY(CubeFace.EDGE_LENGTH * 0.5).pivotZ(CubeFace.EDGE_LENGTH * 0.5).build();
-        Rotate yRotate = new SimpleRotateBuilder().axis(Rotate.Y_AXIS).pivotX(CubeFace.EDGE_LENGTH * 0.5)
-            .pivotY(CubeFace.EDGE_LENGTH * 0.5).pivotZ(CubeFace.EDGE_LENGTH * 0.5).build();
+        Rotate xRotate = new SimpleRotateBuilder().axis(Rotate.X_AXIS).pivotX(CubeFace.EDGE_LENGTH / 2)
+                .pivotY(CubeFace.EDGE_LENGTH / 2).pivotZ(CubeFace.EDGE_LENGTH / 2).build();
+        Rotate yRotate = new SimpleRotateBuilder().axis(Rotate.Y_AXIS).pivotX(CubeFace.EDGE_LENGTH / 2)
+                .pivotY(CubeFace.EDGE_LENGTH / 2).pivotZ(CubeFace.EDGE_LENGTH / 2).build();
         getTransforms().setAll(xRotate, yRotate);
         xRotate.angleProperty().bind(angleX);
         yRotate.angleProperty().bind(angleY);

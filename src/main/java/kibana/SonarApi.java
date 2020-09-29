@@ -75,10 +75,6 @@ public class SonarApi extends Application {
         primaryStage.show();
     }
 
-    private String getApiUrl(int p) {
-        return SONAR_API_ISSUES + "&p=" + p;
-    }
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -87,5 +83,9 @@ public class SonarApi extends Application {
         Map<String, String> hashMap = new HashMap<>(GET_HEADERS);
         PhantomJSUtils.makeGet(url, hashMap, outFile);
         return JsonExtractor.toObject(outFile);
+    }
+
+    private static String getApiUrl(int p) {
+        return SONAR_API_ISSUES + "&p=" + p;
     }
 }
