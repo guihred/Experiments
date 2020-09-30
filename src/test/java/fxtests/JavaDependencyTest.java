@@ -25,7 +25,7 @@ import utils.ex.RunnableEx;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JavaDependencyTest {
     private static final Logger LOG = HasLogging.log();
-    private static int NUMBER_TESTS = 10;
+    private static final int NUMBER_TESTS = 4;
 
     @Test
     public void testTestUncoveredApps() {
@@ -48,7 +48,7 @@ public class JavaDependencyTest {
             List<String> allPaths =
                     paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1")).collect(Collectors.toList());
             LOG.info(" All Paths {}", allPaths);
-            if (allPaths.contains("StringSigaUtils")) {
+            if (allPaths.contains("StringSigaUtils") || allPaths.contains("ExtractUtils")) {
                 tests.remove("IndependentTest");
                 tests.add(0, "IndependentTest");
             }

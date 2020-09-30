@@ -6,12 +6,14 @@ import graphs.app.ProjectTopology;
 import graphs.entities.Cell;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import ml.data.CoverageUtils;
 import ml.data.JavaFileDependency;
 import org.junit.Test;
 import utils.ConsoleUtils;
@@ -50,11 +52,19 @@ public class FXEngineGraphTest extends AbstractTestExecution {
             .map(e -> lookup(e).queryComboBox())
             .collect(Collectors.toList());
         List<Node> queryAll = lookup("Go").queryAll().stream().collect(Collectors.toList());
+        Map<String, Double> coverageMap = CoverageUtils.buildDataframe().stream()
+                .collect(Collectors.toMap(e -> e.getKey().toString(), Entry<Object, Double>::getValue));
         for (ComboBox<?> e : queryButtons) {
 			ObservableList<?> items = e.getItems();
             if (items.size() <= 11) {
 				for (int i = 0; i < items.size() ; i++) {
-					int j = i;
+                    String simpleName = items.get(i).getClass().getSimpleName();
+                    if (coverageMap.getOrDefault(simpleName, 0.) >= 80) {
+                        continue;
+                    }
+                    getLogger().info("COVERAGE {} = {}", simpleName, coverageMap.getOrDefault(simpleName, 0.));
+
+                    int j = i;
 					interact(() -> e.getSelectionModel().select(j));
 					for (Node node : queryAll) {
 						clickOn(node);
@@ -63,16 +73,6 @@ public class FXEngineGraphTest extends AbstractTestExecution {
 				}
 			}
 		}
-        ComboBox<?> layout = queryButtons.get(0);
-        interact(() -> layout.getSelectionModel().select(1));
-        ComboBox<?> topology = queryButtons.get(1);
-        interact(() -> topology.getSelectionModel().select(4));
-        for (int i = queryAll.size() - 1; i >= 0; --i) {
-            Node node = queryAll.get(i);
-            clickOn(node);
-            ConsoleUtils.waitAllProcesses();
-        }
-
 	}
 
     @Test

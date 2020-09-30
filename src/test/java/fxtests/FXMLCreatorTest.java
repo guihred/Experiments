@@ -1,6 +1,5 @@
 package fxtests;
 
-import cubesystem.SphereSystemApp;
 import fxml.utils.FXMLCreatorHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +29,7 @@ public final class FXMLCreatorTest {
     @Test
     public void testClassesNotClose() {
         List<Class<? extends Application>> classes =
-                Arrays.asList(SphereSystemApp.class);
+                Arrays.asList();
         FXMLCreatorHelper.testApplications(classes, false);
 
     }

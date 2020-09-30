@@ -2,6 +2,7 @@ package fxtests;
 
 import audio.mp3.EditSongController;
 import audio.mp3.MusicOrganizer;
+import audio.mp3.PageImage;
 import extract.Music;
 import extract.MusicReader;
 import fxpro.ch08.BasicAudioPlayerWithControlLauncher;
@@ -23,7 +24,10 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.util.WaitForAsyncUtils;
-import utils.*;
+import utils.ConsoleUtils;
+import utils.ExtractUtils;
+import utils.FileTreeWalker;
+import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.PredicateEx;
@@ -116,6 +120,13 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             });
         });
         WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
+    public void verifyPageImage() {
+        show(PageImage.class);
+        tryClickOn(lookupFirst(TextField.class));
+        write("Dog");
     }
 
     @Test

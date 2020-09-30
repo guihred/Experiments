@@ -69,8 +69,6 @@ public class DataframeMLTest extends AbstractTestExecution {
 
     @Test
     public void testMakeStats() {
-        File csvFile = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Palo Alto] - Threat.csv");
-        measureTime("DataframeUtils.makeStats", () -> DataframeBuilder.builder(csvFile).makeStats());
         Path randomPathByExtension = FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".csv");
         measureTime("DataframeUtils.makeStats",
                 () -> DataframeBuilder.builder(randomPathByExtension.toFile()).makeStats());

@@ -32,6 +32,7 @@ import ml.data.DecisionTree;
 import ml.data.FastFourierTransform;
 import neuro.BrazilianVerbsConjugator;
 import org.apache.commons.math3.complex.Complex;
+import org.jsoup.nodes.Document;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -138,6 +139,19 @@ public class IndependentTest {
     }
 
     @Test
+    public void testExtractUtils() {
+        String key = "RarTest.rar";
+        String url1 = "https://github.com/guihred/Experiments/raw/master/src/main/resources/RarTest.rar";
+        File outFile = ResourceFXUtils.getOutFile("aliceCopy.txt");
+        measureTime("ExtractUtils.getFile", () -> ExtractUtils.getFile(key, url1));
+
+        measureTime("ExtractUtils.extractURL", () -> ExtractUtils.extractURL(key, url1));
+        measureTime("ExtractUtils.extractURL", () -> ExtractUtils.extractURL(url1));
+        measureTime("ExtractUtils.copy", () -> ExtractUtils.copy(ResourceFXUtils.toStream("alice.txt"), outFile));
+        measureTime("ExtractUtils.copy", () -> ExtractUtils.copy(url1, outFile));
+    }
+
+    @Test
     public void testFastFourierTransform() {
         double[] input = DoubleStream.iterate(0, i -> i + 1).limit(16).toArray();
         Complex[] cinput = measureTime("FastFourierTransform.fft", () -> FastFourierTransform.fft(input));
@@ -199,15 +213,11 @@ public class IndependentTest {
         measureTime("JsoupUtils.normalParse", () -> JsoupUtils.normalParse(file));
         measureTime("JsoupUtils.renderedInTheBrowser", () -> JsoupUtils.renderedInTheBrowser(url));
         measureTime("JsoupUtils.selectingElements", () -> JsoupUtils.selectingElements());
-        // final String username = "guih.red@gmail.com";
-        // final String pass = "";
-        // String url1 = "yourWebsite.com/loginUrl";
-        // String value = "yourUsername";
-        // String value2 = "yourPassword";
-        // measureTime("JsoupUtils.simpleAuthentication", () ->
-        // JsoupUtils.simpleAuthentication(url1, value, value2));
-        // measureTime("JsoupUtils.loginGitHub", () ->
-        // JsoupUtils.loginGitHub(username, pass));
+        measureTime("JsoupUtils.executeRequest",
+                () -> JsoupUtils.executeRequest("https://pt.wikipedia.org/", new HashMap<>()));
+        Document measureTime2 = measureTime("JsoupUtils.getDocument",
+                () -> JsoupUtils.getDocument("https://pt.wikipedia.org/", new HashMap<>()));
+        measureTime("JsoupUtils.getTables", () -> JsoupUtils.getTables(measureTime2));
 
     }
 

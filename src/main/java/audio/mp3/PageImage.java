@@ -20,7 +20,6 @@ public class PageImage extends Application {
         root.prefWidthProperty().bind(scrollPane.widthProperty());
         TextField textField = new TextField();
         textField.textProperty().addListener((ob, t, value) -> ImageLoader.loadImages(root.getChildren(), value));
-        textField.setText("Dog");
         Scene scene = new Scene(new VBox(textField, scrollPane));
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
         textField.prefWidthProperty().bind(scene.widthProperty().multiply(9. / 10));

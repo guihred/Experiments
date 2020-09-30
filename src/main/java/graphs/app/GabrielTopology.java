@@ -6,10 +6,8 @@ import graphs.entities.EdgeDistancePack;
 import graphs.entities.Graph;
 import java.util.List;
 import javafx.beans.NamedArg;
-import utils.MatrixSolver;
 
 public class GabrielTopology extends BaseTopology {
-
 
     public GabrielTopology(@NamedArg("size") int size, @NamedArg("graph") Graph graph) {
         super(graph, "Gabriel", size);
@@ -52,19 +50,5 @@ public class GabrielTopology extends BaseTopology {
 
 
 
-    public static double determinant(Cell a, Cell b, Cell c, Cell d) {
-        double ay = a.getLayoutY();
-        double ax = a.getLayoutX();
-        double by = b.getLayoutY();
-        double bx = b.getLayoutX();
-        double cy = c.getLayoutY();
-        double cx = c.getLayoutX();
-        double dy = d.getLayoutY();
-        double dx = d.getLayoutX();
-        double[][] matrix = new double[][] { { ax, ay, ax * ax + ay * ay, 1 }, { bx, by, bx * bx + by * by, 1 },
-            { cx, cy, cx * cx + cy * cy, 1 }, { dx, dy, dx * dx + dy * dy, 1 } };
-        return MatrixSolver.determinant(matrix);
-
-    }
 
 }

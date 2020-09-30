@@ -23,7 +23,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
-import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 public final class JsoupUtils {
     private static final String USER_AGENT =
@@ -285,30 +284,5 @@ public final class JsoupUtils {
 
     private static void addProxyAuthorization(Connection connect) {
         connect.header("Proxy-Authorization", "Basic " + ExtractUtils.getEncodedAuthorization());
-    }
-
-    public static class ReadAllLinks {
-        private Set<String> uniqueURL = new HashSet<>();
-        private String mySite;
-
-        public void getLinks(URL url) throws IOException {
-            mySite = url.getHost();
-            getLinks(url.toString());
-        }
-
-        private void getLinks(String url) throws IOException {
-            Document doc = Jsoup.connect(url).userAgent(USER_AGENT).get();
-            Elements links = doc.select("a");
-            if (links.isEmpty()) {
-                return;
-            }
-            links.stream().map(link -> link.attr("abs:href")).forEachOrdered(ConsumerEx.makeConsumer(thisUrl -> {
-                boolean add = uniqueURL.add(thisUrl);
-                if (add && thisUrl.contains(mySite)) {
-                    LOG.info("{}", thisUrl);
-                    getLinks(thisUrl);
-                }
-            }));
-        }
     }
 }
