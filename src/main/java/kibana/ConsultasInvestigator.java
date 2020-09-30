@@ -48,7 +48,6 @@ public class ConsultasInvestigator extends Application {
     private static final ImmutableMap<String,
             String> REPLACEMENT_MAP = ImmutableMap.<String, String>builder().put(USER_NAME_QUERY, MDC_UID_KEYWORD)
                     .put(ACESSOS_SISTEMA_QUERY, "dtpsistema")
-
                     .build();
     @FXML
     private TextField resultsFilter;

@@ -65,19 +65,21 @@ public final class TimelionApi extends KibanaApi {
         }, FXCollections.emptyObservableList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
     }
 
+    private static void addToSeries(XYChart.Series<Number, Number> java, Object f) {
+        Long access2 = Long.valueOf(JsonExtractor.access(f, String.class, 0));
+        Long access3 = Long.valueOf(JsonExtractor.access(f, String.class, 1));
+        java.getData().add(new XYChart.Data<>(access2, access3));
+    }
+
     private static ObservableList<XYChart.Series<Number, Number>>
             convertToSeries(ObservableList<Series<Number, Number>> series, List<?> access) {
         return access.stream()
                 .flatMap(e -> JsonExtractor.accessList(e, "list").stream())
                 .map((Object o) -> {
-                    XYChart.Series<Number, Number> java = new XYChart.Series<>();
-                    java.setName(JsonExtractor.access(o, String.class, "label"));
-                    JsonExtractor.accessList(o, "data").stream().forEach(f -> {
-                        Long access2 = Long.valueOf(JsonExtractor.access(f, String.class, 0));
-                        Long access3 = Long.valueOf(JsonExtractor.access(f, String.class, 1));
-                        java.getData().add(new XYChart.Data<>(access2, access3));
-                    });
-                    return java;
+                    XYChart.Series<Number, Number> serie = new XYChart.Series<>();
+                    serie.setName(JsonExtractor.access(o, String.class, "label"));
+                    JsonExtractor.accessList(o, "data").stream().forEach(f -> addToSeries(serie, f));
+                    return serie;
                 }).collect(Collectors.toCollection(() -> series));
     }
 

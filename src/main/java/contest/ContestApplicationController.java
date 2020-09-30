@@ -7,13 +7,13 @@ import static utils.ex.FunctionEx.mapIf;
 
 import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;
-import contest.db.ContestText;
 import contest.db.ContestQuestionType;
+import contest.db.ContestText;
 import java.util.List;
 import java.util.Objects;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
+import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -73,14 +73,7 @@ public class ContestApplicationController {
         }
 
         questions.getSelectionModel().selectedIndexProperty().addListener((o, old, n) -> current.set(n.intValue()));
-        answersCorrect.addListener((MapChangeListener<Integer, String>) change -> cellMap.entrySet().stream()
-            .filter(e -> Objects.equals(e.getValue(), change.getKey())).findFirst()
-            .ifPresent(cel -> {
-                cel.getKey().getStyleClass().removeAll("", CERTO, ERRADO, CERTO0, ERRADO0);
-                if (change.wasAdded() && cel.getKey().getItem().getNumber() == cel.getValue()) {
-                    cel.getKey().getStyleClass().add(change.getValueAdded());
-                }
-            }));
+        answersCorrect.addListener(this::answerCorrectChange);
 
         questions.setCellFactory(newCellFactory((ContestQuestion c, ListCell<ContestQuestion> v) -> {
             v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())));
@@ -92,21 +85,8 @@ public class ContestApplicationController {
                 cellMap.remove(v);
             }
         }));
-        options.getSelectionModel().selectedItemProperty().addListener((observable, old, value) -> {
-            if (value == null) {
-                return;
-            }
-            answersCorrect.put(value.getExercise().getNumber(), value.getCorrect() ? CERTO : ERRADO);
-            questions.setItems(contestQuestions.getListQuestions());
-            splitPane.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
-                if (e.contains(CERTO0)) {
-                    e.add(CERTO);
-                }
-                if (e.contains(ERRADO0)) {
-                    e.add(ERRADO);
-                }
-            });
-        });
+        options.getSelectionModel().selectedItemProperty()
+                .addListener((observable, old, value) -> onOptionSelected(value));
         questionNumber.textProperty().bind(current.add(1).asString("Questão %d"));
         updateCellFactory();
         current.addListener((ob, old, value) -> onCurrentChange(value));
@@ -137,6 +117,17 @@ public class ContestApplicationController {
 
     private void addImages(String item) {
         images.getChildren().addAll(ImageTableCell.createImages(item, scrollPane2.widthProperty()));
+    }
+
+    private void answerCorrectChange(Change<? extends Integer, ? extends String> change) {
+        cellMap.entrySet().stream()
+            .filter(e -> Objects.equals(e.getValue(), change.getKey())).findFirst()
+            .ifPresent(cel -> {
+                cel.getKey().getStyleClass().removeAll("", CERTO, ERRADO, CERTO0, ERRADO0);
+                if (change.wasAdded() && cel.getKey().getItem().getNumber() == cel.getValue()) {
+                    cel.getKey().getStyleClass().add(change.getValueAdded());
+                }
+            });
     }
 
     private void changeOptions(ContestQuestion contestQuestion) {
@@ -181,6 +172,22 @@ public class ContestApplicationController {
             addImages(contestQuestion.getImage());
         }
         setText(cur);
+    }
+
+    private void onOptionSelected(ContestQuestionAnswer value) {
+        if (value == null) {
+            return;
+        }
+        answersCorrect.put(value.getExercise().getNumber(), value.getCorrect() ? CERTO : ERRADO);
+        questions.setItems(contestQuestions.getListQuestions());
+        splitPane.lookupAll(".cell").stream().map(Node::getStyleClass).forEach(e -> {
+            if (e.contains(CERTO0)) {
+                e.add(CERTO);
+            }
+            if (e.contains(ERRADO0)) {
+                e.add(ERRADO);
+            }
+        });
     }
 
     private void setText(int cur) {

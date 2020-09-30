@@ -92,7 +92,7 @@ public final class PhantomJSUtils {
                 StringSigaUtils.fixEncoding(content, StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1),
                 ContentType.create("application/x-ndjson")));
         headers.forEach(get::addHeader);
-        LOG.info("Request \n\t{} \n{} \n\t{} \n\t{} ", url, content, get.getAllHeaders(), outFile.getName());
+        LOG.info("Request \n\t{} \n\t{} ", url, outFile.getName());
         HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
             InstallCert.installCertificate(url);
             return client.execute(get);

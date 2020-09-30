@@ -64,7 +64,7 @@ public class PrintConfig extends Application {
     @FXML
     private Text qualityText;
     private IntegerProperty currentPage = new SimpleIntegerProperty(0);
-    private boolean closeOnPrint = false;
+    private boolean closeOnPrint;
     @FXML
     private Slider vgap;
 
