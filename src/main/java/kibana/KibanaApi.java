@@ -22,6 +22,7 @@ import utils.PhantomJSUtils;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class KibanaApi {
@@ -131,10 +132,11 @@ public class KibanaApi {
                         .entrySet().stream().map(e -> String
                                 .format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
                         .collect(Collectors.joining("\n"));
-                getFromURL(
+                RunnableEx.make(() -> getFromURL(
                         "https://n321p000124.fast.prevnet/"
                                 + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true" + index,
-                        getContent(file, keywords, gte, lte), outFile);
+                        getContent(file, keywords, gte, lte), outFile),
+                        e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, Collections.emptyMap());

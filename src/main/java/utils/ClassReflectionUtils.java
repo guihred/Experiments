@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import java.io.Serializable;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -133,9 +134,10 @@ public final class ClassReflectionUtils {
 
     public static Map<String, Object> getGetterMap(Object object) {
         return getGetterMethodsRecursive(object.getClass(), 10).stream().
-
-                filter(e -> invoke(object, e) != null)
-                .collect(Collectors.toMap(ClassReflectionUtils::getFieldNameCase, e -> invoke(object, e), (u, v) -> v));
+                map(e -> new AbstractMap.SimpleEntry<>(ClassReflectionUtils.getFieldNameCase(e), invoke(object, e)))
+                .filter(e -> e.getValue() != null)
+                .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue,
+                        SupplierEx::nonNull));
     }
 
     public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
@@ -264,7 +266,7 @@ public final class ClassReflectionUtils {
     }
 
     public static Object invoke(Object ob, Method method, Object... args) {
-        return SupplierEx.get(() -> method.invoke(ob, args));
+        return SupplierEx.getIgnore(() -> method.invoke(ob, args));
     }
 
     public static Object invoke(Object ob, String method, Object... args) {

@@ -14,7 +14,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import kibana.ConsultasInvestigator;
 import kibana.KibanaApi;
+import kibana.KibanaInvestigator;
 import kibana.TimelionApi;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
@@ -58,6 +60,13 @@ public class FXHackTest extends AbstractTestExecution {
     }
 
     @Test
+    public void testConsultasInvestigator() {
+        ImageFXUtils.setShowImage(false);
+        show(ConsultasInvestigator.class);
+        clickButtonsWait(WAIT_TIME * 5);
+    }
+
+    @Test
     public void testFillIP() {
         File csvFile = new File(
                 "C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Acesso Web] Top Origens x URL Únicas acessadas.csv");
@@ -91,6 +100,13 @@ public class FXHackTest extends AbstractTestExecution {
     @Test
     public void testKibanaApi() {
         measureTime("KibanaApi.kibanaFullScan", () -> KibanaApi.kibanaFullScan("187.22.201.244"));
+    }
+
+    @Test
+    public void testKibanaInvestigator() {
+        ImageFXUtils.setShowImage(false);
+        show(KibanaInvestigator.class);
+        clickButtonsWait();
     }
 
     @Test

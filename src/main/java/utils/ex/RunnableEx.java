@@ -38,7 +38,7 @@ public interface RunnableEx {
 
     static void measureTime(String name, RunnableEx runnable) {
         long currentTimeMillis = System.currentTimeMillis();
-        run(runnable);
+        remap(runnable, "ERROR IN (" + name + ")");
         long currentTimeMillis2 = System.currentTimeMillis();
         long arg2 = currentTimeMillis2 - currentTimeMillis;
         String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");

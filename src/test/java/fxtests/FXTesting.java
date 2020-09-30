@@ -1,5 +1,7 @@
 package fxtests;
 
+import static utils.ex.RunnableEx.run;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -23,19 +25,16 @@ public class FXTesting implements HasLogging {
     protected void testApplications(List<Class<? extends Application>> applicationClasses) {
 
         CommonsFX.initializeFX();
-        List<Object> testedApps = Collections.synchronizedList(new ArrayList<>());
+        List<Class<? extends Application>> testedApps = Collections.synchronizedList(new ArrayList<>());
         long currentTimeMillis = System.currentTimeMillis();
         for (Class<? extends Application> class1 : applicationClasses) {
-            Platform.runLater(RunnableEx.make(() -> {
-                getLogger().info("TESTING " + class1.getSimpleName());
-
+            Platform.runLater(RunnableEx.make(() -> measureTime("TESTING " + class1.getSimpleName(), () -> {
                 Application newInstance = class1.newInstance();
                 Stage primaryStage = new Stage();
                 newInstance.start(primaryStage);
                 primaryStage.close();
-                getLogger().info("ENDED " + class1.getSimpleName());
-                testedApps.add(newInstance);
-            }, e -> {
+                testedApps.add(class1);
+            }), e -> {
                 getLogger().error("", e);
                 setClass(class1, e);
             }));
@@ -121,7 +120,7 @@ public class FXTesting implements HasLogging {
     }
 
     public static void runInTime(String name, RunnableEx runnable, final long maxTime) {
-        RunnableEx.run(() -> {
+        run(() -> {
             Thread thread = new Thread(RunnableEx.make(() -> measureTime(name, runnable)));
             thread.start();
             long start = System.currentTimeMillis();
