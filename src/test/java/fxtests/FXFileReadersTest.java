@@ -200,7 +200,6 @@ public class FXFileReadersTest extends AbstractTestExecution {
                 }, ResourceFXUtils.getOutFile("apiResult2.xlsx")));
     }
 
-
     @Test
     public void testPCapReader() {
         File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\CiscoCNNA\\two.pcap");
@@ -209,14 +208,15 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
     @Test
     public void testRar() {
-        measureTime("UnRar.extractRarFiles", () -> UnRar.extractRarFiles(UnRar.SRC_DIRECTORY));
-        File userFolder = ResourceFXUtils.getOutFile().getParentFile();
-        FileTreeWalker.getPathByExtension(userFolder, "rar").stream().map(FunctionEx.makeFunction(e -> {
-            Path name = e.getName(e.getNameCount() - 1);
-            File outFile = ResourceFXUtils.getOutFile(name.toString());
-            ExtractUtils.copy(e, outFile);
-            return outFile.toPath();
-        })).forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile())));
+        measureTime("UnRar.extractRarFiles", () -> {
+            File userFolder = ResourceFXUtils.getOutFile().getParentFile();
+            FileTreeWalker.getPathByExtension(userFolder, "rar").stream().map(FunctionEx.makeFunction(e -> {
+                Path name = e.getName(e.getNameCount() - 1);
+                File outFile = ResourceFXUtils.getOutFile(name.toString());
+                ExtractUtils.copy(e, outFile);
+                return outFile.toPath();
+            })).forEach(ConsumerEx.makeConsumer(p -> UnRar.extractRarFiles(p.toFile())));
+        });
 
     }
 
