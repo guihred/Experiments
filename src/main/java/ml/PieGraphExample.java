@@ -13,7 +13,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import ml.data.DataframeBuilder;
@@ -24,6 +26,7 @@ import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
+import utils.ex.RunnableEx;
 
 public class PieGraphExample extends Application {
 
@@ -32,23 +35,23 @@ public class PieGraphExample extends Application {
     private ObjectProperty<DataframeML> dataframeObj = new SimpleObjectProperty<>();
 
     @Override
-	public void start(final Stage theStage) {
+    public void start(final Stage theStage) {
         theStage.setTitle("Points Graph Example");
         HBox root = new HBox();
         Scene theScene = new Scene(root, SIZE, SIZE);
-		theStage.setScene(theScene);
+        theStage.setScene(theScene);
         PieGraph canvas = new PieGraph();
         SimpleComboBoxBuilder<String> onSelect =
                 new SimpleComboBoxBuilder<String>().onSelect(e -> canvas.setDataframe(dataframeObj.get(), e));
         dataframeObj.addListener((ob, old, val) -> {
             List<String> collect =
-                    val.getFormatMap().entrySet().stream()
-                    .map(Entry<String, Class<? extends Comparable<?>>>::getKey).filter(StringUtils::isNotBlank)
-                    .collect(Collectors.toList());
+                    val.getFormatMap().entrySet().stream().map(Entry<String, Class<? extends Comparable<?>>>::getKey)
+                            .filter(StringUtils::isNotBlank).collect(Collectors.toList());
             onSelect.items(collect);
             onSelect.select(collect.size() - 1);
         });
-        DataframeML dataframe = DataframeBuilder.builder("WDICountry.csv").build();
+        ProgressIndicator progress = new ProgressIndicator(0);
+        DataframeML dataframe = DataframeBuilder.builder("WDICountry.csv").build(progress.progressProperty());
         dataframeObj.set(dataframe);
         ComboBox<String> build = onSelect.build();
         Button exportButton = newButton("Export", e -> ImageFXUtils.take(canvas));
@@ -59,16 +62,17 @@ public class PieGraphExample extends Application {
         VBox propSlider = newSlider("Legend Distance", 0, 1., canvas.legendsRadiusProperty());
         CheckBox newCheck = CommonsFX.newCheck("", canvas.showLinesProperty());
         Button chooseFile = new FileChooserBuilder().name("Choose CSV").title("CSV").extensions("CSV", "*.csv")
-                .onSelect(f -> dataframeObj.set(DataframeBuilder.build(f)))
-        .buildOpenButton();
-
-        root.getChildren()
-                .add(new VBox(newCheck, radiusSlider, binsSlider, start, xSlider, propSlider, build, chooseFile,
-                        exportButton));
+                .onSelect(f -> RunnableEx.runNewThread(
+                        () -> DataframeBuilder.builder(f).build(progress.progressProperty()),
+                        o -> CommonsFX.runInPlatform(() -> dataframeObj.set(o))))
+                .buildOpenButton();
+        root.getChildren().add(new VBox(newCheck, radiusSlider, binsSlider, start, xSlider, propSlider, build,
+                chooseFile, progress, exportButton));
+        HBox.setHgrow(canvas, Priority.ALWAYS);
         root.getChildren().add(new HBox(canvas));
-		theStage.show();
+        theStage.show();
         onSelect.select("Region");
-	}
+    }
 
     public static void main(final String[] args) {
         launch(args);

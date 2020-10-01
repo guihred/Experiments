@@ -91,21 +91,34 @@ public final class Mapping {
         for (int i = 0; i < parameterTypes.length; i++) {
             if (i >= dependencies.length) {
                 TextField node = (TextField) vBox.getChildren().get(i - dependencies.length);
-                Object tryAsNumber =
-                        StringSigaUtils.FORMAT_HIERARCHY_MAP.getOrDefault(parameterTypes[i], e -> e)
-                                .apply(node.getText());
+                Object tryAsNumber = StringSigaUtils.FORMAT_HIERARCHY_MAP.getOrDefault(parameterTypes[i], e -> e)
+                        .apply(node.getText());
                 ob[i] = tryAsNumber;
             }
         }
         String params = Arrays.toString(ob);
         String strDepen = Arrays.toString(dependencies);
         LOG.info("RUNNING {} {} {}", method, params, strDepen);
-        runNewThread(() -> DataframeUtils.crossFeatureObject(dataframe, button.getText(), progress, o -> {
-            for (int i = 0; i < o.length; i++) {
-                ob[i] = o[i];
+        runNewThread(() -> {
+            if (!dataframe.isLoaded()) {
+                DataframeML build2 = DataframeBuilder.builder(dataframe.getFile())
+                        .addCrossFeature(button.getText(), dependencies, o -> {
+                            for (int i = 0; i < o.length; i++) {
+                                ob[i] = o[i];
+                            }
+                            return method.invoke(null, ob);
+                        }).build(progress);
+                dataframe.getDataframe().putAll(build2.getDataframe());
+                dataframe.getFormatMap().putAll(build2.getFormatMap());
+                return;
             }
-            return method.invoke(null, ob);
-        }, dependencies));
+            DataframeUtils.crossFeatureObject(dataframe, button.getText(), progress, o -> {
+                for (int i = 0; i < o.length; i++) {
+                    ob[i] = o[i];
+                }
+                return method.invoke(null, ob);
+            }, dependencies);
+        });
 
         return progress;
     }

@@ -160,7 +160,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public static <T,V> void addClosableColumn(TableView<T> node,String name, FunctionEx<T, V> func) {
+    public static <T, V> TableColumn<T, V> addClosableColumn(TableView<T> node, String name, FunctionEx<T, V> func) {
         TableColumn<T, V> e2 = new TableColumn<>(name);
         Hyperlink value = new Hyperlink("X");
         value.setOnAction(e -> node.getColumns().remove(e2));
@@ -168,6 +168,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         e2.setGraphic(value);
         e2.setCellValueFactory(m -> new SimpleObjectProperty<>(FunctionEx.apply(func, m.getValue())));
         node.getColumns().add(e2);
+        return e2;
     }
 
     public static <T> void addColumns(final TableView<Map<String, T>> simpleTableViewBuilder,

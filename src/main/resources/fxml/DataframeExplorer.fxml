@@ -84,20 +84,21 @@
 				</Tab>
 				<Tab text="Histogram">
 					<content>
-						<TableView fx:id="histogram">
-							<columns>
-								<TableColumn text="Name">
-									<cellValueFactory>
-										<PropertyValueFactory property="xValue" />
-									</cellValueFactory>
-								</TableColumn>
-								<TableColumn text="Value">
-									<cellValueFactory>
-										<PropertyValueFactory property="yValue" />
-									</cellValueFactory>
-								</TableColumn>
-							</columns>
-						</TableView>
+						<PaginatedTableView fx:id="histogram" />
+<!-- 						<TableView fx:id="histogram"> -->
+<!-- 							<columns> -->
+<!-- 								<TableColumn text="Name"> -->
+<!-- 									<cellValueFactory> -->
+<!-- 										<PropertyValueFactory property="xValue" /> -->
+<!-- 									</cellValueFactory> -->
+<!-- 								</TableColumn> -->
+<!-- 								<TableColumn text="Value"> -->
+<!-- 									<cellValueFactory> -->
+<!-- 										<PropertyValueFactory property="yValue" /> -->
+<!-- 									</cellValueFactory> -->
+<!-- 								</TableColumn> -->
+<!-- 							</columns> -->
+<!-- 						</TableView> -->
 					</content>
 				</Tab>
 				<Tab text="Bar Chart">

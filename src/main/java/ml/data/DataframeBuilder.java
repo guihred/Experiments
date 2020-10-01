@@ -2,20 +2,18 @@ package ml.data;
 
 import extract.ExcelService;
 import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Scanner;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import utils.ResourceFXUtils;
+import utils.ex.FunctionEx;
 import utils.ex.SupplierEx;
 
 public class DataframeBuilder extends DataframeML {
-    private final DataframeML dataframeML = new DataframeML();
+    private final DataframeML dataframeML = this;
 
     protected DataframeBuilder(File csvFile) {
         dataframeML.file = csvFile;
@@ -30,16 +28,25 @@ public class DataframeBuilder extends DataframeML {
         return this;
     }
 
+    public DataframeBuilder addCrossFeature(String d, String[] dependencies, FunctionEx<Object[], ?> mapper) {
+        dataframeML.crossFeature.put(d, new AbstractMap.SimpleEntry<>(dependencies,mapper));
+        return this;
+    }
+
     public DataframeBuilder addMapping(String d, UnaryOperator<Object> mapper) {
         dataframeML.mapping.put(d, mapper);
         return this;
     }
 
     public DataframeML build() {
+        return build(new SimpleDoubleProperty(0));
+    }
+
+    public DataframeML build(DoubleProperty progress) {
         if (ExcelService.isExcel(dataframeML.file)) {
             return ExcelDataReader.readExcel(dataframeML, dataframeML.file);
         }
-        DataframeUtils.readCSV(dataframeML.file, dataframeML);
+        DataframeUtils.readCSV(dataframeML.file, progress, dataframeML);
         return dataframeML;
     }
 

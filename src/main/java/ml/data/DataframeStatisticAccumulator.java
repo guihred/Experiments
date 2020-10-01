@@ -19,6 +19,7 @@ public class DataframeStatisticAccumulator {
     private double min = Double.MAX_VALUE;
     private double max = Double.NEGATIVE_INFINITY;
     private final String header;
+    private Object object;
     private Map<String, Integer> countMap = new LinkedHashMap<>();
     private final Map<Number, Integer> distributionMap = new LinkedHashMap<>();
     private final Map<String, Class<? extends Comparable<?>>> formatMap;
@@ -37,6 +38,7 @@ public class DataframeStatisticAccumulator {
         if (getFormat().isInstance(o) && String.class.isAssignableFrom(getFormat())) {
             acceptString((String) o);
         }
+        object = o;
         count++;
         return this;
     }
@@ -143,6 +145,10 @@ public class DataframeStatisticAccumulator {
         }
 
         return count == 0 ? 0 : min;
+    }
+
+    public Object getObject() {
+        return object;
     }
 
     public double getStd() {
@@ -309,4 +315,5 @@ public class DataframeStatisticAccumulator {
     private static Comparator<Entry<?, Integer>> comparator() {
         return Comparator.comparing(Entry<?, Integer>::getValue);
     }
+
 }

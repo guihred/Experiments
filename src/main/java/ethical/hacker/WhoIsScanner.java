@@ -172,11 +172,12 @@ public class WhoIsScanner {
 
     public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn, DoubleProperty count) {
         builder.filter(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(IP_REGEX));
-        DataframeML dataframe = builder.build();
+        DataframeML dataframe = builder.build(count);
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         ObservableMap<String, Map<String, String>> ipInfoCache = FXCollections.observableHashMap();
+        count.set(0);
         ipInfoCache.addListener((Change<? extends String, ? extends Map<String, String>> e) -> count
-                .set(count.get() + e.getValueAdded().size()));
+                .set(count.get() + e.getValueAdded().size() / dataframe.getSize()));
         DataframeUtils.crossFeatureObject(dataframe, "Rede", e -> getFromCache(whoIsScanner, ipInfoCache, e, "network"),
                 ipColumn);
         DataframeUtils.crossFeatureObject(dataframe, "Owner",

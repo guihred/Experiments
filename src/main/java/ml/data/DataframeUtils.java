@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import org.slf4j.Logger;
 import utils.CSVUtils;
 import utils.CommonsFX;
@@ -87,6 +88,8 @@ public class DataframeUtils extends DataframeML {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> List<T> crossFeatureObject(DataframeML dataframe, String header, DoubleProperty progress,
             FunctionEx<Object[], T> mapper, String... dependent) {
+
+
         AtomicInteger count = new AtomicInteger(0);
         List<T> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
                 .map(FunctionEx.makeFunction(mapper))
@@ -205,20 +208,29 @@ public class DataframeUtils extends DataframeML {
     }
 
     public static DataframeML readCSV(File csvFile, DataframeML dataframeML) {
+        return readCSV(csvFile, new SimpleDoubleProperty(0), dataframeML);
+    }
+
+    public static DataframeML readCSV(File csvFile, DoubleProperty progress, DataframeML dataframeML) {
+        double totalSize = ResourceFXUtils.computeAttributes(csvFile).size();
+        CommonsFX.runInPlatform(() -> progress.set(0));
         try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
             dataframeML.file = csvFile;
             dataframeML.size = 0;
+
             List<String> header = getHeaders(scanner);
             for (String column : header) {
                 dataframeML.getDataframe().put(column, new ArrayList<>());
                 dataframeML.putFormat(column, String.class);
+
             }
 
-            readRows(dataframeML, scanner, header);
+            readRows(dataframeML, scanner, header, progress, totalSize);
         } catch (Exception e) {
             LOG.error("ERROR IN FILE {} - {}", csvFile, e.getMessage());
             LOG.trace("FILE NOT FOUND " + csvFile, e);
         }
+        CommonsFX.runInPlatform(() -> progress.set(1));
         return dataframeML;
     }
 
@@ -231,7 +243,8 @@ public class DataframeUtils extends DataframeML {
             List<String> lines = new ArrayList<>();
             List<String> cols = dataframe.cols();
             lines.add(cols.stream().map(e -> "\"" + e + "\"").collect(Collectors.joining(",")));
-            dataframe.forEachRow(m -> lines.add(cols.stream().map(e -> m.getOrDefault(e, "")).map(e -> "\"" + e + "\"")
+            dataframe.forEachRow(m -> lines.add(cols.stream().map(e -> m.getOrDefault(e, ""))
+                    .map(e -> "\"" + StringSigaUtils.toStringSpecial(e) + "\"")
                     .collect(Collectors.joining(","))));
             Files.write(outFile.toPath(), lines);
         });
@@ -397,8 +410,102 @@ public class DataframeUtils extends DataframeML {
     }
 
     @SuppressWarnings("unchecked")
+    private static void addCrossFeature(DataframeML dataframe) {
+        dataframe.crossFeature.forEach((header, ob) -> {
+            List<Object> computeIfAbsent = dataframe.getDataframe().computeIfAbsent(header, h -> new ArrayList<>());
+            String[] key = ob.getKey();
+            Object[] array = Stream.of(key)
+                    .map(dataframe::list)
+                    .map(l -> l.get(l.size() - 1)).toArray();
+            Object apply = FunctionEx.apply(ob.getValue(), array);
+            Class<? extends Object> columnFormat = FunctionEx.mapIf(apply, Object::getClass);
+            // dataframe.add
+            computeIfAbsent.add(apply);
+
+            if (columnFormat != null && columnFormat.isArray()) {
+                Object[] m = (Object[]) apply;
+                for (int j = 0; j < m.length; j++) {
+                    int i = j;
+                    dataframe.getDataframe().computeIfAbsent(header + j, h -> new ArrayList<>()).add(m[i]);
+                    dataframe.formatMap.putIfAbsent(header + j,
+                            (Class<? extends Comparable<?>>) columnFormat.getComponentType());
+                }
+            } else if (columnFormat != null && Collection.class.isAssignableFrom(columnFormat)) {
+                Collection<?> m = (Collection<?>) apply;
+                int max = m.size();
+                for (int j = 0; j < max; j++) {
+                    int i1 = j;
+                    Object collect = m.stream().skip(i1).findFirst().orElse(null);
+                    dataframe.getDataframe().computeIfAbsent(header + j, h -> new ArrayList<>()).add(collect);
+                    dataframe.formatMap.putIfAbsent(header + j,
+                            (Class<? extends Comparable<?>>) FunctionEx.mapIf(collect, Object::getClass));
+                }
+            } else if (columnFormat != null && Map.class.isAssignableFrom(columnFormat)) {
+                Map<?, ?> m = (Map<?, ?>) apply;
+                List<Object> max = m.keySet().stream().collect(Collectors.toList());
+                for (Object j : max) {
+                    Object collect = m.get(j);
+                    dataframe.getDataframe().computeIfAbsent(header + j, h -> new ArrayList<>()).add(collect);
+                    dataframe.formatMap.putIfAbsent(header + j,
+                            (Class<? extends Comparable<?>>) FunctionEx.mapIf(collect, Object::getClass));
+                }
+            } else {
+                dataframe.putFormat(header, (Class<? extends Comparable<?>>) columnFormat);
+            }
+            
+        });
+        // if(dataframe.crossFeature.isEmpty())
+        // dataframe.getDataframe().forEach((k, li) -> {
+        // while (li.size() < dataframe.size) {
+        // li.add(null);
+        // }
+        // });
+    }
+
+    private static void addCrossStats(DataframeML dataframeML) {
+        dataframeML.crossFeature.forEach((header1, ob) -> {
+            String[] key = ob.getKey();
+            Object[] array = Stream.of(key)
+                    .map(k -> dataframeML.getStats().get(k).getObject()).toArray();
+            Object apply = FunctionEx.apply(ob.getValue(), array);
+            Class<? extends Object> columnFormat = FunctionEx.mapIf(apply, Object::getClass);
+            if (columnFormat != null && columnFormat.isArray()) {
+                Object[] m = (Object[]) apply;
+                for (int j = 0; j < m.length; j++) {
+                    int i = j;
+                    dataframeML.stats.computeIfAbsent(header1 + j,
+                            h -> new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, h))
+                            .accept(m[i]);
+                }
+            } else if (columnFormat != null && Collection.class.isAssignableFrom(columnFormat)) {
+                Collection<?> m = (Collection<?>) apply;
+                int max = m.size();
+                for (int j = 0; j < max; j++) {
+                    int i1 = j;
+                    Object collect = m.stream().skip(i1).findFirst().orElse(null);
+                    dataframeML.stats.computeIfAbsent(header1+ j,h->new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, h)).accept(collect);
+                }
+            } else if (columnFormat != null && Map.class.isAssignableFrom(columnFormat)) {
+                Map<?, ?> m = (Map<?, ?>) apply;
+                List<Object> max = m.keySet().stream().collect(Collectors.toList());
+                for (Object j : max) {
+                    Object collect = m.get(j);
+                    dataframeML.stats.computeIfAbsent(header1+ j,h->new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, h)).accept(collect);
+                }
+            } else {
+
+                dataframeML.stats
+                        .computeIfAbsent(header1,
+                                h -> new DataframeStatisticAccumulator(dataframeML.dataframe, dataframeML.formatMap, h))
+                        .accept(apply);
+            }
+            
+        });
+    }
+
+    @SuppressWarnings("unchecked")
     private static <T> void crossArrayFeature(DataframeML dataframe, String header, List<T> mappedColumn,
-            Class<? extends Comparable<?>> orElse) {
+            Class<?> orElse) {
         List<Object[]> m = (List<Object[]>) mappedColumn;
         int max = m.stream().mapToInt(e -> e.length).max().orElse(1);
         for (int j = 0; j < max; j++) {
@@ -423,6 +530,7 @@ public class DataframeUtils extends DataframeML {
         }
     }
 
+
     @SuppressWarnings("unchecked")
     private static <T> void crossMapFeature(DataframeML dataframe, String header, List<T> mappedColumn) {
         List<Map<?, ?>> m = (List<Map<?, ?>>) mappedColumn;
@@ -444,7 +552,6 @@ public class DataframeUtils extends DataframeML {
             return dataframeML.filters.containsKey(key) && !dataframeML.filters.get(key).test(tryNumber);
         });
     }
-
 
     private static String fixNumber(String field, Class<?> currentFormat) {
         if (field.matches("\\d+\\.0+$") && currentFormat != Double.class) {
@@ -486,11 +593,17 @@ public class DataframeUtils extends DataframeML {
         }
     }
 
-    private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header) {
+    private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header, DoubleProperty progress,
+            double totalSize) {
         CSVUtils defaultCSVUtils = CSVUtils.defaultCSVUtils();
+        long co = 0;
         while (scanner.hasNext()) {
-            List<String> line2 = defaultCSVUtils.getFields(scanner.nextLine());
-            CSVUtils.fixMultipleLines(scanner, defaultCSVUtils, line2);
+            String nextLine = scanner.nextLine();
+            co += nextLine.getBytes(StandardCharsets.UTF_8).length;
+            List<String> line2 = defaultCSVUtils.getFields(nextLine);
+            co += CSVUtils.fixMultipleLines(scanner, defaultCSVUtils, line2);
+            long computed = co;
+            CommonsFX.runInPlatform(() -> progress.set(computed / totalSize));
             if (filterOut(dataframe, header, line2)) {
                 continue;
             }
@@ -504,6 +617,8 @@ public class DataframeUtils extends DataframeML {
                 tryNumber = mapIfMappable(dataframe, key, tryNumber);
                 dataframe.list(key).add(tryNumber);
             }
+            addCrossFeature(dataframe);
+
             if (dataframe.size > dataframe.maxSize) {
                 return;
             }
@@ -527,6 +642,10 @@ public class DataframeUtils extends DataframeML {
                 DataframeStatisticAccumulator acc = dataframeML.stats.get(key);
                 acc.accept(tryNumber);
             }
+            addCrossStats(dataframeML);
+
+
+
         }
         CSVUtils.fixEmptyLine(header, line2);
         return co;

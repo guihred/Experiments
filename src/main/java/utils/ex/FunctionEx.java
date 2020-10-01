@@ -61,4 +61,8 @@ public interface FunctionEx<T, R> {
         return f;
     }
 
+    static <T, F,D> D mapIf2(T length, FunctionEx<T, F> func, FunctionEx<F, D> func2) {
+        return FunctionEx.mapIf(length, t -> FunctionEx.mapIf(func.apply(t), func2::apply), null);
+    }
+
 }

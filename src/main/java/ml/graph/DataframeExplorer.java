@@ -14,7 +14,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -23,7 +22,6 @@ import org.slf4j.Logger;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
-import simplebuilder.SimpleTableViewBuilder;
 import utils.CSVUtils;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
@@ -35,8 +33,6 @@ import utils.ex.SupplierEx;
 public class DataframeExplorer extends ExplorerVariables {
 
     private static final Logger LOG = HasLogging.log();
-    private ObservableList<Entry<String, DataframeStatisticAccumulator>> columns = FXCollections.observableArrayList();
-    private ObservableList<Question> questions = FXCollections.observableArrayList();
 
     public void addStats(File file) {
         interruptCurrentThread();
@@ -58,12 +54,16 @@ public class DataframeExplorer extends ExplorerVariables {
 
     public void initialize() {
         questions.addListener(this::onQuestionsChange);
-        histogram.getColumns().get(0).textProperty().bind(barChart.titleProperty());
 
         columns.addListener(this::onColumnsChange);
-        SimpleTableViewBuilder.of(histogram).multipleSelection().equalColumns().copiable().savable()
-                .onKey(KeyCode.ADD, list -> addQuestion(list, true))
-                .onKey(KeyCode.SUBTRACT, list -> addQuestion(list, false));
+        histogram.setList(barList);
+        histogram.addColumn(barChart.titleProperty(), i -> barList.get(i).getXValue());
+        histogram.addColumn("Value", i -> barList.get(i).getYValue());
+        histogram.onKey(KeyCode.ADD,
+                list -> addQuestion(list.stream().map(barList::get).collect(Collectors.toList()), true));
+        histogram.onKey(KeyCode.SUBTRACT,
+                list -> addQuestion(list.stream().map(barList::get).collect(Collectors.toList()), false));
+        histogram.setColumnsWidth(10, 5);
         SimpleListViewBuilder.of(columnsList).items(columns).multipleSelection().onSelect(this::onColumnChosen)
                 .onKey(KeyCode.DELETE, t -> {
                     columns.remove(t);
@@ -115,7 +115,7 @@ public class DataframeExplorer extends ExplorerVariables {
             String ipColumn = selectedItem.getKey();
             DataframeBuilder builder = builderWithQuestions(getDataframe().getFile(), questions);
             SimpleDoubleProperty count = new SimpleDoubleProperty();
-            count.divide((double) getDataframe().getSize())
+            count
                     .addListener((ob, old, val) -> progress.setProgress(val.doubleValue()));
             setDataframe(WhoIsScanner.fillIPInformation(builder, ipColumn, count));
             File outFile = ResourceFXUtils.getOutFile("csv/" + getDataframe().getFile().getName());
@@ -150,7 +150,7 @@ public class DataframeExplorer extends ExplorerVariables {
             builder.makeStats(progress.progressProperty());
         }
         if (ExcelService.isExcel(file) || getDataframe().getSize() <= maxSize) {
-            setDataframe(builder.build());
+            setDataframe(builder.build(progress.progressProperty()));
             CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
         }
         CommonsFX.runInPlatform(() -> columns.setAll(SupplierEx
@@ -160,10 +160,13 @@ public class DataframeExplorer extends ExplorerVariables {
 
     public Thread save(File outFile) {
         return RunnableEx.runNewThread(() -> {
+            List<String> cols = getDataframe().cols();
             if (!getDataframe().isLoaded()) {
                 readDataframe(getDataframe().getFile(), getDataframe().getSize());
             }
-            DataframeUtils.save(getDataframe(), outFile);
+            DataframeML dataframe2 = getDataframe();
+            dataframe2.cols().stream().filter(t -> !cols.contains(t)).forEach(dataframe2::removeCol);
+            DataframeUtils.save(dataframe2, outFile);
             LOG.info("{} SAVED", outFile);
         });
     }
@@ -174,22 +177,6 @@ public class DataframeExplorer extends ExplorerVariables {
         CommonsFX.addCSS(primaryStage.getScene(), "progressLoader.css");
     }
 
-    private void addQuestion(List<Data<String, Number>> list, boolean add) {
-        if (list.isEmpty()) {
-            return;
-        }
-        QuestionType type = list.size() == 1 ? QuestionType.EQ : QuestionType.IN;
-        String collect = list.stream().map(Data<String, Number>::getXValue).collect(Collectors.joining(";"));
-        Entry<String, DataframeStatisticAccumulator> selectedItem =
-                columns.stream().filter(e -> e.getKey().equals(barChart.getTitle())).findFirst().orElse(null);
-        if (type != null && selectedItem != null) {
-            String colName = selectedItem.getKey();
-            String text2 = collect;
-            Object tryNumber = getQueryObject(type, colName, text2);
-            Question question = new Question(colName, tryNumber, type, !add);
-            questions.add(question);
-        }
-    }
 
     private void onQuestionsChange(Change<? extends Question> c) {
         while (c.next()) {

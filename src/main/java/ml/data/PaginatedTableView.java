@@ -11,16 +11,20 @@ import java.util.stream.IntStream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.StringSigaUtils;
+import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 import utils.ex.PredicateEx;
 import utils.ex.RunnableEx;
@@ -70,10 +74,16 @@ public final class PaginatedTableView extends VBox {
                 .onSortClicked(e -> RunnableEx.runIf(items,
                         i -> table.getColumns().stream().filter(c -> c.getText().equals(e.getKey())).findFirst()
                                 .ifPresent(col -> items.sort(QuickSortML.getComparator(col, e)))));
+
     }
 
     public <T> void addColumn(String name, FunctionEx<Integer, T> func) {
         SimpleTableViewBuilder.addClosableColumn(table, name, func);
+        updateItems();
+    }
+
+    public <T> void addColumn(StringProperty name, FunctionEx<Integer, T> func) {
+        SimpleTableViewBuilder.addClosableColumn(table, name.get(), func).textProperty().bind(name);
         updateItems();
     }
 
@@ -98,8 +108,23 @@ public final class PaginatedTableView extends VBox {
         return filteredItems;
     }
 
+    public TableView<Integer> getTable() {
+        return table;
+    }
+
+    public void onKey(KeyCode code, ConsumerEx<List<Integer>> e) {
+        SimpleTableViewBuilder.of(table).onKey(code, e);
+    }
+
     public void setColumnsWidth(double... array) {
         prefWidthColumns(table, concat(of(3.), of(array)).toArray());
+    }
+
+    public <T>void setList(ObservableList<T> barList) {
+        barList.addListener((ListChangeListener<T>) c -> {
+            c.next();
+            maxSize.set(c.getList().size());
+        });
     }
 
     public void setListSize(int maxSize) {
@@ -108,8 +133,8 @@ public final class PaginatedTableView extends VBox {
 
     private boolean containsString(String n, Integer e) {
         return StringUtils.isBlank(n)
-                || table.getColumns().stream().map(c -> StringSigaUtils.toStringSpecial(c.getCellData(e)))
-                .anyMatch(str -> StringUtils.containsIgnoreCase(str, n) || PredicateEx.test(s -> s.matches(n), str));
+                || table.getColumns().stream().map(c -> StringSigaUtils.toStringSpecial(c.getCellData(e))).anyMatch(
+                        str -> StringUtils.containsIgnoreCase(str, n) || PredicateEx.test(s -> s.matches(n), str));
     }
 
     private int getPageCount() {

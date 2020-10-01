@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import utils.ex.FunctionEx;
 
 public class BaseDataframe {
 
@@ -14,6 +15,7 @@ public class BaseDataframe {
     protected Map<String, Set<String>> categories = new LinkedHashMap<>();
     protected final Map<String, Class<? extends Comparable<?>>> formatMap = new LinkedHashMap<>();
     protected Map<String, UnaryOperator<Object>> mapping = new LinkedHashMap<>();
+    protected Map<String, Map.Entry<String[], FunctionEx<Object[], ?>>> crossFeature = new LinkedHashMap<>();
     protected int size;
     protected File file;
 

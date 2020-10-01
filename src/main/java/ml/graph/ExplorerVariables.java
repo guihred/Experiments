@@ -13,13 +13,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.stage.Stage;
 import ml.data.*;
 import simplebuilder.ListHelper;
@@ -30,7 +33,7 @@ import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
 public abstract class ExplorerVariables extends Application {
-    protected static final int MAX_ELEMENTS = 10000;
+    protected static final int MAX_ELEMENTS = 1000;
     @FXML
     protected ComboBox<Entry<String, DataframeStatisticAccumulator>> headersCombo;
     @FXML
@@ -47,7 +50,7 @@ public abstract class ExplorerVariables extends Application {
     @FXML
     protected PaginatedTableView dataTable;
     @FXML
-    protected TableView<XYChart.Data<String, Number>> histogram;
+    protected PaginatedTableView histogram;
     @FXML
     protected ProgressIndicator progress;
     @FXML
@@ -60,11 +63,35 @@ public abstract class ExplorerVariables extends Application {
 
     protected Thread currentThread;
 
+    protected ObservableList<Entry<String, DataframeStatisticAccumulator>> columns =
+            FXCollections.observableArrayList();
+
+    protected ObservableList<Question> questions = FXCollections.observableArrayList();
+    protected ObservableList<Data<String, Number>> barList = FXCollections.observableArrayList();
+
     public ExplorerVariables() {
         dataframe.addListener((ob, old, val) -> CommonsFX.runInPlatform(() -> {
             String fileName = FunctionEx.mapIf(getDataframe(), d -> d.getFile().getName(), "");
-            ((Stage) questionsList.getScene().getWindow()).setTitle(String.format("Dataframe Explorer (%s)", fileName));
+            FunctionEx.mapIf2(questionsList, Node::getScene, s -> (Stage) s.getWindow())
+                    .setTitle(String.format("Dataframe Explorer (%s)", fileName));
         }));
+    }
+
+    public void addQuestion(List<Data<String, Number>> list, boolean add) {
+        if (list.isEmpty()) {
+            return;
+        }
+        QuestionType type = list.size() == 1 ? QuestionType.EQ : QuestionType.IN;
+        String collect = list.stream().map(Data<String, Number>::getXValue).collect(Collectors.joining(";"));
+        Entry<String, DataframeStatisticAccumulator> selectedItem =
+                columns.stream().filter(e -> e.getKey().equals(barChart.getTitle())).findFirst().orElse(null);
+        if (type != null && selectedItem != null) {
+            String colName = selectedItem.getKey();
+            String text2 = collect;
+            Object tryNumber = getQueryObject(type, colName, text2);
+            Question question = new Question(colName, tryNumber, type, !add);
+            questions.add(question);
+        }
     }
 
     public DataframeML getDataframe() {
@@ -106,11 +133,11 @@ public abstract class ExplorerVariables extends Application {
             Set<String> unique = val.getValue().getUnique();
             return unique.isEmpty() || !unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
         }, e -> CommonsFX.runInPlatform(() -> fillIP.setDisable(e)));
-        ObservableList<Data<String, Number>> barList = FXCollections.observableArrayList();
+        barList.clear();
         ObservableList<PieChart.Data> pieData = ListHelper.mapping(barList,
                 e -> new PieChart.Data(String.format("(%d) %s", e.getYValue().intValue(), e.getXValue()),
                         e.getYValue().doubleValue()));
-        histogram.setItems(barList);
+
         Class<? extends Comparable<?>> format = val.getValue().getFormat();
         if (format == String.class) {
             Map<String, Integer> countMap = val.getValue().getCountMap();
@@ -168,8 +195,8 @@ public abstract class ExplorerVariables extends Application {
                         .toArray();
                 dataTable.setColumnsWidth(array);
             } else {
-                addedSubList.forEach(entry -> dataTable.addColumn(entry.getKey(),
-                        i -> getDataframe().getAt(entry.getKey(), i)));
+                addedSubList.forEach(
+                        entry -> dataTable.addColumn(entry.getKey(), i -> getDataframe().getAt(entry.getKey(), i)));
                 dataTable.setListSize(getDataframe().getSize());
                 double[] array = addedSubList.stream().mapToDouble(e -> Math.max(getTopLength(e), e.getKey().length()))
                         .toArray();
