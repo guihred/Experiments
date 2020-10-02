@@ -35,9 +35,9 @@ public class PopulacionalPyramidExample extends Application {
         BorderPane root = new BorderPane();
         Predicate<String> asPredicate = Pattern.compile("MA|FE").asPredicate();
         String countryHeader = "Country";
-        DataframeML x = DataframeBuilder.builder("POPULACAO.csv").filter("Unit", "Persons"::equals)
-                .filter("SEX", e -> asPredicate.test(e.toString()))
-                .filter("Subject", e -> e.toString().matches("Population.+\\d+")).addCategory(countryHeader)
+        DataframeML x = DataframeBuilder.builder("POPULACAO.csv").filterOut("Unit", "Persons"::equals)
+                .filterOut("SEX", e -> asPredicate.test(e.toString()))
+                .filterOut("Subject", e -> e.toString().matches("Population.+\\d+")).addCategory(countryHeader)
                 .addCategory("TIME").addMapping("Subject", e -> e.toString().replaceAll("Population.+\\) (.+)", "$1"))
                 .build();
 

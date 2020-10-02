@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import org.slf4j.Logger;
 import utils.CSVUtils;
 import utils.CommonsFX;
@@ -91,10 +90,10 @@ public class DataframeUtils extends DataframeML {
 
 
         AtomicInteger count = new AtomicInteger(0);
+        update(progress, 0);
         List<T> mappedColumn = IntStream.range(0, dataframe.size).mapToObj(i -> toArray(dataframe, i, dependent))
                 .map(FunctionEx.makeFunction(mapper))
-                .peek(i -> CommonsFX
-                        .runInPlatform(() -> progress.set(count.getAndIncrement() / (double) dataframe.size)))
+                .peek(i -> update(progress, count.getAndIncrement() / (double) dataframe.size))
                 .collect(Collectors.toList());
         Class<? extends Comparable<?>> columnFormat = (Class<? extends Comparable<?>>) mappedColumn.stream()
                 .filter(Objects::nonNull).findFirst().map(T::getClass).orElse(null);
@@ -108,7 +107,7 @@ public class DataframeUtils extends DataframeML {
             dataframe.getDataframe().put(header, (List) mappedColumn);
             dataframe.putFormat(header, columnFormat);
         }
-        CommonsFX.runInPlatform(() -> progress.set(1));
+        update(progress, 1);
         return mappedColumn;
     }
 
@@ -208,12 +207,12 @@ public class DataframeUtils extends DataframeML {
     }
 
     public static DataframeML readCSV(File csvFile, DataframeML dataframeML) {
-        return readCSV(csvFile, new SimpleDoubleProperty(0), dataframeML);
+        return readCSV(csvFile, null, dataframeML);
     }
 
     public static DataframeML readCSV(File csvFile, DoubleProperty progress, DataframeML dataframeML) {
         double totalSize = ResourceFXUtils.computeAttributes(csvFile).size();
-        CommonsFX.runInPlatform(() -> progress.set(0));
+        update(progress, 0);
         try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
             dataframeML.file = csvFile;
             dataframeML.size = 0;
@@ -230,7 +229,7 @@ public class DataframeUtils extends DataframeML {
             LOG.error("ERROR IN FILE {} - {}", csvFile, e.getMessage());
             LOG.trace("FILE NOT FOUND " + csvFile, e);
         }
-        CommonsFX.runInPlatform(() -> progress.set(1));
+        update(progress, 1);
         return dataframeML;
     }
 
@@ -385,10 +384,10 @@ public class DataframeUtils extends DataframeML {
         }
     }
 
-
     protected static void createNullRow(List<String> header, Map<String, Object> line2) {
         header.stream().filter(e -> !line2.containsKey(e)).forEach(e -> line2.put(e, null));
     }
+
 
     protected static Object mapIfMappable(DataframeML dataframe, String key, Object tryNumber) {
         if (dataframe.mapping.containsKey(key)) {
@@ -452,14 +451,7 @@ public class DataframeUtils extends DataframeML {
             } else {
                 dataframe.putFormat(header, (Class<? extends Comparable<?>>) columnFormat);
             }
-            
         });
-        // if(dataframe.crossFeature.isEmpty())
-        // dataframe.getDataframe().forEach((k, li) -> {
-        // while (li.size() < dataframe.size) {
-        // li.add(null);
-        // }
-        // });
     }
 
     private static void addCrossStats(DataframeML dataframeML) {
@@ -530,7 +522,6 @@ public class DataframeUtils extends DataframeML {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     private static <T> void crossMapFeature(DataframeML dataframe, String header, List<T> mappedColumn) {
         List<Map<?, ?>> m = (List<Map<?, ?>>) mappedColumn;
@@ -543,6 +534,7 @@ public class DataframeUtils extends DataframeML {
                     .filter(Objects::nonNull).findFirst().map(Object::getClass).orElse(null));
         }
     }
+
 
     private static boolean filterOut(DataframeML dataframeML, List<String> header, List<String> line2) {
         return line2.isEmpty() || IntStream.range(0, header.size()).anyMatch(i -> {
@@ -576,19 +568,19 @@ public class DataframeUtils extends DataframeML {
         dataframeML.file = csvFile;
         long computed = 0;
         double size2 = ResourceFXUtils.computeAttributes(csvFile).size();
-        CommonsFX.runInPlatform(() -> progress.set(0));
+        update(progress, 0);
         try (Scanner scanner = new Scanner(csvFile, StandardCharsets.UTF_8.displayName())) {
             List<String> header = addHeaders(dataframeML, scanner);
             CSVUtils defaultCSVUtils = CSVUtils.defaultCSVUtils();
             while (scanner.hasNext()) {
                 computed += runLine(dataframeML, header, scanner, defaultCSVUtils);
                 double co = computed;
-                CommonsFX.runInPlatform(() -> progress.set(co / size2));
+                update(progress, co / size2);
                 if (dataframeML.size > dataframeML.maxSize) {
                     break;
                 }
             }
-            CommonsFX.runInPlatform(() -> progress.set(1));
+            update(progress, 1);
             return dataframeML.stats;
         }
     }
@@ -596,14 +588,14 @@ public class DataframeUtils extends DataframeML {
     private static void readRows(DataframeML dataframe, Scanner scanner, List<String> header, DoubleProperty progress,
             double totalSize) {
         CSVUtils defaultCSVUtils = CSVUtils.defaultCSVUtils();
-        long co = 0;
+        double co = 0;
         while (scanner.hasNext()) {
             String nextLine = scanner.nextLine();
             co += nextLine.getBytes(StandardCharsets.UTF_8).length;
             List<String> line2 = defaultCSVUtils.getFields(nextLine);
             co += CSVUtils.fixMultipleLines(scanner, defaultCSVUtils, line2);
-            long computed = co;
-            CommonsFX.runInPlatform(() -> progress.set(computed / totalSize));
+            
+            update(progress, co / totalSize);
             if (filterOut(dataframe, header, line2)) {
                 continue;
             }
@@ -665,5 +657,11 @@ public class DataframeUtils extends DataframeML {
             d[j] = ((Number) dataframe.getDataframe().get(dependent[j]).get(i)).doubleValue();
         }
         return d;
+    }
+
+    private static void update(DoubleProperty progress,double i) {
+        if(progress!=null) {
+            CommonsFX.runInPlatform(() -> progress.set(i));
+        }
     }
 }

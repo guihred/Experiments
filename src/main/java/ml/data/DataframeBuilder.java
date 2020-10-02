@@ -13,10 +13,9 @@ import utils.ex.FunctionEx;
 import utils.ex.SupplierEx;
 
 public class DataframeBuilder extends DataframeML {
-    private final DataframeML dataframeML = this;
 
     protected DataframeBuilder(File csvFile) {
-        dataframeML.file = csvFile;
+        file = csvFile;
     }
 
     protected DataframeBuilder(String csvFile) {
@@ -24,17 +23,17 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public DataframeBuilder addCategory(String d) {
-        dataframeML.categories.put(d, new HashSet<>());
+        categories.put(d, new HashSet<>());
         return this;
     }
 
     public DataframeBuilder addCrossFeature(String d, String[] dependencies, FunctionEx<Object[], ?> mapper) {
-        dataframeML.crossFeature.put(d, new AbstractMap.SimpleEntry<>(dependencies,mapper));
+        crossFeature.put(d, new AbstractMap.SimpleEntry<>(dependencies, mapper));
         return this;
     }
 
     public DataframeBuilder addMapping(String d, UnaryOperator<Object> mapper) {
-        dataframeML.mapping.put(d, mapper);
+        mapping.put(d, mapper);
         return this;
     }
 
@@ -43,45 +42,44 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public DataframeML build(DoubleProperty progress) {
-        if (ExcelService.isExcel(dataframeML.file)) {
-            return ExcelDataReader.readExcel(dataframeML, dataframeML.file);
+        if (ExcelService.isExcel(file)) {
+            return ExcelDataReader.readExcel(this, file);
         }
-        DataframeUtils.readCSV(dataframeML.file, progress, dataframeML);
-        return dataframeML;
+        DataframeUtils.readCSV(file, progress, this);
+        return this;
     }
 
     public Set<Entry<String, DataframeStatisticAccumulator>> columns() {
         return SupplierEx.get(() -> {
-            try (Scanner scanner = new Scanner(dataframeML.file, "UTF-8")) {
-                DataframeUtils.addHeaders(dataframeML, scanner);
+            try (Scanner scanner = new Scanner(file, "UTF-8")) {
+                DataframeUtils.addHeaders(this, scanner);
             }
-            return dataframeML.getStats().entrySet();
+            return getStats().entrySet();
         }, Collections.emptySet());
     }
 
     public DataframeML dataframe() {
-        return dataframeML;
+        return this;
     }
 
-    @Override
-    public DataframeBuilder filter(String d, Predicate<Object> fil) {
-        dataframeML.filters.put(d, fil);
+    public DataframeBuilder filterOut(String d, Predicate<Object> fil) {
+        filters.put(d, fil);
         return this;
     }
 
     public DataframeML makeStats() {
 
-        DataframeUtils.makeStats(dataframeML.file, dataframeML, new SimpleDoubleProperty());
-        return dataframeML;
+        DataframeUtils.makeStats(file, this, new SimpleDoubleProperty());
+        return this;
     }
 
     public DataframeML makeStats(DoubleProperty progress) {
-        DataframeUtils.makeStats(dataframeML.file, dataframeML, progress);
-        return dataframeML;
+        DataframeUtils.makeStats(file, this, progress);
+        return this;
     }
 
     public DataframeBuilder setMaxSize(int maxSize) {
-        dataframeML.maxSize = maxSize;
+        this.maxSize = maxSize;
         return this;
     }
 

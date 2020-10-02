@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -114,10 +113,7 @@ public class DataframeExplorer extends ExplorerVariables {
             }
             String ipColumn = selectedItem.getKey();
             DataframeBuilder builder = builderWithQuestions(getDataframe().getFile(), questions);
-            SimpleDoubleProperty count = new SimpleDoubleProperty();
-            count
-                    .addListener((ob, old, val) -> progress.setProgress(val.doubleValue()));
-            setDataframe(WhoIsScanner.fillIPInformation(builder, ipColumn, count));
+            setDataframe(WhoIsScanner.fillIPInformation(builder, ipColumn, progress.progressProperty()));
             File outFile = ResourceFXUtils.getOutFile("csv/" + getDataframe().getFile().getName());
             LOG.info("File {} SAVING IN", outFile);
             DataframeUtils.save(getDataframe(), outFile);
@@ -182,12 +178,14 @@ public class DataframeExplorer extends ExplorerVariables {
         while (c.next()) {
             if (getDataframe() != null) {
                 if (getDataframe().isLoaded() && c.wasAdded() && !c.wasRemoved()) {
-                    for (Question question : c.getAddedSubList()) {
+                    for (Question question : c.getList()) {
                         getDataframe().filter(question.getColName(), question::answer);
                     }
                     int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
                     columns.setAll(DataframeUtils.makeStats(getDataframe()).entrySet());
                     headersCombo.getSelectionModel().select(selectedIndex);
+
+                    CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
                 } else {
                     addStats(getDataframe().getFile());
                 }
@@ -213,7 +211,7 @@ public class DataframeExplorer extends ExplorerVariables {
     private static DataframeBuilder builderWithQuestions(File file, List<Question> questions) {
         DataframeBuilder builder = DataframeBuilder.builder(file);
         for (Question question : questions) {
-            builder.filter(question.getColName(), question::answer);
+            builder.filterOut(question.getColName(), question::answer);
         }
         return builder;
     }

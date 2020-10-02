@@ -2,7 +2,7 @@ package kibana;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
-import ethical.hacker.VirusTotalApi;
+import ethical.hacker.WhoIsScanner;
 import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
@@ -61,10 +61,10 @@ public class KibanaApi {
                 makeKibanaSearch("kibana/trafficQuery.json", query, "ReceiveTime", "country_code2");
         trafficSearch.computeIfPresent("ReceiveTime",
                 (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
-        Map<String, String> ipInformation = VirusTotalApi.getIpTotalInfo(query);
+        Map<String, String> ipInformation = new WhoIsScanner().getIpInformation(query);
         Map<String, String> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", query);
-        fullScan.put("Provedor", Objects.toString(ipInformation.get("as_owner")));
+        fullScan.put("Provedor", Objects.toString(WhoIsScanner.getKey(ipInformation, "as_owner", "HostName"), ""));
         fullScan.put("Geolocation",
                 Objects.toString(ipInformation.getOrDefault("country", trafficSearch.remove("country_code2"))));
         fullScan.put("Talos Blacklist", isInBlacklist(query));
@@ -92,7 +92,7 @@ public class KibanaApi {
                         getContent(file, query, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
-        }, Collections.emptyMap(),
+        }, new HashMap<>(),
                 e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
     }
 

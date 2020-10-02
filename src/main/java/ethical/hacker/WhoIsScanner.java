@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import ml.data.*;
@@ -171,20 +170,19 @@ public class WhoIsScanner {
     }
 
     public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn, DoubleProperty count) {
-        builder.filter(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(IP_REGEX));
+        builder.filterOut(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(IP_REGEX));
         DataframeML dataframe = builder.build(count);
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         ObservableMap<String, Map<String, String>> ipInfoCache = FXCollections.observableHashMap();
         count.set(0);
-        ipInfoCache.addListener((Change<? extends String, ? extends Map<String, String>> e) -> count
-                .set(count.get() + e.getValueAdded().size() / dataframe.getSize()));
-        DataframeUtils.crossFeatureObject(dataframe, "Rede", e -> getFromCache(whoIsScanner, ipInfoCache, e, "network"),
+        DataframeUtils.crossFeatureObject(dataframe, "Rede", count,
+                e -> getFromCache(whoIsScanner, ipInfoCache, e, "network"),
                 ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, "Owner",
+        DataframeUtils.crossFeatureObject(dataframe, "Owner", count,
                 e -> getFromCache(whoIsScanner, ipInfoCache, e, "asname", "as_owner"), ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, REVERSE_DNS,
+        DataframeUtils.crossFeatureObject(dataframe, REVERSE_DNS, count,
                 e -> getFromCache(whoIsScanner, ipInfoCache, e, REVERSE_DNS), ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, "Country",
+        DataframeUtils.crossFeatureObject(dataframe, "Country", count,
                 e -> getFromCache(whoIsScanner, ipInfoCache, e, "country", "ascountry"), ipColumn);
         return dataframe;
     }
@@ -209,6 +207,11 @@ public class WhoIsScanner {
             first.put(REVERSE_DNS, ia.getCanonicalHostName());
         }
         return first;
+    }
+
+    public static String getKey(Map<String, String> first, String... keys) {
+        return Stream.of(keys).map(first::get).filter(Objects::nonNull).findFirst().orElse(null);
+
     }
 
     public static String getLastNumberField(BaseDataframe dataframe) {
@@ -276,11 +279,6 @@ public class WhoIsScanner {
     private static String getIPColumn(DataframeBuilder builder) {
         return builder.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
                 .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
-    }
-
-    private static String getKey(Map<String, String> first, String... keys) {
-        return Stream.of(keys).map(first::get).filter(Objects::nonNull).findFirst().orElse(null);
-
     }
 
     private static InetAddress toInetAddress(String ip) throws UnknownHostException {
