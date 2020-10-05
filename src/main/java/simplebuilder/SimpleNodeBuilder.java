@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.effect.Effect;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
@@ -187,6 +188,14 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
         node.setOnKeyReleased(e -> {
             RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
             value.handle(e);
+        });
+    }
+
+    public static void onKeyReleased(Node node, KeyCode e, RunnableEx value) {
+        onKeyReleased(node, e0 -> {
+            if (e0.getCode() == e) {
+                RunnableEx.run(value);
+            }
         });
     }
 

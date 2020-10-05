@@ -1,7 +1,6 @@
 package kibana;
 
 import com.google.common.collect.ImmutableMap;
-import ethical.hacker.WhoIsScanner;
 import extract.ExcelService;
 import fxml.utils.JsonExtractor;
 import java.io.File;
@@ -101,28 +100,6 @@ public class ConsultasInvestigator extends Application {
         onActionKibanaScan();
     }
 
-    public void onActionFillIP() {
-        RunnableEx.runNewThread(() -> {
-            ObservableList<Map<String, String>> items = consultasTable.getItems();
-            if (items.isEmpty()) {
-                return;
-            }
-            setProgress(0);
-            WhoIsScanner whoIsScanner = new WhoIsScanner();
-            for (Map<String, String> map : items) {
-                Map<String, String> ipInformation = whoIsScanner.getIpInformation(map.get("key"));
-                map.put("Rede", getFirst(ipInformation, "network", "CanonicalHostName"));
-                map.put("Owner", getFirst(ipInformation, "as_owner", "asname"));
-                map.put("Country", getFirst(ipInformation, "country", "ascountry"));
-                if (progress.getProgress() == 0) {
-                    CommonsFX.runInPlatform(() -> SimpleTableViewBuilder.addColumns(consultasTable, map.keySet()));
-                }
-                addProgress(1. / items.size());
-            }
-            CommonsFX.runInPlatform(() -> SimpleTableViewBuilder.addColumns(consultasTable, items.get(0).keySet()));
-            setProgress(1);
-        });
-    }
 
     public void onActionKibanaScan() {
         RunnableEx.runNewThread(() -> {
@@ -302,10 +279,6 @@ public class ConsultasInvestigator extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    private static String getFirst(Map<String, String> ipInformation, String... keys) {
-        return Stream.of(keys).map(ipInformation::get).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
 }

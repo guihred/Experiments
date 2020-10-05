@@ -73,13 +73,13 @@ public class JsonViewer extends Application {
                 .onChange((old, val) -> fileProp.set(val));
         fileProp.addListener((ob, old, val) -> CommonsFX.runInPlatform(() -> {
             if (val != null) {
+                onChange.select(val);
                 List<Integer> arrayList = getSelectionOrder();
                 readJsonFile(tree, val);
                 selectSame(arrayList);
                 if (!files.contains(val)) {
                     files.add(val);
                 }
-                onChange.select(val);
             }
         }));
     }
@@ -107,7 +107,7 @@ public class JsonViewer extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        CommonsFX.loadFXML("Json Viewer", "JsonViewer.fxml", primaryStage);
+        CommonsFX.loadFXML("Json Viewer", "JsonViewer.fxml", this, primaryStage);
     }
 
     private List<Integer> getSelectionOrder() {

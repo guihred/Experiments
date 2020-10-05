@@ -66,20 +66,29 @@ public class FXEnginePaintTest extends AbstractTestExecution {
         Node stack = lookupFirst(ZoomableScrollPane.class).getContent();
         List<PaintTool> asList =
                 Arrays.asList(PaintTools.LINE.getTool(), PaintTools.PENCIL.getTool(), PaintTools.PICTURE.getTool());
+
+        Map<String, Double> coverageMap = CoverageUtils.buildDataframe().stream()
+                .collect(Collectors.toMap(e -> e.getKey().toString(), Entry<Object, Double>::getValue));
         for (Node next : asList) {
+            if (coverageMap.getOrDefault(next.getClass().getSimpleName(), 0.) >= 95) {
+                continue;
+            }
             clickOn(next);
             moveTo(stack);
             drag(MouseButton.PRIMARY);
             moveRandom(2);
             drop();
-            press(KeyCode.SHIFT);
-            drag(MouseButton.PRIMARY);
-            moveRandom(1000);
-            drop();
-            drag(MouseButton.PRIMARY);
-            moveTo(stack);
-            drop();
-            release(KeyCode.SHIFT);
+            holding(KeyCode.CONTROL, () -> type(KeyCode.ADD));
+            type(typeText("M0,0L10,10"));
+            type(KeyCode.ENTER);
+            holding(KeyCode.SHIFT, () -> {
+                drag(MouseButton.PRIMARY);
+                moveRandom(1000);
+                drop();
+                drag(MouseButton.PRIMARY);
+                moveTo(stack);
+                drop();
+            });
         }
     }
 

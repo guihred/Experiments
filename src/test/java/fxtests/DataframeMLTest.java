@@ -5,6 +5,9 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import ml.data.*;
@@ -51,7 +54,7 @@ public class DataframeMLTest extends AbstractTestExecution {
         tryClickOn(button);
         List<KeyCode> codes = Arrays.asList(KeyCode.DELETE, KeyCode.SUBTRACT);
         lookup(ListView.class).forEach(listView -> {
-            from(listView).lookup(ListCell.class::isInstance).queryAll().stream().limit(10).forEach(t -> {
+            from(listView).lookup(ListCell.class::isInstance).queryAll().stream().limit(3).forEach(t -> {
                 tryClickOn(t);
                 type(randomItem(codes));
             });
@@ -77,6 +80,10 @@ public class DataframeMLTest extends AbstractTestExecution {
     @Test
     public void testMapping() {
         measureTime("Mapping.getMethods", () -> Mapping.getMethods());
+    }
+
+    @Test
+    public void testMappingExecution() {
         DataframeExplorer show = show(DataframeExplorer.class);
         File csvFile =
                 FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile().getParentFile(), ".csv").toFile();
@@ -88,11 +95,7 @@ public class DataframeMLTest extends AbstractTestExecution {
         from(lookupFirst(ListView.class)).lookup(ListCell.class::isInstance).queryAll().stream().limit(2)
                 .forEach(this::tryClickOn);
         release(KeyCode.CONTROL);
-        MenuItem menuItem = lookupFirst(ListView.class).getContextMenu().getItems().get(1);
-        interactNoWait(menuItem::fire);
-        ComboBox<?> queryAs = lookup("#methodCombo").queryAs(ComboBox.class);
-        selectComboItems(queryAs, nextInt(queryAs.getItems().size()));
-        clickOn("Add");
+        testMappingMenu();
     }
 
     @Test
@@ -100,6 +103,41 @@ public class DataframeMLTest extends AbstractTestExecution {
         File csvFile = ResourceFXUtils.getOutFile("notExists");
         DataframeML b = DataframeBuilder.build(csvFile);
         DataframeUtils.describe(b);
+    }
+
+    @Test
+    public void testTableTabs() {
+        DataframeExplorer show = show(DataframeExplorer.class);
+        File csvFile =
+                FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile().getParentFile(), ".csv").toFile();
+        if (!csvFile.exists()) {
+            return;
+        }
+        show.readDataframe(csvFile, 1000);
+        press(KeyCode.CONTROL);
+        from(lookupFirst(ListView.class)).lookup(ListCell.class::isInstance).queryAll().stream().limit(2)
+                .forEach(this::tryClickOn);
+        release(KeyCode.CONTROL);
+        Set<Node> queryAll2 = lookup(".tab").queryAll();
+        for (Node node : queryAll2) {
+            tryClickOn(node);
+            Set<Node> queryAs =
+                    lookup(".tab-content-area").queryAll().stream().filter(Node::isVisible).collect(Collectors.toSet());
+            List<KeyCode> asList = Arrays.asList(KeyCode.S, KeyCode.C, KeyCode.SUBTRACT, KeyCode.ADD, KeyCode.A);
+            from(queryAs).lookup(TableRow.class::isInstance).queryAll().stream().filter(Node::isVisible).limit(2)
+                    .forEachOrdered(t -> {
+                        tryClickOn(t);
+                        press(KeyCode.CONTROL);
+                        type(randomItem(asList));
+                        release(KeyCode.CONTROL);
+                        type(KeyCode.ENTER);
+                        press(KeyCode.ALT);
+                        type(KeyCode.S);
+                        release(KeyCode.ALT);
+                    });
+
+        }
+
     }
 
     @Test
@@ -119,5 +157,13 @@ public class DataframeMLTest extends AbstractTestExecution {
         Map<Double, Long> histogram =
                 measureTime("DataframeML.histogram", () -> DataframeUtils.histogram(x, "population", 10));
         Assert.notNull(histogram, "Must not be null");
+    }
+
+    private void testMappingMenu() {
+        MenuItem menuItem = lookupFirst(ListView.class).getContextMenu().getItems().get(1);
+        interactNoWait(menuItem::fire);
+        ComboBox<?> methods = lookup("#methodCombo").queryAs(ComboBox.class);
+        selectComboItems(methods, nextInt(methods.getItems().size()));
+        clickOn("Add");
     }
 }

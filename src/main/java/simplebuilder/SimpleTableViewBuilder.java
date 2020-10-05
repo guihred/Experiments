@@ -45,7 +45,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, ?> column = new TableColumn<>(columnName);
         column.setCellValueFactory(new PropertyValueFactory<>(propertyName));
@@ -64,7 +63,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         node.getColumns().add(column);
         return this;
     }
-
 
     public SimpleTableViewBuilder<T> copiable() {
         onKeyReleased(e -> copyContent(node, e));
@@ -155,7 +153,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public static <T> void addColumns(final TableView<Map<String, T>> simpleTableViewBuilder,
-        final Collection<String> keySet) {
+            final Collection<String> keySet) {
         simpleTableViewBuilder.getColumns().clear();
         keySet.forEach(key -> {
             TableColumn<Map<String, T>, String> column = new TableColumn<>(key);

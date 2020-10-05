@@ -4,6 +4,7 @@ import election.*;
 import fxpro.ch06.TaskProgressApp;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import org.junit.After;
@@ -32,8 +33,14 @@ public class FXHibernateTest extends AbstractTestExecution {
     @Test
     public void verifyCandidatoApp() {
         show(CandidatoApp.class);
+        TreeView<?> treeView = lookupFirst(TreeView.class);
+        TreeItem<?> lookupFirst = treeView.getRoot();
+        while (lookupFirst.getChildren().isEmpty()) {
+            // DOES NOTHING
+            sleep(500);
+        }
         targetPos(Pos.TOP_CENTER);
-        clickOn(lookupFirst(TreeView.class));
+        clickOn(treeView);
         type(KeyCode.SPACE);
         type(KeyCode.RIGHT);
         type(KeyCode.DOWN, 3);

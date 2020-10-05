@@ -61,9 +61,9 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
         return stage;
     }
 
-    public SimpleDialogBuilder button(String buttonMsg, Runnable c) {
+    public SimpleDialogBuilder button(String buttonMsg, RunnableEx c) {
         Button button = newButton(buttonMsg, a -> {
-            c.run();
+            RunnableEx.run(c);
             stage.close();
         });
         group.getChildren().add(button);

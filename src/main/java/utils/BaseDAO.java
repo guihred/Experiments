@@ -37,7 +37,6 @@ public class BaseDAO implements HasLogging {
                 T apply = run.apply(session);
                 session.flush();
                 transaction.commit();
-                session.close();
                 return apply;
             }
         });

@@ -3,16 +3,12 @@ package fxtests;
 import ethical.hacker.*;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import kibana.ConsultasInvestigator;
 import kibana.KibanaApi;
@@ -63,7 +59,21 @@ public class FXHackTest extends AbstractTestExecution {
     public void testConsultasInvestigator() {
         ImageFXUtils.setShowImage(false);
         show(ConsultasInvestigator.class);
-        clickButtonsWait(WAIT_TIME * 5);
+        ProgressIndicator lookup = lookupFirst(ProgressIndicator.class);
+        List<Button> buttons = lookupList(Button.class).stream().limit(4).collect(Collectors.toList());
+        for (Node e1 : buttons) {
+            clickOn(e1);
+            wiatProgress(lookup);
+        }
+        wiatProgress(lookup);
+        Set<Node> queryAll2 = lookup(".tab").queryAll();
+        for (Node node : queryAll2) {
+            tryClickOn(node);
+            Set<Node> queryAs =
+                    lookup(".tab-content-area").queryAll().stream().filter(Node::isVisible).collect(Collectors.toSet());
+            from(queryAs).lookup(TableRow.class::isInstance).queryAll().stream().limit(1).forEach(this::doubleClickOn);
+            wiatProgress(lookup);
+        }
     }
 
     @Test
@@ -232,6 +242,12 @@ public class FXHackTest extends AbstractTestExecution {
                 "people-pa.clients6.google.com", "people-pa.clients6.google.com", "clients6.google.com",
                 "mail.google.com", "play.google.com", "http://wwwcztapwlwk.net/plafgxc80333067532");
         measureTime("VirusTotalApi.getUrlInformation", () -> VirusTotalApi.getUrlInformation(randomItem));
+    }
+
+    private static void wiatProgress(ProgressIndicator lookup) {
+        while (lookup.getProgress() > 0 && lookup.getProgress() < 1) {
+            // DOES NOTHING
+        }
     }
 
 }

@@ -26,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleDialogBuilder;
+import simplebuilder.SimpleNodeBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
@@ -195,22 +196,28 @@ public class PictureTool extends PaintTool {
     }
 
     public void showNewPicDialog() {
-        TextField button = new TextField();
+        TextField pathText = new TextField();
         SVGPath path = new SVGPath();
         path.setContent("M0,0");
-        button.textProperty().addListener((ob, old, val) -> {
-            String value = "M0,0" + button.getText();
+        pathText.textProperty().addListener((ob, old, val) -> {
+            String value = "M0,0" + pathText.getText();
             String content = path.getContent();
             RunnableEx.make(() -> path.setContent(value), e -> path.setContent(content)).run();
         });
+
         VBox.setVgrow(path, Priority.ALWAYS);
-        new SimpleDialogBuilder().node(path).node(button).button("New Pic", () -> {
-            String value = "M0,0" + button.getText();
-            area.setContent(value);
-            ToggleButton addToggle = SimpleToggleGroupBuilder.addToggle(shapeOption, PictureOption.toSVG(value), value);
-            ObservableList<Node> children = picturePane.getChildren();
-            children.add(children.size() - 1, addToggle);
-        }).bindWindow(picturePane).displayDialog();
+        SimpleNodeBuilder.onKeyReleased(pathText, KeyCode.ENTER, () -> addNewPic(pathText.getText()));
+        new SimpleDialogBuilder().node(path).node(pathText).button("New Pic", () -> addNewPic(pathText.getText()))
+                .bindWindow(picturePane)
+                .displayDialog();
+    }
+
+    private void addNewPic(String path) {
+        String value = "M0,0" + path;
+        area.setContent(value);
+        ToggleButton addToggle = SimpleToggleGroupBuilder.addToggle(shapeOption, PictureOption.toSVG(value), value);
+        ObservableList<Node> children = picturePane.getChildren();
+        children.add(children.size() - 1, addToggle);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

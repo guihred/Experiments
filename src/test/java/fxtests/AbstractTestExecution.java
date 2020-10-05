@@ -48,7 +48,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     @Override
     public FxRobotInterface doubleClickOn(Node node, MouseButton... buttons) {
-        return SupplierEx.getIgnore(() ->super.doubleClickOn(node, buttons));
+        return SupplierEx.getIgnore(() -> super.doubleClickOn(node, buttons));
     }
 
     @Override
@@ -58,7 +58,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     @Override
     public FxRobotInterface moveTo(Node bounds) {
-        return SupplierEx.get(()->super.moveTo(bounds));
+        return SupplierEx.get(() -> super.moveTo(bounds));
     }
 
     @Override
@@ -68,6 +68,7 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         currentStage.setX(0);
         currentStage.setY(0);
     }
+
     @Override
     public void stop() {
         interact(() -> currentStage.close());
@@ -94,6 +95,13 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
 
     protected String getRandomString() {
         return Long.toString(Math.abs(random.nextLong()) + 1000, Character.MAX_RADIX).substring(0, 4);
+    }
+
+    protected void holding(KeyCode code, RunnableEx run) {
+        press(code);
+        RunnableEx.run(run);
+        release(code);
+
     }
 
     protected <M extends Node> Set<M> lookup(Class<M> cl) {
@@ -220,10 +228,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
     }
 
     @SuppressWarnings("deprecation")
-    protected  KeyCode[] typeText(String txt) {
+    protected KeyCode[] typeText(String txt) {
         KeyCode[] values = KeyCode.values();
         KeyCode[] array = txt.chars().mapToObj(e -> Objects.toString((char) e).toUpperCase())
-            .flatMap(s -> Stream.of(values).filter(v -> v.impl_getChar().equals(s))).toArray(KeyCode[]::new);
+                .flatMap(s -> Stream.of(values).filter(v -> v.impl_getChar().equals(s))).toArray(KeyCode[]::new);
         String string = Arrays.toString(array);
         logger.info("TYPING {}", string);
         return array;

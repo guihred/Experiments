@@ -59,16 +59,8 @@ public class RoundMazeModel {
             } else {
                 maze[x][y].setCenter(false);
                 draw();
-                final Runnable c = () -> {
-                    initializeMaze();
-                    angle.setAngle(90);
-                    x = RoundMazeHandler.MAZE_WIDTH - 1;
-                    y = RoundMazeHandler.MAZE_HEIGHT - 1;
-                    maze[RoundMazeHandler.MAZE_WIDTH - 1][RoundMazeHandler.MAZE_HEIGHT - 1].setCenter(true);
-                    RoundMazeHandler.createMaze(maze);
-                    draw();
-                };
-                new SimpleDialogBuilder().text("You Won").button("_Reset", c).bindWindow(canvas).displayDialog();
+                new SimpleDialogBuilder().text("You Won").button("_Reset", this::reset).bindWindow(canvas)
+                        .displayDialog();
             }
         }
     }
@@ -134,6 +126,16 @@ public class RoundMazeModel {
                 }
             }
         }
+    }
+
+    private void reset() {
+        initializeMaze();
+        angle.setAngle(90);
+        x = RoundMazeHandler.MAZE_WIDTH - 1;
+        y = RoundMazeHandler.MAZE_HEIGHT - 1;
+        maze[RoundMazeHandler.MAZE_WIDTH - 1][RoundMazeHandler.MAZE_HEIGHT - 1].setCenter(true);
+        RoundMazeHandler.createMaze(maze);
+        draw();
     }
 
     public static RoundMazeModel create(Scene scene, Canvas canvas) {

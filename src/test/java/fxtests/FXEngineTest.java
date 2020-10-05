@@ -70,12 +70,14 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyJsonViewer() {
-        JsonViewer show = show(JsonViewer.class);
         List<Path> pathByExtension = FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".json").stream()
                 .limit(10).collect(Collectors.toList());
-        show.addFile(pathByExtension.stream().map(Path::toFile).toArray(File[]::new));
 
+        JsonViewer show = show(JsonViewer.class);
+        interactNoWait(() -> show.addFile(pathByExtension.stream().map(Path::toFile).toArray(File[]::new)));
         sleep(500);
+
+        selectComboItems(lookupFirst(ComboBox.class), 10);
         targetPos(Pos.TOP_CENTER);
         clickOn(lookupFirst(TreeView.class));
         targetPos(Pos.CENTER);

@@ -29,10 +29,6 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         return this;
     }
 
-    public SimpleTreeViewBuilder<T> editable(boolean value) {
-        node.setEditable(value);
-        return this;
-    }
 
     public SimpleTreeViewBuilder<T> onSelect(ConsumerEx<TreeItem<T>> consume) {
         node.getSelectionModel().selectedItemProperty()

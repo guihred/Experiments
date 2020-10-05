@@ -138,7 +138,7 @@
 
 				<Text fx:id="filterText" text="" />
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
-				<Button onAction="#onActionFillIP" text="Fill IP" />
+				
 				<Button onAction="#onActionClear" text="Clear" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
 				<Button onAction="#onOpenDataframe" text="Open Dataframe" />

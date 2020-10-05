@@ -155,7 +155,8 @@ public class DataframeStatisticAccumulator {
         if (getFormat() == String.class) {
             double mean = sum / countMap.size();
             double sum2 =
-                    SupplierEx.get(() -> countMap.values().stream().mapToDouble(e -> e - mean).map(e -> e * e).sum(),
+                    SupplierEx.getIgnore(
+                            () -> countMap.values().stream().mapToDouble(e -> e - mean).map(e -> e * e).sum(),
                             0.);
             return Math.sqrt(sum2 / (countMap.size() - 1));
         }
