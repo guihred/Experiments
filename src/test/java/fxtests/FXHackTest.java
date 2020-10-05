@@ -10,10 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import kibana.ConsultasInvestigator;
-import kibana.KibanaApi;
-import kibana.KibanaInvestigator;
-import kibana.TimelionApi;
+import kibana.*;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.junit.Test;
@@ -156,6 +153,13 @@ public class FXHackTest extends AbstractTestExecution {
                 () -> NetworkInformationScanner.displayNetworkInformation());
         measureTime("NetworkInformationScanner.displayNetworkInformation",
                 () -> NetworkInformationScanner.displayNetworkInformation());
+    }
+
+    @Test
+    public void testSonarApi() {
+        ImageFXUtils.setShowImage(false);
+        show(SonarApi.class);
+        clickButtonsWait();
     }
 
     @Test

@@ -147,7 +147,7 @@ public class FXEngineGamingTest extends AbstractTestExecution {
         Collections.shuffle(queryAll);
         for (int i = 0; i < 30; i++) {
             Node next = queryAll.get(i);
-            tryClickOn(next);
+            tryClickOn(next, randomItem(MouseButton.PRIMARY, MouseButton.SECONDARY));
             if (tryClickButtons()) {
                 return;
             }

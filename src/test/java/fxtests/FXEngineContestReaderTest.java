@@ -68,8 +68,12 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
     public void testIades() {
         ExtractUtils.addDomain(new SimpleStringProperty(""), "");
         show(IadesCrawler.class);
-        clickOn(lookupFirst(TreeView.class));
+        TreeView<?> lookupFirst = lookupFirst(TreeView.class);
+        clickOn(lookupFirst);
         type(KeyCode.SPACE);
+        while (lookupFirst.getRoot().getChildren().isEmpty()) {
+            sleep(500);
+        }
         type(KeyCode.RIGHT);
         type(KeyCode.DOWN, 20);
         type(KeyCode.TAB);

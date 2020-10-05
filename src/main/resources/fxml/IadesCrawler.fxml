@@ -6,7 +6,7 @@
 <VBox xmlns:fx="http://javafx.com/fxml" 
 	styleClass="root" stylesheets="@/css/filesComparator.css">
 	<children>
-		<SplitPane fx:id="splitPane0">
+		<SplitPane fx:id="splitPane0" VBox.vgrow="ALWAYS">
 			<items>
 				<TreeView fx:id="treeView1">
 				</TreeView>

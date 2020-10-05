@@ -30,7 +30,7 @@ import utils.HibernateUtil;
 import utils.ex.RunnableEx;
 
 public class IadesCrawler extends Application {
-    private static final String DOMAIN = "http://www.iades.com.br";
+    private static final String DOMAIN = "https://www.iades.com.br";
     @FXML
     private TableView<Concurso> tableView2;
     @FXML
@@ -64,8 +64,7 @@ public class IadesCrawler extends Application {
         SimpleListViewBuilder.onSelect(listView3,
                 (old, value) -> RunnableEx.runNewThread(() -> saveContestValues(concurso, value, listView3)));
         tableColumn4.setCellFactory(SimpleTableViewBuilder.newCellFactory(IadesHelper::addClasses));
-        tableView2.setItems(concursos);
-        SimpleTableViewBuilder.onSelect(tableView2, (old, value) -> {
+        SimpleTableViewBuilder.of(tableView2).items(concursos).equalColumns().onSelect((old, value) -> {
             concurso.setValue(value);
             listView3.setItems(value.getVagas());
         });
@@ -75,7 +74,7 @@ public class IadesCrawler extends Application {
         List<Map.Entry<String, String>> linksFound = doc.select("a").stream()
                 .map(l -> new SimpleEntry<>(l.text(), addDomain(currentDomain, l.attr("abs:href"))))
                 .filter(t -> !"#".equals(t.getValue()))
-                .filter(t -> StringUtils.isNotBlank(t.getKey()) && !t.getKey().matches("\\d+\\..*"))
+                .filter(t -> StringUtils.isNotBlank(t.getKey()) && !t.getKey().matches("\\d+\\..*|[\\d \\-]+"))
                 .filter(t -> level < 1 || t.getKey().contains("Provas") || t.getKey().contains("Gabarito"))
                 .filter(t -> links.add(t.getValue())).distinct().collect(Collectors.toList());
         if (level == 1 && !linksFound.isEmpty()) {
@@ -107,15 +106,17 @@ public class IadesCrawler extends Application {
             return;
         }
         int level = treeView1.getTreeItemLevel(newValue);
-        CommonsFX.runInPlatform(() -> {
+        RunnableEx.runNewThread(() -> {
             URL url2 = new URL(url);
             currentDomain.set(url2.getProtocol() + "://" + url2.getHost());
             Document doc = JsoupUtils.getDocument(url);
-            List<Entry<String, String>> l = getLinks(doc, entry, level);
+            return getLinks(doc, entry, level);
+        }, l -> CommonsFX.runInPlatform(() -> {
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
             l.stream().sorted(Comparator.comparing(Entry<String, String>::getKey))
                     .forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
-        });
+        }));
+
     }
 
     public static void main(String[] args) {
