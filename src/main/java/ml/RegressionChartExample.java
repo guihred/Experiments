@@ -32,7 +32,7 @@ public class RegressionChartExample extends Application {
         String[] list = CSVUtils.getDataframeCSVs();
         dataframe = DataframeBuilder.build("out/" + list[0]);
 
-        String key = "Country Name";
+        String key = dataframe.cols().get(0);
         ObservableList<Series<Number, Number>> data = observableArrayList();
         LineChart<Number, Number> lineChart = lineChart(data, "");
         List<Object> list2 = dataframe.list(key);

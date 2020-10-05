@@ -45,13 +45,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public <V> SimpleTableViewBuilder<T> addColumn(final String columnName, final FunctionEx<T, V> value) {
-        final TableColumn<T, V> column = new TableColumn<>(columnName);
-        column.setCellValueFactory(m -> new SimpleObjectProperty<>(FunctionEx.apply(value, m.getValue())));
-        column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-        node.getColumns().add(column);
-        return this;
-    }
 
     public SimpleTableViewBuilder<T> addColumn(final String columnName, final String propertyName) {
         final TableColumn<T, ?> column = new TableColumn<>(columnName);
@@ -72,16 +65,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> addColumns(final String... columnName) {
-        for (String columnProp : columnName) {
-            TableColumn<T, String> column = new TableColumn<>(columnProp);
-            column.setId(columnProp);
-            column.setCellValueFactory(new PropertyValueFactory<>(columnProp));
-            column.setPrefWidth(COLUMN_DEFAULT_WIDTH);
-            node.getColumns().add(column);
-        }
-        return this;
-    }
 
     public SimpleTableViewBuilder<T> copiable() {
         onKeyReleased(e -> copyContent(node, e));

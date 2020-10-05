@@ -25,11 +25,12 @@ public final class StatsLogAccess {
             try (BufferedReader scanner = Files.newBufferedReader(file.toPath(), StandardCharsets.ISO_8859_1)) {
                 Map<String,
                         Long> collect2 =
-                                scanner.lines().filter(l -> !l.matches("\tat (sun|java|javax|org|com|javafx)\\..+"))
+                                scanner.lines()
+                                        .filter(l -> !l.matches(
+                                                "\tat (sun|java|javax|org|com|javafx|io.pkts|utils\\.ex|fxtests\\.FXTesting)\\..+"))
                                 .filter(l -> l.matches("\tat .+?\\(.+\\)"))
                                 .map(l -> l.replaceAll("\tat (.+?\\(.+\\))", "$1"))
                                 .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-
                 return collect2.entrySet().stream().sorted(
                         Comparator.comparing((Entry<String, Long> e) -> -e.getValue())
                                 .thenComparing(Entry<String, Long>::getKey))
