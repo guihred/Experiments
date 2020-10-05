@@ -206,8 +206,12 @@ public class PictureTool extends PaintTool {
         });
 
         VBox.setVgrow(path, Priority.ALWAYS);
-        SimpleNodeBuilder.onKeyReleased(pathText, KeyCode.ENTER, () -> addNewPic(pathText.getText()));
-        new SimpleDialogBuilder().node(path).node(pathText).button("New Pic", () -> addNewPic(pathText.getText()))
+        SimpleDialogBuilder simpleDialogBuilder = new SimpleDialogBuilder();
+        SimpleNodeBuilder.onKeyReleased(pathText, KeyCode.ENTER, () -> {
+            addNewPic(pathText.getText());
+            SimpleDialogBuilder.closeStage(simpleDialogBuilder.build());
+        });
+        simpleDialogBuilder.node(path).node(pathText).button("New Pic", () -> addNewPic(pathText.getText()))
                 .bindWindow(picturePane)
                 .displayDialog();
     }

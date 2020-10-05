@@ -170,6 +170,11 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     }
 
     public static void closeStage(EventTarget button) {
+        if (button instanceof Stage) {
+            ((Stage) button).close();
+            return;
+        }
+
         Node button2 = (Node) button;
         ((Stage) button2.getScene().getWindow()).close();
     }
