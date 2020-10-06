@@ -2,8 +2,11 @@ package ml.data;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import utils.ClassReflectionUtils;
 import utils.StringSigaUtils;
@@ -20,7 +23,8 @@ public enum QuestionType {
             (ob1, ob2) -> StringUtils.containsIgnoreCase(StringSigaUtils.toStringSpecial(ob1),
                     StringSigaUtils.toStringSpecial(ob2)),
             String.class),
-    IN("in", (ob1, ob2) -> ((Collection<?>) ob2).contains(ob1), String.class, Number.class),
+    IN("in", (ob1, ob2) -> ob2 instanceof Collection && ((Collection<?>) ob2).contains(ob1), String.class,
+            Number.class),
     LIKE("like",
             (ob1, ob) -> PredicateEx.test(s -> s.matches(StringSigaUtils.toStringSpecial(ob)),
                     StringSigaUtils.toStringSpecial(ob1)),
@@ -62,6 +66,10 @@ public enum QuestionType {
 
     public boolean matchesClass(Class<?> a) {
         return ClassReflectionUtils.hasClass(Arrays.asList(classes), a);
+    }
+
+    public static List<QuestionType> getMatches(Class<?> a) {
+        return Stream.of(values()).filter(v -> v.matchesClass(a)).collect(Collectors.toList());
     }
 
 }

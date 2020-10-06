@@ -65,14 +65,8 @@ public final class RectBuilder {
         double destHeight = destImage.getHeight();
         for (int i = 0; i <= width; i++) {
             for (int j = 0; j <= height; j++) {
-                if (within(i + endX, destWidth) && within(j + endY, destHeight) && within(i + startX, srcWidth)
-                        && within(j + startY, srcHeight)) {
-                    int color = pixelReader.getArgb(i + (int) startX, j + (int) startY);
-                    if (Type.BYTE_BGRA_PRE == type) {
-                        Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
-                        color = PixelHelper.toArgb(Color.hsb(color2.getHue(), color2.getSaturation(),
-                                color2.getBrightness(), color2.getOpacity()));
-                    }
+                if (isWithin(srcWidth, srcHeight, destWidth, destHeight, i, j)) {
+                    int color = getColor(pixelReader, type, i, j);
                     if (color != argb) {
                         pixelWriter.setArgb(i + (int) endX, j + (int) endY, isTransparent ? color | 0xFF000000 : color);
                     }
@@ -89,8 +83,7 @@ public final class RectBuilder {
         double destHeight = destImage.getHeight();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (within(i + endX, destWidth) && within(j + endY, destHeight) && within(i + startX, srcWidth)
-                        && within(j + startY, srcHeight)) {
+                if (isWithin(srcWidth, srcHeight, destWidth, destHeight, i, j)) {
                     Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
                     Color color = PixelHelper.asColor(PixelHelper.toArgb(color2) | 0xFF000000);
                     RectBuilder.drawPointTransparency(i + (int) endX, j + (int) endY, color, color2.getOpacity(),
@@ -326,6 +319,20 @@ public final class RectBuilder {
                 }
             }
         }
+    }
+
+    private int getColor(PixelReader pixelReader, Type type, int i, int j) {
+        if (Type.BYTE_BGRA_PRE == type) {
+            Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
+           return PixelHelper.toArgb(Color.hsb(color2.getHue(), color2.getSaturation(),
+                    color2.getBrightness(), color2.getOpacity()));
+        }
+        return pixelReader.getArgb(i + (int) startX, j + (int) startY);
+    }
+
+    private boolean isWithin(double srcWidth, double srcHeight, double destWidth, double destHeight, int i, int j) {
+        return within(i + endX, destWidth) && within(j + endY, destHeight) && within(i + startX, srcWidth)
+                && within(j + startY, srcHeight);
     }
 
     private void update() {

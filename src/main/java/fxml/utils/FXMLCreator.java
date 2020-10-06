@@ -116,12 +116,11 @@ public final class FXMLCreator {
         return originalElement;
     }
 
-    @SuppressWarnings("deprecation")
     private Map<String, Object> differences(Object ob1) {
         Map<String, Object> diffFields = new LinkedHashMap<>();
         Class<?> cl = ob1.getClass();
         if (ob1 instanceof Image) {
-            String url = ((Image) ob1).impl_getUrl();
+            String url = (String) ClassReflectionUtils.invoke(ob1, "impl_getUrl");
             if (url != null) {
                 String mapUrl = mapUrl(url);
                 diffFields.put("url", mapUrl);
@@ -319,12 +318,9 @@ public final class FXMLCreator {
         for (int i = 0; i < allNode.size(); i++) {
             Object node2 = allNode.get(i);
             org.w3c.dom.Node parent = nodeMap.getOrDefault(node2, document);
-            String name = node2.getClass().getSimpleName().replaceAll("\\$", ".");
-            String name2 = node2.getClass().getPackage().getName();
-            if (node2.getClass().getEnclosingClass() != null) {
-                name = node2.getClass().getEnclosingClass().getSimpleName() + "." + node2.getClass().getSimpleName();
-            }
-            packages.add(name2);
+            String packageName2 = node2.getClass().getPackage().getName();
+            String name = getClassName(node2);
+            packages.add(packageName2);
             Element createElement = document.createElement(name);
             parent.appendChild(createElement);
 
@@ -382,7 +378,7 @@ public final class FXMLCreator {
             defineElement.appendChild(createElement);
             differences.forEach((k, v) -> {
                 if (v != null && hasClass(FXMLConstants.getAttributeClasses(), v.getClass())
-                    && hasField(targetClass, k)) {
+                        && hasField(targetClass, k)) {
                     Object mapProperty2 = ClassReflectionUtils.mapProperty(v);
                     String value = mapProperty2 + "";
                     createElement.setAttribute(k, value.replaceAll("\\.0$", ""));
@@ -431,6 +427,13 @@ public final class FXMLCreator {
 
     private static boolean containsSame(List<Object> allNode, Object fieldValue) {
         return allNode.stream().anyMatch(ob -> ob == fieldValue);
+    }
+
+    private static String getClassName(Object node2) {
+        if (node2.getClass().getEnclosingClass() != null) {
+           return node2.getClass().getEnclosingClass().getSimpleName() + "." + node2.getClass().getSimpleName();
+        }
+        return node2.getClass().getSimpleName().replaceAll("\\$", ".");
     }
 
     private static boolean isStarterArgument(String fieldName, Object fieldValue, Object parent) {

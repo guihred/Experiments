@@ -284,8 +284,7 @@ public class StringSigaUtils extends StringUtils {
 
     public static Object tryAsNumber(Map<String, Class<? extends Comparable<?>>> formatMap2, String header,
             Class<?> currentFormat, String number) {
-        Set<Entry<Class<? extends Comparable<?>>, Function<String, ?>>> entrySet =
-                FORMAT_HIERARCHY_MAP.entrySet();
+        Set<Entry<Class<? extends Comparable<?>>, Function<String, ?>>> entrySet = FORMAT_HIERARCHY_MAP.entrySet();
         for (Entry<Class<? extends Comparable<?>>, Function<String, ?>> entry : entrySet) {
             try {
                 return tryNumber(formatMap2, entry.getKey(), currentFormat, number, header, entry.getValue());
@@ -351,8 +350,11 @@ public class StringSigaUtils extends StringUtils {
         return linkedHashMap;
     }
 
-    private static boolean hasBom(byte[] input) {
-        return input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB && (input[2] & 0xFF) == 0xBF;
+    private static int hasBom(byte[] input) {
+        return input.length >= 3 && (input[0] & 0xFF) == 0xEF && (input[1] & 0xFF) == 0xBB && (input[2] & 0xFF) == 0xBF
+
+                ? 3
+                : 0;
     }
 
     private static String justified(List<String> map, int maxLetters, int i) {
@@ -377,31 +379,34 @@ public class StringSigaUtils extends StringUtils {
         return str.endsWith(".") || str.endsWith(".”") || str.matches("Texto \\d+");
     }
 
-    private static boolean validUTF8(byte[] input) {
-        int i = 0;
-        // Check for BOM
-        if (hasBom(input)) {
-            i = 3;
+    private static int utf8LeadingByte(int octet) {
+        if ((octet & 0xE0) == 0xC0) {
+            return 1;
+        } else if ((octet & 0xF0) == 0xE0) {
+            return 2;
+        } else if ((octet & 0xF8) == 0xF0) {
+            return 3;
+        } else {
+            // Java only supports BMP so 3 is max
+            return 0;
         }
+    }
 
-        int end;
+    private static boolean validUTF8(byte[] input) {
+        int i = hasBom(input);
+
         for (int j = input.length; i < j; ++i) {
             int octet = input[i];
             if ((octet & 0x80) == 0) {
                 continue; // ASCII
             }
-
+            int leadingByte = utf8LeadingByte(octet);
             // Check for UTF-8 leading byte
-            if ((octet & 0xE0) == 0xC0) {
-                end = i + 1;
-            } else if ((octet & 0xF0) == 0xE0) {
-                end = i + 2;
-            } else if ((octet & 0xF8) == 0xF0) {
-                end = i + 3;
-            } else {
-                // Java only supports BMP so 3 is max
+            if (leadingByte == 0) {
                 return false;
             }
+
+            int end = i + leadingByte;
 
             while (i < end) {
                 i++;

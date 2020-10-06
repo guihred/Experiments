@@ -91,11 +91,9 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         int total = lines.size();
         List<Thread> ths = new ArrayList<>();
         for (int j = 0; j < lines.size(); j += STEP) {
-            if (isCancelled()) {
-                return "Cancelled";
-            }
+
             int k = j;
-            Thread thread = new Thread(() -> {
+            Thread thread = RunnableEx.runNewThread(() -> {
                 for (int i = 0; i < STEP && k + i < lines.size(); i++) {
                     if (isCancelled()) {
                         return;
@@ -106,7 +104,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                 }
             });
             ths.add(thread);
-            thread.start();
             long count = ths.stream().filter(Thread::isAlive).count();
             while (count > NUMBER_THREADS) {
                 count = ths.stream().filter(Thread::isAlive).count();

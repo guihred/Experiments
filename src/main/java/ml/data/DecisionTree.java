@@ -79,8 +79,7 @@ public class DecisionTree {
         final double currentUncertainty = entropy(dataframe, label);
         for (String col : cols) {
             Set<Object> values = dataframe.freeCategory(col);
-            List<QuestionType> values2 = dataframe.getFormat(col) == String.class ? Arrays.asList(QuestionType.EQ)
-                : Arrays.asList(QuestionType.GE, QuestionType.GT);
+            List<QuestionType> values2 = QuestionType.getMatches(dataframe.getFormat(col));
             Collections.shuffle(values2);
             for (QuestionType questionType : values2) {
                 for (Object val : values) {

@@ -68,9 +68,7 @@ public class CSVUtils {
             }
             inQuotes = true;
             // Fixed : allow "" in empty quote enclosed
-            if (isAppendQuote(customQuote, startCollectChar, chars)) {
-                curVal.append('"');
-            }
+            appendQuote(customQuote, startCollectChar, chars, curVal);
             return curVal;
         }
         startCollectChar = true;
@@ -242,6 +240,13 @@ public class CSVUtils {
 
     }
 
+    private static void appendQuote(char customQuote, boolean startCollectChar, char[] chars,
+            StringBuilder curVal) {
+        if (chars[0] != '"' && customQuote == '\"' || startCollectChar) {
+                curVal    .append('"');
+        }
+    }
+
     private static Writer createWriter(String csvFile) {
         return SupplierEx.remap(() -> {
             File file = new File(csvFile);
@@ -262,10 +267,6 @@ public class CSVUtils {
             }
         }
         return true;
-    }
-
-    private static boolean isAppendQuote(char customQuote, boolean startCollectChar, char[] chars) {
-        return chars[0] != '"' && customQuote == '\"' || startCollectChar;
     }
 
     private static Writer newWrite(File source, String firstLine, String string) throws IOException {

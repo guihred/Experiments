@@ -100,14 +100,23 @@ public class AutocompleteField extends TextField {
         }
     }
 
-    private Pattern getPattern(String text) {
-        Pattern pattern;
-        if (isCaseSensitive()) {
-            pattern = Pattern.compile(".*" + text + ".*");
-        } else {
-            pattern = Pattern.compile(".*" + text + ".*", Pattern.CASE_INSENSITIVE);
+    private void addSearchResults(LinkedList<String> searchResult, String text) {
+        filteredEntries.clear();
+        filteredEntries.addAll(searchResult);
+        // Only show popup if not in filter mode
+        if (!isPopupHidden()) {
+            populatePopup(searchResult, text);
+            if (!entriesPopup.isShowing()) {
+                entriesPopup.show(AutocompleteField.this, Side.BOTTOM, 0, 0);
+            }
         }
-        return pattern;
+    }
+
+    private Pattern getPattern(String text) {
+        if (isCaseSensitive()) {
+            return Pattern.compile(".*" + text + ".*");
+        }
+        return Pattern.compile(".*" + text + ".*", Pattern.CASE_INSENSITIVE);
     }
 
     private void onTextChange() {
@@ -122,15 +131,7 @@ public class AutocompleteField extends TextField {
         String text = getText();
         addSearches(searchResult, text);
         if (!searchResult.isEmpty()) {
-            filteredEntries.clear();
-            filteredEntries.addAll(searchResult);
-            // Only show popup if not in filter mode
-            if (!isPopupHidden()) {
-                populatePopup(searchResult, text);
-                if (!entriesPopup.isShowing()) {
-                    entriesPopup.show(AutocompleteField.this, Side.BOTTOM, 0, 0);
-                }
-            }
+            addSearchResults(searchResult, text);
             return;
         }
         entriesPopup.hide();
@@ -143,14 +144,7 @@ public class AutocompleteField extends TextField {
                 Collection<String> wordsNearestSum = searchResult(s);
                 searchResult.addAll(wordsNearestSum.stream().filter(e -> !s.equals(e))
                         .map(e -> collect + wordSeparator + e).collect(Collectors.toList()));
-                filteredEntries.clear();
-                filteredEntries.addAll(searchResult);
-                if (!isPopupHidden()) {
-                    populatePopup(searchResult, s);
-                    if (!entriesPopup.isShowing()) {
-                        entriesPopup.show(AutocompleteField.this, Side.BOTTOM, 0, 0);
-                    }
-                }
+                addSearchResults(searchResult, s);
             }
         }
     }
