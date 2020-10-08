@@ -73,14 +73,14 @@
 				</ComboBox>
 				<Text text="Horizontal Gap" />
 				<Slider fx:id="hgap" max="0.5" min="0.0" value="0.0"
-					onValueChange="#valueChanged" blockIncrement="0.01" />
+					onValueChange="#valueChanged" blockIncrement="0.005" />
 				<Text text="Vertical Gap" />
 
 				<Slider fx:id="vgap" max="0.5" min="0.0" value="0.0"
-					onValueChange="#valueChanged" blockIncrement="0.01" />
+					onValueChange="#valueChanged" blockIncrement="0.001" />
 				<Text text="Print Quality" fx:id="qualityText" />
 				<Slider fx:id="quality" max="8" min="0.1" value="4"
-					onValueChange="#valueChanged" blockIncrement="0.01" />
+					onValueChange="#valueChanged" blockIncrement="0.1" />
 
 				<Text text="Print Type" />
 

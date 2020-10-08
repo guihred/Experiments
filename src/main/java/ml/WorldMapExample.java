@@ -20,6 +20,7 @@ import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import utils.CSVUtils;
+import utils.ResourceFXUtils;
 
 public class WorldMapExample extends Application {
 
@@ -47,14 +48,14 @@ public class WorldMapExample extends Application {
             .onSelect(canvas.valueHeaderProperty()::set)
             .build();
 
-        DataframeML x = DataframeBuilder.builder("out/" + list[0]).build();
+        DataframeML x = DataframeBuilder.builder(ResourceFXUtils.getOutFile(list[0])).build();
         canvas.valueHeaderProperty().set("2016");
         canvas.setDataframe(x,
             x.cols().stream().filter(e -> e.contains("untry N")).findFirst().orElse("﻿Country Name"));
 
         ComboBox<String> statisticsCombo = new SimpleComboBoxBuilder<String>()
             .items(list).onSelect(s -> {
-                DataframeML x2 = DataframeBuilder.builder("out/" + s).build();
+                    DataframeML x2 = DataframeBuilder.builder(ResourceFXUtils.getOutFile(s)).build();
                 ObservableList<String> itens = x2
                     .cols().stream().filter(StringUtils::isNumeric).sorted()
                     .filter(e -> x2.list(e).stream().anyMatch(Objects::nonNull))

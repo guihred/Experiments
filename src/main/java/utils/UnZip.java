@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
@@ -20,7 +22,8 @@ public final class UnZip {
 
     public static void extractZippedFiles(File jap) {
         if (jap.isDirectory()) {
-            File[] listFiles = jap.listFiles();
+            List<File> listFiles = FileTreeWalker.getPathByExtension(jap, ".zip").stream().map(e -> e.toFile())
+                    .collect(Collectors.toList());
             File output = new File(jap, "out");
             if (!output.exists()) {
                 output.mkdir();

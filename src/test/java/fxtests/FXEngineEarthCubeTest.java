@@ -36,12 +36,8 @@ public class FXEngineEarthCubeTest extends AbstractTestExecution {
             sleep(2000);
             CubeNode cube = lookupFirst(CubeNode.class);
             randomDrag(cube, 100);
-            press(KeyCode.CONTROL);
-            randomDrag(cube, 100);
-            release(KeyCode.CONTROL);
-            press(KeyCode.ALT);
-            randomDrag(cube, 100);
-            release(KeyCode.ALT);
+            holding(KeyCode.CONTROL, () -> randomDrag(cube, 100));
+            holding(KeyCode.ALT, () -> randomDrag(cube, 100));
             type(KeyCode.SPACE);
             sleep(1500);
             type(KeyCode.SPACE);

@@ -120,11 +120,10 @@ public class FXEngineGamingTest extends AbstractTestExecution {
             type(W, 20);
             clickOn(".root");
             for (KeyCode keyCode : Arrays.asList(W, S, A, DOWN, D, UP, R, L, U, D, B, F, Z, X, LEFT, RIGHT)) {
-                press(keyCode).release(keyCode);
-                press(CONTROL, keyCode).release(keyCode);
-                press(ALT, keyCode).release(keyCode);
-                press(SHIFT, keyCode).release(keyCode);
-                release(CONTROL, ALT, SHIFT);
+                type(keyCode);
+                holding(CONTROL, () -> type(keyCode));
+                holding(ALT, () -> type(keyCode));
+                holding(SHIFT, () -> type(keyCode));
             }
         }, Arrays.asList(Labyrinth3DMouseControl.class, Labyrinth3DCollisions.class, Labyrinth3D.class,
             Labyrinth2D.class));

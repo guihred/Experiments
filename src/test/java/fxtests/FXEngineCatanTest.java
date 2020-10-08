@@ -14,6 +14,7 @@ import ml.data.DataframeML;
 import ml.data.DecisionNode;
 import ml.data.DecisionTree;
 import org.junit.Test;
+import utils.ResourceFXUtils;
 
 public class FXEngineCatanTest extends AbstractTestExecution {
 
@@ -51,7 +52,7 @@ public class FXEngineCatanTest extends AbstractTestExecution {
     @Test
     public void testDecisionTree() {
         CatanAppMain newInstance = show(CatanAppMain.class);
-        DataframeML build = DataframeBuilder.builder("out/catan_log.txt").build();
+        DataframeML build = DataframeBuilder.builder(ResourceFXUtils.getOutFile(CatanLogger.CATAN_LOG)).build();
         build.removeCol("WINNER", "PLAYER");
         List<Object> list = build.list("ACTION");
         list.add(list.remove(0));

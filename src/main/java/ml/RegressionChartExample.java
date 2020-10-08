@@ -22,6 +22,7 @@ import ml.data.DataframeML;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleComboBoxBuilder;
 import utils.CSVUtils;
+import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 
 public class RegressionChartExample extends Application {
@@ -30,7 +31,7 @@ public class RegressionChartExample extends Application {
     @Override
     public void start(Stage primaryStage) {
         String[] list = CSVUtils.getDataframeCSVs();
-        dataframe = DataframeBuilder.build("out/" + list[0]);
+        dataframe = DataframeBuilder.build(ResourceFXUtils.getOutFile(list[0]));
 
         String key = dataframe.cols().get(0);
         ObservableList<Series<Number, Number>> data = observableArrayList();

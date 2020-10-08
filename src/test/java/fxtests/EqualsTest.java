@@ -4,6 +4,7 @@ import contest.db.Contest;
 import contest.db.ContestQuestion;
 import contest.db.ContestQuestionAnswer;
 import election.Cidade;
+import ethical.hacker.SitePage;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.PointCh4;
 import ex.j9.ch4.PrimaryColor;
@@ -35,6 +36,7 @@ import java.util.stream.IntStream;
 import org.junit.Assert;
 import org.junit.Test;
 import others.HuffmanTree;
+import paintexp.tool.PictureOption;
 import utils.ClassReflectionUtils;
 import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
@@ -106,7 +108,7 @@ public class EqualsTest extends AbstractTestExecution {
                 new RectangleCh4(new PointCh4(2, 4), 3, 5), new EdgeElement(v, null, 2), new EdgeElement(v, v, 5),
                 new Contest(), new LessonPK(), new MadEdge(null, null), new MadEdgeDistance(null, 2F),
                 new SnakeSquare(), new JapaneseLesson(), new ContestQuestionAnswer(), new SolitaireCard(null, null),
-                new City(PlayerColor.BLUE));
+                new City(PlayerColor.BLUE), new SitePage(""), PictureOption.DIAMOND);
         Collections.shuffle(asList);
         return asList;
     }

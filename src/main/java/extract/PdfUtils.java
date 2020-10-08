@@ -132,7 +132,8 @@ public final class PdfUtils {
     }
 
     public static PdfInfo readText(File file1) throws IOException {
-        PrintStream out = new PrintStream(ResourceFXUtils.getOutFile(file1.getName().replaceAll("\\.pdf", ".txt")),
+        PrintStream out =
+                new PrintStream(ResourceFXUtils.getOutFile("txt/" + file1.getName().replaceAll("\\.pdf", ".txt")),
                 StandardCharsets.UTF_8.displayName());
         return readFile(new PdfInfo(), file1, out);
     }

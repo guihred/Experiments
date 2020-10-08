@@ -35,8 +35,7 @@ public class DataframeMLTest extends AbstractTestExecution {
     @Test
     public void testDataframeExplorer() {
         DataframeExplorer show = show(DataframeExplorer.class);
-        File csvFile =
-                FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile().getParentFile(), ".csv").toFile();
+        File csvFile = FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".csv").toFile();
         if (!csvFile.exists()) {
             return;
         }
@@ -85,16 +84,15 @@ public class DataframeMLTest extends AbstractTestExecution {
     @Test
     public void testMappingExecution() {
         DataframeExplorer show = show(DataframeExplorer.class);
-        File csvFile =
-                FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile().getParentFile(), ".csv").toFile();
+        File csvFile = FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".csv").toFile();
         if (!csvFile.exists()) {
             return;
         }
         show.readDataframe(csvFile, 1000);
-        press(KeyCode.CONTROL);
-        from(lookupFirst(ListView.class)).lookup(ListCell.class::isInstance).queryAll().stream().limit(2)
-                .forEach(this::tryClickOn);
-        release(KeyCode.CONTROL);
+        holding(KeyCode.CONTROL, () -> {
+            from(lookupFirst(ListView.class)).lookup(ListCell.class::isInstance).queryAll().stream().limit(2)
+                    .forEach(this::tryClickOn);
+        });
         testMappingMenu();
     }
 
@@ -108,16 +106,13 @@ public class DataframeMLTest extends AbstractTestExecution {
     @Test
     public void testTableTabs() {
         DataframeExplorer show = show(DataframeExplorer.class);
-        File csvFile =
-                FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile().getParentFile(), ".csv").toFile();
+        File csvFile = FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getOutFile(), ".csv").toFile();
         if (!csvFile.exists()) {
             return;
         }
         show.readDataframe(csvFile, 1000);
-        press(KeyCode.CONTROL);
-        from(lookupFirst(ListView.class)).lookup(ListCell.class::isInstance).queryAll().stream().limit(2)
-                .forEach(this::tryClickOn);
-        release(KeyCode.CONTROL);
+        holding(KeyCode.CONTROL, () -> from(lookupFirst(ListView.class)).lookup(ListCell.class::isInstance).queryAll()
+                .stream().limit(2).forEach(this::tryClickOn));
         Set<Node> queryAll2 = lookup(".tab").queryAll();
         for (Node node : queryAll2) {
             tryClickOn(node);

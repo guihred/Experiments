@@ -2,6 +2,7 @@ package extract;
 
 import java.io.File;
 import utils.HasImage;
+import utils.ex.FunctionEx;
 
 public class PdfImage implements HasImage {
     private float x;
@@ -62,6 +63,6 @@ public class PdfImage implements HasImage {
 
     @Override
     public String toString() {
-        return getFile() != null ? getFile().getName() : "";
+        return FunctionEx.mapIf(getFile(), File::getName, "");
     }
 }

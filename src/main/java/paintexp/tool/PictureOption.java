@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 
-enum PictureOption {
+public enum PictureOption {
     TRIANGLE("M 12,4 L 20,20 4,20 12,4z"),
     SCALENE("M 0,0 l 0,20 20,0 Z "),
     DIAMOND("M 20,0 l 10,10 -10,10 -10,-10 Z "),

@@ -96,25 +96,6 @@ public class KibanaApi {
                 e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
     }
 
-    public static Map<String, String> makeKibanaSearch(File file, String index, int days, Map<String, String> search,
-            String... params) {
-        return SupplierEx.get(() -> {
-            String values = search.values().stream().collect(Collectors.joining());
-            File outFile = newJsonFile(removeExtension(file) + values + days);
-            if (!outFile.exists() || oneDayModified(outFile)) {
-                String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
-                String lte = Objects.toString(Instant.now().toEpochMilli());
-                String keywords = search
-                        .entrySet().stream().map(e -> String
-                                .format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
-                        .collect(Collectors.joining("\n"));
-                getFromURLJson(
-                        "https://n321p000124.fast.prevnet/api/console/proxy?path=" + index + "_search&method=POST",
-                        getContent(file, keywords, gte, lte), outFile);
-            }
-            return JsonExtractor.makeMapFromJsonFile(outFile, params);
-        }, Collections.emptyMap());
-    }
 
     public static Map<String, String> makeKibanaSearch(String file, String query, String... params) {
         return makeKibanaSearch(ResourceFXUtils.toFile(file), 1, query, params);

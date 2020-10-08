@@ -113,8 +113,9 @@ public class FXEnginePaintTest extends AbstractTestExecution {
     @Test
     public void testPrintConfig2() {
         PrintConfig show = show(PrintConfig.class);
+        interactNoWait(() ->
         show.addFiles(FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".png", "jpg", ".jpeg").stream()
-                .map(e -> e.toFile()).collect(Collectors.toList()));
+                .map(e -> e.toFile()).collect(Collectors.toList())));
     }
 
     @Test

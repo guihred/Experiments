@@ -21,7 +21,8 @@ public class FXPDFReaderTest extends AbstractTestExecution {
 
     @Test
     public void testPdfUtils2() {
-        File file2 = new File("C:\\Users\\guigu\\Documents\\Estudo\\jsoup.pdf");
+        File file2 = new File(
+                "C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Referencias\\v13.6_web_application_firewall_user_guide_8-5-2020.pdf");
         measureTime("PdfUtils.readFile", () -> PdfUtils.readText(file2));
     }
 

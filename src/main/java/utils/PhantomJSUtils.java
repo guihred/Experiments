@@ -71,7 +71,7 @@ public final class PhantomJSUtils {
         get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());
         get.setEntity(new StringEntity(content, ContentType.APPLICATION_JSON));
         headers.forEach(get::addHeader);
-        LOG.info("Request \n\t{} \n{} \n\t{} \n\t{} ", url, content, get.getAllHeaders(), outFile.getName());
+        LOG.info("Request \n\t{} \n{} \n\t{} ", url, content, outFile.getName());
         HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
             InstallCert.installCertificate(url);
             return client.execute(get);

@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.RunnableEx;
 
 public enum Country {
@@ -333,7 +334,7 @@ public enum Country {
                     DoubleSummaryStatistics countryX = country.getxStats();
                     DoubleSummaryStatistics countryY = country.getyStats();
                     if (intersect(countryX.getMin(), countryY.getMin(), countryX.getMax() - countryX.getMin(),
-                        countryY.getMax() - countryY.getMin())) {
+                            countryY.getMax() - countryY.getMin())) {
 
                         neighbors.add(country);
                         country.addNeighbor(this);
@@ -395,7 +396,7 @@ public enum Country {
     private boolean intersect(double x, double y, double width, double height) {
         getPoints();
         return x + width >= xStats.getMin() && y + height >= yStats.getMin() && x <= xStats.getMax()
-            && y <= yStats.getMax();
+                && y <= yStats.getMax();
 
     }
 
@@ -408,7 +409,7 @@ public enum Country {
             File file = ResourceFXUtils.toFile("countries.csv");
             try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
                 while (scanner.hasNext()) {
-                    String firstLine = scanner.nextLine();
+                    String firstLine = StringSigaUtils.fixEncoding(scanner.nextLine()).replaceAll("\"", "");
                     String[] split = firstLine.split(";");
                     Country.valueOf(split[0]).path = split[1];
                 }

@@ -85,7 +85,7 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
             return image;
         }
 		try {
-			return ResourceFXUtils.toExternalForm("out/" + image);
+            return ResourceFXUtils.convertToURL(ResourceFXUtils.getOutFile(image)).toExternalForm();
 		} catch (Exception e) {
             LOG.trace("", e);
 		}
@@ -93,6 +93,7 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
             return makeFunction((String e) -> ResourceFXUtils.convertToURL(new File(e)).toString()).apply(image);
         }
 
-        return SupplierEx.getIgnore(() -> ResourceFXUtils.toExternalForm("out/pdf/" + image));
+        return SupplierEx.getIgnore(
+                () -> ResourceFXUtils.convertToURL(ResourceFXUtils.getOutFile("pdf/" + image)).toExternalForm());
     }
 }
