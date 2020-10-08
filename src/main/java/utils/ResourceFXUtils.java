@@ -43,7 +43,7 @@ public final class ResourceFXUtils {
 
     public static File getOutFile(String out) {
         File file = getOutFile();
-        File file2 = new File(file, out);
+        File file2 = new File(file, out.replaceAll("[:\\{\\}\"\n]+", "_"));
         if (out.contains("/") && !file2.getParentFile().exists()) {
             file2.getParentFile().mkdir();
         }

@@ -92,10 +92,8 @@ public class KibanaApi {
                         getContent(file, query, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
-        }, new HashMap<>(),
-                e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
+        }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
     }
-
 
     public static Map<String, String> makeKibanaSearch(String file, String query, String... params) {
         return makeKibanaSearch(ResourceFXUtils.toFile(file), 1, query, params);
@@ -109,12 +107,8 @@ public class KibanaApi {
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
-                String keywords = search
-                        .entrySet().stream().map(e -> String
-                                .format("{\"match_phrase\": {\"%s\": {\"query\": \"%s\"}}},", e.getKey(), e.getValue()))
-                        .collect(Collectors.joining("\n"));
-                RunnableEx.make(() -> getFromURL(
-                        "https://n321p000124.fast.prevnet/"
+                String keywords = convertSearchKeywords(search);
+                RunnableEx.make(() -> getFromURL("https://n321p000124.fast.prevnet/"
                                 + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true" + index,
                         getContent(file, keywords, gte, lte), outFile),
                         e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
@@ -155,6 +149,21 @@ public class KibanaApi {
         return finalList;
     }
 
+    protected static String convertSearchKeywords(Map<String, String> search) {
+        String collect = search.entrySet().stream().map(e -> {
+            if (e.getValue().contains("\n")) {
+                return Stream.of(e.getValue().split("\n"))
+                        .map(v -> String.format("{\"match_phrase\":{\"%s\":\"%s\"}}", e.getKey(), v))
+                        .collect(
+                                Collectors.joining(",", "{\"bool\":{\"should\":[", "],\"minimum_should_match\":1}},"));
+            }
+
+            return String.format("{\"match_phrase\":{\"%s\":{\"query\":\"%s\"}}},", e.getKey(), e.getValue());
+        }).collect(Collectors.joining("\n"));
+        LOG.info(collect);
+        return collect;
+    }
+
     protected static void getFromURL(String url, String cont, File outFile) throws IOException {
         String content = cont.replaceAll("[\n\t]+", "").replaceFirst("\\}\\{", "}\n{") + "\n";
         Map<String, String> hashMap = new HashMap<>(GET_HEADERS);
@@ -169,7 +178,7 @@ public class KibanaApi {
     }
 
     protected static File newJsonFile(String string) {
-        String replaceAll = string.replaceAll("[:/{}\" ]+", "_");
+        String replaceAll = string.replaceAll("[:/{}\" \n]+", "_");
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
     }
 

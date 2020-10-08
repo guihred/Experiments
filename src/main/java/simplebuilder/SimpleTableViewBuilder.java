@@ -89,6 +89,22 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public SimpleTableViewBuilder<T> onDoubleClickMany(final ConsumerEx<List<T>> object) {
+        node.setOnMouseClicked(e -> {
+            if (e.getClickCount() > 1) {
+                ConsumerEx.accept(object, node.getSelectionModel().getSelectedItems());
+            }
+        });
+        EventHandler<? super KeyEvent> onKeyReleased = node.getOnKeyReleased();
+        node.setOnKeyReleased(e -> {
+            RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
+            if (e.getCode() == KeyCode.ENTER) {
+                ConsumerEx.accept(object, node.getSelectionModel().getSelectedItems());
+            }
+        });
+        return this;
+    }
+
     public SimpleTableViewBuilder<T> onKey(KeyCode code, ConsumerEx<List<T>> object) {
         SimpleNodeBuilder.onKeyReleased(node, e -> {
             if (code == e.getCode()) {
@@ -204,16 +220,14 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     public static <T> void onDoubleClick(TableView<T> table2, ConsumerEx<T> object) {
         table2.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
-                T selectedItem = table2.getSelectionModel().getSelectedItem();
-                ConsumerEx.accept(object, selectedItem);
+                ConsumerEx.foreach(table2.getSelectionModel().getSelectedItems(), object);
             }
         });
         EventHandler<? super KeyEvent> onKeyReleased = table2.getOnKeyReleased();
         table2.setOnKeyReleased(e -> {
             RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
             if (e.getCode() == KeyCode.ENTER) {
-                T selectedItem = table2.getSelectionModel().getSelectedItem();
-                ConsumerEx.accept(object, selectedItem);
+                ConsumerEx.foreach(table2.getSelectionModel().getSelectedItems(), object);
             }
         });
     }

@@ -36,9 +36,7 @@ public final class TimelionApi extends KibanaApi {
 
             File outFile = newJsonFile(replaceAll + Stream.of(values, time).collect(Collectors.joining()));
             if (!outFile.exists() || oneDayModified(outFile)) {
-                String keywords = search.entrySet().stream().map(
-                        e -> String.format("{\"match_phrase\":{\"%s\":{\"query\":\"%s\"}}},", e.getKey(), e.getValue()))
-                        .collect(Collectors.joining("\n"));
+                String keywords = convertSearchKeywords(search);
                 String content = getContent(file, timelionQuery, keywords, time);
                 getFromURLJson("https://n321p000124.fast.prevnet/api/timelion/run", content, outFile);
             }
@@ -62,7 +60,7 @@ public final class TimelionApi extends KibanaApi {
             CommonsFX.runInPlatform(
                     () -> convertToSeries(series, JsonExtractor.accessList(policiesSearch, "sheet")));
             return series;
-        }, FXCollections.emptyObservableList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
+        }, FXCollections.observableArrayList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
     }
 
     private static void addToSeries(XYChart.Series<Number, Number> java, Object f) {
