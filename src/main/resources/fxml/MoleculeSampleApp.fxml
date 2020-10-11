@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.*?><?import utils.fx.*?><?import javafx.scene.transform.*?><?import javafx.scene.shape.*?><?import javafx.geometry.*?><?import javafx.scene.paint.*?>
+<Group xmlns:fx="http://javafx.com/fxml" fx:id="root">
+	<fx:define>
+		<Point3D fx:id="point3D0" x="0.0" y="1.0" z="0.0" />
+		<Point3D fx:id="point3D1" x="1.0" y="0.0" z="0.0" />
+		<PhongMaterial diffuseColor="0xa9a9a9ff" fx:id="phongMaterial2"
+			specularColor="0x808080ff" />
+		<PhongMaterial fx:id="phongMaterial3" specularColor="0xadd8e6ff" />
+	</fx:define>
+	<children>
+		<Xform fx:id="world">
+			<children>
+				<Group fx:id="axisGroup">
+					<children>
+						<Box depth="1.0" height="1.0" width="240.0">
+							<material>
+								<PhongMaterial diffuseColor="0x8b0000ff"
+									specularColor="0xff0000ff" />
+							</material>
+						</Box>
+						<Box depth="1.0" height="240.0" width="1.0">
+							<material>
+								<PhongMaterial diffuseColor="0x006400ff"
+									specularColor="0x008000ff" />
+							</material>
+						</Box>
+						<Box depth="240.0" height="1.0" width="1.0">
+							<material>
+								<PhongMaterial diffuseColor="0x00008bff"
+									specularColor="0x0000ffff" />
+							</material>
+						</Box>
+					</children>
+				</Group>
+				<Xform fx:id="moleculeGroup">
+					<children>
+						<Xform fx:id="moleculeXform">
+							<children>
+								<Xform fx:id="oxygenXform">
+									<children>
+										<Sphere radius="40.0">
+											<material>
+												<PhongMaterial diffuseColor="0x8b0000ff"
+													specularColor="0xff0000ff" />
+											</material>
+										</Sphere>
+									</children>
+
+								</Xform>
+								<Xform fx:id="hydrogen1SideXform">
+									<children>
+										<Xform fx:id="hydrogen1Xform" tx="100.0">
+											<children>
+												<Sphere radius="30.0">
+													<material>
+														<fx:reference source="phongMaterial3" />
+													</material>
+												</Sphere>
+											</children>
+
+										</Xform>
+										<Cylinder height="100.0" radius="5.0" rotate="90.0"
+											translateX="50.0">
+											<material>
+												<fx:reference source="phongMaterial2" />
+											</material>
+										</Cylinder>
+									</children>
+
+								</Xform>
+								<Xform fx:id="hydrogen2SideXform" rotateY="104.5" ry="104.5">
+									<children>
+										<Xform fx:id="hydrogen2Xform" tx="100.0">
+											<children>
+												<Sphere material="$phongMaterial3" radius="30.0" />
+											</children>
+
+										</Xform>
+										<Cylinder height="100.0" material="$phongMaterial2"
+											radius="5.0" rotate="90.0" translateX="50.0" />
+									</children>
+								</Xform>
+							</children>
+						</Xform>
+					</children>
+				</Xform>
+			</children>
+		</Xform>
+		<Xform fx:id="cameraXform" rotateX="40.0" rotateY="320.0" rx="40.0"
+			ry="320.0">
+			<children>
+				<Xform fx:id="cameraXform2">
+					<children>
+						<Xform fx:id="cameraXform3" rotateZ="180.0" rz="180.0"/>
+					</children>
+				</Xform>
+			</children>
+		</Xform>
+	</children>
+</Group>

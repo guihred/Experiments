@@ -1,189 +1,67 @@
-
 package fxsamples;
 
 import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Cylinder;
-import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
+import utils.CommonsFX;
 import utils.fx.Xform;
 
-/**
- * MoleculeSampleApp
- */
 public class MoleculeSampleApp extends Application {
 
     private static final int HEIGHT = 700;
     private static final double CONTROL_MULTIPLIER = 0.1;
     private static final double CAMERA_DISTANCE = 450;
     private static final double ALT_MULTIPLIER = 0.5;
-    private final Group axisGroup = new Group();
-    private final PerspectiveCamera camera = new PerspectiveCamera(true);
-    private final Xform cameraXform = new Xform();
-    private final Xform cameraXform2 = new Xform();
-    private final Xform cameraXform3 = new Xform();
-    private final Xform moleculeGroup = new Xform();
+    @FXML
+    private Group axisGroup;
+    private PerspectiveCamera camera;
+    @FXML
+    private Xform cameraXform;
+    @FXML
+    private Xform cameraXform2;
+    @FXML
+    private Xform cameraXform3;
+    @FXML
+    private Xform moleculeGroup;
     private double mouseOldX;
     private double mouseOldY;
     private double mousePosX;
     private double mousePosY;
-    private final Group root = new Group();
-    private final Xform world = new Xform();
-    private final Timeline timeline = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
-            .keyFrames(new KeyFrame(Duration.minutes(1), new KeyValue(world.rotateYProperty(), 360))).build();
+    @FXML
+    private Group root;
+    @FXML
+    private Xform world;
+    private Timeline timeline;
     private boolean timelinePlaying;
 
-    @Override
-    public void start(Stage primaryStage) {
-        root.getChildren().add(world);
-        buildCamera();
-        buildAxes();
-        buildMolecule();
+    public void initialize() {
+        timeline = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
+                .addKeyFrame(Duration.minutes(1), world.rotateYProperty(), 360).build();
+        camera = new PerspectiveCamera(true);
+        camera.setFarClip(10000.0);
+        camera.setNearClip(0.1);
+        camera.setTranslateZ(-450.0);
+        cameraXform3.getChildren().add(camera);
+    }
 
-        Scene scene = new Scene(root, 1000, HEIGHT, true);
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        CommonsFX.loadFXML("Molecule Sample Application", "MoleculeSampleApp.fxml", this, primaryStage, 1000, HEIGHT);
+        Scene scene = primaryStage.getScene();
         scene.setFill(Color.GREY);
         scene.setOnKeyPressed(this::handleKeyEvent);
         handleMouse(scene);
-
-        primaryStage.setTitle("Molecule Sample Application");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
         scene.setCamera(camera);
-
-    }
-
-    private void buildAxes() {
-        final PhongMaterial redMaterial = new PhongMaterial(Color.DARKRED);
-        redMaterial.setSpecularColor(Color.RED);
-
-        final PhongMaterial greenMaterial = new PhongMaterial(Color.DARKGREEN);
-        greenMaterial.setSpecularColor(Color.GREEN);
-
-        final PhongMaterial blueMaterial = new PhongMaterial(Color.DARKBLUE);
-        blueMaterial.setSpecularColor(Color.BLUE);
-
-        final Box xAxis = new Box(240, 1, 1);
-        final Box yAxis = new Box(1, 240, 1);
-        final Box zAxis = new Box(1, 1, 240);
-
-        zAxis.setMaterial(blueMaterial);
-        yAxis.setMaterial(greenMaterial);
-        xAxis.setMaterial(redMaterial);
-
-        axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
-        world.getChildren().addAll(axisGroup);
-    }
-
-    private void buildCamera() {
-        root.getChildren().add(cameraXform);
-        cameraXform.getChildren().add(cameraXform2);
-        cameraXform2.getChildren().add(cameraXform3);
-        cameraXform3.getChildren().add(camera);
-        cameraXform3.setRz(180);
-
-        camera.setTranslateZ(-CAMERA_DISTANCE);
-        final int farClip = 10000;
-        camera.setFarClip(farClip);
-        final double nearClip = 0.1;
-        camera.setNearClip(nearClip);
-        final int yRotation = 320;
-        cameraXform.setRy(yRotation);
-        final int xRotation = 40;
-        cameraXform.setRx(xRotation);
-    }
-
-    private void buildMolecule() {
-
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setDiffuseColor(Color.DARKRED);
-        redMaterial.setSpecularColor(Color.RED);
-
-        final PhongMaterial whiteMaterial = new PhongMaterial();
-        whiteMaterial.setDiffuseColor(Color.WHITE);
-        whiteMaterial.setSpecularColor(Color.LIGHTBLUE);
-
-        final PhongMaterial greyMaterial = new PhongMaterial();
-        greyMaterial.setDiffuseColor(Color.DARKGREY);
-        greyMaterial.setSpecularColor(Color.GREY);
-
-        // Molecule Hierarchy
-        // [*] moleculeXform
-        //     [*] oxygenXform
-        //         [*] oxygenSphere
-        //     [*] hydrogen1SideXform
-        //         [*] hydrogen1Xform
-        //             [*] hydrogen1Sphere
-        //         [*] bond1Cylinder
-        //     [*] hydrogen2SideXform
-        //         [*] hydrogen2Xform
-        //             [*] hydrogen2Sphere
-        //         [*] bond2Cylinder
-
-        Xform moleculeXform = new Xform();
-        Xform oxygenXform = new Xform();
-        Xform hydrogen1SideXform = new Xform();
-        Xform hydrogen1Xform = new Xform();
-        Xform hydrogen2SideXform = new Xform();
-        Xform hydrogen2Xform = new Xform();
-
-        final int oxygenRadius = 40;
-        Sphere oxygenSphere = new Sphere(oxygenRadius);
-        oxygenSphere.setMaterial(redMaterial);
-
-        final Sphere hydrogen1Sphere = new Sphere(30);
-        hydrogen1Sphere.setMaterial(whiteMaterial);
-        hydrogen1Sphere.setTranslateX(0);
-
-        final Sphere hydrogen2Sphere = new Sphere(30);
-        hydrogen2Sphere.setMaterial(whiteMaterial);
-        hydrogen2Sphere.setTranslateZ(0);
-
-        Cylinder bond1Cylinder = new Cylinder(5, 100);
-        bond1Cylinder.setMaterial(greyMaterial);
-        bond1Cylinder.setTranslateX(50);
-        bond1Cylinder.setRotationAxis(Rotate.Z_AXIS);
-        bond1Cylinder.setRotate(90);
-
-        Cylinder bond2Cylinder = new Cylinder(5, 100);
-        bond2Cylinder.setMaterial(greyMaterial);
-        bond2Cylinder.setTranslateX(50);
-        bond2Cylinder.setRotationAxis(Rotate.Z_AXIS);
-        bond2Cylinder.setRotate(90);
-
-        moleculeXform.getChildren().add(oxygenXform);
-        moleculeXform.getChildren().add(hydrogen1SideXform);
-        moleculeXform.getChildren().add(hydrogen2SideXform);
-        oxygenXform.getChildren().add(oxygenSphere);
-        hydrogen1SideXform.getChildren().add(hydrogen1Xform);
-        hydrogen2SideXform.getChildren().add(hydrogen2Xform);
-        hydrogen1Xform.getChildren().add(hydrogen1Sphere);
-        hydrogen2Xform.getChildren().add(hydrogen2Sphere);
-        hydrogen1SideXform.getChildren().add(bond1Cylinder);
-        hydrogen2SideXform.getChildren().add(bond2Cylinder);
-
-        hydrogen1Xform.setTx(100);
-        hydrogen2Xform.setTx(100);
-        final double yRotation = 104.5;
-        hydrogen2SideXform.setRy(yRotation);
-
-        moleculeGroup.getChildren().add(moleculeXform);
-
-        world.getChildren().addAll(moleculeGroup);
     }
 
     private void handleKeyEvent(KeyEvent event) {
@@ -307,10 +185,10 @@ public class MoleculeSampleApp extends Application {
     }
 
     public static void main(String[] args) {
+
         System.setProperty("prism.dirtyopts", "false");
         launch(args);
     }
-
     private static double getModifier(MouseEvent me) {
         if (me.isShiftDown()) {
             return 10;

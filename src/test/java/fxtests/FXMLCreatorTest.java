@@ -31,8 +31,7 @@ public final class FXMLCreatorTest {
     public void testClassesNotClose() {
         List<Class<? extends Application>> classes =
                 Arrays.asList(MoleculeSampleApp.class);
-        FXMLCreatorHelper.testApplications(classes, false);
-        while(true);
+        FXMLCreatorHelper.testApplications(classes, true);
     }
 
     private static <T> String classNames(List<Class<? extends T>> testApplications) {

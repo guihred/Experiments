@@ -31,7 +31,7 @@ import utils.ex.SupplierEx;
 
 public final class CommonsFX {
 
-    private static final String FXML_DIR = "fxml/";
+    public static final String FXML_DIR = "fxml/";
     private static final String CSS_DIR = "css/";
 
     private CommonsFX() {
@@ -93,6 +93,14 @@ public final class CommonsFX {
 
     public static void loadFXML(String title, String file, Stage primaryStage, double... size) {
         loadFXML(title, ResourceFXUtils.toFile(FXML_DIR + file), primaryStage, size);
+    }
+
+    public static Parent loadParent(File file, Object controller) {
+        return SupplierEx.remap(() -> {
+            FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
+            fxmlLoader.setController(controller);
+            return fxmlLoader.load();
+        }, "ERROR IN " + file);
     }
 
     public static Parent loadParent(String file, Object controller) {
@@ -174,19 +182,11 @@ public final class CommonsFX {
     private static void loadFXML(String title, File file, Object controller, Stage primaryStage, double... size) {
         RunnableEx.remap(() -> {
             Parent content = loadParent(file, controller);
-            Scene scene = size.length == 2 ? new Scene(content, size[0], size[1]) : new Scene(content);
+            Scene scene = size.length == 2 ? new Scene(content, size[0], size[1], true) : new Scene(content);
             primaryStage.setTitle(title);
             primaryStage.setScene(scene);
             primaryStage.show();
         }, "ERROR in file " + file);
-    }
-
-    private static Parent loadParent(File file, Object controller) {
-        return SupplierEx.remap(() -> {
-            FXMLLoader fxmlLoader = new FXMLLoader(convertToURL(file));
-            fxmlLoader.setController(controller);
-            return fxmlLoader.load();
-        }, "ERROR IN " + file);
     }
 
 }
