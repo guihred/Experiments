@@ -1,4 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.*?><?import utils.fx.*?><?import javafx.scene.transform.*?><?import javafx.scene.shape.*?><?import javafx.geometry.*?><?import javafx.scene.paint.*?>
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.*?>
+<?import utils.fx.*?>
+<?import javafx.scene.transform.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.animation.*?>
+<?import javafx.util.*?>
 <Group xmlns:fx="http://javafx.com/fxml" fx:id="root">
 	<fx:define>
 		<Point3D fx:id="point3D0" x="0.0" y="1.0" z="0.0" />
@@ -91,10 +99,13 @@
 			<children>
 				<Xform fx:id="cameraXform2">
 					<children>
-						<Xform fx:id="cameraXform3" rotateZ="180.0" rz="180.0"/>
+						<Xform fx:id="cameraXform3" rotateZ="180.0" rz="180.0" />
 					</children>
 				</Xform>
 			</children>
 		</Xform>
 	</children>
+	<fx:define>
+		<Timeline fx:id="timeline" cycleCount="-1"/>
+	</fx:define>
 </Group>

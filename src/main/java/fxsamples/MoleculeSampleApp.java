@@ -1,6 +1,5 @@
 package fxsamples;
 
-import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -18,7 +17,6 @@ import utils.fx.Xform;
 
 public class MoleculeSampleApp extends Application {
 
-    private static final int HEIGHT = 700;
     private static final double CONTROL_MULTIPLIER = 0.1;
     private static final double CAMERA_DISTANCE = 450;
     private static final double ALT_MULTIPLIER = 0.5;
@@ -41,22 +39,24 @@ public class MoleculeSampleApp extends Application {
     private Group root;
     @FXML
     private Xform world;
+    @FXML
     private Timeline timeline;
     private boolean timelinePlaying;
 
     public void initialize() {
-        timeline = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
-                .addKeyFrame(Duration.minutes(1), world.rotateYProperty(), 360).build();
+        SimpleTimelineBuilder.of(timeline).addKeyFrame(Duration.minutes(1), world.rotateYProperty(), 360);
         camera = new PerspectiveCamera(true);
-        camera.setFarClip(10000.0);
-        camera.setNearClip(0.1);
-        camera.setTranslateZ(-450.0);
+        final double farClip = 10000.0;
+        camera.setFarClip(farClip);
+        camera.setNearClip(CONTROL_MULTIPLIER);
+        camera.setTranslateZ(-CAMERA_DISTANCE);
         cameraXform3.getChildren().add(camera);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        CommonsFX.loadFXML("Molecule Sample Application", "MoleculeSampleApp.fxml", this, primaryStage, 1000, HEIGHT);
+        final int height = 700;
+        CommonsFX.loadFXML("Molecule Sample Application", "MoleculeSampleApp.fxml", this, primaryStage, 1000, height);
         Scene scene = primaryStage.getScene();
         scene.setFill(Color.GREY);
         scene.setOnKeyPressed(this::handleKeyEvent);
@@ -83,13 +83,13 @@ public class MoleculeSampleApp extends Application {
                 break;
             case DOWN:
                 upAndDownMovement(event, 1);
-                break;
+                return;
             case RIGHT:
                 leftAndRightMovement(event, 1);
-                break;
+                return;
             case LEFT:
                 leftAndRightMovement(event, -1);
-                break;
+                return;
             default:
                 break;
         }
@@ -189,6 +189,7 @@ public class MoleculeSampleApp extends Application {
         System.setProperty("prism.dirtyopts", "false");
         launch(args);
     }
+
     private static double getModifier(MouseEvent me) {
         if (me.isShiftDown()) {
             return 10;
