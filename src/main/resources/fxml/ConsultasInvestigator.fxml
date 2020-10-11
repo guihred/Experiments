@@ -44,11 +44,11 @@
 				<ListView fx:id="filterList" prefWidth="175.0" VBox.vgrow="NEVER" />
 				<HBox spacing="10">
 					<VBox spacing="10">
-						<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
+						<Button onAction="#onActionKibanaScan" text="_Kibana Scan" />
 
-						<Button onAction="#onActionClear" text="Clear" />
-						<Button onAction="#onExportExcel" text="Export Excel" />
-						<Button onAction="#onOpenDataframe" text="Open Dataframe" />
+						<Button onAction="#onActionClear" text="_Clear" />
+						<Button onAction="#onExportExcel" text="_Export Excel" />
+						<Button onAction="#onOpenDataframe" text="_Open Dataframe" />
 					</VBox>
 					<ProgressIndicator fx:id="progress" HBox.hgrow="ALWAYS"
 						minHeight="40.0" minWidth="40.0" progress="0.0" />

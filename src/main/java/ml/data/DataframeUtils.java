@@ -654,8 +654,8 @@ public class DataframeUtils extends DataframeML {
             }
             addCrossStats(dataframeML);
 
+            CSVUtils.fixEmptyLine(header, line2);
         }
-        CSVUtils.fixEmptyLine(header, line2);
         return co;
     }
 

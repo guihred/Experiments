@@ -240,10 +240,9 @@ public class CSVUtils {
 
     }
 
-    private static void appendQuote(char customQuote, boolean startCollectChar, char[] chars,
-            StringBuilder curVal) {
+    private static void appendQuote(char customQuote, boolean startCollectChar, char[] chars, StringBuilder curVal) {
         if (chars[0] != '"' && customQuote == '\"' || startCollectChar) {
-                curVal    .append('"');
+            curVal.append('"');
         }
     }
 

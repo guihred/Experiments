@@ -150,18 +150,15 @@ public class KibanaApi {
     }
 
     protected static String convertSearchKeywords(Map<String, String> search) {
-        String collect = search.entrySet().stream().map(e -> {
+        return search.entrySet().stream().map(e -> {
             if (e.getValue().contains("\n")) {
                 return Stream.of(e.getValue().split("\n"))
                         .map(v -> String.format("{\"match_phrase\":{\"%s\":\"%s\"}}", e.getKey(), v))
                         .collect(
                                 Collectors.joining(",", "{\"bool\":{\"should\":[", "],\"minimum_should_match\":1}},"));
             }
-
             return String.format("{\"match_phrase\":{\"%s\":{\"query\":\"%s\"}}},", e.getKey(), e.getValue());
         }).collect(Collectors.joining("\n"));
-        LOG.info(collect);
-        return collect;
     }
 
     protected static void getFromURL(String url, String cont, File outFile) throws IOException {

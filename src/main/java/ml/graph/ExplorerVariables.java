@@ -152,6 +152,8 @@ public abstract class ExplorerVariables extends Application {
             Map<String, Integer> countMap = val.getValue().getCountMap();
             barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
             pieChart.setData(pieData);
+            barChart.setTitle(val.getKey());
+            pieChart.setTitle(val.getKey());
             addToPieChart(barList, countMap);
             return;
         }
@@ -177,32 +179,30 @@ public abstract class ExplorerVariables extends Application {
     }
 
     protected void onColumnsChange(Change<? extends Entry<String, DataframeStatisticAccumulator>> c) {
-        while (c.next()) {
-            if (c.wasRemoved()) {
-                dataTable.clearColumns();
+        c.next();
+        if (c.wasRemoved()) {
+            dataTable.clearColumns();
+        }
+        List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
+        if (!getDataframe().isLoaded()) {
+            Map<Integer, Map<String, Object>> cache = new HashMap<>();
+            List<String> asList = Arrays.asList("Header", "Mean", "Max", "Min", "Distinct", "Median25", "Median50",
+                    "Median75", "Sum", "Count");
+            for (String key : asList) {
+                dataTable.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
             }
-            List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
-            if (!getDataframe().isLoaded()) {
-                Map<Integer, Map<String, Object>> cache = new HashMap<>();
-                List<String> asList = Arrays.asList("Header", "Mean", "Max", "Min", "Distinct", "Median25", "Median50",
-                        "Median75", "Sum");
-                for (String key : asList) {
-                    dataTable.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
-                }
-                dataTable.setListSize(addedSubList.size());
-                double[] array = asList.stream().mapToDouble(e -> Math
-                        .max(Objects.toString(getStatAt(addedSubList, cache, e.toLowerCase(), 0)).length(), e.length()))
-                        .toArray();
-                dataTable.setColumnsWidth(array);
-            } else {
-                addedSubList.forEach(
-                        entry -> dataTable.addColumn(entry.getKey(), i -> getDataframe().getAt(entry.getKey(), i)));
-                dataTable.setListSize(getDataframe().getSize());
-                double[] array = addedSubList.stream().mapToDouble(e -> Math.max(getTopLength(e), e.getKey().length()))
-                        .toArray();
-                dataTable.setColumnsWidth(array);
-
-            }
+            dataTable.setListSize(addedSubList.size());
+            double[] array = asList.stream().mapToDouble(e -> Math
+                    .max(Objects.toString(getStatAt(addedSubList, cache, e.toLowerCase(), 0)).length(), e.length()))
+                    .toArray();
+            dataTable.setColumnsWidth(array);
+        } else {
+            addedSubList.forEach(
+                    entry -> dataTable.addColumn(entry.getKey(), i -> getDataframe().getAt(entry.getKey(), i)));
+            dataTable.setListSize(getDataframe().getSize());
+            double[] array =
+                    addedSubList.stream().mapToDouble(e -> Math.max(getTopLength(e), e.getKey().length())).toArray();
+            dataTable.setColumnsWidth(array);
         }
     }
 

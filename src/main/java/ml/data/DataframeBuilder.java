@@ -58,9 +58,6 @@ public class DataframeBuilder extends DataframeML {
         }, Collections.emptySet());
     }
 
-    public DataframeML dataframe() {
-        return this;
-    }
 
     public DataframeBuilder filterOut(String d, Predicate<Object> fil) {
         filters.put(d, fil);

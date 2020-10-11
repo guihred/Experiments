@@ -90,7 +90,7 @@ public class BaseDataframe {
 
     public boolean isLoaded() {
         int orElse = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
-        return orElse == size;
+        return orElse != 0;
     }
 
     public Class<? extends Comparable<?>> putFormat(String header, Class<? extends Comparable<?>> value) {

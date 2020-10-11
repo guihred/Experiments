@@ -141,7 +141,7 @@ public class DataframeExplorer extends ExplorerVariables {
         DataframeBuilder builder = builderWithQuestions(file, questions);
         if (!ExcelService.isExcel(file)) {
             Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
-            setDataframe(builder.dataframe());
+            setDataframe(builder);
             CommonsFX.runInPlatform(() -> columns.setAll(entrySet));
             builder.makeStats(progress.progressProperty());
         }

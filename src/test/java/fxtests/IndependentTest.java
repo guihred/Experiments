@@ -173,7 +173,7 @@ public class IndependentTest {
     @Test
     public void testImagesTest() throws IOException {
         File userFolder = ResourceFXUtils.getOutFile();
-        String dataDir = userFolder + "\\";
+        String dataDir = ResourceFXUtils.getOutFile("image/.png").getParentFile().getAbsolutePath();
         File createTempFile = File.createTempFile("created", ".jpg", ResourceFXUtils.getOutFile());
         String nameFile = createTempFile.toPath().toString();
         String svgFile = FileTreeWalker.getFirstPathByExtension(userFolder.getParentFile(), ".svg").toString();
