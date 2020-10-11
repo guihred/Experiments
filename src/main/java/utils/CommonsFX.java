@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.embed.swing.JFXPanel;
@@ -34,26 +35,6 @@ public final class CommonsFX {
     private static final String CSS_DIR = "css/";
 
     private CommonsFX() {
-    }
-
-    public static void initializeFX() {
-        Platform.setImplicitExit(false);
-        new JFXPanel().toString();
-    }
-
-    public static void runInPlatformSync(RunnableEx run) {
-        AtomicBoolean a = new AtomicBoolean(false);
-        Platform.runLater(() -> {
-            RunnableEx.run(run);
-            a.set(true);
-        });
-        while (!a.get()) {
-            // DOES NOTHING
-        }
-    }
-
-    public static void runInPlatform(RunnableEx run) {
-        Platform.runLater(RunnableEx.make(run));
     }
 
     public static void addCSS(Scene value, String css) {
@@ -90,6 +71,10 @@ public final class CommonsFX {
         }
         Collections.shuffle(availableColors);
         return availableColors;
+    }
+    public static void initializeFX() {
+        Platform.setImplicitExit(false);
+        new JFXPanel().toString();
     }
 
     public static void loadFXML(String title, File file, Stage primaryStage, double... size) {
@@ -163,6 +148,27 @@ public final class CommonsFX {
             }
         });
 
+    }
+
+    public static void runInPlatform(RunnableEx run) {
+        Platform.runLater(RunnableEx.make(run));
+    }
+
+    public static void runInPlatformSync(RunnableEx run) {
+        AtomicBoolean a = new AtomicBoolean(false);
+        Platform.runLater(() -> {
+            RunnableEx.run(run);
+            a.set(true);
+        });
+        while (!a.get()) {
+            // DOES NOTHING
+        }
+    }
+
+    public static void update(Property<Number> progress, double value) {
+        if (progress != null) {
+            CommonsFX.runInPlatform(() -> progress.setValue(value));
+        }
     }
 
     private static void loadFXML(String title, File file, Object controller, Stage primaryStage, double... size) {

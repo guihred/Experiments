@@ -51,18 +51,19 @@ public class KibanaInvestigator extends Application {
             String text = networkAddress.getText();
             if (StringUtils.isNotBlank(text)) {
                 String[] split = text.split("[,\n\t; ]+");
-                CommonsFX.runInPlatform(() -> progressIndicator.setProgress(0));
-                for (String ip : split) {
+                CommonsFX.update(progressIndicator.progressProperty(), 0);
+                for (int i = 0; i < split.length; i++) {
+                    String ip = split[i];
                     Map<String, String> nsInformation = KibanaApi.kibanaFullScan(ip);
+                    CommonsFX.update(progressIndicator.progressProperty(), (i + 1.) / split.length);
                     CommonsFX.runInPlatform(() -> {
-                        progressIndicator.setProgress(progressIndicator.getProgress() + 1. / split.length);
                         if (commonTable.getColumns().isEmpty()) {
                             SimpleTableViewBuilder.addColumns(commonTable, nsInformation.keySet());
                         }
                         items.add(nsInformation);
                     });
                 }
-                CommonsFX.runInPlatform(() -> progressIndicator.setProgress(1));
+                CommonsFX.update(progressIndicator.progressProperty(), 1);
             }
         });
     }

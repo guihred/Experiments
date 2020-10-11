@@ -60,16 +60,16 @@ public class FXHackTest extends AbstractTestExecution {
         List<Button> buttons = lookupList(Button.class).stream().limit(4).collect(Collectors.toList());
         for (Node e1 : buttons) {
             clickOn(e1);
-            wiatProgress(lookup);
+            waitProgress(lookup);
         }
-        wiatProgress(lookup);
+        waitProgress(lookup);
         Set<Node> queryAll2 = lookup(".tab").queryAll();
         for (Node node : queryAll2) {
             tryClickOn(node);
             Set<Node> queryAs =
                     lookup(".tab-content-area").queryAll().stream().filter(Node::isVisible).collect(Collectors.toSet());
             from(queryAs).lookup(TableRow.class::isInstance).queryAll().stream().limit(1).forEach(this::doubleClickOn);
-            wiatProgress(lookup);
+            waitProgress(lookup);
         }
     }
 
@@ -248,7 +248,7 @@ public class FXHackTest extends AbstractTestExecution {
         measureTime("VirusTotalApi.getUrlInformation", () -> VirusTotalApi.getUrlInformation(randomItem));
     }
 
-    private static void wiatProgress(ProgressIndicator lookup) {
+    private static void waitProgress(ProgressIndicator lookup) {
         while (lookup.getProgress() > 0 && lookup.getProgress() < 1) {
             // DOES NOTHING
         }

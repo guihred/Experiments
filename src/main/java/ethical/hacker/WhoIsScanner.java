@@ -24,10 +24,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
-import utils.FileTreeWalker;
-import utils.PhantomJSUtils;
-import utils.ResourceFXUtils;
+import utils.*;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -174,7 +171,7 @@ public class WhoIsScanner {
         DataframeML dataframe = builder.build(count);
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         ObservableMap<String, Map<String, String>> ipInfoCache = FXCollections.observableHashMap();
-        count.set(0);
+        CommonsFX.update(count, 0);
         DataframeUtils.crossFeatureObject(dataframe, "Rede", count,
                 e -> getFromCache(whoIsScanner, ipInfoCache, e, "network"),
                 ipColumn);

@@ -81,15 +81,14 @@ public final class MusicReader {
                     Files.find(file.toPath(), 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
                 List<Path> allSongs = find.collect(Collectors.toList());
                 double size = allSongs.size();
-                CommonsFX.runInPlatform(() -> progress.set(0));
+                CommonsFX.update(progress, 0);
                 for (int i = 0; i < allSongs.size(); i++) {
                     Path path = allSongs.get(i);
-                    int j = i;
-                    CommonsFX.runInPlatform(() -> progress.set(j / size));
+                    CommonsFX.update(progress, i / size);
                     Music readTags = readTags(path.toFile());
                     CommonsFX.runInPlatform(() -> musicas.add(readTags));
                 }
-                CommonsFX.runInPlatform(() -> progress.set(1));
+                CommonsFX.update(progress, 1);
             }
         });
         return musicas;

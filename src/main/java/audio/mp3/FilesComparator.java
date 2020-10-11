@@ -131,13 +131,13 @@ public class FilesComparator extends Application {
     }
 
     private void copy(ObjectProperty<File> dir, TableView<File> table1, ObservableList<File> items2) {
-        progress.setProgress(0);
         List<File> selectedItems = new ArrayList<>(table1.getSelectionModel().getSelectedItems());
         RunnableEx.runNewThread(() -> copySelectedFiles(dir, table1, items2, selectedItems));
     }
 
     private void copySelectedFiles(ObjectProperty<File> dir, TableView<File> table1, ObservableList<File> items2,
             List<File> selectedItems) {
+        updateProgress(0);
         for (File selectedItem : selectedItems) {
             if (selectedItem == null || !notRepeated(items2, selectedItem) && contentEqual(items2, selectedItem)) {
                 continue;
@@ -160,7 +160,7 @@ public class FilesComparator extends Application {
                     fileMap.put(selectedItem, MusicReader.readTags(selectedItem));
                 }
                 double d = 1.0 / selectedItems.size();
-                progress.setProgress(progress.getProgress() + d);
+                updateProgress(progress.getProgress() + d);
                 updateCells(table1);
             });
         }
@@ -168,7 +168,7 @@ public class FilesComparator extends Application {
     }
 
     private void updateProgress(double a) {
-        CommonsFX.runInPlatform(() -> progress.setProgress(a));
+        CommonsFX.update(progress.progressProperty(), a);
     }
 
     public static void main(String[] args) {

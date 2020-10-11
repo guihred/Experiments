@@ -1,6 +1,7 @@
 package ml.data;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static utils.CommonsFX.update;
 import static utils.StringSigaUtils.floatFormating;
 import static utils.StringSigaUtils.format;
 import static utils.StringSigaUtils.intFormating;
@@ -20,7 +21,6 @@ import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
 import org.slf4j.Logger;
 import utils.CSVUtils;
-import utils.CommonsFX;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
@@ -675,9 +675,5 @@ public class DataframeUtils extends DataframeML {
         return d;
     }
 
-    private static void update(DoubleProperty progress, double i) {
-        if (progress != null) {
-            CommonsFX.runInPlatform(() -> progress.set(i));
-        }
-    }
+
 }

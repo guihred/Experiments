@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -65,39 +64,6 @@ public final class PdfUtils {
     }
 
 
-    public static Map<Integer, List<PdfImage>> extractImages(File file) {
-        return PdfUtils.extractImages(file, 0, 0);
-    }
-
-    public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages) {
-        return extractImages(file, start, nPages, null);
-    }
-
-    public static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
-            Property<Number> progress) {
-        Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
-        RunnableEx.run(() -> RunnableEx.remap(() -> {
-            try (RandomAccessFile source = new RandomAccessFile(file, "r");
-                    COSDocument cosDoc = parseAndGet(source);
-                    PDDocument pdDoc = new PDDocument(cosDoc)) {
-                int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
-                for (int i = start; i < nPag; i++) {
-                    PrintImageLocations printImageLocations = new PrintImageLocations(file);
-                    List<PdfImage> pageImages = getPageImages(printImageLocations, i, pdDoc.getPage(i));
-                    images.put(i, pageImages);
-                    double current = i;
-                    if (progress != null) {
-                        CommonsFX.runInPlatform(() -> progress.setValue(current / (nPag - start)));
-                    }
-                }
-                if (progress != null) {
-                    CommonsFX.runInPlatform(() -> progress.setValue(1));
-                }
-            }
-        }, ERROR_IN_FILE + file));
-        return images;
-    }
-
     public static String[] getAllLines(File file) {
         return SupplierEx.remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
@@ -109,14 +75,6 @@ public final class PdfUtils {
                 return parsedText.split("\r\n");
             }
         }, ERROR_IN_FILE + file);
-    }
-
-    public static COSDocument parseAndGet(RandomAccessFile source) {
-        return remap(() -> {
-            PDFParser parser = new PDFParser(source);
-            parser.parse();
-            return parser.getDocument();
-        }, ERROR_IN_FILE + source);
     }
 
     public static PdfInfo readFile(File file1) {
@@ -144,8 +102,44 @@ public final class PdfUtils {
         ignore(() -> runOnLines(init, file, onTextPosition, onPage, onLines, onImages));
     }
 
+    private static Map<Integer, List<PdfImage>> extractImages(File file) {
+        return PdfUtils.extractImages(file, 0, 0);
+    }
+
+    private static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages) {
+        return extractImages(file, start, nPages, null);
+    }
+
+    private static Map<Integer, List<PdfImage>> extractImages(File file, int start, int nPages,
+            Property<Number> progress) {
+        Map<Integer, List<PdfImage>> images = new ConcurrentHashMap<>();
+        RunnableEx.run(() -> RunnableEx.remap(() -> {
+            try (RandomAccessFile source = new RandomAccessFile(file, "r");
+                    COSDocument cosDoc = parseAndGet(source);
+                    PDDocument pdDoc = new PDDocument(cosDoc)) {
+                int nPag = nPages == 0 ? pdDoc.getNumberOfPages() : nPages;
+                for (int i = start; i < nPag; i++) {
+                    PrintImageLocations printImageLocations = new PrintImageLocations(file);
+                    List<PdfImage> pageImages = getPageImages(printImageLocations, i, pdDoc.getPage(i));
+                    images.put(i, pageImages);
+                    CommonsFX.update(progress, (double) i / (nPag - start));
+                }
+                CommonsFX.update(progress, 1);
+            }
+        }, ERROR_IN_FILE + file));
+        return images;
+    }
+
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
         return get(() -> printImageLocations.processPage(page, i), new ArrayList<>());
+    }
+
+    private static COSDocument parseAndGet(RandomAccessFile source) {
+        return remap(() -> {
+            PDFParser parser = new PDFParser(source);
+            parser.parse();
+            return parser.getDocument();
+        }, ERROR_IN_FILE + source);
     }
 
     private static void read(PdfInfo pdfInfo, File file1, PrintStream out) throws IOException {
@@ -154,7 +148,6 @@ public final class PdfUtils {
                 PDDocument pdDoc = new PDDocument(cosDoc)) {
             pdfInfo.setNumberOfPages(pdDoc.getNumberOfPages());
             PDFTextStripper pdfStripper = new PDFTextStripper();
-            DoubleProperty progress = pdfInfo.getProgress();
             for (int i = 0; i < pdfInfo.getNumberOfPages(); i++) {
                 pdfStripper.setStartPage(i);
                 pdfStripper.setEndPage(i);
@@ -173,14 +166,10 @@ public final class PdfUtils {
                     lines1.forEach(out::println);
                 }
 
-                if (progress != null) {
-                    int j = i;
-                    CommonsFX.runInPlatform(() -> progress.setValue(j / pdfInfo.getNumberOfPages()));
-                }
+                CommonsFX.update(pdfInfo.getProgress(), (double) i / pdfInfo.getNumberOfPages());
+
             }
-            if (progress != null) {
-                CommonsFX.runInPlatform(() -> progress.setValue(1));
-            }
+            CommonsFX.update(pdfInfo.getProgress(), 1);
             pdfInfo.setNumberOfPages(pdfInfo.getNumberOfPages());
             pdfInfo.setImages(PdfUtils.extractImages(file1, 0, pdfInfo.getNumberOfPages(), pdfInfo.getProgress()));
 
@@ -233,4 +222,6 @@ public final class PdfUtils {
             }
         }
     }
+
+
 }

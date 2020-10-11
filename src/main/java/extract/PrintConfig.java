@@ -69,7 +69,6 @@ public class PrintConfig extends Application {
     private Slider vgap;
 
     public PrintConfig() {
-
         images.add(new Image(
                 FileTreeWalker.getFirstPathByExtension(new File("src").getAbsoluteFile(), ".png").toUri().toString()));
     }

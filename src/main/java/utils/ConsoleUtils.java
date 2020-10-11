@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
@@ -36,11 +35,10 @@ public final class ConsoleUtils {
         RunnableEx.runNewThread(() -> {
             while (PROCESSES.values().stream().anyMatch(e -> !e)) {
                 long count = PROCESSES.values().stream().filter(e -> !e).count();
-                double newValue = (n - count) / n;
-                CommonsFX.runInPlatform(() -> progress.set(newValue));
+                CommonsFX.update(progress, (n - count) / n);
                 RunnableEx.sleepSeconds(0.5);
             }
-            CommonsFX.runInPlatform(() -> progress.set(1));
+            CommonsFX.update(progress, 1);
         });
         return progress;
     }
@@ -55,14 +53,14 @@ public final class ConsoleUtils {
         final ToDoubleFunction<String> function2) {
         SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
         SimpleDoubleProperty total = new SimpleDoubleProperty(100);
-        executeInConsoleAsync.get(totalRegex).addListener((ListChangeListener<String>) c -> {
+        executeInConsoleAsync.get(totalRegex).addListener((Change<? extends String> c) -> {
             while (c.next()) {
                 String text = c.getAddedSubList().get(0);
                 double applyAsDouble = function.applyAsDouble(text);
                 total.set(applyAsDouble);
             }
         });
-        executeInConsoleAsync.get(progressRegex).addListener((ListChangeListener<String>) c -> {
+        executeInConsoleAsync.get(progressRegex).addListener((Change<? extends String> c) -> {
             while (c.next()) {
                 String text = c.getAddedSubList().get(0);
                 double applyAsDouble = function2.applyAsDouble(text);
@@ -70,7 +68,7 @@ public final class ConsoleUtils {
                 progress.set(applyAsDouble / doubleValue);
             }
         });
-        executeInConsoleAsync.get(ACTIVE_FLAG).addListener((final Change<? extends String> e) -> progress.set(1));
+        executeInConsoleAsync.get(ACTIVE_FLAG).addListener((Change<? extends String> e) -> progress.set(1));
         return progress;
     }
 

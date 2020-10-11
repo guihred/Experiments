@@ -162,7 +162,7 @@ public class ConsultasInvestigator extends Application {
     }
 
     private void addProgress(double d) {
-        CommonsFX.runInPlatform(() -> progress.setProgress(progress.getProgress() + d));
+        CommonsFX.update(progress.progressProperty(), progress.getProgress() + d);
     }
 
     private QueryObjects configureTable(String userNameQuery, String queryFile,
