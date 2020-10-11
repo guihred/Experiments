@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.geometry.*?>
+<FlowPane xmlns:fx="http://javafx.com/fxml" hgap="20.0"
+	orientation="VERTICAL" styleClass="root" layoutX="20.0" layoutY="50.0" 
+	vgap="10.0">
+	<fx:define>
+		<ToggleGroup fx:id="toggleGroup5" />
+	</fx:define>
+	<children>
+		<HBox spacing="10.0">
+			<children>
+				<Slider blockIncrement="2.55" fx:id="sliderRef" max="255.0"
+					orientation="VERTICAL" value="255.0" />
+				<ChoiceBox fx:id="choiceBoxRef" />
+			</children>
+		</HBox>
+		<Text fx:id="textSceneX" styleClass="emphasized-text" text="Scene x: 9.0" />
+		<Text fx:id="textSceneY" styleClass="emphasized-text" text="Scene y: 38.0" />
+		<Text fx:id="textSceneW" styleClass="emphasized-text" text="Scene width: 372.0" />
+		<Text fx:id="sceneHeightText" styleClass="emphasized-text" text="Scene height: 500.0" />
+		<Hyperlink fx:id="hyperlink4" onAction="#onActionHyperlink4"
+			text="lookup()" />
+		<RadioButton fx:id="radioButton6" selected="true"
+			text="onTheScene.css" toggleGroup="$toggleGroup5" />
+		<RadioButton fx:id="radioButton7" text="changeOfScenes.css"
+			toggleGroup="$toggleGroup5" />
+		<Label fx:id="stageX" text="Stage x: 765.0" />
+		<Label fx:id="stageY" text="Stage y: 161.0" />
+		<Label fx:id="labelStageW" text="Stage width: 390.0" />
+		<Label fx:id="labelStageH" text="Stage height: 547.0" />
+		<Text fill="0x0000ffff" fx:id="addedTextRef" managed="false"
+			text="Scene fill: 0xffffffff" textOrigin="TOP" y="-30.0">
+			<font>
+				<Font name="System Bold" size="16.0" />
+			</font>
+		</Text>
+	</children>
+	<padding>
+		<Insets bottom="50.0" left="0.0" right="50.0" top="0.0" />
+	</padding>
+</FlowPane>

@@ -49,18 +49,19 @@ public class CubeNode extends Parent {
     private CubeFace frontFace;
 
     private Timeline hideMapTimeline = new Timeline(
-        new KeyFrame(new Duration(0.0), t -> goHomePosition(),
-            new KeyValue(cubeModel.getMapOpacity(), 7. / 10, Interpolator.LINEAR)),
-        new KeyFrame(new Duration(1000.0), new KeyValue(cubeModel.getMapOpacity(), 0.0, Interpolator.EASE_BOTH)));
+            new KeyFrame(new Duration(0.0), t -> goHomePosition(),
+                    new KeyValue(cubeModel.getMapOpacity(), 7. / 10, Interpolator.LINEAR)),
+            new KeyFrame(new Duration(1000.0), new KeyValue(cubeModel.getMapOpacity(), 0.0, Interpolator.EASE_BOTH)));
 
     private CubeFace leftFace;
 
     private CubeFace rearFace;
     private CubeFace rightFace;
     private Timeline showMapTimeline = new Timeline(
-        new KeyFrame(new Duration(0.0), t -> goHomePosition(),
-            new KeyValue(cubeModel.getMapOpacity(), 0.0, Interpolator.LINEAR)),
-        new KeyFrame(new Duration(1000.0), new KeyValue(cubeModel.getMapOpacity(), 7. / 10, Interpolator.EASE_BOTH)));
+            new KeyFrame(new Duration(0.0), t -> goHomePosition(),
+                    new KeyValue(cubeModel.getMapOpacity(), 0.0, Interpolator.LINEAR)),
+            new KeyFrame(new Duration(1000.0),
+                    new KeyValue(cubeModel.getMapOpacity(), 7. / 10, Interpolator.EASE_BOTH)));
     private CubeFace topFace;
 
     public CubeNode() {
@@ -69,26 +70,28 @@ public class CubeNode extends Parent {
         angleY.addListener((ov, oldValue, newValue) -> arrangeFacesZOrder());
 
         rearFace = new CubeFace(CubeFace.REAR_FACE);
-        Rotate build = new SimpleRotateBuilder().angle(180.0).axis(Rotate.Y_AXIS).pivotX(CubeFace.EDGE_LENGTH / 2)
-            .build();
+        final Rotate build =
+                new SimpleRotateBuilder().angle(180.0).axis(Rotate.Y_AXIS).pivotX(CubeFace.EDGE_LENGTH / 2).build();
 
         rearFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH), build);
 
         bottomFace = new CubeFace(CubeFace.BOTTOM_FACE);
-        bottomFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH),
-            new SimpleRotateBuilder().angle(90.0).axis(Rotate.X_AXIS).pivotY(CubeFace.EDGE_LENGTH).build());
+        final Rotate rotate90 =
+                new SimpleRotateBuilder().angle(90.0).axis(Rotate.X_AXIS).pivotY(CubeFace.EDGE_LENGTH).build();
+        bottomFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH), rotate90);
 
         leftFace = new CubeFace(CubeFace.LEFT_FACE);
-        leftFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH),
-            new SimpleRotateBuilder().angle(90.0).axis(Rotate.Y_AXIS).pivotX(0).build());
+        final Rotate rotate90Yaxis = new SimpleRotateBuilder().angle(90.0).axis(Rotate.Y_AXIS).pivotX(0).build();
+        leftFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH), rotate90Yaxis);
 
         rightFace = new CubeFace(CubeFace.RIGHT_FACE);
-        rightFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH),
-            new SimpleRotateBuilder().angle(-90.0).axis(Rotate.Y_AXIS).pivotX(CubeFace.EDGE_LENGTH).build());
+        final Rotate rotateNeg90YAxis =
+                new SimpleRotateBuilder().angle(-90.0).axis(Rotate.Y_AXIS).pivotX(CubeFace.EDGE_LENGTH).build();
+        rightFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH), rotateNeg90YAxis);
 
         topFace = new CubeFace(CubeFace.TOP_FACE);
-        topFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH),
-            new SimpleRotateBuilder().angle(-90.0).axis(Rotate.X_AXIS).pivotX(0).build());
+        final Rotate rotateNeg90XAxis = new SimpleRotateBuilder().angle(-90.0).axis(Rotate.X_AXIS).pivotX(0).build();
+        topFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH), rotateNeg90XAxis);
 
         frontFace = new CubeFace(CubeFace.FRONT_FACE);
         frontFace.getTransforms().setAll(new Translate(0, 0, 0));
@@ -129,8 +132,8 @@ public class CubeNode extends Parent {
 
     public void goHomePosition() {
         Timeline homeTimeline = new Timeline(
-            new KeyFrame(new Duration(1000.0), new KeyValue(angleX, HOME_ANGLE_X, Interpolator.EASE_BOTH),
-                new KeyValue(angleY, HOME_ANGLE_Y, Interpolator.EASE_BOTH)));
+                new KeyFrame(new Duration(1000.0), new KeyValue(angleX, HOME_ANGLE_X, Interpolator.EASE_BOTH),
+                        new KeyValue(angleY, HOME_ANGLE_Y, Interpolator.EASE_BOTH)));
         homeTimeline.play();
     }
 
@@ -140,12 +143,12 @@ public class CubeNode extends Parent {
 
     private final void arrangeFacesZOrder() {
         rearFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 0)));
-        bottomFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 3 * 90)));
-        leftFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 3 * 90)));
-        rightFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 90)));
-        topFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 90)));
-        frontFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 180)));
-
+        final int ninety = 90;
+        bottomFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + 3 * ninety)));
+        leftFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 3 * ninety)));
+        rightFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + ninety)));
+        topFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + ninety)));
+        frontFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 2 * ninety)));
         FXCollections.sort(getChildren(), new CubeFaceComparator());
     }
 
@@ -155,8 +158,8 @@ public class CubeNode extends Parent {
             getScene().getWindow().setY(me.getScreenY() - dragStartOffsetY);
         } else if (me.isAltDown()) {
             double curTranslateZ = getTranslateZ();
-            double proposedTranslateZ = curTranslateZ
-                + (me.getScreenY() - getScene().getWindow().getY() - dragStartOffsetY) * 10;
+            double proposedTranslateZ =
+                    curTranslateZ + (me.getScreenY() - getScene().getWindow().getY() - dragStartOffsetY) * 10;
             if (proposedTranslateZ > MAX_TRANSLATE_Z) {
                 setTranslateZ(MAX_TRANSLATE_Z);
             } else if (proposedTranslateZ < MIN_TRANSLATE_Z) {
@@ -166,9 +169,9 @@ public class CubeNode extends Parent {
             }
         } else {
             angleY.setValue(
-                (me.getScreenX() - getScene().getWindow().getX() - dragStartOffsetX) / 3 * -1 + dragPressedAngleY);
-            angleX
-                .setValue((me.getScreenY() - getScene().getWindow().getY() - dragStartOffsetY) / 3 + dragPressedAngleX);
+                    (me.getScreenX() - getScene().getWindow().getX() - dragStartOffsetX) / 3 * -1 + dragPressedAngleY);
+            angleX.setValue(
+                    (me.getScreenY() - getScene().getWindow().getY() - dragStartOffsetY) / 3 + dragPressedAngleX);
         }
     }
 

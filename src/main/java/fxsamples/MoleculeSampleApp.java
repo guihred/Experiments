@@ -43,7 +43,7 @@ public class MoleculeSampleApp extends Application {
     private double mousePosY;
     private final Group root = new Group();
     private final Xform world = new Xform();
-    private Timeline timeline = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
+    private final Timeline timeline = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
             .keyFrames(new KeyFrame(Duration.minutes(1), new KeyValue(world.rotateYProperty(), 360))).build();
     private boolean timelinePlaying;
 
@@ -145,11 +145,11 @@ public class MoleculeSampleApp extends Application {
         Sphere oxygenSphere = new Sphere(oxygenRadius);
         oxygenSphere.setMaterial(redMaterial);
 
-        Sphere hydrogen1Sphere = new Sphere(30);
+        final Sphere hydrogen1Sphere = new Sphere(30);
         hydrogen1Sphere.setMaterial(whiteMaterial);
         hydrogen1Sphere.setTranslateX(0);
 
-        Sphere hydrogen2Sphere = new Sphere(30);
+        final Sphere hydrogen2Sphere = new Sphere(30);
         hydrogen2Sphere.setMaterial(whiteMaterial);
         hydrogen2Sphere.setTranslateZ(0);
 

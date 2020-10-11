@@ -1,7 +1,7 @@
 package fxtests;
 
 import fxml.utils.FXMLCreatorHelper;
-import fxpro.ch02.CSSStylingExample;
+import fxsamples.MoleculeSampleApp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +30,9 @@ public final class FXMLCreatorTest {
     @Test
     public void testClassesNotClose() {
         List<Class<? extends Application>> classes =
-                Arrays.asList(CSSStylingExample.class);
+                Arrays.asList(MoleculeSampleApp.class);
         FXMLCreatorHelper.testApplications(classes, false);
-
+        while(true);
     }
 
     private static <T> String classNames(List<Class<? extends T>> testApplications) {
