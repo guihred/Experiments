@@ -96,7 +96,7 @@ public final class FXMLConstants {
     }
 
     private static String mapStylesheet(Collection<?> l) {
-        String s = "file:/" + getOutFile().getParentFile().toString().replaceAll("\\\\", "/");
+        String s = "file:/" + new File(getOutFile().getParentFile(), "classes").toString().replaceAll("\\\\", "/");
         String sd = "file:/" + new File("src/main/resources/").getAbsolutePath().replaceAll("\\\\", "/");
         return l.stream().map(st -> st.toString().replaceAll(s + "|" + sd, "@")).distinct().collect(joining(", "));
     }

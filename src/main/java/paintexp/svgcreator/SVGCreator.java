@@ -60,29 +60,13 @@ public class SVGCreator extends Application {
 
     public void handleEvent(MouseEvent e) {
         if (MouseEvent.MOUSE_PRESSED == e.getEventType()) {
-            if (pointStage == 0) {
-                if (!points.isEmpty()) {
-                    lastPoints = points.get(0);
-                }
-                points.clear();
-            }
-            points.add(new Point2D(Math.max(0, e.getX()), Math.max(0, e.getY())));
-            if (command.getArgs() < 4) {
-                handleSimple(e);
-            }
+            handlePressed(e);
         }
         if (isSimpleHandle(e)) {
             handleSimple(e);
         }
         if (MouseEvent.MOUSE_RELEASED == e.getEventType()) {
-            int args = command.getArgs() == 7 ? 4 : command.getArgs();
-            if (args > 1) {
-                pointStage = (pointStage + 1) % (args / 2);
-            }
-            if (pointStage == 0) {
-                points.add(new Point2D(Math.max(0, e.getX()), Math.max(0, e.getY())));
-                setContent(path.getContent());
-            }
+            handleRelease(e);
         }
 
     }
@@ -155,6 +139,30 @@ public class SVGCreator extends Application {
     public void undo() {
         String replaceAll = path.getContent().replaceAll("[a-zA-Z][^a-zA-Z]+$", "");
         contentField.setText(replaceAll);
+    }
+
+    private void handlePressed(MouseEvent e) {
+        if (pointStage == 0) {
+            if (!points.isEmpty()) {
+                lastPoints = points.get(0);
+            }
+            points.clear();
+        }
+        points.add(new Point2D(Math.max(0, e.getX()), Math.max(0, e.getY())));
+        if (command.getArgs() < 4) {
+            handleSimple(e);
+        }
+    }
+
+    private void handleRelease(MouseEvent e) {
+        int args = command.getArgs() == 7 ? 4 : command.getArgs();
+        if (args > 1) {
+            pointStage = (pointStage + 1) % (args / 2);
+        }
+        if (pointStage == 0) {
+            points.add(new Point2D(Math.max(0, e.getX()), Math.max(0, e.getY())));
+            setContent(path.getContent());
+        }
     }
 
     private void handleSimple(final MouseEvent e) {

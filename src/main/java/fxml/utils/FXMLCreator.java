@@ -462,7 +462,8 @@ public final class FXMLCreator {
     }
 
     private static String mapUrl(String st) {
-        String s = "file:/" + getOutFile().getParentFile().toString().replaceAll("\\\\", "/");
+        File file = new File(getOutFile().getParentFile(), "classes");
+        String s = "file:/" + file.toString().replaceAll("\\\\", "/");
         return st.replace(s, "@");
     }
 

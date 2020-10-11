@@ -296,13 +296,13 @@ public final class GraphModelAlgorithms {
         Map<Cell, Integer> distance = new HashMap<>();
         Map<Cell, Boolean> known = createDistanceMap(source, distance, allCells);
         for (int i = 0; i < allCells.size(); i++) {
-            for (Cell v : allCells) {
-                if (!known.get(v) && distance.get(v) == i) {
-                    known.put(v, true);
-                    for (Cell w : anyAdjacents(v, allEdges)) {
-                        if (distance.get(w) == Integer.MAX_VALUE) {
-                            distance.put(w, i + 1);
-                            setPath(w, source, v, paths);
+            for (Cell cell0 : allCells) {
+                if (unknownDistance(distance, known, i, cell0)) {
+                    known.put(cell0, true);
+                    for (Cell cell1 : anyAdjacents(cell0, allEdges)) {
+                        if (distance.get(cell1) == Integer.MAX_VALUE) {
+                            distance.put(cell1, i + 1);
+                            setPath(cell1, source, cell0, paths);
                         }
                     }
                 }
@@ -444,6 +444,10 @@ public final class GraphModelAlgorithms {
             paths = new HashMap<>();
         }
         paths.computeIfAbsent(from, f -> new HashMap<>()).put(to, by);
+    }
+
+    private static boolean unknownDistance(Map<Cell, Integer> distance, Map<Cell, Boolean> known, int i, Cell cell0) {
+        return !known.get(cell0) && distance.get(cell0) == i;
     }
 
 }
