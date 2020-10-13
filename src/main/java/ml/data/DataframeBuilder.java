@@ -27,6 +27,11 @@ public class DataframeBuilder extends DataframeML {
         return this;
     }
 
+    public DataframeBuilder addCrossFeature(String d,  FunctionEx<Object[], ?> mapper,String... dependencies) {
+        crossFeature.put(d, new AbstractMap.SimpleEntry<>(dependencies, mapper));
+        return this;
+    }
+
     public DataframeBuilder addCrossFeature(String d, String[] dependencies, FunctionEx<Object[], ?> mapper) {
         crossFeature.put(d, new AbstractMap.SimpleEntry<>(dependencies, mapper));
         return this;

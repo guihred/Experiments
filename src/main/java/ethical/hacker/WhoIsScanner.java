@@ -24,7 +24,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ExtractUtils;
+import utils.FileTreeWalker;
+import utils.PhantomJSUtils;
+import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -168,20 +171,20 @@ public class WhoIsScanner {
 
     public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn, DoubleProperty count) {
         builder.filterOut(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(IP_REGEX));
-        DataframeML dataframe = builder.build(count);
+
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         ObservableMap<String, Map<String, String>> ipInfoCache = FXCollections.observableHashMap();
-        CommonsFX.update(count, 0);
-        DataframeUtils.crossFeatureObject(dataframe, "Rede", count,
-                e -> getFromCache(whoIsScanner, ipInfoCache, e, "network"),
-                ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, "Owner", count,
-                e -> getFromCache(whoIsScanner, ipInfoCache, e, "asname", "as_owner"), ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, REVERSE_DNS, count,
-                e -> getFromCache(whoIsScanner, ipInfoCache, e, REVERSE_DNS), ipColumn);
-        DataframeUtils.crossFeatureObject(dataframe, "Country", count,
-                e -> getFromCache(whoIsScanner, ipInfoCache, e, "country", "ascountry"), ipColumn);
-        return dataframe;
+        builder.addCrossFeature("", e -> {
+            Map<String, String> hashMap = new LinkedHashMap<>();
+            hashMap.put("Network", getFromCache(whoIsScanner, ipInfoCache, e, "network"));
+            hashMap.put("Owner", getFromCache(whoIsScanner, ipInfoCache, e, "asname", "as_owner"));
+            hashMap.put("Reverse DNS", getFromCache(whoIsScanner, ipInfoCache, e, REVERSE_DNS));
+            hashMap.put("Country", getFromCache(whoIsScanner, ipInfoCache, e, "country", "ascountry"));
+            return hashMap;
+        }, ipColumn);
+        DataframeML build = builder.build(count);
+        build.removeCol("");
+        return build;
     }
 
     public static DataframeML fillIPInformation(File csvFile) {
@@ -212,10 +215,9 @@ public class WhoIsScanner {
     }
 
     public static String getLastNumberField(BaseDataframe dataframe) {
-        List<String> numberCols =
-                dataframe.getFormatMap().entrySet().stream().filter(e -> e.getValue() != null)
-                        .filter(e -> Number.class.isAssignableFrom(e.getValue()))
-                        .map(Entry<String, Class<? extends Comparable<?>>>::getKey).collect(Collectors.toList());
+        List<String> numberCols = dataframe.getFormatMap().entrySet().stream().filter(e -> e.getValue() != null)
+                .filter(e -> Number.class.isAssignableFrom(e.getValue()))
+                .map(Entry<String, Class<? extends Comparable<?>>>::getKey).collect(Collectors.toList());
         return numberCols.get(numberCols.size() - 1);
     }
 
