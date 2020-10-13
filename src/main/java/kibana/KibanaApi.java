@@ -126,23 +126,35 @@ public class KibanaApi {
         int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
         List<String> keys = ob.keySet().stream().collect(Collectors.toList());
         List<Map<String, String>> finalList = new ArrayList<>();
+        List<List<String>> partialList = new ArrayList<>();
         Map<String, String> reference = null;
         for (int i = 0; i < orElse; i++) {
             int j = i;
             List<String> collect2 =
                     collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
-            if (collect2.get(0).matches(regex) || reference == null) {
+            if (collect2.stream().anyMatch(s -> s.matches(regex))) {
                 reference = new LinkedHashMap<>();
                 Map<String, String> m = reference;
                 IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, m, k));
+                if (!partialList.isEmpty()) {
+                    for (List<String> list : partialList) {
+                        Map<String, String> newMap = new LinkedHashMap<>(reference);
+                        newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex))
+                                .findFirst().map(Entry<String, String>::getKey).orElse(null));
+                        IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, list, newMap, k));
+                        finalList.add(newMap);
+                    }
+                    partialList.clear();
+                    reference = null;
+                }
+            } else if (reference == null) {
+                partialList.add(collect2);
             } else {
                 Map<String, String> newMap = new LinkedHashMap<>(reference);
                 newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
                         .map(Entry<String, String>::getKey).orElse(null));
                 IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, newMap, k));
-                if (!Objects.equals(reference.keySet(), newMap.keySet())) {
-                    finalList.add(newMap);
-                }
+                finalList.add(newMap);
             }
 
         }
@@ -154,8 +166,7 @@ public class KibanaApi {
             if (e.getValue().contains("\n")) {
                 return Stream.of(e.getValue().split("\n"))
                         .map(v -> String.format("{\"match_phrase\":{\"%s\":\"%s\"}}", e.getKey(), v))
-                        .collect(
-                                Collectors.joining(",", "{\"bool\":{\"should\":[", "],\"minimum_should_match\":1}},"));
+                        .collect(Collectors.joining(",", "{\"bool\":{\"should\":[", "],\"minimum_should_match\":1}},"));
             }
             return String.format("{\"match_phrase\":{\"%s\":{\"query\":\"%s\"}}},", e.getKey(), e.getValue());
         }).collect(Collectors.joining("\n"));

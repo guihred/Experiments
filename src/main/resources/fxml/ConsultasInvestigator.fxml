@@ -58,18 +58,18 @@
 		<TabPane fx:id="tabPane0" tabMaxHeight="22.0" HBox.hgrow="ALWAYS"
 			tabMinHeight="22.0">
 			<tabs>
-				<Tab closable="false" text="Usuários x Número consultas">
-					<content>
-						<VBox>
-							<TableView fx:id="consultasTable" VBox.vgrow="ALWAYS" />
-						</VBox>
-					</content>
-				</Tab>
 				<Tab closable="false" text="Acessos por Sistema">
 					<content>
 						<VBox>
 
 							<TableView fx:id="acessosSistemaTable" VBox.vgrow="ALWAYS" />
+						</VBox>
+					</content>
+				</Tab>
+				<Tab closable="false" text="Usuários x Número consultas">
+					<content>
+						<VBox>
+							<TableView fx:id="consultasTable" VBox.vgrow="ALWAYS" />
 						</VBox>
 					</content>
 				</Tab>

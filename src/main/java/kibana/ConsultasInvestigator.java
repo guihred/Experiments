@@ -1,6 +1,7 @@
 package kibana;
 
 import com.google.common.collect.ImmutableMap;
+import ethical.hacker.WhoIsScanner;
 import extract.ExcelService;
 import java.io.File;
 import java.time.Instant;
@@ -79,12 +80,13 @@ public class ConsultasInvestigator extends Application {
 
     public void initialize() {
         String count = "doc_count";
-        configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count);
+        configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count).setAllowEmpty(false);
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
         configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^[^\\/\\d].+");
         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
-        configureTable(USER_NAME_QUERY, "geridQuery.json", ipsTable, "key", "value").setGroup("[^\\d].+")
+        configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "value", "key")
+                .setGroup(WhoIsScanner.IP_REGEX)
                 .setAllowEmpty(false);
         SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> filter.remove(e.getKey()));
         filter.addListener((Change<? extends String, ? extends String> change) -> {
