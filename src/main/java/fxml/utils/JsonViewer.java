@@ -173,7 +173,8 @@ public class JsonViewer extends Application {
             list.clear();
             sideTable.getColumns().clear();
             addColumns(sideTable, Arrays.asList("Key", "Value"));
-            List<Map<String, String>> collect = map.entrySet().stream().map(e -> {
+            List<Map<String, String>> collect =
+                    map.entrySet().stream().map(e -> {
                 Map<String, String> newMap = newMap("Key", e.getKey());
                 newMap.put("Value", e.getValue());
                 return newMap;

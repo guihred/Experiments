@@ -16,6 +16,7 @@ import org.nd4j.shade.jackson.databind.JsonNode;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
 import simplebuilder.SimpleTextBuilder;
 import utils.DateFormatUtils;
+import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 
 public final class JsonExtractor {
@@ -23,12 +24,12 @@ public final class JsonExtractor {
     private JsonExtractor() {
     }
 
-    public static <T>T access(Object root,Class<T> cl, Object... param) {
+    public static <T> T access(Object root, Class<T> cl, Object... param) {
         Object o = root;
         for (Object object : param) {
             o = FunctionEx.apply(ob -> {
                 if (object instanceof String) {
-                    return ((Map<?,?>) ob).get(object);
+                    return ((Map<?, ?>) ob).get(object);
                 }
                 if (object instanceof Integer) {
                     return ((List<?>) ob).get(((Integer) object).intValue());
@@ -39,10 +40,14 @@ public final class JsonExtractor {
         return cl.cast(o);
     }
 
-
     @SuppressWarnings("unchecked")
     public static <T> List<T> accessList(Object root, Object... param) {
         return access(root, List.class, param);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> Map<K, V> accessMap(Object root, Object... param) {
+        return access(root, Map.class, param);
     }
 
     public static void addValue(JsonNode item, TreeItem<Map<String, String>> e) {
@@ -394,7 +399,12 @@ public final class JsonExtractor {
         JsonNode rootNode = objectMapper.readTree(Files.newInputStream(file.toPath()));
         List<JsonNode> currentNodes = new ArrayList<>();
         currentNodes.add(rootNode);
-        TreeItem<Map<String, String>> value = new TreeItem<>(newMap(rootNode.asText(), rootNode.textValue()));
+        Map<String, String> collect =
+                accessMap(toObject(rootNode, 1)).entrySet().stream().filter(e -> e.getValue() instanceof String)
+                        .collect(Collectors.toMap(e -> StringSigaUtils.toStringSpecial(e.getKey()),
+                                e -> StringSigaUtils.toStringSpecial(e.getValue()), (u, v) -> u,
+                                SimpleMap::new));
+        TreeItem<Map<String, String>> value = new TreeItem<>(collect);
         value.setGraphic(SimpleTextBuilder.newBoldText(rootNode.asText()));
         build.setRoot(value);
         allItems.put(rootNode, value);
