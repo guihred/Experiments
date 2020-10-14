@@ -110,6 +110,9 @@ public final class JsonExtractor {
         // read JSON like DOM Parser
         JsonNode rootNode = objectMapper.readTree(Files.newInputStream(outFile.toPath()));
         Map<String, String> yaml2 = new LinkedHashMap<>();
+        for (String string : a) {
+            yaml2.put(string, "");
+        }
         processNode(rootNode, yaml2, 0, a);
         return yaml2;
     }
@@ -157,6 +160,13 @@ public final class JsonExtractor {
             list.addAll(collect);
         }
         return true;
+    }
+
+    public static Object toFullObject(File file) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // read JSON like DOM Parser
+        JsonNode rootNode = objectMapper.readTree(Files.newInputStream(file.toPath()));
+        return toObject(rootNode, 0, new LinkedHashMap<>());
     }
 
     public static Object toObject(File file) throws IOException {
@@ -212,7 +222,9 @@ public final class JsonExtractor {
             String value = processNode(next.getValue(), ob, depth + 1, filters);
             yaml.append(value);
             if (filters.length == 0 || Arrays.asList(filters).contains(key)) {
-                ob.merge(key, value, (o, n) -> o + "\n" + n);
+                ob.merge(key, value,
+                        (o, n) -> Stream.of(o, n).filter(StringUtils::isNotBlank)
+                        .collect(Collectors.joining("\n")));
             }
             if (iterator.hasNext()) {
                 yaml.append(",");

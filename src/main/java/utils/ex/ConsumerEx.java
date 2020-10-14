@@ -1,5 +1,7 @@
 package utils.ex;
 
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -11,8 +13,13 @@ public interface ConsumerEx<T> {
         ConsumerEx.makeConsumer(run).accept(t);
     }
 
-    static <M> void foreach(Iterable<M> collection, ConsumerEx<M> run) {
-        collection.forEach(ConsumerEx.makeConsumer(run));
+    static <M> void foreach(Collection<M> collection, ConsumerEx<M> run) {
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        collection.forEach(ConsumerEx.make(run, (m, ex) -> atomicInteger.incrementAndGet()));
+        if (atomicInteger.get() > 0) {
+            HasLogging.log(1).error("{} ->{}/{} have thrown an error", HasLogging.getCurrentLine(1),
+                    atomicInteger.get(), collection.size());
+        }
     }
 
     static <M> Consumer<M> ignore(ConsumerEx<M> run) {

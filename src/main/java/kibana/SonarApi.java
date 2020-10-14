@@ -50,28 +50,10 @@ public class SonarApi extends Application {
                 .items(CommonsFX.newFastFilter(filterField, issuesList.filtered(s -> true))).build();
         HBox.setHgrow(build, Priority.ALWAYS);
         primaryStage.setTitle("Sonar API");
-        primaryStage.setScene(new Scene(
-                new HBox(new VBox(new Text("Filter"), filterField, SimpleButtonBuilder.newButton("Update", () -> {
-                    Object sonarRequest =
-                            getFromURLJson(getApiUrl(1), ResourceFXUtils.getOutFile("json/sonarRequest.json"));
-                    List<Map<String, Object>> newJson =
-                            JsonExtractor.accessList(sonarRequest, "issues");
-                    issuesList.addAll(newJson);
-                    Integer valueOf = Integer.valueOf(JsonExtractor.access(sonarRequest, String.class, "total"));
-                    for (int i = 1; i <= valueOf / 100; i++) {
-                        Object fromURLJson = getFromURLJson(getApiUrl(i + 1),
-                                ResourceFXUtils.getOutFile("json/sonarRequest" + i + ".json"));
-                        List<Map<String, Object>> newJson2 = JsonExtractor.accessList(fromURLJson, "issues");
-                        issuesList.addAll(newJson2);
-                    }
-
-                    SimpleTableViewBuilder.addColumns(build, newJson.get(0).keySet());
-                }), SimpleButtonBuilder.newButton("Open Dataframe", () -> {
-                    TableView<Map<String, Object>> table = build;
-                    File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + ".csv");
-                    CSVUtils.saveToFile(table, ev);
-                    new SimpleDialogBuilder().bindWindow(filterField).show(DataframeExplorer.class).addStats(ev);
-                })), build)));
+        primaryStage.setScene(new Scene(new HBox(new VBox(new Text("Filter"), filterField,
+                        SimpleButtonBuilder.newButton("Update", () -> onUpdate(issuesList, build)),
+                        SimpleButtonBuilder.newButton("Open Dataframe", () -> openDataframe(filterField, build))),
+                build)));
         primaryStage.show();
     }
 
@@ -82,10 +64,33 @@ public class SonarApi extends Application {
     protected static Object getFromURLJson(String url, File outFile) throws IOException {
         Map<String, String> hashMap = new HashMap<>(GET_HEADERS);
         PhantomJSUtils.makeGet(url, hashMap, outFile);
-        return JsonExtractor.toObject(outFile);
+        return JsonExtractor.toFullObject(outFile);
     }
 
     private static String getApiUrl(int p) {
         return SONAR_API_ISSUES + "&p=" + p;
+    }
+
+    private static void onUpdate(ObservableList<Map<String, Object>> issuesList, TableView<Map<String, Object>> build)
+            throws IOException {
+        Object sonarRequest = getFromURLJson(getApiUrl(1), ResourceFXUtils.getOutFile("json/sonarRequest.json"));
+        List<Map<String, Object>> newJson = JsonExtractor.accessList(sonarRequest, "issues");
+        issuesList.addAll(newJson);
+        Integer valueOf = JsonExtractor.access(sonarRequest, Integer.class, "total");
+        for (int i = 1; i <= valueOf / 100; i++) {
+            Object fromURLJson =
+                    getFromURLJson(getApiUrl(i + 1), ResourceFXUtils.getOutFile("json/sonarRequest" + i + ".json"));
+            List<Map<String, Object>> newJson2 = JsonExtractor.accessList(fromURLJson, "issues");
+            issuesList.addAll(newJson2);
+        }
+
+        SimpleTableViewBuilder.addColumns(build, newJson.get(0).keySet());
+    }
+
+    private static void openDataframe(TextField filterField, TableView<Map<String, Object>> build) throws IOException {
+        TableView<Map<String, Object>> table = build;
+        File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + ".csv");
+        CSVUtils.saveToFile(table, ev);
+        new SimpleDialogBuilder().bindWindow(filterField).show(DataframeExplorer.class).addStats(ev);
     }
 }

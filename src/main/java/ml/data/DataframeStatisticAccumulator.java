@@ -192,7 +192,7 @@ public class DataframeStatisticAccumulator {
 
     public Set<String> getUnique() {
         if (getFormat() != String.class) {
-            return SupplierEx.get(
+            return SupplierEx.getIgnore(
                     () -> distributionMap.keySet().stream().map(Objects::toString).collect(Collectors.toSet()),
                     Collections.emptySet());
         }

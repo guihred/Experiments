@@ -80,8 +80,8 @@ public class ConsultasInvestigator extends Application {
 
     public void initialize() {
         String count = "doc_count";
-        configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count).setAllowEmpty(false);
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
+        configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count).setAllowEmpty(false);
         configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^[^\\/\\d].+");
         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
@@ -233,7 +233,7 @@ public class ConsultasInvestigator extends Application {
             return;
         }
         Map<String, String> nsInformation =
-                KibanaApi.makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + queryObjects.getQueryFile()),
+                KibanaApi.makeKibanaSearch("kibana/" + queryObjects.getQueryFile(),
                         days.getSelectionModel().getSelectedItem(), filter, queryObjects.getParams());
         List<Map<String, String>> remap = KibanaApi.remap(nsInformation, queryObjects.getGroup());
         CommonsFX.runInPlatform(() -> queryObjects.getItems().clear());

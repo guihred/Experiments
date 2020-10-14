@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
+import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
@@ -40,7 +41,7 @@ public final class TimelionApi extends KibanaApi {
                 String content = getContent(file, timelionQuery, keywords, time);
                 getFromURLJson("https://n321p000124.fast.prevnet/api/timelion/run", content, outFile);
             }
-            return JsonExtractor.toObject(outFile);
+            return JsonExtractor.toFullObject(outFile);
         });
     }
 
@@ -64,8 +65,9 @@ public final class TimelionApi extends KibanaApi {
     }
 
     private static void addToSeries(XYChart.Series<Number, Number> java, Object f) {
-        Long access2 = Long.valueOf(JsonExtractor.access(f, String.class, 0));
-        Long access3 = Long.valueOf(JsonExtractor.access(f, String.class, 1));
+        Object access = JsonExtractor.access(f, Object.class, 0);
+        Long access2 = Long.class.cast(access);
+        Integer access3 = JsonExtractor.access(f, Integer.class, 1);
         java.getData().add(new XYChart.Data<>(access2, access3));
     }
 
@@ -76,7 +78,8 @@ public final class TimelionApi extends KibanaApi {
                 .map((Object o) -> {
                     XYChart.Series<Number, Number> serie = new XYChart.Series<>();
                     serie.setName(JsonExtractor.access(o, String.class, "label"));
-                    JsonExtractor.accessList(o, "data").stream().forEach(f -> addToSeries(serie, f));
+                    List<Object> accessList = JsonExtractor.accessList(o, "data");
+                    ConsumerEx.foreach(accessList, f -> addToSeries(serie, f));
                     return serie;
                 }).collect(Collectors.toCollection(() -> series));
     }

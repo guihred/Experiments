@@ -77,29 +77,31 @@ public class KibanaApi {
         return fullScan;
     }
 
-    public static Map<String, String> makeKibanaSearch(File file, int days, Map<String, String> search,
-            String... params) {
-        return makeNewKibanaSearch(file, "", days, search, params);
-    }
-
     public static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
         return SupplierEx.getHandle(() -> {
-            File outFile = newJsonFile(query + removeExtension(file) + days);
+            File outFile = newJsonFile(removeExtension(file) + query + days);
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
-                getFromURLJson("https://n321p000124.fast.prevnet/api/console/proxy?path=_search&method=POST",
+                getFromURL(
+                        "https://n321p000124.fast.prevnet/"
+                                + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true",
                         getContent(file, query, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
     }
 
+    public static Map<String, String> makeKibanaSearch(String file, int days, Map<String, String> search,
+            String... params) {
+        return makeNewKibanaSearch(ResourceFXUtils.toFile(file), days, search, params);
+    }
+
     public static Map<String, String> makeKibanaSearch(String file, String query, String... params) {
         return makeKibanaSearch(ResourceFXUtils.toFile(file), 1, query, params);
     }
 
-    public static Map<String, String> makeNewKibanaSearch(File file, String index, int days, Map<String, String> search,
+    public static Map<String, String> makeNewKibanaSearch(File file, int days, Map<String, String> search,
             String... params) {
         return SupplierEx.get(() -> {
             String values = search.values().stream().collect(Collectors.joining());
@@ -109,12 +111,12 @@ public class KibanaApi {
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 String keywords = convertSearchKeywords(search);
                 RunnableEx.make(() -> getFromURL("https://n321p000124.fast.prevnet/"
-                                + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true" + index,
+                        + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true",
                         getContent(file, keywords, gte, lte), outFile),
                         e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
-        }, Collections.emptyMap());
+        }, new HashMap<>());
     }
 
     public static List<Map<String, String>> remap(Map<String, String> ob, String regex) {
@@ -136,17 +138,7 @@ public class KibanaApi {
                 reference = new LinkedHashMap<>();
                 Map<String, String> m = reference;
                 IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, m, k));
-                if (!partialList.isEmpty()) {
-                    for (List<String> list : partialList) {
-                        Map<String, String> newMap = new LinkedHashMap<>(reference);
-                        newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex))
-                                .findFirst().map(Entry<String, String>::getKey).orElse(null));
-                        IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, list, newMap, k));
-                        finalList.add(newMap);
-                    }
-                    partialList.clear();
-                    reference = null;
-                }
+                reference = processPartialList(regex, keys, finalList, partialList, reference);
             } else if (reference == null) {
                 partialList.add(collect2);
             } else {
@@ -225,6 +217,22 @@ public class KibanaApi {
         }
 
         linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
+    }
+
+    private static Map<String, String> processPartialList(String regex, List<String> keys, List<Map<String, String>> finalList,
+            List<List<String>> partialList, Map<String, String> reference) {
+        if (partialList.isEmpty()) {
+            return reference;
+        }
+        for (List<String> list : partialList) {
+            Map<String, String> newMap = new LinkedHashMap<>(reference);
+            newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
+                    .map(Entry<String, String>::getKey).orElse(null));
+            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, list, newMap, k));
+            finalList.add(newMap);
+        }
+        partialList.clear();
+        return null;
     }
 
     private static List<Map<String, String>> remap(Map<String, String> ob) {
