@@ -27,6 +27,7 @@ public class CSVUtils {
     private static final Logger LOGGER = HasLogging.log();
     private static final char DEFAULT_SEPARATOR = ',';
     private static final char DEFAULT_QUOTE = '"';
+    private static final char ESCAPE_CHARACTER = '\\';
     private char separators;
     private char customQuote;
     private boolean inQuotes;
@@ -53,38 +54,42 @@ public class CSVUtils {
         return inQuotes;
     }
 
-    private StringBuilder getCurrentVal(List<String> result, StringBuilder curVal, char[] chars, char ch) {
+    private StringBuilder getCurrentVal(List<String> result, StringBuilder curVal, char[] chars, int i) {
+        char previousCh = i > 0 ? chars[i - 1] : ' ';
+        char ch = chars[i];
         if (!inQuotes) {
-            if (ch != customQuote) {
-                if (ch == separators) {
-                    result.add(curVal.toString().replaceFirst("" + DEFAULT_QUOTE, ""));
-                    startCollectChar = false;
-                    return new StringBuilder();
-                }
-                if (ch != '\r') {
-                    curVal.append(ch);
+            if (ch == customQuote && previousCh != ESCAPE_CHARACTER) {
+                inQuotes = true;
+                // Fixed : allow "" in empty quote enclosed
+                if (chars[0] != customQuote || startCollectChar) {
+                    curVal.append(customQuote);
                 }
                 return curVal;
             }
-            inQuotes = true;
-            // Fixed : allow "" in empty quote enclosed
-            appendQuote(customQuote, startCollectChar, chars, curVal);
+            if (ch == separators) {
+                result.add(curVal.toString().replaceFirst("" + DEFAULT_QUOTE, ""));
+                startCollectChar = false;
+                return new StringBuilder();
+            }
+            if (ch != '\r') {
+                curVal.append(ch);
+            }
             return curVal;
         }
         startCollectChar = true;
-        if (ch != customQuote) {
-            if (ch == '\"') {
-                if (!doubleQuotesInColumn) {
-                    curVal.append(ch);
-                    doubleQuotesInColumn = true;
-                }
-                return curVal;
-            }
-            curVal.append(ch);
+        if (ch == customQuote && previousCh != ESCAPE_CHARACTER) {
+            inQuotes = false;
+            doubleQuotesInColumn = false;
             return curVal;
         }
-        inQuotes = false;
-        doubleQuotesInColumn = false;
+        if (ch == '\"') {
+            if (!doubleQuotesInColumn) {
+                curVal.append(ch);
+                doubleQuotesInColumn = true;
+            }
+            return curVal;
+        }
+        curVal.append(ch);
         return curVal;
     }
 
@@ -92,7 +97,7 @@ public class CSVUtils {
         StringBuilder curVal = new StringBuilder();
         char[] chars = cvsLine.toCharArray();
         for (int i = 0; i < chars.length && chars[i] != '\n'; i++) {
-            curVal = getCurrentVal(result, curVal, chars, chars[i]);
+            curVal = getCurrentVal(result, curVal, chars, i);
         }
         return curVal;
     }
@@ -127,9 +132,7 @@ public class CSVUtils {
     }
 
     public static CSVUtils defaultCSVUtils() {
-        char customQuote = DEFAULT_QUOTE;
-        char separators = DEFAULT_SEPARATOR;
-        return new CSVUtils(separators, customQuote);
+        return new CSVUtils(DEFAULT_SEPARATOR, DEFAULT_QUOTE);
 
     }
 
@@ -193,9 +196,7 @@ public class CSVUtils {
         if (cvsLine == null || cvsLine.isEmpty()) {
             return result;
         }
-        char customQuote = quote == ' ' ? DEFAULT_QUOTE : quote;
-        char separators = separator == ' ' ? DEFAULT_SEPARATOR : separator;
-        StringBuilder curVal = new CSVUtils(separators, customQuote).getField(cvsLine, result);
+        StringBuilder curVal = new CSVUtils(separator, quote).getField(cvsLine, result);
         result.add(curVal.toString());
         return result;
     }
@@ -208,8 +209,9 @@ public class CSVUtils {
 
         String collect2 =
                 table.getColumns().stream().map(TableColumn::getText).collect(Collectors.joining("\",\"", "\"", "\""));
-        String collect = selectedItems.stream().map(l -> table.getColumns().stream()
-                .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\",\"", "\"", "\"")))
+        String collect = selectedItems.stream()
+                .map(l -> table.getColumns().stream().map(e -> Objects.toString(e.getCellData(l), ""))
+                        .map(s -> s.replaceAll("\"", "\\\"")).collect(Collectors.joining("\",\"", "\"", "\"")))
                 .collect(Collectors.joining("\n"));
         Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
     }
@@ -238,12 +240,6 @@ public class CSVUtils {
         File source = Paths.get(csvFile).toFile();
         splitFile(source, columnIndex);
 
-    }
-
-    private static void appendQuote(char customQuote, boolean startCollectChar, char[] chars, StringBuilder curVal) {
-        if (chars[0] != '"' && customQuote == '\"' || startCollectChar) {
-            curVal.append('"');
-        }
     }
 
     private static Writer createWriter(String csvFile) {

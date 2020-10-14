@@ -239,7 +239,8 @@ public class DataframeUtils extends DataframeML {
             List<String> cols = dataframe.cols();
             lines.add(cols.stream().map(e -> "\"" + e + "\"").collect(Collectors.joining(",")));
             dataframe.forEachRow(m -> lines.add(cols.stream().map(e -> m.getOrDefault(e, ""))
-                    .map(e -> "\"" + StringSigaUtils.toStringSpecial(e) + "\"").collect(Collectors.joining(","))));
+                    .map(StringSigaUtils::toStringSpecial).map(s -> s.replaceAll("\"", "\\\""))
+                    .map(e -> "\"" + e + "\"").collect(Collectors.joining(","))));
             Files.write(outFile.toPath(), lines);
         });
 

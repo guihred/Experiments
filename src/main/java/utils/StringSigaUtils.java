@@ -66,6 +66,11 @@ public class StringSigaUtils extends StringUtils {
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
     }
 
+    public static String decode64(String line) {
+        byte[] bytes = Base64.getDecoder().decode(line);
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
     public static String decodificar(String nome) {
         return getIgnore(() -> URLDecoder.decode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
