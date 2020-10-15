@@ -42,6 +42,7 @@ import utils.ex.RunnableEx;
 public class ConsultasInvestigator extends Application {
     private static final String MDC_UID_KEYWORD = "mdc.uid.keyword";
     private static final String USER_NAME_QUERY = "http.user-name.keyword";
+    private static final String URL_QUERY = "request.keyword";
     private static final String CLIENT_IP_QUERY = "clientip.keyword";
     private static final String ACESSOS_SISTEMA_QUERY = "dtpsistema.keyword";
     private static final ImmutableMap<String, String> REPLACEMENT_MAP = ImmutableMap.<String, String>builder()
@@ -82,7 +83,7 @@ public class ConsultasInvestigator extends Application {
         String count = "doc_count";
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
         configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count).setAllowEmpty(false);
-        configureTable(ACESSOS_SISTEMA_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^[^\\/\\d].+");
+        configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^/.+").setAllowEmpty(false);
         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
         configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "value", "key")
@@ -150,7 +151,8 @@ public class ConsultasInvestigator extends Application {
             QueryObjects orElse =
                     queryList.stream().filter(e -> e.getTable() == lookup).findFirst().orElse(queryList.get(0));
             TableView<Map<String, String>> table = orElse.getTable();
-            String collect = filter.values().stream().collect(Collectors.joining());
+            String collect =
+                    filter.values().stream().map(s -> s.replaceAll(".+/(.+)", "$1")).collect(Collectors.joining());
             File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + collect + ".csv");
             CSVUtils.saveToFile(table, ev);
             new SimpleDialogBuilder().bindWindow(tabPane0).show(DataframeExplorer.class).addStats(ev);

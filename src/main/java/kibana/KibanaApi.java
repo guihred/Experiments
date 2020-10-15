@@ -48,17 +48,23 @@ public class KibanaApi {
     }
 
     public static Map<String, String> kibanaFullScan(String query) {
+        return kibanaFullScan(query, 1);
+    }
+
+    public static Map<String, String> kibanaFullScan(String query, int days) {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
         }
-        Map<String, String> policiesSearch = makeKibanaSearch("kibana/policiesQuery.json", query, "key");
-        Map<String, String> accessesSearch = makeKibanaSearch("kibana/acessosQuery.json", query, "key", "doc_count");
-        Map<String, String> threatsSearch = makeKibanaSearch("kibana/threatQuery.json", query, "key");
-        Map<String, String> destinationSearch = makeKibanaSearch("kibana/destinationQuery.json", query, "key", "value");
+        Map<String, String> policiesSearch = makeKibanaSearch("kibana/policiesQuery.json", query, days, "key");
+        Map<String, String> accessesSearch =
+                makeKibanaSearch("kibana/acessosQuery.json", query, days, "key", "doc_count");
+        Map<String, String> threatsSearch = makeKibanaSearch("kibana/threatQuery.json", query, days, "key");
+        Map<String, String> destinationSearch =
+                makeKibanaSearch("kibana/destinationQuery.json", query, days, "key", "value");
         destinationSearch.computeIfPresent("value",
                 (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
         Map<String, String> trafficSearch =
-                makeKibanaSearch("kibana/trafficQuery.json", query, "ReceiveTime", "country_code2");
+                makeKibanaSearch("kibana/trafficQuery.json", query, days, "ReceiveTime", "country_code2");
         trafficSearch.computeIfPresent("ReceiveTime",
                 (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
         Map<String, String> ipInformation = new WhoIsScanner().getIpInformation(query);
@@ -97,9 +103,10 @@ public class KibanaApi {
         return makeNewKibanaSearch(ResourceFXUtils.toFile(file), days, search, params);
     }
 
-    public static Map<String, String> makeKibanaSearch(String file, String query, String... params) {
-        return makeKibanaSearch(ResourceFXUtils.toFile(file), 1, query, params);
+    public static Map<String, String> makeKibanaSearch(String file, String query,int days, String... params) {
+        return makeKibanaSearch(ResourceFXUtils.toFile(file), days, query, params);
     }
+
 
     public static Map<String, String> makeNewKibanaSearch(File file, int days, Map<String, String> search,
             String... params) {
@@ -178,7 +185,7 @@ public class KibanaApi {
     }
 
     protected static File newJsonFile(String string) {
-        String replaceAll = string.replaceAll("[:/{}\" \n]+", "_");
+        String replaceAll = string.replaceAll("[:/{}\" /\n]+", "_");
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
     }
 

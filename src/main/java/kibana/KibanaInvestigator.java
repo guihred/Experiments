@@ -11,10 +11,7 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
@@ -31,6 +28,9 @@ public class KibanaInvestigator extends Application {
     private TextField networkAddress;
     @FXML
     private ProgressIndicator progressIndicator;
+    @FXML
+    private ComboBox<Integer> days;
+
     @FXML
     private TableView<Map<String, String>> commonTable;
     private ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
@@ -54,7 +54,8 @@ public class KibanaInvestigator extends Application {
                 CommonsFX.update(progressIndicator.progressProperty(), 0);
                 for (int i = 0; i < split.length; i++) {
                     String ip = split[i];
-                    Map<String, String> nsInformation = KibanaApi.kibanaFullScan(ip);
+                    Map<String, String> nsInformation =
+                            KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem());
                     CommonsFX.update(progressIndicator.progressProperty(), (i + 1.) / split.length);
                     CommonsFX.runInPlatform(() -> {
                         if (commonTable.getColumns().isEmpty()) {

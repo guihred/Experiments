@@ -1,23 +1,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.*?>
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.event.*?>
 <?import javafx.scene.input.*?>
+<?import javafx.geometry.*?>
 <HBox xmlns:fx="http://javafx.com/fxml">
 	<children>
-		<VBox>
+		<VBox spacing="10">
+			<padding>
+				<Insets topRightBottomLeft="10" />
+			</padding>
 			<children>
 				<Text text="Filter Results" />
 				<TextField fx:id="resultsFilter" />
+				<HBox spacing="10">
+
+					<Text text="Days" />
+					<ComboBox fx:id="days">
+						<items>
+							<FXCollections fx:factory="observableArrayList">
+								<Integer fx:value="1" />
+								<Integer fx:value="2" />
+								<Integer fx:value="3" />
+								<Integer fx:value="4" />
+								<Integer fx:value="5" />
+								<Integer fx:value="6" />
+								<Integer fx:value="7" />
+							</FXCollections>
+						</items>
+						<value>
+							<Integer fx:value="1" />
+						</value>
+					</ComboBox>
+				</HBox>
+
 				<Text text="IPs" />
 				<TextField fx:id="networkAddress" />
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
-				<ProgressIndicator fx:id="progressIndicator" VBox.vgrow="ALWAYS"
-					minHeight="40.0" minWidth="40.0" progress="0.0" />
+				<ProgressIndicator fx:id="progressIndicator"
+					VBox.vgrow="ALWAYS" minHeight="40.0" minWidth="40.0" progress="0.0" />
 			</children>
 		</VBox>
 		<TableView fx:id="commonTable" />
