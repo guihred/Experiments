@@ -55,16 +55,16 @@ public class KibanaApi {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
         }
-        Map<String, String> policiesSearch = makeKibanaSearch("kibana/policiesQuery.json", query, days, "key");
+        Map<String, String> policiesSearch = makeKibanaSearch("policiesQuery.json", query, days, "key");
         Map<String, String> accessesSearch =
-                makeKibanaSearch("kibana/acessosQuery.json", query, days, "key", "doc_count");
-        Map<String, String> threatsSearch = makeKibanaSearch("kibana/threatQuery.json", query, days, "key");
+                makeKibanaSearch("acessosQuery.json", query, days, "key", "doc_count");
+        Map<String, String> threatsSearch = makeKibanaSearch("threatQuery.json", query, days, "key");
         Map<String, String> destinationSearch =
-                makeKibanaSearch("kibana/destinationQuery.json", query, days, "key", "value");
+                makeKibanaSearch("destinationQuery.json", query, days, "key", "value");
         destinationSearch.computeIfPresent("value",
                 (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
         Map<String, String> trafficSearch =
-                makeKibanaSearch("kibana/trafficQuery.json", query, days, "ReceiveTime", "country_code2");
+                makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime", "country_code2");
         trafficSearch.computeIfPresent("ReceiveTime",
                 (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
         Map<String, String> ipInformation = new WhoIsScanner().getIpInformation(query);
@@ -103,10 +103,9 @@ public class KibanaApi {
         return makeNewKibanaSearch(ResourceFXUtils.toFile(file), days, search, params);
     }
 
-    public static Map<String, String> makeKibanaSearch(String file, String query,int days, String... params) {
-        return makeKibanaSearch(ResourceFXUtils.toFile(file), days, query, params);
+    public static Map<String, String> makeKibanaSearch(String file, String query, int days, String... params) {
+        return makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + file), days, query, params);
     }
-
 
     public static Map<String, String> makeNewKibanaSearch(File file, int days, Map<String, String> search,
             String... params) {
@@ -117,9 +116,11 @@ public class KibanaApi {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 String keywords = convertSearchKeywords(search);
-                RunnableEx.make(() -> getFromURL("https://n321p000124.fast.prevnet/"
-                        + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true",
-                        getContent(file, keywords, gte, lte), outFile),
+                RunnableEx.make(
+                        () -> getFromURL(
+                                "https://n321p000124.fast.prevnet/"
+                                        + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true",
+                                getContent(file, keywords, gte, lte), outFile),
                         e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
@@ -226,8 +227,8 @@ public class KibanaApi {
         linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
     }
 
-    private static Map<String, String> processPartialList(String regex, List<String> keys, List<Map<String, String>> finalList,
-            List<List<String>> partialList, Map<String, String> reference) {
+    private static Map<String, String> processPartialList(String regex, List<String> keys,
+            List<Map<String, String>> finalList, List<List<String>> partialList, Map<String, String> reference) {
         if (partialList.isEmpty()) {
             return reference;
         }

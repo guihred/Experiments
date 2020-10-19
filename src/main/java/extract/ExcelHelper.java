@@ -114,7 +114,7 @@ public class ExcelHelper {
     protected static Workbook getWorkbook(String selectedFile, InputStream fileInputStream) {
 
         return SupplierEx.remap(() -> selectedFile.endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
-                : new XSSFWorkbook(fileInputStream), "ERROR GETTING WORKBOOK");
+                : new XSSFWorkbook(fileInputStream), "ERROR GETTING WORKBOOK " + selectedFile);
     }
 
     protected static <T> void makeBigExcel(BiFunction<Integer, Integer, List<T>> lista,

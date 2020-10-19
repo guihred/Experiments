@@ -55,10 +55,10 @@ public class CSVUtils {
     }
 
     private StringBuilder getCurrentVal(List<String> result, StringBuilder curVal, char[] chars, int i) {
-        char previousCh = i > 0 ? chars[i - 1] : ' ';
+        char previousCh = getPreviousChar(chars, i);
         char ch = chars[i];
         if (!inQuotes) {
-            if (ch == customQuote && previousCh != ESCAPE_CHARACTER) {
+            if (isQuote(previousCh, ch)) {
                 inQuotes = true;
                 // Fixed : allow "" in empty quote enclosed
                 if (chars[0] != customQuote || startCollectChar) {
@@ -77,7 +77,7 @@ public class CSVUtils {
             return curVal;
         }
         startCollectChar = true;
-        if (ch == customQuote && previousCh != ESCAPE_CHARACTER) {
+        if (isQuote(previousCh, ch)) {
             inQuotes = false;
             doubleQuotesInColumn = false;
             return curVal;
@@ -100,6 +100,10 @@ public class CSVUtils {
             curVal = getCurrentVal(result, curVal, chars, i);
         }
         return curVal;
+    }
+
+    private boolean isQuote(char previousCh, char ch) {
+        return ch == customQuote && previousCh != ESCAPE_CHARACTER;
     }
 
     public static void appendLine(File file, Map<String, Object> rowMap) {
@@ -262,6 +266,10 @@ public class CSVUtils {
             }
         }
         return true;
+    }
+
+    private static char getPreviousChar(char[] chars, int i) {
+        return i > 0 ? chars[i - 1] : ' ';
     }
 
     private static Writer newWrite(File source, String firstLine, String string) throws IOException {

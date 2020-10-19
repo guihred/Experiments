@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
@@ -61,15 +58,17 @@ public final class ExcelService extends ExcelHelper {
 
     public static ObservableList<String> getSheetsExcel(File selectedFile) {
         ObservableList<String> list = FXCollections.observableArrayList();
-        CommonsFX.runInPlatform(() -> {
+        RunnableEx.runNewThread(() -> {
             try (FileInputStream fileInputStream = new FileInputStream(selectedFile);
                     Workbook workbook = getWorkbook(selectedFile, fileInputStream)) {
+                List<String> sheets = new ArrayList<>();
                 int numberOfSheets = workbook.getNumberOfSheets();
                 for (int i = 0; i < numberOfSheets; i++) {
-                    list.add(workbook.getSheetAt(i).getSheetName());
+                    sheets.add(workbook.getSheetAt(i).getSheetName());
                 }
+                return sheets;
             }
-        });
+        }, l -> CommonsFX.runInPlatform(() -> list.addAll(l)));
         return list;
     }
 
@@ -80,6 +79,5 @@ public final class ExcelService extends ExcelHelper {
     public static boolean isExcel(File file) {
         return file.getName().endsWith("xlsx") || file.getName().endsWith("xls");
     }
-
 
 }

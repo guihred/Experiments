@@ -52,7 +52,7 @@ public class RegressionChartExample extends Application {
 
     private void onChangeFile(String key, LineChart<Number, Number> lineChart, ComboBox<Object> build,
         String datafile) {
-        dataframe = DataframeBuilder.build("out/" + datafile);
+        dataframe = DataframeBuilder.build(ResourceFXUtils.getOutFile(datafile));
         onChangeCountry(dataframe, key, lineChart, dataframe.list(key), build.getSelectionModel().getSelectedItem());
     }
 

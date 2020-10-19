@@ -83,7 +83,7 @@ public class ConsultasInvestigator extends Application {
         String count = "doc_count";
         configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
         configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count).setAllowEmpty(false);
-        configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^/.+").setAllowEmpty(false);
+        configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^/.*").setAllowEmpty(false);
         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
         configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "value", "key")

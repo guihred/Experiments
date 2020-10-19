@@ -178,7 +178,8 @@ public class WhoIsScanner {
             Map<String, String> hashMap = new LinkedHashMap<>();
             hashMap.put("Network", getFromCache(whoIsScanner, ipInfoCache, e, "network"));
             hashMap.put("Owner", getFromCache(whoIsScanner, ipInfoCache, e, "asname", "as_owner"));
-            hashMap.put("Reverse DNS", getFromCache(whoIsScanner, ipInfoCache, e, REVERSE_DNS));
+            RunnableEx.runIf(getFromCache(whoIsScanner, ipInfoCache, e, REVERSE_DNS),
+                    s -> hashMap.put("Reverse DNS", s));
             hashMap.put("Country", getFromCache(whoIsScanner, ipInfoCache, e, "country", "ascountry"));
             return hashMap;
         }, ipColumn);

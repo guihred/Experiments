@@ -353,6 +353,17 @@ public final class JsonExtractor {
         addValue(item.getValue(), e);
     }
 
+    private static SimpleMap toMap(JsonNode rootNode) {
+        Object object = toObject(rootNode, 1);
+        if(object instanceof Map) {
+            return accessMap(object).entrySet().stream().filter(e -> e.getValue() instanceof String)
+                    .collect(Collectors.toMap(e -> StringSigaUtils.toStringSpecial(e.getKey()),
+                            e -> StringSigaUtils.toStringSpecial(e.getValue()), (u, v) -> u,
+                            SimpleMap::new));
+        }
+        return new SimpleMap();
+    }
+
     private static Object toObject(JsonNode jsonNode, int depth) {
         if (jsonNode.isValueNode()) {
             return convertObj(jsonNode);
@@ -412,10 +423,7 @@ public final class JsonExtractor {
         List<JsonNode> currentNodes = new ArrayList<>();
         currentNodes.add(rootNode);
         Map<String, String> collect =
-                accessMap(toObject(rootNode, 1)).entrySet().stream().filter(e -> e.getValue() instanceof String)
-                        .collect(Collectors.toMap(e -> StringSigaUtils.toStringSpecial(e.getKey()),
-                                e -> StringSigaUtils.toStringSpecial(e.getValue()), (u, v) -> u,
-                                SimpleMap::new));
+                toMap(rootNode);
         TreeItem<Map<String, String>> value = new TreeItem<>(collect);
         value.setGraphic(SimpleTextBuilder.newBoldText(rootNode.asText()));
         build.setRoot(value);

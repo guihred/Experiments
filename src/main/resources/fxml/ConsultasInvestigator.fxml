@@ -17,6 +17,10 @@
 	</padding>
 	<items>
 		<VBox spacing="10">
+			<padding>
+				<Insets topRightBottomLeft="10" />
+			</padding>
+
 			<children>
 				<Text text="Filter Results" />
 				<TextField fx:id="resultsFilter" />
