@@ -2,6 +2,7 @@ package pdfreader;
 
 import extract.PdfInfo;
 import extract.PdfUtils;
+import extract.SongUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -11,10 +12,11 @@ import javafx.animation.Animation.Status;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
@@ -25,6 +27,8 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -32,7 +36,9 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTimelineBuilder;
-import utils.*;
+import utils.CommonsFX;
+import utils.HasImage;
+import utils.ResourceFXUtils;
 import utils.ex.RunnableEx;
 import utils.fx.ImageTableCell;
 
@@ -64,6 +70,8 @@ public class PdfController extends Application {
     private WebView currentLines;
     @FXML
     private SplitPane splitPane;
+
+    private final ObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
 
     public void displayNextLine() {
 
@@ -124,7 +132,6 @@ public class PdfController extends Application {
             updateAll();
         }
     }
-
     public void initialize() {
         slider.valueProperty().bindBidirectional(timeline.rateProperty());
         progress.progressProperty().bind(pdfInfo.getProgress());
@@ -134,17 +141,23 @@ public class PdfController extends Application {
         imageBox.managedProperty().bind(imageBox.visibleProperty());
         imageBox.setVisible(false);
         splitPane.setDividerPosition(1, 1);
-        StringBinding createStringBinding =
-                Bindings.createStringBinding(this::getPageLines, pdfInfo.getLines(), pdfInfo.getSkipLines(),
-                        pdfInfo.lineIndexProperty());
-        InvalidationListener listener =
-                (Observable o) -> CommonsFX
-                        .runInPlatform(() -> {
-                            currentLines.getEngine().loadContent(createStringBinding.get());
-                            RunnableEx.ignore(() -> currentLines.getEngine()
-                                    .executeScript("document.getElementsByTagName(\"b\")[0].scrollIntoView(true);"));
+        StringBinding createStringBinding = Bindings.createStringBinding(this::getPageLines, pdfInfo.getLines(),
+                pdfInfo.getSkipLines(), pdfInfo.lineIndexProperty());
+        InvalidationListener listener = o -> CommonsFX.runInPlatform(() -> {
+            String content = createStringBinding.get();
+            currentLines.getEngine().loadContent(content);
+            RunnableEx.ignore(() -> currentLines.getEngine()
+                    .executeScript("document.getElementsByTagName(\"b\")[0].scrollIntoView(true);"));
 
-                        });
+        });
+
+        pdfInfo.pageIndexProperty()
+                .addListener(o -> RunnableEx.runNewThread(() -> BalabolkaApi.speak(getPageLines2(), out -> {
+                    RunnableEx.runIf(mediaPlayer.get(), SongUtils::stopAndDispose);
+                    Media sound = new Media(out.toURI().toString());
+                    mediaPlayer.set(new MediaPlayer(sound));
+                    mediaPlayer.get().play();
+                })));
         pdfInfo.getLines().addListener(listener);
         pdfInfo.lineIndexProperty().addListener(listener);
         pdfInfo.getSkipLines().addListener(listener);
@@ -159,6 +172,13 @@ public class PdfController extends Application {
         }).openFileAction(event);
         updateAll();
 
+    }
+
+    public void saveAsText(ActionEvent e) {
+        new FileChooserBuilder().title("Save As Text")
+                .initialFilename(pdfInfo.getFile().getName().replaceAll("\\.pdf", ".txt"))
+                .extensions("Text", "*.txt").onSelect(s -> RunnableEx.runNewThread(() -> PdfUtils.readText(pdfInfo, s)))
+                .saveFileAction(e);
     }
 
     @Override
@@ -191,9 +211,14 @@ public class PdfController extends Application {
         ObservableList<String> lines = pdfInfo.getLines();
         String string = lines.isEmpty() ? "" : lines.get((pdfInfo.getLineIndex() - 1 + lines.size()) % lines.size());
 
-        return lines.stream().filter(StringUtils::isNotBlank)
-                .filter(t -> !pdfInfo.getSkipLines().contains(t))
+        return lines.stream().filter(StringUtils::isNotBlank).filter(t -> !pdfInfo.getSkipLines().contains(t))
                 .map(e -> "<div>" + (Objects.equals(e, string) ? "<b>" + e + "</b>" : e) + "</div>")
+                .collect(Collectors.joining("\n"));
+    }
+
+    private String getPageLines2() {
+        ObservableList<String> lines = pdfInfo.getLines();
+        return lines.stream().filter(StringUtils::isNotBlank).filter(t -> !pdfInfo.getSkipLines().contains(t))
                 .collect(Collectors.joining("\n"));
     }
 

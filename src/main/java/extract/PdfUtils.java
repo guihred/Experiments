@@ -63,7 +63,6 @@ public final class PdfUtils {
         }
     }
 
-
     public static String[] getAllLines(File file) {
         return SupplierEx.remap(() -> {
             try (RandomAccessFile source = new RandomAccessFile(file, "r");
@@ -90,10 +89,13 @@ public final class PdfUtils {
     }
 
     public static PdfInfo readText(File file1) throws IOException {
-        PrintStream out =
-                new PrintStream(ResourceFXUtils.getOutFile("txt/" + file1.getName().replaceAll("\\.pdf", ".txt")),
-                StandardCharsets.UTF_8.displayName());
-        return readFile(new PdfInfo(), file1, out);
+        File outFile = ResourceFXUtils.getOutFile("txt/" + file1.getName().replaceAll("\\.pdf", ".txt"));
+        return readText(new PdfInfo(file1), outFile);
+    }
+
+    public static PdfInfo readText(PdfInfo fileInfo, File outFile) throws IOException {
+        PrintStream out = new PrintStream(outFile, StandardCharsets.UTF_8.displayName());
+        return readFile(fileInfo, fileInfo.getFile(), out);
     }
 
     public static void runOnFile(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,
@@ -222,6 +224,5 @@ public final class PdfUtils {
             }
         }
     }
-
 
 }

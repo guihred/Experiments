@@ -2,6 +2,7 @@ package utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +16,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -128,6 +130,25 @@ public final class ConsoleUtils {
         } catch (Exception e) {
             LOGGER.error("", e);
         }
+        return execution;
+    }
+
+    public static ObservableList<String> executeInConsoleInfo(final String cmd,
+            
+            
+            InputStream inputStream) {
+        ObservableList<String> execution = FXCollections.observableArrayList();
+        LOGGER.info(EXECUTING, cmd);
+        PROCESSES.put(cmd, false);
+        RunnableEx.run(() -> {
+            Process p = newProcess(cmd);
+            IOUtils.copy(inputStream, p.getOutputStream());
+            LOGGER.info("INPUT WRITTEN");
+            p.getOutputStream().close();
+            p.waitFor();
+            PROCESSES.put(cmd, true);
+            logProcesses();
+        });
         return execution;
     }
 

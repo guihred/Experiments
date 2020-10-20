@@ -29,6 +29,10 @@ public class PdfInfo {
     public PdfInfo() {
     }
 
+    public PdfInfo(File pdfFile) {
+        file = pdfFile;
+    }
+
     public PdfInfo(String pdfFile) {
         file = new File(pdfFile);
     }

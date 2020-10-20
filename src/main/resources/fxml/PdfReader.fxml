@@ -43,5 +43,6 @@
 		<Button alignment="CENTER" text="Next _Line" onAction="#displayNextLine" />
 		<Button alignment="CENTER" text="P_revious Page" onAction="#displayPreviousPage" />
 		<Button alignment="CENTER" text="_Next Page" onAction="#displayNextPage" />
+		<Button alignment="CENTER" text="Save As _Text" onAction="#saveAsText" />
 	</FlowPane>
 </VBox>
