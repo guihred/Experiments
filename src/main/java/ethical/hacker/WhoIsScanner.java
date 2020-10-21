@@ -232,7 +232,7 @@ public class WhoIsScanner {
 
     public static String reorderAndLog(DataframeML dataframe, String numberField) {
         DataframeUtils.sort(dataframe, numberField);
-        List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, "Rede", numberField);
+        List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, "Network", numberField);
         createSeries.forEach(s2 -> LOG.info("{}", s2));
         List<Entry<Object, Double>> series = DataframeUtils.createSeries(dataframe, "Owner", numberField);
         series.forEach(s1 -> LOG.info("{}", s1));
