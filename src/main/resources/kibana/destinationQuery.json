@@ -4,7 +4,7 @@
     "2": {
       "terms": {
         "field": "DestinationIP",
-        "size": 5,
+        "size": 10,
         "order": {
           "1": "desc"
         }
@@ -18,7 +18,7 @@
         "3": {
           "terms": {
             "field": "DestinationIP",
-            "size": 5,
+            "size": 10,
             "order": {
               "1": "desc"
             }

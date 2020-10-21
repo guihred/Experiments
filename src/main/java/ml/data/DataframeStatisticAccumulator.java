@@ -247,7 +247,7 @@ public class DataframeStatisticAccumulator {
             return getByProportion(d, countMap);
         }
         if (!dataframe.get(header).isEmpty()) {
-            return SupplierEx.getIgnore(
+            return SupplierEx.get(
                     () -> dataframe.get(header).stream().sorted().skip((long) (d * count)).findFirst().orElse(null));
         }
         List<Number> array = SupplierEx.getIgnore(

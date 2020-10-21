@@ -27,6 +27,9 @@ import utils.ex.SupplierEx;
 
 public class KibanaApi {
 
+    private static final String ELASTICSEARCH_MSEARCH_URL =
+            "https://n321p000124.fast.prevnet/elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true";
+
     private static final Logger LOG = HasLogging.log();
 
     private static final Map<String, String> GET_HEADERS = ImmutableMap.<String, String>builder()
@@ -56,11 +59,9 @@ public class KibanaApi {
             return Collections.emptyMap();
         }
         Map<String, String> policiesSearch = makeKibanaSearch("policiesQuery.json", query, days, "key");
-        Map<String, String> accessesSearch =
-                makeKibanaSearch("acessosQuery.json", query, days, "key", "doc_count");
+        Map<String, String> accessesSearch = makeKibanaSearch("acessosQuery.json", query, days, "key", "doc_count");
         Map<String, String> threatsSearch = makeKibanaSearch("threatQuery.json", query, days, "key");
-        Map<String, String> destinationSearch =
-                makeKibanaSearch("destinationQuery.json", query, days, "key", "value");
+        Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", query, days, "key", "value");
         destinationSearch.computeIfPresent("value",
                 (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
         Map<String, String> trafficSearch =
@@ -89,10 +90,7 @@ public class KibanaApi {
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
-                getFromURL(
-                        "https://n321p000124.fast.prevnet/"
-                                + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true",
-                        getContent(file, query, gte, lte), outFile);
+                getFromURL(ELASTICSEARCH_MSEARCH_URL, getContent(file, query, gte, lte), outFile);
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
@@ -116,12 +114,10 @@ public class KibanaApi {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 String keywords = convertSearchKeywords(search);
-                RunnableEx.make(
-                        () -> getFromURL(
-                                "https://n321p000124.fast.prevnet/"
-                                        + "elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true",
-                                getContent(file, keywords, gte, lte), outFile),
-                        e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
+                RunnableEx
+                        .make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, getContent(file, keywords, gte, lte),
+                                outFile), e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage()))
+                        .run();
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>());

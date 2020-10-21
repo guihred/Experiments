@@ -5,10 +5,7 @@ import static utils.ex.FunctionEx.mapIf;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -25,16 +22,17 @@ public class PdfInfo {
     private final ObservableSet<String> skipLines = FXCollections.observableSet();
     private final ObservableList<String> words = FXCollections.observableArrayList();
     private final IntegerProperty pageIndex = new SimpleIntegerProperty(0);
+    private final StringProperty titleName = new SimpleStringProperty("");
 
     public PdfInfo() {
     }
 
     public PdfInfo(File pdfFile) {
-        file = pdfFile;
+        setFile(pdfFile);
     }
 
     public PdfInfo(String pdfFile) {
-        file = new File(pdfFile);
+        setFile(new File(pdfFile));
     }
 
     public File getFile() {
@@ -107,12 +105,12 @@ public class PdfInfo {
 
     public void setFile(File file) {
         this.file = file;
+        titleName.set(file.getName());
     }
 
     public void setImages(Map<Integer, List<PdfImage>> images) {
         this.images = images;
     }
-
     public void setIndex(int index) {
         this.index = index;
     }
@@ -131,6 +129,10 @@ public class PdfInfo {
 
     public void setProgress(double value) {
         progress.set(value);
+    }
+
+    public StringProperty titleNameProperty() {
+        return titleName;
     }
 
     @Override

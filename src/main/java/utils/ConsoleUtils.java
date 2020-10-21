@@ -46,13 +46,13 @@ public final class ConsoleUtils {
     }
 
     public static DoubleProperty defineProgress(final String totalRegex, final String progressRegex,
-        final Map<String, ObservableList<String>> executeInConsoleAsync, final ToDoubleFunction<String> function) {
+            final Map<String, ObservableList<String>> executeInConsoleAsync, final ToDoubleFunction<String> function) {
         return defineProgress(totalRegex, progressRegex, executeInConsoleAsync, function, function);
     }
 
     public static DoubleProperty defineProgress(final String totalRegex, final String progressRegex,
-        final Map<String, ObservableList<String>> executeInConsoleAsync, final ToDoubleFunction<String> function,
-        final ToDoubleFunction<String> function2) {
+            final Map<String, ObservableList<String>> executeInConsoleAsync, final ToDoubleFunction<String> function,
+            final ToDoubleFunction<String> function2) {
         SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
         SimpleDoubleProperty total = new SimpleDoubleProperty(100);
         executeInConsoleAsync.get(totalRegex).addListener((Change<? extends String> c) -> {
@@ -78,19 +78,19 @@ public final class ConsoleUtils {
         Map<String, String> result = new HashMap<>();
         LOGGER.debug(EXECUTING, cmd);
         Process exec = newProcess(cmd);
-        try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
+        try (BufferedReader in =
+                new BufferedReader(new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in.readLine()) != null) {
                 LOGGER.debug(line);
                 String line1 = line;
-                result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey())).collect(
-                    Collectors.toMap(Entry<String, String>::getKey, e -> line1.replaceAll(e.getKey(), e.getValue()))));
+                result.putAll(responses.entrySet().stream().filter(r -> line1.matches(r.getKey())).collect(Collectors
+                        .toMap(Entry<String, String>::getKey, e -> line1.replaceAll(e.getKey(), e.getValue()))));
 
             }
             exec.waitFor();
             PROCESSES.put(cmd, true);
-			logProcesses();
+            logProcesses();
 
         } catch (Exception e) {
             LOGGER.error("", e);
@@ -98,8 +98,8 @@ public final class ConsoleUtils {
         return result;
     }
 
-	public static Map<String, ObservableList<String>> executeInConsoleAsync(final String cmd,
-        final Map<String, String> responses) {
+    public static Map<String, ObservableList<String>> executeInConsoleAsync(final String cmd,
+            final Map<String, String> responses) {
         Map<String, ObservableList<String>> result = new HashMap<>();
         result.put(ACTIVE_FLAG, FXCollections.observableArrayList());
         responses.forEach((reg, li) -> result.put(reg, FXCollections.observableArrayList()));
@@ -113,19 +113,19 @@ public final class ConsoleUtils {
 
         Process p = newProcess(cmd);
 
-        try (BufferedReader in2 = new BufferedReader(
-            new InputStreamReader(p.getInputStream(), StandardCharsets.ISO_8859_1))) {
+        try (BufferedReader in2 =
+                new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.ISO_8859_1))) {
             String line;
             while ((line = in2.readLine()) != null) {
-                String fixEncoding = StringSigaUtils.fixEncoding(line, StandardCharsets.ISO_8859_1,
-                    Charset.forName("IBM00858"));
+                String fixEncoding =
+                        StringSigaUtils.fixEncoding(line, StandardCharsets.ISO_8859_1, Charset.forName("IBM00858"));
                 LOGGER.debug("{}", fixEncoding);
                 execution.add(fixEncoding);
             }
 
             p.waitFor();
             PROCESSES.put(cmd, true);
-			logProcesses();
+            logProcesses();
 
         } catch (Exception e) {
             LOGGER.error("", e);
@@ -133,23 +133,19 @@ public final class ConsoleUtils {
         return execution;
     }
 
-    public static ObservableList<String> executeInConsoleInfo(final String cmd,
-            
-            
-            InputStream inputStream) {
-        ObservableList<String> execution = FXCollections.observableArrayList();
+    public static Integer executeInConsoleInfo(final String cmd, InputStream inputStream) {
         LOGGER.info(EXECUTING, cmd);
         PROCESSES.put(cmd, false);
-        RunnableEx.run(() -> {
+        return SupplierEx.get(() -> {
             Process p = newProcess(cmd);
             IOUtils.copy(inputStream, p.getOutputStream());
             LOGGER.info("INPUT WRITTEN");
             p.getOutputStream().close();
-            p.waitFor();
+            int waitFor = p.waitFor();
             PROCESSES.put(cmd, true);
             logProcesses();
+            return waitFor;
         });
-        return execution;
     }
 
     public static ObservableList<String> executeInConsoleInfoAsync(final String cmd, final Runnable... onFinish) {
@@ -159,8 +155,8 @@ public final class ConsoleUtils {
         RunnableEx.runNewThread(() -> {
             RunnableEx.sleepSeconds(0.1);
             Process p = newProcess(cmd);
-            try (BufferedReader in2 = new BufferedReader(
-                new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
+            try (BufferedReader in2 =
+                    new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in2.readLine()) != null) {
                     LOGGER.debug("{}", line);
@@ -171,7 +167,7 @@ public final class ConsoleUtils {
                     onFinish[i].run();
                 }
                 PROCESSES.put(cmd, true);
-				logProcesses();
+                logProcesses();
 
             } catch (Exception e) {
                 LOGGER.error("", e);
@@ -189,7 +185,7 @@ public final class ConsoleUtils {
         while (PROCESSES.values().stream().anyMatch(e -> !e)) {
             try {
                 List<String> processes = PROCESSES.entrySet().stream().filter(e -> !e.getValue())
-                    .map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
+                        .map(Entry<String, Boolean>::getKey).collect(Collectors.toList());
                 String formated = processes.stream().collect(Collectors.joining("\n", "\n", ""));
                 LOGGER.debug("Running {} processes {}", processes.size(), formated);
                 RunnableEx.sleepSeconds(5);
@@ -205,16 +201,16 @@ public final class ConsoleUtils {
     }
 
     private static void logProcesses() {
-		long count = PROCESSES.values().stream().filter(e -> e).count();
-		LOGGER.info("{}/{} Completed ", count, PROCESSES.size());
-	}
+        long count = PROCESSES.values().stream().filter(e -> e).count();
+        LOGGER.info("{}/{} Completed ", count, PROCESSES.size());
+    }
 
     private static Process makeProcessAndWait(final String cmd, String regex) throws IOException {
         List<String> response = Collections.synchronizedList(new ArrayList<>(Arrays.asList(regex)));
         Process exec = Runtime.getRuntime().exec(cmd);
         RunnableEx.runNewThread(() -> {
-            try (BufferedReader in = new BufferedReader(
-                new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
+            try (BufferedReader in =
+                    new BufferedReader(new InputStreamReader(exec.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in.readLine()) != null) {
                     LOGGER.debug(line);
@@ -244,24 +240,24 @@ public final class ConsoleUtils {
     }
 
     private static void updateRegexMapValues(final String cmd, final Map<String, String> responses,
-        final Map<String, ObservableList<String>> result) {
+            final Map<String, ObservableList<String>> result) {
         LOGGER.info(EXECUTING, cmd);
         Process exec = newProcess(cmd);
-        try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8))) {
+        try (BufferedReader in =
+                new BufferedReader(new InputStreamReader(exec.getErrorStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = in.readLine()) != null) {
                 LOGGER.debug(line);
                 String line1 = line;
-                Map<String, String> regMap = responses.entrySet().stream().filter(r -> line1.matches(r.getKey()))
-                    .collect(Collectors.toMap(Entry<String, String>::getKey,
-                        e -> line1.replaceAll(e.getKey(), e.getValue())));
+                Map<String, String> regMap =
+                        responses.entrySet().stream().filter(r -> line1.matches(r.getKey())).collect(Collectors
+                                .toMap(Entry<String, String>::getKey, e -> line1.replaceAll(e.getKey(), e.getValue())));
                 regMap.forEach((reg, li) -> result.get(reg).add(li));
             }
             exec.waitFor();
             result.get(ACTIVE_FLAG).add("");
             PROCESSES.put(cmd, true);
-			logProcesses();
+            logProcesses();
 
         } catch (Exception e) {
             LOGGER.error("", e);

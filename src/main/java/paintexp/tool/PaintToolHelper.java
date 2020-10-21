@@ -1,5 +1,6 @@
 package paintexp.tool;
 
+import static utils.CommonsFX.bindBidirectional;
 import static utils.ResourceFXUtils.convertToURL;
 
 import java.io.File;
@@ -153,10 +154,7 @@ public final class PaintToolHelper {
         vBox.getChildren().add(comboBox);
     }
 
-    private static <T> void bindBidirectional(Property<T> prop1, Property<T> prop2) {
-        prop1.addListener((ob, old, val) -> prop2.setValue(val));
-        prop2.addListener((ob, old, val) -> prop1.setValue(val));
-    }
+
 
     private static Image gatherImages(List<File> files) {
         List<Image> collect =

@@ -2,6 +2,8 @@ package ml.data;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -39,6 +41,18 @@ public class BaseDataframe {
         filters = new LinkedHashMap<>(frame.filters);
     }
 
+    public <T extends Comparable<?>> void addCols(List<String> cols, Class<T> classes) {
+        for (String string : cols) {
+            dataframe.put(string, new ArrayList<>());
+            formatMap.put(string, classes);
+        }
+    }
+
+    public <T extends Comparable<?>> void addCols(String string, Class<T> classes) {
+        dataframe.put(string, new ArrayList<>());
+        formatMap.put(string, classes);
+    }
+
     public List<String> cols() {
         return dataframe.keySet().stream().collect(Collectors.toList());
     }
@@ -53,6 +67,16 @@ public class BaseDataframe {
         }
         BaseDataframe other = (BaseDataframe) obj;
         return Objects.equals(file, other.file);
+    }
+
+    public void forEach(BiConsumer<String, List<Object>> action) {
+        dataframe.forEach(action);
+    }
+
+    public void forEachRow(Consumer<Map<String, Object>> foreach) {
+        for (int i = 0; i < size; i++) {
+            foreach.accept(rowMap(i));
+        }
     }
 
     public Object getAt(String header, int i) {
@@ -95,5 +119,16 @@ public class BaseDataframe {
 
     public Class<? extends Comparable<?>> putFormat(String header, Class<? extends Comparable<?>> value) {
         return formatMap.put(header, value);
+    }
+
+    public void removeCol(String... cols) {
+        for (String string : cols) {
+            dataframe.remove(string);
+            formatMap.remove(string);
+        }
+    }
+
+    public Map<String, Object> rowMap(int i) {
+        return DataframeStatisticAccumulator.rowMap(dataframe, i);
     }
 }

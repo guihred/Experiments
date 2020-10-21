@@ -44,6 +44,7 @@ public class WhoIsScanner {
     private String name = "";
     private String waitStr = "";
     private final Map<String, String> cookies = new HashMap<>();
+    private final Map<String, String> cache = new HashMap<>();
     private String[] subFolder = new String[] {};
 
     private File print;
@@ -91,6 +92,10 @@ public class WhoIsScanner {
     public WhoIsScanner name(String url1) {
         name = url1;
         return this;
+    }
+
+    public String reverseDNS(String ip) {
+        return cache.computeIfAbsent(ip, i -> getReverseDNS(i));
     }
 
     public ObservableList<Map<String, String>> scanIps(String ip) {
@@ -197,15 +202,13 @@ public class WhoIsScanner {
     public static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String ip) {
         if (ip.matches("^10\\..+")) {
             Map<String, String> hashMap = new HashMap<>();
-            InetAddress ia = SupplierEx.get(() -> toInetAddress(ip));
-            hashMap.put(REVERSE_DNS, ia.getCanonicalHostName());
+            hashMap.put(REVERSE_DNS, whoIsScanner.reverseDNS(ip));
             return hashMap;
         }
         Map<String, String> first =
                 SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(ip), () -> whoIsScanner.whoIsScan(ip));
         if (ip.matches("^200\\.152\\..+")) {
-            InetAddress ia = SupplierEx.get(() -> toInetAddress(ip));
-            first.put(REVERSE_DNS, ia.getCanonicalHostName());
+            first.put(REVERSE_DNS, whoIsScanner.reverseDNS(ip));
         }
         return first;
     }
@@ -222,43 +225,10 @@ public class WhoIsScanner {
         return numberCols.get(numberCols.size() - 1);
     }
 
-    public static String getReverseDNS(String ip) throws UnknownHostException {
-        InetAddress ia = toInetAddress(ip);
-        return ia.getCanonicalHostName();
-
+    public static String getReverseDNS(String ip) {
+        return SupplierEx.get(() -> toInetAddress(ip).getCanonicalHostName());
     }
 
-    public static void main(String[] args) {
-        List<String> asList = Arrays.asList("www.previc.gov.br", "smtp2.dataprev.gov.br", "pius.previc.gov.br",
-                "owa.dataprev.gov.br", "ouvidoria.previdencia.gov.br", "mx71.registrarh-saude.dataprev.gov.br",
-                "mx02.registrarh-saude.dataprev.gov.br", "mx01.registrarh-saude.dataprev.gov.br", "mx.inss.gov.br",
-                "mx.dataprev.gov.br", "mailint.dataprev.gov.br", "cioba.previdencia.gov.br",
-                "cgeridinss.dataprev.gov.br", "agendaconselho.dataprev.gov.br", "cgeridinss.dataprev.gov.br",
-                "chat.dataprev.gov.br", "cioba.previdencia.gov.br", "consultaprocessos.inss.gov.br",
-                "correio.dataprev.gov.br", "correio.inss.gov.br", "correiov2.dataprev.gov.br", "correiov2.inss.gov.br",
-                "correiov3.inss.gov.br", "correiovs.dataprev.gov.br", "cplp.dataprev.gov.br", "databox.dataprev.gov.br",
-                "dtp-gerid.dataprev.gov.br", "erecursos.previdencia.gov.br", "estatisticasweb.dataprev.gov.br",
-                "estatisticaswebatualiza.dataprev.gov.br", "eu.dataprev.gov.br", "exemplo20080624.previdencia.gov.br",
-                "treina-sei.inss.gov.br", "geridmps.dataprev.gov.br", "geridprevic.dataprev.gov.br",
-                "hagendaconselho.dataprev.gov.br", "hdtp.gerid.dataprev.gov.br", "hempregabrasil.mte.gov.br",
-                "homo-sei.inss.gov.br", "hportal.inss.gov.br", "hprevic.gerid.dataprev.gov.br", "hu.dataprev.gov.br",
-                "imap.dataprev.gov.br", "m.dataprev.gov.br", "mailint.dataprev.gov.br", "mx.dataprev.gov.br",
-                "mx.inss.gov.br", "mx01.registrarh-saude.dataprev.gov.br", "ouvidoria.previdencia.gov.br",
-                "owa.dataprev.gov.br", "pesquisas.dataprev.gov.br", "pius.previc.gov.br", "portal.dataprev.gov.br",
-                "previc.gerid.dataprev.gov.br", "projetos.dataprev.gov.br", "sf.dataprev.gov.br",
-                "saa2.previdencia.gov.br", "sdtp.gerid.dataprev.gov.br", "sei.inss.gov.br", "sirc.gov.br",
-                "smtp2.dataprev.gov.br", "waw-erecursos", "www-dtpprojetos.prevnet", "www-gerdic", "www.inss.gov.br",
-                "www.previc.gov.br", "www.sirc.gov.br", "wwwhom.inss.gov.br").stream().distinct()
-                .collect(Collectors.toList());
-        WhoIsScanner whoIsScanner = new WhoIsScanner();
-        for (int i = 0; i < asList.size(); i++) {
-            String url = asList.get(i);
-            LOG.info("SCANNING {} -- {}/{}", url, i, asList.size());
-            RunnableEx.run(() -> whoIsScanner.name(url).waitStr("Please wait...")
-                    .subFolder("#gradeA", "#warningBox", "ratingTitle", "reportTitle").evaluateURL(
-                            "https://www.ssllabs.com/ssltest/analyze.html?d=" + url + "&ignoreMismatch=on&latest"));
-        }
-    }
 
     public static String reorderAndLog(DataframeML dataframe, String numberField) {
         DataframeUtils.sort(dataframe, numberField);

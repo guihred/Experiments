@@ -1,7 +1,10 @@
 package ml.data;
 
 import java.util.*;
-import java.util.function.*;
+import java.util.function.DoubleUnaryOperator;
+import java.util.function.IntConsumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,21 +43,9 @@ public class DataframeML extends BaseDataframe {
         size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
     }
 
-    public <T extends Comparable<?>> void addCols(List<String> cols, Class<T> classes) {
-        for (String string : cols) {
-            dataframe.put(string, new ArrayList<>());
-            formatMap.put(string, classes);
-        }
-    }
-
-    public <T extends Comparable<?>> void addCols(String string, Class<T> classes) {
-        dataframe.put(string, new ArrayList<>());
-        formatMap.put(string, classes);
-    }
-
     public void apply(String header, DoubleUnaryOperator mapper) {
         dataframe.put(header, dataframe.get(header).stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
-            .map(mapper).boxed().collect(Collectors.toList()));
+                .map(mapper).boxed().collect(Collectors.toList()));
         formatMap.put(header, Double.class);
     }
 
@@ -100,15 +91,7 @@ public class DataframeML extends BaseDataframe {
         return this;
     }
 
-    public void forEach(BiConsumer<String, List<Object>> action) {
-        dataframe.forEach(action);
-    }
 
-    public void forEachRow(Consumer<Map<String, Object>> foreach) {
-        for (int i = 0; i < size; i++) {
-            foreach.accept(rowMap(i));
-        }
-    }
 
     public Set<Object> freeCategory(String header) {
         return new HashSet<>(dataframe.get(header));
@@ -116,8 +99,8 @@ public class DataframeML extends BaseDataframe {
 
     public Map<String, Long> histogram(String header) {
         List<Object> list = dataframe.get(header);
-        List<String> stringList = list.stream().filter(Objects::nonNull).map(Objects::toString)
-            .collect(Collectors.toList());
+        List<String> stringList =
+                list.stream().filter(Objects::nonNull).map(Objects::toString).collect(Collectors.toList());
         return stringList.parallelStream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
     }
 
@@ -127,9 +110,9 @@ public class DataframeML extends BaseDataframe {
         if (list != null || header == null) {
             return list;
         }
-        return (List<T>) dataframe.keySet().stream()
-                .filter(Objects::nonNull).filter(e -> Stream.of(header.split(" ")).allMatch(e::contains)).findFirst()
-                .map(dataframe::get).orElse(null);
+        return (List<T>) dataframe.keySet().stream().filter(Objects::nonNull)
+                .filter(e -> Stream.of(header.split(" ")).allMatch(e::contains)).findFirst().map(dataframe::get)
+                .orElse(null);
     }
 
     public void map(String header, UnaryOperator<Object> mapper) {
@@ -145,22 +128,12 @@ public class DataframeML extends BaseDataframe {
         }
     }
 
-    public void removeCol(String... cols) {
-        for (String string : cols) {
-            dataframe.remove(string);
-            formatMap.remove(string);
-        }
-    }
-
-    public Map<String, Object> rowMap(int i) {
-        return DataframeStatisticAccumulator.rowMap(dataframe, i);
-    }
 
     public DoubleSummaryStatistics summary(String header) {
         if (!dataframe.containsKey(header)) {
             return new DoubleSummaryStatistics();
         }
         return list(header).stream().filter(Objects::nonNull).map(Number.class::cast).mapToDouble(Number::doubleValue)
-            .summaryStatistics();
+                .summaryStatistics();
     }
 }

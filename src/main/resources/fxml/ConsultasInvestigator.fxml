@@ -55,7 +55,7 @@
 						<Button onAction="#onOpenDataframe" text="_Open Dataframe" />
 					</VBox>
 					<ProgressIndicator fx:id="progress" HBox.hgrow="ALWAYS"
-						minHeight="40.0" minWidth="40.0" progress="0.0" />
+						minHeight="40.0" minWidth="40.0"  />
 				</HBox>
 			</children>
 		</VBox>

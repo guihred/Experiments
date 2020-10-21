@@ -3,7 +3,6 @@ package kibana;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
-import ethical.hacker.TracerouteScanner;
 import extract.ExcelService;
 import java.io.File;
 import java.util.Map;
@@ -13,7 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
+import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
@@ -25,7 +24,7 @@ public class KibanaInvestigator extends Application {
     @FXML
     private TextField resultsFilter;
     @FXML
-    private TextField networkAddress;
+    private ListView<String> filterList;
     @FXML
     private ProgressIndicator progressIndicator;
     @FXML
@@ -42,30 +41,28 @@ public class KibanaInvestigator extends Application {
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         SimpleTableViewBuilder.of(commonTable).copiable().savable();
-        networkAddress.setText(TracerouteScanner.IP_TO_SCAN);
+        SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable().pasteable(s -> s);
     }
 
     public void onActionKibanaScan() {
         items.clear();
         RunnableEx.runNewThread(() -> {
-            String text = networkAddress.getText();
-            if (StringUtils.isNotBlank(text)) {
-                String[] split = text.split("[,\n\t; ]+");
-                CommonsFX.update(progressIndicator.progressProperty(), 0);
-                for (int i = 0; i < split.length; i++) {
-                    String ip = split[i];
-                    Map<String, String> nsInformation =
-                            KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem());
-                    CommonsFX.update(progressIndicator.progressProperty(), (i + 1.) / split.length);
-                    CommonsFX.runInPlatform(() -> {
-                        if (commonTable.getColumns().isEmpty()) {
-                            SimpleTableViewBuilder.addColumns(commonTable, nsInformation.keySet());
-                        }
-                        items.add(nsInformation);
-                    });
-                }
-                CommonsFX.update(progressIndicator.progressProperty(), 1);
+            CommonsFX.update(progressIndicator.progressProperty(), 0);
+            ObservableList<String> items2 = filterList.getItems();
+            for (int i = 0; i < items2.size(); i++) {
+                String ip = items2.get(i);
+                Map<String, String> nsInformation =
+                        KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem());
+                CommonsFX.update(progressIndicator.progressProperty(), (i + 1.) / items2.size());
+                CommonsFX.runInPlatform(() -> {
+                    if (commonTable.getColumns().isEmpty()) {
+                        SimpleTableViewBuilder.addColumns(commonTable, nsInformation.keySet());
+                    }
+                    items.add(nsInformation);
+                });
             }
+            CommonsFX.update(progressIndicator.progressProperty(), 1);
+
         });
     }
 

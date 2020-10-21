@@ -3,6 +3,7 @@ package pdfreader;
 import extract.PdfInfo;
 import extract.PdfUtils;
 import extract.SongUtils;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -20,8 +21,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
@@ -59,9 +62,10 @@ public class PdfController extends Application {
     private Text currentPage;
     @FXML
     private Pane imageBox;
-    private PdfInfo pdfInfo = new PdfInfo(PDF_FILE);
+    private final PdfInfo pdfInfo = new PdfInfo(PDF_FILE);
     private final ObservableList<HasImage> currentImages =
             FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
+    private final ObservableMap<Integer, File> pageSounds = FXCollections.observableHashMap();
 
     private Timeline timeline =
             new SimpleTimelineBuilder().addKeyFrame(Duration.millis(WORD_DISPLAY_PERIOD), time -> displayNextWord())
@@ -71,6 +75,8 @@ public class PdfController extends Application {
     @FXML
     private SplitPane splitPane;
 
+    @FXML
+    private CheckBox playSound;
     private final ObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
 
     public void displayNextLine() {
@@ -102,13 +108,8 @@ public class PdfController extends Application {
         if (pdfInfo.getIndex() >= pdfInfo.getWords().size()) {
             if (pdfInfo.getLineIndex() >= pdfInfo.getLines().size()) {
 
-                List<String> linesNextPage = pdfInfo.getPages().get(pdfInfo.getPageIndex());
-                if (!pdfInfo.getLines().isEmpty()) {
-                    List<String> repeated = linesNextPage.stream().filter(l -> pdfInfo.getLines().contains(l))
-                            .collect(Collectors.toList());
-                    pdfInfo.getSkipLines().addAll(repeated);
-
-                }
+                int pageIndex = pdfInfo.getPageIndex();
+                List<String> linesNextPage = getLinesByPageIndex(pageIndex);
                 pdfInfo.getLines().setAll(linesNextPage);
                 updateImages();
                 pdfInfo.setPageIndex(pdfInfo.getPageIndex() + 1);
@@ -132,6 +133,7 @@ public class PdfController extends Application {
             updateAll();
         }
     }
+
     public void initialize() {
         slider.valueProperty().bindBidirectional(timeline.rateProperty());
         progress.progressProperty().bind(pdfInfo.getProgress());
@@ -141,8 +143,8 @@ public class PdfController extends Application {
         imageBox.managedProperty().bind(imageBox.visibleProperty());
         imageBox.setVisible(false);
         splitPane.setDividerPosition(1, 1);
-        StringBinding createStringBinding = Bindings.createStringBinding(this::getPageLines, pdfInfo.getLines(),
-                pdfInfo.getSkipLines(), pdfInfo.lineIndexProperty());
+        StringBinding createStringBinding = Bindings.createStringBinding(() -> getPageLines(pdfInfo.getLines()),
+                pdfInfo.getLines(), pdfInfo.getSkipLines(), pdfInfo.lineIndexProperty());
         InvalidationListener listener = o -> CommonsFX.runInPlatform(() -> {
             String content = createStringBinding.get();
             currentLines.getEngine().loadContent(content);
@@ -151,13 +153,19 @@ public class PdfController extends Application {
 
         });
 
-        pdfInfo.pageIndexProperty()
-                .addListener(o -> RunnableEx.runNewThread(() -> BalabolkaApi.speak(getPageLines2(), out -> {
-                    RunnableEx.runIf(mediaPlayer.get(), SongUtils::stopAndDispose);
-                    Media sound = new Media(out.toURI().toString());
-                    mediaPlayer.set(new MediaPlayer(sound));
-                    mediaPlayer.get().play();
-                })));
+        pdfInfo.pageIndexProperty().addListener((ob, old, val) -> {
+            if (playSound.isSelected()) {
+                RunnableEx.runNewThread(
+                        () -> pageSounds.computeIfAbsent(val.intValue(),
+                                i -> BalabolkaApi.toAudio(getPageLines2(getLinesByPageIndex(i)))),
+                        out -> CommonsFX.runInPlatform(() -> {
+                            RunnableEx.runIf(mediaPlayer.get(), SongUtils::stopAndDispose);
+                            Media sound = new Media(out.toURI().toString());
+                            mediaPlayer.set(new MediaPlayer(sound));
+                            mediaPlayer.get().play();
+                        }));
+            }
+        });
         pdfInfo.getLines().addListener(listener);
         pdfInfo.lineIndexProperty().addListener(listener);
         pdfInfo.getSkipLines().addListener(listener);
@@ -176,15 +184,15 @@ public class PdfController extends Application {
 
     public void saveAsText(ActionEvent e) {
         new FileChooserBuilder().title("Save As Text")
-                .initialFilename(pdfInfo.getFile().getName().replaceAll("\\.pdf", ".txt"))
-                .extensions("Text", "*.txt").onSelect(s -> RunnableEx.runNewThread(() -> PdfUtils.readText(pdfInfo, s)))
-                .saveFileAction(e);
+                .initialFilename(pdfInfo.getFile().getName().replaceAll("\\.pdf", ".txt")).extensions("Text", "*.txt")
+                .onSelect(s -> RunnableEx.runNewThread(() -> PdfUtils.readText(pdfInfo, s))).saveFileAction(e);
     }
 
     @Override
     public void start(Stage primaryStage) {
         final int width = 500;
-        CommonsFX.loadFXML("PDF Read Helper", "PdfReader.fxml", primaryStage, width, width);
+        CommonsFX.loadFXML("PDF Read Helper", "PdfReader.fxml", this, primaryStage, width, width);
+        CommonsFX.bind(pdfInfo.titleNameProperty(), primaryStage.titleProperty());
     }
 
     public void toggleTimelineStatus() {
@@ -207,8 +215,18 @@ public class PdfController extends Application {
         return pdfInfo.getLines().get(pdfInfo.getLineIndexAndAdd());
     }
 
-    private String getPageLines() {
-        ObservableList<String> lines = pdfInfo.getLines();
+    private List<String> getLinesByPageIndex(int pageIndex) {
+        List<String> linesNextPage = pdfInfo.getPages().get(pageIndex);
+        if (!pdfInfo.getLines().isEmpty()) {
+            List<String> repeated =
+                    linesNextPage.stream().filter(l -> pdfInfo.getLines().contains(l)).collect(Collectors.toList());
+            pdfInfo.getSkipLines().addAll(repeated);
+
+        }
+        return linesNextPage;
+    }
+
+    private String getPageLines(List<String> lines) {
         String string = lines.isEmpty() ? "" : lines.get((pdfInfo.getLineIndex() - 1 + lines.size()) % lines.size());
 
         return lines.stream().filter(StringUtils::isNotBlank).filter(t -> !pdfInfo.getSkipLines().contains(t))
@@ -216,8 +234,8 @@ public class PdfController extends Application {
                 .collect(Collectors.joining("\n"));
     }
 
-    private String getPageLines2() {
-        ObservableList<String> lines = pdfInfo.getLines();
+    private String getPageLines2(List<String> lines) {
+
         return lines.stream().filter(StringUtils::isNotBlank).filter(t -> !pdfInfo.getSkipLines().contains(t))
                 .collect(Collectors.joining("\n"));
     }

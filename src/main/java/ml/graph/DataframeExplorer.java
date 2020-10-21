@@ -89,6 +89,7 @@ public class DataframeExplorer extends ExplorerVariables {
         }).converter(QuestionType::getSign);
         SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove)
                 .onKey(KeyCode.MINUS, this::toggleQuestion).onKey(KeyCode.SUBTRACT, this::toggleQuestion);
+        RunnableEx.runNewThread(Mapping::getMethods);
     }
 
     public void onActionAdd() {

@@ -20,6 +20,7 @@ import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class TimelionApi extends KibanaApi {
+    private static final String TIMELION_URL = "https://n321p000124.fast.prevnet/api/timelion/run";
     private static final Logger LOG = HasLogging.log();
     public static final String TIMELINE_USERS = ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\","
             + "split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
@@ -39,7 +40,7 @@ public final class TimelionApi extends KibanaApi {
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String keywords = convertSearchKeywords(search);
                 String content = getContent(file, timelionQuery, keywords, time);
-                getFromURLJson("https://n321p000124.fast.prevnet/api/timelion/run", content, outFile);
+                getFromURLJson(TIMELION_URL, content, outFile);
             }
             return JsonExtractor.toFullObject(outFile);
         });
@@ -58,8 +59,7 @@ public final class TimelionApi extends KibanaApi {
         return SupplierEx.getHandle(() -> {
             Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
                     timelineUsers, filterMap, time);
-            CommonsFX.runInPlatform(
-                    () -> convertToSeries(series, JsonExtractor.accessList(policiesSearch, "sheet")));
+            CommonsFX.runInPlatform(() -> convertToSeries(series, JsonExtractor.accessList(policiesSearch, "sheet")));
             return series;
         }, FXCollections.observableArrayList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
     }
@@ -73,15 +73,13 @@ public final class TimelionApi extends KibanaApi {
 
     private static ObservableList<XYChart.Series<Number, Number>>
             convertToSeries(ObservableList<Series<Number, Number>> series, List<?> access) {
-        return access.stream()
-                .flatMap(e -> JsonExtractor.accessList(e, "list").stream())
-                .map((Object o) -> {
-                    XYChart.Series<Number, Number> serie = new XYChart.Series<>();
-                    serie.setName(JsonExtractor.access(o, String.class, "label"));
-                    List<Object> accessList = JsonExtractor.accessList(o, "data");
-                    ConsumerEx.foreach(accessList, f -> addToSeries(serie, f));
-                    return serie;
-                }).collect(Collectors.toCollection(() -> series));
+        return access.stream().flatMap(e -> JsonExtractor.accessList(e, "list").stream()).map((Object o) -> {
+            XYChart.Series<Number, Number> serie = new XYChart.Series<>();
+            serie.setName(JsonExtractor.access(o, String.class, "label"));
+            List<Object> accessList = JsonExtractor.accessList(o, "data");
+            ConsumerEx.foreach(accessList, f -> addToSeries(serie, f));
+            return serie;
+        }).collect(Collectors.toCollection(() -> series));
     }
 
 }

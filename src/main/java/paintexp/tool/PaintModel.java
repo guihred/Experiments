@@ -43,11 +43,6 @@ public class PaintModel {
         return backColor;
     }
 
-    public void bindTitle(StringProperty o) {
-        filename.addListener((ob, old, val) -> o.setValue(val));
-        o.set(filename.get());
-    }
-
     public void createImageVersion() {
 
         WritableImage e = new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());

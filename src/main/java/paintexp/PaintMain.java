@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import paintexp.tool.PaintModel;
 import simplebuilder.SimpleMenuBarBuilder;
+import utils.CommonsFX;
 import utils.ExtractUtils;
 
 public class PaintMain extends Application {
@@ -61,7 +62,7 @@ public class PaintMain extends Application {
         root.setBottom(PaintHelper.buildColorGrid(paintModel, controller));
         root.setLeft(PaintHelper.buildToolBar(controller));
         root.setRight(PaintHelper.displayImageVersions(paintModel));
-        paintModel.bindTitle(stage.titleProperty());
+        CommonsFX.bind(paintModel.filenameProperty(), stage.titleProperty());
         stage.setX(0);
         final int width = 900;
 

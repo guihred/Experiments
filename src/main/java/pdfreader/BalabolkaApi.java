@@ -46,4 +46,10 @@ public class BalabolkaApi {
         return outFile;
 
     }
+
+    public static File toAudio(String s) {
+        return speak(s, out -> {
+            // DOES NOTHING
+        });
+    }
 }

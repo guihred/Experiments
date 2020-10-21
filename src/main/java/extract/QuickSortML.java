@@ -11,8 +11,11 @@ public class QuickSortML {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
     public static Comparator<Integer> getComparator(TableColumn<Integer, ?> col, Entry<String, Boolean> e) {
         Comparator<Integer> comparing =
-                Comparator.comparing(m -> (Comparable) (col.getCellData(m) instanceof Comparable ? col.getCellData(m)
-                        : Objects.toString(col.getCellData(m))));
+                Comparator.comparing(m -> {
+                    Object cellData = col.getCellData(m);
+                    return (Comparable) (cellData instanceof Number ? ((Number) cellData).doubleValue()
+                            : Objects.toString(cellData));
+                });
         return e.getValue() ? comparing : comparing.reversed();
     }
     public static <T> boolean isSorted(List<T> a, Comparator<T> comp) {

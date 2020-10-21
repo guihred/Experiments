@@ -40,6 +40,16 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return cellFactory(newCellFactory((t, cell) -> cell.setText(FunctionEx.apply(func, t))));
     }
 
+    public SimpleListViewBuilder<T> copiable() {
+        onKeyReleased(ev->copyContent(node, ev));
+        return this;
+    }
+
+    public SimpleListViewBuilder<T> deletable() {
+        onKey(KeyCode.DELETE, node.getItems()::remove);
+        return this;
+    }
+
     public SimpleListViewBuilder<T> fixedCellSize(double value) {
         node.setFixedCellSize(value);
         return this;
@@ -74,10 +84,22 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
 
     }
 
-
     public SimpleListViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         node.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+        return this;
+    }
+
+
+    public SimpleListViewBuilder<T> pasteable(FunctionEx<String, T> f) {
+        SimpleNodeBuilder.onKeyReleased(node, e -> {
+            if (KeyCode.V == e.getCode()&&e.isControlDown()) {
+                String string = Clipboard.getSystemClipboard().getString();
+                for (String string2 : string.split("[\n,]+")) {
+                    node.getItems().add(FunctionEx.apply(f, string2));
+                }
+            }
+        });
         return this;
     }
 

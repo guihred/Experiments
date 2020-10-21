@@ -41,6 +41,14 @@ public final class CommonsFX {
         value.getStylesheets().add(toExternalForm(CSS_DIR + css));
     }
 
+    public static <T> void bind(Property<T> source, Property<T> target) {
+        source.addListener((ob, old, val) -> runInPlatform(() -> target.setValue(val)));
+        target.setValue(source.getValue());
+    }
+    public static <T> void bindBidirectional(Property<T> prop1, Property<T> prop2) {
+        prop1.addListener((ob, old, val) -> prop2.setValue(val));
+        prop2.addListener((ob, old, val) -> prop1.setValue(val));
+    }
     public static boolean containsMouse(Node node, MouseEvent event) {
         double x = event.getX();
         double y = event.getY();
@@ -72,6 +80,7 @@ public final class CommonsFX {
         Collections.shuffle(availableColors);
         return availableColors;
     }
+
     public static void initializeFX() {
         Platform.setImplicitExit(false);
         new JFXPanel().toString();
