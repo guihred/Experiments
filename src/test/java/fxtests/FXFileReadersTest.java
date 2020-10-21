@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.util.WaitForAsyncUtils;
 import org.w3c.dom.Document;
+import pdfreader.BalabolkaApi;
 import rosario.LeitorArquivos;
 import rosario.Medicamento;
 import utils.*;
@@ -229,6 +230,11 @@ public class FXFileReadersTest extends AbstractTestExecution {
     @Test
     public void testZIP() {
         measureTime("UnZip.extractZippedFiles", () -> UnZip.extractZippedFiles(UnZip.ZIPPED_FILE_FOLDER));
+    }
+
+    @Test
+    public void textBalabolkaApi() {
+        measureTime("BalabolkaApi.speak", () -> BalabolkaApi.speak("It Worked"));
     }
 
     private static String convert(Object o) {

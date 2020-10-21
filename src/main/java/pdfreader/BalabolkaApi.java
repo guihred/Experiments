@@ -15,9 +15,6 @@ public class BalabolkaApi {
     private static final String BALABOLKA_EXE = FileTreeWalker
             .getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "bal4web.exe").toFile().toString();
 
-    public static void main(String[] args) {
-        speak("It Worked");
-    }
 
     public static File speak(String s) {
         return speak(s, out -> {

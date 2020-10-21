@@ -3,8 +3,6 @@ package election;
 import java.time.LocalDate;
 import java.util.Set;
 import javafx.application.Application;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -34,10 +32,11 @@ public abstract class CandidatoAppVariables extends Application {
     @FXML
     protected PieGraph pieGraph;
     @FXML
-    protected SimpleIntegerProperty maxResult;
+    protected ComboBox<Integer> maxResultCombo;
     @FXML
-    protected SimpleStringProperty column;
-    protected SimpleIntegerProperty first = new SimpleIntegerProperty(0);
+    protected ComboBox<String> columnName;
+    @FXML
+    protected Pagination pagination;
     @FXML
     protected ObservableList<Candidato> candidates;
     @FXML

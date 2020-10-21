@@ -15,129 +15,138 @@
 
 
 	<center>
-		<VBox>
-			<children>
-				<TextField fx:id="filter">
-					<padding>
-						<Insets bottom="4.0" left="7.0" right="7.0" top="4.0" />
-					</padding>
-				</TextField>
-				<TableView fx:id="tableView2" prefWidth="500.0">
-					<columns>
-						<TableColumn fx:id="fotoUrl" text="fotoUrl">
-							<cellValueFactory>
-								<PropertyValueFactory property="fotoUrl" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="nome" text="nome">
-							<cellValueFactory>
-								<PropertyValueFactory property="nome" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="numero" text="numero">
-							<cellValueFactory>
-								<PropertyValueFactory property="numero" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="partido" text="partido">
-							<cellValueFactory>
-								<PropertyValueFactory property="partido" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="grauInstrucao"
-							text="grauInstrucao">
-							<cellValueFactory>
-								<PropertyValueFactory
-									property="grauInstrucao" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="cargo" text="cargo">
-							<cellValueFactory>
-								<PropertyValueFactory property="cargo" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="naturalidade" text="naturalidade">
-							<cellValueFactory>
-								<PropertyValueFactory
-									property="naturalidade" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="ocupacao" text="ocupacao">
-							<cellValueFactory>
-								<PropertyValueFactory property="ocupacao" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="nomeCompleto" text="nomeCompleto">
-							<cellValueFactory>
-								<PropertyValueFactory
-									property="nomeCompleto" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="votos" text="votos">
-							<cellValueFactory>
-								<PropertyValueFactory property="votos" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="cidade" text="cidade">
-							<cellValueFactory>
-								<PropertyValueFactory property="cidade" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="eleito" text="eleito">
-							<cellValueFactory>
-								<PropertyValueFactory property="eleito" />
-							</cellValueFactory>
-						</TableColumn>
-						<TableColumn fx:id="nascimento" text="nascimento">
-							<cellValueFactory>
-								<PropertyValueFactory property="nascimento" />
-							</cellValueFactory>
-						</TableColumn>
-					</columns>
-					<padding>
-						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
-					</padding>
-				</TableView>
-				<HBox>
-					<children>
-						<ComboBox fx:id="columnNumber" value="cargo">
-							<items>
-								<FXCollections fx:factory="observableArrayList">
-									<String fx:value="cargo" />
-									<String fx:value="estado" />
-									<String fx:value="coligacao" />
-									<String fx:value="grauInstrucao" />
-									<String fx:value="ocupacao" />
-									<String fx:value="partido" />
-									<String fx:value="eleito" />
-								</FXCollections>
-							</items>
-						</ComboBox>
-						<ComboBox fx:id="maxResultCombo">
-							<items>
-								<FXCollections fx:factory="observableArrayList">
-									<Integer fx:value="10" />
-									<Integer fx:value="50" />
-									<Integer fx:value="100" />
-									<Integer fx:value="200" />
-								</FXCollections>
-							</items>
-							<value>
-								<Integer fx:value="10" />
-							</value>
-						</ComboBox>
+		<TabPane fx:id="tabPane0">
+			<tabs>
+				<Tab text="Table">
+					<content>
 						<VBox>
-							<children>
-								<Slider blockIncrement="0.01" fx:id="slider20" max="1.0"
-									value="0.75" />
-							</children>
+							<TextField fx:id="filter" />
+							<TableView fx:id="tableView2" prefWidth="500.0"
+								VBox.vgrow="ALWAYS">
+								<columns>
+									<TableColumn fx:id="fotoUrl" text="fotoUrl">
+										<cellValueFactory>
+											<PropertyValueFactory property="fotoUrl" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="nome" text="nome">
+										<cellValueFactory>
+											<PropertyValueFactory property="nome" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="numero" text="numero">
+										<cellValueFactory>
+											<PropertyValueFactory property="numero" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="partido" text="partido">
+										<cellValueFactory>
+											<PropertyValueFactory property="partido" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="grauInstrucao" text="grauInstrucao">
+										<cellValueFactory>
+											<PropertyValueFactory property="grauInstrucao" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="cargo" text="cargo">
+										<cellValueFactory>
+											<PropertyValueFactory property="cargo" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="naturalidade" text="naturalidade">
+										<cellValueFactory>
+											<PropertyValueFactory property="naturalidade" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="ocupacao" text="ocupacao">
+										<cellValueFactory>
+											<PropertyValueFactory property="ocupacao" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="nomeCompleto" text="nomeCompleto">
+										<cellValueFactory>
+											<PropertyValueFactory property="nomeCompleto" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="votos" text="votos">
+										<cellValueFactory>
+											<PropertyValueFactory property="votos" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="cidade" text="cidade">
+										<cellValueFactory>
+											<PropertyValueFactory property="cidade" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="eleito" text="eleito">
+										<cellValueFactory>
+											<PropertyValueFactory property="eleito" />
+										</cellValueFactory>
+									</TableColumn>
+									<TableColumn fx:id="nascimento" text="nascimento">
+										<cellValueFactory>
+											<PropertyValueFactory property="nascimento" />
+										</cellValueFactory>
+									</TableColumn>
+								</columns>
+								<padding>
+									<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+								</padding>
+							</TableView>
+							<HBox>
+								<children>
+									<Pagination fx:id="pagination" pageCount="1" />
+								</children>
+								<ComboBox fx:id="maxResultCombo">
+									<items>
+										<FXCollections fx:factory="observableArrayList">
+											<Integer fx:value="10" />
+											<Integer fx:value="25" />
+											<Integer fx:value="50" />
+											<Integer fx:value="100" />
+											<Integer fx:value="200" />
+										</FXCollections>
+									</items>
+									<value>
+										<Integer fx:value="25" />
+									</value>
+								</ComboBox>
+
+							</HBox>
 						</VBox>
-						<Text fx:id="text18" />
-					</children>
-				</HBox>
-				<PieGraph fx:id="pieGraph" />
-			</children>
-		</VBox>
+					</content>
+
+				</Tab>
+				<Tab text="Pie">
+					<content>
+						<VBox>
+							<ComboBox fx:id="columnName" value="cargo">
+								<items>
+									<FXCollections fx:factory="observableArrayList">
+										<String fx:value="cargo" />
+										<String fx:value="estado" />
+										<String fx:value="coligacao" />
+										<String fx:value="grauInstrucao" />
+										<String fx:value="ocupacao" />
+										<String fx:value="partido" />
+										<String fx:value="eleito" />
+									</FXCollections>
+								</items>
+							</ComboBox>
+							<VBox>
+								<children>
+									<Slider blockIncrement="0.01" fx:id="slider20" max="1.0"
+										value="0.75" />
+								</children>
+							</VBox>
+							<Text fx:id="text18" />
+							<PieGraph fx:id="pieGraph" />
+						</VBox>
+					</content>
+				</Tab>
+			</tabs>
+		</TabPane>
 	</center>
 	<left>
 		<TreeView fx:id="treeView0" showRoot="false">
@@ -150,15 +159,8 @@
 		</TreeView>
 	</left>
 	<fx:define>
-		<FXCollections fx:id="candidates"
-			fx:factory="observableArrayList" />
-		<FXCollections fx:id="fieldMap"
-			fx:factory="observableHashMap" />
-		<FXCollections fx:id="portChecks"
-			fx:factory="observableHashMap" />
-		<SimpleIntegerProperty fx:id="maxResult"
-			value="${maxResultCombo.value}" />
-		<SimpleStringProperty fx:id="column"
-			value="${columnNumber.value}" />
+		<FXCollections fx:id="candidates" fx:factory="observableArrayList" />
+		<FXCollections fx:id="fieldMap" fx:factory="observableHashMap" />
+		<FXCollections fx:id="portChecks" fx:factory="observableHashMap" />
 	</fx:define>
 </BorderPane>

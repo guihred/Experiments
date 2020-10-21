@@ -7,6 +7,7 @@ import static election.CandidatoHelper.updateTable;
 import static utils.CommonsFX.onCloseWindow;
 
 import javafx.beans.Observable;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.stage.Stage;
 import simplebuilder.SimpleTreeViewBuilder;
 import utils.CommonsFX;
@@ -18,23 +19,27 @@ public class CandidatoApp extends CandidatoAppVariables {
 
     public void initialize() {
         ExtractUtils.insertProxyConfig();
+        ObservableObjectValue<String> column = columnName.getSelectionModel().selectedItemProperty();
         RunnableEx.runNewThread(CandidatoHelper::getRelevantFields, relevantFields -> CommonsFX.runInPlatform(() -> {
             for (String field : relevantFields) {
                 SimpleTreeViewBuilder.addToRoot(treeView0, field, distinct(field));
             }
-            column.set(relevantFields.get(0));
+            columnName.getSelectionModel().select(relevantFields.get(0));
         }));
         CandidatoHelper.configTable(fotoUrl, cidade, eleito, nascimento, tableView2);
         tableView2.setItems(CommonsFX.newFastFilter(filter, candidates.filtered(e -> true)));
-        column.addListener((ob, o, n) -> updateTable(first, maxResult.get(), n, pieGraph, candidates, fieldMap));
+        ObservableObjectValue<Integer> maxResult = maxResultCombo.getSelectionModel().selectedItemProperty();
+        column.addListener((ob, o, n) -> updateTable(pagination, maxResult.get(), n, pieGraph, candidates, fieldMap));
         maxResult.addListener(
-                (ob, o, n) -> updateTable(first, n.intValue(), column.get(), pieGraph, candidates, fieldMap));
+                (ob, o, n) -> updateTable(pagination, n.intValue(), column.get(), pieGraph, candidates, fieldMap));
         slider20.valueProperty().bindBidirectional(pieGraph.legendsRadiusProperty());
         treeView0.getSelectionModel().selectedItemProperty()
                 .addListener((ob, o, newValue) -> onChangeElement(fieldMap, portChecks, newValue));
         bindTextToMap(text18, fieldMap);
-        fieldMap.addListener(
-                (Observable e) -> updateTable(first, maxResult.get(), column.get(), pieGraph, candidates, fieldMap));
+        fieldMap.addListener((Observable e) -> updateTable(pagination, maxResult.get(), column.get(), pieGraph,
+                candidates, fieldMap));
+        pagination.currentPageIndexProperty().addListener((Observable e) -> updateTable(pagination, maxResult.get(),
+                column.get(), pieGraph, candidates, fieldMap));
 
     }
 

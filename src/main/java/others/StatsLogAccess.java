@@ -15,7 +15,8 @@ import utils.ex.SupplierEx;
 
 public final class StatsLogAccess {
     private static final String EXCLUDE_PACKAGES =
-            "\tat (sun|java|javax|org|com|javafx|io.pkts|utils\\.ex|fxtests\\.FXTesting)\\..+";
+            "\tat (sun|java|javax|org|com|javafx|io.pkts|utils\\.ex"
+                    + "|fxtests\\.(FXTesting|JavaDependencyTest|AbstractTestExecution))\\..+";
     private static final Logger LOG = HasLogging.log();
 
     private StatsLogAccess() {

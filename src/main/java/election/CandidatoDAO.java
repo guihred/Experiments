@@ -3,6 +3,7 @@ package election;
 import java.util.*;
 import java.util.stream.Collectors;
 import utils.BaseDAO;
+import utils.ClassReflectionUtils;
 
 public class CandidatoDAO extends BaseDAO {
 
@@ -14,7 +15,20 @@ public class CandidatoDAO extends BaseDAO {
             hql.append(field);
             hql.append(" AS c FROM Candidato ORDER BY c");
             return session.createQuery(hql.toString(), Object.class).list().stream().map(Objects::toString)
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
+        });
+    }
+
+    public Map<String, Long> distinctFields() {
+        List<String> fields2 = ClassReflectionUtils.getFields(Candidato.class);
+        return execute(session -> {
+            StringBuilder hql = new StringBuilder();
+            hql.append("SELECT   ");
+            String collect = fields2.stream().map(f -> String.format(" COUNT(DISTINCT %s ) as %s", f, f))
+                    .collect(Collectors.joining(","));
+            hql.append(collect);
+            hql.append(" FROM  Candidato ");
+            return toMap( session.createQuery(hql.toString()));
         });
     }
 
@@ -69,7 +83,7 @@ public class CandidatoDAO extends BaseDAO {
             hql.append(" WHERE 1=1 ");
             hql.append(getConditions(fieldMap));
             return session.createQuery(hql.toString(), Candidato.class).setFirstResult(startPosition)
-                .setMaxResults(maxResult).list();
+                    .setMaxResults(maxResult).list();
         });
     }
 
@@ -92,9 +106,10 @@ public class CandidatoDAO extends BaseDAO {
     }
 
     private static String getConditions(Map<String, Set<String>> fieldMap) {
-        return fieldMap.entrySet().stream().filter(e -> !e.getValue().isEmpty()).map(
-            e -> " AND " + e.getKey() + " IN " + e.getValue().stream().collect(Collectors.joining("','", "('", "')")))
-            .collect(Collectors.joining(""));
+        return fieldMap.entrySet().stream().filter(e -> !e.getValue().isEmpty())
+                .map(e -> " AND " + e.getKey() + " IN "
+                        + e.getValue().stream().collect(Collectors.joining("','", "('", "')")))
+                .collect(Collectors.joining(""));
     }
 
 }
