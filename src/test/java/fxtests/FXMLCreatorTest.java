@@ -1,7 +1,7 @@
 package fxtests;
 
 import fxml.utils.FXMLCreatorHelper;
-import fxsamples.MoleculeSampleApp;
+import fxpro.ch02.PongLauncher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +30,7 @@ public final class FXMLCreatorTest {
     @Test
     public void testClassesNotClose() {
         List<Class<? extends Application>> classes =
-                Arrays.asList(MoleculeSampleApp.class);
+                Arrays.asList(PongLauncher.class);
         FXMLCreatorHelper.testApplications(classes, true);
     }
 

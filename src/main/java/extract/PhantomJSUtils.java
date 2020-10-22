@@ -1,6 +1,5 @@
-package utils;
+package extract;
 
-import ethical.hacker.InstallCert;
 import gui.ava.html.image.generator.HtmlImageGenerator;
 import java.awt.Dimension;
 import java.io.BufferedReader;
@@ -34,6 +33,10 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
+import utils.FileTreeWalker;
+import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;

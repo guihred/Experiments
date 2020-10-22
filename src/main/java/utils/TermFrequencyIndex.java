@@ -1,4 +1,4 @@
-package fxml.utils;
+package utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,8 +11,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import org.assertj.core.api.exception.RuntimeIOException;
 import org.slf4j.Logger;
-import utils.ResourceFXUtils;
-import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 
 public final class TermFrequencyIndex {

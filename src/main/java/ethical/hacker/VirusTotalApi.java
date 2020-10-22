@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import extract.PhantomJSUtils;
 import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +12,6 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
-import utils.PhantomJSUtils;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;

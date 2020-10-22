@@ -48,7 +48,7 @@ public interface CommonTool {
         // DOES NOTHING
     }
 
-    default void onSelected(PaintTool old, PaintModel model) {
+    default <T extends CommonTool> void onSelected(T old, PaintModel model) {
         onSelected(model);
     }
 

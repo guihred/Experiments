@@ -1,6 +1,7 @@
 package ethical.hacker;
 
 import extract.JsoupUtils;
+import extract.PhantomJSUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -26,7 +27,6 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.FileTreeWalker;
-import utils.PhantomJSUtils;
 import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;

@@ -1,6 +1,7 @@
 package fxtests;
 
 import ethical.hacker.*;
+import extract.InstallCert;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;

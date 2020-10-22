@@ -1,6 +1,5 @@
 package simplebuilder;
 
-import fxml.utils.TermFrequency;
 import java.lang.reflect.Method;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -16,6 +15,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import utils.ClassReflectionUtils;
+import utils.TermFrequency;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 

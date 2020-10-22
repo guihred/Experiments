@@ -1,6 +1,7 @@
 package kibana;
 
 import com.google.common.collect.ImmutableMap;
+import extract.PhantomJSUtils;
 import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +23,6 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CSVUtils;
 import utils.CommonsFX;
-import utils.PhantomJSUtils;
 import utils.ResourceFXUtils;
 
 public class SonarApi extends Application {

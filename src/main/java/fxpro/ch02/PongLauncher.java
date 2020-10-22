@@ -5,21 +5,17 @@
  */
 package fxpro.ch02;
 
-
 import static utils.CommonsFX.onCloseWindow;
 
 import javafx.animation.Animation;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.Cursor;
+import javafx.fxml.FXML;
 import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
@@ -27,25 +23,14 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simplebuilder.*;
+import simplebuilder.SimpleLinearGradientBuilder;
+import simplebuilder.SimpleTimelineBuilder;
+import utils.CommonsFX;
 import utils.Delta;
 
 public class PongLauncher extends Application {
 
     private static final double WIDTH = 500;
-    /**
-     * The center points of the moving ball
-     */
-    private DoubleProperty centerX = new SimpleDoubleProperty();
-    private DoubleProperty centerY = new SimpleDoubleProperty();
-    /**
-     * The Y coordinate of the left paddle
-     */
-    private DoubleProperty leftPaddleY = new SimpleDoubleProperty();
-    /**
-     * The Y coordinate of the right paddle
-     */
-    private DoubleProperty rightPaddleY = new SimpleDoubleProperty();
     /**
      * The drag anchor for left and right paddles
      */
@@ -58,28 +43,32 @@ public class PongLauncher extends Application {
     /**
      * The moving ball
      */
-    private Circle ball = new SimpleCircleBuilder().radius(5.0).fill(Color.RED).build();
+    @FXML
+    private Circle ball;
     /**
      * The Group containing all of the walls, paddles, and ball. This also allows us
      * to requestFocus for KeyEvents on the Group
      */
+    @FXML
     private Group pongComponents;
     /**
      * The left and right paddles
      */
+    @FXML
     private Rectangle leftPaddle;
+    @FXML
     private Rectangle rightPaddle;
     /**
      * The walls
      */
-    /**
-     * Controls whether the startButton is visible
-     */
-    private BooleanProperty startVisible = new SimpleBooleanProperty(true);
-    private Line topWall = new SimpleLineBuilder().startX(0).startY(0).endX(WIDTH).endY(0).build();
-    private Line rightWall = new SimpleLineBuilder().startX(WIDTH).startY(0).endX(WIDTH).endY(WIDTH).build();
-    private Line leftWall = new SimpleLineBuilder().startX(0).startY(0).endX(0).endY(WIDTH).build();
-    private Line bottomWall = new SimpleLineBuilder().startX(0).startY(WIDTH).endX(WIDTH).endY(WIDTH).build();
+    @FXML
+    private Line topWall;
+    @FXML
+    private Line rightWall;
+    @FXML
+    private Line leftWall;
+    @FXML
+    private Line bottomWall;
     /**
      * Controls whether the ball is moving right
      */
@@ -91,19 +80,16 @@ public class PongLauncher extends Application {
     /**
      * The animation of the ball
      */
-    private Timeline pongAnimation = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
-        .addKeyFrame(Duration.millis(10), t -> {
-            checkForCollision();
-            int horzPixels = movingRight ? 1 : -1;
-            int vertPixels = movingDown ? 1 : -1;
-            centerX.setValue(centerX.getValue() + horzPixels);
-            centerY.setValue(centerY.getValue() + vertPixels);
-        }).build();
-    private Button startButton = SimpleButtonBuilder.newButton(WIDTH / 2, WIDTH * 2 / 3, "Start!", e -> {
-        startVisible.set(false);
-        pongAnimation.playFromStart();
-        pongComponents.requestFocus();
-    });
+    private Timeline pongAnimation =
+            new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE).addKeyFrame(Duration.millis(10), t -> {
+                checkForCollision();
+                int horzPixels = movingRight ? 1 : -1;
+                int vertPixels = movingDown ? 1 : -1;
+                ball.setCenterX(ball.getCenterX() + horzPixels);
+                ball.setCenterY(ball.getCenterY() + vertPixels);
+            }).build();
+    @FXML
+    private Button startButton;
 
     public double getLeftPaddleDragAnchorY() {
         return leftPaddleDelta.getY();
@@ -111,6 +97,53 @@ public class PongLauncher extends Application {
 
     public double getRightPaddleDragAnchorY() {
         return leftPaddleDelta.getX();
+    }
+
+    public void initialize() {
+        reset();
+    }
+
+    public void onActionStartButton() {
+        startButton.setVisible(false);
+        pongAnimation.playFromStart();
+        pongComponents.requestFocus();
+    }
+
+    public void onKeyPressedGroup0(KeyEvent k) {
+        if (k.getCode() == KeyCode.L && !rightPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {
+            rightPaddle.setTranslateY(rightPaddle.getTranslateY() - 6);
+        }
+        if (k.getCode() == KeyCode.COMMA
+                && !rightPaddle.getBoundsInParent().intersects(bottomWall.getBoundsInLocal())) {
+            rightPaddle.setTranslateY(rightPaddle.getTranslateY() + 6);
+        }
+        if (k.getCode() == KeyCode.A && !leftPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {
+            leftPaddle.setTranslateY(leftPaddle.getTranslateY() - 6);
+        }
+        if (k.getCode() == KeyCode.Z && !leftPaddle.getBoundsInParent().intersects(bottomWall.getBoundsInLocal())) {
+            leftPaddle.setTranslateY(leftPaddle.getTranslateY() + 6);
+        }
+
+    }
+
+    public void onMouseDraggedLeftPaddle(MouseEvent me) {
+        double dragY = me.getSceneY() - getLeftPaddleDragAnchorY();
+        leftPaddle.setTranslateY(initLeftPaddleTranslateY + dragY);
+    }
+
+    public void onMouseDraggedRightPaddle(MouseEvent me) {
+        double dragY = me.getSceneY() - getRightPaddleDragAnchorY();
+        rightPaddle.setTranslateY(initRightPaddleTranslateY + dragY);
+    }
+
+    public void onMousePressedLeftPaddle(MouseEvent me) {
+        initLeftPaddleTranslateY = leftPaddle.getTranslateY();
+        setLeftPaddleDragAnchorY(me.getSceneY());
+    }
+
+    public void onMousePressedRightPaddle(MouseEvent me) {
+        initRightPaddleTranslateY = rightPaddle.getTranslateY();
+        setRightPaddleDragAnchorY(me.getSceneY());
     }
 
     public void setLeftPaddleDragAnchorY(double leftPaddleDragAnchorY) {
@@ -123,57 +156,10 @@ public class PongLauncher extends Application {
 
     @Override
     public void start(Stage stage) {
-        rightPaddle = new SimpleRectangleBuilder().x(WIDTH - 30).width(10).height(30).fill(Color.LIGHTBLUE)
-            .cursor(Cursor.HAND).onMousePressed(me -> {
-                initRightPaddleTranslateY = rightPaddle.getTranslateY();
-                setRightPaddleDragAnchorY(me.getSceneY());
-            }).onMouseDragged(me -> {
-                double dragY = me.getSceneY() - getRightPaddleDragAnchorY();
-                rightPaddleY.setValue(initRightPaddleTranslateY + dragY);
-            }).build();
-        leftPaddle = new SimpleRectangleBuilder().x(20).width(10).height(30).fill(Color.LIGHTBLUE).cursor(Cursor.HAND)
-            .onMousePressed(me -> {
-                initLeftPaddleTranslateY = leftPaddle.getTranslateY();
-                setLeftPaddleDragAnchorY(me.getSceneY());
-            }).onMouseDragged(me -> {
-                double dragY = me.getSceneY() - getLeftPaddleDragAnchorY();
-                leftPaddleY.setValue(initLeftPaddleTranslateY + dragY);
-            }).build();
-
-        pongComponents = new Group(topWall, leftWall, rightWall, bottomWall, leftPaddle, rightPaddle, startButton,
-            ball);
-        pongComponents.setFocusTraversable(true);
-        pongComponents.setOnKeyPressed(k -> {
-            if (k.getCode() == KeyCode.L && !rightPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {
-                rightPaddleY.setValue(rightPaddleY.getValue() - 6);
-            }
-            if (k.getCode() == KeyCode.COMMA
-                && !rightPaddle.getBoundsInParent().intersects(bottomWall.getBoundsInLocal())) {
-                rightPaddleY.setValue(rightPaddleY.getValue() + 6);
-            }
-            if (k.getCode() == KeyCode.A && !leftPaddle.getBoundsInParent().intersects(topWall.getBoundsInLocal())) {
-                leftPaddleY.setValue(leftPaddleY.getValue() - 6);
-            }
-            if (k.getCode() == KeyCode.Z && !leftPaddle.getBoundsInParent().intersects(bottomWall.getBoundsInLocal())) {
-                leftPaddleY.setValue(leftPaddleY.getValue() + 6);
-            }
-        });
-
-        Scene scene = new Scene(pongComponents, WIDTH, WIDTH);
-        scene.setFill(new SimpleLinearGradientBuilder().startX(0.0).startY(0.0).endX(0.0).endY(1.0)
-            .stops(new Stop(0.0, Color.BLACK), new Stop(0.0, Color.GRAY)).build());
-        ball.centerXProperty().bind(centerX);
-        ball.centerYProperty().bind(centerY);
-        leftPaddle.translateYProperty().bind(leftPaddleY);
-        rightPaddle.translateYProperty().bind(rightPaddleY);
-        startButton.visibleProperty().bind(startVisible);
-        stage.setScene(scene);
-        initialize();
-        stage.setWidth(WIDTH + 8);
-        stage.setHeight(WIDTH + 30);
-        stage.setTitle("ZenPong Example");
+        CommonsFX.loadFXML("ZenPong Example", "PongLauncher.fxml", this, stage, WIDTH, WIDTH);
+        stage.getScene().setFill(new SimpleLinearGradientBuilder().startX(0.0).startY(0.0).endX(0.0).endY(1.0)
+                .stops(new Stop(0.0, Color.BLACK), new Stop(0.0, Color.GRAY)).build());
         onCloseWindow(stage, () -> pongAnimation.stop());
-        stage.show();
     }
 
     /**
@@ -184,11 +170,11 @@ public class PongLauncher extends Application {
     private void checkForCollision() {
         if (ball.intersects(rightWall.getBoundsInLocal()) || ball.intersects(leftWall.getBoundsInLocal())) {
             pongAnimation.stop();
-            initialize();
+            reset();
         } else if (ball.intersects(bottomWall.getBoundsInLocal()) || ball.intersects(topWall.getBoundsInLocal())) {
             movingDown = !movingDown;
         } else if (ball.intersects(leftPaddle.getBoundsInParent()) && !movingRight
-            || ball.intersects(rightPaddle.getBoundsInParent()) && movingRight) {
+                || ball.intersects(rightPaddle.getBoundsInParent()) && movingRight) {
             movingRight = !movingRight;
         }
     }
@@ -196,19 +182,20 @@ public class PongLauncher extends Application {
     /**
      * Sets the initial starting positions of the ball and paddles
      */
-    private void initialize() {
-        centerX.setValue(WIDTH / 2);
-        centerY.setValue(WIDTH / 2);
-        leftPaddleY.setValue(WIDTH / 2);
-        rightPaddleY.setValue(WIDTH / 2);
-        startVisible.set(true);
+    private void reset() {
+        ball.setCenterX(WIDTH / 2);
+        ball.setCenterY(WIDTH / 2);
+        leftPaddle.setTranslateY(WIDTH / 2);
+        rightPaddle.setTranslateY(WIDTH / 2);
+        startButton.setVisible(true);
         pongComponents.requestFocus();
     }
 
     /**
-     * @param args the command line arguments
+     * @param args
+     *            the command line arguments
      */
     public static void main(String[] args) {
-        Application.launch(args);
+        launch(args);
     }
 }

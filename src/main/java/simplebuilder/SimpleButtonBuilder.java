@@ -8,28 +8,23 @@ import utils.ex.RunnableEx;
 
 public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonBuilder> {
 
-
-	public SimpleButtonBuilder() {
+    public SimpleButtonBuilder() {
         super(new Button());
-	}
+    }
 
-	public SimpleButtonBuilder onAction(EventHandler<ActionEvent> value) {
+    public SimpleButtonBuilder onAction(EventHandler<ActionEvent> value) {
         node.setOnAction(value);
         return this;
     }
 
     public SimpleButtonBuilder text(String string) {
         node.setText(string);
-		return this;
-	}
+        return this;
+    }
 
     public static Button newButton(final double layoutX, final double layoutY, final String nome,
-        final EventHandler<ActionEvent> onAction) {
-        Button node = new Button(nome);
-        node.setLayoutX(layoutX);
-        node.setLayoutY(layoutY);
-        node.setOnAction(onAction);
-        return node;
+            final EventHandler<ActionEvent> onAction) {
+        return new SimpleButtonBuilder().text(nome).layoutX(layoutX).layoutY(layoutY).onAction(onAction).build();
     }
 
     public static Button newButton(final Node graphic, final String id, final EventHandler<ActionEvent> onAction) {

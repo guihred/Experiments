@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.scene.shape.*?><?import javafx.scene.control.*?><?import javafx.geometry.*?>
+<Group xmlns:fx="http://javafx.com/fxml" focusTraversable="true"
+	 fx:id="pongComponents"
+	onKeyPressed="#onKeyPressedGroup0" styleClass="root">
+	<children>
+		<Line endX="500.0" fx:id="topWall" />
+		<Line endY="500.0" fx:id="leftWall" />
+		<Line endX="500.0" endY="500.0" fx:id="rightWall" startX="500.0" />
+		<Line endX="500.0" endY="500.0" fx:id="bottomWall" startY="500.0" />
+		<Rectangle fill="0xadd8e6ff" fx:id="leftPaddle" height="30.0"
+			 onMouseDragged="#onMouseDraggedLeftPaddle"
+			onMousePressed="#onMousePressedLeftPaddle" translateY="250.0" width="10.0"
+			x="20.0" />
+		<Rectangle fill="0xadd8e6ff" fx:id="rightPaddle" height="30.0"
+			id="rightPaddle" onMouseDragged="#onMouseDraggedRightPaddle"
+			onMousePressed="#onMousePressedRightPaddle" translateY="250.0" width="10.0"
+			x="470.0" />
+		<Button alignment="CENTER" fx:id="startButton" 
+			layoutX="250.0" layoutY="333.3333333333333" onAction="#onActionStartButton"
+			text="Start!" textFill="0x333333ff">
+			<padding>
+				<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+			</padding>
+		</Button>
+		<Circle centerX="250.0" centerY="250.0" fill="0xff0000ff" fx:id="ball"
+			radius="5.0" />
+	</children>
+</Group>

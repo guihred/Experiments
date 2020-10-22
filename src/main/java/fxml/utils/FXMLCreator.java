@@ -20,6 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import utils.ClassReflectionUtils;
+import utils.TermFrequency;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;

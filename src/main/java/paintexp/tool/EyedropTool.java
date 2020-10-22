@@ -63,8 +63,8 @@ public class EyedropTool extends PaintTool {
     }
 
     @Override
-    public void onSelected(PaintTool oldTool, PaintModel model) {
-        old = oldTool;
+    public void onSelected(CommonTool oldTool, PaintModel model) {
+        old = (PaintTool) oldTool;
         model.getToolOptions().getChildren().add(getArea());
     }
 
