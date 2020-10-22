@@ -16,6 +16,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import simplebuilder.SimpleRectangleBuilder;
 import utils.CommonsFX;
+import utils.ImageFXUtils;
 
 public abstract class AreaTool extends PaintTool {
     protected WritableImage imageSelected;
@@ -33,7 +34,7 @@ public abstract class AreaTool extends PaintTool {
             imageSelected = new WritableImage((int) width, (int) height);
             RectBuilder.copyImagePart(image, imageSelected, getArea());
         }
-        PaintToolHelper.setClipboardContent(imageSelected);
+        ImageFXUtils.setClipboardContent(imageSelected);
         return imageSelected;
     }
 
@@ -153,7 +154,7 @@ public void onMousePressed(MouseEvent e, PaintModel model) {
     }
 
     public final WritableImage pasteFromClipboard(PaintModel model) {
-        Image image = PaintToolHelper.getClipboardImage();
+        Image image = ImageFXUtils.getClipboardImage();
         if (image != null) {
             copyImage(model, image, imageSelected);
         }

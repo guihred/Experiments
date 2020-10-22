@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -46,7 +44,8 @@ public class SonarApi extends Application {
     public void start(Stage primaryStage) throws Exception {
         TextField filterField = new TextField();
         ObservableList<Map<String, Object>> issuesList = FXCollections.observableArrayList();
-        TableView<Map<String, Object>> build = new SimpleTableViewBuilder<Map<String, Object>>().savable().copiable()
+        TableView<Map<String, Object>> build =
+                new SimpleTableViewBuilder<Map<String, Object>>().id("sonarTable").savable().copiable()
                 .items(CommonsFX.newFastFilter(filterField, issuesList.filtered(s -> true))).build();
         HBox.setHgrow(build, Priority.ALWAYS);
         primaryStage.setTitle("Sonar API");
@@ -84,7 +83,10 @@ public class SonarApi extends Application {
             issuesList.addAll(newJson2);
         }
 
-        SimpleTableViewBuilder.addColumns(build, newJson.get(0).keySet());
+        List<String> keySet = new ArrayList<>(newJson.get(0).keySet());
+        keySet.removeAll(Arrays.asList("updateDate", "comments", "fromHotspot", "project", "effort", "creationDate",
+                "transitions", "flows", "organization", "textRange", "actions", "debt", "hash", "key"));
+        SimpleTableViewBuilder.addColumns(build, keySet);
     }
 
     private static void openDataframe(TextField filterField, TableView<Map<String, Object>> build) throws IOException {

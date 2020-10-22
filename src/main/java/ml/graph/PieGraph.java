@@ -17,9 +17,10 @@ import javafx.scene.shape.ArcType;
 import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
-import utils.CommonsFX;
+import utils.ImageFXUtils;
 
 public class PieGraph extends Canvas {
+    private static final double TOTAL_CIRCLE = 360.;
     private static final int WIDTH = 550;
     private final GraphicsContext gc;
     private final ObservableMap<String, Long> histogram = FXCollections.observableHashMap();
@@ -48,7 +49,7 @@ public class PieGraph extends Canvas {
             Map<String, Long> hist = convertToHistogram();
             histogram.clear();
             histogram.putAll(hist);
-            availableColors = CommonsFX.generateRandomColors(histogram.size());
+            availableColors = ImageFXUtils.generateRandomColors(histogram.size());
             drawGraph();
         });
         widthProperty().addListener(listener);
@@ -66,17 +67,17 @@ public class PieGraph extends Canvas {
         long sum = histogram.values().stream().mapToLong(e -> e).sorted().sum();
         gc.clearRect(0, 0, getWidth(), getHeight());
 
-        double centerX = gc.getCanvas().getWidth() / 4 + xOffset.get();
-        double centerY = gc.getCanvas().getHeight() / 4 + xOffset.get();
+        double centerX = getWidth() / 4 + xOffset.get();
+        double centerY = getHeight() / 4 + xOffset.get();
         final int realStartAngle = start.get();
         double startAngle = start.get();
-        gc.setLineWidth(0.5);
+        gc.setLineWidth(1. / 2);
         List<Entry<String, Long>> histogramLevels = histogram.entrySet().stream()
                 .sorted(Comparator.comparing(Entry<String, Long>::getValue)).collect(Collectors.toList());
         int radius2 = radius.get();
         for (int i = 0; i < histogramLevels.size(); i++) {
             Entry<String, Long> entry = histogramLevels.get(i);
-            double arcExtent = entry.getValue() * 360. / sum;
+            double arcExtent = entry.getValue() * TOTAL_CIRCLE / sum;
             gc.setFill(availableColors.get(i));
 
             gc.fillArc(centerX, centerY, radius2, radius2, startAngle, arcExtent, ArcType.ROUND);
@@ -88,10 +89,10 @@ public class PieGraph extends Canvas {
         gc.setTextAlign(TextAlignment.CENTER);
         for (int i = 0; i < histogramLevels.size(); i++) {
             Entry<String, Long> entry = histogramLevels.get(i);
-            double arcExtent = entry.getValue() * 360. / sum;
+            double arcExtent = entry.getValue() * TOTAL_CIRCLE / sum;
             int j = radius2 / 2;
             double d = legendsRadius.get();
-            double angdeg = arcExtent / 2 + startAngle + 90;
+            double angdeg = arcExtent / 2 + startAngle + TOTAL_CIRCLE / 4;
             double x = Math.sin(Math.toRadians(angdeg)) * radius2 * d + centerX + j;
             double y = Math.cos(Math.toRadians(angdeg)) * radius2 * d + centerY + j;
 
@@ -101,17 +102,16 @@ public class PieGraph extends Canvas {
                 double y2 = Math.cos(Math.toRadians(angdeg)) * radius2 / 3 + centerY + j;
                 gc.strokeLine(x, y, x2, y2);
 
-                double ang = (angdeg + 720) % 360;
+                double ang = (angdeg + TOTAL_CIRCLE * 2) % TOTAL_CIRCLE;
                 gc.setTextAlign(
-                        ang > 180 && ang < 360 ? TextAlignment.RIGHT
-                                : TextAlignment.LEFT);
+                        ang > TOTAL_CIRCLE / 2 && ang < TOTAL_CIRCLE ? TextAlignment.RIGHT : TextAlignment.LEFT);
                 gc.fillText(entry.getKey(), x, y);
 
             } else {
                 gc.save();
                 gc.translate(x, y);
-                double degrees = 360 - startAngle - arcExtent / 2;
-                double degrees2 = degrees > 90 ? degrees + 180 : degrees;
+                double degrees = TOTAL_CIRCLE - startAngle - arcExtent / 2;
+                double degrees2 = degrees > TOTAL_CIRCLE / 4 ? degrees + TOTAL_CIRCLE / 2 : degrees;
                 gc.rotate(degrees2);
                 gc.fillText(entry.getKey(), 0, 0);
                 gc.restore();
@@ -146,6 +146,10 @@ public class PieGraph extends Canvas {
         }
     }
 
+    public boolean getShowLines() {
+        return showLines.get();
+    }
+
     public DoubleProperty legendsRadiusProperty() {
         return legendsRadius;
     }
@@ -159,15 +163,19 @@ public class PieGraph extends Canvas {
         this.column = column;
         histogram.clear();
         histogram.putAll(convertToHistogram());
-        availableColors = CommonsFX.generateRandomColors(histogram.size());
+        availableColors = ImageFXUtils.generateRandomColors(histogram.size());
         drawGraph();
     }
 
     public void setHistogram(Map<String, Long> dataframe) {
         histogram.clear();
         histogram.putAll(dataframe);
-        availableColors = CommonsFX.generateRandomColors(histogram.size());
+        availableColors = ImageFXUtils.generateRandomColors(histogram.size());
         drawGraph();
+    }
+
+    public void setShowLines(boolean value) {
+        showLines.set(value);
     }
 
     public BooleanProperty showLinesProperty() {

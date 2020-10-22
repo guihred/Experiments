@@ -40,7 +40,8 @@ public class CandidatoApp extends CandidatoAppVariables {
                 candidates, fieldMap));
         pagination.currentPageIndexProperty().addListener((Observable e) -> updateTable(pagination, maxResult.get(),
                 column.get(), pieGraph, candidates, fieldMap));
-
+        CommonsFX.bind(slider20.widthProperty(), pieGraph.widthProperty());
+        CommonsFX.bind(slider20.widthProperty(), pieGraph.heightProperty());
     }
 
     @Override

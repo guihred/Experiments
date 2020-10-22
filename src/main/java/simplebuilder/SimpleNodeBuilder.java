@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import fxml.utils.TermFrequency;
 import java.lang.reflect.Method;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -25,6 +26,9 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 
     public SimpleNodeBuilder(final T shape) {
         this.node = shape;
+
+        id(TermFrequency.getField());
+
     }
 
     public Z addContextMenu(String text, EventHandler<ActionEvent> value) {
@@ -71,7 +75,7 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
         return (Z) this;
     }
 
-    public Z id(final String id) {
+    public final Z id(final String id) {
         node.setId(id);
         return (Z) this;
     }

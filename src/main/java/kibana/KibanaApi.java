@@ -1,3 +1,4 @@
+
 package kibana;
 
 import com.google.common.collect.ImmutableMap;
@@ -33,7 +34,6 @@ public class KibanaApi {
     private static final Logger LOG = HasLogging.log();
 
     private static final Map<String, String> GET_HEADERS = ImmutableMap.<String, String>builder()
-
             .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0")
             .put("Accept", "application/json, text/plain, */*")
             .put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3").put("Accept-Encoding", "gzip, deflate, br")

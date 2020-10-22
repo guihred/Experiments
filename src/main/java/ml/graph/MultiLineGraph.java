@@ -18,7 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 import org.slf4j.Logger;
-import utils.CommonsFX;
+import utils.ImageFXUtils;
 import utils.ex.HasLogging;
 
 public class MultiLineGraph extends Canvas {
@@ -77,7 +77,7 @@ public class MultiLineGraph extends Canvas {
 
         dataframe.forEach((col, items) -> {
             if (colors == null || colors.size() < stats.size()) {
-                List<Color> generateColors = CommonsFX.generateRandomColors(stats.size());
+                List<Color> generateColors = ImageFXUtils.generateRandomColors(stats.size());
                 Iterator<Color> iterator = generateColors.iterator();
                 stats.forEach((col2, itens) -> colors.put(col2, iterator.next()));
             }

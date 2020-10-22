@@ -18,7 +18,6 @@ import ml.data.Country;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.apache.commons.lang3.StringUtils;
-import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.RotateUtils;
 
@@ -155,7 +154,7 @@ public class WorldMapGraph extends Canvas {
             return;
         }
 
-        List<Color> generateColors = CommonsFX.generateRandomColors(categorize.size() + 1);
+        List<Color> generateColors = ImageFXUtils.generateRandomColors(categorize.size() + 1);
         int k = 0;
         for (String label : categorize) {
             categoryMap.put(label, generateColors.get(k));

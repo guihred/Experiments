@@ -113,7 +113,7 @@ public class DataframeStatisticAccumulator {
 
     public Object getMax() {
         if (getFormat() == String.class) {
-            return SupplierEx.get(() -> countMap.entrySet().stream().max(comparator())
+            return SupplierEx.getIgnore(() -> countMap.entrySet().stream().max(comparator())
                     .map(Entry<String, Integer>::getKey).orElse(null));
         }
         return max;

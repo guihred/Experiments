@@ -4,7 +4,6 @@ import extract.Music;
 import extract.MusicReader;
 import extract.QuickSortML;
 import java.util.Comparator;
-import java.util.Map.Entry;
 import java.util.Objects;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -83,11 +82,11 @@ public class MusicOrganizer extends Application {
         CommonsFX.loadFXML("Organizador de Músicas", "MusicOrganizer.fxml", this, primaryStage, WIDTH, HEIGHT);
     }
 
-    private void sortBy(Entry<String, Boolean> columnName) {
+    private void sortBy(String columnName, Boolean ascending) {
         ObservableList<Music> items2 = SupplierEx.nonNull(musicas, musicaTable.getItems());
         Comparator<Music> comparing = Comparator.comparing(
-                e -> comparing(e, StringSigaUtils.removerDiacritico(StringSigaUtils.changeCase(columnName.getKey()))));
-        QuickSortML.sort(items2, columnName.getValue() ? comparing : comparing.reversed());
+                e -> comparing(e, StringSigaUtils.removerDiacritico(StringSigaUtils.changeCase(columnName))));
+        QuickSortML.sort(items2, ascending ? comparing : comparing.reversed());
     }
 
     public static void main(String[] args) {

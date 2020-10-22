@@ -18,7 +18,7 @@ import utils.fx.Xform;
 
 public class XylophoneApp extends Application {
 
-    private static final double END_ROTATE = 390D;
+    private static final double END_ROTATE = 390.;
     private static final Duration ONE_SECOND = Duration.seconds(1.0);
     private static final Duration HALF_SECOND = Duration.seconds(0.5);
     private static final double X_START = -110.0;
@@ -36,13 +36,13 @@ public class XylophoneApp extends Application {
                     Interpolator.TANGENT(HALF_SECOND, X_OFFSET, HALF_SECOND, X_OFFSET))
 
             .build();
-    private Timeline animation2 = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
+    private final Timeline animation2 = new SimpleTimelineBuilder().cycleCount(Animation.INDEFINITE)
             .addKeyFrame(Duration.ZERO,
-                    sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(ONE_SECOND, 60D))
+                    sceneRoot.rotateXProperty(), 60., Interpolator.TANGENT(ONE_SECOND, 60.))
             .addKeyFrame(Duration.seconds(4),
-                    sceneRoot.rotateXProperty(), 90D, Interpolator.TANGENT(ONE_SECOND, 90D))
+                    sceneRoot.rotateXProperty(), 90., Interpolator.TANGENT(ONE_SECOND, 90.))
             .addKeyFrame(Duration.seconds(8),
-                    sceneRoot.rotateXProperty(), 60D, Interpolator.TANGENT(ONE_SECOND, 60D))
+                    sceneRoot.rotateXProperty(), 60., Interpolator.TANGENT(ONE_SECOND, 60.))
 			.build();
     // I didn't have any xylophone sounds so I added piano sounds :P
     private final AudioClip bar1Note = new AudioClip(toExternalForm("waves/C.wav"));

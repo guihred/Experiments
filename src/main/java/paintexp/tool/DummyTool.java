@@ -2,11 +2,11 @@ package paintexp.tool;
 
 import javafx.scene.Node;
 import javafx.scene.shape.Circle;
-import utils.CommonsFX;
+import utils.ImageFXUtils;
 
 public class DummyTool extends PaintTool {
     @Override
     public Node createIcon() {
-        return new Circle(10, CommonsFX.generateRandomColors(50).get(0));
+        return new Circle(10, ImageFXUtils.generateRandomColors(50).get(0));
     }
 }

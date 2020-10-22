@@ -13,6 +13,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import simplebuilder.SimpleSliderBuilder;
 import utils.CustomList;
+import utils.ImageFXUtils;
 import utils.PixelHelper;
 
 public class PatternTool extends WandTool {
@@ -30,7 +31,7 @@ public class PatternTool extends WandTool {
         if (imageSelected != null) {
             return imageSelected;
         }
-        Image clipboardImage = PaintToolHelper.getClipboardImage();
+        Image clipboardImage = ImageFXUtils.getClipboardImage();
         if (clipboardImage != null) {
             patternImage = clipboardImage;
         }

@@ -1,21 +1,18 @@
 package simplebuilder;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
+import utils.ImageFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
@@ -94,7 +91,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     public SimpleListViewBuilder<T> pasteable(FunctionEx<String, T> f) {
         SimpleNodeBuilder.onKeyReleased(node, e -> {
             if (KeyCode.V == e.getCode()&&e.isControlDown()) {
-                String string = Clipboard.getSystemClipboard().getString();
+                String string = ImageFXUtils.getClipboardString();
                 for (String string2 : string.split("[\n,]+")) {
                     node.getItems().add(FunctionEx.apply(f, string2));
                 }
@@ -114,9 +111,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
                 call.updateItem(t, false);
                 return Objects.toString(call.getText());
             }).collect(Collectors.joining("\n"));
-            Map<DataFormat, Object> content = FXCollections.observableHashMap();
-            content.put(DataFormat.PLAIN_TEXT, collect);
-            Clipboard.getSystemClipboard().setContent(content);
+            ImageFXUtils.setClipboardContent(collect);
         }
     }
 

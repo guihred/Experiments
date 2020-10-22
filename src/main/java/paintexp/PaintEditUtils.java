@@ -38,7 +38,7 @@ public final class PaintEditUtils {
         if (!(paintController.getTool() instanceof AreaTool)) {
             paintController.changeTool(PaintTools.SELECT_RECT.getTool());
         }
-        Image pastedImg = PaintToolHelper.getClipboardImage();
+        Image pastedImg = ImageFXUtils.getClipboardImage();
         if (pastedImg != null) {
             WritableImage image = paintModel.getImage();
             double width = image.getWidth();

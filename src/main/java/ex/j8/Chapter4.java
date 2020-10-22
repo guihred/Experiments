@@ -35,7 +35,7 @@ public final class Chapter4 {
     }
 
     public static Circle buildSun(Scene scene) {
-        Circle theSun = new SimpleCircleBuilder().radius(50).fill(Color.YELLOW).build();
+        final Circle theSun = new SimpleCircleBuilder().radius(50).fill(Color.YELLOW).build();
         theSun.centerXProperty().bind(divide(scene.widthProperty(), 2));
         theSun.centerYProperty().bind(divide(scene.heightProperty(), 2));
         return theSun;
@@ -43,14 +43,14 @@ public final class Chapter4 {
 
     public static void createOrbitAnimation(Scene scene, Circle planet, Slider rotationSlider, Slider radiusSlider) {
         new SimplePathTransitionBuilder().duration(Duration.millis(1000)).interpolator(Interpolator.LINEAR).node(planet)
-            .cycleCount(Animation.INDEFINITE).path(buildArc(scene, rotationSlider, radiusSlider)).build().play();
+                .cycleCount(Animation.INDEFINITE).path(buildArc(scene, rotationSlider, radiusSlider)).build().play();
     }
 
     public static void createPulseAnimation(Circle planet) {
         final double maxScale = 1.5;
         new SimpleScaleTransitionBuilder().byX(maxScale).byY(maxScale).cycleCount(Animation.INDEFINITE)
-            .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet).build()
-            .play();
+                .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet).build()
+                .play();
     }
 
     public static void main(String[] args) {
@@ -58,14 +58,14 @@ public final class Chapter4 {
     }
 
     public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t,
-        ObservableValue<U> u) {
+            ObservableValue<U> u) {
         return new SimpleObjectProperty<R>() {
             @Override
             public void addListener(ChangeListener<? super R> listener) {
                 t.addListener((o, old, value) -> listener.changed(this, f.apply(old, u.getValue()),
-                    f.apply(value, u.getValue())));
+                        f.apply(value, u.getValue())));
                 u.addListener((o, old, value) -> listener.changed(this, f.apply(t.getValue(), old),
-                    f.apply(t.getValue(), value)));
+                        f.apply(t.getValue(), value)));
             }
 
             @Override
@@ -104,17 +104,20 @@ public final class Chapter4 {
         final double scaleFactor = 3.6;
         final int startAngle = 45;
         final int radiusY = 150;
+        final int fullCircle = 360;
+        final double initialRotation = 30.;
         return new SimpleArcBuilder().centerX(divide(scene.widthProperty(), 2)).radiusX(100).radiusY(radiusY)
-            .startAngle(startAngle).length(360).centerY(divide(scene.heightProperty(), 2)).type(ArcType.CHORD)
-            .stroke(Color.RED).strokeType(StrokeType.OUTSIDE).strokeLineCap(StrokeLineCap.ROUND).rotate(30D)
-            .radiusX(multiply(radiusSlider.valueProperty(), scaleFactor)).strokeLineJoin(StrokeLineJoin.ROUND)
-            .rotate(multiply(rotationSlider.valueProperty(), scaleFactor)).fill(Color.TRANSPARENT).build();
+                .startAngle(startAngle).length(fullCircle).centerY(divide(scene.heightProperty(), 2))
+                .type(ArcType.CHORD).stroke(Color.RED).strokeType(StrokeType.OUTSIDE).strokeLineCap(StrokeLineCap.ROUND)
+                .rotate(initialRotation).radiusX(multiply(radiusSlider.valueProperty(), scaleFactor))
+                .strokeLineJoin(StrokeLineJoin.ROUND).rotate(multiply(rotationSlider.valueProperty(), scaleFactor))
+                .fill(Color.TRANSPARENT).build();
     }
 
     private static Circle buildPlanet(Scene scene) {
         final int defaultRadius = 25;
         Circle planet = new SimpleCircleBuilder().centerX(scene.getWidth() / 4 + 100).centerY(scene.getWidth() / 4)
-            .fill(Color.BLUE).radius(defaultRadius).build();
+                .fill(Color.BLUE).radius(defaultRadius).build();
         planet.centerXProperty().bind(divide(scene.widthProperty(), 2).add(100));
         planet.centerYProperty().bind(divide(scene.heightProperty(), 2));
         return planet;
@@ -154,8 +157,8 @@ public final class Chapter4 {
             TextField textField = new TextField(ResourceFXUtils.toExternalForm("About.html"));
             WebView browser = new WebView();
             WebEngine engine = browser.getEngine();
-            Button backButton = SimpleButtonBuilder.newButton("Back",
-                event -> RunnableEx.ignore(() -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1)));
+            Button backButton = SimpleButtonBuilder.newButton("Back", event -> RunnableEx
+                    .ignore(() -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1)));
             Button loadButton = new Button("Go");
             loadButton.setOnAction(event -> engine.load(textField.getText()));
             HBox top = new HBox();
@@ -211,16 +214,17 @@ public final class Chapter4 {
 
         @Override
         public void start(Stage stage) {
-            Pane pane = new VBox(20);
+            final Pane pane = new VBox(20);
             Scene scene = new Scene(pane);
             Slider slider = new Slider();
             Button button = new Button("Teste Disabled");
             CheckBox check = new CheckBox("Teste Check");
             Label message = new Label("Teste Disabled");
 
-            button.disableProperty().bind(observe(t -> t.doubleValue() > 50, slider.valueProperty()));
+            final int maxValue = 50;
+            button.disableProperty().bind(observe(t -> t.doubleValue() > maxValue, slider.valueProperty()));
             ObservableValue<String> observe = observe((t, b) -> (t.doubleValue() > 50) + " " + b,
-                slider.valueProperty(), check.selectedProperty());
+                    slider.valueProperty(), check.selectedProperty());
             observe.addListener((o, old, newV) -> HasLogging.log().info("{} {}", old, newV));
             message.textProperty().bind(observe);
             pane.getChildren().addAll(slider, check, button, message);
@@ -237,7 +241,7 @@ public final class Chapter4 {
         @Override
         public void start(Stage stage) {
             BorderPane pane = new BorderPane(new Button("Center"), new Button("Top"), new Button("Right"),
-                new Button("Bottom"), new Button("Left"));
+                    new Button("Bottom"), new Button("Left"));
             BorderPane.setAlignment(pane.getTop(), Pos.CENTER);
             BorderPane.setAlignment(pane.getBottom(), Pos.CENTER);
             Scene scene = new Scene(pane);
@@ -261,7 +265,7 @@ public final class Chapter4 {
             pane.setRight(new Button("Right"));
             Scene scene = new Scene(pane);
             top.setBorder(new Border(
-                new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(1))));
+                    new BorderStroke(Color.RED, BorderStrokeStyle.SOLID, new CornerRadii(5), new BorderWidths(1))));
             pane.setTop(top);
 
             stage.setScene(scene);
@@ -289,14 +293,15 @@ public final class Chapter4 {
             rotationSlider.setValue(10);
             Slider radiusSlider = new Slider();
             radiusSlider.setOrientation(Orientation.VERTICAL);
-            radiusSlider.setValue(30);
+            final int initialValue = 30;
+            radiusSlider.setValue(initialValue);
             pane.setRight(new HBox(radiusSlider, rotationSlider));
             pane.setCenter(center);
             BorderPane.setAlignment(pane.getCenter(), Pos.CENTER);
             Button pulse = SimpleButtonBuilder.newButton("Pulse", e -> createPulseAnimation(planet));
             center.getChildren().add(buildArc(scene, rotationSlider, radiusSlider));
             Button orbit = SimpleButtonBuilder.newButton("Orbit",
-                e -> createOrbitAnimation(scene, planet, rotationSlider, radiusSlider));
+                    e -> createOrbitAnimation(scene, planet, rotationSlider, radiusSlider));
             pane.setBottom(new HBox(pulse, orbit));
             stage.setScene(scene);
             stage.setTitle("EX9");

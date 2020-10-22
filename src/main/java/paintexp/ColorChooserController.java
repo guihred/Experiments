@@ -20,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 import utils.DrawOnPoint;
 
 public class ColorChooserController {
+    private static final int MAX_THREAD_HEAP = 60;
     private static final int SQUARE_SIZE = 64;
     @FXML
     private Slider hueSlider2;
@@ -96,7 +97,7 @@ public class ColorChooserController {
             circle.setCenterX(newV.getSaturation() * MAX_BYTE);
             circle.setCenterY(MAX_BYTE * (1 - newV.getBrightness()));
         });
-        DrawOnPoint.transparentImage(256, transparentImage);
+        DrawOnPoint.transparentImage(MAX_BYTE + 1, transparentImage);
         DrawOnPoint.transparentImage(SQUARE_SIZE, smallImage);
         setSliderImage();
         drawImage();
@@ -136,7 +137,7 @@ public class ColorChooserController {
     }
 
     private void drawImage() {
-        if (Thread.currentThread().getStackTrace().length > 60) {
+        if (Thread.currentThread().getStackTrace().length > MAX_THREAD_HEAP) {
             return;
         }
         for (int x = 0; x < 256; x++) {

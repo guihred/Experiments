@@ -141,7 +141,7 @@
 								</children>
 							</VBox>
 							<Text fx:id="text18" />
-							<PieGraph fx:id="pieGraph" />
+							<PieGraph fx:id="pieGraph" showLines="true"/>
 						</VBox>
 					</content>
 				</Tab>

@@ -20,12 +20,14 @@ import simplebuilder.*;
 
 public class RandomPathExample extends Application {
 
-    private Ellipse ellipse = new SimpleEllipseBuilder().centerX(100).centerY(50).radiusX(4).radiusY(4).fill(Color.BLUE)
-        .build();
+    private static final int MAX_RANDOMNESS = 200;
+
+    private Ellipse ellipse =
+            new SimpleEllipseBuilder().centerX(100).centerY(50).radiusX(4).radiusY(4).fill(Color.BLUE).build();
 
     private PathTransition anim = new SimplePathTransitionBuilder()
-        .orientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT).interpolator(Interpolator.LINEAR)
-        .autoReverse(false).cycleCount(Animation.INDEFINITE).node(ellipse).duration(new Duration(1000.0)).build();
+            .orientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT).interpolator(Interpolator.LINEAR)
+            .autoReverse(false).cycleCount(Animation.INDEFINITE).node(ellipse).duration(new Duration(1000.0)).build();
 
     private Random random = new Random();
 
@@ -36,13 +38,13 @@ public class RandomPathExample extends Application {
         Button pauseButton = SimpleButtonBuilder.newButton("Pause", e -> anim.pause());
         Button startButton = SimpleButtonBuilder.newButton("Start", e -> anim.playFromStart());
         SimplePathBuilder moveTo = new SimplePathBuilder().moveTo(200, 200);
-        HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10)
-            .children(startButton, pauseButton, resumeButton, stopButton).build();
-        Scene scene = new Scene(new Group(ellipse, moveTo.build(), hbox), 400, 500);
+        final HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10)
+                .children(startButton, pauseButton, resumeButton, stopButton).build();
+        final Scene scene = new Scene(new Group(ellipse, moveTo.build(), hbox), 400, 500);
         List<Runnable> run = Arrays.asList(
-            () -> moveTo.arcTo(d(), d(), d(), d(), d(), random.nextBoolean(), random.nextBoolean()),
-            () -> moveTo.cubicCurveTo(d(), d(), d(), d(), d(), d()), () -> moveTo.quadCurveTo(d(), d(), d(), d()),
-            () -> moveTo.hLineTo(d()), () -> moveTo.vLineTo(d()), () -> moveTo.lineTo(d(), d()));
+                () -> moveTo.arcTo(d(), d(), d(), d(), d(), random.nextBoolean(), random.nextBoolean()),
+                () -> moveTo.cubicCurveTo(d(), d(), d(), d(), d(), d()), () -> moveTo.quadCurveTo(d(), d(), d(), d()),
+                () -> moveTo.hLineTo(d()), () -> moveTo.vLineTo(d()), () -> moveTo.lineTo(d(), d()));
         Collections.shuffle(run);
         run.forEach(Runnable::run);
         moveTo.closePath();
@@ -57,7 +59,7 @@ public class RandomPathExample extends Application {
     }
 
     private double d() {
-        return random.nextDouble() * 200;
+        return random.nextDouble() * MAX_RANDOMNESS;
     }
 
     public static void main(String[] args) {

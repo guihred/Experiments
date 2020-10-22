@@ -2,15 +2,19 @@ package fxml.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.FileTreeWalker;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public final class TermFrequency {
     private static final Logger LOGGER = HasLogging.log();
@@ -42,6 +46,24 @@ public final class TermFrequency {
 
         }
 
+    }
+
+    public static String getField() {
+        return SupplierEx.get(() -> {
+            String stackMatch = HasLogging.getStackMatch(s -> !s.startsWith("simplebuilder")&&!s.startsWith("fxml.utils"));
+            String[] split = stackMatch.split("[:\\.]+");
+            String line = split[split.length - 1];
+            String fileName = split[split.length - 2];
+            Path javaPath = FileTreeWalker.getFirstPathByExtension(new File("src"), fileName + ".java");
+                try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
+                    // String[] split2 =
+                    return lines.skip(StringSigaUtils.toInteger(line)).filter(s -> s.contains("=")).findFirst()
+                            .map(s -> Stream.of(s.split("[\\s=]+")).filter(StringUtils::isNotBlank)
+                                    .filter(t -> !getJavaKeywords().contains(t))
+                                    .filter(m -> Character.isLowerCase(m.charAt(0))).findFirst().orElse(s))
+                            .orElse(null);
+            }
+        });
     }
 
     public static Map<String, Long> getFrequencyMap(File f, String suffix) {

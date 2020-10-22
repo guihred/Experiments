@@ -1,9 +1,7 @@
 package paintexp.tool;
 
 import static utils.CommonsFX.bindBidirectional;
-import static utils.ResourceFXUtils.convertToURL;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
@@ -16,10 +14,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -30,8 +24,6 @@ import simplebuilder.SimpleConverter;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ClassReflectionUtils;
 import utils.StringSigaUtils;
-import utils.ex.FunctionEx;
-import utils.ex.SupplierEx;
 
 public final class PaintToolHelper {
     private PaintToolHelper() {
@@ -65,20 +57,6 @@ public final class PaintToolHelper {
 
         addStrokeArray(selectedItem, children, "strokeDashArray", selectedItem.getStrokeDashArray());
 
-    }
-
-    public static Image getClipboardImage() {
-        Clipboard systemClipboard = Clipboard.getSystemClipboard();
-        return SupplierEx.orElse(systemClipboard.getImage(), () -> {
-            List<File> files = systemClipboard.getFiles();
-            return gatherImages(files);
-        });
-    }
-
-    public static void setClipboardContent(Object imageSelected2) {
-        Map<DataFormat, Object> content = FXCollections.observableHashMap();
-        content.put(DataFormat.IMAGE, imageSelected2);
-        Clipboard.getSystemClipboard().setContent(content);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -126,6 +104,8 @@ public final class PaintToolHelper {
         }
     }
 
+
+
     private static void addStrokeArray(Shape selectedItem, ObservableList<Node> children, String key,
             ObservableList<Double> property) {
         String changeCase = StringSigaUtils.splitMergeCamelCase(StringSigaUtils.changeCase(key));
@@ -152,31 +132,6 @@ public final class PaintToolHelper {
         selectedItem.strokeWidthProperty().addListener((ob, old, val) -> property
                 .setAll(comboBox.getValue().stream().map(e -> e * val.doubleValue()).collect(Collectors.toList())));
         vBox.getChildren().add(comboBox);
-    }
-
-
-
-    private static Image gatherImages(List<File> files) {
-        List<Image> collect =
-                files.stream().map(FunctionEx.makeFunction(f -> new Image(convertToURL(f).toExternalForm())))
-                        .filter(Objects::nonNull).collect(Collectors.toList());
-        if (collect.isEmpty()) {
-            return null;
-        }
-        if (collect.size() == 1) {
-            return collect.get(0);
-        }
-        double width = collect.stream().mapToDouble(Image::getWidth).max().orElse(0);
-        double height = collect.stream().mapToDouble(Image::getHeight).max().orElse(0);
-        WritableImage writableImage = new WritableImage((int) width, (int) height * collect.size());
-        int x = 0;
-        for (Image image : collect) {
-            int height2 = (int) image.getHeight();
-            writableImage.getPixelWriter().setPixels(0, x, (int) image.getWidth(), height2, image.getPixelReader(), 0,
-                    0);
-            x += height2;
-        }
-        return writableImage;
     }
 
     private static double getMax(double value3) {

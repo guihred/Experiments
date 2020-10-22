@@ -103,7 +103,7 @@ public class PdfInfo {
         return pageIndex;
     }
 
-    public void setFile(File file) {
+    public final void setFile(File file) {
         this.file = file;
         titleName.set(file.getName());
     }

@@ -27,8 +27,8 @@ public final class GraphAlgorithms {
     }
 
     public static List<Vertex> createGraph2() {
-        List<Vertex> vertices = IntStream.range(1, 12).mapToObj(Vertex::new).collect(Collectors.toList());
-        int[][] adj = { { 2, 5 }, // A
+        final List<Vertex> vertices = IntStream.range(1, 12).mapToObj(Vertex::new).collect(Collectors.toList());
+        final int[][] adj = { { 2, 5 }, // A
             { 3 }, // B
             { 11 }, // C
             { 1, 5 }, // D
@@ -120,7 +120,7 @@ public final class GraphAlgorithms {
     }
 
     public static List<Vertex> createGraph7() {
-        List<Vertex> graph = IntStream.range(1, 11).mapToObj(Vertex::new).collect(Collectors.toList());
+        final List<Vertex> graph = IntStream.range(1, 11).mapToObj(Vertex::new).collect(Collectors.toList());
         Vertex a = graph.get(0);
         Vertex b = graph.get(1);
         Vertex c = graph.get(2);

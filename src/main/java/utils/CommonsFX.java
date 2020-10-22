@@ -4,14 +4,12 @@ import static utils.ResourceFXUtils.convertToURL;
 import static utils.ResourceFXUtils.toExternalForm;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +20,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import utils.ex.PredicateEx;
@@ -41,7 +38,7 @@ public final class CommonsFX {
         value.getStylesheets().add(toExternalForm(CSS_DIR + css));
     }
 
-    public static <T> void bind(Property<T> source, Property<T> target) {
+    public static <T> void bind(ObservableValue<T> source, Property<T> target) {
         source.addListener((ob, old, val) -> runInPlatform(() -> target.setValue(val)));
         target.setValue(source.getValue());
     }
@@ -63,22 +60,6 @@ public final class CommonsFX {
         TextField textField = new TextField();
         textField.textProperty().bindBidirectional(propriedade);
         return new Node[] { new Label(nome), textField };
-    }
-
-    public static List<Color> generateRandomColors(final int size) {
-        final int maxByte = 255;
-        int max = 256;
-        List<Color> availableColors = new ArrayList<>();
-        int cubicRoot = Integer.max((int) Math.ceil(Math.pow(size, 1.0 / 3.0)), 2);
-        for (int i = 0; i < cubicRoot * cubicRoot * cubicRoot; i++) {
-            Color rgb = Color.rgb(Math.abs(maxByte - i / cubicRoot / cubicRoot % cubicRoot * max / cubicRoot) % max,
-                    Math.abs(maxByte - i / cubicRoot % cubicRoot * max / cubicRoot) % max,
-                    Math.abs(maxByte - i % cubicRoot * max / cubicRoot) % max);
-
-            availableColors.add(rgb);
-        }
-        Collections.shuffle(availableColors);
-        return availableColors;
     }
 
     public static void initializeFX() {

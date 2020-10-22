@@ -17,6 +17,7 @@ import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.RunnableEx;
 
 public class KibanaInvestigator extends Application {
@@ -41,7 +42,8 @@ public class KibanaInvestigator extends Application {
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         SimpleTableViewBuilder.of(commonTable).copiable().savable();
-        SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable().pasteable(s -> s);
+        SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
+                .pasteable(s -> StringSigaUtils.getMatches(s, "(\\d+\\.\\d+\\.\\d+\\.\\d+)"));
     }
 
     public void onActionKibanaScan() {

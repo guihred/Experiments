@@ -21,7 +21,7 @@ public interface SupplierEx<T> {
 
     @SafeVarargs
     static <A> A getFirst(SupplierEx<A>... run) {
-        List<Exception> exceptions = new ArrayList<>();
+        List<Throwable> exceptions = new ArrayList<>();
         for (SupplierEx<A> supplierEx : run) {
             A a = makeSupplier(supplierEx, exceptions::add).get();
             if (a != null) {
@@ -30,16 +30,16 @@ public interface SupplierEx<T> {
         }
         if (!exceptions.isEmpty()) {
             HasLogging.log(1).error("ERROR {} {}", HasLogging.getCurrentLine(1),
-                    exceptions.stream().map(Exception::getMessage).collect(Collectors.toList()));
+                    exceptions.stream().map(Throwable::getMessage).collect(Collectors.toList()));
         }
         return null;
     }
 
-    static <A> A getHandle(SupplierEx<A> run, A orElse, Consumer<Exception> onError) {
+    static <A> A getHandle(SupplierEx<A> run, A orElse, Consumer<Throwable> onError) {
         try {
             A a = run.get();
             return a != null ? a : orElse;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             HasLogging.log(1).trace("", e);
             onError.accept(e);
             return orElse;
@@ -58,7 +58,7 @@ public interface SupplierEx<T> {
         return makeSupplier(run::get, e -> HasLogging.log(1).error("", e));
     }
 
-    static <A> Supplier<A> makeSupplier(SupplierEx<A> run, Consumer<Exception> onError) {
+    static <A> Supplier<A> makeSupplier(SupplierEx<A> run, Consumer<Throwable> onError) {
         return () -> getHandle(run, null, onError);
     }
 

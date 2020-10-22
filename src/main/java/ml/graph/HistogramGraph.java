@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
-import utils.CommonsFX;
+import utils.ImageFXUtils;
 
 public class HistogramGraph extends Canvas {
     private static final int SIZE = 550;
@@ -149,7 +149,7 @@ public class HistogramGraph extends Canvas {
         this.dataframe = dataframe;
 
         dataframe.forEach((col, items) -> {
-            List<Color> generateColors = CommonsFX.generateRandomColors(stats.size());
+            List<Color> generateColors = ImageFXUtils.generateRandomColors(stats.size());
             Iterator<Color> iterator = generateColors.iterator();
             colors.put(col, iterator.next());
             Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, col, bins.get());

@@ -11,10 +11,12 @@ import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 
-public class BalabolkaApi {
+public final class BalabolkaApi {
     private static final String BALABOLKA_EXE = FileTreeWalker
             .getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "bal4web.exe").toFile().toString();
 
+    private BalabolkaApi() {
+    }
 
     public static File speak(String s) {
         return speak(s, out -> {

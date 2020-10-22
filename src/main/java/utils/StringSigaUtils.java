@@ -177,6 +177,16 @@ public class StringSigaUtils extends StringUtils {
         return links;
     }
 
+    public static String getMatches(String content, String regex) {
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(Objects.toString(content, ""));
+        StringBuilder matches = new StringBuilder();
+        while (m.find()) {
+            matches.append(m.group(1));
+        }
+        return matches.toString();
+    }
+
     public static String intFormating(int length) {
         return "\t%" + length + "d";
     }

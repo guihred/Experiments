@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import ml.data.DataframeML;
 import org.apache.commons.lang3.StringUtils;
-import utils.CommonsFX;
+import utils.ImageFXUtils;
 import utils.StringSigaUtils;
 
 public class TimelineGraph extends Canvas {
@@ -104,7 +104,7 @@ public class TimelineGraph extends Canvas {
         double j2 = (MAX_LAYOUT - layout.get()) / ybins.get();
         boolean colorEmpty = colors.isEmpty();
 
-        List<Color> generateRandomColors = CommonsFX.generateRandomColors(list.size());
+        List<Color> generateRandomColors = ImageFXUtils.generateRandomColors(list.size());
         for (int i = 0; i < list.size(); i++) {
             String labelRow = list.get(i);
             Color value = colors.get(labelRow);

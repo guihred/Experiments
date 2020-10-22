@@ -1,27 +1,25 @@
 package simplebuilder;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import utils.CSVUtils;
+import utils.ImageFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
-import utils.ex.RunnableEx;
 
 public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>, SimpleTableViewBuilder<T>> {
 
@@ -95,13 +93,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
                 ConsumerEx.accept(object, node.getSelectionModel().getSelectedItems());
             }
         });
-        EventHandler<? super KeyEvent> onKeyReleased = node.getOnKeyReleased();
-        node.setOnKeyReleased(e -> {
-            RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
-            if (e.getCode() == KeyCode.ENTER) {
-                ConsumerEx.accept(object, node.getSelectionModel().getSelectedItems());
-            }
-        });
+        onKey(KeyCode.ENTER, object);
         return this;
     }
 
@@ -123,14 +115,12 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
-    public SimpleTableViewBuilder<T> onSortClicked(ConsumerEx<Entry<String, Boolean>> c) {
+    public SimpleTableViewBuilder<T> onSortClicked(BiConsumer<String, Boolean> c) {
         node.setSortPolicy((TableView<T> o) -> {
-            ObservableList<TableColumn<T, ?>> sortOrder = o.getSortOrder();
+            List<TableColumn<T, ?>> sortOrder = o.getSortOrder();
             if (!sortOrder.isEmpty()) {
                 TableColumn<T, ?> tableColumn = sortOrder.get(0);
-                SortType sortType = tableColumn.getSortType();
-                ConsumerEx.accept(c,
-                        new AbstractMap.SimpleEntry<>(tableColumn.getText(), sortType == SortType.ASCENDING));
+                c.accept(tableColumn.getText(), tableColumn.getSortType() == SortType.ASCENDING);
             }
             return true;
         });
@@ -183,20 +173,18 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public static <T> void copyContent(TableView<T> table, KeyEvent ev) {
         if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
-            ObservableList<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
+            List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
             String collect =
                     selectedItems
                             .stream().map(l -> table.getColumns().stream()
                                     .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
                             .collect(Collectors.joining("\n"));
-            Map<DataFormat, Object> content = FXCollections.observableHashMap();
-            content.put(DataFormat.PLAIN_TEXT, collect);
-            Clipboard.getSystemClipboard().setContent(content);
+            ImageFXUtils.setClipboardContent(collect);
         }
     }
 
     public static <S> void equalColumns(TableView<S> table) {
-        ObservableList<TableColumn<S, ?>> columns = table.getColumns();
+        List<TableColumn<S, ?>> columns = table.getColumns();
         prefWidthColumns(table, columns.stream().mapToDouble(e -> 1).toArray());
     }
 
@@ -223,13 +211,8 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
                 ConsumerEx.foreach(table2.getSelectionModel().getSelectedItems(), object);
             }
         });
-        EventHandler<? super KeyEvent> onKeyReleased = table2.getOnKeyReleased();
-        table2.setOnKeyReleased(e -> {
-            RunnableEx.runIf(onKeyReleased, onKey -> onKey.handle(e));
-            if (e.getCode() == KeyCode.ENTER) {
-                ConsumerEx.foreach(table2.getSelectionModel().getSelectedItems(), object);
-            }
-        });
+        onKeyReleased(table2, KeyCode.ENTER,
+                () -> ConsumerEx.foreach(table2.getSelectionModel().getSelectedItems(), object));
     }
 
     public static <T> void onSelect(TableView<T> table, final BiConsumer<T, T> value) {
@@ -238,7 +221,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public static <S> void prefWidthColumns(TableView<S> table1, double... prefs) {
-        ObservableList<TableColumn<S, ?>> columns = table1.getColumns();
+        List<TableColumn<S, ?>> columns = table1.getColumns();
         double sum = DoubleStream.of(prefs).sum();
         for (int i = 0; i < prefs.length; i++) {
             double pref = prefs[i];

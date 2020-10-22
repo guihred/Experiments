@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
@@ -18,8 +17,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.WritablePixelFormat;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
@@ -214,10 +211,9 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             List<Path> pathByExtension =
                     FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".png");
             if (!pathByExtension.isEmpty()) {
-                Map<DataFormat, Object> content = FXCollections.observableHashMap();
                 Path path = randomItem(pathByExtension);
-                content.put(DataFormat.FILES, Arrays.asList(path.toFile()));
-                Clipboard.getSystemClipboard().setContent(content);
+                File file = path.toFile();
+                ImageFXUtils.setClipboardContent(file);
             }
         });
     }

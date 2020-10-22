@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
-import utils.CommonsFX;
 import utils.DisjSets;
+import utils.ImageFXUtils;
 import utils.ex.HasLogging;
 
 public final class GraphModelAlgorithms {
@@ -69,7 +69,7 @@ public final class GraphModelAlgorithms {
     }
 
     public static void coloring(Collection<Cell> allCells2, List<Edge> allEdges) {
-        List<Color> availableColors = CommonsFX.generateRandomColors(allCells2.size());
+        List<Color> availableColors = ImageFXUtils.generateRandomColors(allCells2.size());
         int i = 0;
         List<Cell> vertices =
                 allCells2.stream().sorted(Comparator.comparing((Cell e) -> biedgesNumber(e, allEdges)).reversed())
