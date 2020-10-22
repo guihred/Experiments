@@ -29,6 +29,7 @@
 				<TextField fx:id="address" text="10.69.64.31" />
 				<Button id="Ping _Trace" onAction="#onActionPingTrace" text="Ping _Trace" />
 				<Button id="_Who is" onAction="#onActionWhoIs" text="_Who is" />
+				<Button id="_Reverse DNS" onAction="#onActionReverseDNS" text="_Reverse DNS" />
 				<Text text="Network Adress" />
 				<HBox>
 					<children>

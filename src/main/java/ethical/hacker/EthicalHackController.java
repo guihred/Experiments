@@ -126,6 +126,22 @@ public class EthicalHackController extends EthicalHackApp {
         });
     }
 
+    public void onActionReverseDNS() {
+        items.clear();
+        String[] split = address.getText().split("[ ,;]+");
+        WhoIsScanner whoIsScanner = new WhoIsScanner();
+        for (String ip : split) {
+            Map<String,String> linkedHashMap = new LinkedHashMap<>();
+            String reverseDns = whoIsScanner.reverseDNS(ip);
+            linkedHashMap.put("IP", ip);
+            linkedHashMap.put("Reverse DNS", reverseDns);
+            if (items.isEmpty()) {
+                SimpleTableViewBuilder.addColumns(commonTable, linkedHashMap.keySet());
+            }
+            items.add(linkedHashMap);
+        }
+    }
+
     public void onActionWebsiteScan() {
         items.clear();
         String text = dns.getText();
