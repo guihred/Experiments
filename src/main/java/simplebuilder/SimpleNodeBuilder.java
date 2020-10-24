@@ -26,8 +26,9 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
 
     public SimpleNodeBuilder(final T shape) {
         this.node = shape;
-
-        id(TermFrequency.getField());
+        if (shape.getId() == null) {
+            id(TermFrequency.getField());
+        }
 
     }
 

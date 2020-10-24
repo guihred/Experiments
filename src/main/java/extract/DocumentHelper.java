@@ -1,7 +1,9 @@
 package extract;
 
+import com.google.common.io.Files;
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -14,12 +16,23 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.CommonsFX;
+import utils.ExtractUtils;
+import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -36,7 +49,7 @@ public final class DocumentHelper {
         ClassReflectionUtils.allProperties(loadWorker, loadWorker.getClass()).forEach((s, prop) -> {
             Text e = new Text();
             e.textProperty().bind(Bindings.concat(StringSigaUtils.changeCase(s), ": ", prop));
-            e.textProperty().addListener((ob, old, val) -> LOG.info("{}", val));
+            e.textProperty().addListener((ob, old, val) -> LOG.debug("{}", val));
             value.getItems().add(e);
         });
         value.getItems().sort(Comparator.comparing(Text::getText));
@@ -67,6 +80,13 @@ public final class DocumentHelper {
         return getByTagAttribute(url, doc, "a", "href");
     }
 
+    public static Document newDocument() throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+        return documentBuilder.newDocument();
+    }
+
     public static void onDocumentChange(Document doc, String url, ListView<String> linksList2,
             ListView<ImageView> imageList2) {
         if (doc != null) {
@@ -79,6 +99,34 @@ public final class DocumentHelper {
                 CommonsFX.runInPlatform(() -> imageList2.setItems(imgs));
             });
         }
+    }
+
+    public static void saveToFile(Document document, File file) throws TransformerException {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        DOMSource domSource = new DOMSource(document);
+        StreamResult streamResult = new StreamResult(file);
+        transformer.transform(domSource, streamResult);
+    }
+
+    public static void saveToHtmlFile(Document document, File file) throws TransformerException {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        DOMSource domSource = new DOMSource(document);
+        StreamResult streamResult = new StreamResult(file);
+        transformer.transform(domSource, streamResult);
+        RunnableEx.run(() -> {
+            String string = "<!DOCTYPE html>\n" + Files.toString(file, StandardCharsets.UTF_8)
+                    .replaceAll("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+            String lowerCase = StringSigaUtils.replaceToLowerCase(string);
+            Files.write(lowerCase, file, StandardCharsets.UTF_8);
+        });
+
     }
 
     private static ObservableList<String> getByTagAttribute(String url, Document doc, String tagname,

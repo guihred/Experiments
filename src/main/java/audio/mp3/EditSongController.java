@@ -102,7 +102,7 @@ public class EditSongController extends Application {
     }
 
     public void onActionSplit(ActionEvent e) {
-        File outFile = ResourceFXUtils.getOutFile(selectedItem.getArquivo().getName());
+        File outFile = ResourceFXUtils.getOutFile("mp3/" + selectedItem.getArquivo().getName());
         if (initialSlider.getValue() != 0 || finalSlider.getValue() != 1) {
             EditSongHelper.splitAndSave(selectedItem, initialSlider, finalSlider, outFile, progressIndicator,
                 mediaPlayer);

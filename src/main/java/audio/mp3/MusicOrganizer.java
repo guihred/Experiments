@@ -56,19 +56,19 @@ public class MusicOrganizer extends Application {
     public void onActionCarregarMusicas(ActionEvent e) {
         new FileChooserBuilder().name("Carregar _Musicas").title("Carregar Pasta de Músicas")
                 .initialDir(ResourceFXUtils.getUserFolder("Music")).onSelect(selectedFile -> {
-            musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
-            configurarFiltroRapido(filterText, musicaTable, musicas);
-        }).openDirectoryAction(e);
+                    musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
+                    configurarFiltroRapido(filterText, musicaTable, musicas);
+                }).openDirectoryAction(e);
     }
 
     public void onActionCarregarVideos(ActionEvent e) {
         new FileChooserBuilder().name("Carregar _Vídeos").title("Carregar Pasta de Músicas")
                 .initialDir(ResourceFXUtils.getUserFolder("Music")).onSelect(selectedFile -> {
-            ObservableList<Music> videos = FXCollections.observableArrayList();
-            FileTreeWalker.getPathByExtensionAsync(selectedFile, v -> videos.add(new Music(v.toFile())), ".mp4", ".wma",
-                    ".webm", ".wav");
-            configurarFiltroRapido(filterText, musicaTable, videos);
-        }).openDirectoryAction(e);
+                    musicas.clear();
+                    FileTreeWalker.getPathByExtensionAsync(selectedFile, v -> musicas.add(new Music(v.toFile())),
+                            ".mp4", ".wma", ".webm", ".wav");
+                    configurarFiltroRapido(filterText, musicaTable, musicas);
+                }).openDirectoryAction(e);
     }
 
     public void onActionConsertarMusicas() {

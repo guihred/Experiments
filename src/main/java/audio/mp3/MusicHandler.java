@@ -141,7 +141,8 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
             return;
         }
         Path path = arquivo.toPath();
-        File outFile = ResourceFXUtils.getOutFile(path.toFile().getName());
+        String name = path.toFile().getName();
+        File outFile = ResourceFXUtils.getOutFile(name.replaceAll(".+\\.(\\w+)$", "$1") + "/" + name);
         ExtractUtils.copy(path, outFile);
         Files.deleteIfExists(path);
     }

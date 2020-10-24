@@ -14,7 +14,7 @@ public class FXPhotoViewerTest extends AbstractTestExecution {
         Set<Node> queryAll = lookup(".button").queryAll();
         queryAll.forEach(ConsumerEx.ignore(t -> {
             for (int i = 0; i < 10; i++) {
-                clickOn(t);
+                tryClickOn(t);
             }
         }));
         sleep(5000);

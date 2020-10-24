@@ -10,7 +10,7 @@ import utils.ex.HasLogging;
 
 public final class CatanLogger {
     private static final Logger LOGGER = HasLogging.log();
-    public static final String CATAN_LOG = "catan_log.txt";
+    public static final String CATAN_LOG = "txt/catan_log.txt";
     private static final DataframeML DATAFRAME_ML = CatanLogBuilder.getDataframe();
 
     private CatanLogger() {

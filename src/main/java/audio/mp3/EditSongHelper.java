@@ -122,7 +122,7 @@ public final class EditSongHelper {
         String format = FunctionEx.mapIf(music.getArtista(), a -> String.format("%s-%s.mp3", music.getTitulo(), a),
             music.getTitulo().replaceAll("\\..+", ".mp3"));
 
-        File newFile = ResourceFXUtils.getOutFile(format);
+        File newFile = ResourceFXUtils.getOutFile("mp3/" + format);
         DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime.get(), currentTime);
         progressIndicator.progressProperty().bind(splitAudio);
         progressIndicator.setVisible(true);

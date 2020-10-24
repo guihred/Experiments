@@ -163,7 +163,7 @@ public final class TermFrequencyIndex {
 
             entrySet.sort(TermFrequencyIndex::compare);
             // MAP
-            File file = ResourceFXUtils.getOutFile("resultado.txt");
+            File file = ResourceFXUtils.getOutFile("txt/resultado.txt");
             printWordFound(entrySet, file);
         } catch (Exception e2) {
             LOGGER.error("", e2);
@@ -188,7 +188,6 @@ public final class TermFrequencyIndex {
 
     private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) {
         try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
-
             entrySet.forEach(e -> {
                 if (!TermFrequency.getJavaKeywords().contains(e.getKey())) {
                     out.println(e.getKey() + "={");

@@ -6,15 +6,19 @@ import static extract.DocumentHelper.onDocumentChange;
 import extract.DocumentHelper;
 import extract.JsoupUtils;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener.Change;
 import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
@@ -37,8 +41,11 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import utils.CommonsFX;
 import utils.ExtractUtils;
+import utils.ImageFXUtils;
+import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class WebBrowserApplication extends Application {
     private static final Logger LOG = HasLogging.log();
@@ -67,7 +74,9 @@ public class WebBrowserApplication extends Application {
         progressIndicator.progressProperty().bind(loadWorker.progressProperty());
         siteField.prefWidthProperty()
                 .bind(browser.widthProperty().add(progressIndicator.widthProperty().add(50).negate()));
-        loadWorker.stateProperty().addListener((ob, oldValue, newState) -> ((Stage) siteField.getScene().getWindow())
+        loadWorker.stateProperty()
+                .addListener((ObservableValue<? extends State> ob, State oldValue,
+                        State newState) -> ((Stage) siteField.getScene().getWindow())
                 .setTitle(engine.getLocation() + " " + newState));
         loadWorker.exceptionProperty().addListener((ob, oldValue, newException) -> onException(newException));
         engine.getHistory().getEntries().addListener((Change<? extends Entry> c) -> {
@@ -90,6 +99,10 @@ public class WebBrowserApplication extends Application {
 
     }
 
+    public boolean isLoading() {
+        return engine.getLoadWorker().getState() == State.RUNNING;
+    }
+
     public void loadSite(String url) {
         RunnableEx.ignore(() -> engine.load(url));
     }
@@ -104,9 +117,20 @@ public class WebBrowserApplication extends Application {
         }
     }
 
+    public File saveHtmlImage() {
+        return SupplierEx.get(() -> {
+            File file = ResourceFXUtils.getOutFile("html/webBrowser.html");
+            DocumentHelper.saveToHtmlFile(engine.getDocument(), file);
+            Bounds bounds = browser.getBoundsInLocal();
+            String take = ImageFXUtils.take(browser, bounds.getWidth(), bounds.getHeight(), 10);
+            return new File(take);
+        });
+    }
+
     @Override
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("WebBrowserApplication", "WebBrowserApplication.fxml", this, primaryStage);
+        primaryStage.setMaximized(true);
     }
 
     private String getUrl() {

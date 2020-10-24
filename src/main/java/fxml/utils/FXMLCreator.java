@@ -8,6 +8,7 @@ import static utils.StringSigaUtils.changeCase;
 import static utils.TreeElement.getDifferences;
 import static utils.ex.RunnableEx.make;
 
+import extract.DocumentHelper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -46,7 +47,7 @@ public final class FXMLCreator {
     public void createFXMLFile(Object node, File file) {
         String packageName = FXMLCreator.class.getPackage().getName();
         RunnableEx.remap(() -> {
-            document = XMLExtractor.newDocument();
+            document = DocumentHelper.newDocument();
             allNode.add(node);
             processNodes(file, packageName);
 
@@ -54,7 +55,7 @@ public final class FXMLCreator {
             document.removeChild(firstChild);
             packages.forEach(p -> document.appendChild(document.createProcessingInstruction("import", p + ".*")));
             document.appendChild(firstChild);
-            XMLExtractor.saveToFile(document, file);
+            DocumentHelper.saveToFile(document, file);
             createController(file, packageName);
         }, "ERROR in file " + file.getName());
     }

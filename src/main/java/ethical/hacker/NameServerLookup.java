@@ -27,18 +27,13 @@ public class NameServerLookup {
         results.put(server, "$1");
 
         Map<String, String> cname = ConsoleUtils.executeInConsole("nslookup -type=cname " + address, results);
-        LOG.info("DNS Server Name = {}", executeInConsole.get(dnsServerName));
-        LOG.info("Non-Authoritative Answer = {}", executeInConsole.get(nonAuthoritativeAnswer));
-        LOG.info("CNAME Alias = {}", cname.get(alias));
-        LOG.info("Canonical name = {}", cname.get(server));
-        LOG.info("MX (Mail Exchanger) = {}", cname.get(mailExchanger));
         Map<String, String> properties = new HashMap<>();
         properties.put("DNS Server Name", executeInConsole.get(dnsServerName));
         properties.put("Non-Authoritative Answer", executeInConsole.get(nonAuthoritativeAnswer));
         properties.put("CNAME Alias", cname.get(alias));
         properties.put("Canonical name", cname.get(server));
         properties.put("MX (Mail Exchanger)", cname.get(mailExchanger));
-
+        LOG.info("DNS Info = {}", properties);
         return properties;
 
     }

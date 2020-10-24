@@ -21,7 +21,6 @@ import utils.StringSigaUtils;
 import utils.ex.RunnableEx;
 
 public class KibanaInvestigator extends Application {
-    private static final int WIDTH = 600;
     @FXML
     private TextField resultsFilter;
     @FXML
@@ -76,7 +75,8 @@ public class KibanaInvestigator extends Application {
 
     @Override
     public void start(final Stage primaryStage) {
-        CommonsFX.loadFXML("Kibana Investigator", "KibanaInvestigator.fxml", this, primaryStage, WIDTH, WIDTH);
+        final int width = 600;
+        CommonsFX.loadFXML("Kibana Investigator", "KibanaInvestigator.fxml", this, primaryStage, width, width);
     }
 
     public static void main(String[] args) {

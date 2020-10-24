@@ -7,17 +7,25 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import javax.imageio.ImageIO;
+import org.apache.poi.util.Units;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.ResourceFXUtils;
+import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
 public final class WordService {
+
+    private static final Logger LOG = HasLogging.log();
 
     private WordService() {
     }
@@ -33,9 +41,9 @@ public final class WordService {
         });
     }
 
-    public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
+    public static void getWord(Map<String, Object> mapaSubstituicao, File arquivo, File outStream) {
         RunnableEx.run(() -> {
-            try (InputStream resourceAsStream = ResourceFXUtils.toStream(arquivo);
+            try (InputStream resourceAsStream = new FileInputStream(arquivo);
                 XWPFDocument document1 = new XWPFDocument(resourceAsStream);
                 FileOutputStream stream = new FileOutputStream(outStream)) {
                 changeHeader(mapaSubstituicao, document1);
@@ -47,6 +55,10 @@ public final class WordService {
                 document1.write(stream);
             }
         });
+    }
+
+    public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
+        getWord(mapaSubstituicao, ResourceFXUtils.toFile(arquivo), outStream);
     }
 
     private static void changeHeader(Map<String, Object> mapaSubstituicao, XWPFDocument document1) {
@@ -81,7 +93,7 @@ public final class WordService {
         }
     }
 
-    private static void substituirCell(XWPFTableCell cell, String string) {
+    private static void substituirCell(XWPFTableCell cell, Object object) {
         List<XWPFParagraph> paragraphs = cell.getParagraphs();
 
         int size = paragraphs.size();
@@ -89,7 +101,19 @@ public final class WordService {
             cell.removeParagraph(1);
         }
         XWPFParagraph paragraph = size > 0 ? cell.getParagraphs().get(0) : cell.addParagraph();
-        substituirParagrafo(paragraph, string);
+        if (object instanceof String) {
+            substituirParagrafo(paragraph, (String) object);
+        }
+        if (object instanceof Image) {
+            RunnableEx.run(() -> {
+                String imgFile = object.hashCode() + ".png";
+                File outFile = ResourceFXUtils.getOutFile("png/" + imgFile);
+                ImageIO.write(SwingFXUtils.fromFXImage((Image) object, null), "PNG", outFile);
+                paragraph.createRun().addPicture(new FileInputStream(outFile),
+                        Document.PICTURE_TYPE_PNG, imgFile, Units.toEMU(50), Units.toEMU(50));
+            });
+        }
+
     }
 
     private static void substituirParagrafo(Map<String, Object> mapaSubstituicao, XWPFParagraph paragraph) {
@@ -119,11 +143,13 @@ public final class WordService {
     }
 
     private static void substituirParagrafo(XWPFParagraph paragraph, String string) {
-        paragraph.getRuns().get(0).setText(string, 0);
+        XWPFRun xwpfRun = paragraph.getRuns().get(0);
+        xwpfRun.setText(string, 0);
         int size = paragraph.getRuns().size();
         for (int j = 1; j < size; j++) {
             paragraph.removeRun(1);
         }
+
     }
 
     private static void substituirTabela(IBodyElement element, Map<String, Object> map) {
@@ -136,12 +162,13 @@ public final class WordService {
             for (int j = 0; j < tableCells.size(); j++) {
                 XWPFTableCell cell = row.getCell(j);
                 String cellText = cell.getText();
+                LOG.info(cellText);
                 if (map.containsKey(cellText) || map.containsKey(cellText.trim())) {
                     Object object = getObject(map, cellText);
-                    if (object instanceof String) {
-                        String string = object.toString();
-                        substituirCell(cell, string);
+                    if (object != null) {
+                        substituirCell(cell, object);
                     }
+
                 }
             }
         }

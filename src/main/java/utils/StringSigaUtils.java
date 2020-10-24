@@ -240,6 +240,18 @@ public class StringSigaUtils extends StringUtils {
                 nome);
     }
 
+    public static String replaceToLowerCase(String str) {
+        Pattern compile = Pattern.compile("</?[\\w\\-]+");
+        Matcher matcher = compile.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        while(matcher.find()) {
+            String group = matcher.group(0);
+            matcher.appendReplacement(sb, group.toLowerCase());
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
     public static String retirarMascara(String valor) {
         if (StringUtils.isNotBlank(valor)) {
             return valor.replaceAll("[./-]", "");

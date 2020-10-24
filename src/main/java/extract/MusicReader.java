@@ -158,7 +158,7 @@ public final class MusicReader {
 
     public static void saveMetadata(Music a, File file) {
 
-        File file2 = ResourceFXUtils.getOutFile("copy_" + file.getName());
+        File file2 = ResourceFXUtils.getOutFile("mp3/copy_" + file.getName());
         try {
             ExtractUtils.copy(file, file2);
 
@@ -172,7 +172,7 @@ public final class MusicReader {
             if (a.getImage() != null) {
                 String value = getDescription(a);
                 Image image = a.getImage();
-                File destination = ResourceFXUtils.getOutFile("test" + value + ".png");
+                File destination = ResourceFXUtils.getOutFile("png/test" + value + ".png");
                 ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", destination);
                 byte[] allBytes = Files.readAllBytes(destination.toPath());
                 tags.setAlbumImage(allBytes, "image/png");

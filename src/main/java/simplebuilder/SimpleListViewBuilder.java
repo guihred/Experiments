@@ -92,7 +92,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         SimpleNodeBuilder.onKeyReleased(node, e -> {
             if (KeyCode.V == e.getCode()&&e.isControlDown()) {
                 String string = ImageFXUtils.getClipboardString();
-                for (String string2 : string.split("[\n,]+")) {
+                for (String string2 : string.split("[\n,\t]+")) {
                     node.getItems().add(FunctionEx.apply(f, string2));
                 }
             }

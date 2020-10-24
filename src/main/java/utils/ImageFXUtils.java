@@ -157,6 +157,12 @@ public final class ImageFXUtils {
 
     }
 
+    public static String take(final Node canvas, double scale) {
+        return ImageFXUtils.take(canvas, canvas.getBoundsInParent().getWidth(), canvas.getBoundsInParent().getHeight(),
+                scale);
+
+    }
+
     public static String take(final Node canvas, final double w, final double h) {
         return take(canvas, w, h, 1);
     }
@@ -176,12 +182,12 @@ public final class ImageFXUtils {
     }
 
     public static WritableImage take(Node canvas, Rectangle2D viewport) {
-        return SupplierEx.makeSupplier(() -> {
+        return SupplierEx.get(() -> {
             WritableImage writableImage = new WritableImage((int) viewport.getWidth(), (int) viewport.getHeight());
             SnapshotParameters params = new SnapshotParameters();
             params.setViewport(viewport);
             return canvas.snapshot(params, writableImage);
-        }).get();
+        });
     }
 
     public static BufferedImage toBufferedImage(final Node canvas) {
@@ -216,10 +222,6 @@ public final class ImageFXUtils {
 
     }
 
-    static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
-        return (value - min) * (newMax - newMin) / (max - min) + newMin;
-    }
-
     private static Image gatherImages(List<File> files) {
         List<Image> collect =
                 files.stream().map(FunctionEx.makeFunction(f -> new Image(convertToURL(f).toExternalForm())))
@@ -241,5 +243,9 @@ public final class ImageFXUtils {
             x += height2;
         }
         return writableImage;
+    }
+
+    private    static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
+        return (value - min) * (newMax - newMin) / (max - min) + newMin;
     }
 }

@@ -19,17 +19,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.apache.xmlbeans.XmlObject;
-import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -93,13 +83,6 @@ public final class XMLExtractor {
         ImageFXUtils.openInDesktop(outFile);
     }
 
-    public static Document newDocument() throws ParserConfigurationException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-        return documentBuilder.newDocument();
-    }
-
     public static Map.Entry<String, String> newEntry(String key, String value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }
@@ -152,16 +135,6 @@ public final class XMLExtractor {
     public static void readXMLFile(TreeView<Map<String, String>> build,
             Map<Node, TreeItem<Map<String, String>>> allItems, File file) {
         remap(() -> tryToRead(build, allItems, file), "ERROR READING");
-    }
-
-    public static void saveToFile(Document document, File file) throws TransformerException {
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        DOMSource domSource = new DOMSource(document);
-        StreamResult streamResult = new StreamResult(file);
-        transformer.transform(domSource, streamResult);
     }
 
     private static void addColumns(TableView<Map<String, String>> tableView, Collection<String> keySet) {

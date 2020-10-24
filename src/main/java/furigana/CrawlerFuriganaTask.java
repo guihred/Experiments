@@ -33,7 +33,7 @@ import utils.fx.CrawlerTask;
 
 public class CrawlerFuriganaTask extends CrawlerTask {
 
-    private static final String FURIGANA_READING = "hiraganaReading.txt";
+    private static final String FURIGANA_READING = "txt/hiraganaReading.txt";
 
     private static final Logger LOG = HasLogging.log();
 
@@ -277,7 +277,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     private static void endTask(List<String> lines) {
-        RunnableEx.run(() -> Files.write(ResourceFXUtils.getOutFile("hp1Tex2Converted.tex").toPath(), lines,
+        RunnableEx.run(() -> Files.write(ResourceFXUtils.getOutFile("tex/hp1Tex2Converted.tex").toPath(), lines,
                 StandardCharsets.UTF_8));
     }
 

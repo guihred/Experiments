@@ -26,7 +26,7 @@ public final class SimpleCopyTask extends Task<Boolean> {
 
             List<Path> pathByExtension2 = FileTreeWalker.getPathByExtension(getOutFile(), ".txt");
             File file = pathByExtension2.get(rnd.nextInt(pathByExtension2.size())).toFile();
-            File outFile = getOutFile("resultado2.txt");
+            File outFile = getOutFile("txt/resultado2.txt");
             copyFile(file.getAbsolutePath(), outFile.getAbsolutePath());
             elapsedTime = System.currentTimeMillis() - elapsedTime;
             String status = elapsedTime + " milliseconds";
