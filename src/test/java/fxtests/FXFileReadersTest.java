@@ -3,7 +3,6 @@ package fxtests;
 import com.google.common.collect.ImmutableMap;
 import ethical.hacker.ImageCracker;
 import ethical.hacker.PCapReader;
-import ethical.hacker.WebBrowserApplication;
 import extract.DocumentHelper;
 import extract.ExcelService;
 import extract.WordService;
@@ -13,7 +12,6 @@ import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -221,53 +219,9 @@ public class FXFileReadersTest extends AbstractTestExecution {
         measureTime("WordService.getWord", () -> {
             Map<String, Object> mapaSubstituicao = new HashMap<>();
             File file = ResourceFXUtils.getOutFile("resultado.docx");
-            mapaSubstituicao.put("443", "444");
-            WordService.getWord(mapaSubstituicao, "CONTROLE_DCDF_RDMs.docx", file);
+            WordService.getWord(mapaSubstituicao, "ModeloGeralReporte.docx", file);
 
         });
-    }
-
-    @Test
-    public void testWordReport() {
-        String kibanaURL =
-                "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/191e1a10-9e56-11e9-bffd-37ab21b02682?_g="
-                        + "(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,"
-                        + "to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,"
-                        + "index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!f,"
-                        + "params:!('191.96.73.211'),type:phrases,value:'191.96.73.211'),"
-                        + "query:(bool:(minimum_should_match:1,"
-                        + "should:!((match_phrase:(clientip.keyword:'191.96.73.211'))))))),linked:!f,"
-                        + "query:(language:lucene,query:''),uiState:(vis:(params:(sort:(columnIndex:!n,"
-                        + "direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,"
-                        + "type:count),(enabled:!t,id:'2',params:(field:dtpsistema.keyword,"
-                        + "missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',"
-                        + "otherBucket:!f,otherBucketLabel:Other,size:200),schema:bucket,"
-                        + "type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,"
-                        + "showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),"
-                        + "title:'%5BAcesso%20Web%5D%20Quantidade%20de%20Acessos%20por%20Sistema',type:table))";
-        WebBrowserApplication show = show(WebBrowserApplication.class);
-        String replaceAll = kibanaURL.replaceAll("191.96.73.211", "191.96.73.227");
-        interactNoWait(() -> show.loadSite(replaceAll));
-        measureTime("WordService.getWord", () -> {
-            AtomicBoolean atomicBoolean = new AtomicBoolean(true);
-            while (atomicBoolean.get()) {
-                interactNoWait(() -> {
-                    boolean loading = show.isLoading();
-                    atomicBoolean.set(loading);
-                    return loading;
-                });
-                sleep(5000);
-            }
-
-            interactNoWait(() -> {
-                File saveHtmlImage = show.saveHtmlImage();
-                Map<String, Object> mapaSubstituicao = new HashMap<>();
-                File file = ResourceFXUtils.getOutFile("docx/resultado.docx");
-                mapaSubstituicao.put("443", new Image(ResourceFXUtils.convertToURL(saveHtmlImage).toExternalForm()));
-                WordService.getWord(mapaSubstituicao, "ModeloGeralReporte.docx", file);
-            });
-        });
-
     }
 
     @Test

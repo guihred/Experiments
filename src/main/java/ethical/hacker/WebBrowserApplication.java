@@ -122,7 +122,7 @@ public class WebBrowserApplication extends Application {
             File file = ResourceFXUtils.getOutFile("html/webBrowser.html");
             DocumentHelper.saveToHtmlFile(engine.getDocument(), file);
             Bounds bounds = browser.getBoundsInLocal();
-            String take = ImageFXUtils.take(browser, bounds.getWidth(), bounds.getHeight(), 10);
+            String take = ImageFXUtils.take(browser, bounds.getWidth(), bounds.getHeight());
             return new File(take);
         });
     }

@@ -168,17 +168,16 @@ public final class ImageFXUtils {
     }
 
     public static String take(final Node canvas, final double w, final double h, final double scale) {
-        return SupplierEx.makeSupplier(() -> {
+        return SupplierEx.get(() -> {
             final WritableImage writableImage = new WritableImage((int) (w * scale), (int) (h * scale));
             SnapshotParameters params = new SnapshotParameters();
             params.setTransform(new Scale(scale, scale));
             final WritableImage snapshot = canvas.snapshot(params, writableImage);
-            File destination = File.createTempFile("snapshot", ".png");
+            File destination = File.createTempFile("snapshot", ".png", ResourceFXUtils.getOutFile("png"));
             BufferedImage fromFXImage = SwingFXUtils.fromFXImage(snapshot, null);
             ImageIO.write(fromFXImage, "PNG", destination);
-            openInDesktop(destination);
             return destination.getAbsolutePath();
-        }).get();
+        });
     }
 
     public static WritableImage take(Node canvas, Rectangle2D viewport) {
