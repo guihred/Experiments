@@ -95,13 +95,13 @@ public class ExcelDataReader extends DataframeUtils {
     }
 
     private static Object getValue(Cell cell) {
-        if (cell.getCellTypeEnum() == CellType.STRING) {
+        if (cell.getCellType() == CellType.STRING) {
             return cell.getStringCellValue().trim();
         }
-        if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
+        if (cell.getCellType() == CellType.BOOLEAN) {
             return cell.getBooleanCellValue();
         }
-        if (cell.getCellTypeEnum() == CellType.NUMERIC) {
+        if (cell.getCellType() == CellType.NUMERIC) {
             return cell.getNumericCellValue();
         }
         return null;

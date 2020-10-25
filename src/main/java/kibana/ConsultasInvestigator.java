@@ -74,7 +74,7 @@ public class ConsultasInvestigator extends Application {
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
         configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "value", "key").setGroup(WhoIsScanner.IP_REGEX)
                 .setAllowEmpty(false);
-        SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> filter.remove(e.getKey()));
+        SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> filter.remove(e.getKey())).copiable();
         filter.addListener((Change<? extends String, ? extends String> change) -> {
             if (change.wasRemoved()) {
                 filterList.getItems().removeIf(e -> Objects.equals(e.getKey(), change.getKey()));
@@ -83,7 +83,7 @@ public class ConsultasInvestigator extends Application {
                 filterList.getItems().add(new AbstractMap.SimpleEntry<>(change.getKey(), change.getValueAdded()));
             }
         });
-        splitPane0.setDividerPositions(0.2);
+        splitPane0.setDividerPositions(0.1);
     }
 
     public void onActionClear() {

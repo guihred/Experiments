@@ -146,28 +146,28 @@ public final class ImageFXUtils {
         ImageFXUtils.showImage = showImage;
     }
 
-    public static String take(final Canvas canvas) {
+    public static File take(final Canvas canvas) {
         return ImageFXUtils.take(canvas, canvas.getWidth(), canvas.getHeight());
 
     }
 
-    public static String take(final Node canvas) {
+    public static File take(final Node canvas) {
         return ImageFXUtils.take(canvas, canvas.getBoundsInParent().getWidth(), canvas.getBoundsInParent().getHeight(),
                 canvas.getScaleX());
 
     }
 
-    public static String take(final Node canvas, double scale) {
+    public static File take(final Node canvas, double scale) {
         return ImageFXUtils.take(canvas, canvas.getBoundsInParent().getWidth(), canvas.getBoundsInParent().getHeight(),
                 scale);
 
     }
 
-    public static String take(final Node canvas, final double w, final double h) {
+    public static File take(final Node canvas, final double w, final double h) {
         return take(canvas, w, h, 1);
     }
 
-    public static String take(final Node canvas, final double w, final double h, final double scale) {
+    public static File take(final Node canvas, final double w, final double h, final double scale) {
         return SupplierEx.get(() -> {
             final WritableImage writableImage = new WritableImage((int) (w * scale), (int) (h * scale));
             SnapshotParameters params = new SnapshotParameters();
@@ -176,7 +176,7 @@ public final class ImageFXUtils {
             File destination = File.createTempFile("snapshot", ".png", ResourceFXUtils.getOutFile("png"));
             BufferedImage fromFXImage = SwingFXUtils.fromFXImage(snapshot, null);
             ImageIO.write(fromFXImage, "PNG", destination);
-            return destination.getAbsolutePath();
+            return destination;
         });
     }
 

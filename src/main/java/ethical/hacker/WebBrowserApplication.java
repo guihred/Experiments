@@ -119,11 +119,10 @@ public class WebBrowserApplication extends Application {
 
     public File saveHtmlImage() {
         return SupplierEx.get(() -> {
-            File file = ResourceFXUtils.getOutFile("html/webBrowser.html");
+            File file = ResourceFXUtils.getOutFile("html/webBrowser" + ".html");
             DocumentHelper.saveToHtmlFile(engine.getDocument(), file);
             Bounds bounds = browser.getBoundsInLocal();
-            String take = ImageFXUtils.take(browser, bounds.getWidth(), bounds.getHeight());
-            return new File(take);
+            return ImageFXUtils.take(browser, bounds.getWidth(), bounds.getHeight());
         });
     }
 

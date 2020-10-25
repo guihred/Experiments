@@ -5,7 +5,6 @@ import static extract.ExcelService.isExcel;
 import static utils.StringSigaUtils.intValue;
 
 import extract.PdfUtils;
-import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,7 +19,6 @@ import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
@@ -31,7 +29,6 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public final class LeitorArquivos {
-    private static final Color RED_COLOR = new Color(1.0F, 0.2F, 0.2F);
     private static final String QTESTOQUECOMERCIAL = "qtestoquecomercial";
     private static final String CODPRODUTO = "codproduto";
     public static final String CODIGO = "Codigo";
@@ -159,7 +156,7 @@ public final class LeitorArquivos {
         Sheet createSheet = wb.createSheet(sheetName);
 
         XSSFCellStyle style = wb.createCellStyle();
-        style.setFillBackgroundColor(new XSSFColor(RED_COLOR));
+        style.setFillBackgroundColor(IndexedColors.RED.getIndex());
         style.setFillPattern(FillPatternType.FINE_DOTS);
         int j = 0;
         for (int i = 0; i < medicamentos.size(); i++) {
@@ -201,7 +198,7 @@ public final class LeitorArquivos {
 
         Sheet createSheet = wb.createSheet(sheetname);
         XSSFCellStyle style = wb.createCellStyle();
-        style.setFillBackgroundColor(new XSSFColor(RED_COLOR));
+        style.setFillBackgroundColor(IndexedColors.RED.getIndex());
         style.setFillPattern(FillPatternType.FINE_DOTS);
         int j = 0;
         for (int i = 0; i < medicamentos.size(); i++) {
@@ -233,9 +230,9 @@ public final class LeitorArquivos {
 
     private static String getLote(Row row) {
         Cell cell = row.getCell(row.getLastCellNum() - 2);
-        if (cell != null && cell.getCellTypeEnum() == CellType.NUMERIC) {
+        if (cell != null && cell.getCellType() == CellType.NUMERIC) {
             return Integer.toString((int) cell.getNumericCellValue());
-        } else if (cell != null && cell.getCellTypeEnum() == CellType.STRING) {
+        } else if (cell != null && cell.getCellType() == CellType.STRING) {
             return cell.getStringCellValue();
         }
         return "";
@@ -260,14 +257,14 @@ public final class LeitorArquivos {
     }
 
     private static String getRegistro(Cell cell0) {
-        if (cell0.getCellTypeEnum() == CellType.NUMERIC) {
+        if (cell0.getCellType() == CellType.NUMERIC) {
             return Integer.toString((int) cell0.getNumericCellValue());
         }
         return cell0.getStringCellValue().replaceAll("\\D+", "");
     }
 
     private static String getString(Cell cell0) {
-        if (cell0.getCellTypeEnum() == CellType.NUMERIC) {
+        if (cell0.getCellType() == CellType.NUMERIC) {
             double numericCellValue = cell0.getNumericCellValue();
             return Long.toString((long) numericCellValue);
         }

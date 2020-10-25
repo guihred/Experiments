@@ -12,13 +12,13 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
+import org.apache.commons.lang3.StringUtils;
 import utils.ImageFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 
 public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, SimpleListViewBuilder<T>> {
-
 
     public SimpleListViewBuilder() {
         super(new ListView<T>());
@@ -38,7 +38,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     }
 
     public SimpleListViewBuilder<T> copiable() {
-        onKeyReleased(ev->copyContent(node, ev));
+        onKeyReleased(ev -> copyContent(node, ev));
         return this;
     }
 
@@ -87,13 +87,15 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return this;
     }
 
-
     public SimpleListViewBuilder<T> pasteable(FunctionEx<String, T> f) {
         SimpleNodeBuilder.onKeyReleased(node, e -> {
-            if (KeyCode.V == e.getCode()&&e.isControlDown()) {
+            if (KeyCode.V == e.getCode() && e.isControlDown()) {
                 String string = ImageFXUtils.getClipboardString();
                 for (String string2 : string.split("[\n,\t]+")) {
-                    node.getItems().add(FunctionEx.apply(f, string2));
+                    T apply = FunctionEx.apply(f, string2);
+                    if (StringUtils.isNotBlank(Objects.toString(apply, "")) && !node.getItems().contains(apply)) {
+                        node.getItems().add(apply);
+                    }
                 }
             }
         });
@@ -105,13 +107,8 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
             List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices().isEmpty()
                     ? IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList())
                     : table.getSelectionModel().getSelectedIndices();
-            CustomListCell<T> call = getCustomList(table);
-            String collect = selectedItems.stream().map(l -> {
-                T t = table.getItems().get(l);
-                call.updateItem(t, false);
-                return Objects.toString(call.getText());
-            }).collect(Collectors.joining("\n"));
-            ImageFXUtils.setClipboardContent(collect);
+            String content = getSelectedContent(table, selectedItems);
+            ImageFXUtils.setClipboardContent(content);
         }
     }
 
@@ -148,7 +145,8 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     }
 
     private static <T> CustomListCell<T> getCustomList(ListView<T> table) {
-        ListCell<T> call2 = table.getCellFactory().call(table);
+        Callback<ListView<T>, ListCell<T>> cellFactory = table.getCellFactory();
+        ListCell<T> call2 = cellFactory.call(table);
         if (call2 instanceof CustomListCell) {
             return (CustomListCell<T>) call2;
         }
@@ -156,11 +154,26 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return (CustomListCell<T>) table.getCellFactory().call(table);
     }
 
+    private static <T> String getSelectedContent(ListView<T> table, List<Integer> selectedItems) {
+        if (table.getCellFactory() == null) {
+            return selectedItems.stream().map(l -> StringSigaUtils.toStringSpecial(table.getItems().get(l)))
+                    .collect(Collectors.joining("\n"));
+        }
+        CustomListCell<T> call = getCustomList(table);
+        return selectedItems.stream().map(l -> {
+            T t = table.getItems().get(l);
+            call.updateItem(t, false);
+            return Objects.toString(call.getText());
+        }).collect(Collectors.joining("\n"));
+    }
+
     private static final class CustomListCell<C> extends ListCell<C> {
         private final BiConsumer<C, ListCell<C>> value;
+
         private CustomListCell(BiConsumer<C, ListCell<C>> value) {
             this.value = value;
         }
+
         @Override
         public void updateItem(final C item, final boolean empty) {
             super.updateItem(item, empty);

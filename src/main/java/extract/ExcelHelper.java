@@ -27,10 +27,10 @@ public class ExcelHelper {
 
 
     protected static void alterarValorCell(Map<Object, Object> map, Sheet sheet, Row row, Cell c) {
-        if (c.getCellTypeEnum() == CellType.NUMERIC) {
+        if (c.getCellType() == CellType.NUMERIC) {
             alterNumeric(map, sheet, c);
         }
-        if (c.getCellTypeEnum() == CellType.STRING) {
+        if (c.getCellType() == CellType.STRING) {
             alterString(map, sheet, row, c);
         }
     }
@@ -48,7 +48,6 @@ public class ExcelHelper {
             }
             if (object instanceof String) {
                 cell.setCellValue((String) object);
-                cell.setCellType(CellType.STRING);
             }
         }
     }
@@ -97,7 +96,7 @@ public class ExcelHelper {
     }
 
     protected static Object getCellValue(Cell cell) {
-        switch (cell.getCellTypeEnum()) {
+        switch (cell.getCellType()) {
             case BOOLEAN:
                 return cell.getBooleanCellValue();
             case FORMULA:

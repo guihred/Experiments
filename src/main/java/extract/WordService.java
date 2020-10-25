@@ -29,7 +29,7 @@ public final class WordService {
 
     private static final Logger LOG = HasLogging.log();
 
-    private static final int IMAGE_WIDTH = 200;
+    private static final int IMAGE_WIDTH = 300;
 
     private WordService() {
     }
@@ -121,6 +121,16 @@ public final class WordService {
         }
     }
 
+    private static void replaceImage(XWPFRun createRun, Image object) {
+        RunnableEx.run(() -> {
+            String imgFile = object.hashCode() + ".png";
+            File outFile = ResourceFXUtils.getOutFile("png/" + imgFile);
+            ImageIO.write(SwingFXUtils.fromFXImage(object, null), "PNG", outFile);
+            createRun.addPicture(new FileInputStream(outFile), Document.PICTURE_TYPE_PNG, imgFile,
+                    Units.toEMU(IMAGE_WIDTH), Units.toEMU(IMAGE_WIDTH / object.getWidth() * object.getHeight()));
+        });
+    }
+
     private static void setText(XWPFParagraph paragraph, String string) {
         List<XWPFRun> runs = paragraph.getRuns();
         XWPFRun xwpfRun = runs.isEmpty() ? paragraph.createRun() : runs.get(0);
@@ -140,7 +150,7 @@ public final class WordService {
             setText(paragraph, (String) object);
         }
         if (object instanceof Image) {
-            substituirImage(paragraph.createRun(), (Image) object);
+            replaceImage(paragraph.createRun(), (Image) object);
         }
         if (object instanceof Collection) {
             Collection<?> object2 = (Collection<?>) object;
@@ -153,21 +163,11 @@ public final class WordService {
                     setText(paragraph, (String) ob0);
                 }
                 if (ob0 instanceof Image) {
-                    substituirImage(paragraph.createRun(), (Image) ob0);
+                    replaceImage(paragraph.createRun(), (Image) ob0);
                 }
             }
         }
 
-    }
-
-    private static void substituirImage(XWPFRun createRun, Image object) {
-        RunnableEx.run(() -> {
-            String imgFile = object.hashCode() + ".png";
-            File outFile = ResourceFXUtils.getOutFile("png/" + imgFile);
-            ImageIO.write(SwingFXUtils.fromFXImage(object, null), "PNG", outFile);
-            createRun.addPicture(new FileInputStream(outFile), Document.PICTURE_TYPE_PNG, imgFile,
-                    Units.toEMU(IMAGE_WIDTH), Units.toEMU(IMAGE_WIDTH / object.getWidth() * object.getHeight()));
-        });
     }
 
     private static void substituirParagrafo(XWPFParagraph paragraph, Map<String, Object> mapaSubstituicao) {
@@ -188,7 +188,7 @@ public final class WordService {
                                 setText(xwpfRun, (String) ob0);
                             }
                             if (ob0 instanceof Image) {
-                                substituirImage(xwpfRun, (Image) ob0);
+                                replaceImage(xwpfRun, (Image) ob0);
                             }
                         }
                     }

@@ -39,7 +39,6 @@ public class StringSigaUtils extends StringUtils {
     public static Map<String, String> asMap(String line) {
         return asMap(line, ":");
     }
-
     public static Map<String, String> asMap(String line, String separator) {
         return Stream.of(lines(line)).filter(s -> s.contains(separator))
                 .collect(Collectors.toMap(s -> s.split(separator)[0],
@@ -204,6 +203,7 @@ public class StringSigaUtils extends StringUtils {
     public static String[] lines(String nome) {
         return split(Objects.toString(nome, ""), "[\n\r]+");
     }
+
 
     public static String putNumbers(List<String> map) {
         int orElse = map.stream().map(v -> Objects.toString(v, "")).mapToInt(String::length).max().orElse(0);

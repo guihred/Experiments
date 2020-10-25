@@ -20,19 +20,17 @@ public final class DateFormatUtils {
     private DateFormatUtils() {
     }
 
-    public static int getYearCreation(Path path) {
-        return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime()
-                .toInstant().atZone(ZoneId.systemDefault()).getYear(), () -> ZonedDateTime.now().getYear());
-    
+    public static long convertTimeToMillis(String text) {
+        return ChronoUnit.MILLIS.between(LocalTime.MIN, TIME_OF_SECONDS_FORMAT.parse(text, LocalTime::from));
+    }
+
+    public static String currentDate() {
+        return SupplierEx.get(() ->  DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now()));
     }
 
     public static LocalDate epochSecondToLocalDate(String asText) {
         long epochSecond = Long.parseLong(asText);
         return Instant.ofEpochSecond(epochSecond).atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-
-    public static long convertTimeToMillis(String text) {
-        return ChronoUnit.MILLIS.between(LocalTime.MIN, TIME_OF_SECONDS_FORMAT.parse(text, LocalTime::from));
     }
 
     public static LocalDate extractDate(final String children) {
@@ -46,6 +44,16 @@ public final class DateFormatUtils {
     public static String formatDate(TemporalAccessor temporal) {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
         return dateFormat.format(temporal);
+    }
+
+    public static ZonedDateTime getCreationDate(Path path) {
+        return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime()
+                .toInstant().atZone(ZoneId.systemDefault()), () -> ZonedDateTime.now());
+    }
+
+    public static int getYearCreation(Path path) {
+        return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime()
+                .toInstant().atZone(ZoneId.systemDefault()).getYear(), () -> ZonedDateTime.now().getYear());
     }
 
     public static TemporalAccessor parse(CharSequence text) {

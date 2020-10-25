@@ -104,6 +104,14 @@ public final class PdfUtils {
         ignore(() -> runOnLines(init, file, onTextPosition, onPage, onLines, onImages));
     }
 
+    protected static COSDocument parseAndGet(RandomAccessFile source) {
+        return remap(() -> {
+            PDFParser parser = new PDFParser(source);
+            parser.parse();
+            return parser.getDocument();
+        }, ERROR_IN_FILE + source);
+    }
+
     private static Map<Integer, List<PdfImage>> extractImages(File file) {
         return PdfUtils.extractImages(file, 0, 0);
     }
@@ -134,14 +142,6 @@ public final class PdfUtils {
 
     private static List<PdfImage> getPageImages(PrintImageLocations printImageLocations, int i, PDPage page) {
         return get(() -> printImageLocations.processPage(page, i), new ArrayList<>());
-    }
-
-    private static COSDocument parseAndGet(RandomAccessFile source) {
-        return remap(() -> {
-            PDFParser parser = new PDFParser(source);
-            parser.parse();
-            return parser.getDocument();
-        }, ERROR_IN_FILE + source);
     }
 
     private static void read(PdfInfo pdfInfo, File file1, PrintStream out) throws IOException {
