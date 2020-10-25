@@ -376,7 +376,7 @@ public final class JsonExtractor {
             return arrayObject;
         }
         if (jsonNode.isObject()) {
-            Map<String, Object> mapObject = new HashMap<>();
+            Map<String, Object> mapObject = new LinkedHashMap<>();
             for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
                 Entry<String, JsonNode> next = iterator.next();
                 mapObject.put(next.getKey(), toObject(next.getValue(), depth + 1));
