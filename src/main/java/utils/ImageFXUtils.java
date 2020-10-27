@@ -5,6 +5,7 @@ import static utils.ResourceFXUtils.convertToURL;
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
@@ -30,6 +31,10 @@ public final class ImageFXUtils {
     private static boolean showImage = true;
 
     private ImageFXUtils() {
+    }
+
+    public static void saveImage(WritableImage image, File file) throws IOException {
+        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", file);
     }
 
     public static WritableImage copyImage(Image selectedImage, int width, int height) {

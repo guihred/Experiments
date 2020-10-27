@@ -3,16 +3,15 @@ package paintexp;
 import extract.PrintConfig;
 import java.io.File;
 import java.io.FileInputStream;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import paintexp.tool.PaintModel;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleDialogBuilder;
+import utils.ImageFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -78,10 +77,7 @@ public final class PaintFileUtils {
                     () -> FunctionEx.mapIf(paintModel.getCurrentFile(), File::getParentFile), () -> defaultFile));
             chooser.extensions("Image", "*.png").onSelect(paintModel::setCurrentFile).saveFileAction(event);
         }
-        RunnableEx.runIf(paintModel.getCurrentFile(), file -> {
-            WritableImage image = paintModel.getImage();
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", file);
-        });
+        RunnableEx.runIf(paintModel.getCurrentFile(), file -> ImageFXUtils.saveImage(paintModel.getImage(), file));
 
     }
 

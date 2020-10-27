@@ -290,6 +290,13 @@ public class StringSigaUtils extends StringUtils {
         return numero.replaceAll("\\D", "");
     }
 
+    public static Double toDouble(Object numero) {
+        if (numero instanceof Number) {
+            return ((Number) numero).doubleValue();
+        }
+        return getIgnore(() -> Double.valueOf(Objects.toString(numero, "").replaceAll("[^0-9\\.]", "")), 0.);
+    }
+
     public static Integer toInteger(Object numero) {
         if (numero instanceof Number) {
             return ((Number) numero).intValue();

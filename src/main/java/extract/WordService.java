@@ -221,6 +221,8 @@ public final class WordService {
                     if (object != null) {
                         substituirCell(cell, object);
                     }
+                } else {
+                    LOG.info(cellText);
                 }
             }
         }

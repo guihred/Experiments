@@ -1,0 +1,99 @@
+{"index":"inss-*-prod*","ignore_unavailable":true,"preference":1600792228289}
+{
+  "aggs": {
+    "4": {
+      "terms": {
+        "field": "mdc.cpf.keyword",
+        "size": 50,
+        "order": {
+          "_count": "desc"
+        }
+      },
+      "aggs": {
+        "5": {
+          "terms": {
+            "field": "mdc.uid.keyword",
+            "size": 5,
+            "order": {
+              "_count": "desc"
+            }
+          },
+          "aggs": {
+            "3": {
+              "terms": {
+                "field": "mdc.ip",
+                "size": 50,
+                "order": {
+                  "_count": "desc"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    },
+    {
+      "field": "mdc.loginTime",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "match_all": {}
+        },
+        {
+          "match_phrase": {
+            "logger_name": {
+              "query": "br.gov.dataprev.satcentral.util.AuditLogger"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "mdc.ip": {
+              "query": "%s"
+            }
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": %s,
+              "lte": %s,
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "dtpsistema": {
+              "query": "portalatendimento"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}
