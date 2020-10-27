@@ -51,7 +51,7 @@ public class ConsultasInvestigator extends Application {
     private TableView<Map<String, String>> pathsTable;
     @FXML
     private TabPane tabPane0;
-    private List<QueryObjects> queryList = new ArrayList<>();
+    private final List<QueryObjects> queryList = new ArrayList<>();
     private ObservableMap<String, String> filter = FXCollections.observableHashMap();
     @FXML
     private ComboBox<String> ipCombo;
@@ -64,6 +64,10 @@ public class ConsultasInvestigator extends Application {
     private SplitPane splitPane0;
     @FXML
     private LineChart<Number, Number> timelineIPs;
+
+    public List<QueryObjects> getQueryList() {
+        return queryList;
+    }
 
     public void initialize() {
         String count = "doc_count";
@@ -191,7 +195,6 @@ public class ConsultasInvestigator extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 
 
 }

@@ -25,8 +25,10 @@
 	</root>
 	<logger name="contest.ContestReader" level="OFF" />
 	<logger name="utils.ExtractUtils" level="INFO" />
+	<logger name="extract.PhantomJSUtils" level="OFF" />
 	<logger name="utils.ConsoleUtils" level="INFO" />
  	<logger name="schema.sngpc.FXMLCreator" level="OFF" /> 
+ 	<logger name="ethical.hacker.WhoIsScanner" level="OFF" /> 
  	<logger name="rosario.LeitorArquivos" level="OFF" /> 
 
 	<logger name="ch.qos.logback.classic" level="OFF" />

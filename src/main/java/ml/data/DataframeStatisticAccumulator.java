@@ -56,7 +56,7 @@ public class DataframeStatisticAccumulator {
 
     public String getBottom() {
         if (getFormat() == String.class) {
-            return SupplierEx.get(() -> countMap.entrySet().stream().min(comparator())
+            return SupplierEx.getIgnore(() -> countMap.entrySet().stream().min(comparator())
                     .map(Entry<String, Integer>::getKey).orElse(null));
         }
         return Objects.toString(min);

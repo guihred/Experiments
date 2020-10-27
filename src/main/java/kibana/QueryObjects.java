@@ -26,7 +26,7 @@ import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.ex.ConsumerEx;
 
-class QueryObjects {
+public class QueryObjects {
     public static final String MDC_UID_KEYWORD = "mdc.uid.keyword";
     public static final String URL_QUERY = "request.keyword";
 
@@ -147,10 +147,10 @@ class QueryObjects {
         return allowEmpty;
     }
 
-    public void makeKibanaQuery(Map<String, String> filter1, Integer days) {
+    public List<Map<String, String>> makeKibanaQuery(Map<String, String> filter1, Integer days) {
         if (filter1.isEmpty() && !isAllowEmpty()) {
             CommonsFX.runInPlatform(() -> getItems().clear());
-            return;
+            return getItems();
         }
         Map<String, String> nsInformation =
                 KibanaApi.makeKibanaSearch("kibana/" + getQueryFile(), days, filter1, getParams());
@@ -163,6 +163,7 @@ class QueryObjects {
             }
             getItems().addAll(remap);
         });
+        return remap;
     }
 
     public void makeTimelionQuery(Map<String, String> filter) {

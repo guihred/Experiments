@@ -301,6 +301,13 @@ public class StringSigaUtils extends StringUtils {
         return getIgnore(() -> Integer.valueOf(Objects.toString(numero, "").replaceAll("\\D", "")), 0);
     }
 
+    public static Long toLong(Object numero) {
+        if (numero instanceof Number) {
+            return ((Number) numero).longValue();
+        }
+        return getIgnore(() -> Long.valueOf(Objects.toString(numero, "").replaceAll("\\D", "")), 0L);
+    }
+
     public static String toStringSpecial(Object n) {
         if (n instanceof Number) {
             return ((Number) n).doubleValue() % 1 == 0 ? String.format("%.0f", ((Number) n).doubleValue())

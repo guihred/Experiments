@@ -1,10 +1,9 @@
 package ml;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
@@ -54,7 +54,7 @@ public class WordSearchApp extends Application {
         TextField filterField = new TextField();
 
         List<String> allLines =
-                SupplierEx.get(() -> getLines(ResourceFXUtils.toURI("pt_PT.dic")).collect(Collectors.toList()));
+                SupplierEx.get(() -> getLines(ResourceFXUtils.toPath("pt_PT.dic")).collect(Collectors.toList()));
         FilteredList<String> lines = FXCollections.observableArrayList(allLines).filtered(e -> true);
         filterField.textProperty().addListener((o, old, value) -> {
             compile = SupplierEx.getIgnore(() -> Pattern.compile(value), compile);
@@ -66,7 +66,11 @@ public class WordSearchApp extends Application {
         root.setLeft(listView);
         Button button = SimpleButtonBuilder.newButton("Add", a -> search(wordMap, filters, lines));
         filters.getChildren().add(button);
+        Text size = new Text("");
+        root.setBottom(size);
+        lines.predicateProperty().addListener(e -> size.setText("" + lines.size()));
         search(wordMap, filters, lines);
+
         theStage.show();
 
     }
@@ -88,37 +92,37 @@ public class WordSearchApp extends Application {
     }
 
     private void search(ObservableMap<String, Set<String>> observableMap, VBox filters, FilteredList<String> lines) {
-        Set<String> splitLines = observableMap.values().stream().flatMap(Set<String>::stream)
-            .collect(Collectors.toSet());
+        Set<String> splitLines =
+                observableMap.values().stream().flatMap(Set<String>::stream).collect(Collectors.toSet());
         splitLines.add(null);
         ObservableList<String> values = FXCollections.observableArrayList(splitLines);
         FilteredList<String> filtered = values.sorted().filtered(e -> true);
-        ComboBox<String> category = new SimpleComboBoxBuilder<String>().items(observableMap.keySet())
-            .onChange((old, nVal) -> {
-                filtersMap.remove(old);
-                filtered.setPredicate(e -> {
-                    Set<String> set = observableMap.get(nVal);
-                    return e == null || set != null && set.contains(e);
-                });
-            }).build();
+        List<String> keySet = observableMap.keySet().stream().collect(Collectors.toList());
+        keySet.add(0, "");
+        ComboBox<String> category = new SimpleComboBoxBuilder<String>().items(keySet).onChange((old, nVal) -> {
+            filtersMap.remove(old);
+            filtered.setPredicate(e -> {
+                Set<String> set = observableMap.get(nVal);
+                return e == null || set == null || set.contains(e);
+            });
+        }).build();
 
-        ComboBox<String> val = new SimpleComboBoxBuilder<String>().items(filtered).onSelect(s -> {
+        ComboBox<String> val = new SimpleComboBoxBuilder<String>().items(filtered).onChange((o, s) -> {
             String selectedItem = category.selectionModelProperty().get().getSelectedItem();
             if (s == null) {
                 filtersMap.remove(selectedItem);
-                return;
+            } else {
+                filtersMap.put(selectedItem, s);
             }
-            filtersMap.put(selectedItem, s);
-
             lines.setPredicate(t -> isInCriteria(t) && hasValue(compile.pattern(), t));
         }).build();
 
         filters.getChildren().add(filters.getChildren().size() - 1, new HBox(category, val));
     }
 
-    public static Stream<String> getLines(URI txtFile) throws IOException {
-        return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).sequential().map(String::trim)
-            .filter(s -> !s.isEmpty()).distinct();
+    public static Stream<String> getLines(Path txtFile) throws IOException {
+        return Files.lines(txtFile, StandardCharsets.UTF_8).sequential().map(String::trim).filter(s -> !s.isEmpty())
+                .distinct();
     }
 
     public static void main(String[] args) {
@@ -126,10 +130,10 @@ public class WordSearchApp extends Application {
     }
 
     private static Map<String, Set<String>> createMap() throws IOException {
-        return getLines(ResourceFXUtils.toURI("pt_PT.dic")).filter(e -> e.contains("\t"))
-            .map(e -> e.replaceAll(".+\t\\[(\\$\\.+\\$)*(.+)\\]", "$2")).flatMap(e -> Stream.of(e.split(",")))
-            .collect(Collectors.groupingBy(e -> e.split("=")[0].replaceAll("\\$.+\\$", ""),
-                Collectors.mapping(e -> e.split("=")[1].replaceAll("\\$[A-Z]+", ""), Collectors.toSet())));
+        return getLines(ResourceFXUtils.toPath("pt_PT.dic")).filter(e -> e.contains("\t"))
+                .map(e -> e.replaceAll(".+\t\\[(\\$\\.+\\$)*(.+)\\]", "$2")).flatMap(e -> Stream.of(e.split(",")))
+                .collect(Collectors.groupingBy(e -> e.split("=")[0].replaceAll("\\$.+\\$", ""),
+                        Collectors.mapping(e -> e.split("=")[1].replaceAll("\\$[A-Z]+", ""), Collectors.toSet())));
 
     }
 
