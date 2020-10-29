@@ -85,20 +85,6 @@
 				<Tab text="Histogram">
 					<content>
 						<PaginatedTableView fx:id="histogram" />
-<!-- 						<TableView fx:id="histogram"> -->
-<!-- 							<columns> -->
-<!-- 								<TableColumn text="Name"> -->
-<!-- 									<cellValueFactory> -->
-<!-- 										<PropertyValueFactory property="xValue" /> -->
-<!-- 									</cellValueFactory> -->
-<!-- 								</TableColumn> -->
-<!-- 								<TableColumn text="Value"> -->
-<!-- 									<cellValueFactory> -->
-<!-- 										<PropertyValueFactory property="yValue" /> -->
-<!-- 									</cellValueFactory> -->
-<!-- 								</TableColumn> -->
-<!-- 							</columns> -->
-<!-- 						</TableView> -->
 					</content>
 				</Tab>
 				<Tab text="Bar Chart">
@@ -124,6 +110,11 @@
 								<NumberAxis side="LEFT" tickUnit="10.0" upperBound="100.0" />
 							</xAxis>
 						</LineChart>
+					</content>
+				</Tab>
+				<Tab text="Statistics">
+					<content>
+						<PaginatedTableView fx:id="statistics" />
 					</content>
 				</Tab>
 			</tabs>

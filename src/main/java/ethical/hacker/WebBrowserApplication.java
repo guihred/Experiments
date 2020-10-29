@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener.Change;
 import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
@@ -75,9 +74,8 @@ public class WebBrowserApplication extends Application {
         siteField.prefWidthProperty()
                 .bind(browser.widthProperty().add(progressIndicator.widthProperty().add(50).negate()));
         loadWorker.stateProperty()
-                .addListener((ObservableValue<? extends State> ob, State oldValue,
-                        State newState) -> ((Stage) siteField.getScene().getWindow())
-                .setTitle(engine.getLocation() + " " + newState));
+                .addListener((ob, oldValue, newState) -> RunnableEx.runIf((Stage) siteField.getScene().getWindow(),
+                        s -> s.setTitle(engine.getLocation() + " " + newState)));
         loadWorker.exceptionProperty().addListener((ob, oldValue, newException) -> onException(newException));
         engine.getHistory().getEntries().addListener((Change<? extends Entry> c) -> {
             c.next();

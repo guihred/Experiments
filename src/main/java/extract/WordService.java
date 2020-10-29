@@ -106,6 +106,10 @@ public final class WordService {
         return map.getOrDefault(cellText, map.get(cellText.trim()));
     }
 
+    private static boolean isNotInMap(Map<String, Object> map, String cellText) {
+        return StringUtils.isBlank(cellText) || !map.containsKey(cellText) && !map.containsKey(cellText.trim());
+    }
+
     private static void recordPicture(XSLFPictureData data) {
         RunnableEx.run(() -> {
             File outFile = ResourceFXUtils.getOutFile("ppt/" + data.getFileName());
@@ -124,7 +128,7 @@ public final class WordService {
     private static void replaceImage(XWPFRun createRun, Image object) {
         RunnableEx.run(() -> {
             String imgFile = object.hashCode() + ".png";
-            File outFile = ResourceFXUtils.getOutFile("png/" + imgFile);
+            File outFile = File.createTempFile("png", imgFile);
             ImageIO.write(SwingFXUtils.fromFXImage(object, null), "PNG", outFile);
             createRun.addPicture(new FileInputStream(outFile), Document.PICTURE_TYPE_PNG, imgFile,
                     Units.toEMU(IMAGE_WIDTH), Units.toEMU(IMAGE_WIDTH / object.getWidth() * object.getHeight()));
@@ -175,22 +179,21 @@ public final class WordService {
         for (int i = 0; i < runs.size(); i++) {
             XWPFRun xwpfRun = runs.get(i);
             String text = xwpfRun.text();
-            if (StringUtils.isNotBlank(text)) {
-                LOG.info(text);
-                if (mapaSubstituicao.containsKey(text) || mapaSubstituicao.containsKey(text.trim())) {
-                    Object object = getObject(mapaSubstituicao, text);
-                    if (object instanceof String) {
-                        setText(xwpfRun, object.toString());
+            if (isNotInMap(mapaSubstituicao, text)) {
+                continue;
+            }
+            LOG.info(text);
+            Object object = getObject(mapaSubstituicao, text);
+            if (object instanceof String) {
+                setText(xwpfRun, object.toString());
+            }
+            if (object instanceof Collection) {
+                for (Object ob0 : (Collection<?>) object) {
+                    if (ob0 instanceof String) {
+                        setText(xwpfRun, (String) ob0);
                     }
-                    if (object instanceof Collection) {
-                        for (Object ob0 : (Collection<?>) object) {
-                            if (ob0 instanceof String) {
-                                setText(xwpfRun, (String) ob0);
-                            }
-                            if (ob0 instanceof Image) {
-                                replaceImage(xwpfRun, (Image) ob0);
-                            }
-                        }
+                    if (ob0 instanceof Image) {
+                        replaceImage(xwpfRun, (Image) ob0);
                     }
                 }
             }
@@ -216,13 +219,12 @@ public final class WordService {
             for (int j = 0; j < tableCells.size(); j++) {
                 XWPFTableCell cell = row.getCell(j);
                 String cellText = cell.getText();
-                if (map.containsKey(cellText) || map.containsKey(cellText.trim())) {
-                    Object object = getObject(map, cellText);
-                    if (object != null) {
-                        substituirCell(cell, object);
-                    }
-                } else {
-                    LOG.info(cellText);
+                if (isNotInMap(map, cellText)) {
+                    continue;
+                }
+                Object object = getObject(map, cellText);
+                if (object != null) {
+                    substituirCell(cell, object);
                 }
             }
         }

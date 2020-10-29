@@ -1,5 +1,7 @@
 package ml.graph;
 
+import static utils.StringSigaUtils.toDouble;
+
 import ethical.hacker.WhoIsScanner;
 import java.util.*;
 import java.util.Map.Entry;
@@ -28,7 +30,6 @@ import ml.data.*;
 import simplebuilder.ListHelper;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
-import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
@@ -47,6 +48,8 @@ public abstract class ExplorerVariables extends Application {
     @FXML
     protected ComboBox<QuestionType> questType;
     protected final ObjectProperty<DataframeML> dataframe = new SimpleObjectProperty<>();
+    @FXML
+    protected PaginatedTableView statistics;
     @FXML
     protected PaginatedTableView dataTable;
     @FXML
@@ -182,20 +185,12 @@ public abstract class ExplorerVariables extends Application {
         c.next();
         if (c.wasRemoved()) {
             dataTable.clearColumns();
+            statistics.clearColumns();
         }
         List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
+        addEntries(statistics, addedSubList);
         if (!getDataframe().isLoaded()) {
-            Map<Integer, Map<String, Object>> cache = new HashMap<>();
-            List<String> asList = Arrays.asList("Header", "Mean", "Max", "Min", "Distinct", "Median25", "Median50",
-                    "Median75", "Sum", "Count");
-            for (String key : asList) {
-                dataTable.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
-            }
-            dataTable.setListSize(addedSubList.size());
-            double[] array = asList.stream().mapToDouble(e -> Math
-                    .max(Objects.toString(getStatAt(addedSubList, cache, e.toLowerCase(), 0)).length(), e.length()))
-                    .toArray();
-            dataTable.setColumnsWidth(array);
+            addEntries(dataTable, addedSubList);
         } else {
             addedSubList.forEach(
                     entry -> dataTable.addColumn(entry.getKey(), i -> getDataframe().getAt(entry.getKey(), i)));
@@ -217,10 +212,8 @@ public abstract class ExplorerVariables extends Application {
             Data<Number, Number> e = new Data<>((Number) map.get(x), (Number) map.get(y));
             if (name != null) {
                 linkedHashMap.merge(map.get(name), e, (o, n) -> {
-                    n.setXValue(StringSigaUtils.toInteger(o.getXValue()).doubleValue()
-                            + StringSigaUtils.toInteger(n.getXValue()).doubleValue());
-                    n.setYValue(StringSigaUtils.toInteger(o.getYValue()).doubleValue()
-                            + StringSigaUtils.toInteger(n.getYValue()).doubleValue());
+                    n.setXValue(toDouble(o.getXValue()) + toDouble(n.getXValue()));
+                    n.setYValue(toDouble(o.getYValue()) + toDouble(n.getYValue()));
                     return n;
                 });
                 e.setExtraValue(map.get(name));
@@ -238,6 +231,21 @@ public abstract class ExplorerVariables extends Application {
         lineChart.getYAxis().setLabel(val.getKey());
         a.setData(data);
         lineChart.setData(value);
+    }
+
+    private static void addEntries(PaginatedTableView dataTable2,
+            List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList) {
+        Map<Integer, Map<String, Object>> cache = new HashMap<>();
+        List<String> asList = Arrays.asList("Header", "Mean", "Max", "Min", "Distinct", "Median25", "Median50",
+                "Median75", "Sum", "Count");
+        for (String key : asList) {
+            dataTable2.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
+        }
+        dataTable2.setListSize(addedSubList.size());
+        double[] array = asList.stream().mapToDouble(e -> Math
+                .max(Objects.toString(getStatAt(addedSubList, cache, e.toLowerCase(), 0)).length(), e.length()))
+                .toArray();
+        dataTable2.setColumnsWidth(array);
     }
 
     private static void addToList(ObservableList<Data<String, Number>> dataList, List<Data<String, Number>> array,

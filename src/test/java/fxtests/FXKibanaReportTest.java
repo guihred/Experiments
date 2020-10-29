@@ -81,7 +81,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordReport() throws IOException {
-        String finalIP = "52.67.85.231";
+        String finalIP = "185.185.147.138";
         Map<String, Object> mapaSubstituicao =
                 JsonExtractor.accessMap(JsonExtractor.toObject(ResourceFXUtils.toFile("kibana/modeloRelatorio.json")));
         Map<String, String> params = new LinkedHashMap<>();
@@ -96,7 +96,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordReportConsultas() throws IOException {
-        String finalIP = "187.68.10.191";
+        String finalIP = "186.209.190.164";
         Map<String, Object> mapaSubstituicao = JsonExtractor
                 .accessMap(JsonExtractor.toObject(ResourceFXUtils.toFile("kibana/modeloRelatorioConsultas.json")));
         Map<String, String> params = new LinkedHashMap<>();
@@ -130,7 +130,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
         if (outFile.exists()) {
             return new Image(ResourceFXUtils.convertToURL(outFile).toExternalForm());
         }
-        show = SupplierEx.nonNull(show, show(WebBrowserApplication.class));
+        show = SupplierEx.orElse(show, () -> show(WebBrowserApplication.class));
         Property<Image> image = new SimpleObjectProperty<>();
         String kibanaURL = Objects.toString(imageObj.get("url"), "");
         String replaceAll = kibanaURL.replaceAll("191.96.73.211", finalIP);
@@ -140,6 +140,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
         measureTime("Load Site " + imageObj.get("name"), () -> {
             AtomicBoolean atomicBoolean = new AtomicBoolean(true);
             while (atomicBoolean.get()) {
+                sleep(5000);
                 interactNoWait(() -> {
                     boolean loading = show.isLoading();
                     atomicBoolean.set(loading);

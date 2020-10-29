@@ -162,6 +162,10 @@ public class StringSigaUtils extends StringUtils {
         return String.format(Locale.ENGLISH, "%.2f %s", sizeInBytes / Math.pow(BYTES_IN_A_KILOBYTE, a0), SIZES[a0]);
     }
 
+    public static String getFileSize(Number sizeInBytes) {
+        return SupplierEx.getIgnore(() -> getFileSize(sizeInBytes.longValue()), sizeInBytes+"");
+    }
+
     public static String getFileSize(String sizeInBytes) {
         return SupplierEx.getIgnore(() -> getFileSize(Double.valueOf(sizeInBytes).longValue()), sizeInBytes);
     }
@@ -202,6 +206,10 @@ public class StringSigaUtils extends StringUtils {
 
     public static String[] lines(String nome) {
         return split(Objects.toString(nome, ""), "[\n\r]+");
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getFileSize(9.1308466E7));
     }
 
 

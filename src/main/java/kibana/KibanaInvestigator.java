@@ -67,6 +67,27 @@ public class KibanaInvestigator extends Application {
         });
     }
 
+    public void onActionKibanaScanParallel() {
+        items.clear();
+        RunnableEx.runNewThread(() -> {
+            CommonsFX.update(progressIndicator.progressProperty(), 0);
+            ObservableList<String> items2 = filterList.getItems();
+            items2.parallelStream().map(s -> {
+                String ip = s;
+                Map<String, String> nsInformation =
+                        KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem());
+                CommonsFX.addProgress(progressIndicator.progressProperty(), 1. / items2.size());
+                return nsInformation;
+            }).peek(ns -> CommonsFX.runInPlatform(() -> items.add(ns))).forEach(ns -> CommonsFX.runInPlatform(() -> {
+                if (commonTable.getColumns().isEmpty()) {
+                    SimpleTableViewBuilder.addColumns(commonTable, ns.keySet());
+                }
+            }));
+            CommonsFX.update(progressIndicator.progressProperty(), 1);
+
+        });
+    }
+
     public void onExportExcel() {
         File outFile = ResourceFXUtils.getOutFile("xlsx/kibana.xlsx");
         ExcelService.getExcel(items, outFile);

@@ -158,7 +158,9 @@ public class CSVUtils {
                 continue;
             }
             line2.set(last, line2.get(last) + "\n" + fields.remove(0));
-            line2.addAll(fields);
+            for (String string : fields) {
+                line2.add(string.replaceAll("^\"", ""));
+            }
         }
         return co;
     }

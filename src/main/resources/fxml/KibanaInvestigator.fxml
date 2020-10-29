@@ -45,6 +45,7 @@
                 <ListView fx:id="filterList" prefWidth="175.0" prefHeight="175" VBox.vgrow="NEVER" />
 
 				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
+				<Button onAction="#onActionKibanaScanParallel" text="Parallel Scan" />
 				<Button onAction="#onExportExcel" text="Export Excel" />
 				<ProgressIndicator fx:id="progressIndicator"
 					VBox.vgrow="ALWAYS" minHeight="40.0" minWidth="40.0" progress="0.0" />

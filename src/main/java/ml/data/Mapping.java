@@ -42,7 +42,7 @@ public final class Mapping {
 
     public static List<Method> getMethods() {
         List<Class<?>> allowedTypes = Arrays.asList(Double.class, String.class, Integer.class, Long.class, int.class,
-                Object.class, long.class, double.class);
+                Object.class, long.class, double.class, Number.class);
         List<Class<?>> returnTypes = Arrays.asList(Double.class, String.class, Integer.class, Long.class, int.class,
                 Object.class, long.class, double.class, Map.class, List.class, Collection.class, String[].class);
         return SupplierEx.orElse(methods,

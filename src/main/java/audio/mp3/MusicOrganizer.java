@@ -46,11 +46,11 @@ public class MusicOrganizer extends Application {
         MusicHandler musicHandler = new MusicHandler(musicaTable);
         imageColumn.setCellValueFactory(m -> new SimpleObjectProperty<>(
                 MusicHandler.view(SupplierEx.nonNull(m.getValue().getImage(), DEFAULT_VIEW))));
-        SimpleTableViewBuilder.of(musicaTable).sortable(true).multipleSelection().equalColumns().copiable()
+        SimpleTableViewBuilder.of(musicaTable).sortable(true).multipleSelection().equalColumns().copiable().savable()
                 .onMousePressed(musicHandler).onKeyReleased(musicHandler::handle).onSortClicked(this::sortBy);
         configurarFiltroRapido(filterText, musicaTable, FXCollections.observableArrayList());
         consertarMusicas.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> musicaTable.getItems().stream().anyMatch(Music::isNotMP3), musicaTable.getItems()));
+                () -> musicas.stream().anyMatch(Music::isNotMP3), musicaTable.getItems()));
     }
 
     public void onActionCarregarMusicas(ActionEvent e) {

@@ -38,6 +38,11 @@ public final class CommonsFX {
         value.getStylesheets().add(toExternalForm(CSS_DIR + css));
     }
 
+    public static void addProgress(Property<Number> progress, double value) {
+        if (progress != null) {
+            CommonsFX.runInPlatform(() -> progress.setValue(progress.getValue().doubleValue()+value));
+        }
+    }
     public static <T> void bind(ObservableValue<T> source, Property<T> target) {
         source.addListener((ob, old, val) -> runInPlatform(() -> target.setValue(val)));
         target.setValue(source.getValue());
@@ -46,6 +51,7 @@ public final class CommonsFX {
         prop1.addListener((ob, old, val) -> prop2.setValue(val));
         prop2.addListener((ob, old, val) -> prop1.setValue(val));
     }
+
     public static boolean containsMouse(Node node, MouseEvent event) {
         double x = event.getX();
         double y = event.getY();

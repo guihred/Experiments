@@ -139,7 +139,6 @@ public final class ClassReflectionUtils {
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue,
                         SupplierEx::nonNull));
     }
-
     public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
         return getGetterMethodsRecursive(targetClass, 10);
     }

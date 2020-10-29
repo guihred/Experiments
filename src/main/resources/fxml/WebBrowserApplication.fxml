@@ -7,39 +7,45 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.layout.VBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/filesComparator.css">
 	<center>
 		<WebView fx:id="browser" />
 	</center>
 	<right>
-		<Accordion>
-			<panes>
-				<TitledPane expanded="false" text="Links">
-					<content>
-						<ListView fx:id="linksList" visible="false" />
-					</content>
-				</TitledPane>
-				<TitledPane expanded="false" text="Variables">
-					<content>
-						<ListView fx:id="varList" visible="false">
-						</ListView>
-					</content>
-				</TitledPane>
-				<TitledPane expanded="false" text="Images">
-					<content>
-						<ListView fx:id="imageList" visible="false" />
-					</content>
-				</TitledPane>
-				<TitledPane expanded="false" text="History">
-					<content>
-						<ListView fx:id="historyList" visible="false" />
-					</content>
-				</TitledPane>
-			</panes>
-			<clip>
-				<Rectangle height="547.0" width="250.0" />
-			</clip>
-		</Accordion>
+		<VBox>
+			<children>
+				<Accordion>
+					<panes>
+						<TitledPane expanded="false" text="Links">
+							<content>
+								<ListView fx:id="linksList" visible="false" />
+							</content>
+						</TitledPane>
+						<TitledPane expanded="false" text="Variables">
+							<content>
+								<ListView fx:id="varList" visible="false">
+								</ListView>
+							</content>
+						</TitledPane>
+						<TitledPane expanded="false" text="Images">
+							<content>
+								<ListView fx:id="imageList" visible="false" />
+							</content>
+						</TitledPane>
+						<TitledPane expanded="false" text="History">
+							<content>
+								<ListView fx:id="historyList" visible="false" />
+							</content>
+						</TitledPane>
+					</panes>
+					<clip>
+						<Rectangle height="547.0" width="250.0" />
+					</clip>
+				</Accordion>
+				<Button text="Save Print" onAction="#saveHtmlImage" />
+			</children>
+		</VBox>
 	</right>
 	<top>
 		<HBox>
