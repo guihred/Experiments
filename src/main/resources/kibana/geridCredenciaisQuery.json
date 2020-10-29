@@ -1,0 +1,89 @@
+{"index":"inss-*-prod-*","ignore_unavailable":true,"preference":1603971139102}
+{
+	"version": true,
+	"size": 500,
+	"sort": [
+		{
+			"@timestamp": {
+				"order": "desc",
+				"unmapped_type": "boolean"
+			}
+		}
+	],
+	"_source": {
+		"excludes": []
+	},
+	"aggs": {
+		"2": {
+			"date_histogram": {
+				"field": "@timestamp",
+				"interval": "30m",
+				"time_zone": "America/Argentina/Buenos_Aires",
+				"min_doc_count": 1
+			}
+		}
+	},
+	"stored_fields": [
+		"*"
+	],
+	"script_fields": {
+		
+	},
+	"docvalue_fields": [
+		{
+			"field": "@timestamp",
+			"format": "date_time"
+		},
+		{
+			"field": "mdc.loginTime",
+			"format": "date_time"
+		}
+	],
+	"query": {
+		"bool": {
+			"must": [
+				{
+					"query_string": {
+						"query": "\"%s\"",
+						"analyze_wildcard": true,
+						"default_field": "*"
+					}
+				},
+				{
+					"match_phrase": {
+						"dtpsistema": {
+							"query": "geridcas"
+						}
+					}
+				},
+				{
+					"range": {
+						"@timestamp": {
+							"gte": %s,
+							"lte": %s,
+							"format": "epoch_millis"
+						}
+					}
+				}
+			],
+			"filter": [],
+			"should": [],
+			"must_not": []
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"@kibana-highlighted-field@"
+		],
+		"post_tags": [
+			"@/kibana-highlighted-field@"
+		],
+		"fields": {
+			"*": {
+				
+			}
+		},
+		"fragment_size": 2147483647
+	},
+	"timeout": "30000ms"
+}

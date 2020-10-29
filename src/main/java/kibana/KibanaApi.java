@@ -50,6 +50,19 @@ public class KibanaApi {
                 "ERROR IN FILE " + file).replaceAll("[\n\t]", "");
     }
 
+    public static Map<String, String> getGeridCredencial(String finalIP) {
+        Map<String, String> makeKibanaSearch2 =
+                KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", finalIP, 1, "message");
+        String orDefault = makeKibanaSearch2.getOrDefault("message", "");
+        String regex = "WHO:\\s+(.+)";
+        List<String> collect =
+                Stream.of(orDefault.split("\n")).filter(l -> l.matches(regex)).map(s -> s.replaceAll(regex, "$1"))
+                        .distinct().filter(StringUtils::isNumeric).collect(Collectors.toList());
+        String[] split = orDefault.split("Audit trail record BEGIN");
+        return Stream.of(split).filter(l -> collect.contains(getWhoField(regex, l))).distinct()
+                .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s, SupplierEx::nonNull));
+    }
+
     public static Map<String, String> kibanaFullScan(String query) {
         return kibanaFullScan(query, 1);
     }
@@ -200,6 +213,10 @@ public class KibanaApi {
         return IntStream.range(0, orElse).mapToObj(
                 j -> collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
                 .distinct().collect(Collectors.joining("\n"));
+    }
+
+    private static String getWhoField(String regex, String s) {
+        return Stream.of(s.split("\n")).filter(l -> l.matches(regex)).findFirst().orElse("").replaceAll(regex, "$1");
     }
 
     private static String isInBlacklist(String query) {

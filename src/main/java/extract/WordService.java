@@ -220,6 +220,7 @@ public final class WordService {
                 XWPFTableCell cell = row.getCell(j);
                 String cellText = cell.getText();
                 if (isNotInMap(map, cellText)) {
+                    LOG.info(cellText);
                     continue;
                 }
                 Object object = getObject(map, cellText);
