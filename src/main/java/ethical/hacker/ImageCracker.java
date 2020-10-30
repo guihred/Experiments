@@ -31,7 +31,7 @@ public final class ImageCracker {
 
     public static String crackImage(Image img) {
         return SupplierEx.get(() -> {
-            File outFile = ResourceFXUtils.getOutFile("captchaOut.png");
+            File outFile = ResourceFXUtils.getOutFile("png/captchaOut.png");
             try (FileOutputStream out = new FileOutputStream(outFile)) {
                 ImageIO.write(SwingFXUtils.fromFXImage(img, null), "PNG", out);
             }

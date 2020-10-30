@@ -146,6 +146,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     @Test
     public void testWordReport() throws IOException {
         String finalIP = "189.68.23.187";
+        String out = "docx/Reporte_Eventos_MeuINSS_" + finalIP + ".docx";
         Map<String, Object> mapaSubstituicao =
                 JsonExtractor.accessMap(JsonExtractor.toObject(ResourceFXUtils.toFile("kibana/modeloRelatorio.json")));
         Map<String, String> params = new LinkedHashMap<>();
@@ -153,7 +154,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
         params.put("\\$date", DateFormatUtils.currentDate());
         addParameters(finalIP, mapaSubstituicao, params);
 
-        File file = ResourceFXUtils.getOutFile("docx/Reporte_Eventos_MeuINSS_" + finalIP + ".docx");
+        File file = ResourceFXUtils.getOutFile(out);
         getLogger().info("APPLYING MAP{}", mapaSubstituicao);
         WordService.getWord(mapaSubstituicao, "ModeloGeralReporte.docx", file);
     }
@@ -161,6 +162,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     @Test
     public void testWordReportAuxilio() throws IOException {
         String finalIP = "177.58.255.90";
+        String out = "docx/Reporte_Eventos_auxilioemergencial_" + finalIP + ".docx";
         Map<String, Object> mapaSubstituicao = JsonExtractor
                 .accessMap(JsonExtractor.toObject(ResourceFXUtils.toFile("kibana/modeloRelatorioAuxilio.json")));
         Map<String, String> params = new LinkedHashMap<>();
@@ -168,7 +170,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
         params.put("\\$date", DateFormatUtils.currentDate());
         addParameters(finalIP, mapaSubstituicao, params);
 
-        File file = ResourceFXUtils.getOutFile("docx/Reporte_Eventos_auxilioemergencial_" + finalIP + ".docx");
+        File file = ResourceFXUtils.getOutFile(out);
         getLogger().info("APPLYING MAP {}", mapaSubstituicao);
         WordService.getWord(mapaSubstituicao, "ModeloGeralReporte.docx", file);
     }
