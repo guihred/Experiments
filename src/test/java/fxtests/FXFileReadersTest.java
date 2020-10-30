@@ -213,6 +213,12 @@ public class FXFileReadersTest extends AbstractTestExecution {
     }
 
     @Test
+    public void testTalosIsInBlacklist() {
+        measureTime("ExcelService.getExcel",
+                () ->  KibanaApi.isInBlacklist("200.201.175.19"));
+    }
+
+    @Test
     public void testWordFile() {
         measureTime("WordService.getPowerPointImages",
                 () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));

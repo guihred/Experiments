@@ -63,6 +63,12 @@ public class KibanaApi {
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s, SupplierEx::nonNull));
     }
 
+    public static String isInBlacklist(String query) {
+        File file = ResourceFXUtils.toFile("kibana/ip_filter.txt");
+        return SupplierEx.get(() -> java.nio.file.Files.lines(file.toPath()).anyMatch(query::equals) ? "sim" : "não",
+                "não");
+    }
+
     public static Map<String, String> kibanaFullScan(String query) {
         return kibanaFullScan(query, 1);
     }
@@ -71,10 +77,11 @@ public class KibanaApi {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
         }
-        Map<String, String> policiesSearch = makeKibanaSearch("policiesQuery.json", query, days, "key");
-        Map<String, String> accessesSearch = makeKibanaSearch("acessosQuery.json", query, days, "key", "doc_count");
-        Map<String, String> threatsSearch = makeKibanaSearch("threatQuery.json", query, days, "key");
-        Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", query, days, "key", "value");
+        String key = "key";
+        Map<String, String> policiesSearch = makeKibanaSearch("policiesQuery.json", query, days, key);
+        Map<String, String> accessesSearch = makeKibanaSearch("acessosQuery.json", query, days, key, "doc_count");
+        Map<String, String> threatsSearch = makeKibanaSearch("threatQuery.json", query, days, key);
+        Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", query, days, key, "value");
         destinationSearch.computeIfPresent("value",
                 (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
         Map<String, String> trafficSearch =
@@ -87,7 +94,6 @@ public class KibanaApi {
         fullScan.put("Provedor", Objects.toString(WhoIsScanner.getKey(ipInformation, "as_owner", "HostName"), ""));
         fullScan.put("Geolocation",
                 Objects.toString(ipInformation.getOrDefault("country", trafficSearch.remove("country_code2"))));
-        fullScan.put("Talos Blacklist", isInBlacklist(query));
         fullScan.put("Bloqueio WAF", display(policiesSearch));
         fullScan.put("Palo Alto Threat", display(threatsSearch));
         fullScan.put("TOP Conexão FW", display(destinationSearch));
@@ -103,7 +109,8 @@ public class KibanaApi {
             if (!outFile.exists() || oneDayModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
-                getFromURL(ELASTICSEARCH_MSEARCH_URL, getContent(file, query, gte, lte), outFile);
+                RunnableEx.make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, getContent(file, query, gte, lte), outFile),
+                        e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
@@ -217,12 +224,6 @@ public class KibanaApi {
 
     private static String getWhoField(String regex, String s) {
         return Stream.of(s.split("\n")).filter(l -> l.matches(regex)).findFirst().orElse("").replaceAll(regex, "$1");
-    }
-
-    private static String isInBlacklist(String query) {
-        File file = ResourceFXUtils.toFile("kibana/ip_filter.txt");
-        return SupplierEx.get(() -> java.nio.file.Files.lines(file.toPath()).anyMatch(query::equals) ? "sim" : "não",
-                "não");
     }
 
     private static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,

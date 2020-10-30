@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import javafx.scene.image.Image;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -141,14 +142,18 @@ public final class PhantomJSUtils {
                 driver -> ExtractUtils.copy(driver.getScreenshotAs(OutputType.FILE), outFile));
     }
 
-    public static void saveHtmlImage(String html, File file) {
+    public static Image saveHtmlImage(String html) {
+        return SupplierEx.get(() -> saveHtmlImage(html, ResourceFXUtils.getOutFile("print/oi.png")));
+    }
+
+    public static Image saveHtmlImage(String html, File file) {
         HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
         Dimension dim = imageGenerator.getDefaultSize();
         dim.setSize(Math.min(800, dim.getWidth()), dim.getHeight());
         imageGenerator.setSize(dim);
         imageGenerator.loadHtml(html);
         imageGenerator.saveAsImage(file);
-
+        return new Image(ResourceFXUtils.convertToURL(file).toExternalForm());
     }
 
 }

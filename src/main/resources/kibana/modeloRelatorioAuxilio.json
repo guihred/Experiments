@@ -1,0 +1,68 @@
+{
+	"Figuras da Evidência / Contexto": [
+		"Volumetria de acessos distribuídos entre diversos URLs",
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/40fc62b0-ede4-11ea-b3aa-4f2d12d8184e?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:dtpsistema.keyword,negate:!f,params:(query:vip-auxilioemergencial.dataprev.gov.br,type:phrase),type:phrase,value:vip-auxilioemergencial.dataprev.gov.br),query:(match:(dtpsistema.keyword:(query:vip-auxilioemergencial.dataprev.gov.br,type:phrase)))),('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!f,params:(query:'191.96.73.211',type:phrase),type:phrase,value:'191.96.73.211'),query:(match:(clientip.keyword:(query:'191.96.73.211',type:phrase))))),linked:!f,query:(language:kuery,query:''),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'URL%20Unicas',field:request.keyword),schema:metric,type:cardinality),(enabled:!t,id:'2',params:(field:clientip.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20WEB%5D%20URL%20Unicas%20Auxilio%20Emergencial',type:table))",
+			"name": "auxilio",
+			"width": 0.6,
+			"height": 0.12,
+			"x": 0.318562,
+			"y": 0.1168
+		},
+		"Altos número de acessos",
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/46ce7d10-fa2d-11e8-a078-93662b30045b?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!t,params:(query:'127.0.0.1',type:phrase),type:phrase,value:'127.0.0.1'),query:(match:(clientip.keyword:(query:'127.0.0.1',type:phrase)))),('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!f,params:!('191.96.73.211'),type:phrases,value:'191.96.73.211'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(clientip.keyword:'191.96.73.211'))))))),linked:!f,query:(language:lucene,query:''),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:clientip.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:100),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20Web%5D%20Top%20Clientes%20por%20n%C3%BAmero%20de%20requisi%C3%A7%C3%B5es',type:table))",
+			"name": "acessos",
+			"width": 0.6,
+			"height": 0.12,
+			"x": 0.318562,
+			"y": 0.1168
+		},
+		"Acesso concentrado em página de consulta",
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/c1023890-e3b7-11ea-b3aa-4f2d12d8184e?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:dtpsistema.keyword,negate:!f,params:(query:vip-auxilioemergencial.dataprev.gov.br,type:phrase),type:phrase,value:vip-auxilioemergencial.dataprev.gov.br),query:(match:(dtpsistema.keyword:(query:vip-auxilioemergencial.dataprev.gov.br,type:phrase)))),('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!f,params:!('191.96.73.211'),type:phrases,value:'191.96.73.211'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(clientip.keyword:'191.96.73.211'))))))),linked:!f,query:(language:kuery,query:''),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'IPs%20Unicos',field:clientip.keyword),schema:metric,type:cardinality),(enabled:!t,id:'2',params:(field:request.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!t,otherBucketLabel:Outros,size:20),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20WEB%5D%20URL%20x%20IPs%20Unicos%20Auxilio%20Emergencial',type:table))",
+			"name": "urls",
+			"width": 0.68,
+			"height": 0.4,
+			"x": 0.318562,
+			"y": 0.1168
+		},
+		"Padrão de acesso automatizado",
+        {
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/dashboard/24e6f630-87c3-11ea-9285-7145e1cc7623?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(description:'',filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!f,params:!('191.96.73.211'),type:phrases,value:'191.96.73.211'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(clientip.keyword:'191.96.73.211'))))))),fullScreenMode:!f,options:(darkTheme:!f,hidePanelTitles:!f,useMargins:!t),panels:!((embeddableConfig:(),gridData:(h:14,i:'1',w:48,x:0,y:16),id:'9f0f6130-87bf-11ea-9285-7145e1cc7623',panelIndex:'1',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:15,i:'2',w:48,x:0,y:30),id:cdcad6e0-87be-11ea-9285-7145e1cc7623,panelIndex:'2',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:15,i:'3',w:48,x:0,y:45),id:c7259120-87c0-11ea-9285-7145e1cc7623,panelIndex:'3',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:5,i:'5',w:10,x:0,y:0),id:'0cf0db10-f662-11e9-bffd-37ab21b02682',panelIndex:'5',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:5,i:'6',w:10,x:0,y:5),id:a44aeb80-87c2-11ea-9285-7145e1cc7623,panelIndex:'6',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:6,i:'7',w:10,x:0,y:10),id:dc6c9450-87c2-11ea-9285-7145e1cc7623,panelIndex:'7',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:16,i:'8',w:38,x:10,y:0),id:cee8c5d0-87c5-11ea-9285-7145e1cc7623,panelIndex:'8',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:18,i:'9',w:48,x:0,y:77),id:'0cd081a0-88b9-11ea-9285-7145e1cc7623',panelIndex:'9',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:17,i:'10',w:24,x:1,y:60),id:c2da6850-88d0-11ea-9285-7145e1cc7623,panelIndex:'10',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:12,i:'11',w:48,x:0,y:95),id:bb17efa0-fa17-11e8-a078-93662b30045b,panelIndex:'11',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:17,i:'12',w:23,x:25,y:60),id:'46ce7d10-fa2d-11e8-a078-93662b30045b',panelIndex:'12',type:visualization,version:'6.6.2')),query:(language:lucene,query:''),timeRestore:!t,title:'%20%5BAcesso%20WEB%5D%20Monitoramento%20Volum%C3%A9trico',viewMode:view)",
+            "name": "timeline",
+            "width": 0.56,
+            "height": 0.40,
+            "x": 0.30,
+            "y": 0.126
+        },
+		"Acessos a outros sistemas",
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/191e1a10-9e56-11e9-bffd-37ab21b02682?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!f,params:!('191.96.73.211'),type:phrases,value:'191.96.73.211'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(clientip.keyword:'191.96.73.211'))))))),linked:!f,query:(language:lucene,query:''),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:dtpsistema.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:200),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20Web%5D%20Quantidade%20de%20Acessos%20por%20Sistema',type:table))",
+			"name": "sistemas",
+			"width": 0.6,
+			"height": 0.3,
+			"x": 0.318562,
+			"y": 0.1168
+		}
+	],
+	"Informar os indicadores de ameaça": [
+		"- A aplicação possui histórico de padrão de ataques automatizados, utilizam acessos autenticados para exfiltrar informações",
+        "- Volumetria de acessos acima dos demais usuários"
+	],
+	"enderecoOrigem": [
+		"Informações endereço de origem",
+		{
+			"url": "https://registro.br/tecnologia/ferramentas/whois/?search=191.96.73.211",
+			"name": "whoIs",
+			"width": 0.40,
+			"height": 0.37,
+			"x": 0.20,
+			"y": 0.14
+		}
+	],
+	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados ao vip-auxilioemergencial.dataprev.gov.br",
+	"Informar data de início/fim": "$date",
+	"ips": "$ip",
+	"cred": "Não se aplica"
+}

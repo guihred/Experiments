@@ -76,7 +76,7 @@ public class ConsultasInvestigator extends Application {
         configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^/.*").setAllowEmpty(false);
         configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
-        configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "value", "key").setGroup(WhoIsScanner.IP_REGEX)
+        configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setGroup(WhoIsScanner.IP_REGEX)
                 .setAllowEmpty(false);
         SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> filter.remove(e.getKey())).copiable();
         filter.addListener((Change<? extends String, ? extends String> change) -> {
