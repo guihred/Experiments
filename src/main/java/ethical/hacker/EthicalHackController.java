@@ -1,5 +1,8 @@
 package ethical.hacker;
 
+import static simplebuilder.SimpleTableViewBuilder.of;
+import static utils.CommonsFX.newFastFilter;
+
 import extract.ExcelService;
 import java.io.File;
 import java.net.URL;
@@ -14,7 +17,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.SelectionMode;
 import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTableViewBuilder;
@@ -23,15 +25,11 @@ import utils.ex.RunnableEx;
 
 public class EthicalHackController extends EthicalHackApp {
 
-
     public void initialize() {
-        final int columnWidth = 120;
-        commonTable.prefWidthProperty().bind(parent.widthProperty().add(-columnWidth));
         ports.textProperty().bind(
                 Bindings.createStringBinding(() -> String.format("Port Services %s", portsSelected), portsSelected));
-        commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
-        commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        SimpleTableViewBuilder.of(commonTable).copiable().savable();
+        of(commonTable).items(newFastFilter(resultsFilter, items.filtered(e -> true))).multipleSelection()
+                .copiable().savable();
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> tcpItems =
                 FXCollections.synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet()
@@ -60,8 +58,7 @@ public class EthicalHackController extends EthicalHackApp {
         items.clear();
         Map<String, String> nsInformation = NameServerLookup.getNSInformation(dns.getText());
         items.add(nsInformation);
-        Set<String> keySet = nsInformation.keySet();
-        SimpleTableViewBuilder.addColumns(commonTable, keySet);
+        SimpleTableViewBuilder.addColumns(commonTable, nsInformation.keySet());
     }
 
     public void onActionIps(ActionEvent event) {
@@ -131,7 +128,7 @@ public class EthicalHackController extends EthicalHackApp {
         String[] split = address.getText().split("[ ,;]+");
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         for (String ip : split) {
-            Map<String,String> linkedHashMap = new LinkedHashMap<>();
+            Map<String, String> linkedHashMap = new LinkedHashMap<>();
             String reverseDns = whoIsScanner.reverseDNS(ip);
             linkedHashMap.put("IP", ip);
             linkedHashMap.put("Reverse DNS", reverseDns);
@@ -183,7 +180,6 @@ public class EthicalHackController extends EthicalHackApp {
     public void start(final Stage primaryStage) {
         CommonsFX.loadFXML("Ethical Hack App", "EthicalHackApp.fxml", this, primaryStage, WIDTH, WIDTH);
     }
-
 
     public static CheckBox getCheckBox(List<Integer> checkedPorts, Map<Integer, CheckBox> checkbox,
             Entry<Integer, String> e) {

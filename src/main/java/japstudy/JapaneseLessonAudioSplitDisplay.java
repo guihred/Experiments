@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import utils.ResourceFXUtils;
+import utils.ex.RunnableEx;
 
 public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDisplay {
 
@@ -28,7 +29,7 @@ public class JapaneseLessonAudioSplitDisplay extends JapaneseLessonEditingDispla
         String format =
                 String.format("mp3/%s%dx%d.mp3", type, japaneseLesson.getLesson(), japaneseLesson.getExercise());
         File newFile = ResourceFXUtils.getOutFile(format);
-        new Thread(() -> SongUtils.splitAudio(audio.getFile(), newFile, startTime, currentTime)).start();
+        RunnableEx.runNewThread(() -> SongUtils.splitAudio(audio.getFile(), newFile, startTime, currentTime));
         startTime = currentTime;
         currentState = (currentState + 1) % 2;
         if (currentState == 0) {

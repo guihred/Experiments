@@ -23,6 +23,7 @@ import org.apache.sshd.common.channel.Channel;
 import org.apache.sshd.common.cipher.BuiltinCiphers;
 import org.apache.sshd.common.kex.BuiltinDHFactories;
 import org.assertj.core.api.exception.RuntimeIOException;
+import utils.ex.RunnableEx;
 
 public class SSHClientUtils extends BaseTestSupport {
 
@@ -30,7 +31,7 @@ public class SSHClientUtils extends BaseTestSupport {
         OutputStream out) throws InterruptedException {
         final List<Throwable> errors = new ArrayList<>();
         final CountDownLatch latch = new CountDownLatch(1);
-        Runnable r = () -> {
+        RunnableEx.runNewThread(() -> {
             try {
                 runClient(msg, host, port, username, password, out);
             } catch (Exception t) {
@@ -38,8 +39,7 @@ public class SSHClientUtils extends BaseTestSupport {
             } finally {
                 latch.countDown();
             }
-        };
-        new Thread(r).start();
+        });
         latch.await();
         if (!errors.isEmpty()) {
             throw new RuntimeIOException("Errors", errors.get(0));

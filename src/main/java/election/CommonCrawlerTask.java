@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import utils.ExtractUtils;
 import utils.HibernateUtil;
+import utils.ex.RunnableEx;
 import utils.fx.CrawlerTask;
 
 public abstract class CommonCrawlerTask<T> extends CrawlerTask {
@@ -34,9 +35,7 @@ public abstract class CommonCrawlerTask<T> extends CrawlerTask {
             if (isCancelled()) {
                 return "Cancelled";
             }
-            Thread thread = new Thread(() -> performTask(cidade));
-            ths.add(thread);
-            thread.start();
+            ths.add(RunnableEx.runNewThread(() -> performTask(cidade)));
             long count = ths.stream().filter(Thread::isAlive).count();
             while (count > MAX_THREAD_COUNT) {
                 count = ths.stream().filter(Thread::isAlive).count();

@@ -21,10 +21,11 @@ public class ProcessScan {
 
     public static List<Map<String, String>> scanCurrentTasks() {
         List<String> processes = ConsoleUtils
-            .executeInConsoleInfo("wmic process get Name,ProcessId,ParentProcessId,SessionId /FORMAT:csv");
+                .executeInConsoleInfo(
+                        "wmic process get Name,ProcessId,ParentProcessId,SessionId,CommandLine /FORMAT:csv");
 //        Node,Name,ParentProcessId,ProcessId,SessionId
         List<String> title = new ArrayList<>();
-        return processes.stream().map(e -> e.trim().split(",")).map(e -> Stream.of(e).collect(Collectors.toList()))
+        return processes.stream().map(e -> Stream.of(e.trim().split(",")).collect(Collectors.toList()))
             .map(key -> createMap(title, key)).filter(e -> !e.isEmpty()).collect(Collectors.toList());
     }
 

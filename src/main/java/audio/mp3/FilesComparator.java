@@ -63,7 +63,7 @@ public class FilesComparator extends Application {
     public ObservableList<File> getSongs(File file, ObservableList<File> musicas, TableView<File> table1) {
         musicas.clear();
         updateProgress(0);
-        new Thread(() -> {
+        RunnableEx.runNewThread(() -> {
             LOG.info("Scanning {}", file);
             List<Path> find = FileTreeWalker.getPathByExtension(file, ".mp3");
             find.stream().map(Path::toFile).forEach(musicas::add);
@@ -78,7 +78,7 @@ public class FilesComparator extends Application {
             updateProgress(1);
             updateCells(table1);
             LOG.info("{} Songs from {}", musicas.size(), file);
-        }).start();
+        });
         return musicas;
     }
 

@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public class ImageLoader {
     private static final Logger LOG = HasLogging.log();
@@ -64,8 +65,7 @@ public class ImageLoader {
                 thread.interrupt();
             }
         });
-        thread = new Thread(() -> addImages(root, value));
-        thread.start();
+        thread = RunnableEx.runNewThread(() -> addImages(root, value));
     }
 
     public static double byArea(Node e) {

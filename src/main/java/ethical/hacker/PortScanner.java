@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import utils.ConsoleUtils;
 import utils.ExtractUtils;
 import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 
 public class PortScanner {
 
@@ -38,7 +39,7 @@ public class PortScanner {
     public static ObservableMap<String, List<String>> scanNetworkOpenPorts(String networkAddress,
             List<Integer> portsSelected) {
         Locale.setDefault(Locale.ENGLISH);
-        int nPorts = 5;
+        int nPorts = 10;
         String s = portsSelected.isEmpty() ? "--top-ports " + nPorts
                 : "-p" + portsSelected.stream().map(Object::toString).collect(Collectors.joining(","));
 
@@ -56,15 +57,13 @@ public class PortScanner {
         List<Thread> threads = new ArrayList<>();
         for (int i = 1; i < 2 * Short.MAX_VALUE; i += STEP) {
             int j = i;
-            Thread thread = new Thread(() -> {
+            threads.add(RunnableEx.runNewThread(() -> {
                 for (int porta = j; porta <= j + STEP; porta++) {
                     if (ExtractUtils.isPortOpen(ip, porta, timeout)) {
                         synchronizedList.add(PortServices.getServiceByPort(porta));
                     }
                 }
-            });
-            threads.add(thread);
-            thread.start();
+            }));
         }
         while (threads.stream().anyMatch(Thread::isAlive)) {
             // NOOP

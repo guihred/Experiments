@@ -62,6 +62,6 @@
 				</VBox>
 			</children>
 		</VBox>
-		<TableView fx:id="commonTable" />
+		<TableView fx:id="commonTable" HBox.hgrow="ALWAYS" />
 	</children>
 </HBox>
