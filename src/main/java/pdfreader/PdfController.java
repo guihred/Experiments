@@ -144,7 +144,7 @@ public class PdfController extends Application {
         imageBox.setVisible(false);
         splitPane.setDividerPosition(1, 1);
         StringBinding createStringBinding = Bindings.createStringBinding(() -> getPageLines(pdfInfo.getLines()),
-                pdfInfo.getLines(), pdfInfo.getSkipLines(), pdfInfo.lineIndexProperty());
+                pdfInfo.getLines(), pdfInfo.getSkipLines(), pdfInfo.lineIndexProperty(), pdfInfo.pageIndexProperty());
         InvalidationListener listener = o -> CommonsFX.runInPlatform(() -> {
             String content = createStringBinding.get();
             currentLines.getEngine().loadContent(content);
@@ -167,6 +167,7 @@ public class PdfController extends Application {
             }
         });
         pdfInfo.getLines().addListener(listener);
+        pdfInfo.pageIndexProperty().addListener(listener);
         pdfInfo.lineIndexProperty().addListener(listener);
         pdfInfo.getSkipLines().addListener(listener);
         PdfUtils.readFile(pdfInfo);

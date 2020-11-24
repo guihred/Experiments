@@ -47,7 +47,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
         Map<String, String> filter1 = new HashMap<>();
         Integer days = 1;
         List<String> asList = Arrays.asList("consultas.inss.gov.br", "vip-pmeuinssprxr.inss.gov.br",
-                "tarefas.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br");
+                "tarefas.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br", "cadastro-cat.inss.gov.br");
         for (QueryObjects queryObjects : queryList) {
             if (queryObjects.getLineChart() == null) {
                 for (String string : asList) {
@@ -102,7 +102,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
         Map<String, String> filter1 = new HashMap<>();
         Integer days = 1;
         List<String> asList = Arrays.asList("consultas.inss.gov.br", "vip-pmeuinssprxr.inss.gov.br",
-                "tarefas.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br");
+                "tarefas.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br", "cadastro-cat.inss.gov.br");
         for (QueryObjects queryObjects : queryList) {
             for (String string : asList) {
                 filter1.put(QueryObjects.ACESSOS_SISTEMA_QUERY, string);
@@ -145,7 +145,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordReport() throws IOException {
-        String finalIP = "189.68.23.187";
+        String finalIP = "143.208.252.10";
         String out = "docx/Reporte_Eventos_MeuINSS_" + finalIP + ".docx";
         Map<String, Object> mapaSubstituicao =
                 JsonExtractor.accessMap(JsonExtractor.toObject(ResourceFXUtils.toFile("kibana/modeloRelatorio.json")));
@@ -161,7 +161,8 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordReportAuxilio() throws IOException {
-        String finalIP = "177.58.255.90";
+        String finalIP = "143.208.252.10";
+
         String out = "docx/Reporte_Eventos_auxilioemergencial_" + finalIP + ".docx";
         Map<String, Object> mapaSubstituicao = JsonExtractor
                 .accessMap(JsonExtractor.toObject(ResourceFXUtils.toFile("kibana/modeloRelatorioAuxilio.json")));
@@ -177,7 +178,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordReportConsultas() throws IOException {
-        String finalIP = "191.17.40.15";
+        String finalIP = "177.102.158.76";
         Map<String, Object> mapaSubstituicao = JsonExtractor
                 .accessMap(JsonExtractor.toObject(ResourceFXUtils.toFile("kibana/modeloRelatorioConsultas.json")));
         Map<String, String> params = new LinkedHashMap<>();
@@ -240,14 +241,6 @@ public class FXKibanaReportTest extends AbstractTestExecution {
         return image.getValue();
     }
 
-    @SuppressWarnings({ "unchecked", "static-method" })
-    private void mergeImage(Map<String, Object> mapaSubstituicao, List<Object> collect) {
-        mapaSubstituicao.merge("gerid", collect, (o, n) -> {
-            ((List<Object>) o).addAll((List<?>) n);
-            return o;
-        });
-    }
-
     @SuppressWarnings("unchecked")
     private Object remap(String finalIP, Map<String, String> params, Object e) {
         if (e instanceof Map) {
@@ -287,8 +280,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     }
 
     private static String getFirst(String[] params, Map<String, String> m) {
-        String orDefault = m.getOrDefault(params[0], m.values().iterator().next());
-        return orDefault;
+        return m.getOrDefault(params[0], m.values().iterator().next());
     }
 
     private static Double getNumber(String numberCol, Map<String, String> m) {
@@ -304,6 +296,14 @@ public class FXKibanaReportTest extends AbstractTestExecution {
             }
         }
         return true;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static void mergeImage(Map<String, Object> mapaSubstituicao, List<Object> collect) {
+        mapaSubstituicao.merge("gerid", collect, (o, n) -> {
+            ((List<?>) o).addAll((List) n);
+            return o;
+        });
     }
 
     private static Object replaceString(Map<String, String> params, Object v) {
