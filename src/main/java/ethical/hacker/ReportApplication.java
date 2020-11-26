@@ -29,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -52,6 +53,8 @@ public class ReportApplication extends Application {
     @FXML
     private WebView browser;
     @FXML
+    private Text loc;
+    @FXML
     private ComboBox<Path> model;
     private WebEngine engine;
 
@@ -59,6 +62,7 @@ public class ReportApplication extends Application {
         ExtractUtils.insertProxyConfig();
         engine = browser.getEngine();
         Worker<Void> loadWorker = engine.getLoadWorker();
+        engine.locationProperty().addListener((ob, old, val) -> loc.setText(StringUtils.abbreviate(val, 60)));
         progressIndicator.progressProperty().bind(loadWorker.progressProperty());
         File parentFile = ResourceFXUtils.toFile("kibana/modeloRelatorio.json").getParentFile();
         List<Path> firstFileMatch = FileTreeWalker

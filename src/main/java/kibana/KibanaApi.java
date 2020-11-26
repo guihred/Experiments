@@ -106,7 +106,7 @@ public class KibanaApi {
     public static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
         return SupplierEx.getHandle(() -> {
             File outFile = newJsonFile(removeExtension(file) + query + days);
-            if (!outFile.exists() || oneDayModified(outFile)) {
+            if (!outFile.exists() || oneHourModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 RunnableEx.make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, getContent(file, query, gte, lte), outFile),
@@ -130,7 +130,7 @@ public class KibanaApi {
         return SupplierEx.get(() -> {
             String values = search.values().stream().collect(Collectors.joining());
             File outFile = newJsonFile(removeExtension(file) + values + days);
-            if (!outFile.exists() || oneDayModified(outFile)) {
+            if (!outFile.exists() || oneHourModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 String keywords = convertSearchKeywords(search);
@@ -206,7 +206,7 @@ public class KibanaApi {
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
     }
 
-    protected static boolean oneDayModified(File outFile) {
+    protected static boolean oneHourModified(File outFile) {
         FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
         Instant instant = lastModifiedTime.toInstant();
         long between = ChronoUnit.HOURS.between(instant, Instant.now());

@@ -22,8 +22,9 @@ import utils.ex.SupplierEx;
 public final class TimelionApi extends KibanaApi {
     private static final String TIMELION_URL = "https://n321p000124.fast.prevnet/api/timelion/run";
     private static final Logger LOG = HasLogging.log();
-    public static final String TIMELINE_USERS = ".es(index=inss-*-prod*,q=\\\"dtpsistema:portalatendimento\\\","
-            + "split=mdc.uid.keyword:12).label('$1','.*>.*:(.*)>.*')";
+    public static final String TIMELINE_USERS =
+            ".es(index=*apache-prod*,q=\\\"dtptype:nginx OR dtptype:apache OR dtptype:varnish\\\","
+                    + "split=dtpsistema.keyword:12).label('$1','.*>.*:(.*)>.*')";
     public static final String TIMELINE_IPS =
             ".es(index=*apache-prod*,q=\\\"dtptype:nginx OR dtptype:apache OR dtptype:varnish\\\","
                     + "split=clientip.keyword:12).label('$1','.*>.*:(.*)>.*')";
@@ -37,7 +38,7 @@ public final class TimelionApi extends KibanaApi {
             String replaceAll = timelionQuery.replaceAll(".+split=(.+?):.+", "$1");
 
             File outFile = newJsonFile(replaceAll + Stream.of(values, time).collect(Collectors.joining()));
-            if (!outFile.exists() || oneDayModified(outFile)) {
+            if (!outFile.exists() || oneHourModified(outFile)) {
                 String keywords = convertSearchKeywords(search);
                 String content = getContent(file, timelionQuery, keywords, time);
                 getFromURLJson(TIMELION_URL, content, outFile);

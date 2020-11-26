@@ -23,7 +23,10 @@
 					<Text text="Model" />
 					<ComboBox fx:id="model" />
 				</VBox>
-				<Button text="_Make Report" onAction="#makeReportConsultas" />
+				<VBox>
+					<Text text="" fx:id="loc" />
+					<Button text="_Make Report" onAction="#makeReportConsultas" />
+				</VBox>
 			</children>
 		</HBox>
 	</top>

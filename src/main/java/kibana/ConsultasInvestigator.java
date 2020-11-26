@@ -2,7 +2,6 @@ package kibana;
 
 import static kibana.QueryObjects.ACESSOS_SISTEMA_QUERY;
 import static kibana.QueryObjects.CLIENT_IP_QUERY;
-import static kibana.QueryObjects.MDC_UID_KEYWORD;
 import static kibana.QueryObjects.URL_QUERY;
 import static utils.StringSigaUtils.toDouble;
 
@@ -39,6 +38,9 @@ public class ConsultasInvestigator extends Application {
 
     private static final Logger LOG = HasLogging.log();
     public static final String IGNORE_IPS_REGEX = "10\\..+|::1|127.0.0.1";
+    private static final List<String> APPLICATION_LIST =
+            Arrays.asList("consultas.inss.gov.br", "vip-pmeuinssprxr.inss.gov.br", "tarefas.inss.gov.br",
+                    "vip-auxilioemergencial.dataprev.gov.br", "mteempregabr");
     @FXML
     private TextField resultsFilter;
     @FXML
@@ -61,16 +63,17 @@ public class ConsultasInvestigator extends Application {
     private ObservableMap<String, String> filter = FXCollections.observableHashMap();
     @FXML
     private ComboBox<String> ipCombo;
+
     @FXML
     private ComboBox<String> uidCombo;
-
     @FXML
     private LineChart<Number, Number> timelineUsuarios;
-    @FXML
-    private SplitPane splitPane0;
 
     @FXML
+    private SplitPane splitPane0;
+    @FXML
     private LineChart<Number, Number> timelineIPs;
+
     private List<String> excludeOwners = Arrays.asList("CAIXA ECONOMICA FEDERAL",
             "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO", "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.");
 
@@ -80,10 +83,11 @@ public class ConsultasInvestigator extends Application {
 
     public void initialize() {
         String count = "doc_count";
-        configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
+        QueryObjects configureTable = configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
+        RunnableEx.runNewThread(() -> configureTable.makeKibanaQuery(filter, days.getValue()));
         configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count).setAllowEmpty(false);
         configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^/.*").setAllowEmpty(false);
-        configureTimeline(MDC_UID_KEYWORD, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
+        configureTimeline(ACESSOS_SISTEMA_QUERY, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
         configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setGroup(WhoIsScanner.IP_REGEX)
                 .setAllowEmpty(false);
@@ -107,10 +111,10 @@ public class ConsultasInvestigator extends Application {
 
     public void makeAutomatedSearch() {
         Map<String, String> filter1 = new HashMap<>();
-        List<String> applicationList = Arrays.asList("consultas.inss.gov.br", "vip-pmeuinssprxr.inss.gov.br",
-                "tarefas.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br", "cadastro-cat.inss.gov.br");
         RunnableEx.runNewThread(() -> {
             CommonsFX.update(progress.progressProperty(), 0);
+            List<String> applicationList = getApplicationList();
+
             for (String application : applicationList) {
                 for (QueryObjects queryObjects : queryList) {
                     if (queryObjects.getLineChart() != null) {
@@ -241,6 +245,14 @@ public class ConsultasInvestigator extends Application {
                 .map(e -> completeInformation(params, whoIsScanner, e))
                 .filter(m -> !excludeOwners.contains(m.getOrDefault("as_owner", "")))
                 .filter(m -> isNotBlocked(days.getValue(), getFirst(params, m))).collect(Collectors.toList());
+    }
+
+    private List<String> getApplicationList() {
+        if(!acessosSistemaTable.getSelectionModel().getSelectedItems().isEmpty()) {
+            return acessosSistemaTable.getSelectionModel().getSelectedItems().stream().map(e -> e.get("key"))
+                    .collect(Collectors.toList());
+        }
+        return APPLICATION_LIST;
     }
 
     private void makeKibanaQuery(QueryObjects queryObjects) {

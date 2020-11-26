@@ -96,7 +96,7 @@
 					<content>
 						<VBox>
 							<children>
-								<Text text="mdc.uid.keyword" />
+								<Text text="dtpsistema.keyword" />
 								<ComboBox fx:id="uidCombo">
 									<items>
 										<FXCollections fx:factory="observableArrayList">
