@@ -49,6 +49,7 @@
 				<HBox spacing="10">
 					<VBox spacing="10">
 						<Button onAction="#onActionKibanaScan" text="_Kibana Scan" />
+						<Button onAction="#makeAutomatedSearch" text="_Automated Search" />
 
 						<Button onAction="#onActionClear" text="_Clear" />
 						<Button onAction="#onExportExcel" text="_Export Excel" />

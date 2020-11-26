@@ -2,6 +2,7 @@ package paintexp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -92,9 +93,14 @@ public class PaintController {
     public void handleMouse(final MouseEvent e) {
         double x = e.getX();
         double y = e.getY();
-        paintModel.getMousePosition().setText(x > 0 && y > 0 ? String.format("%.0fx%.0f", x, y) : "");
+        double width = paintModel.getImage().getWidth();
+        double height = paintModel.getImage().getHeight();
+        paintModel.getMousePosition()
+                .setText(x > 0 && y > 0
+                        ? String.format(Locale.ENGLISH, "%.0fx%.0f (%.4f,%.4f)", x, y, x / width, y / height)
+                        : "");
         String imageSize =
-                String.format("%.0fx%.0f", paintModel.getImage().getWidth(), paintModel.getImage().getHeight());
+                String.format("%.0fx%.0f", width, height);
         paintModel.getImageSize().setText(imageSize);
 
         PaintTool paintTool = getTool();

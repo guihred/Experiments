@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.text.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml">
+	<center>
+		<WebView fx:id="browser" />
+	</center>
+	<top>
+		<HBox>
+			<children>
+				<ProgressIndicator fx:id="progressIndicator" />
+				<VBox>
+					<Text text="IP" />
+					<TextField fx:id="ipField" />
+				</VBox>
+				<VBox>
+					<Text text="Model" />
+					<ComboBox fx:id="model" />
+				</VBox>
+				<Button text="_Make Report" onAction="#makeReportConsultas" />
+			</children>
+		</HBox>
+	</top>
+</BorderPane>

@@ -5,6 +5,7 @@ import static utils.ResourceFXUtils.toExternalForm;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -167,6 +168,16 @@ public final class CommonsFX {
         while (!a.get()) {
             // DOES NOTHING
         }
+    }
+
+    public static <T> T runInPlatformSync(SupplierEx<T> run) {
+        AtomicReference<T> a = new AtomicReference<>();
+        AtomicReference<Throwable> ex = new AtomicReference<>();
+        Platform.runLater(() -> a.set(SupplierEx.makeSupplier(run, ex::set).get()));
+        while (a.get() == null && ex.get() == null) {
+            // DOES NOTHING
+        }
+        return a.get();
     }
 
     public static void update(Property<Number> progress, double value) {

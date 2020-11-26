@@ -75,7 +75,7 @@ public final class VirusTotalApi {
             if (!outFile.exists()) {
                 getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
             }
-            return JsonExtractor.makeMapFromJsonFile(outFile, "as_owner", "country", 
+            return JsonExtractor.makeMapFromJsonFile(outFile, "id", "as_owner", "country", 
                     LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "network");
         }, null, e -> LOG.info("ERROR SEARCHING {} {}", ip, e.getMessage()));
     }

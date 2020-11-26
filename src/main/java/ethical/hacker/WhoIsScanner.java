@@ -53,7 +53,6 @@ public class WhoIsScanner {
         String string = com.google.common.io.Files.toString(htmlFile, StandardCharsets.UTF_8);
         return Stream.of(subFolder).allMatch(t -> !string.contains(t)) || string.contains(waitStr);
     }
-
     public WhoIsScanner cookie(String string, String string2) {
         cookies.put(string, string2);
         return this;
@@ -81,6 +80,7 @@ public class WhoIsScanner {
 
     public Map<String, String> getIpInformation(String ip) {
         Map<String, String> ipInformation = getIpInformation(this, ip);
+        ipInformation.putIfAbsent("id", ip);
         LOG.info("{}", ipInformation);
         return ipInformation;
     }
@@ -228,6 +228,7 @@ public class WhoIsScanner {
     public static String getReverseDNS(String ip) {
         return SupplierEx.get(() -> toInetAddress(ip).getCanonicalHostName());
     }
+
 
 
     public static String reorderAndLog(DataframeML dataframe, String numberField) {

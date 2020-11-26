@@ -93,7 +93,8 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
                 String string = ImageFXUtils.getClipboardString();
                 for (String string2 : string.split("[\n,\t]+")) {
                     T apply = FunctionEx.apply(f, string2);
-                    if (StringUtils.isNotBlank(Objects.toString(apply, "")) && !node.getItems().contains(apply)) {
+                    if (apply != null && StringUtils.isNotBlank(Objects.toString(apply, ""))
+                            && !node.getItems().contains(apply)) {
                         node.getItems().add(apply);
                     }
                 }

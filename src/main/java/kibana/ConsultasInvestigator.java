@@ -1,8 +1,10 @@
 package kibana;
+
 import static kibana.QueryObjects.ACESSOS_SISTEMA_QUERY;
 import static kibana.QueryObjects.CLIENT_IP_QUERY;
 import static kibana.QueryObjects.MDC_UID_KEYWORD;
 import static kibana.QueryObjects.URL_QUERY;
+import static utils.StringSigaUtils.toDouble;
 
 import ethical.hacker.WhoIsScanner;
 import extract.ExcelService;
@@ -22,6 +24,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import ml.graph.DataframeExplorer;
+import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import utils.CSVUtils;
@@ -29,10 +32,13 @@ import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
 public class ConsultasInvestigator extends Application {
 
+    private static final Logger LOG = HasLogging.log();
+    public static final String IGNORE_IPS_REGEX = "10\\..+|::1|127.0.0.1";
     @FXML
     private TextField resultsFilter;
     @FXML
@@ -57,13 +63,16 @@ public class ConsultasInvestigator extends Application {
     private ComboBox<String> ipCombo;
     @FXML
     private ComboBox<String> uidCombo;
-    @FXML
-    private LineChart<Number, Number> timelineUsuarios;
 
     @FXML
+    private LineChart<Number, Number> timelineUsuarios;
+    @FXML
     private SplitPane splitPane0;
+
     @FXML
     private LineChart<Number, Number> timelineIPs;
+    private List<String> excludeOwners = Arrays.asList("CAIXA ECONOMICA FEDERAL",
+            "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO", "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.");
 
     public List<QueryObjects> getQueryList() {
         return queryList;
@@ -78,7 +87,13 @@ public class ConsultasInvestigator extends Application {
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
         configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setGroup(WhoIsScanner.IP_REGEX)
                 .setAllowEmpty(false);
-        SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> filter.remove(e.getKey())).copiable();
+        SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> filter.remove(e.getKey())).pasteable(s -> {
+            if (s.contains("=")) {
+                String[] split = s.split("=");
+                filter.merge(split[0], split[1], (a, b) -> a + "\n" + b);
+            }
+            return null;
+        }).copiable();
         filter.addListener((Change<? extends String, ? extends String> change) -> {
             if (change.wasRemoved()) {
                 filterList.getItems().removeIf(e -> Objects.equals(e.getKey(), change.getKey()));
@@ -88,6 +103,40 @@ public class ConsultasInvestigator extends Application {
             }
         });
         splitPane0.setDividerPositions(0.1);
+    }
+
+    public void makeAutomatedSearch() {
+        Map<String, String> filter1 = new HashMap<>();
+        List<String> applicationList = Arrays.asList("consultas.inss.gov.br", "vip-pmeuinssprxr.inss.gov.br",
+                "tarefas.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br", "cadastro-cat.inss.gov.br");
+        RunnableEx.runNewThread(() -> {
+            CommonsFX.update(progress.progressProperty(), 0);
+            for (String application : applicationList) {
+                for (QueryObjects queryObjects : queryList) {
+                    if (queryObjects.getLineChart() != null) {
+                        continue;
+                    }
+                    filter1.put(QueryObjects.ACESSOS_SISTEMA_QUERY, application);
+                    String[] params = queryObjects.getParams();
+                    String numberCol = params[queryObjects.getParams().length - 1];
+                    List<Map<String, String>> kibanaQuery = queryObjects.searchRemap(filter1, days.getValue());
+                    String fieldQuery = queryObjects.getQuery();
+                    DoubleSummaryStatistics summaryStatistics = getStatistics(params, numberCol, kibanaQuery);
+                    List<Map<String, String>> aboveAvgInfo =
+                            getAboveAvgInfo(summaryStatistics, kibanaQuery, numberCol, params);
+                    if (!aboveAvgInfo.isEmpty()) {
+                        CommonsFX.runInPlatform(() -> {
+                            for (Map<String, String> map : aboveAvgInfo) {
+                                filter.merge(fieldQuery, getFirst(params, map), (a, b) -> a + "\n" + b);
+                            }
+                        });
+                        LOG.info("\n\t{}\n\t{}\n{}", application, fieldQuery, join(aboveAvgInfo));
+                    }
+                }
+                CommonsFX.addProgress(progress.progressProperty(), 1. / applicationList.size());
+            }
+            CommonsFX.update(progress.progressProperty(), 1);
+        });
     }
 
     public void onActionClear() {
@@ -177,6 +226,23 @@ public class ConsultasInvestigator extends Application {
         return configureTimeline(field, queryList, userNameQuery, lineChart, combo);
     }
 
+    private List<Map<String, String>> getAboveAvgInfo(DoubleSummaryStatistics summaryStatistics,
+            List<Map<String, String>> makeKibanaQuery, String numberCol, String[] params) {
+        if (summaryStatistics.getCount() <= 1 || summaryStatistics.getSum() == 0) {
+            return Collections.emptyList();
+        }
+        double avg = summaryStatistics.getAverage();
+        double max = summaryStatistics.getMax();
+        double min = summaryStatistics.getMin();
+        double range = (max - min) * .45;
+        WhoIsScanner whoIsScanner = new WhoIsScanner();
+        return makeKibanaQuery.parallelStream().filter(m -> !getFirst(params, m).matches(IGNORE_IPS_REGEX))
+                .filter(m -> getNumber(numberCol, m) > avg + range)
+                .map(e -> completeInformation(params, whoIsScanner, e))
+                .filter(m -> !excludeOwners.contains(m.getOrDefault("as_owner", "")))
+                .filter(m -> isNotBlocked(days.getValue(), getFirst(params, m))).collect(Collectors.toList());
+    }
+
     private void makeKibanaQuery(QueryObjects queryObjects) {
         queryObjects.makeKibanaQuery(filter, days.getSelectionModel().getSelectedItem());
     }
@@ -196,5 +262,45 @@ public class ConsultasInvestigator extends Application {
         launch(args);
     }
 
+    private static Map<String, String> completeInformation(String[] params, WhoIsScanner whoIsScanner,
+            Map<String, String> e) {
+        String field = getFirst(params, e);
+        if (field.matches(WhoIsScanner.IP_REGEX)) {
+            Map<String, String> ipInformation = whoIsScanner.getIpInformation(field);
+            ipInformation.remove("last_analysis_stats");
+            ipInformation.remove("malicious");
+            e.putAll(ipInformation);
+        }
+        return e;
+    }
+
+    private static String getFirst(String[] params, Map<String, String> m) {
+        return m.getOrDefault(params[0], m.values().iterator().next());
+    }
+
+    private static Double getNumber(String numberCol, Map<String, String> m) {
+        return toDouble(m.getOrDefault(numberCol, m.get(numberCol + 0)));
+    }
+
+    private static DoubleSummaryStatistics getStatistics(String[] params, String numberCol,
+            List<Map<String, String>> makeKibanaQuery) {
+        return makeKibanaQuery.stream().filter(m -> !getFirst(params, m).matches(IGNORE_IPS_REGEX))
+                .mapToDouble(m -> getNumber(numberCol, m)).summaryStatistics();
+    }
+
+    private static boolean isNotBlocked(Integer days, String ip) {
+        if (ip.matches(WhoIsScanner.IP_REGEX)) {
+            Map<String, String> blocked = KibanaApi.makeKibanaSearch("policiesQuery.json", ip, days, "key");
+            if (blocked.values().stream().anyMatch(s -> s.contains("block"))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static String join(List<Map<String, String>> collect) {
+        return collect.stream().map(e -> "\t" + e.values().stream().collect(Collectors.joining("\t")))
+                .collect(Collectors.joining("\n"));
+    }
 
 }

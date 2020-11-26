@@ -152,9 +152,7 @@ public class QueryObjects {
             CommonsFX.runInPlatform(() -> getItems().clear());
             return getItems();
         }
-        Map<String, String> nsInformation =
-                KibanaApi.makeKibanaSearch("kibana/" + getQueryFile(), days, filter1, getParams());
-        List<Map<String, String>> remap = KibanaApi.remap(nsInformation, getGroup());
+        List<Map<String, String>> remap = searchRemap(filter1, days);
         CommonsFX.runInPlatform(() -> getItems().clear());
         CommonsFX.runInPlatform(() -> {
             if (getTable().getColumns().isEmpty()) {
@@ -180,6 +178,12 @@ public class QueryObjects {
         });
 
         TimelionApi.timelionScan(data, getQueryFile(), filter, "now-d");
+    }
+
+    public List<Map<String, String>> searchRemap(Map<String, String> filter1, Integer days) {
+        Map<String, String> nsInformation =
+                KibanaApi.makeKibanaSearch("kibana/" + getQueryFile(), days, filter1, getParams());
+        return KibanaApi.remap(nsInformation, getGroup());
     }
 
     public void setAllowEmpty(boolean allowEmpty) {
