@@ -54,9 +54,11 @@ public class ReportApplication extends Application {
     private WebView browser;
     @FXML
     private Text loc;
+    private WebEngine engine;
     @FXML
     private ComboBox<Path> model;
-    private WebEngine engine;
+    @FXML
+    private ComboBox<Integer> hours;
 
     public void initialize() {
         ExtractUtils.insertProxyConfig();
@@ -148,7 +150,8 @@ public class ReportApplication extends Application {
 
         Property<Image> image = new SimpleObjectProperty<>();
         String kibanaURL = Objects.toString(imageObj.get("url"), "");
-        String replaceAll = kibanaURL.replaceAll(IP_REPLACEMENT, finalIP);
+        String replaceAll =
+                kibanaURL.replaceAll(IP_REPLACEMENT, finalIP).replaceAll("-24h", "-" + hours.getValue() + "h");
         CommonsFX.runInPlatform(() -> loadSite(replaceAll));
         RunnableEx.measureTime("Load Site " + imageObj.get("name"), () -> {
             AtomicBoolean atomicBoolean = new AtomicBoolean(true);

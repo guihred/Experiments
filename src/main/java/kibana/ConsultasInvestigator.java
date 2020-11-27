@@ -1,5 +1,10 @@
 package kibana;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Stream.concat;
+import static java.util.stream.Stream.of;
 import static kibana.QueryObjects.ACESSOS_SISTEMA_QUERY;
 import static kibana.QueryObjects.CLIENT_IP_QUERY;
 import static kibana.QueryObjects.URL_QUERY;
@@ -10,7 +15,6 @@ import extract.ExcelService;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener.Change;
@@ -23,6 +27,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import ml.graph.DataframeExplorer;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
@@ -83,7 +88,8 @@ public class ConsultasInvestigator extends Application {
 
     public void initialize() {
         String count = "doc_count";
-        QueryObjects configureTable = configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
+        QueryObjects configureTable =
+                configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
         RunnableEx.runNewThread(() -> configureTable.makeKibanaQuery(filter, days.getValue()));
         configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count).setAllowEmpty(false);
         configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^/.*").setAllowEmpty(false);
@@ -92,10 +98,7 @@ public class ConsultasInvestigator extends Application {
         configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setGroup(WhoIsScanner.IP_REGEX)
                 .setAllowEmpty(false);
         SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> filter.remove(e.getKey())).pasteable(s -> {
-            if (s.contains("=")) {
-                String[] split = s.split("=");
-                filter.merge(split[0], split[1], (a, b) -> a + "\n" + b);
-            }
+            addToFilter(s);
             return null;
         }).copiable();
         filter.addListener((Change<? extends String, ? extends String> change) -> {
@@ -109,14 +112,66 @@ public class ConsultasInvestigator extends Application {
         splitPane0.setDividerPositions(0.1);
     }
 
+    public void makeAutomatedNetworkSearch() {
+        Map<String, String> filter1 = new HashMap<>();
+        RunnableEx.runNewThread(() -> {
+            CommonsFX.update(progress.progressProperty(), 0);
+            List<String> applicationList = getApplicationList();
+            List<QueryObjects> queries = queryList.stream()
+                    .filter(q -> q.getLineChart() == null && QueryObjects.CLIENT_IP_QUERY.equals(q.getQuery()))
+                    .collect(Collectors.toList());
+            WhoIsScanner whoIsScanner = new WhoIsScanner();
+            for (String application : applicationList) {
+                for (QueryObjects queryObjects : queries) {
+                    filter1.put(QueryObjects.ACESSOS_SISTEMA_QUERY, application);
+                    String[] params = queryObjects.getParams();
+                    String numberCol = params[queryObjects.getParams().length - 1];
+                    List<Map<String, String>> kibanaQuery = queryObjects.searchRemap(filter1, days.getValue());
+                    String queryField = queryObjects.getQuery();
+                    List<Map<String, String>> whoIsInfo = kibanaQuery.parallelStream()
+                            .filter(m -> !getFirst(params, m).matches(ConsultasInvestigator.IGNORE_IPS_REGEX))
+                            .map(e -> {
+                                Map<String, String> ipInformation = whoIsScanner.getIpInformation(getFirst(params, e));
+                                ipInformation.remove("last_analysis_stats");
+                                ipInformation.remove("malicious");
+                                e.putAll(ipInformation);
+                                return e;
+                            }).collect(Collectors.toList());
+                    Map<String,
+                            Double> collect = whoIsInfo.stream()
+                                    .collect(Collectors.groupingBy(
+                                            m -> WhoIsScanner.getKey(m, "as_owner", "") + "\t"
+                                                    + WhoIsScanner.getKey(m, "network", "id"),
+                                            Collectors.summingDouble(m -> getNumber(numberCol, m))));
+                    DoubleSummaryStatistics summaryStatistics =
+                            collect.values().stream().mapToDouble(e -> e).summaryStatistics();
+                    double avg = summaryStatistics.getAverage();
+                    double max = summaryStatistics.getMax();
+                    double min = summaryStatistics.getMin();
+                    double range = (max - min) * .40;
+                    String collect3 = collect.entrySet().stream().filter(m -> m.getValue() > avg + range)
+                            .filter(m -> excludeOwners.stream().noneMatch(ow -> m.getKey().startsWith(ow)))
+                            .map(s -> "\t" + s).collect(Collectors.joining("\n"));
+                    if (StringUtils.isNotBlank(collect3)) {
+                        LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, collect3);
+                    }
+
+                    CommonsFX.addProgress(progress.progressProperty(), 1. / applicationList.size() / queries.size());
+                }
+            }
+            CommonsFX.update(progress.progressProperty(), 1);
+        });
+    }
+
     public void makeAutomatedSearch() {
         Map<String, String> filter1 = new HashMap<>();
         RunnableEx.runNewThread(() -> {
             CommonsFX.update(progress.progressProperty(), 0);
             List<String> applicationList = getApplicationList();
-
+            List<QueryObjects> queries =
+                    queryList.stream().filter(q -> q.getLineChart() == null).collect(Collectors.toList());
             for (String application : applicationList) {
-                for (QueryObjects queryObjects : queryList) {
+                for (QueryObjects queryObjects : queries) {
                     if (queryObjects.getLineChart() != null) {
                         continue;
                     }
@@ -129,15 +184,11 @@ public class ConsultasInvestigator extends Application {
                     List<Map<String, String>> aboveAvgInfo =
                             getAboveAvgInfo(summaryStatistics, kibanaQuery, numberCol, params);
                     if (!aboveAvgInfo.isEmpty()) {
-                        CommonsFX.runInPlatform(() -> {
-                            for (Map<String, String> map : aboveAvgInfo) {
-                                filter.merge(fieldQuery, getFirst(params, map), (a, b) -> a + "\n" + b);
-                            }
-                        });
+                        mergeFilter(params, fieldQuery, aboveAvgInfo);
                         LOG.info("\n\t{}\n\t{}\n{}", application, fieldQuery, join(aboveAvgInfo));
                     }
+                    CommonsFX.addProgress(progress.progressProperty(), 1. / applicationList.size() / queries.size());
                 }
-                CommonsFX.addProgress(progress.progressProperty(), 1. / applicationList.size());
             }
             CommonsFX.update(progress.progressProperty(), 1);
         });
@@ -170,10 +221,10 @@ public class ConsultasInvestigator extends Application {
     public void onExportExcel() {
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
         Map<String, List<Map<String, String>>> collect = queryList.stream().filter(e -> e.getTable() != null)
-                .collect(Collectors.toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
+                .collect(toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
         List<String> collect2 =
                 queryList.stream().filter(e -> e.getTable() != null).flatMap(e -> e.getTable().getColumns().stream())
-                        .map(TableColumn::getText).distinct().collect(Collectors.toList());
+                        .map(TableColumn::getText).distinct().collect(toList());
         for (String text : collect2) {
             mapa.put(text, t -> t.getOrDefault(text, ""));
         }
@@ -193,8 +244,7 @@ public class ConsultasInvestigator extends Application {
             QueryObjects orElse =
                     queryList.stream().filter(e -> e.getTable() == lookup).findFirst().orElse(queryList.get(0));
             TableView<Map<String, String>> table = orElse.getTable();
-            String collect =
-                    filter.values().stream().map(s -> s.replaceAll(".+/(.+)", "$1")).collect(Collectors.joining());
+            String collect = filter.values().stream().map(s -> s.replaceAll(".+/(.+)", "$1")).collect(joining());
             File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + collect + ".csv");
             CSVUtils.saveToFile(table, ev);
             new SimpleDialogBuilder().bindWindow(tabPane0).show(DataframeExplorer.class).addStats(ev);
@@ -211,6 +261,25 @@ public class ConsultasInvestigator extends Application {
         CommonsFX.update(progress.progressProperty(), progress.getProgress() + d);
     }
 
+    private void addToFilter(String s) {
+        if (s.contains("=")) {
+            String[] split = s.split("=");
+            filter.merge(split[0], split[1], this::merge);
+            return;
+        }
+        if (s.matches(WhoIsScanner.IP_REGEX)) {
+            filter.merge(CLIENT_IP_QUERY, s, this::merge);
+            return;
+        }
+        if (s.startsWith("/")) {
+            filter.merge(URL_QUERY, s, this::merge);
+            return;
+        }
+        if (!StringUtils.isNumeric(s)) {
+            filter.merge(ACESSOS_SISTEMA_QUERY, s, this::merge);
+        }
+    }
+
     private QueryObjects configureTable(String userNameQuery, String queryFile,
             TableView<Map<String, String>> ipsTable2, String... params) {
         QueryObjects fieldObjects = new QueryObjects(userNameQuery, queryFile, ipsTable2, params);
@@ -218,7 +287,7 @@ public class ConsultasInvestigator extends Application {
         return fieldObjects.configureTable(resultsFilter, e -> {
             for (Map<String, String> map : e) {
                 filter.merge(userNameQuery, map.values().stream().findFirst().orElse("key"),
-                        (u, v) -> Stream.of(u, v).distinct().collect(Collectors.joining("\n")));
+                        (u, v) -> of(u, v).distinct().collect(joining("\n")));
             }
             resultsFilter.setText("");
             onActionKibanaScan();
@@ -244,13 +313,13 @@ public class ConsultasInvestigator extends Application {
                 .filter(m -> getNumber(numberCol, m) > avg + range)
                 .map(e -> completeInformation(params, whoIsScanner, e))
                 .filter(m -> !excludeOwners.contains(m.getOrDefault("as_owner", "")))
-                .filter(m -> isNotBlocked(days.getValue(), getFirst(params, m))).collect(Collectors.toList());
+                .filter(m -> isNotBlocked(days.getValue(), getFirst(params, m))).collect(toList());
     }
 
     private List<String> getApplicationList() {
-        if(!acessosSistemaTable.getSelectionModel().getSelectedItems().isEmpty()) {
+        if (!acessosSistemaTable.getSelectionModel().getSelectedItems().isEmpty()) {
             return acessosSistemaTable.getSelectionModel().getSelectedItems().stream().map(e -> e.get("key"))
-                    .collect(Collectors.toList());
+                    .collect(toList());
         }
         return APPLICATION_LIST;
     }
@@ -261,6 +330,18 @@ public class ConsultasInvestigator extends Application {
 
     private void makeTimelionQuery(QueryObjects queryObjects) {
         queryObjects.makeTimelionQuery(filter);
+    }
+
+    private String merge(String a, String b) {
+        return concat(of(a.split("\n")), of(b.split("\n"))).distinct().sorted().collect(joining("\n"));
+    }
+
+    private void mergeFilter(String[] params, String fieldQuery, List<Map<String, String>> aboveAvgInfo) {
+        CommonsFX.runInPlatform(() -> {
+            for (Map<String, String> map : aboveAvgInfo) {
+                filter.merge(fieldQuery, getFirst(params, map), this::merge);
+            }
+        });
     }
 
     public static QueryObjects configureTimeline(String field, List<QueryObjects> queryList, String userNameQuery,
@@ -311,8 +392,7 @@ public class ConsultasInvestigator extends Application {
     }
 
     private static String join(List<Map<String, String>> collect) {
-        return collect.stream().map(e -> "\t" + e.values().stream().collect(Collectors.joining("\t")))
-                .collect(Collectors.joining("\n"));
+        return collect.stream().map(e -> "\t" + e.values().stream().collect(joining("\t"))).collect(joining("\n"));
     }
 
 }

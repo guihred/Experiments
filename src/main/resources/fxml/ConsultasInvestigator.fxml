@@ -92,7 +92,7 @@
 						</VBox>
 					</content>
 				</Tab>
-				<Tab text="Timeline Usuários">
+				<Tab text="Timeline Sistemas">
 					<content>
 						<VBox>
 							<children>
@@ -104,7 +104,7 @@
 										</FXCollections>
 									</items>
 								</ComboBox>
-								<LineChart fx:id="timelineUsuarios" title="Timeline Usuários"
+								<LineChart fx:id="timelineUsuarios" title="Timeline Sistemas"
 									legendSide="LEFT" verticalZeroLineVisible="false" animated="false"
 									createSymbols="false">
 									<yAxis>
