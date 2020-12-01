@@ -44,8 +44,8 @@ public class ConsultasInvestigator extends Application {
     private static final Logger LOG = HasLogging.log();
     public static final String IGNORE_IPS_REGEX = "10\\..+|::1|127.0.0.1";
     private static final List<String> APPLICATION_LIST =
-            Arrays.asList("consultas.inss.gov.br", "vip-pmeuinssprxr.inss.gov.br", "tarefas.inss.gov.br",
-                    "vip-auxilioemergencial.dataprev.gov.br", "mteempregabr");
+            Arrays.asList("consultas.inss.gov.br", "vip-pmeuinssprxr.inss.gov.br",
+                    "vip-auxilioemergencial.dataprev.gov.br");
     @FXML
     private TextField resultsFilter;
     @FXML
@@ -80,7 +80,8 @@ public class ConsultasInvestigator extends Application {
     private LineChart<Number, Number> timelineIPs;
 
     private List<String> excludeOwners = Arrays.asList("CAIXA ECONOMICA FEDERAL",
-            "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO", "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.");
+            "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO", "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.",
+            "Google LLC");
 
     public List<QueryObjects> getQueryList() {
         return queryList;

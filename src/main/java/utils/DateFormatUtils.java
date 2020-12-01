@@ -28,6 +28,10 @@ public final class DateFormatUtils {
         return SupplierEx.get(() ->  DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now()));
     }
 
+    public static String currentHour() {
+        return SupplierEx.get(() -> DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()));
+    }
+
     public static LocalDate epochSecondToLocalDate(String asText) {
         long epochSecond = Long.parseLong(asText);
         return Instant.ofEpochSecond(epochSecond).atZone(ZoneId.systemDefault()).toLocalDate();

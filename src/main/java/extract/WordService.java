@@ -13,7 +13,6 @@ import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.Units;
-import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
@@ -50,16 +49,6 @@ public final class WordService {
         cLink.setRArray(new CTR[] { ctr });
     }
 
-    public static void getPowerPointImages(String arquivo) {
-        RunnableEx.run(() -> {
-            try (XMLSlideShow a = new XMLSlideShow(new FileInputStream(arquivo))) {
-                List<XSLFPictureData> pictureData = a.getPictureData();
-                for (XSLFPictureData data : pictureData) {
-                    recordPicture(data);
-                }
-            }
-        });
-    }
 
     public static void getWord(Map<String, Object> mapaSubstituicao, File arquivo, File outStream) {
         RunnableEx.run(() -> {

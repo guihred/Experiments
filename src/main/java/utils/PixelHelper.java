@@ -17,6 +17,10 @@ public class PixelHelper {
     public PixelHelper() {
     }
 
+    public PixelHelper(Color argb) {
+        this(toArgb(argb));
+    }
+
     public PixelHelper(int argb) {
         reset(argb);
     }
@@ -44,10 +48,10 @@ public class PixelHelper {
         int blue = b - getByte(argb, 0);
         return Math.abs(red) + Math.abs(green) + Math.abs(blue) + Math.abs(trans);
     }
+
     public int modulus() {
         return Math.abs(r) + Math.abs(g) + Math.abs(b) + Math.abs(a);
     }
-
     public final void reset() {
         a = b = r = g = i = 0;
     }
@@ -69,13 +73,21 @@ public class PixelHelper {
         return trans << 8 * 3 | red << 8 * 2 | green << 8 | blue;
     }
 
-
     public Color toColor() {
         int red = getWithinRange(i == 0 ? r : r / i, 0, MAX_BYTE);
         int green = getWithinRange(i == 0 ? g : g / i, 0, MAX_BYTE);
         int blue = getWithinRange(i == 0 ? b : b / i, 0, MAX_BYTE);
         double transp = getWithinRange(i == 0 ? MAX_BYTE : a / (double) i, 0.0, MAX_BYTE) / MAX_BYTE;
         return Color.rgb(red, green, blue, transp);
+    }
+
+
+    public double trans(final int argb) {
+        int trans = a - getByte(argb, 3);
+        int red = r - getByte(argb, 2);
+        int green = g - getByte(argb, 1);
+        int blue = b - getByte(argb, 0);
+        return (Math.abs(red) + Math.abs(green) + Math.abs(blue) + Math.abs(trans))/4.;
     }
 
     public static Color asColor(final int argb) {

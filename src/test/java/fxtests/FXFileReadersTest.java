@@ -5,6 +5,7 @@ import ethical.hacker.ImageCracker;
 import ethical.hacker.PCapReader;
 import extract.DocumentHelper;
 import extract.ExcelService;
+import extract.PPTService;
 import extract.WordService;
 import fxml.utils.XmlToXlsx;
 import java.io.File;
@@ -220,8 +221,8 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
     @Test
     public void testWordFile() {
-        measureTime("WordService.getPowerPointImages",
-                () -> WordService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
+        measureTime("PPTService.getPowerPointImages",
+                () -> PPTService.getPowerPointImages(ResourceFXUtils.toFullPath("testPowerPoint.pptx")));
         measureTime("WordService.getWord", () -> {
             Map<String, Object> mapaSubstituicao = new HashMap<>();
             File file = ResourceFXUtils.getOutFile("resultado.docx");

@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import simplebuilder.SimpleSliderBuilder;
 import utils.CustomList;
 import utils.ImageFXUtils;
@@ -58,8 +59,9 @@ public class PatternTool extends WandTool {
                     addNeighbors(toGo, next, y);
                     int patternX = (int) Math.round(x / scale.get()) % selectedWidth;
                     int patternY = (int) Math.round(y / scale.get()) % selectedHeight;
-                    int argb = patternImage.getPixelReader().getArgb(patternX, patternY);
-                    selectedImage.getPixelWriter().setArgb(x, y, argb);
+                    Color argb = patternImage.getPixelReader().getColor(patternX, patternY);
+
+                    selectedImage.getPixelWriter().setColor(x, y, argb);
                     adjustArea(x, y);
                 }
             }

@@ -25,7 +25,7 @@ public final class ExtractUtils {
     public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
     public static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
     private static final String LOGIN = "guilherme.hmedeiros";
-    private static final String PASS = "16-juuROKU";
+    private static final String PASS = "30-sanJU";
     private static final String PROXY_ADDRESS = getProxyAddress();
     private static final boolean IS_PROXIED = PROXY_ADDRESS != null;
 
