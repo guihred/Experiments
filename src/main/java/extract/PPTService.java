@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.poi.xddf.usermodel.text.XDDFTextParagraph;
 import org.apache.poi.xslf.usermodel.*;
 import org.slf4j.Logger;
 import utils.DateFormatUtils;
@@ -39,11 +40,11 @@ public final class PPTService {
 
     public static void main(String[] args) {
         Map<String, Object> mapaSubstituicao = new HashMap<>();
-        mapaSubstituicao.put(
-                "DATAPREV/DIT/SUOP/DESO/DMPR\r\n\r\n\r\nDIA: DD/MM/AAAA\r\n\r\n\r\nHora: HH/MM h  ",
-                String.format("DATAPREV/DIT/SUOP/DESO/DMPR\r\n\r\n\r\nDIA: %s\r\n\r\n\r\nHora: %s h  ",
-                        DateFormatUtils.currentDate(), DateFormatUtils.currentHour()));
-        getPowerPoint(mapaSubstituicao, "modeloRelatorioRadarEventos.pptx", ResourceFXUtils.getOutFile("result.pptx"));
+        mapaSubstituicao.put("DIA: DD/MM/AAAA", String.format("DIA: %s", DateFormatUtils.currentDate()));
+        mapaSubstituicao.put("Hora: HH/MM h", String.format("Hora: %s", DateFormatUtils.currentHour()));
+        mapaSubstituicao.put("Julho 2020", DateFormatUtils.currentTime("MMMM yyyy"));
+        File outFile = ResourceFXUtils.getOutFile("pptx/result.pptx");
+        getPowerPoint(mapaSubstituicao, "modeloRelatorioRadarEventos.pptx", outFile);
     }
 
     private static void getPowerPoint(Map<String, Object> replacementMap, File arquivo, File outStream) {
@@ -52,19 +53,7 @@ public final class PPTService {
                     XMLSlideShow document1 = new XMLSlideShow(resourceAsStream);
                     FileOutputStream stream = new FileOutputStream(outStream)) {
                 for (XSLFSlide slide : document1.getSlides()) {
-                    List<XSLFShape> shapes = slide.getShapes();
-                    for (XSLFShape shape : shapes) {
-                        if (shape instanceof XSLFTextBox) {
-                            XSLFTextBox textBox = (XSLFTextBox) shape;
-                            String text = textBox.getText();
-                            LOG.info("{} ", text);
-                            Object object = replacementMap.get(text);
-                            if (object instanceof String) {
-                                LOG.info("replaced to {}", object);
-                                textBox.setText((String) object);
-                            }
-                        }
-                    }
+                    replaceSlide(replacementMap, slide);
                 }
                 document1.write(stream);
             }
@@ -77,6 +66,26 @@ public final class PPTService {
             InputStream inputStream = data.getInputStream();
             ExtractUtils.copy(inputStream, outFile);
         });
+    }
+
+    private static void replaceSlide(Map<String, Object> replacementMap, XSLFSlide slide) {
+        List<XSLFShape> shapes = slide.getShapes();
+        for (XSLFShape shape : shapes) {
+            if (shape instanceof XSLFTextBox) {
+                XSLFTextBox textBox = (XSLFTextBox) shape;
+                List<XDDFTextParagraph> paragraphs = textBox.getTextBody().getParagraphs();
+                for (XDDFTextParagraph paragraph : paragraphs) {
+                    String text = paragraph.getText();
+                    Object object = replacementMap.get(text);
+                    if (object instanceof String) {
+                        LOG.info("\"{}\" replaced to \"{}\"", text, object);
+                        paragraph.setText((String) object);
+                    } else {
+                        LOG.info("{}", text);
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -25,11 +25,15 @@ public final class DateFormatUtils {
     }
 
     public static String currentDate() {
-        return SupplierEx.get(() ->  DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now()));
+        return currentTime("dd/MM/yyyy");
     }
 
     public static String currentHour() {
-        return SupplierEx.get(() -> DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now()));
+        return currentTime("HH:mm");
+    }
+
+    public static String currentTime(String fmt) {
+        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).format(LocalDateTime.now()));
     }
 
     public static LocalDate epochSecondToLocalDate(String asText) {
