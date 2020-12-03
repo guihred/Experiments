@@ -25,7 +25,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     public void testWordReport() {
         ImageFXUtils.setShowImage(false);
         ReportApplication show2 = show(ReportApplication.class);
-        show2.setIp("177.9.205.246");
+        // show2.setIp("177.9.205.246");
         show2.makeReportConsultas();
     }
 

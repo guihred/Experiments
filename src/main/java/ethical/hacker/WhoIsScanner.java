@@ -4,8 +4,6 @@ import extract.JsoupUtils;
 import extract.PhantomJSUtils;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,6 +51,7 @@ public class WhoIsScanner {
         String string = com.google.common.io.Files.toString(htmlFile, StandardCharsets.UTF_8);
         return Stream.of(subFolder).allMatch(t -> !string.contains(t)) || string.contains(waitStr);
     }
+
     public WhoIsScanner cookie(String string, String string2) {
         cookies.put(string, string2);
         return this;
@@ -206,7 +205,8 @@ public class WhoIsScanner {
             return hashMap;
         }
         Map<String, String> first =
-                SupplierEx.getFirst(() -> VirusTotalApi.getIpTotalInfo(ip), () -> whoIsScanner.whoIsScan(ip));
+                SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip), () -> VirusTotalApi.getIpTotalInfo(ip),
+                        () -> whoIsScanner.whoIsScan(ip));
         if (ip.matches("^200\\.152\\..+")) {
             first.put(REVERSE_DNS, whoIsScanner.reverseDNS(ip));
         }
@@ -226,10 +226,8 @@ public class WhoIsScanner {
     }
 
     public static String getReverseDNS(String ip) {
-        return SupplierEx.get(() -> toInetAddress(ip).getCanonicalHostName());
+        return SupplierEx.get(() -> CIDRUtils.toInetAddress(ip).getCanonicalHostName());
     }
-
-
 
     public static String reorderAndLog(DataframeML dataframe, String numberField) {
         DataframeUtils.sort(dataframe, numberField);
@@ -250,12 +248,6 @@ public class WhoIsScanner {
     private static String getIPColumn(DataframeBuilder builder) {
         return builder.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
                 .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
-    }
-
-    private static InetAddress toInetAddress(String ip) throws UnknownHostException {
-        List<Byte> collect =
-                Stream.of(ip.split("\\.")).map(t -> Integer.valueOf(t).byteValue()).collect(Collectors.toList());
-        return InetAddress.getByAddress(new byte[] { collect.get(0), collect.get(1), collect.get(2), collect.get(3) });
     }
 
 }

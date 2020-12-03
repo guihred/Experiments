@@ -13,13 +13,11 @@ import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.Units;
-import org.apache.poi.xslf.usermodel.XSLFPictureData;
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -99,13 +97,6 @@ public final class WordService {
         return StringUtils.isBlank(cellText) || !map.containsKey(cellText) && !map.containsKey(cellText.trim());
     }
 
-    private static void recordPicture(XSLFPictureData data) {
-        RunnableEx.run(() -> {
-            File outFile = ResourceFXUtils.getOutFile("ppt/" + data.getFileName());
-            InputStream inputStream = data.getInputStream();
-            ExtractUtils.copy(inputStream, outFile);
-        });
-    }
 
     private static void removerLinks(XWPFParagraph paragraph) {
         int size = paragraph.getCTP().getHyperlinkList().size();

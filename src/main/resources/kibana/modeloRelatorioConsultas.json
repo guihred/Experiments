@@ -1,6 +1,10 @@
 {
     "model":"ModeloGeralReporteConsultas.docx",
-
+    "params":{
+        "ip":"",
+        "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h"]
+    },
+    "name": "Reporte_Eventos_consultas_$ip.docx",
     "figurasSat": [
         "Alto número de acessos por IP ",
         {
@@ -64,6 +68,5 @@
 	"ips": "$ip",
 	"Foi realizado o bloqueio temporário dos endereços no WAF.": "Foi realizado o bloqueio temporário dos endereços e de credenciais no WAF.",
 	"cred": "$creds",
-	"name": "Reporte_Eventos_consultas_$ip.docx",
 	"gerid": ["Uso de Credenciais pelo IP $ip"]
 }

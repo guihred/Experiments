@@ -17,32 +17,34 @@
 			<children>
 				<ProgressIndicator fx:id="progressIndicator" />
 				<VBox>
-					<Text text="IP" />
-					<TextField fx:id="ipField" />
-				</VBox>
-				<VBox>
 					<Text text="Model" />
 					<ComboBox fx:id="model" />
 				</VBox>
-				<VBox>
-					<Text text="Hours" />
-					<ComboBox fx:id="hours">
-						<items>
-							<FXCollections fx:factory="observableArrayList">
-								<Integer fx:value="12" />
-								<Integer fx:value="24" />
-								<Integer fx:value="36" />
-								<Integer fx:value="48" />
-								<Integer fx:value="60" />
-								<Integer fx:value="72" />
-								<Integer fx:value="84" />
-							</FXCollections>
-						</items>
-						<value>
-							<Integer fx:value="24" />
-						</value>
-					</ComboBox>
-				</VBox>
+				<HBox fx:id="paramsPane" >
+<!-- 					<VBox> -->
+<!-- 						<Text text="IP" /> -->
+<!-- 						<TextField fx:id="ipField" /> -->
+<!-- 					</VBox> -->
+<!-- 					<VBox> -->
+<!-- 						<Text text="Hours" /> -->
+<!-- 						<ComboBox fx:id="hours"> -->
+<!-- 							<items> -->
+<!-- 								<FXCollections fx:factory="observableArrayList"> -->
+<!-- 									<Integer fx:value="12" /> -->
+<!-- 									<Integer fx:value="24" /> -->
+<!-- 									<Integer fx:value="36" /> -->
+<!-- 									<Integer fx:value="48" /> -->
+<!-- 									<Integer fx:value="60" /> -->
+<!-- 									<Integer fx:value="72" /> -->
+<!-- 									<Integer fx:value="84" /> -->
+<!-- 								</FXCollections> -->
+<!-- 							</items> -->
+<!-- 							<value> -->
+<!-- 								<Integer fx:value="24" /> -->
+<!-- 							</value> -->
+<!-- 						</ComboBox> -->
+<!-- 					</VBox> -->
+				</HBox>
 				<VBox>
 					<Text text="" fx:id="loc" />
 					<Button text="_Make Report" onAction="#makeReportConsultas" />

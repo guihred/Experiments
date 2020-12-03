@@ -12,7 +12,9 @@ import ex.j9.ch4.Ch4;
 import ex.j9.ch4.LabeledPoint;
 import ex.j9.ch4.LineCh4;
 import ex.j9.ch4.PointCh4;
-import extract.*;
+import extract.JsoupUtils;
+import extract.QuickSortML;
+import extract.WikiImagesUtils;
 import fxml.utils.JsonExtractor;
 import image.ImageCreating;
 import image.ImageLoading;
@@ -185,6 +187,7 @@ public class IndependentTest {
         measureTime("ImageLoading.grayScaling", () -> ImageLoading.grayScaling(dataDir, nameFile));
     }
 
+    @Test
     public void testJsonExtractor() {
 
         measureTime("JsonExtractor.toObject",

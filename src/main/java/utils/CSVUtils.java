@@ -128,6 +128,31 @@ public class CSVUtils {
         }
     }
 
+    public static void appendLines(File file, List<Map<String, Object>> rowMap) {
+        boolean exists = file.exists();
+        List<String> keySet = rowMap.get(0).keySet().stream().collect(Collectors.toList());
+        String csvHeader = keySet.stream().collect(Collectors.joining("\",\"", "\"", "\""));
+        if (exists) {
+            exists = SupplierEx.get(() -> doesHeaderMatch(file, csvHeader));
+            if (!exists) {
+                RunnableEx.run(() -> Files.deleteIfExists(file.toPath()));
+            }
+        }
+        try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true)) {
+            if (!exists) {
+                fw.append(csvHeader + "\n");
+            }
+            for (Map<String, Object> map : rowMap) {
+                keySet.forEach(s -> map.putIfAbsent(s, ""));
+                fw.append(map.entrySet().stream().sorted(Comparator.comparing(t -> keySet.indexOf(t.getKey())))
+                        .map(Entry<String, Object>::getValue).map(Object::toString)
+                        .collect(Collectors.joining("\",\"", "\"", "\"\n")));
+            }
+        } catch (Exception e1) {
+            LOGGER.error("{}", e1);
+        }
+    }
+
     public static void createNullRow(Collection<String> header, Collection<String> line2) {
         if (line2.size() < header.size()) {
             long maxSize2 = header.size() - (long) line2.size();

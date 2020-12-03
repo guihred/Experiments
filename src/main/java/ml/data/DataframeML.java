@@ -91,6 +91,19 @@ public class DataframeML extends BaseDataframe {
         return this;
     }
 
+    public Map<String, Object> findFirst(String header, Predicate<Object> v) {
+        List<Object> list = dataframe.get(header);
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                Object object = list.get(i);
+                if (v.test(object)) {
+                    return rowMap(i);
+                }
+            }
+        }
+        return null;
+    }
+
 
 
     public Set<Object> freeCategory(String header) {

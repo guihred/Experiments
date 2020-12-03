@@ -27,7 +27,7 @@ public final class PPTService {
         getPowerPoint(mapaSubstituicao, ResourceFXUtils.toFile(arquivo), outStream);
     }
 
-    public static void getPowerPointImages(String arquivo) {
+    public static void getPowerPointImages(File arquivo) {
         RunnableEx.run(() -> {
             try (XMLSlideShow a = new XMLSlideShow(new FileInputStream(arquivo))) {
                 List<XSLFPictureData> pictureData = a.getPictureData();

@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ClassReflectionUtils;
+import utils.ConsoleUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
@@ -63,14 +64,15 @@ public final class NetworkInformationScanner {
         }, Collections.emptyList());
     }
 
+
+
     public static List<Map<String, String>> getNetworkInformation() {
         return SupplierEx.get(() -> {
             Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
             Map<Class<?>, FunctionEx<Object, String>> toStringMAp = new HashMap<>();
             toStringMAp.put(byte[].class, o -> convertToString((byte[]) o));
             List<Map<String, String>> arrayList = new ArrayList<>();
-
-            toStringMAp.put(InetAddress.class, o -> convertToString((InetAddress) o));
+            toStringMAp.put(InetAddress.class, o -> CIDRUtils.convertToString((InetAddress) o));
             while (e.hasMoreElements()) {
                 NetworkInterface n = e.nextElement();
                 if (n.getInterfaceAddresses().isEmpty() || !n.isUp() || n.isLoopback()
@@ -86,8 +88,6 @@ public final class NetworkInformationScanner {
             return arrayList;
         }, Collections.emptyList());
     }
-
-
 
     private static Stream<String> convertStream(byte[] ipOrMacAddress) {
         if (ipOrMacAddress.length == 16) {
@@ -110,10 +110,6 @@ public final class NetworkInformationScanner {
         String delimiter = delimiter(invoke);
         return Stream.of(invoke).flatMap(NetworkInformationScanner::convertStream)
             .collect(Collectors.joining(delimiter));
-    }
-
-    private static String convertToString(InetAddress o) {
-        return o.getHostAddress();
     }
 
     private static String delimiter(byte[] invoke) {

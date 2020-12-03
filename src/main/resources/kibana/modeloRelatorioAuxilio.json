@@ -1,5 +1,11 @@
 {
     "model":"ModeloGeralReporte.docx",
+    "params":{
+        "ip":"",
+        "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h"]
+    },
+    
+    "name": "Reporte_Eventos_auxilioemergencial_$ip.docx",
 	"Figuras da Evidência / Contexto": [
 		"Volumetria de acessos distribuídos entre diversos URLs",
 		{
@@ -65,6 +71,5 @@
 	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados ao vip-auxilioemergencial.dataprev.gov.br",
 	"Informar data de início/fim": "$date",
 	"ips": "$ip",
-    "name": "Reporte_Eventos_auxilioemergencial_$ip.docx",
 	"cred": "Não se aplica"
 }
