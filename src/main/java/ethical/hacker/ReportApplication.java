@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import extract.PPTService;
 import extract.WordService;
 import fxml.utils.JsonExtractor;
 import java.io.File;
@@ -66,24 +67,24 @@ public class ReportApplication extends Application {
         LOG.info("MAKING REPORT {} {}", params, modelFile.getName());
         RunnableEx.runNewThread(() -> {
             Map<String, Object> mapaSubstituicao = JsonExtractor.accessMap(JsonExtractor.toObject(modelFile));
-            params.put("\\$date", DateFormatUtils.currentDate());
+            params.put("\\$gatheredDate", DateFormatUtils.currentTime("ddMMyyyy"));
+            params.put("\\$dateInverted", DateFormatUtils.currentTime("yyyy-MM-dd"));
             params.put("\\$currentHour", DateFormatUtils.currentHour());
             params.put("\\$currentMonth", DateFormatUtils.currentTime("MMMM yyyy"));
-            params.put("\\$dateInverted", DateFormatUtils.currentTime("yyyy-MM-dd"));
+            params.put("\\$date", DateFormatUtils.currentDate());
             String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
-            File reportFile = ResourceFXUtils.getOutFile("docx/" + replaceString);
+            String extension = replaceString.replaceAll(".+\\.(\\w+)$", "$1");
+            File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
-            if (mapaSubstituicao.containsKey("gerid")) {
-                LOG.info("GETTING GERID CREDENTIALS ");
-                Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip"));
-                params.put("\\$creds", makeKibanaSearch.keySet().stream().collect(Collectors.joining("\n")));
-                List<Object> collect =
-                        makeKibanaSearch.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
-                ReportHelper.mergeImage(mapaSubstituicao, collect);
-            }
+            addGeridInfo(mapaSubstituicao);
             ReportHelper.addParameters(mapaSubstituicao, params, browser);
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
-            WordService.getWord(mapaSubstituicao, mapaSubstituicao.get("model").toString(), reportFile);
+            String modelUsed = mapaSubstituicao.get("model").toString();
+            if ("pptx".equals(extension)) {
+                PPTService.getPowerPoint(mapaSubstituicao, modelUsed, reportFile);
+            } else {
+                WordService.getWord(mapaSubstituicao, modelUsed, reportFile);
+            }
             ImageFXUtils.openInDesktop(reportFile);
 
         });
@@ -93,6 +94,17 @@ public class ReportApplication extends Application {
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Report Application", "ReportApplication.fxml", this, primaryStage);
         primaryStage.setMaximized(true);
+    }
+
+    private void addGeridInfo(Map<String, Object> mapaSubstituicao) {
+        if (mapaSubstituicao.containsKey("gerid")) {
+            LOG.info("GETTING GERID CREDENTIALS ");
+            Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip"));
+            params.put("\\$creds", makeKibanaSearch.keySet().stream().collect(Collectors.joining("\n")));
+            List<Object> collect =
+                    makeKibanaSearch.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
+            ReportHelper.mergeImage(mapaSubstituicao, collect);
+        }
     }
 
     private Node getNode(String k, Object v) {

@@ -3,80 +3,106 @@
     "params":{
         
     },
-    "name": "Radar_Eventos_v01122020REL1$ip.pptx",
+    "name": "Radar_Eventos_v$gatheredDateREL1.pptx",
      "Dia: 01/12/2020":"DIA: $date",
      "Hora: 10:30 h":"Hora: $currentHour",
      "Dezembro 2020":"$currentMonth",
     
 	"Volumes de acesso a portais e aplicações WEB": [
         {
-            "url": "https://n321p000124.fast.prevnet/app/kibana#/dashboard/24e6f630-87c3-11ea-9285-7145e1cc7623?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(description:'',filters:!(),fullScreenMode:!f,options:(darkTheme:!f,hidePanelTitles:!f,useMargins:!t),panels:!((embeddableConfig:(),gridData:(h:14,i:'1',w:48,x:0,y:16),id:'9f0f6130-87bf-11ea-9285-7145e1cc7623',panelIndex:'1',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:15,i:'2',w:48,x:0,y:30),id:cdcad6e0-87be-11ea-9285-7145e1cc7623,panelIndex:'2',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:15,i:'3',w:48,x:0,y:45),id:c7259120-87c0-11ea-9285-7145e1cc7623,panelIndex:'3',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:5,i:'5',w:10,x:0,y:0),id:'0cf0db10-f662-11e9-bffd-37ab21b02682',panelIndex:'5',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:5,i:'6',w:10,x:0,y:5),id:a44aeb80-87c2-11ea-9285-7145e1cc7623,panelIndex:'6',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:6,i:'7',w:10,x:0,y:10),id:dc6c9450-87c2-11ea-9285-7145e1cc7623,panelIndex:'7',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:16,i:'8',w:38,x:10,y:0),id:cee8c5d0-87c5-11ea-9285-7145e1cc7623,panelIndex:'8',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:18,i:'9',w:48,x:0,y:77),id:'0cd081a0-88b9-11ea-9285-7145e1cc7623',panelIndex:'9',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:17,i:'10',w:24,x:1,y:60),id:c2da6850-88d0-11ea-9285-7145e1cc7623,panelIndex:'10',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:12,i:'11',w:48,x:0,y:95),id:bb17efa0-fa17-11e8-a078-93662b30045b,panelIndex:'11',type:visualization,version:'6.6.2'),(embeddableConfig:(),gridData:(h:17,i:'12',w:23,x:25,y:60),id:'46ce7d10-fa2d-11e8-a078-93662b30045b',panelIndex:'12',type:visualization,version:'6.6.2')),query:(language:lucene,query:''),timeRestore:!t,title:'%20%5BAcesso%20WEB%5D%20Monitoramento%20Volum%C3%A9trico',viewMode:view)",
-            "name": "volumetria",
-            "width": 0.6609,
-            "height": 0.45,
-            "x": 0.2891,
-            "y": 0.1371
-        },
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/cee8c5d0-87c5-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+            "name": "volumetria$dateInverted",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        }
 	],
 	"Número de origens de acesso aos portais e aplicações WEB": [
         {
-            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/e248a510-7a77-11ea-9285-7145e1cc7623?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:lucene,query:'DestinationPort:80%20OR%20%20DestinationPort:443'),uiState:(vis:(defaultColors:('0%20-%20100':'rgb(0,104,55)','100%20-%20500':'rgb(255,255,190)','500%20-%203000':'rgb(165,0,38)'))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'IP%20%C3%9Anico',field:SourceIP),schema:metric,type:cardinality),(enabled:!t,id:'2',params:(filters:!((input:(query:'DestinationIP:%22200.152.35.66%22'),label:Servicos.MTE),(input:(query:'DestinationIP:%22200.152.33.10%22%20OR%20DestinationIP:%22200.152.35.199%22'),label:MeuINSS),(input:(query:'DestinationIP:%22200.152.47.17%22'),label:'RH%20Saude'),(input:(query:'DestinationIP:%22200.152.40.36%22'),label:'Portal%20DTP'),(input:(query:'DestinationIP:%22200.152.35.44%22%20OR%20DestinationIP:%22200.152.35.45%22'),label:'Aux.%20Emerg.'))),schema:group,type:filters)),params:(addLegend:!f,addTooltip:!t,gauge:(autoExtend:!f,backStyle:Full,colorSchema:'Green%20to%20Red',colorsRange:!((from:0,to:100),(from:100,to:500),(from:500,to:3000)),gaugeColorMode:None,gaugeStyle:Full,gaugeType:Arc,invertColors:!f,labels:(color:black,show:!t),orientation:vertical,percentageMode:!f,scale:(color:%23333,labels:!f,show:!t,width:2),style:(bgColor:!f,bgFill:%23000,fontSize:60,labelColor:!f,subText:''),type:meter,useRanges:!f,verticalSplit:!f),isDisplayWarning:!f,type:gauge),title:'%5BPalo%20Alto%5D%5BTraffic%5D%20Total%20de%20Endere%C3%A7os%20de%20Origem',type:goal))",
-            "name": "origens",
-            "width": 0.6609,
-            "height": 0.45,
-            "x": 0.2891,
-            "y": 0.1371
-        },
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/e248a510-7a77-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+            "name": "origens$dateInverted",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        }
 	],
 	"Volume de conexões VPN": [
         {
             "url": "http://www-cocar/VPN/index1.php?data=$dateInverted",
-            "name": "origens",
-            "width": 0.6609,
-            "height": 0.45,
-            "x": 0.2891,
-            "y": 0.1371
-        },
+            "name": "cocar$dateInverted",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        }
 	],
 	"Acessos volumétricos por origem - Firewall": [
         {
-            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/b93157a0-8156-11e9-a19b-edf276112fe9?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(field:Bytes),schema:metric,type:sum),(enabled:!t,id:'2',params:(field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:10),schema:segment,type:terms),(enabled:!t,id:'3',params:(field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:5),schema:group,type:terms)),params:(addLegend:!t,addTimeMarker:!f,addTooltip:!t,categoryAxes:!((id:CategoryAxis-1,labels:(show:!t,truncate:100),position:bottom,scale:(type:linear),show:!t,style:(),title:(),type:category)),grid:(categoryLines:!f,style:(color:%23eee)),legendPosition:right,seriesParams:!((data:(id:'1',label:'Sum%20of%20Bytes'),drawLinesBetweenPoints:!t,mode:stacked,show:true,showCircles:!t,type:histogram,valueAxis:ValueAxis-1)),times:!(),type:histogram,valueAxes:!((id:ValueAxis-1,labels:(filter:!f,rotate:0,show:!t,truncate:100),name:LeftAxis-1,position:left,scale:(mode:normal,type:linear),show:!t,style:(),title:(text:'Sum%20of%20Bytes'),type:value))),title:'%5BPalo%20Alto%5D%20-%20Top%20Source%20IP%20x%20Total%20Bytes',type:histogram))",
-            "name": "origens",
-            "width": 0.6609,
-            "height": 0.45,
-            "x": 0.2891,
-            "y": 0.1371
-        },
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/b93157a0-8156-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+            "name": "firewallOrigem$dateInverted",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        }
 	],
 	"Acessos volumétricos por destino - Firewall": [
         {
-            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/b93157a0-8156-11e9-a19b-edf276112fe9?_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:lucene,query:''),uiState:(),vis:(aggs:!((enabled:!t,id:'1',params:(field:Bytes),schema:metric,type:sum),(enabled:!t,id:'2',params:(field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:10),schema:segment,type:terms),(enabled:!t,id:'3',params:(field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:5),schema:group,type:terms)),params:(addLegend:!t,addTimeMarker:!f,addTooltip:!t,categoryAxes:!((id:CategoryAxis-1,labels:(show:!t,truncate:100),position:bottom,scale:(type:linear),show:!t,style:(),title:(),type:category)),grid:(categoryLines:!f,style:(color:%23eee)),legendPosition:right,seriesParams:!((data:(id:'1',label:'Sum%20of%20Bytes'),drawLinesBetweenPoints:!t,mode:stacked,show:true,showCircles:!t,type:histogram,valueAxis:ValueAxis-1)),times:!(),type:histogram,valueAxes:!((id:ValueAxis-1,labels:(filter:!f,rotate:0,show:!t,truncate:100),name:LeftAxis-1,position:left,scale:(mode:normal,type:linear),show:!t,style:(),title:(text:'Sum%20of%20Bytes'),type:value))),title:'%5BPalo%20Alto%5D%20-%20Top%20Source%20IP%20x%20Total%20Bytes',type:histogram))",
-            "name": "origens",
-            "width": 0.6609,
-            "height": 0.45,
-            "x": 0.2891,
-            "y": 0.1371
-        },
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/9637fbe0-8157-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+            "name": "firewallDestino$dateInverted",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        }
 	],
 	"Volume de Ataques barrados pelo WAF": [
         {
-            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/c2da6850-88d0-11ea-9285-7145e1cc7623?_g=(refreshInterval:(pause:!t,value:0),time:(from:now%2Fd,mode:quick,to:now%2Fd))&_a=(filters:!(),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!(),params:(axis_formatter:number,axis_position:left,axis_scale:normal,bar_color_rules:!((id:'1648e290-88cd-11ea-82a5-630dd17f6871')),drop_last_bucket:0,id:'61ca57f0-469d-11e7-af02-69e470af7417',index_pattern:'dtp-waf*',interval:'7d',series:!((axis_position:right,chart_type:line,color:%2368BC00,fill:0.5,filter:'action:%22block%22',formatter:number,id:'61ca57f1-469d-11e7-af02-69e470af7417',line_width:1,metrics:!((id:'61ca57f2-469d-11e7-af02-69e470af7417',type:count)),point_size:1,separate_axis:0,split_filters:!((color:%2368BC00,filter:'DestinationIP:%22200.152.35.199%22%20OR%20DestinationIP:%22200.152.33.10%22%20',id:'73382a90-88cf-11ea-82a5-630dd17f6871',label:MeuINSS),(color:%2368BC00,filter:'DestinationIP:%22200.152.35.195%22',id:'75a029e0-88cf-11ea-82a5-630dd17f6871',label:SAG),(color:%2368BC00,filter:'DestinationIP:%22200.152.35.66%22%20',id:'7b77fb90-88cf-11ea-82a5-630dd17f6871',label:ServicosMTE),(color:%2368BC00,filter:'DestinationIP:%22200.152.32.46%22%20%20%20AND%20NOT%20application-name.keyword:%22PRONTO%22%20',id:'95a5f2b0-88cf-11ea-82a5-630dd17f6871',label:SIAC-KBA),(color:%2368BC00,filter:'application-name.keyword:%2FGERID.*%2F',id:'95f8cda0-88cf-11ea-82a5-630dd17f6871',label:GERID),(color:%2368BC00,filter:'DestinationIP:%22200.152.35.44%22%20OR%20DestinationIP:%22200.152.35.45%22',id:d1692c40-88cf-11ea-82a5-630dd17f6871,label:'Aux.%20Emerg.'),(color:%2368BC00,filter:'DestinationIP:%22200.152.32.144%22',id:d26f51a0-88cf-11ea-82a5-630dd17f6871,label:'www2%20(SABI,FAP,...)'),(color:%2368BC00,filter:'DestinationIP:%22200.152.32.22%22',id:d37799e0-88cf-11ea-82a5-630dd17f6871,label:CNISNET),(color:%2368BC00,filter:'DestinationIP:%22200.152.39.65%22',id:d3e59df0-88cf-11ea-82a5-630dd17f6871,label:PortalINSS),(color:%2368BC00,filter:'DestinationIP:%22200.152.40.36%22',id:d431e930-88cf-11ea-82a5-630dd17f6871,label:PortalDTP)),split_mode:filters,stacked:none,terms_direction:desc,terms_field:SourceIP,terms_order_by:_count)),show_grid:1,show_legend:1,time_field:'@timestamp',type:top_n),title:'%5BWAF%5D%20Eventos%20Bloqueados%20-%20TOP%2010%20Aplic.%20de%20Interesse',type:metrics))",
-            "name": "origens",
-            "width": 0.6609,
-            "height": 0.45,
-            "x": 0.2891,
-            "y": 0.1371
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/c2da6850-88d0-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+            "name": "ataques$dateInverted",
+            "width": 1,
+            "height": 0.3,
+            "x": 0,
+            "y": 0
         },
+        {
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/0cd081a0-88b9-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+            "name": "ataquesTimeline$dateInverted",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        }
 	],
 	"Volume de Ataques por geolocalização barrados pelo WAF": [
         {
-            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/c2da6850-88d0-11ea-9285-7145e1cc7623?_g=(refreshInterval:(pause:!t,value:0),time:(from:now%2Fd,mode:quick,to:now%2Fd))&_a=(filters:!(),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!(),params:(axis_formatter:number,axis_position:left,axis_scale:normal,bar_color_rules:!((id:'1648e290-88cd-11ea-82a5-630dd17f6871')),drop_last_bucket:0,id:'61ca57f0-469d-11e7-af02-69e470af7417',index_pattern:'dtp-waf*',interval:'7d',series:!((axis_position:right,chart_type:line,color:%2368BC00,fill:0.5,filter:'action:%22block%22',formatter:number,id:'61ca57f1-469d-11e7-af02-69e470af7417',line_width:1,metrics:!((id:'61ca57f2-469d-11e7-af02-69e470af7417',type:count)),point_size:1,separate_axis:0,split_filters:!((color:%2368BC00,filter:'DestinationIP:%22200.152.35.199%22%20OR%20DestinationIP:%22200.152.33.10%22%20',id:'73382a90-88cf-11ea-82a5-630dd17f6871',label:MeuINSS),(color:%2368BC00,filter:'DestinationIP:%22200.152.35.195%22',id:'75a029e0-88cf-11ea-82a5-630dd17f6871',label:SAG),(color:%2368BC00,filter:'DestinationIP:%22200.152.35.66%22%20',id:'7b77fb90-88cf-11ea-82a5-630dd17f6871',label:ServicosMTE),(color:%2368BC00,filter:'DestinationIP:%22200.152.32.46%22%20%20%20AND%20NOT%20application-name.keyword:%22PRONTO%22%20',id:'95a5f2b0-88cf-11ea-82a5-630dd17f6871',label:SIAC-KBA),(color:%2368BC00,filter:'application-name.keyword:%2FGERID.*%2F',id:'95f8cda0-88cf-11ea-82a5-630dd17f6871',label:GERID),(color:%2368BC00,filter:'DestinationIP:%22200.152.35.44%22%20OR%20DestinationIP:%22200.152.35.45%22',id:d1692c40-88cf-11ea-82a5-630dd17f6871,label:'Aux.%20Emerg.'),(color:%2368BC00,filter:'DestinationIP:%22200.152.32.144%22',id:d26f51a0-88cf-11ea-82a5-630dd17f6871,label:'www2%20(SABI,FAP,...)'),(color:%2368BC00,filter:'DestinationIP:%22200.152.32.22%22',id:d37799e0-88cf-11ea-82a5-630dd17f6871,label:CNISNET),(color:%2368BC00,filter:'DestinationIP:%22200.152.39.65%22',id:d3e59df0-88cf-11ea-82a5-630dd17f6871,label:PortalINSS),(color:%2368BC00,filter:'DestinationIP:%22200.152.40.36%22',id:d431e930-88cf-11ea-82a5-630dd17f6871,label:PortalDTP)),split_mode:filters,stacked:none,terms_direction:desc,terms_field:SourceIP,terms_order_by:_count)),show_grid:1,show_legend:1,time_field:'@timestamp',type:top_n),title:'%5BWAF%5D%20Eventos%20Bloqueados%20-%20TOP%2010%20Aplic.%20de%20Interesse',type:metrics))",
-            "name": "origens",
-            "width": 0.6609,
-            "height": 0.45,
-            "x": 0.2891,
-            "y": 0.1371
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fd2fedf0-0f5e-11e9-ac1b-331041153b51?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+            "name": "geolocation$dateInverted",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        }
+	],
+	"Volume de ataques detectados pelo Firewall": [
+        {
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fdaf4750-87d4-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+            "name": "ataquesFirewall$dateInverted",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
         },
+        {
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/f7a5c1d0-87d5-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+            "name": "threatID$dateInverted",
+            "width": 1,
+            "height": 0.5,
+            "x": 0,
+            "y": 0
+        }
 	],
     "paramss":""
 }

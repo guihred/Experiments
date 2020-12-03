@@ -4,7 +4,6 @@ import static utils.StringSigaUtils.toDouble;
 
 import extract.PhantomJSUtils;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,7 +14,6 @@ import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker.State;
-import javafx.geometry.Bounds;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.shape.Rectangle;
@@ -34,7 +32,8 @@ import utils.ex.SupplierEx;
 public final class ReportHelper {
     private static final Logger LOG = HasLogging.log();
 
-    private ReportHelper(){}
+    private ReportHelper() {
+    }
 
     public static void addParameters(Map<String, Object> mapaSubstituicao, Map<String, String> params,
             WebView browser) {
@@ -76,11 +75,8 @@ public final class ReportHelper {
         return string;
     }
 
-    public static File saveHtmlImage(WebView browser2) {
-        return SupplierEx.get(() -> {
-            Bounds bounds = browser2.getBoundsInLocal();
-            return ImageFXUtils.take(browser2, bounds.getWidth(), bounds.getHeight());
-        });
+    public static File saveHtmlImage(WebView browser2, File out) {
+        return SupplierEx.get(() -> ImageFXUtils.take(browser2, out));
     }
 
     public static Image textToImage(String s) {
@@ -93,8 +89,7 @@ public final class ReportHelper {
         return PhantomJSUtils.saveHtmlImage(format);
     }
 
-    private static Image getImage(Map<String, Object> imageObj, WebView browser,
-            Map<String, String> params) {
+    private static Image getImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
         File outFile = ResourceFXUtils
                 .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
         if (outFile.exists()) {
@@ -130,9 +125,8 @@ public final class ReportHelper {
         return replaceString(params, e);
     }
 
-    private static WritableImage saveImage(Map<String, Object> info, File outFile, WebView browser2)
-            throws IOException {
-        File saveHtmlImage = CommonsFX.runInPlatformSync(() -> saveHtmlImage(browser2));
+    private static WritableImage saveImage(Map<String, Object> info, File outFile, WebView browser2) {
+        File saveHtmlImage = CommonsFX.runInPlatformSync(() -> saveHtmlImage(browser2, outFile));
         String externalForm = ResourceFXUtils.convertToURL(saveHtmlImage).toExternalForm();
         Image value = new Image(externalForm);
         double width = value.getWidth();
@@ -144,7 +138,6 @@ public final class ReportHelper {
         a.setLayoutY(height * toDouble(info.get("y")));
         WritableImage destImage = new WritableImage((int) a.getWidth(), (int) a.getHeight());
         RectBuilder.copyImagePart(value, destImage, a);
-        ImageFXUtils.saveImage(destImage, outFile);
         return destImage;
     }
 

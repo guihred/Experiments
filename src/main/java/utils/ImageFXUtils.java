@@ -4,6 +4,7 @@ import static utils.ResourceFXUtils.convertToURL;
 
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -31,10 +32,6 @@ public final class ImageFXUtils {
     private static boolean showImage = true;
 
     private ImageFXUtils() {
-    }
-
-    public static void saveImage(WritableImage image, File file) throws IOException {
-        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", file);
     }
 
     public static WritableImage copyImage(Image selectedImage, int width, int height) {
@@ -92,7 +89,7 @@ public final class ImageFXUtils {
             Color rgb = Color.rgb(Math.abs(maxByte - i / cubicRoot / cubicRoot % cubicRoot * max / cubicRoot) % max,
                     Math.abs(maxByte - i / cubicRoot % cubicRoot * max / cubicRoot) % max,
                     Math.abs(maxByte - i % cubicRoot * max / cubicRoot) % max);
-    
+
             availableColors.add(rgb);
         }
         Collections.shuffle(availableColors);
@@ -129,6 +126,10 @@ public final class ImageFXUtils {
         });
     }
 
+    public static void saveImage(WritableImage image, File file) throws IOException {
+        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", file);
+    }
+
     public static void setClipboardContent(File file) {
         Map<DataFormat, Object> content = FXCollections.observableHashMap();
         content.put(DataFormat.FILES, Arrays.asList(file));
@@ -162,27 +163,19 @@ public final class ImageFXUtils {
 
     }
 
-    public static File take(final Node canvas, double scale) {
-        return ImageFXUtils.take(canvas, canvas.getBoundsInParent().getWidth(), canvas.getBoundsInParent().getHeight(),
-                scale);
-
-    }
-
     public static File take(final Node canvas, final double w, final double h) {
         return take(canvas, w, h, 1);
     }
 
     public static File take(final Node canvas, final double w, final double h, final double scale) {
-        return SupplierEx.get(() -> {
-            final WritableImage writableImage = new WritableImage((int) (w * scale), (int) (h * scale));
-            SnapshotParameters params = new SnapshotParameters();
-            params.setTransform(new Scale(scale, scale));
-            final WritableImage snapshot = canvas.snapshot(params, writableImage);
-            File destination = File.createTempFile("snapshot", ".png", ResourceFXUtils.getOutFile("png"));
-            BufferedImage fromFXImage = SwingFXUtils.fromFXImage(snapshot, null);
-            ImageIO.write(fromFXImage, "PNG", destination);
-            return destination;
-        });
+        return SupplierEx.get(() -> take(canvas, w, h, scale,
+                File.createTempFile("snapshot", ".png", ResourceFXUtils.getOutFile("png"))));
+    }
+
+    public static File take(final Node canvas, File out) {
+        return ImageFXUtils.take(canvas, canvas.getBoundsInLocal().getWidth(), canvas.getBoundsInLocal().getHeight(),
+                canvas.getScaleX(), out);
+
     }
 
     public static WritableImage take(Node canvas, Rectangle2D viewport) {
@@ -208,6 +201,12 @@ public final class ImageFXUtils {
             final WritableImage snapshot = canvas.snapshot(params, writableImage);
             return SwingFXUtils.fromFXImage(snapshot, null);
         });
+    }
+
+    public static byte[] toByteArray(Image image) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", output);
+        return output.toByteArray();
     }
 
     public static WritableImage toImage(final Node canvas) {
@@ -249,7 +248,19 @@ public final class ImageFXUtils {
         return writableImage;
     }
 
-    private    static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
+    private static double normalizeValue(double value, double min, double max, double newMin, double newMax) {
         return (value - min) * (newMax - newMin) / (max - min) + newMin;
+    }
+
+    private static File take(final Node canvas, final double w, final double h, final double scale, File destination) {
+        return SupplierEx.get(() -> {
+            final WritableImage writableImage = new WritableImage((int) (w * scale), (int) (h * scale));
+            SnapshotParameters params = new SnapshotParameters();
+            params.setTransform(new Scale(scale, scale));
+            final WritableImage snapshot = canvas.snapshot(params, writableImage);
+            BufferedImage fromFXImage = SwingFXUtils.fromFXImage(snapshot, null);
+            ImageIO.write(fromFXImage, "PNG", destination);
+            return destination;
+        });
     }
 }
