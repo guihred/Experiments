@@ -89,11 +89,26 @@ public final class ReportHelper {
         return PhantomJSUtils.saveHtmlImage(format);
     }
 
+    private static WritableImage crop(Map<String, Object> info, File outFile) {
+        String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
+        Image value = new Image(externalForm);
+        double width = value.getWidth();
+        double height = value.getHeight();
+        double width2 = width * toDouble(info.get("width"));
+        double height2 = height * toDouble(info.get("height"));
+        Rectangle a = new Rectangle(width2, height2);
+        a.setLayoutX(width * toDouble(info.get("x")));
+        a.setLayoutY(height * toDouble(info.get("y")));
+        WritableImage destImage = new WritableImage((int) a.getWidth(), (int) a.getHeight());
+        RectBuilder.copyImagePart(value, destImage, a);
+        return destImage;
+    }
+
     private static Image getImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
         File outFile = ResourceFXUtils
                 .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
         if (outFile.exists()) {
-            return new Image(ResourceFXUtils.convertToURL(outFile).toExternalForm());
+            return crop(imageObj, outFile);
         }
 
         WebEngine engine = browser.getEngine();
@@ -126,19 +141,8 @@ public final class ReportHelper {
     }
 
     private static WritableImage saveImage(Map<String, Object> info, File outFile, WebView browser2) {
-        File saveHtmlImage = CommonsFX.runInPlatformSync(() -> saveHtmlImage(browser2, outFile));
-        String externalForm = ResourceFXUtils.convertToURL(saveHtmlImage).toExternalForm();
-        Image value = new Image(externalForm);
-        double width = value.getWidth();
-        double height = value.getHeight();
-        double width2 = width * toDouble(info.get("width"));
-        double height2 = height * toDouble(info.get("height"));
-        Rectangle a = new Rectangle(width2, height2);
-        a.setLayoutX(width * toDouble(info.get("x")));
-        a.setLayoutY(height * toDouble(info.get("y")));
-        WritableImage destImage = new WritableImage((int) a.getWidth(), (int) a.getHeight());
-        RectBuilder.copyImagePart(value, destImage, a);
-        return destImage;
+        CommonsFX.runInPlatformSync(() -> saveHtmlImage(browser2, outFile));
+        return crop(info, outFile);
     }
 
 }
