@@ -2,8 +2,10 @@ package extract;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javafx.scene.control.TableColumn;
+import org.apache.commons.lang3.StringUtils;
 
 public class QuickSortML {
 
@@ -31,10 +33,9 @@ public class QuickSortML {
 			// DOES NOTHING
 		}, T::compareTo);
 	}
-	public static <T extends Comparable<T>> void sort(List<T> inputArr, BiIntConsumer onSwap) {
+    public static <T extends Comparable<T>> void sort(List<T> inputArr, BiIntConsumer onSwap) {
 		sort(inputArr, onSwap, T::compareTo);
 	}
-
 	public static <T> void sort(List<T> inputArr, BiIntConsumer onSwap, Comparator<T> compa) {
 
 		if (inputArr == null || inputArr.isEmpty()) {
@@ -42,11 +43,18 @@ public class QuickSortML {
 		}
 		quickSort(0, inputArr.size() - 1, inputArr, onSwap, compa);
 	}
+
 	public static <T> void sort(List<T> inputArr, Comparator<T> compa) {
 		sort(inputArr, (i, j) -> {
 			// DOES NOTHING
 		}, compa);
 	}
+	public static void sortMapList(List<Map<String, String>> ipItems2, String col, Boolean ascending) {
+        Comparator<Map<String, String>> comparing = Comparator
+                .comparing(m -> StringUtils.isNumeric(m.get(col)) ? String.format("%09d", Long.valueOf(m.get(col)))
+                        : Objects.toString(m.get(col), ""));
+        ipItems2.sort(ascending ? comparing : comparing.reversed());
+    }
 
 	private static <T> void exchangeNumbers(int i, int j, List<T> array, BiIntConsumer onSwap) {
 		T temp = array.get(i);

@@ -4,10 +4,14 @@ import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
 import com.google.common.collect.ImmutableMap;
+import extract.QuickSortML;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
@@ -73,13 +77,7 @@ public class QueryObjects {
         table.setItems(CommonsFX.newFastFilter(resultsFilter, ipItems2.filtered(e -> true)));
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         SimpleTableViewBuilder.of(table).copiable().savable().onDoubleClickMany(onClick)
-                .onSortClicked((col, ascending) -> {
-            Comparator<Map<String, String>> comparing =
-                            Comparator.comparing(m -> StringUtils.isNumeric(m.get(col))
-                                    ? String.format("%09d", Long.valueOf(m.get(col)))
-                                    : Objects.toString(m.get(col), ""));
-                    ipItems2.sort(ascending ? comparing : comparing.reversed());
-        });
+                .onSortClicked((col, ascending) -> QuickSortML.sortMapList(ipItems2, col, ascending));
         return this;
     }
 
@@ -194,4 +192,6 @@ public class QueryObjects {
         this.group = group;
         return this;
     }
+
+
 }

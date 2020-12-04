@@ -4,6 +4,7 @@ import static simplebuilder.SimpleTableViewBuilder.of;
 import static utils.CommonsFX.newFastFilter;
 
 import extract.ExcelService;
+import extract.QuickSortML;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
@@ -29,7 +30,7 @@ public class EthicalHackController extends EthicalHackApp {
         ports.textProperty().bind(
                 Bindings.createStringBinding(() -> String.format("Port Services %s", portsSelected), portsSelected));
         of(commonTable).items(newFastFilter(resultsFilter, items.filtered(e -> true))).multipleSelection()
-                .copiable().savable();
+                .copiable().savable().onSortClicked((col, b) -> QuickSortML.sortMapList(items, col, b));
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> tcpItems =
                 FXCollections.synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet()
