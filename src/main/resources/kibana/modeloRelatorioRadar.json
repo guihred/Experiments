@@ -23,9 +23,9 @@
             "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/e248a510-7a77-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
             "name": "origens$dateInverted",
             "width": 1,
-            "height": 1,
+            "height": 0.4,
             "x": 0,
-            "y": 0
+            "y": 0.43
         }
 	],
 	"Volume de conexões VPN": [

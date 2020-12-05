@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker.State;
@@ -36,16 +37,22 @@ public final class ReportHelper {
     }
 
     public static void addParameters(Map<String, Object> mapaSubstituicao, Map<String, String> params,
-            WebView browser) {
-        for (String key : mapaSubstituicao.keySet().stream().collect(Collectors.toList())) {
+            WebView browser, DoubleProperty progress) {
+        List<String> keys = mapaSubstituicao.keySet().stream().collect(Collectors.toList());
+        CommonsFX.update(progress, 0);
+        for (String key : keys) {
             mapaSubstituicao.compute(key, (k, v) -> {
                 if (v instanceof List) {
-                    return ((List<?>) v).stream().map(e -> remap(params, e, browser)).filter(Objects::nonNull)
+                    List<?> list = (List<?>) v;
+                    return list.stream().map(e -> remap(params, e, browser)).filter(Objects::nonNull)
+                            .peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
                             .collect(Collectors.toList());
                 }
+                CommonsFX.addProgress(progress, 1. / keys.size());
                 return replaceString(params, v);
             });
         }
+        CommonsFX.update(progress, 1);
     }
 
     public static boolean isLoading(WebEngine engine) {

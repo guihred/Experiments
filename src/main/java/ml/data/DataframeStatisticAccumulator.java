@@ -213,8 +213,10 @@ public class DataframeStatisticAccumulator {
     @Override
     public String toString() {
         Class<? extends Comparable<?>> format = getFormat();
-        return format == String.class ? String.format("{format: %s, distinct: %d}", format.getSimpleName(), distinct)
+        SupplierEx<String> run = () -> format == String.class
+                ? String.format("{format: %s, distinct: %d}", format.getSimpleName(), distinct)
                 : String.format("{format: %s, median: %s}", format.getSimpleName(), getMedian50());
+        return SupplierEx.getFirst(run, run, () -> "");
     }
 
     private void acceptNumber(Number n) {

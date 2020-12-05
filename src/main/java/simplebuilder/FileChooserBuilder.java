@@ -48,6 +48,10 @@ public class FileChooserBuilder {
         return this;
     }
 
+    public String getExtension() {
+        return fileChooser.getSelectedExtensionFilter().getDescription();
+    }
+
     public FileChooserBuilder initialDir(File initialDir) {
         chooser.setInitialDirectory(initialDir);
         fileChooser.setInitialDirectory(initialDir);

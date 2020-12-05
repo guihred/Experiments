@@ -4,6 +4,7 @@ import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
 import extract.ExcelService;
+import extract.QuickSortML;
 import java.io.File;
 import java.util.Map;
 import javafx.application.Application;
@@ -40,7 +41,8 @@ public class KibanaInvestigator extends Application {
                 .bind(Bindings.selectDouble(commonTable.parentProperty(), "width").add(-columnWidth));
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        SimpleTableViewBuilder.of(commonTable).copiable().savable();
+        SimpleTableViewBuilder.of(commonTable).copiable().savable()
+                .onSortClicked((c, a) -> QuickSortML.sortMapList(items, c, a));
         SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
                 .pasteable(s -> StringSigaUtils.getMatches(s, "(\\d+\\.\\d+\\.\\d+\\.\\d+)"));
     }

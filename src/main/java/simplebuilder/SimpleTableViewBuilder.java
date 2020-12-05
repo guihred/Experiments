@@ -1,5 +1,6 @@
 package simplebuilder;
 
+import extract.ExcelService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -231,8 +232,18 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public static <T> void saveContent(TableView<T> table, KeyEvent ev) {
         if (ev.isControlDown() && ev.getCode() == KeyCode.S) {
-            new FileChooserBuilder().initialFilename(Objects.toString(table.getId(), "table") + ".csv")
-                    .extensions("CSV", "*.csv").onSelect(f -> CSVUtils.saveToFile(table, f)).saveFileAction(ev);
+            FileChooserBuilder fileChooserBuilder = new FileChooserBuilder();
+            fileChooserBuilder.initialFilename(Objects.toString(table.getId(), "table") + ".csv")
+                    .extensions("CSV", "*.csv").extensions("Excel", "*.xlsx")
+
+                    .onSelect(f -> {
+                        String extension = fileChooserBuilder.getExtension();
+                        if ("CSV".equals(extension)) {
+                            CSVUtils.saveToFile(table, f);
+                        } else {
+                            ExcelService.getExcel(table, f);
+                        }
+                    }).saveFileAction(ev);
 
         }
     }

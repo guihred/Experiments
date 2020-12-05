@@ -15,6 +15,7 @@ import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -36,6 +37,8 @@ public class ReportApplication extends Application {
 
     private static final Logger LOG = HasLogging.log();
     @FXML
+    private ProgressBar progressBar;
+    @FXML
     private ProgressIndicator progressIndicator;
     @FXML
     private WebView browser;
@@ -47,6 +50,7 @@ public class ReportApplication extends Application {
     private ComboBox<Path> model;
 
     private Map<String, String> params = new LinkedHashMap<>();
+    private Map<String, Node> paramsNode = new LinkedHashMap<>();
 
     public void initialize() {
         ExtractUtils.insertProxyConfig();
@@ -77,7 +81,7 @@ public class ReportApplication extends Application {
             File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
             addGeridInfo(mapaSubstituicao);
-            ReportHelper.addParameters(mapaSubstituicao, params, browser);
+            ReportHelper.addParameters(mapaSubstituicao, params, browser, progressBar.progressProperty());
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
             String modelUsed = mapaSubstituicao.get("model").toString();
             if ("pptx".equals(extension)) {
@@ -108,15 +112,16 @@ public class ReportApplication extends Application {
     }
 
     private Node getNode(String k, Object v) {
-        if (v instanceof List) {
-            List<?> v2 = (List<?>) v;
-            return new SimpleComboBoxBuilder<>().items(v2.toArray())
-                    .onSelect(s -> params.put("\\$" + k, s.toString()))
-                    .build();
-        }
-        TextField textField = new TextField();
-        textField.textProperty().addListener((ob, old, val) -> params.put("\\$" + k, val));
-        return textField;
+        return paramsNode.computeIfAbsent(k, key -> {
+            if (v instanceof List) {
+                List<?> v2 = (List<?>) v;
+                return new SimpleComboBoxBuilder<>().items(v2.toArray())
+                        .onSelect(s -> params.put("\\$" + k, s.toString())).build();
+            }
+            TextField textField = new TextField();
+            textField.textProperty().addListener((ob, old, val) -> params.put("\\$" + k, val));
+            return textField;
+        });
     }
 
     private void onModelChange(Path path) throws IOException {

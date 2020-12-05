@@ -71,6 +71,7 @@ public final class PaginatedTableView extends VBox {
         textField.textProperty().addListener(
                 (ob, o, n) -> RunnableEx.runIf(filteredItems, i -> i.setPredicate(e -> containsString(n, e))));
         SimpleTableViewBuilder.of(table).copiable().savable()
+                .onKey(KeyCode.DELETE, i -> items.removeAll(table.getSelectionModel().getSelectedItems()))
                 .onSortClicked((colName, ascending) -> RunnableEx.runIf(items,
                         i -> table.getColumns().stream().filter(c -> c.getText().equals(colName)).findFirst()
                                 .ifPresent(col -> items.sort(QuickSortML.getComparator(col, ascending)))));
@@ -110,6 +111,10 @@ public final class PaginatedTableView extends VBox {
 
     public TableView<Integer> getTable() {
         return table;
+    }
+
+    public void onDoubleClick(ConsumerEx<Integer> object) {
+        SimpleTableViewBuilder.of(table).onDoubleClick(object);
     }
 
     public void onKey(KeyCode code, ConsumerEx<List<Integer>> e) {

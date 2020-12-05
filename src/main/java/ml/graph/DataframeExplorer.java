@@ -63,11 +63,21 @@ public class DataframeExplorer extends ExplorerVariables {
         histogram.onKey(KeyCode.SUBTRACT,
                 list -> addQuestion(list.stream().map(barList::get).collect(Collectors.toList()), false));
         histogram.setColumnsWidth(10, 5);
+        statistics.onDoubleClick(i -> columnsList.getSelectionModel().select(i));
         SimpleListViewBuilder.of(columnsList).items(columns).multipleSelection().onSelect(this::onColumnChosen)
-                .onKey(KeyCode.DELETE, t -> {
-                    columns.remove(t);
-                    getDataframe().removeCol(t.getKey());
-                }).addContextMenu("_Split", e -> splitByColumn()).addContextMenu("Add Mapping",
+                .onKey(KeyCode.ADD, () -> {
+                    ObservableList<Entry<String, DataframeStatisticAccumulator>> selectedItems =
+                            columnsList.getSelectionModel().getSelectedItems();
+                    List<Entry<String, DataframeStatisticAccumulator>> collect =
+                            columns.stream().filter(s -> !selectedItems.contains(s)).collect(Collectors.toList());
+                    columns.removeAll(collect);
+                    getDataframe().removeCol(collect.stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
+                            .toArray(String[]::new));
+                }).onKey(KeyCode.DELETE, col -> {
+                    columns.remove(col);
+                    getDataframe().removeCol(col.getKey());
+                }).addContextMenu("_Split", e -> splitByColumn())
+                .addContextMenu("Add Mapping",
                         e0 -> Mapping.showDialog(barChart, columnsList.getSelectionModel().getSelectedItems().stream()
                                 .map(Entry<String, DataframeStatisticAccumulator>::getKey).toArray(String[]::new),
                                 getDataframe(), this::addStats));
@@ -173,7 +183,6 @@ public class DataframeExplorer extends ExplorerVariables {
         CommonsFX.loadFXML("Dataframe Explorer", "DataframeExplorer.fxml", this, primaryStage);
         CommonsFX.addCSS(primaryStage.getScene(), "progressLoader.css");
     }
-
 
     private void onQuestionsChange(Change<? extends Question> c) {
         while (c.next()) {

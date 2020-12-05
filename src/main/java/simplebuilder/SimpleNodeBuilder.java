@@ -96,6 +96,10 @@ public class SimpleNodeBuilder<T extends Node, Z extends SimpleBuilder<T>> imple
         return (Z) this;
     }
 
+    public Z onKey(KeyCode e, RunnableEx value) {
+        onKeyReleased(node, e, value);
+        return (Z) this;
+    }
     public Z onKeyReleased(final EventHandler<? super KeyEvent> value) {
         onKeyReleased(node, value);
         return (Z) this;

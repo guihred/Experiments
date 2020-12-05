@@ -7,8 +7,11 @@ import java.io.OutputStream;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import org.apache.poi.ss.usermodel.Workbook;
 import utils.CommonsFX;
 import utils.ex.FunctionEx;
@@ -54,6 +57,18 @@ public final class ExcelService extends ExcelHelper {
 
     public static void getExcel(String arquivo, Map<Object, Object> map, OutputStream outStream) {
         RunnableEx.run(() -> makeExcelWithSubstitutions(arquivo, map, outStream));
+    }
+
+    public static <T> void getExcel(TableView<T> table, File f) {
+        List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
+        if (selectedItems.isEmpty()) {
+            selectedItems = IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
+        }
+        Map<String, FunctionEx<Integer, Object>> mapa =
+                table.getColumns().stream().collect(Collectors.toMap(TableColumn::getText,
+                        (TableColumn<T, ?> col) -> col::getCellData, (u, c) -> u, LinkedHashMap::new));
+        getExcel(selectedItems, mapa, f);
+
     }
 
     public static ObservableList<String> getSheetsExcel(File selectedFile) {
