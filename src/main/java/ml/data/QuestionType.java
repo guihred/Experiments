@@ -25,6 +25,9 @@ public enum QuestionType {
             String.class),
     IN("in", (ob1, ob2) -> ob2 instanceof Collection && ((Collection<?>) ob2).contains(ob1), String.class,
             Number.class),
+    @SuppressWarnings("unchecked")
+    DISTINCT("distinct", (ob1, ob2) -> ob2 instanceof Collection && ((Collection<Object>) ob2).add(ob1), String.class,
+            Number.class),
     LIKE("like",
             (ob1, ob) -> PredicateEx.test(s -> s.matches(StringSigaUtils.toStringSpecial(ob)),
                     StringSigaUtils.toStringSpecial(ob1)),

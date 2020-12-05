@@ -38,6 +38,7 @@
 									<QuestionType fx:value="EQ" />
 									<QuestionType fx:value="NE" />
 									<QuestionType fx:value="IN" />
+									<QuestionType fx:value="DISTINCT" />
 									<QuestionType fx:value="CONTAINS" />
 									<QuestionType fx:value="LIKE" />
 									<QuestionType fx:value="GE" />

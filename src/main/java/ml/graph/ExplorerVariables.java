@@ -106,6 +106,9 @@ public abstract class ExplorerVariables extends Application {
     }
 
     protected Object getQueryObject(QuestionType type, String colName, String text2) {
+        if (type == QuestionType.DISTINCT) {
+            return new LinkedHashSet<>();
+        }
         if (type == QuestionType.IN) {
             List<Object> arrayList = new ArrayList<>();
             for (String string : text2.split("[,;\t\n]+")) {

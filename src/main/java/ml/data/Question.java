@@ -6,7 +6,7 @@ import java.util.Objects;
 public class Question {
     private final String colName;
     private final Object ob;
-    private QuestionType type = QuestionType.EQ;
+    private final QuestionType type;
     private double infoGain;
     private boolean not;
 
@@ -24,7 +24,7 @@ public class Question {
     }
 
     public boolean answer(Object ob1) {
-        boolean execute = type.execute(ob1, ob);
+        boolean execute = getType().execute(ob1, ob);
         return not ? !execute : execute;
     }
 
@@ -41,7 +41,7 @@ public class Question {
         }
         Question other = (Question) obj;
         return Objects.equals(colName, other.colName) && Objects.equals(not, other.not) && Objects.equals(ob, other.ob)
-                && Objects.equals(type, other.type);
+                && Objects.equals(getType(), other.getType());
 
     }
 
@@ -55,7 +55,7 @@ public class Question {
 
     @Override
     public int hashCode() {
-        return Objects.hash(colName, ob, type, not);
+        return Objects.hash(colName, ob, getType(), not);
     }
 
     public void setInfoGain(double infoGain) {
@@ -70,7 +70,15 @@ public class Question {
     @Override
     public String toString() {
         String string = not ? "%s not %s %s" : "%s %s %s";
-        return String.format(string, getColName(), type.getSign(), ob instanceof String ? "\"" + ob + "\"" : ob);
+        return String.format(string, getColName(), getType().getSign(), ob instanceof String ? "\"" + ob + "\"" : ob);
+    }
+
+    public QuestionType getType() {
+        return type;
+    }
+
+    public Object getOb() {
+        return ob;
     }
 
 }

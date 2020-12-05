@@ -189,6 +189,9 @@ public class DataframeExplorer extends ExplorerVariables {
             if (getDataframe() != null) {
                 if (getDataframe().isLoaded() && c.wasAdded() && !c.wasRemoved()) {
                     for (Question question : c.getList()) {
+                        if (question.getType() == QuestionType.DISTINCT) {
+                            ((Set<?>)question.getOb()).clear();
+                        }
                         getDataframe().filter(question.getColName(), question::answer);
                     }
                     int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
@@ -221,6 +224,9 @@ public class DataframeExplorer extends ExplorerVariables {
     private static DataframeBuilder builderWithQuestions(File file, List<Question> questions) {
         DataframeBuilder builder = DataframeBuilder.builder(file);
         for (Question question : questions) {
+            if (question.getType() == QuestionType.DISTINCT) {
+                ((Set<?>) question.getOb()).clear();
+            }
             builder.filterOut(question.getColName(), question::answer);
         }
         return builder;
