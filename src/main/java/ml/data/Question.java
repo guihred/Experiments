@@ -53,6 +53,14 @@ public class Question {
         return infoGain;
     }
 
+    public Object getOb() {
+        return ob;
+    }
+
+    public QuestionType getType() {
+        return type;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(colName, ob, getType(), not);
@@ -70,15 +78,7 @@ public class Question {
     @Override
     public String toString() {
         String string = not ? "%s not %s %s" : "%s %s %s";
-        return String.format(string, getColName(), getType().getSign(), ob instanceof String ? "\"" + ob + "\"" : ob);
-    }
-
-    public QuestionType getType() {
-        return type;
-    }
-
-    public Object getOb() {
-        return ob;
+        return String.format(string, getColName(), getType().getSign(), ob instanceof String ? "\"" + ob + "\"" : Objects.toString(ob, ""));
     }
 
 }

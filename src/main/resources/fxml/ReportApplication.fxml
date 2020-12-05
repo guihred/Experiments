@@ -23,7 +23,7 @@
 				<HBox fx:id="paramsPane" />
 				<VBox HBox.hgrow="ALWAYS">
 					<Text text="" fx:id="loc" />
-					<HBox>
+					<HBox VBox.vgrow="ALWAYS">
 						<Button text="_Make Report" onAction="#makeReportConsultas" />
 						<ProgressBar fx:id="progressBar" HBox.hgrow="ALWAYS"/>
 					</HBox>

@@ -104,7 +104,7 @@ public class QueryObjects {
         combo.setItems(mapping);
         combo.getSelectionModel().selectedItemProperty().addListener((ob, old, val) -> {
             lineChart.getYAxis().setAutoRanging(false);
-            filtered.setPredicate(e -> StringUtils.isBlank(val) || Objects.equals(e.getName(), val));
+            filtered.setPredicate(e -> StringUtils.isBlank(val) || e != null && Objects.equals(e.getName(), val));
         });
         return fieldObjects;
     }
