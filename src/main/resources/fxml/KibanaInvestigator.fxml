@@ -44,9 +44,9 @@
 				<Text text="IPs" />
                 <ListView fx:id="filterList" prefWidth="175.0" prefHeight="175" VBox.vgrow="NEVER" />
 
-				<Button onAction="#onActionKibanaScan" text="Kibana Scan" />
-				<Button onAction="#onActionKibanaScanParallel" text="Parallel Scan" />
-				<Button onAction="#onExportExcel" text="Export Excel" />
+				<Button onAction="#onActionKibanaScan" text="_Kibana Scan" />
+				<Button onAction="#onActionKibanaScanParallel" text="_Parallel Scan" />
+				<Button onAction="#onOpenDataframe" text="_Open Dataframe" />
 				<ProgressIndicator fx:id="progressIndicator"
 					VBox.vgrow="ALWAYS" minHeight="40.0" minWidth="40.0" progress="0.0" />
 			</children>

@@ -205,7 +205,7 @@ public final class RectBuilder {
         }
     }
 
-    public void drawRect(WritableImage image, WritableImage exception, final Color backColor) {
+    public void drawRect(WritableImage image, Image exception, final Color backColor) {
         int startX2 = (int) startX;
         int startY2 = (int) startY;
         for (int i = 0; i < width; i++) {

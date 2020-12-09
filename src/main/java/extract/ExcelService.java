@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import utils.CommonsFX;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class ExcelService extends ExcelHelper {
 
@@ -65,8 +66,9 @@ public final class ExcelService extends ExcelHelper {
             selectedItems = IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
         }
         Map<String, FunctionEx<Integer, Object>> mapa =
-                table.getColumns().stream().collect(Collectors.toMap(TableColumn::getText,
-                        (TableColumn<T, ?> col) -> col::getCellData, (u, c) -> u, LinkedHashMap::new));
+                table.getColumns().stream().filter(c -> !"Nº".equals(c.getText()))
+                        .collect(Collectors.toMap(TableColumn::getText,
+                                (TableColumn<T, ?> col) -> col::getCellData, SupplierEx::nonNull, LinkedHashMap::new));
         getExcel(selectedItems, mapa, f);
 
     }

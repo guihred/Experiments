@@ -1,10 +1,12 @@
 package simplebuilder;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -52,6 +54,11 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return this;
     }
 
+    public SimpleListViewBuilder<T> items(final Collection<T> value) {
+        node.setItems(FXCollections.observableArrayList(value));
+        return this;
+    }
+
     public SimpleListViewBuilder<T> items(final ObservableList<T> value) {
         node.setItems(value);
         return this;
@@ -90,7 +97,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     public SimpleListViewBuilder<T> pasteable(FunctionEx<String, T> f) {
         SimpleNodeBuilder.onKeyReleased(node, e -> {
             if (KeyCode.V == e.getCode() && e.isControlDown()) {
-                String string = ImageFXUtils.getClipboardString();
+                String string = Objects.toString(ImageFXUtils.getClipboardString(), "");
                 for (String string2 : string.split("[\n,\t]+")) {
                     T apply = FunctionEx.apply(f, string2);
                     if (apply != null && StringUtils.isNotBlank(Objects.toString(apply, ""))

@@ -300,7 +300,8 @@ public class DataframeStatisticAccumulator {
     }
 
     public static Map<String, Object> rowMap(Map<String, List<Object>> dataframe2, int i) {
-        return dataframe2.entrySet().stream().filter(e -> e.getValue().get(i) != null)
+        return dataframe2.entrySet().stream().filter(e -> e.getValue().size() > i)
+                .filter(e -> e.getValue().get(i) != null)
                 .collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i),
                         DataframeStatisticAccumulator.throwError(), LinkedHashMap<String, Object>::new));
     }

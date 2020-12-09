@@ -6,20 +6,24 @@ import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -27,7 +31,10 @@ import javafx.stage.Stage;
 import kibana.KibanaApi;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import paintexp.tool.PaintTool;
 import simplebuilder.SimpleComboBoxBuilder;
+import simplebuilder.SimpleDialogBuilder;
+import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleVBoxBuilder;
 import utils.*;
 import utils.ex.HasLogging;
@@ -56,7 +63,7 @@ public class ReportApplication extends Application {
         ExtractUtils.insertProxyConfig();
         WebEngine engine = browser.getEngine();
         Worker<Void> loadWorker = engine.getLoadWorker();
-        engine.locationProperty().addListener((ob, old, val) -> loc.setText(StringUtils.abbreviate(val, 80)));
+        engine.locationProperty().addListener((ob, old, val) -> loc.setText(StringUtils.abbreviate(val, 100)));
         progressIndicator.progressProperty().bind(loadWorker.progressProperty());
         File parentFile = ResourceFXUtils.toFile("kibana/modeloRelatorio.json").getParentFile();
         List<Path> firstFileMatch = FileTreeWalker
@@ -91,6 +98,60 @@ public class ReportApplication extends Application {
             }
             ImageFXUtils.openInDesktop(reportFile);
 
+        });
+    }
+
+    public void makeReportConsultasEditImages() {
+        File modelFile = model.getSelectionModel().getSelectedItem().toFile();
+        LOG.info("MAKING REPORT {} {}", params, modelFile.getName());
+        RunnableEx.runNewThread(() -> {
+            Map<String, Object> mapaSubstituicao = JsonExtractor.accessMap(JsonExtractor.toObject(modelFile));
+            params.put("\\$gatheredDate", DateFormatUtils.currentTime("ddMMyyyy"));
+            params.put("\\$dateInverted", DateFormatUtils.currentTime("yyyy-MM-dd"));
+            params.put("\\$currentHour", DateFormatUtils.currentHour());
+            params.put("\\$currentMonth", DateFormatUtils.currentTime("MMMM yyyy"));
+            params.put("\\$date", DateFormatUtils.currentDate());
+            String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
+            String extension = replaceString.replaceAll(".+\\.(\\w+)$", "$1");
+            File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
+            LOG.info("OUTPUT REPORT {} ", reportFile.getName());
+            addGeridInfo(mapaSubstituicao);
+            ReportHelper.addParametersNotCrop(mapaSubstituicao, params, browser, progressBar.progressProperty());
+            ImageView imageView = new ImageView();
+            imageView.setFitWidth(500);
+            imageView.setPreserveRatio(true);
+            @SuppressWarnings("deprecation")
+            List<String> collect =
+                    mapaSubstituicao.values().stream().flatMap(ReportApplication::objectList).map(Image::impl_getUrl)
+                    .collect(Collectors.toList());
+
+            ListView<String> build = new SimpleListViewBuilder<String>()
+                    .onSelect((old, val) -> imageView.setImage(new Image(val)))
+                    .items(collect)
+                    .build();
+            Rectangle rectangle = new Rectangle();
+            rectangle.setStroke(Color.BLACK);
+            StackPane stackPane = new StackPane(imageView, rectangle);
+            rectangle.setManaged(false);
+            imageView.setManaged(false);
+            SplitPane pane = new SplitPane(build, stackPane);
+            // 190.106.134.86
+            stackPane.setOnKeyReleased(e -> PaintTool.moveArea(e, rectangle));
+            PaintTool.moveArea(stackPane, rectangle, imageView);
+            CommonsFX.runInPlatform(() -> {
+                new SimpleDialogBuilder().bindWindow(browser)
+                        .node(pane)
+                        .displayDialog();
+            });
+            // LOG.info("APPLYING MAP {}", mapaSubstituicao);
+            // String modelUsed = mapaSubstituicao.get("model").toString();
+            // if ("pptx".equals(extension)) {
+            // PPTService.getPowerPoint(mapaSubstituicao, modelUsed, reportFile);
+            // } else {
+            // WordService.getWord(mapaSubstituicao, modelUsed, reportFile);
+            // }
+            // ImageFXUtils.openInDesktop(reportFile);
+            
         });
     }
 
@@ -136,6 +197,13 @@ public class ReportApplication extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static Stream<Image> objectList(Object e) {
+        if (!(e instanceof Collection)) {
+            return Stream.empty();
+        }
+        return ((Collection<?>) e).stream().filter(o -> o instanceof Image).map(Image.class::cast);
     }
 
 }

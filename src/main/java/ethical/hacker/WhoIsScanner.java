@@ -94,7 +94,7 @@ public class WhoIsScanner {
     }
 
     public String reverseDNS(String ip) {
-        return cache.computeIfAbsent(ip, i -> getReverseDNS(i));
+        return cache.computeIfAbsent(ip, WhoIsScanner::getReverseDNS);
     }
 
     public ObservableList<Map<String, String>> scanIps(String ip) {

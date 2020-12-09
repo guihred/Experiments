@@ -116,7 +116,7 @@ public abstract class AreaTool extends PaintTool {
     }
 
     @Override
-public void onMousePressed(MouseEvent e, PaintModel model) {
+    public void onMousePressed(MouseEvent e, PaintModel model) {
         if (model.getImageStack().getChildren().contains(getArea())) {
             if (CommonsFX.containsMouse(area, e)) {
                 createSelectedImage(model);

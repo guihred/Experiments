@@ -174,7 +174,7 @@ public final class ImageFXUtils {
 
     public static File take(final Node canvas, File out) {
         return ImageFXUtils.take(canvas, canvas.getBoundsInLocal().getWidth(), canvas.getBoundsInLocal().getHeight(),
-                canvas.getScaleX(), out);
+                2, out);
 
     }
 

@@ -61,7 +61,16 @@ public class CIDRUtils {
     }
 
     public static void main(String[] args) {
-        LOG.info("{}", findNetwork("187.34.119.82"));
+        LOG.info("{}", makeNetworkCSV());
+    }
+
+    public static List<Map<String, Object>> makeNetworkCSV() {
+        List<Path> firstFileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile(),
+                p -> p.getFileName().toString().matches("(\\d+\\.){3}\\d+\\.json"));
+        List<Map<String, Object>> collect = firstFileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readMap))
+                .distinct().collect(Collectors.toList());
+        CSVUtils.appendLines(ResourceFXUtils.getOutFile(NETWORKS_CSV), collect);
+        return collect;
     }
 
     public static InetAddress toInetAddress(String ip) throws UnknownHostException {
@@ -69,14 +78,6 @@ public class CIDRUtils {
                 Stream.of(ip.split("\\.")).map(t -> Integer.valueOf(t).byteValue()).collect(Collectors.toList());
         byte[] addr = new byte[] { collect.get(0), collect.get(1), collect.get(2), collect.get(3) };
         return InetAddress.getByAddress(addr);
-    }
-
-    private static void makeNetworkCSV() {
-        List<Path> firstFileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile(),
-                p -> p.getFileName().toString().matches("(\\d+\\.){3}\\d+\\.json"));
-        List<Map<String, Object>> collect = firstFileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readMap))
-                .distinct().collect(Collectors.toList());
-        CSVUtils.appendLines(ResourceFXUtils.getOutFile(NETWORKS_CSV), collect);
     }
 
     private static Map<String, Object> readMap(Path e) throws IOException {

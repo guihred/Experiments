@@ -178,6 +178,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             String collect =
                     selectedItems
                             .stream().map(l -> table.getColumns().stream()
+                                    .filter(c -> !"Nº".equals(c.getText()))
                                     .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
                             .collect(Collectors.joining("\n"));
             ImageFXUtils.setClipboardContent(collect);

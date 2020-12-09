@@ -5,6 +5,7 @@ import static javafx.collections.FXCollections.synchronizedObservableList;
 
 import com.google.common.collect.ImmutableMap;
 import extract.QuickSortML;
+import fxml.utils.JsonExtractor;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -181,7 +182,7 @@ public class QueryObjects {
     public List<Map<String, String>> searchRemap(Map<String, String> filter1, Integer days) {
         Map<String, String> nsInformation =
                 KibanaApi.makeKibanaSearch("kibana/" + getQueryFile(), days, filter1, getParams());
-        return KibanaApi.remap(nsInformation, getGroup());
+        return JsonExtractor.remap(nsInformation, getGroup());
     }
 
     public void setAllowEmpty(boolean allowEmpty) {

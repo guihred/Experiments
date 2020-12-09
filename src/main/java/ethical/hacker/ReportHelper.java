@@ -55,6 +55,34 @@ public final class ReportHelper {
         CommonsFX.update(progress, 1);
     }
 
+    @SuppressWarnings("unchecked")
+    public static void addParametersNotCrop(Map<String, Object> mapaSubstituicao, Map<String, String> params,
+            WebView browser, DoubleProperty progress) {
+        List<String> keys = mapaSubstituicao.keySet().stream().collect(Collectors.toList());
+        CommonsFX.update(progress, 0);
+        for (String key : keys) {
+            mapaSubstituicao.compute(key, (k, v) -> {
+                if (v instanceof List) {
+                    List<?> list = (List<?>) v;
+                    return list.stream().map(e -> {
+                        if (e instanceof Map) {
+                            return getUncroppedImage((Map<String, Object>) e, browser, params);
+                        }
+                        if (e instanceof Image) {
+                            return e;
+                        }
+                        return replaceString(params, e);
+                    }).filter(Objects::nonNull)
+                            .peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
+                            .collect(Collectors.toList());
+                }
+                CommonsFX.addProgress(progress, 1. / keys.size());
+                return replaceString(params, v);
+            });
+        }
+        CommonsFX.update(progress, 1);
+    }
+
     public static boolean isLoading(WebEngine engine) {
         return engine.getLoadWorker().getState() == State.RUNNING;
     }
@@ -132,6 +160,33 @@ public final class ReportHelper {
                 RunnableEx.sleepSeconds(6);
             }
             image.setValue(saveImage(imageObj, outFile, browser));
+        });
+        return image.getValue();
+    }
+
+    private static Image getUncroppedImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
+        File outFile = ResourceFXUtils
+                .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
+        if (outFile.exists()) {
+            String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
+            return new Image(externalForm);
+        }
+
+        WebEngine engine = browser.getEngine();
+        Property<Image> image = new SimpleObjectProperty<>();
+        String kibanaURL = Objects.toString(imageObj.get("url"), "");
+        String finalURL = replaceString(params, kibanaURL);
+        CommonsFX.runInPlatform(() -> loadSite(engine, finalURL));
+        RunnableEx.measureTime("Load Site " + imageObj.get("name"), () -> {
+            AtomicBoolean atomicBoolean = new AtomicBoolean(true);
+            while (atomicBoolean.get()) {
+                RunnableEx.sleepSeconds(6);
+                CommonsFX.runInPlatform(() -> atomicBoolean.set(isLoading(engine)));
+                RunnableEx.sleepSeconds(6);
+            }
+            CommonsFX.runInPlatformSync(() -> saveHtmlImage(browser, outFile));
+            String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
+            image.setValue(new Image(externalForm));
         });
         return image.getValue();
     }

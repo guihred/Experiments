@@ -1,23 +1,23 @@
 package fxml.utils;
 
-import static utils.ex.RunnableEx.remap;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import kibana.KibanaApi;
 import org.apache.commons.lang3.StringUtils;
 import org.nd4j.shade.jackson.databind.JsonNode;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
 import simplebuilder.SimpleTextBuilder;
-import utils.DateFormatUtils;
 import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public final class JsonExtractor {
 
@@ -73,10 +73,10 @@ public final class JsonExtractor {
 
     public static String convertObj(JsonNode jsonNode) {
         String asText = jsonNode.asText();
-        if (!asText.matches("\\d{10}")) {
+        // if (!asText.matches("\\d{10}")) {
             return asText;
-        }
-        return DateFormatUtils.epochSecondToLocalDate(asText).toString();
+        // }
+        // return DateFormatUtils.epochSecondToLocalDate(asText).toString();
     }
 
     public static String displayJsonFromFile(File outFile, String... a) throws IOException {
@@ -117,15 +117,6 @@ public final class JsonExtractor {
         return yaml2;
     }
 
-    public static Map<String, String> makeMapFromJsonFile(String fileContent, String... a) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        // read JSON like DOM Parser
-        JsonNode rootNode = objectMapper.readTree(fileContent);
-        Map<String, String> yaml2 = new LinkedHashMap<>();
-        processNode(rootNode, yaml2, 0, a);
-        return yaml2;
-    }
-
     public static Map.Entry<String, String> newEntry(String key, String value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }
@@ -136,7 +127,58 @@ public final class JsonExtractor {
 
     public static void readJsonFile(TreeView<Map<String, String>> build, File file) {
         Map<JsonNode, TreeItem<Map<String, String>>> allItems = new HashMap<>();
-        remap(() -> tryToRead(build, allItems, file), "ERROR READING");
+        RunnableEx.remap(() -> tryToRead(build, allItems, file), "ERROR READING");
+    }
+
+    public static List<Map<String, String>> remap(Map<String, String> ob) {
+        List<List<String>> collect =
+                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
+        List<String> keys = ob.keySet().stream().collect(Collectors.toList());
+        List<Map<String, String>> arrayList = new ArrayList<>();
+        for (int i = 0; i < orElse; i++) {
+            Map<String, String> linkedHashMap = new LinkedHashMap<>();
+            int j = i;
+            List<String> collect2 =
+                    collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
+            IntStream.range(0, keys.size()).forEach(k -> linkedHashMap.put(keys.get(k), collect2.get(k)));
+            arrayList.add(linkedHashMap);
+        }
+        return arrayList;
+    }
+
+    public static List<Map<String, String>> remap(Map<String, String> ob, String regex) {
+        if (StringUtils.isBlank(regex)) {
+            return remap(ob);
+        }
+        List<List<String>> collect =
+                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
+        List<String> keys = ob.keySet().stream().collect(Collectors.toList());
+        List<Map<String, String>> finalList = new ArrayList<>();
+        List<List<String>> partialList = new ArrayList<>();
+        Map<String, String> reference = null;
+        for (int i = 0; i < orElse; i++) {
+            int j = i;
+            List<String> collect2 =
+                    collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
+            if (collect2.stream().anyMatch(s -> s.matches(regex))) {
+                reference = new LinkedHashMap<>();
+                Map<String, String> m = reference;
+                IntStream.range(0, keys.size()).forEach(k -> KibanaApi.merge(regex, keys, collect2, m, k));
+                reference = KibanaApi.processPartialList(regex, keys, finalList, partialList, reference);
+            } else if (reference == null) {
+                partialList.add(collect2);
+            } else {
+                Map<String, String> newMap = new LinkedHashMap<>(reference);
+                newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
+                        .map(Entry<String, String>::getKey).orElse(null));
+                IntStream.range(0, keys.size()).forEach(k -> KibanaApi.merge(regex, keys, collect2, newMap, k));
+                finalList.add(newMap);
+            }
+    
+        }
+        return finalList;
     }
 
     public static boolean splitList(List<Map<String, String>> list, Map<String, String> newItem) {
@@ -183,6 +225,13 @@ public final class JsonExtractor {
         Map<String, Object> linkedHashMap = new LinkedHashMap<>();
         toObject(rootNode, 0, linkedHashMap, f);
         return linkedHashMap;
+    }
+
+    public static Object toObjectFromJsonContent(String fileContent, String... a) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // read JSON like DOM Parser
+        JsonNode rootNode = objectMapper.readTree(fileContent);
+        return toObject(rootNode, 0, new LinkedHashMap<>(), a);
     }
 
     private static String appendJsonArray(JsonNode jsonNode, Map<String, String> yaml, int depth, String... filters) {

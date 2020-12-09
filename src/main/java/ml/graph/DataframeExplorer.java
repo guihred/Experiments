@@ -65,15 +65,8 @@ public class DataframeExplorer extends ExplorerVariables {
         histogram.setColumnsWidth(10, 5);
         statistics.onDoubleClick(i -> columnsList.getSelectionModel().select(i));
         SimpleListViewBuilder.of(columnsList).items(columns).multipleSelection().onSelect(this::onColumnChosen)
-                .onKey(KeyCode.ADD, () -> {
-                    ObservableList<Entry<String, DataframeStatisticAccumulator>> selectedItems =
-                            columnsList.getSelectionModel().getSelectedItems();
-                    List<Entry<String, DataframeStatisticAccumulator>> collect =
-                            columns.stream().filter(s -> !selectedItems.contains(s)).collect(Collectors.toList());
-                    columns.removeAll(collect);
-                    getDataframe().removeCol(collect.stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
-                            .toArray(String[]::new));
-                }).onKey(KeyCode.DELETE, col -> {
+                .onKey(KeyCode.ADD, () -> retainOnly(columnsList.getSelectionModel().getSelectedItems()))
+                .onKey(KeyCode.DELETE, col -> {
                     columns.remove(col);
                     getDataframe().removeCol(col.getKey());
                 }).addContextMenu("_Split", e -> splitByColumn())
@@ -204,6 +197,14 @@ public class DataframeExplorer extends ExplorerVariables {
                 }
             }
         }
+    }
+
+    private void retainOnly(ObservableList<Entry<String, DataframeStatisticAccumulator>> selectedItems) {
+        List<Entry<String, DataframeStatisticAccumulator>> collect =
+                columns.stream().filter(s -> !selectedItems.contains(s)).collect(Collectors.toList());
+        columns.removeAll(collect);
+        getDataframe().removeCol(collect.stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
+                .toArray(String[]::new));
     }
 
     private void splitByColumn() {

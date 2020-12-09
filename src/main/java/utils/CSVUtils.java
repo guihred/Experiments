@@ -238,10 +238,12 @@ public class CSVUtils {
             selectedItems = IntStream.range(0, table.getItems().size()).boxed().collect(Collectors.toList());
         }
 
+        List<TableColumn<T, ?>> columns =
+                table.getColumns().stream().filter(c -> !"Nº".equals(c.getText())).collect(Collectors.toList());
         String collect2 =
-                table.getColumns().stream().map(TableColumn::getText).collect(Collectors.joining("\",\"", "\"", "\""));
+                columns.stream().map(TableColumn::getText).collect(Collectors.joining("\",\"", "\"", "\""));
         String collect = selectedItems.stream()
-                .map(l -> table.getColumns().stream().map(e -> Objects.toString(e.getCellData(l), ""))
+                .map(l -> columns.stream().map(e -> Objects.toString(e.getCellData(l), ""))
                         .map(s -> s.replaceAll("\"", "\\\"")).collect(Collectors.joining("\",\"", "\"", "\"")))
                 .collect(Collectors.joining("\n"));
         Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);

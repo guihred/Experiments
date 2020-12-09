@@ -78,11 +78,15 @@ public class KibanaApi {
             return Collections.emptyMap();
         }
         String key = "key";
+        makeKibanaSearch("wafQuery.json", query, days, key);
         Map<String, String> policiesSearch = makeKibanaSearch("policiesQuery.json", query, days, key);
         Map<String, String> accessesSearch = makeKibanaSearch("acessosQuery.json", query, days, key, "doc_count");
         Map<String, String> threatsSearch = makeKibanaSearch("threatQuery.json", query, days, key);
         Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", query, days, key, "value");
         destinationSearch.computeIfPresent("value",
+                (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
+        Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", query, days, "value");
+        totalBytesQuery.computeIfPresent("value",
                 (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
         Map<String, String> trafficSearch =
                 makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime", "country_code2");
@@ -99,6 +103,7 @@ public class KibanaApi {
         fullScan.put("TOP Conexão FW", display(destinationSearch));
         fullScan.put("TOP conexões WEB", display(accessesSearch));
         fullScan.put("Ultimo Acesso", display(trafficSearch));
+        fullScan.put("Total Bytes", display(totalBytesQuery));
         LOG.info("KIBANA RESULT{}", fullScan);
         return fullScan;
     }
@@ -141,40 +146,6 @@ public class KibanaApi {
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>());
-    }
-
-    public static List<Map<String, String>> remap(Map<String, String> ob, String regex) {
-        if (StringUtils.isBlank(regex)) {
-            return remap(ob);
-        }
-        List<List<String>> collect =
-                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
-        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
-        List<String> keys = ob.keySet().stream().collect(Collectors.toList());
-        List<Map<String, String>> finalList = new ArrayList<>();
-        List<List<String>> partialList = new ArrayList<>();
-        Map<String, String> reference = null;
-        for (int i = 0; i < orElse; i++) {
-            int j = i;
-            List<String> collect2 =
-                    collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
-            if (collect2.stream().anyMatch(s -> s.matches(regex))) {
-                reference = new LinkedHashMap<>();
-                Map<String, String> m = reference;
-                IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, m, k));
-                reference = processPartialList(regex, keys, finalList, partialList, reference);
-            } else if (reference == null) {
-                partialList.add(collect2);
-            } else {
-                Map<String, String> newMap = new LinkedHashMap<>(reference);
-                newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
-                        .map(Entry<String, String>::getKey).orElse(null));
-                IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, collect2, newMap, k));
-                finalList.add(newMap);
-            }
-
-        }
-        return finalList;
     }
 
     protected static String convertSearchKeywords(Map<String, String> search) {
@@ -226,7 +197,7 @@ public class KibanaApi {
         return Stream.of(s.split("\n")).filter(l -> l.matches(regex)).findFirst().orElse("").replaceAll(regex, "$1");
     }
 
-    private static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
+    public static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
             int k) {
         int l = 0;
         for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
@@ -241,7 +212,7 @@ public class KibanaApi {
         linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
     }
 
-    private static Map<String, String> processPartialList(String regex, List<String> keys,
+    public static Map<String, String> processPartialList(String regex, List<String> keys,
             List<Map<String, String>> finalList, List<List<String>> partialList, Map<String, String> reference) {
         if (partialList.isEmpty()) {
             return reference;
@@ -255,23 +226,6 @@ public class KibanaApi {
         }
         partialList.clear();
         return null;
-    }
-
-    private static List<Map<String, String>> remap(Map<String, String> ob) {
-        List<List<String>> collect =
-                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
-        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
-        List<String> keys = ob.keySet().stream().collect(Collectors.toList());
-        List<Map<String, String>> arrayList = new ArrayList<>();
-        for (int i = 0; i < orElse; i++) {
-            Map<String, String> linkedHashMap = new LinkedHashMap<>();
-            int j = i;
-            List<String> collect2 =
-                    collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
-            IntStream.range(0, keys.size()).forEach(k -> linkedHashMap.put(keys.get(k), collect2.get(k)));
-            arrayList.add(linkedHashMap);
-        }
-        return arrayList;
     }
 
     private static String removeExtension(File file) {

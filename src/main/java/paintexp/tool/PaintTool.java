@@ -1,24 +1,25 @@
 package paintexp.tool;
 
+import static utils.DrawOnPoint.getWithinRange;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.beans.binding.DoubleExpression;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
+import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
@@ -134,6 +135,79 @@ public abstract class PaintTool extends Group implements CommonTool {
             default:
                 return false;
         }
+    }
+
+    public static boolean moveArea(KeyEvent e, Rectangle area2) {
+
+        KeyCode code = e.getCode();
+        final double initialX = area2.getLayoutX();
+        double x = initialX;
+        final double initialY = area2.getLayoutY();
+        double y = initialY;
+
+        switch (code) {
+            case RIGHT:
+                x += 1;
+                break;
+            case LEFT:
+                x -= 1;
+                break;
+            case DOWN:
+                y += 1;
+                break;
+            case UP:
+                y -= 1;
+                break;
+            default:
+        }
+        area2.setLayoutX(Math.min(x, initialX));
+        area2.setLayoutY(Math.min(y, initialY));
+        if (e.isShiftDown()) {
+            area2.setWidth(Math.abs(x - initialX));
+            area2.setHeight(Math.abs(y - initialY));
+        }
+
+        return true;
+    }
+
+    public static void moveArea(StackPane stackPane, Rectangle area, ImageView imageView) {
+        ObjectProperty<WritableImage> imageSelected = new SimpleObjectProperty<>();
+        DoubleProperty initialX = new SimpleDoubleProperty(0);
+        DoubleProperty initialY = new SimpleDoubleProperty(0);
+        DoubleProperty dragX = new SimpleDoubleProperty(0);
+        DoubleProperty dragY = new SimpleDoubleProperty(0);
+
+        stackPane.setOnMousePressed(e -> {
+            initialX.set(e.getX());
+            initialY.set(e.getY());
+        });
+        stackPane.setOnMouseDragged(e -> {
+            double x0 = e.getX();
+            double y0 = e.getY();
+            Image image = imageView.getImage();
+            double width = image.getWidth();
+            double height = image.getHeight();
+            if (stackPane.getChildren().contains(area) && imageSelected.get() != null) {
+                area.setLayoutX(Math.max(x0 - dragX.get(), -width / 4));
+                area.setLayoutY(Math.max(y0 - dragY.get(), -height / 4));
+                return;
+            }
+            double x = getWithinRange(x0, 0, width);
+            double y = getWithinRange(y0, 0, height);
+            area.setLayoutX(Math.min(x, initialX.get()));
+            area.setLayoutY(Math.min(y, initialY.get()));
+            area.setWidth(Math.abs(x - initialX.get()));
+            area.setHeight(Math.abs(y - initialY.get()));
+        });
+        stackPane.setOnMouseReleased(e -> {
+            int width = Math.max(1, (int) area.getWidth());
+            int height = Math.max(1, (int) area.getHeight());
+            imageSelected.set(new WritableImage(width, height));
+            Image srcImage = imageView.getImage();
+            RectBuilder.copyImagePart(srcImage, imageSelected.get(), area);
+            area.setFill(new ImagePattern(imageSelected.get()));
+        });
+
     }
 
     public static FlowPane propertiesPane(Shape area2, Map<String, Double> maxMap, String... exclude) {

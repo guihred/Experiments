@@ -1,5 +1,6 @@
 package utils;
 
+import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
@@ -7,7 +8,7 @@ import javafx.scene.paint.Color;
 public interface DrawOnPoint {
 	void draw(int x, int y);
 
-    static int clamp(int value, int min, int max) {
+    static double clamp(double value, double min, double max) {
         if (Double.compare(value, min) < 0) {
             return min;
         }
@@ -17,7 +18,7 @@ public interface DrawOnPoint {
         return value;
     }
 
-    static double clamp(double value, double min, double max) {
+    static int clamp(int value, int min, int max) {
         if (Double.compare(value, min) < 0) {
             return min;
         }
@@ -67,16 +68,16 @@ public interface DrawOnPoint {
         return min <= y && y < max;
     }
 
-    static boolean withinImage(final double x, final double y, final WritableImage image) {
+    static boolean withinImage(final double x, final double y, final Image image) {
         return within(y, image.getHeight()) && within(x, image.getWidth());
+    }
+
+    static boolean withinImage(final int x, final int y, final Image image) {
+        return within(x, image.getWidth()) && within(y, image.getHeight());
     }
 
     static boolean withinImage(final int x, final int y, final int width, final int height) {
         return within(x, width) && within(y, height);
-    }
-
-    static boolean withinImage(final int x, final int y, final WritableImage image) {
-        return within(x, image.getWidth()) && within(y, image.getHeight());
     }
 
 }

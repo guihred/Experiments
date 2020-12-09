@@ -6,6 +6,7 @@ import static fxml.utils.JsonExtractor.readJsonFile;
 
 import extract.ExcelService;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -17,12 +18,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import simplebuilder.FileChooserBuilder;
-import simplebuilder.SimpleComboBoxBuilder;
-import simplebuilder.SimpleTableViewBuilder;
-import simplebuilder.SimpleTreeViewBuilder;
+import ml.graph.DataframeExplorer;
+import simplebuilder.*;
+import utils.CSVUtils;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
@@ -40,6 +42,8 @@ public class JsonViewer extends Application {
     private TableView<Map<String, String>> sideTable;
     @FXML
     private ComboBox<File> comboBox3;
+    @FXML
+    private TextField toCSV;
 
     public void addFile(File... filesToAdd) {
 
@@ -69,8 +73,7 @@ public class JsonViewer extends Application {
         SimpleTreeViewBuilder.of(tree).root(newMap("Root", null))
                 .onSelect(newValue -> onSelectTreeItem(list, sideTable, newValue)).build();
         SimpleComboBoxBuilder<File> onChange =
-                SimpleComboBoxBuilder.of(comboBox3).items(files)
-                .onChange((old, val) -> fileProp.set(val));
+                SimpleComboBoxBuilder.of(comboBox3).items(files).onChange((old, val) -> fileProp.set(val));
         fileProp.addListener((ob, old, val) -> CommonsFX.runInPlatform(() -> {
             if (val != null) {
                 onChange.select(val);
@@ -93,7 +96,18 @@ public class JsonViewer extends Application {
                 .onSelect(fileProp::set).openFileAction(e);
     }
 
-
+    @SuppressWarnings("unchecked")
+    public void onKeyReleased(KeyEvent k) throws IOException {
+        if (k.getCode() == KeyCode.ENTER) {
+            String[] split = toCSV.getText().split("[, ]+");
+            File value = comboBox3.getValue();
+            Map<String, String> mkae = JsonExtractor.makeMapFromJsonFile(value, split);
+            List<?> remap2 = JsonExtractor.remap(mkae);
+            File outFile = ResourceFXUtils.getOutFile("csv/" + value.getName().replaceAll("\\.json", ".csv"));
+            CSVUtils.appendLines(outFile, (List<Map<String, Object>>) remap2);
+            new SimpleDialogBuilder().bindWindow(comboBox3).show(DataframeExplorer.class).addStats(outFile);
+        }
+    }
 
     public void setFile(File filesToAdd) {
         fileProp.set(filesToAdd);
@@ -173,8 +187,7 @@ public class JsonViewer extends Application {
             list.clear();
             sideTable.getColumns().clear();
             addColumns(sideTable, Arrays.asList("Key", "Value"));
-            List<Map<String, String>> collect =
-                    map.entrySet().stream().map(e -> {
+            List<Map<String, String>> collect = map.entrySet().stream().map(e -> {
                 Map<String, String> newMap = newMap("Key", e.getKey());
                 newMap.put("Value", e.getValue());
                 return newMap;

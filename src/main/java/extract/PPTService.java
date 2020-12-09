@@ -97,7 +97,7 @@ public final class PPTService {
                 List<XDDFTextParagraph> paragraphs = textBox.getTextBody().getParagraphs();
                 for (XDDFTextParagraph paragraph : paragraphs) {
                     String text = paragraph.getText();
-                    Object object = replacementMap.get(text);
+                    Object object = replacementMap.getOrDefault(text, replacementMap.get(text.trim()));
                     if (object instanceof List<?>) {
                         List<?> object2 = (List<?>) object;
                         addImage(slide, ppt, object2);

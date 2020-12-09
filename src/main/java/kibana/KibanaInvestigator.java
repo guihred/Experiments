@@ -3,7 +3,6 @@ package kibana;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
-import extract.ExcelService;
 import extract.QuickSortML;
 import java.io.File;
 import java.util.Map;
@@ -13,10 +12,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import ml.graph.DataframeExplorer;
+import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
+import utils.CSVUtils;
 import utils.CommonsFX;
-import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.RunnableEx;
@@ -71,7 +72,8 @@ public class KibanaInvestigator extends Application {
 
     public void onActionKibanaScanParallel() {
         items.clear();
-        RunnableEx.runNewThread(() -> {
+        RunnableEx.runNewThread(() -> RunnableEx.measureTime("PARALLEL SCAN", () -> {
+
             CommonsFX.update(progressIndicator.progressProperty(), 0);
             ObservableList<String> items2 = filterList.getItems();
             items2.parallelStream().map(s -> {
@@ -86,14 +88,17 @@ public class KibanaInvestigator extends Application {
                 }
             }));
             CommonsFX.update(progressIndicator.progressProperty(), 1);
-
-        });
+        }));
     }
 
-    public void onExportExcel() {
-        File outFile = ResourceFXUtils.getOutFile("xlsx/kibana.xlsx");
-        ExcelService.getExcel(items, outFile);
-        ImageFXUtils.openInDesktop(outFile);
+
+    public void onOpenDataframe() {
+        RunnableEx.run(() -> {
+            TableView<Map<String, String>> table = commonTable;
+            File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() +  ".csv");
+            CSVUtils.saveToFile(table, ev);
+            new SimpleDialogBuilder().bindWindow(commonTable).show(DataframeExplorer.class).addStats(ev);
+        });
     }
 
     @Override
