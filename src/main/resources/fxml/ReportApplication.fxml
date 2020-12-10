@@ -28,8 +28,10 @@
 					GridPane.columnIndex="3" GridPane.rowIndex="1" />
 				<Button text="Make and _Edit Report" GridPane.columnIndex="4"
 					GridPane.rowIndex="1" onAction="#makeReportConsultasEditImages" />
-				<ProgressBar fx:id="progressBar" GridPane.columnIndex="5"
+				<ProgressBar fx:id="progressBar" prefWidth="500" GridPane.columnIndex="5" 
 					GridPane.rowIndex="1" GridPane.rowSpan="3" />
+				<Slider fx:id="zoom" GridPane.columnIndex="6" max="2" min="0.6" majorTickUnit="0.01" value="1" 
+                    GridPane.rowIndex="0" />
 			</children>
 		</GridPane>
 	</top>

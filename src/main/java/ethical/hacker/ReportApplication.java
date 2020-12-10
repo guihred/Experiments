@@ -54,6 +54,8 @@ public class ReportApplication extends Application {
     @FXML
     private Text loc;
     @FXML
+    private Slider zoom;
+    @FXML
     private ComboBox<Path> model;
 
     private Map<String, String> params = new LinkedHashMap<>();
@@ -61,6 +63,7 @@ public class ReportApplication extends Application {
 
     public void initialize() {
         ExtractUtils.insertProxyConfig();
+        CommonsFX.bindBidirectional(browser.zoomProperty(), zoom.valueProperty());
         WebEngine engine = browser.getEngine();
         Worker<Void> loadWorker = engine.getLoadWorker();
         engine.locationProperty().addListener((ob, old, val) -> loc.setText(StringUtils.abbreviate(val, 100)));
@@ -177,7 +180,7 @@ public class ReportApplication extends Application {
             if (v instanceof List) {
                 List<?> v2 = (List<?>) v;
                 return new SimpleComboBoxBuilder<>().items(v2.toArray())
-                        .onSelect(s -> params.put("\\$" + k, s.toString())).build();
+                        .onSelect(s -> params.put("\\$" + k, s.toString())).select(0).build();
             }
             TextField textField = new TextField();
             textField.textProperty().addListener((ob, old, val) -> params.put("\\$" + k, val));

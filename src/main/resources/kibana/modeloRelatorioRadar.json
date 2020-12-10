@@ -66,8 +66,11 @@
             "height": 0.3,
             "x": 0,
             "y": 0
-        },
+        }
+    ],
+    "Volume de Ataques barrados pelo WAF Timeline": [
         {
+            "zoom":1.05,
             "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/0cd081a0-88b9-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
             "name": "ataquesTimeline$dateInverted",
             "width": 1,

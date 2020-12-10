@@ -82,12 +82,18 @@ public class KibanaApi {
         Map<String, String> policiesSearch = makeKibanaSearch("policiesQuery.json", query, days, key);
         Map<String, String> accessesSearch = makeKibanaSearch("acessosQuery.json", query, days, key, "doc_count");
         Map<String, String> threatsSearch = makeKibanaSearch("threatQuery.json", query, days, key);
-        Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", query, days, key, "value");
-        destinationSearch.computeIfPresent("value",
-                (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
-        Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", query, days, "value");
-        totalBytesQuery.computeIfPresent("value",
-                (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
+        String valueCol = "value";
+        Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", query, days, key, valueCol);
+        convertToBytes(valueCol, destinationSearch);
+        String dateKey = "key_as_string";
+        Map<String, String> totalBytesQuery =
+                makeKibanaSearch("totalBytesQuery.json", query, days + 3, dateKey, valueCol);
+        convertToBytes(valueCol, totalBytesQuery);
+        removeDateZone(dateKey, totalBytesQuery);
+        Map<String, String> totalBytesSent =
+                makeKibanaSearch("paloAltoQuery.json", query, days + 3, dateKey, valueCol);
+        convertToBytes(valueCol, totalBytesSent);
+        removeDateZone(dateKey, totalBytesSent);
         Map<String, String> trafficSearch =
                 makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime", "country_code2");
         trafficSearch.computeIfPresent("ReceiveTime",
@@ -103,7 +109,8 @@ public class KibanaApi {
         fullScan.put("TOP Conexão FW", display(destinationSearch));
         fullScan.put("TOP conexões WEB", display(accessesSearch));
         fullScan.put("Ultimo Acesso", display(trafficSearch));
-        fullScan.put("Total Bytes", display(totalBytesQuery));
+        fullScan.put("Total Bytes Received", display(totalBytesQuery));
+        fullScan.put("Total Bytes Sent", display(totalBytesSent));
         LOG.info("KIBANA RESULT{}", fullScan);
         return fullScan;
     }
@@ -148,6 +155,37 @@ public class KibanaApi {
         }, new HashMap<>());
     }
 
+    public static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
+            int k) {
+        int l = 0;
+        for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
+            if (Objects.equals(linkedHashMap.get(keys.get(k) + l), collect2.get(k))) {
+                return;
+            }
+            if (!linkedHashMap.get(keys.get(k) + l).matches(regex)) {
+                break;
+            }
+        }
+
+        linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
+    }
+
+    public static Map<String, String> processPartialList(String regex, List<String> keys,
+            List<Map<String, String>> finalList, List<List<String>> partialList, Map<String, String> reference) {
+        if (partialList.isEmpty()) {
+            return reference;
+        }
+        for (List<String> list : partialList) {
+            Map<String, String> newMap = new LinkedHashMap<>(reference);
+            newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
+                    .map(Entry<String, String>::getKey).orElse(null));
+            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, list, newMap, k));
+            finalList.add(newMap);
+        }
+        partialList.clear();
+        return null;
+    }
+
     protected static String convertSearchKeywords(Map<String, String> search) {
         return search.entrySet().stream().map(e -> {
             if (e.getValue().contains("\n")) {
@@ -184,6 +222,11 @@ public class KibanaApi {
         return between > 1;
     }
 
+    private static void convertToBytes(String valueCol, Map<String, String> destinationSearch) {
+        destinationSearch.computeIfPresent(valueCol,
+                (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
+    }
+
     private static String display(Map<String, String> ob) {
         List<List<String>> collect =
                 ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
@@ -197,35 +240,9 @@ public class KibanaApi {
         return Stream.of(s.split("\n")).filter(l -> l.matches(regex)).findFirst().orElse("").replaceAll(regex, "$1");
     }
 
-    public static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
-            int k) {
-        int l = 0;
-        for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
-            if (Objects.equals(linkedHashMap.get(keys.get(k) + l), collect2.get(k))) {
-                return;
-            }
-            if (!linkedHashMap.get(keys.get(k) + l).matches(regex)) {
-                break;
-            }
-        }
-
-        linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
-    }
-
-    public static Map<String, String> processPartialList(String regex, List<String> keys,
-            List<Map<String, String>> finalList, List<List<String>> partialList, Map<String, String> reference) {
-        if (partialList.isEmpty()) {
-            return reference;
-        }
-        for (List<String> list : partialList) {
-            Map<String, String> newMap = new LinkedHashMap<>(reference);
-            newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
-                    .map(Entry<String, String>::getKey).orElse(null));
-            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, list, newMap, k));
-            finalList.add(newMap);
-        }
-        partialList.clear();
-        return null;
+    private static void removeDateZone(String dateKey, Map<String, String> totalBytesQuery) {
+        totalBytesQuery.computeIfPresent(dateKey,
+        (k1, v1) -> Stream.of(v1.split("\n")).map(s->s.replaceAll("T.+", "")).collect(Collectors.joining("\n")));
     }
 
     private static String removeExtension(File file) {

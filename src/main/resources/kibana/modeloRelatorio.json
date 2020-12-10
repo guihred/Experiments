@@ -12,7 +12,7 @@
         {
             "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/09fbe670-fa19-11e8-a078-93662b30045b?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:kuery,query:''),uiState:(),vis:(aggs:!(),params:(expression:'.es(index%3D*apache-prod*,q%3D%22clientip:$ip%20AND%20(%20dtptype:nginx%20OR%20dtptype:apache%20OR%20dtptype:varnish)%22,split%3Ddtpsistema.keyword:5).label(!'$1!',!'.*%3E.*:(.*)%3E.*!')',interval:auto),title:'%5BAcesso%20Web%5D%20Top%20Aplica%C3%A7%C3%B5es%20por%20n%C3%BAmero%20de%20requisi%C3%A7%C3%B5es%20-%20Timeline',type:timelion))",
             "name": "timeline$ip",
-            "width": 0.9,
+            "width": 1,
             "height": 1,
             "x": 0,
             "y": 0

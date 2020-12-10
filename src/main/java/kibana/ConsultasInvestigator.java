@@ -204,17 +204,16 @@ public class ConsultasInvestigator extends Application {
     public void onActionKibanaScan() {
         RunnableEx.runNewThread(() -> {
             CommonsFX.update(progress.progressProperty(), 0);
-            for (QueryObjects queryObjects : queryList) {
-                RunnableEx.measureTime(queryObjects.getQueryFile(), () -> {
-                    if (queryObjects.getLineChart() == null) {
-                        makeKibanaQuery(queryObjects);
+            queryList.parallelStream().forEach(query -> {
+                RunnableEx.measureTime(query.getQueryFile(), () -> {
+                    if (query.getLineChart() == null) {
+                        makeKibanaQuery(query);
                         return;
                     }
-                    makeTimelionQuery(queryObjects);
+                    makeTimelionQuery(query);
                 });
-
                 addProgress(1. / queryList.size());
-            }
+            });
             CommonsFX.update(progress.progressProperty(), 1);
         });
     }
@@ -259,7 +258,7 @@ public class ConsultasInvestigator extends Application {
     }
 
     private void addProgress(double d) {
-        CommonsFX.update(progress.progressProperty(), progress.getProgress() + d);
+        CommonsFX.addProgress(progress.progressProperty(), d);
     }
 
     private void addToFilter(String s) {

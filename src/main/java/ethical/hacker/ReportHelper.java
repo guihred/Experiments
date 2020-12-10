@@ -26,6 +26,7 @@ import paintexp.tool.RectBuilder;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
@@ -111,6 +112,7 @@ public final class ReportHelper {
     }
 
     public static File saveHtmlImage(WebView browser2, File out) {
+        LOG.info("SAVING to {}", out.getName());
         return SupplierEx.get(() -> ImageFXUtils.take(browser2, out));
     }
 
@@ -148,11 +150,15 @@ public final class ReportHelper {
 
         WebEngine engine = browser.getEngine();
         Property<Image> image = new SimpleObjectProperty<>();
+        Integer zoom = StringSigaUtils.toInteger(imageObj.getOrDefault("zoom", 1));
         String kibanaURL = Objects.toString(imageObj.get("url"), "");
 
         String finalURL = replaceString(params, kibanaURL);
-        CommonsFX.runInPlatform(() -> loadSite(engine, finalURL));
-        RunnableEx.measureTime("Load Site " + imageObj.get("name"), () -> {
+        CommonsFX.runInPlatform(() -> {
+            browser.setZoom(zoom);
+            loadSite(engine, finalURL);
+        });
+        RunnableEx.measureTime("Load Site " + replaceString(params, imageObj.get("name")), () -> {
             AtomicBoolean atomicBoolean = new AtomicBoolean(true);
             while (atomicBoolean.get()) {
                 RunnableEx.sleepSeconds(6);
