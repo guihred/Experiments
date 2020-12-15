@@ -4,7 +4,6 @@ import static java.util.stream.DoubleStream.concat;
 import static java.util.stream.DoubleStream.of;
 import static simplebuilder.SimpleTableViewBuilder.prefWidthColumns;
 
-import extract.QuickSortML;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,6 +22,7 @@ import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
+import utils.QuickSortML;
 import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;

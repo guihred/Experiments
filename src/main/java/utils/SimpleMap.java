@@ -1,4 +1,4 @@
-package fxml.utils;
+package utils;
 
 import java.util.LinkedHashMap;
 

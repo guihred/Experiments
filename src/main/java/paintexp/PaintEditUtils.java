@@ -9,6 +9,7 @@ import javafx.scene.shape.Rectangle;
 import paintexp.tool.*;
 import utils.ImageFXUtils;
 import utils.fx.PixelatedImageView;
+import utils.fx.RectBuilder;
 import utils.fx.ZoomableScrollPane;
 
 public final class PaintEditUtils {

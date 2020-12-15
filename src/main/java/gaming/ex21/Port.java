@@ -19,7 +19,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import simplebuilder.SimpleTextBuilder;
-import utils.RotateUtils;
+import utils.fx.RotateUtils;
 
 public class Port extends Group {
 

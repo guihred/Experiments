@@ -19,7 +19,7 @@ import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.apache.commons.lang3.StringUtils;
 import utils.ImageFXUtils;
-import utils.RotateUtils;
+import utils.fx.RotateUtils;
 
 public class WorldMapGraph extends Canvas {
     public static final int HEIGHT = 1200;

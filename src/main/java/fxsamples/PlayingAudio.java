@@ -24,8 +24,8 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import simplebuilder.SimpleCircleBuilder;
 import utils.CommonsFX;
-import utils.RotateUtils;
 import utils.ex.HasLogging;
+import utils.fx.RotateUtils;
 
 public class PlayingAudio extends Application {
     private static final Logger LOG = HasLogging.log();

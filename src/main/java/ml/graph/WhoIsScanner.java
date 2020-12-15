@@ -1,22 +1,18 @@
-package ethical.hacker;
+package ml.graph;
 
+import extract.CIDRUtils;
 import extract.JsoupUtils;
 import extract.PhantomJSUtils;
+import extract.VirusTotalApi;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-import ml.data.*;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -32,13 +28,13 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class WhoIsScanner {
-    private static final String REVERSE_DNS = "HostName";
+    public static final String REVERSE_DNS = "HostName";
 
     private static final String SANS_API_URL = "http://isc.sans.edu/api/ip/";
 
     public static final String IP_REGEX = "^\\d+\\.\\d+\\.\\d+\\.\\d+$";
 
-    private static final Logger LOG = HasLogging.log();
+    public static final Logger LOG = HasLogging.log();
     private String name = "";
     private String waitStr = "";
     private final Map<String, String> cookies = new HashMap<>();
@@ -78,7 +74,7 @@ public class WhoIsScanner {
     }
 
     public Map<String, String> getIpInformation(String ip) {
-        Map<String, String> ipInformation = getIpInformation(this, ip);
+        Map<String, String> ipInformation = WhoIsScanner.getIpInformation(this, ip);
         ipInformation.putIfAbsent("id", ip);
         LOG.info("{}", ipInformation);
         return ipInformation;
@@ -169,35 +165,6 @@ public class WhoIsScanner {
         return whoIsScanner.name(name).waitStr(waitStr).subFolder(subFolder).evaluateURL(url);
     }
 
-    public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn) {
-        return fillIPInformation(builder, ipColumn, new SimpleDoubleProperty(0));
-    }
-
-    public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn, DoubleProperty count) {
-        builder.filterOut(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(IP_REGEX));
-
-        WhoIsScanner whoIsScanner = new WhoIsScanner();
-        ObservableMap<String, Map<String, String>> ipInfoCache = FXCollections.observableHashMap();
-        builder.addCrossFeature("", e -> {
-            Map<String, String> hashMap = new LinkedHashMap<>();
-            hashMap.put("Network", getFromCache(whoIsScanner, ipInfoCache, e, "network"));
-            hashMap.put("Owner", getFromCache(whoIsScanner, ipInfoCache, e, "asname", "as_owner"));
-            RunnableEx.runIf(getFromCache(whoIsScanner, ipInfoCache, e, REVERSE_DNS),
-                    s -> hashMap.put("Reverse DNS", s));
-            hashMap.put("Country", getFromCache(whoIsScanner, ipInfoCache, e, "country", "ascountry"));
-            return hashMap;
-        }, ipColumn);
-        DataframeML build = builder.build(count);
-        build.removeCol("");
-        return build;
-    }
-
-    public static DataframeML fillIPInformation(File csvFile) {
-        DataframeBuilder builder = DataframeBuilder.builder(csvFile);
-        String ipColumn = getIPColumn(builder);
-        return fillIPInformation(builder, ipColumn);
-    }
-
     public static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String ip) {
         if (ip.matches("^10\\..+")) {
             Map<String, String> hashMap = new HashMap<>();
@@ -213,41 +180,8 @@ public class WhoIsScanner {
         return first;
     }
 
-    public static String getKey(Map<String, String> first, String... keys) {
-        return Stream.of(keys).map(first::get).filter(Objects::nonNull).findFirst().orElse(null);
-
-    }
-
-    public static String getLastNumberField(BaseDataframe dataframe) {
-        List<String> numberCols = dataframe.getFormatMap().entrySet().stream().filter(e -> e.getValue() != null)
-                .filter(e -> Number.class.isAssignableFrom(e.getValue()))
-                .map(Entry<String, Class<? extends Comparable<?>>>::getKey).collect(Collectors.toList());
-        return numberCols.get(numberCols.size() - 1);
-    }
-
     public static String getReverseDNS(String ip) {
         return SupplierEx.get(() -> CIDRUtils.toInetAddress(ip).getCanonicalHostName());
-    }
-
-    public static String reorderAndLog(DataframeML dataframe, String numberField) {
-        DataframeUtils.sort(dataframe, numberField);
-        List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, "Network", numberField);
-        createSeries.forEach(s2 -> LOG.info("{}", s2));
-        List<Entry<Object, Double>> series = DataframeUtils.createSeries(dataframe, "Owner", numberField);
-        series.forEach(s1 -> LOG.info("{}", s1));
-        dataframe.removeCol("filters");
-        return DataframeUtils.toString(dataframe, 30);
-
-    }
-
-    private static String getFromCache(WhoIsScanner whoIsScanner, ObservableMap<String, Map<String, String>> ipInfo,
-            Object[] e, String... string) {
-        return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> getIpInformation(whoIsScanner, ip)), string);
-    }
-
-    private static String getIPColumn(DataframeBuilder builder) {
-        return builder.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
-                .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
     }
 
 }

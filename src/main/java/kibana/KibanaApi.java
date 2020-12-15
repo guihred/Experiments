@@ -3,9 +3,8 @@ package kibana;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
-import ethical.hacker.WhoIsScanner;
+import extract.JsonExtractor;
 import extract.PhantomJSUtils;
-import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +17,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.Property;
+import ml.graph.IPFill;
+import ml.graph.WhoIsScanner;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CommonsFX;
@@ -95,7 +96,7 @@ public class KibanaApi {
         fullScan.put("Provedor",
                 () -> {
                     Map<String, String> ipInformation = whoIsScanner.getIpInformation(query);
-                    return Objects.toString(WhoIsScanner.getKey(ipInformation, "as_owner", "HostName"), "");
+                    return Objects.toString(IPFill.getKey(ipInformation, "as_owner", "HostName"), "");
                 });
         fullScan.put("Geolocation",
                 () -> {
@@ -187,37 +188,6 @@ public class KibanaApi {
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>());
-    }
-
-    public static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
-            int k) {
-        int l = 0;
-        for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
-            if (Objects.equals(linkedHashMap.get(keys.get(k) + l), collect2.get(k))) {
-                return;
-            }
-            if (!linkedHashMap.get(keys.get(k) + l).matches(regex)) {
-                break;
-            }
-        }
-
-        linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
-    }
-
-    public static Map<String, String> processPartialList(String regex, List<String> keys,
-            List<Map<String, String>> finalList, List<List<String>> partialList, Map<String, String> reference) {
-        if (partialList.isEmpty()) {
-            return reference;
-        }
-        for (List<String> list : partialList) {
-            Map<String, String> newMap = new LinkedHashMap<>(reference);
-            newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
-                    .map(Entry<String, String>::getKey).orElse(null));
-            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, list, newMap, k));
-            finalList.add(newMap);
-        }
-        partialList.clear();
-        return null;
     }
 
     protected static String convertSearchKeywords(Map<String, String> search) {

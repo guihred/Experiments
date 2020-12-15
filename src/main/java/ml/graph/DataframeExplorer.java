@@ -1,7 +1,5 @@
 package ml.graph;
 
-import ethical.hacker.WhoIsScanner;
-import extract.ExcelService;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +21,7 @@ import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import utils.CSVUtils;
 import utils.CommonsFX;
+import utils.ExcelService;
 import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
@@ -129,7 +128,7 @@ public class DataframeExplorer extends ExplorerVariables {
             }
             String ipColumn = selectedItem.getKey();
             DataframeBuilder builder = builderWithQuestions(getDataframe().getFile(), questions);
-            setDataframe(WhoIsScanner.fillIPInformation(builder, ipColumn, progress.progressProperty()));
+            setDataframe(IPFill.fillIPInformation(builder, ipColumn, progress.progressProperty()));
             File outFile = ResourceFXUtils.getOutFile("csv/" + getDataframe().getFile().getName());
             LOG.info("File {} SAVING IN", outFile);
             DataframeUtils.save(getDataframe(), outFile);

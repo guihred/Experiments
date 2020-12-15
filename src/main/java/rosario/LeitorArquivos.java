@@ -1,7 +1,7 @@
 package rosario;
 
-import static extract.ExcelService.getWorkbook;
-import static extract.ExcelService.isExcel;
+import static utils.ExcelService.getWorkbook;
+import static utils.ExcelService.isExcel;
 import static utils.StringSigaUtils.intValue;
 
 import extract.PdfUtils;

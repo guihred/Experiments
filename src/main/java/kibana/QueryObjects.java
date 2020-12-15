@@ -4,8 +4,7 @@ import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
 import com.google.common.collect.ImmutableMap;
-import extract.QuickSortML;
-import fxml.utils.JsonExtractor;
+import extract.JsonExtractor;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -29,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import simplebuilder.ListHelper;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
+import utils.QuickSortML;
 import utils.ex.ConsumerEx;
 
 public class QueryObjects {

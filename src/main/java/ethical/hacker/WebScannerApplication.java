@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import extract.HashVerifier;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -14,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import ml.graph.WhoIsScanner;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import simplebuilder.SimpleTreeViewBuilder;

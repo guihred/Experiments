@@ -1,5 +1,6 @@
 package ethical.hacker;
 
+import extract.CIDRUtils;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;

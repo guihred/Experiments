@@ -1,6 +1,6 @@
 package kibana;
 
-import fxml.utils.JsonExtractor;
+import extract.JsonExtractor;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;

@@ -19,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import utils.CommonsFX;
+import utils.fx.RectBuilder;
 
 public class BrushTool extends PaintTool {
 

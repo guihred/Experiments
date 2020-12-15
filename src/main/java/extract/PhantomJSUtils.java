@@ -1,6 +1,5 @@
 package extract;
 
-import ethical.hacker.HashVerifier;
 import gui.ava.html.image.generator.HtmlImageGenerator;
 import java.awt.Dimension;
 import java.io.BufferedReader;

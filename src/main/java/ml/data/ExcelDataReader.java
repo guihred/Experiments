@@ -1,6 +1,5 @@
 package ml.data;
 
-import extract.ExcelService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
@@ -9,6 +8,7 @@ import java.util.stream.IntStream;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
+import utils.ExcelService;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 

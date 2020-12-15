@@ -14,7 +14,7 @@ import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import utils.RotateUtils;
+import utils.fx.RotateUtils;
 
 public class SimpleScene3D extends Application {
     private static final double SCENE_WIDTH = 600;

@@ -22,7 +22,7 @@ import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.RotateUtils;
+import utils.fx.RotateUtils;
 
 public class PhotoViewer extends Application {
     @FXML

@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import utils.MatrixSolver;
-import utils.RotateUtils;
+import utils.fx.RotateUtils;
 
 public class VoronoiRegion extends Group {
 

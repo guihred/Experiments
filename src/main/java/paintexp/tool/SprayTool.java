@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleSliderBuilder;
 import utils.PixelHelper;
 import utils.ex.HasLogging;
+import utils.fx.RectBuilder;
 
 public class SprayTool extends PaintTool {
 

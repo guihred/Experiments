@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import utils.*;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
+import utils.fx.RotateUtils;
 import utils.fx.Xform;
 
 public class JewelViewer extends Application {

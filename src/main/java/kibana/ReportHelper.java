@@ -1,4 +1,4 @@
-package ethical.hacker;
+package kibana;
 
 import static utils.StringSigaUtils.toDouble;
 
@@ -22,7 +22,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import paintexp.tool.RectBuilder;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
@@ -30,6 +29,7 @@ import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
+import utils.fx.RectBuilder;
 
 public final class ReportHelper {
     private static final Logger LOG = HasLogging.log();

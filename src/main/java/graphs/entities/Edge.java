@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
-import utils.RotateUtils;
+import utils.fx.RotateUtils;
 
 public class Edge extends Group implements Comparable<Edge> {
 

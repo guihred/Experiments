@@ -1,11 +1,10 @@
 package rosario;
 
-import static extract.ExcelService.isExcel;
 import static rosario.LeitorArquivos.*;
 import static simplebuilder.SimpleTableViewBuilder.newCellFactory;
+import static utils.ExcelService.isExcel;
 import static utils.ex.RunnableEx.runIf;
 
-import extract.ExcelService;
 import java.awt.Desktop;
 import java.io.File;
 import java.util.*;
@@ -27,6 +26,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
+import utils.ExcelService;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 

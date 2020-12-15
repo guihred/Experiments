@@ -16,13 +16,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import paintexp.tool.AreaTool;
 import paintexp.tool.PaintModel;
-import paintexp.tool.RectBuilder;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleToggleGroupBuilder;
 import simplebuilder.StageHelper;
 import utils.ImageFXUtils;
 import utils.fx.PixelatedImageView;
+import utils.fx.RectBuilder;
 
 public final class PaintViewUtils {
     private static final String PERCENTAGE_FIELD = "Percentage";

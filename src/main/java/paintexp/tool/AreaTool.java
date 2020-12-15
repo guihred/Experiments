@@ -17,6 +17,7 @@ import javafx.scene.shape.Rectangle;
 import simplebuilder.SimpleRectangleBuilder;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
+import utils.fx.RectBuilder;
 
 public abstract class AreaTool extends PaintTool {
     protected WritableImage imageSelected;

@@ -14,11 +14,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import paintexp.tool.PaintModel;
-import paintexp.tool.RectBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
+import utils.fx.RectBuilder;
 
 public class AdjustImageController {
     private PaintModel paintModel;

@@ -1,7 +1,5 @@
-package ethical.hacker;
+package extract;
 
-import extract.PhantomJSUtils;
-import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;

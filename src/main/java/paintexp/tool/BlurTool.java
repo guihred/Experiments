@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
 import utils.PixelHelper;
+import utils.fx.RectBuilder;
 
 public class BlurTool extends PaintTool {
 

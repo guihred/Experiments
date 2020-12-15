@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import simplebuilder.SimpleFadeTransitionBuilder;
-import utils.RotateUtils;
+import utils.fx.RotateUtils;
 
 public class EdgeCatan extends Group {
 

@@ -9,6 +9,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import utils.fx.RectBuilder;
 
 public class PencilTool extends PaintTool {
 

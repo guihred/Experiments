@@ -3,7 +3,6 @@ package kibana;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
-import extract.QuickSortML;
 import java.io.File;
 import java.util.Map;
 import javafx.application.Application;
@@ -18,10 +17,7 @@ import ml.graph.DataframeExplorer;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.CSVUtils;
-import utils.CommonsFX;
-import utils.ResourceFXUtils;
-import utils.StringSigaUtils;
+import utils.*;
 import utils.ex.RunnableEx;
 
 public class KibanaInvestigator extends Application {

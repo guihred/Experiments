@@ -10,8 +10,6 @@ import static kibana.QueryObjects.CLIENT_IP_QUERY;
 import static kibana.QueryObjects.URL_QUERY;
 import static utils.StringSigaUtils.toDouble;
 
-import ethical.hacker.WhoIsScanner;
-import extract.ExcelService;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,14 +25,13 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import ml.graph.DataframeExplorer;
+import ml.graph.IPFill;
+import ml.graph.WhoIsScanner;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
-import utils.CSVUtils;
-import utils.CommonsFX;
-import utils.ImageFXUtils;
-import utils.ResourceFXUtils;
+import utils.*;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -141,8 +138,8 @@ public class ConsultasInvestigator extends Application {
                     Map<String,
                             Double> collect = whoIsInfo.stream()
                                     .collect(Collectors.groupingBy(
-                                            m -> WhoIsScanner.getKey(m, "as_owner", "") + "\t"
-                                                    + WhoIsScanner.getKey(m, "network", "id"),
+                                            m -> IPFill.getKey(m, "as_owner", "") + "\t"
+                                                    + IPFill.getKey(m, "network", "id"),
                                             Collectors.summingDouble(m -> getNumber(numberCol, m))));
                     DoubleSummaryStatistics summaryStatistics =
                             collect.values().stream().mapToDouble(e -> e).summaryStatistics();

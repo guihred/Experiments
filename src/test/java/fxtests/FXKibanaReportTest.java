@@ -1,8 +1,8 @@
 package fxtests;
 
-import ethical.hacker.ReportApplication;
 import kibana.ConsultasInvestigator;
 import kibana.KibanaApi;
+import kibana.ReportApplication;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;

@@ -14,7 +14,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import utils.CommonsFX;
 import utils.ExtractUtils;
-import utils.RotateUtils;
+import utils.fx.RotateUtils;
 
 /**
  *

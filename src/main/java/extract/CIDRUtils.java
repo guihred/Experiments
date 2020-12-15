@@ -1,6 +1,5 @@
-package ethical.hacker;
+package extract;
 
-import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;

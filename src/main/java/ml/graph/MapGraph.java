@@ -21,7 +21,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import ml.data.Country;
 import utils.ResourceFXUtils;
-import utils.RotateUtils;
+import utils.fx.RotateUtils;
 
 public class MapGraph extends Application {
     private static final int FLAG_HEIGHT = 72;

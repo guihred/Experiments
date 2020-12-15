@@ -6,7 +6,6 @@ import static utils.StringSigaUtils.floatFormating;
 import static utils.StringSigaUtils.format;
 import static utils.StringSigaUtils.intFormating;
 
-import extract.QuickSortML;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
@@ -21,6 +20,7 @@ import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
 import org.slf4j.Logger;
 import utils.CSVUtils;
+import utils.QuickSortML;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.FunctionEx;

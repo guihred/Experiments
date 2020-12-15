@@ -22,6 +22,7 @@ import simplebuilder.SimpleSliderBuilder;
 import utils.CommonsFX;
 import utils.CustomList;
 import utils.PixelHelper;
+import utils.fx.RectBuilder;
 
 public class WandTool extends AreaTool {
 

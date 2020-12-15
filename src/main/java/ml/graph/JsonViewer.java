@@ -1,10 +1,10 @@
 
-package fxml.utils;
+package ml.graph;
 
-import static fxml.utils.JsonExtractor.newMap;
-import static fxml.utils.JsonExtractor.readJsonFile;
+import static extract.JsonExtractor.newMap;
+import static extract.JsonExtractor.readJsonFile;
 
-import extract.ExcelService;
+import extract.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -22,12 +22,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import ml.graph.DataframeExplorer;
 import simplebuilder.*;
-import utils.CSVUtils;
-import utils.CommonsFX;
-import utils.ImageFXUtils;
-import utils.ResourceFXUtils;
+import utils.*;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
@@ -104,9 +100,8 @@ public class JsonViewer extends Application {
         if (k.getCode() == KeyCode.ENTER) {
             String text = toCSV.getText();
             String[] split2 = text.split(":");
-            String[] split = split2[0].split("[, ]+");
             File value = comboBox3.getValue();
-            Map<String, String> mkae = JsonExtractor.makeMapFromJsonFile(value, split);
+            Map<String, String> mkae = JsonExtractor.makeMapFromJsonFile(value, split2[0].split("[, ]+"));
             List<?> remap2 = JsonExtractor.remap(mkae, text.contains(":") ? split2[1] : "");
             File outFile = ResourceFXUtils.getOutFile("csv/" + value.getName().replaceAll("\\.json", ".csv"));
             CSVUtils.appendLines(outFile, (List<Map<String, Object>>) remap2);

@@ -1,8 +1,8 @@
-package ethical.hacker;
+package kibana;
 
+import extract.JsonExtractor;
 import extract.PPTService;
 import extract.WordService;
-import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -29,7 +29,6 @@ import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import kibana.KibanaApi;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.SimpleComboBoxBuilder;
@@ -39,6 +38,7 @@ import simplebuilder.SimpleVBoxBuilder;
 import utils.*;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
+import utils.fx.RotateUtils;
 
 public class ReportApplication extends Application {
 

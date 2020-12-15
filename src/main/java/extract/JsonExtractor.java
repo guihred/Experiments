@@ -1,4 +1,4 @@
-package fxml.utils;
+package extract;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,11 +10,11 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import kibana.KibanaApi;
 import org.apache.commons.lang3.StringUtils;
 import org.nd4j.shade.jackson.databind.JsonNode;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
 import simplebuilder.SimpleTextBuilder;
+import utils.SimpleMap;
 import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
@@ -22,6 +22,37 @@ import utils.ex.RunnableEx;
 public final class JsonExtractor {
 
     private JsonExtractor() {
+    }
+
+    public static Map<String, String> processPartialList(String regex, List<String> keys,
+            List<Map<String, String>> finalList, List<List<String>> partialList, Map<String, String> reference) {
+        if (partialList.isEmpty()) {
+            return reference;
+        }
+        for (List<String> list : partialList) {
+            Map<String, String> newMap = new LinkedHashMap<>(reference);
+            newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
+                    .map(Entry<String, String>::getKey).orElse(null));
+            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, list, newMap, k));
+            finalList.add(newMap);
+        }
+        partialList.clear();
+        return null;
+    }
+
+    public static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
+            int k) {
+        int l = 0;
+        for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
+            if (Objects.equals(linkedHashMap.get(keys.get(k) + l), collect2.get(k))) {
+                return;
+            }
+            if (!linkedHashMap.get(keys.get(k) + l).matches(regex)) {
+                break;
+            }
+        }
+    
+        linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
     }
 
     public static <T> T access(Object root, Class<T> cl, Object... param) {
@@ -165,15 +196,15 @@ public final class JsonExtractor {
             if (collect2.stream().anyMatch(s -> s.matches(regex))) {
                 reference = new LinkedHashMap<>();
                 Map<String, String> m = reference;
-                IntStream.range(0, keys.size()).forEach(k -> KibanaApi.merge(regex, keys, collect2, m, k));
-                reference = KibanaApi.processPartialList(regex, keys, finalList, partialList, reference);
+                IntStream.range(0, keys.size()).forEach(k -> JsonExtractor.merge(regex, keys, collect2, m, k));
+                reference = JsonExtractor.processPartialList(regex, keys, finalList, partialList, reference);
             } else if (reference == null) {
                 partialList.add(collect2);
             } else {
                 Map<String, String> newMap = new LinkedHashMap<>(reference);
                 newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
                         .map(Entry<String, String>::getKey).orElse(null));
-                IntStream.range(0, keys.size()).forEach(k -> KibanaApi.merge(regex, keys, collect2, newMap, k));
+                IntStream.range(0, keys.size()).forEach(k -> JsonExtractor.merge(regex, keys, collect2, newMap, k));
                 finalList.add(newMap);
             }
     
@@ -274,6 +305,13 @@ public final class JsonExtractor {
                 ob.merge(key, value,
                         (o, n) -> Stream.of(o, n).filter(StringUtils::isNotBlank)
                         .collect(Collectors.joining("\n")));
+                int orElse = ob.values().stream().mapToInt(s -> s.split("\n").length).max().orElse(0);
+                ob.entrySet().stream().filter(e -> e.getValue().split("\n").length < orElse - 1).forEach(e -> {
+                    String[] value2 = e.getValue().split("\n");
+                    ob.merge(e.getKey(), value2[value2.length - 1], (o, n) -> Stream.of(o, n)
+                            .filter(StringUtils::isNotBlank).collect(Collectors.joining("\n")));
+                });
+
             }
             if (iterator.hasNext()) {
                 yaml.append(",");

@@ -1,4 +1,4 @@
-package ethical.hacker;
+package extract;
 
 import java.io.File;
 import java.io.IOException;

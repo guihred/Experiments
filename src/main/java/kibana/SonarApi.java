@@ -1,8 +1,8 @@
 package kibana;
 
 import com.google.common.collect.ImmutableMap;
+import extract.JsonExtractor;
 import extract.PhantomJSUtils;
-import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;

@@ -1,4 +1,4 @@
-package utils;
+package utils.fx;
 
 
 import static utils.DrawOnPoint.getWithinRange;
@@ -26,7 +26,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
-import paintexp.tool.RectBuilder;
+import utils.DrawOnPoint;
+import utils.ImageFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.RunnableEx;
 
