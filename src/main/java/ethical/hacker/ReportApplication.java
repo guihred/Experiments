@@ -32,7 +32,6 @@ import javafx.stage.Stage;
 import kibana.KibanaApi;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import paintexp.tool.PaintTool;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
@@ -143,7 +142,7 @@ public class ReportApplication extends Application {
                     (ob, old, val) -> imageView
                             .setFitWidth((1 - val.doubleValue()) * 0.9 * imageView.getScene().getWidth()));
 
-            PaintTool.moveArea(stackPane, rectangle, imageView,
+            RotateUtils.moveArea(stackPane, rectangle, imageView,
                     img -> onImageSelected(mapaSubstituicao, reportFile, build, img));
             CommonsFX.runInPlatform(() -> {
                 new SimpleDialogBuilder().bindWindow(browser).title("Crop Images").node(pane).displayDialog();

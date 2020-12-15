@@ -1,36 +1,26 @@
 package paintexp.tool;
 
-import static utils.DrawOnPoint.getWithinRange;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.beans.binding.DoubleExpression;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Slider;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import utils.ClassReflectionUtils;
-import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
-import utils.ex.ConsumerEx;
 import utils.ex.RunnableEx;
 
 public abstract class PaintTool extends Group implements CommonTool {
@@ -174,73 +164,6 @@ public abstract class PaintTool extends Group implements CommonTool {
         }
 
         return true;
-    }
-
-    public static void moveArea(StackPane stackPane, Rectangle area, ImageView imageView,
-            ConsumerEx<Image> onImageCropped) {
-        DoubleProperty initialX = new SimpleDoubleProperty(0);
-        DoubleProperty initialY = new SimpleDoubleProperty(0);
-        stackPane.setOnMousePressed(e -> {
-            initialX.set(e.getX());
-            initialY.set(e.getY());
-            area.setStroke(Color.BLACK);
-        });
-        stackPane.setOnKeyReleased(e -> {
-            KeyCode code = e.getCode();
-            if (code == KeyCode.A && e.isControlDown()) {
-                Bounds bounds = imageView.getBoundsInLocal();
-                area.setLayoutX(0);
-                area.setLayoutY(0);
-                int width = (int) bounds.getWidth();
-                int height = (int) bounds.getHeight();
-                area.setWidth(width);
-                area.setHeight(height);
-                Image image = imageView.getImage();
-                WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(), image.getHeight());
-                double p = srcImage.getWidth() / imageView.getFitWidth();
-                double x = area.getLayoutX() * p;
-                double y = area.getLayoutY() * p;
-                double width1 = width * p;
-                double height1 = height * p;
-                WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
-                RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage,
-                        imageSelected, Color.TRANSPARENT);
-                ConsumerEx.accept(onImageCropped, imageSelected);
-                area.setStroke(Color.TRANSPARENT);
-
-            }
-        });
-        stackPane.setOnMouseDragged(e -> {
-            double x0 = e.getX();
-            double y0 = e.getY();
-            Bounds image = imageView.getBoundsInLocal();
-            double width = image.getWidth();
-            double height = image.getHeight();
-            double x = getWithinRange(x0, 0, width);
-            double y = getWithinRange(y0, 0, height);
-            area.setLayoutX(Math.min(x, initialX.get()));
-            area.setLayoutY(Math.min(y, initialY.get()));
-            area.setWidth(Math.abs(x - initialX.get()));
-            area.setHeight(Math.abs(y - initialY.get()));
-        });
-        stackPane.setOnMouseReleased(e -> {
-            int width = Math.max(1, (int) area.getWidth());
-            int height = Math.max(1, (int) area.getHeight());
-            Image image = imageView.getImage();
-            WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(),
-                    image.getHeight());
-            double p = srcImage.getWidth() / imageView.getFitWidth();
-            double x = area.getLayoutX() * p;
-            double y = area.getLayoutY() * p;
-            double width1 = width * p;
-            double height1 = height * p;
-            WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
-            RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage,
-                    imageSelected, Color.TRANSPARENT);
-            ConsumerEx.accept(onImageCropped, imageSelected);
-            area.setStroke(Color.TRANSPARENT);
-        });
-
     }
 
     public static FlowPane propertiesPane(Shape area2, Map<String, Double> maxMap, String... exclude) {

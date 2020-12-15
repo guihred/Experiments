@@ -1,6 +1,7 @@
 package utils;
 
 
+import static utils.DrawOnPoint.getWithinRange;
 import static utils.ex.RunnableEx.runIf;
 
 import java.util.Arrays;
@@ -9,10 +10,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -20,6 +26,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+import paintexp.tool.RectBuilder;
 import utils.ex.ConsumerEx;
 import utils.ex.RunnableEx;
 
@@ -30,6 +37,72 @@ public final class RotateUtils {
 
     private RotateUtils() {
 
+    }
+    public static void moveArea(StackPane stackPane, Rectangle area, ImageView imageView,
+            ConsumerEx<Image> onImageCropped) {
+        DoubleProperty initialX = new SimpleDoubleProperty(0);
+        DoubleProperty initialY = new SimpleDoubleProperty(0);
+        stackPane.setOnMousePressed(e -> {
+            initialX.set(e.getX());
+            initialY.set(e.getY());
+            area.setStroke(Color.BLACK);
+        });
+        stackPane.setOnKeyReleased(e -> {
+            KeyCode code = e.getCode();
+            if (code == KeyCode.A && e.isControlDown()) {
+                Bounds bounds = imageView.getBoundsInLocal();
+                area.setLayoutX(0);
+                area.setLayoutY(0);
+                int width = (int) bounds.getWidth();
+                int height = (int) bounds.getHeight();
+                area.setWidth(width);
+                area.setHeight(height);
+                Image image = imageView.getImage();
+                WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(), image.getHeight());
+                double p = srcImage.getWidth() / imageView.getFitWidth();
+                double x = area.getLayoutX() * p;
+                double y = area.getLayoutY() * p;
+                double width1 = width * p;
+                double height1 = height * p;
+                WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
+                RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage,
+                        imageSelected, Color.TRANSPARENT);
+                ConsumerEx.accept(onImageCropped, imageSelected);
+                area.setStroke(Color.TRANSPARENT);
+    
+            }
+        });
+        stackPane.setOnMouseDragged(e -> {
+            double x0 = e.getX();
+            double y0 = e.getY();
+            Bounds image = imageView.getBoundsInLocal();
+            double width = image.getWidth();
+            double height = image.getHeight();
+            double x = getWithinRange(x0, 0, width);
+            double y = getWithinRange(y0, 0, height);
+            area.setLayoutX(Math.min(x, initialX.get()));
+            area.setLayoutY(Math.min(y, initialY.get()));
+            area.setWidth(Math.abs(x - initialX.get()));
+            area.setHeight(Math.abs(y - initialY.get()));
+        });
+        stackPane.setOnMouseReleased(e -> {
+            int width = Math.max(1, (int) area.getWidth());
+            int height = Math.max(1, (int) area.getHeight());
+            Image image = imageView.getImage();
+            WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(),
+                    image.getHeight());
+            double p = srcImage.getWidth() / imageView.getFitWidth();
+            double x = area.getLayoutX() * p;
+            double y = area.getLayoutY() * p;
+            double width1 = width * p;
+            double height1 = height * p;
+            WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
+            RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage,
+                    imageSelected, Color.TRANSPARENT);
+            ConsumerEx.accept(onImageCropped, imageSelected);
+            area.setStroke(Color.TRANSPARENT);
+        });
+    
     }
     public static double getAngle(Line line) {
         return getAngle(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());

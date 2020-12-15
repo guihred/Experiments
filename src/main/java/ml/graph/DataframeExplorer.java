@@ -107,6 +107,18 @@ public class DataframeExplorer extends ExplorerVariables {
         }
     }
 
+    public void onActionAddMinus() {
+        QuestionType type = questType.getSelectionModel().getSelectedItem();
+        Entry<String, DataframeStatisticAccumulator> selectedItem = getSelected(headersCombo);
+        if (type != null && selectedItem != null) {
+            String colName = selectedItem.getKey();
+            String text2 = text.getText();
+            Object tryNumber = getQueryObject(type, colName, text2);
+            Question question = new Question(colName, tryNumber, type, true);
+            questions.add(question);
+        }
+    }
+
     public void onActionFillIP() {
         currentThread = RunnableEx.runNewThread(() -> {
             LOG.info("FILLING {} IPS", getDataframe().getFile().getName());
