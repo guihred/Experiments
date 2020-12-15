@@ -5,11 +5,11 @@ import extract.WordService;
 import fxml.utils.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
@@ -19,6 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -87,19 +88,13 @@ public class ReportApplication extends Application {
             params.put("\\$currentMonth", DateFormatUtils.currentTime("MMMM yyyy"));
             params.put("\\$date", DateFormatUtils.currentDate());
             String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
-            String extension = replaceString.replaceAll(".+\\.(\\w+)$", "$1");
+            String extension = getExtension(replaceString);
             File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
             addGeridInfo(mapaSubstituicao);
             ReportHelper.addParameters(mapaSubstituicao, params, browser, progressBar.progressProperty());
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
-            String modelUsed = mapaSubstituicao.get("model").toString();
-            if ("pptx".equals(extension)) {
-                PPTService.getPowerPoint(mapaSubstituicao, modelUsed, reportFile);
-            } else {
-                WordService.getWord(mapaSubstituicao, modelUsed, reportFile);
-            }
-            ImageFXUtils.openInDesktop(reportFile);
+            finalizeReport(mapaSubstituicao, reportFile);
 
         });
     }
@@ -115,7 +110,7 @@ public class ReportApplication extends Application {
             params.put("\\$currentMonth", DateFormatUtils.currentTime("MMMM yyyy"));
             params.put("\\$date", DateFormatUtils.currentDate());
             String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
-            String extension = replaceString.replaceAll(".+\\.(\\w+)$", "$1");
+            String extension = getExtension(replaceString);
             File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
             addGeridInfo(mapaSubstituicao);
@@ -123,38 +118,37 @@ public class ReportApplication extends Application {
             ImageView imageView = new ImageView();
             imageView.setFitWidth(500);
             imageView.setPreserveRatio(true);
-            @SuppressWarnings("deprecation")
-            List<String> collect =
-                    mapaSubstituicao.values().stream().flatMap(ReportApplication::objectList).map(Image::impl_getUrl)
-                    .collect(Collectors.toList());
+            List<String> collect = mapaSubstituicao.values().stream().flatMap(ReportApplication::objectList)
+                    .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).collect(Collectors.toList());
 
             ListView<String> build = new SimpleListViewBuilder<String>()
-                    .onSelect((old, val) -> imageView.setImage(new Image(val)))
-                    .items(collect)
-                    .build();
+                    .onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(val))))
+                    .cellFactory((String st) -> st.replaceAll(".+/", ""))
+                    .onKey(KeyCode.DELETE, s -> {
+                        Path path = Paths.get(new URI(s));
+                        Files.deleteIfExists(path);
+                        SimpleDialogBuilder.closeStage(imageView);
+                        makeReportConsultasEditImages();
+                    })
+                    .items(collect).build();
             Rectangle rectangle = new Rectangle();
-            rectangle.setStroke(Color.BLACK);
+            rectangle.setStroke(Color.TRANSPARENT);
+            rectangle.setFill(Color.TRANSPARENT);
             StackPane stackPane = new StackPane(imageView, rectangle);
             rectangle.setManaged(false);
             imageView.setManaged(false);
             SplitPane pane = new SplitPane(build, stackPane);
-            // 190.106.134.86
-            stackPane.setOnKeyReleased(e -> PaintTool.moveArea(e, rectangle));
-            PaintTool.moveArea(stackPane, rectangle, imageView);
+
+            pane.getDividers().get(0).positionProperty().addListener(
+                    (ob, old, val) -> imageView
+                            .setFitWidth((1 - val.doubleValue()) * 0.9 * imageView.getScene().getWidth()));
+
+            PaintTool.moveArea(stackPane, rectangle, imageView,
+                    img -> onImageSelected(mapaSubstituicao, reportFile, build, img));
             CommonsFX.runInPlatform(() -> {
-                new SimpleDialogBuilder().bindWindow(browser)
-                        .node(pane)
-                        .displayDialog();
+                new SimpleDialogBuilder().bindWindow(browser).title("Crop Images").node(pane).displayDialog();
+                build.prefHeightProperty().bind(imageView.getScene().heightProperty());
             });
-            // LOG.info("APPLYING MAP {}", mapaSubstituicao);
-            // String modelUsed = mapaSubstituicao.get("model").toString();
-            // if ("pptx".equals(extension)) {
-            // PPTService.getPowerPoint(mapaSubstituicao, modelUsed, reportFile);
-            // } else {
-            // WordService.getWord(mapaSubstituicao, modelUsed, reportFile);
-            // }
-            // ImageFXUtils.openInDesktop(reportFile);
-            
         });
     }
 
@@ -202,11 +196,51 @@ public class ReportApplication extends Application {
         launch(args);
     }
 
+    private static void finalizeReport(Map<String, Object> mapaSubstituicao, File reportFile) {
+        String modelUsed = mapaSubstituicao.get("model").toString();
+        String extension = getExtension(reportFile.getName());
+        if ("pptx".equals(extension)) {
+            PPTService.getPowerPoint(mapaSubstituicao, modelUsed, reportFile);
+        } else {
+            WordService.getWord(mapaSubstituicao, modelUsed, reportFile);
+        }
+        ImageFXUtils.openInDesktop(reportFile);
+    }
+
+    private static String getExtension(String replaceString) {
+        return replaceString.replaceAll(".+\\.(\\w+)$", "$1");
+    }
+
     private static Stream<Image> objectList(Object e) {
         if (!(e instanceof Collection)) {
             return Stream.empty();
         }
         return ((Collection<?>) e).stream().filter(o -> o instanceof Image).map(Image.class::cast);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private static void onImageSelected(Map<String, Object> mapaSubstituicao, File reportFile, ListView<String> build,
+            Image img) {
+        String selectedItem = build.getSelectionModel().getSelectedItem();
+        Collection<Object> values = mapaSubstituicao.values();
+        for (Object e : values) {
+            if (e instanceof List) {
+                List<Object> collection = (List<Object>) e;
+                collection.stream()
+                        .filter(o -> o instanceof Image
+                                && Objects.equals(selectedItem, ClassReflectionUtils.invoke(o, "impl_getUrl")))
+                        .findFirst().ifPresent(o -> {
+                            int indexOf = collection.indexOf(o);
+                            collection.set(indexOf, img);
+                            build.getItems().remove(selectedItem);
+                        });
+            }
+        }
+        if (build.getItems().isEmpty()) {
+            LOG.info("APPLYING MAP {}", mapaSubstituicao);
+            finalizeReport(mapaSubstituicao, reportFile);
+            SimpleDialogBuilder.closeStage(build);
+        }
     }
 
 }

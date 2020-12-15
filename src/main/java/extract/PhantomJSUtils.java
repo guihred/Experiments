@@ -1,5 +1,6 @@
 package extract;
 
+import ethical.hacker.HashVerifier;
 import gui.ava.html.image.generator.HtmlImageGenerator;
 import java.awt.Dimension;
 import java.io.BufferedReader;
@@ -143,7 +144,8 @@ public final class PhantomJSUtils {
     }
 
     public static Image saveHtmlImage(String html) {
-        return SupplierEx.get(() -> saveHtmlImage(html, ResourceFXUtils.getOutFile("print/oi.png")));
+        return SupplierEx.get(() -> saveHtmlImage(html,
+                ResourceFXUtils.getOutFile("print/oi" + HashVerifier.getSha256Hash(html) + ".png")));
     }
 
     public static Image saveHtmlImage(String html, File file) {

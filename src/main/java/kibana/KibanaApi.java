@@ -17,8 +17,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.beans.property.Property;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
@@ -70,49 +72,81 @@ public class KibanaApi {
     }
 
     public static Map<String, String> kibanaFullScan(String query) {
-        return kibanaFullScan(query, 1);
+        return kibanaFullScan(query, 1, null);
     }
 
     public static Map<String, String> kibanaFullScan(String query, int days) {
+        return kibanaFullScan(query, days, null);
+
+    }
+    public static Map<String, String> kibanaFullScan(String query, int days, Property<Number> progress) {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
         }
         String key = "key";
-        makeKibanaSearch("wafQuery.json", query, days, key);
-        Map<String, String> policiesSearch = makeKibanaSearch("policiesQuery.json", query, days, key);
-        Map<String, String> accessesSearch = makeKibanaSearch("acessosQuery.json", query, days, key, "doc_count");
-        Map<String, String> threatsSearch = makeKibanaSearch("threatQuery.json", query, days, key);
+
         String valueCol = "value";
-        Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", query, days, key, valueCol);
-        convertToBytes(valueCol, destinationSearch);
         String dateKey = "key_as_string";
-        Map<String, String> totalBytesQuery =
-                makeKibanaSearch("totalBytesQuery.json", query, days + 3, dateKey, valueCol);
-        convertToBytes(valueCol, totalBytesQuery);
-        removeDateZone(dateKey, totalBytesQuery);
-        Map<String, String> totalBytesSent =
-                makeKibanaSearch("paloAltoQuery.json", query, days + 3, dateKey, valueCol);
-        convertToBytes(valueCol, totalBytesSent);
-        removeDateZone(dateKey, totalBytesSent);
-        Map<String, String> trafficSearch =
-                makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime", "country_code2");
-        trafficSearch.computeIfPresent("ReceiveTime",
-                (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
-        Map<String, String> ipInformation = new WhoIsScanner().getIpInformation(query);
-        Map<String, String> fullScan = new LinkedHashMap<>();
-        fullScan.put("IP", query);
-        fullScan.put("Provedor", Objects.toString(WhoIsScanner.getKey(ipInformation, "as_owner", "HostName"), ""));
+
+
+        WhoIsScanner whoIsScanner = new WhoIsScanner();
+        Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
+        fullScan.put("IP", () -> query);
+        fullScan.put("Provedor",
+                () -> {
+                    Map<String, String> ipInformation = whoIsScanner.getIpInformation(query);
+                    return Objects.toString(WhoIsScanner.getKey(ipInformation, "as_owner", "HostName"), "");
+                });
         fullScan.put("Geolocation",
-                Objects.toString(ipInformation.getOrDefault("country", trafficSearch.remove("country_code2"))));
-        fullScan.put("Bloqueio WAF", display(policiesSearch));
-        fullScan.put("Palo Alto Threat", display(threatsSearch));
-        fullScan.put("TOP Conexão FW", display(destinationSearch));
-        fullScan.put("TOP conexões WEB", display(accessesSearch));
-        fullScan.put("Ultimo Acesso", display(trafficSearch));
-        fullScan.put("Total Bytes Received", display(totalBytesQuery));
-        fullScan.put("Total Bytes Sent", display(totalBytesSent));
-        LOG.info("KIBANA RESULT{}", fullScan);
-        return fullScan;
+                () -> {
+                    Map<String, String> ipInformation = whoIsScanner.getIpInformation(query);
+                    return Objects
+                            .toString(ipInformation.getOrDefault("country", ""));
+                });
+        fullScan.put("Bloqueio WAF", () -> display(makeKibanaSearch("policiesQuery.json", query, days, key)));
+        fullScan.put("Palo Alto Threat", () -> display(makeKibanaSearch("threatQuery.json", query, days, key)));
+        fullScan.put("TOP Conexão FW", () -> {
+            Map<String, String> destinationSearch =
+                    makeKibanaSearch("destinationQuery.json", query, days, key, valueCol);
+            convertToBytes(valueCol, destinationSearch);
+            return display(destinationSearch);
+        });
+        fullScan.put("TOP conexões WEB",
+                () -> display(makeKibanaSearch("acessosQuery.json", query, days, key, "doc_count")));
+        fullScan.put("Ultimo Acesso", () -> {
+            Map<String, String> trafficSearch =
+                    makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime", "country_code2");
+            trafficSearch.computeIfPresent("ReceiveTime",
+                    (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
+            return display(trafficSearch);
+        });
+        fullScan.put("Total Bytes Received", () -> {
+            Map<String, String> totalBytesQuery =
+                    makeKibanaSearch("totalBytesQuery.json", query, days + 3, dateKey, valueCol);
+            convertToBytes(valueCol, totalBytesQuery);
+            removeDateZone(dateKey, totalBytesQuery);
+            return display(totalBytesQuery);
+        });
+        fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", query, days, key)));
+        fullScan.put("Total Bytes Sent", () -> {
+            Map<String, String> totalBytesSent =
+                    makeKibanaSearch("paloAltoQuery.json", query, days + 3, dateKey, valueCol);
+            convertToBytes(valueCol, totalBytesSent);
+            removeDateZone(dateKey, totalBytesSent);
+            return display(totalBytesSent);
+        });
+        Set<Entry<String, SupplierEx<String>>> entrySet = fullScan.entrySet();
+
+        Map<String, String> fullScan2 = new LinkedHashMap<>();
+        CommonsFX.update(progress, 0);
+        for (Entry<String, SupplierEx<String>> entry : entrySet) {
+            fullScan2.put(entry.getKey(), SupplierEx.get(entry.getValue()));
+            CommonsFX.addProgress(progress, 1. / entrySet.size());
+        }
+        LOG.info("KIBANA RESULT{}", fullScan2);
+        CommonsFX.update(progress, 1);
+
+        return fullScan2;
     }
 
     public static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
@@ -229,8 +263,14 @@ public class KibanaApi {
 
     private static String display(Map<String, String> ob) {
         List<List<String>> collect =
-                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+                ob.values().stream().map(s -> Stream.of(s.split("\n")).collect(Collectors.toList()))
+                        .collect(Collectors.toList());
         int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
+        collect.forEach(l -> {
+            if (l.size() < orElse) {
+                l.add(0, "\t");
+            }
+        });
         return IntStream.range(0, orElse).mapToObj(
                 j -> collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
                 .distinct().collect(Collectors.joining("\n"));

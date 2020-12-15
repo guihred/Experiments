@@ -53,7 +53,7 @@ public class QueryObjects {
     private TableView<Map<String, String>> table;
 
     private final ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
-    private final ObservableList<Series<Number, Number>> series = synchronizedObservableList(observableArrayList());
+    private final ObservableList<Series<Number, Number>> series = observableArrayList();
 
     private LineChart<Number, Number> lineChart;
 

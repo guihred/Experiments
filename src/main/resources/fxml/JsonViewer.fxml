@@ -7,6 +7,7 @@
 <?import simplebuilder.*?>
 <?import fxml.utils.*?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml" minHeight="400.0" minWidth="400.0">
 	<children>
 		<HBox>
@@ -28,12 +29,13 @@
 						<SimpleConverter name="name" />
 					</converter>
 				</ComboBox>
-				<TextField fx:id="toCSV" onKeyReleased="#onKeyReleased"/>
+				<TextField fx:id="toCSV" onKeyReleased="#onKeyReleased" />
+
 			</children>
 		</HBox>
 		<SplitPane fx:id="splitPane0" VBox.vgrow="ALWAYS">
 			<items>
-				<TreeView fx:id="tree" prefHeight="400.0" VBox.vgrow="ALWAYS">
+				<TreeView fx:id="tree" prefHeight="400.0" >
 					<root>
 						<TreeItem>
 							<value>
@@ -42,7 +44,10 @@
 						</TreeItem>
 					</root>
 				</TreeView>
-				<TableView fx:id="sideTable" prefHeight="400.0" />
+				<VBox>
+					<TableView fx:id="sideTable" prefHeight="400.0" VBox.vgrow="ALWAYS"/>
+					<TextField fx:id="search" />
+				</VBox>
 			</items>
 			<padding>
 				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />

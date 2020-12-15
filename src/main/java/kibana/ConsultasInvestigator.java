@@ -81,7 +81,7 @@ public class ConsultasInvestigator extends Application {
 
     private List<String> excludeOwners = Arrays.asList("CAIXA ECONOMICA FEDERAL",
             "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO", "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.",
-            "Google LLC");
+            "Google LLC", "BANCO MERCANTIL DO BRASIL S/A");
 
     public List<QueryObjects> getQueryList() {
         return queryList;

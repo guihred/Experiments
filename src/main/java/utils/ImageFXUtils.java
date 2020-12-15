@@ -34,7 +34,7 @@ public final class ImageFXUtils {
     private ImageFXUtils() {
     }
 
-    public static WritableImage copyImage(Image selectedImage, int width, int height) {
+    public static WritableImage copyImage(Image selectedImage, double width, double height) {
         int max = (int) Math.max(selectedImage.getWidth(), width);
         int max2 = (int) Math.max(selectedImage.getHeight(), height);
         WritableImage wr = new WritableImage(max, max2);

@@ -64,7 +64,9 @@ public final class PPTService {
         byte[] pictureData = SupplierEx.get(() -> ImageFXUtils.toByteArray(image));
         XSLFPictureData pd = ppt.addPicture(pictureData, PictureData.PictureType.PNG);
         XSLFPictureShape picture = slide.createPicture(pd);
-        picture.setAnchor(new Rectangle(60, 120, 600, 300));
+        int width = 600;
+        int height = (int) (image.getHeight() * width / image.getWidth());
+        picture.setAnchor(new Rectangle(60, 120, width, Math.min(300, height)));
     }
 
     private static void getPowerPoint(Map<String, Object> replacementMap, File arquivo, File outStream) {

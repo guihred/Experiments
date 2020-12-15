@@ -44,6 +44,8 @@ public class JsonViewer extends Application {
     private ComboBox<File> comboBox3;
     @FXML
     private TextField toCSV;
+    @FXML
+    private TextField search;
 
     public void addFile(File... filesToAdd) {
 
@@ -69,7 +71,8 @@ public class JsonViewer extends Application {
 
     public void initialize() {
         ObservableList<Map<String, String>> list = FXCollections.observableArrayList();
-        SimpleTableViewBuilder.of(sideTable).items(list).copiable().savable().multipleSelection();
+        SimpleTableViewBuilder.of(sideTable).items(CommonsFX.newFastFilter(search, list.filtered(e -> true))).copiable()
+                .savable().multipleSelection();
         SimpleTreeViewBuilder.of(tree).root(newMap("Root", null))
                 .onSelect(newValue -> onSelectTreeItem(list, sideTable, newValue)).build();
         SimpleComboBoxBuilder<File> onChange =
@@ -99,10 +102,12 @@ public class JsonViewer extends Application {
     @SuppressWarnings("unchecked")
     public void onKeyReleased(KeyEvent k) throws IOException {
         if (k.getCode() == KeyCode.ENTER) {
-            String[] split = toCSV.getText().split("[, ]+");
+            String text = toCSV.getText();
+            String[] split2 = text.split(":");
+            String[] split = split2[0].split("[, ]+");
             File value = comboBox3.getValue();
             Map<String, String> mkae = JsonExtractor.makeMapFromJsonFile(value, split);
-            List<?> remap2 = JsonExtractor.remap(mkae);
+            List<?> remap2 = JsonExtractor.remap(mkae, text.contains(":") ? split2[1] : "");
             File outFile = ResourceFXUtils.getOutFile("csv/" + value.getName().replaceAll("\\.json", ".csv"));
             CSVUtils.appendLines(outFile, (List<Map<String, Object>>) remap2);
             new SimpleDialogBuilder().bindWindow(comboBox3).show(DataframeExplorer.class).addStats(outFile);

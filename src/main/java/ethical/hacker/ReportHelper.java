@@ -200,7 +200,11 @@ public final class ReportHelper {
     @SuppressWarnings("unchecked")
     private static Object remap(Map<String, String> params, Object e, WebView browser) {
         if (e instanceof Map) {
-            return getImage((Map<String, Object>) e, browser, params);
+            Map<String, Object> e2 = (Map<String, Object>) e;
+            if (e2.containsKey("url")) {
+                return getImage(e2, browser, params);
+            }
+            // return getImage(e2, browser, params)
         }
         if (e instanceof Image) {
             return e;

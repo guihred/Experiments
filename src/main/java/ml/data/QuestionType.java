@@ -28,7 +28,7 @@ public enum QuestionType {
     @SuppressWarnings("unchecked")
     DISTINCT("distinct", (ob1, ob2) -> ob2 instanceof Collection && ((Collection<Object>) ob2).add(ob1), String.class,
             Number.class),
-    EMPTY("empty", (ob1, ob2) -> ob1 == null, String.class, Number.class),
+    EMPTY("empty", (ob1, ob2) -> StringUtils.isBlank(Objects.toString(ob1, "")), String.class, Number.class),
     LIKE("like",
             (ob1, ob) -> PredicateEx.test(s -> s.matches(StringSigaUtils.toStringSpecial(ob)),
                     StringSigaUtils.toStringSpecial(ob1)),

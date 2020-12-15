@@ -8,6 +8,8 @@ import java.io.File;
 import java.util.Map;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleExpression;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -50,52 +52,32 @@ public class KibanaInvestigator extends Application {
 
     public void onActionKibanaScan() {
         items.clear();
-        RunnableEx.runNewThread(() -> {
-            CommonsFX.update(progressIndicator.progressProperty(), 0);
-            ObservableList<String> items2 = filterList.getItems();
-            for (int i = 0; i < items2.size(); i++) {
-                String ip = items2.get(i);
-                Map<String, String> nsInformation =
-                        KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem());
-                CommonsFX.update(progressIndicator.progressProperty(), (i + 1.) / items2.size());
-                CommonsFX.runInPlatform(() -> {
-                    if (commonTable.getColumns().isEmpty()) {
-                        SimpleTableViewBuilder.addColumns(commonTable, nsInformation.keySet());
-                    }
-                    items.add(nsInformation);
-                });
-            }
-            CommonsFX.update(progressIndicator.progressProperty(), 1);
+        CommonsFX.update(progressIndicator.progressProperty(), 0);
+        ObservableList<String> items2 = filterList.getItems();
+        DoubleExpression totalProgress = new SimpleDoubleProperty(0);
+        for (String ip : items2) {
+            SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
+            RunnableEx.runNewThread(
+                    () -> KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem(), progress),
+                    ns -> CommonsFX.runInPlatform(() -> {
+                        if (commonTable.getColumns().isEmpty()) {
+                            SimpleTableViewBuilder.addColumns(commonTable, ns.keySet());
+                        }
+                        items.add(ns);
+                        if (items.size() == items2.size()) {
+                            CommonsFX.update(progressIndicator.progressProperty(), 1);
+                        }
 
-        });
+                    }));
+            totalProgress = totalProgress.add(progress);
+        }
+        CommonsFX.bind(totalProgress.divide(items2.size()), progressIndicator.progressProperty());
     }
-
-    public void onActionKibanaScanParallel() {
-        items.clear();
-        RunnableEx.runNewThread(() -> RunnableEx.measureTime("PARALLEL SCAN", () -> {
-
-            CommonsFX.update(progressIndicator.progressProperty(), 0);
-            ObservableList<String> items2 = filterList.getItems();
-            items2.parallelStream().map(s -> {
-                String ip = s;
-                Map<String, String> nsInformation =
-                        KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem());
-                CommonsFX.addProgress(progressIndicator.progressProperty(), 1. / items2.size());
-                return nsInformation;
-            }).peek(ns -> CommonsFX.runInPlatform(() -> items.add(ns))).forEach(ns -> CommonsFX.runInPlatform(() -> {
-                if (commonTable.getColumns().isEmpty()) {
-                    SimpleTableViewBuilder.addColumns(commonTable, ns.keySet());
-                }
-            }));
-            CommonsFX.update(progressIndicator.progressProperty(), 1);
-        }));
-    }
-
 
     public void onOpenDataframe() {
         RunnableEx.run(() -> {
             TableView<Map<String, String>> table = commonTable;
-            File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() +  ".csv");
+            File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + ".csv");
             CSVUtils.saveToFile(table, ev);
             new SimpleDialogBuilder().bindWindow(commonTable).show(DataframeExplorer.class).addStats(ev);
         });
