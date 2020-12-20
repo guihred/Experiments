@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CSVUtils;
 import utils.FileTreeWalker;
+import utils.QuickSortML;
 import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class CIDRUtils {
@@ -64,11 +67,16 @@ public class CIDRUtils {
     }
 
     public static List<Map<String, Object>> makeNetworkCSV() {
+        File outFile = ResourceFXUtils.getOutFile(NETWORKS_CSV);
+
+        RunnableEx.run(() -> Files.deleteIfExists(outFile.toPath()));
         List<Path> firstFileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile(),
                 p -> p.getFileName().toString().matches("(\\d+\\.){3}\\d+\\.json"));
         List<Map<String, Object>> collect = firstFileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readMap))
+                .filter(e -> e.size() == 3)
                 .distinct().collect(Collectors.toList());
-        CSVUtils.appendLines(ResourceFXUtils.getOutFile(NETWORKS_CSV), collect);
+        QuickSortML.sortMapList(collect, "network", true);
+        CSVUtils.appendLines(outFile, collect);
         return collect;
     }
 

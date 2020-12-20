@@ -49,10 +49,13 @@ public class QuickSortML {
 			// DOES NOTHING
 		}, compa);
 	}
-	public static void sortMapList(List<Map<String, String>> ipItems2, String col, Boolean ascending) {
-        Comparator<Map<String, String>> comparing = Comparator
-                .comparing(m -> StringUtils.isNumeric(m.get(col)) ? String.format("%09d", Long.valueOf(m.get(col)))
-                        : Objects.toString(m.get(col), ""));
+
+    public static <T> void sortMapList(List<Map<String, T>> ipItems2, String col, Boolean ascending) {
+        Comparator<Map<String, T>> comparing = Comparator
+                .comparing(m -> {
+                    String string = Objects.toString(m.get(col), "");
+                    return StringUtils.isNumeric(string) ? String.format("%09d", Long.valueOf(string)) : string;
+                });
         ipItems2.sort(ascending ? comparing : comparing.reversed());
     }
 

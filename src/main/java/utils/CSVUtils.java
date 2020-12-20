@@ -110,9 +110,10 @@ public class CSVUtils {
         boolean exists = file.exists();
         String csvHeader = rowMap.keySet().stream().collect(Collectors.joining(",", "", ""));
         if (exists) {
-            exists = SupplierEx.get(() -> doesHeaderMatch(file, csvHeader));
-            if (!exists) {
+            String header = SupplierEx.get(() -> getHeader(file));
+            if (!csvHeader.equals(header)) {
                 RunnableEx.run(() -> Files.deleteIfExists(file.toPath()));
+                exists = false;
             }
         }
         try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true)) {
@@ -133,9 +134,10 @@ public class CSVUtils {
         List<String> keySet = rowMap.get(0).keySet().stream().collect(Collectors.toList());
         String csvHeader = keySet.stream().collect(Collectors.joining("\",\"", "\"", "\""));
         if (exists) {
-            exists = SupplierEx.get(() -> doesHeaderMatch(file, csvHeader));
-            if (!exists) {
+            String csvHeader2 = SupplierEx.get(() -> getHeader(file));
+            if (!csvHeader.equals(csvHeader2)) {
                 RunnableEx.run(() -> Files.deleteIfExists(file.toPath()));
+                exists = false;
             }
         }
         try (FileWriterWithEncoding fw = new FileWriterWithEncoding(file, StandardCharsets.UTF_8, true)) {
@@ -287,14 +289,10 @@ public class CSVUtils {
         }, "ERROR CREATING WRITER");
     }
 
-    private static Boolean doesHeaderMatch(File file, String csvHeader) throws FileNotFoundException {
+    private static String getHeader(File file) throws FileNotFoundException {
         try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
-            String nextLine = scanner.nextLine();
-            if (!csvHeader.equals(nextLine)) {
-                return false;
-            }
+            return scanner.nextLine();
         }
-        return true;
     }
 
     private static char getPreviousChar(char[] chars, int i) {

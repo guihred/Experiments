@@ -127,7 +127,10 @@ public class KibanaApi {
             convertToStats(valueCol, totalBytesQuery);
             return display(totalBytesQuery);
         });
-        fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", query, days, key)));
+        fullScan.put("WAF", () -> {
+            Map<String, String> makeKibanaSearch = makeKibanaSearch("wafQuery.json", query, days, "Name", "Value");
+            return display(makeKibanaSearch);
+        });
         fullScan.put("Total Bytes Sent", () -> {
             Map<String, String> totalBytesSent =
                     makeKibanaSearch("paloAltoQuery.json", query, days + 3, valueCol);

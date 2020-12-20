@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 import javafx.scene.image.Image;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
@@ -75,20 +76,18 @@ public final class PPTService {
     }
 
     private static void addTable(XSLFSlide slide, Object ob) {
-        List<XSLFShape> shapes = slide.getShapes();
         DataframeML build = DataframeBuilder.build((File) ob);
         String string = DataframeUtils.toString(build);
         LOG.info(string);
-        XSLFTable table = shapes.stream().filter(s -> s instanceof XSLFTable).findFirst().map(XSLFTable.class::cast)
-                .orElseGet(() -> {
-                    XSLFTable createTable = slide.createTable(1, 2);
-                    List<String> cols = build.cols();
-                    for (int i = 0; i < 2 && i < cols.size(); i++) {
-                        XSLFTableCell cell = createTable.getCell(0, i);
-                        cell.setText(cols.get(i));
-                    }
-                    return createTable;
-                });
+        XSLFTable table = getShapeStream(slide, XSLFTable.class).findFirst().orElseGet(() -> {
+            XSLFTable createTable = slide.createTable(1, 2);
+            List<String> cols = build.cols();
+            for (int i = 0; i < 2 && i < cols.size(); i++) {
+                XSLFTableCell cell = createTable.getCell(0, i);
+                cell.setText(cols.get(i));
+            }
+            return createTable;
+        });
         int numberOfColumns = table.getNumberOfColumns();
         for (int i = 0; i < numberOfColumns; i++) {
             XSLFTableCell cell = table.getCell(0, i);
@@ -119,6 +118,10 @@ public final class PPTService {
         });
     }
 
+    private static <T> Stream<T> getShapeStream(XSLFSlide slide, Class<T> class1) {
+        return slide.getShapes().stream().filter(class1::isInstance).map(class1::cast);
+    }
+
     private static void recordPicture(XSLFPictureData data) {
         RunnableEx.run(() -> {
             File outFile = ResourceFXUtils.getOutFile("ppt/" + data.getFileName());
@@ -128,27 +131,23 @@ public final class PPTService {
     }
 
     private static void replaceSlide(Map<String, Object> replacementMap, XSLFSlide slide, XMLSlideShow ppt) {
-        List<XSLFShape> shapes = slide.getShapes();
-        for (int i = 0; i < shapes.size(); i++) {
-            XSLFShape shape = shapes.get(i);
-            if (shape instanceof XSLFTextBox) {
-                XSLFTextBox textBox = (XSLFTextBox) shape;
-                List<XDDFTextParagraph> paragraphs = textBox.getTextBody().getParagraphs();
-                for (XDDFTextParagraph paragraph : paragraphs) {
-                    String text = paragraph.getText();
-                    Object object = replacementMap.getOrDefault(text, replacementMap.get(text.trim()));
-                    if (object instanceof List<?>) {
-                        List<?> object2 = (List<?>) object;
-                        addImage(slide, ppt, object2);
-                    } else if (object instanceof String) {
-                        LOG.info("\"{}\" replaced to \"{}\"", text, object);
-                        paragraph.setText((String) object);
-                    } else {
-                        LOG.info("{}", text);
-                    }
+        getShapeStream(slide, XSLFTextBox.class).forEach((XSLFTextBox textBox) -> {
+
+            List<XDDFTextParagraph> paragraphs = textBox.getTextBody().getParagraphs();
+            for (XDDFTextParagraph paragraph : paragraphs) {
+                String text = paragraph.getText();
+                Object object = replacementMap.getOrDefault(text, replacementMap.get(text.trim()));
+                if (object instanceof List<?>) {
+                    List<?> object2 = (List<?>) object;
+                    addImage(slide, ppt, object2);
+                } else if (object instanceof String) {
+                    LOG.info("\"{}\" replaced to \"{}\"", text, object);
+                    paragraph.setText((String) object);
+                } else {
+                    LOG.info("{}", text);
                 }
             }
-        }
+        });
     }
 
 }
