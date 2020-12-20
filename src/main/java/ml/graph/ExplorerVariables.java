@@ -2,6 +2,7 @@ package ml.graph;
 
 import static utils.StringSigaUtils.toDouble;
 
+import extract.WhoIsScanner;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -105,17 +106,7 @@ public abstract class ExplorerVariables extends Application {
     }
 
     protected Object getQueryObject(QuestionType type, String colName, String text2) {
-        if (type == QuestionType.DISTINCT) {
-            return new LinkedHashSet<>();
-        }
-        if (type == QuestionType.IN) {
-            List<Object> arrayList = new ArrayList<>();
-            for (String string : text2.split("[,;\t\n]+")) {
-                arrayList.add(DataframeUtils.tryNumber(getDataframe(), colName, string));
-            }
-            return arrayList;
-        }
-        return DataframeUtils.tryNumber(getDataframe(), colName, text2);
+        return getQueryObject(getDataframe(), type, colName, text2);
     }
 
     protected void interruptCurrentThread() {
@@ -233,6 +224,20 @@ public abstract class ExplorerVariables extends Application {
         lineChart.getYAxis().setLabel(val.getKey());
         a.setData(data);
         lineChart.setData(value);
+    }
+
+    public static Object getQueryObject(DataframeML dataframe2, QuestionType type, String colName, String text2) {
+        if (type == QuestionType.DISTINCT) {
+            return new LinkedHashSet<>();
+        }
+        if (type == QuestionType.IN) {
+            List<Object> arrayList = new ArrayList<>();
+            for (String string : text2.split("[,;\t\n]+")) {
+                arrayList.add(DataframeUtils.tryNumber(dataframe2, colName, string));
+            }
+            return arrayList;
+        }
+        return DataframeUtils.tryNumber(dataframe2, colName, text2);
     }
 
     private static void addEntries(PaginatedTableView dataTable2,

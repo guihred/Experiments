@@ -618,7 +618,7 @@ public class DataframeUtils extends DataframeML {
             if (filterOut(dataframe, header, line2)) {
                 continue;
             }
-            CSVUtils.fixEmptyLine(header, line2);
+            CSVUtils.fixEmptyLine(header, line2, dataframe.size);
             dataframe.size++;
             for (int i = 0; i < header.size(); i++) {
                 String key = header.get(i);
@@ -655,7 +655,7 @@ public class DataframeUtils extends DataframeML {
             }
             addCrossStats(dataframeML);
 
-            CSVUtils.fixEmptyLine(header, line2);
+            CSVUtils.fixEmptyLine(header, line2, dataframeML.size);
         }
         return co;
     }

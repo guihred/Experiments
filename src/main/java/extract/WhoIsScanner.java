@@ -1,9 +1,5 @@
-package ml.graph;
+package extract;
 
-import extract.CIDRUtils;
-import extract.JsoupUtils;
-import extract.PhantomJSUtils;
-import extract.VirusTotalApi;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -181,7 +177,7 @@ public class WhoIsScanner {
     }
 
     public static String getReverseDNS(String ip) {
-        return SupplierEx.get(() -> CIDRUtils.toInetAddress(ip).getCanonicalHostName());
+        return SupplierEx.get(() -> CIDRUtils.toInetAddress(ip).getCanonicalHostName(), ip);
     }
 
 }

@@ -1,4 +1,4 @@
-{"index":"dtp-*prod*","ignore_unavailable":true,"preference":1600792228289}
+{"index":"*apache-prod*","ignore_unavailable":true,"preference":1600792228289}
 {
 	"aggs": {
 		"2": {

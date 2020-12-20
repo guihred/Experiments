@@ -90,7 +90,7 @@ public class DataframeExplorer extends ExplorerVariables {
                             headersCombo.getSelectionModel().selectedItemProperty()));
         }).converter(QuestionType::getSign);
         SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove)
-                .onKey(KeyCode.MINUS, this::toggleQuestion).onKey(KeyCode.SUBTRACT, this::toggleQuestion);
+                .onKey(KeyCode.MINUS, this::toggleQuestion).onKey(KeyCode.SUBTRACT, this::toggleQuestion).copiable();
         RunnableEx.runNewThread(Mapping::getMethods);
     }
 

@@ -89,6 +89,42 @@
             "y": 0
         }
 	],
+	"Conexões VPN via: Conexões fora do Brasil": [
+	    {
+            "csv": "",
+            "name": "ConexoesForaBrasil$dateInverted",
+            "columns":"event.time|country.src|ip.src|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host",
+            "questions":[
+                "user.dst not empty",
+                "user.dst distinct"
+            ]
+        }
+	],
+	"Conexões VPN via: Client Linux": [
+	    {
+            "csv": "",
+            "name": "ConexoesClientLinux$dateInverted",
+            "columns":"ip.src|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
+            "questions":[
+                "ip.src not empty",
+                "user.dst not empty",
+                "user.dst distinct",
+                "user.dst not contains dataprev"
+            ]
+        }
+	],
+	"Conexões VPN via: SO Server": [
+	    {
+            "csv": "",
+            "name": "VPN-via-OS-Server$dateInverted",
+            "columns":"ip.src|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
+            "questions":[
+                "ip.src not empty",
+                "user.dst not empty",
+                "user.dst distinct"
+            ]
+        }
+	],
 	"Volume de ataques detectados pelo Firewall": [
         {
             "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fdaf4750-87d4-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",

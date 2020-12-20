@@ -1,6 +1,7 @@
 package ml.data;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.IntConsumer;
 import java.util.function.Predicate;
@@ -104,11 +105,11 @@ public class DataframeML extends BaseDataframe {
         return null;
     }
 
-
-
     public Set<Object> freeCategory(String header) {
         return new HashSet<>(dataframe.get(header));
     }
+
+
 
     public Map<String, Long> histogram(String header) {
         List<Object> list = dataframe.get(header);
@@ -139,6 +140,13 @@ public class DataframeML extends BaseDataframe {
                 cons.accept(i);
             }
         }
+    }
+
+    public void sortHeaders(List<String> headers) {
+        List<Entry<String, List<Object>>> collect = dataframe.entrySet().stream().collect(Collectors.toList());
+        dataframe.clear();
+        collect.sort(Comparator.comparing(e -> headers.indexOf(e.getKey())));
+        collect.forEach(e -> dataframe.put(e.getKey(), e.getValue()));
     }
 
 

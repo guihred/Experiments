@@ -4,6 +4,7 @@ import static utils.StringSigaUtils.toDouble;
 
 import extract.PhantomJSUtils;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,8 +21,13 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import ml.data.DataframeBuilder;
+import ml.data.DataframeML;
+import ml.data.DataframeUtils;
+import ml.data.Question;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import simplebuilder.FileChooserBuilder;
 import utils.CommonsFX;
 import utils.ImageFXUtils;
 import utils.ResourceFXUtils;
@@ -37,8 +43,8 @@ public final class ReportHelper {
     private ReportHelper() {
     }
 
-    public static void addParameters(Map<String, Object> mapaSubstituicao, Map<String, String> params,
-            WebView browser, DoubleProperty progress) {
+    public static void addParameters(Map<String, Object> mapaSubstituicao, Map<String, String> params, WebView browser,
+            DoubleProperty progress) {
         List<String> keys = mapaSubstituicao.keySet().stream().collect(Collectors.toList());
         CommonsFX.update(progress, 0);
         for (String key : keys) {
@@ -67,7 +73,11 @@ public final class ReportHelper {
                     List<?> list = (List<?>) v;
                     return list.stream().map(e -> {
                         if (e instanceof Map) {
-                            return getUncroppedImage((Map<String, Object>) e, browser, params);
+                            Map<String, Object> e2 = (Map<String, Object>) e;
+                            if (e2.containsKey("url")) {
+                                return getUncroppedImage(e2, browser, params);
+                            }
+                            return getCSV(e2, params);
                         }
                         if (e instanceof Image) {
                             return e;
@@ -141,6 +151,20 @@ public final class ReportHelper {
         return destImage;
     }
 
+    private static Object getCSV(Map<String, Object> imageObj, Map<String, String> params) {
+        File outFile = ResourceFXUtils
+                .getOutFile("csv/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".csv");
+        if (outFile.exists()) {
+            return outFile;
+        }
+        CommonsFX.runInPlatformSync(() -> {
+            new FileChooserBuilder().title(replaceString(params, imageObj.getOrDefault("name", "erro")))
+                    .onSelect(f -> saveCSV(f, imageObj, outFile)).extensions("CSV", "*.csv").openFileAction(null);
+            return;
+        });
+        return outFile;
+    }
+
     private static Image getImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
         File outFile = ResourceFXUtils
                 .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
@@ -204,12 +228,32 @@ public final class ReportHelper {
             if (e2.containsKey("url")) {
                 return getImage(e2, browser, params);
             }
-            // return getImage(e2, browser, params)
+
+            return getCSV(e2, params);
         }
         if (e instanceof Image) {
             return e;
         }
         return replaceString(params, e);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void saveCSV(File srcFile, Map<String, Object> params, File outFile) {
+        DataframeML build = DataframeBuilder.build(srcFile);
+        List<String> cols = build.cols();
+        String columns = params.getOrDefault("columns", "").toString();
+        cols.removeIf(s -> s.matches(columns));
+        build.removeCol(cols.toArray(new String[0]));
+        List<Object> o = (List<Object>) params.getOrDefault("questions", new ArrayList<>());
+        List<Question> a =
+                o.stream().map(Objects::toString).map(t -> Question.parseQuestion(build, t))
+                        .collect(Collectors.toList());
+
+        for (Question question : a) {
+            build.filter(question.getColName(), question);
+        }
+        build.sortHeaders(Stream.of(columns.split("\\|")).collect(Collectors.toList()));
+        DataframeUtils.save(build, outFile);
     }
 
     private static WritableImage saveImage(Map<String, Object> info, File outFile, WebView browser2) {

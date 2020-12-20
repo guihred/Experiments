@@ -72,6 +72,9 @@ public enum QuestionType {
         return ClassReflectionUtils.hasClass(Arrays.asList(classes), a);
     }
 
+    public static QuestionType getBySign(String a) {
+        return Stream.of(values()).filter(v -> v.sign.equals(a)).findFirst().orElse(null);
+    }
     public static List<QuestionType> getMatches(Class<?> a) {
         return Stream.of(values()).filter(v -> v.matchesClass(a)).collect(Collectors.toList());
     }

@@ -3,7 +3,7 @@
     "params":{
         "ip":"",
         "hour":["-24h","-12h","-36h","-48h","-60h","-72h","-84h"],
-        "sistemaDtp":["vip-pmeuinssprxr.inss.gov.br","servicos.mte.gov.br","mteempregabr","postos","geridmte","meuinss","www2","psabiwebapl01","refisprod.dataprev.gov.br","www2sp.dataprev.gov.br"]
+        "sistemaDtp":["vip-pmeuinssprxr.inss.gov.br","servicos.mte.gov.br","mteempregabr","postos","geridmte","meuinss","www2","psabiwebapl01","refisprod.dataprev.gov.br","www2sp.dataprev.gov.br","agendamento.inss.gov.br","papimgateway.prevnet"]
     },
     
     "name": "Reporte_Eventos_MeuINSS_$ip.docx",
@@ -69,6 +69,17 @@
 		{
 			"url": "https://registro.br/tecnologia/ferramentas/whois/?search=$ip",
 			"name": "whoIs$ip",
+			"width": 0.25,
+			"height": 0.42,
+			"x": 0.25,
+			"y": 0.15
+		}
+	],
+	"PaloAlto": [
+        "Alta quantidade de tráfego registrado",	
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/ead869e0-d1a2-11ea-b3aa-4f2d12d8184e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:kuery,query:'SourceIP:$ip'),uiState:(vis:(params:(sort:(columnIndex:2,direction:desc)))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'Total+de+Bytes',field:Bytes),schema:metric,type:sum),(enabled:!t,id:'2',params:(customLabel:'IP+de+Origem',field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms),(enabled:!t,id:'3',params:(customLabel:'IP+de+Destino',field:DestinationIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:10),schema:bucket,type:terms),(enabled:!t,id:'4',params:(customLabel:'Bytes+recebidos',field:BytesReceived),schema:metric,type:sum)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:2,direction:desc),totalFunc:sum),title:'%5BPalo+Alto%5D+Top+talkers+-+Origem%2FDestino+-+Total+Bytes',type:table))",
+			"name": "paloAlto$ip",
 			"width": 0.25,
 			"height": 0.42,
 			"x": 0.25,

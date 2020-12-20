@@ -94,7 +94,6 @@ public class ReportApplication extends Application {
             ReportHelper.addParameters(mapaSubstituicao, params, browser, progressBar.progressProperty());
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
             finalizeReport(mapaSubstituicao, reportFile);
-
         });
     }
 
@@ -120,27 +119,30 @@ public class ReportApplication extends Application {
             List<String> collect = mapaSubstituicao.values().stream().flatMap(ReportApplication::objectList)
                     .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).collect(Collectors.toList());
 
-            ListView<String> build = new SimpleListViewBuilder<String>()
-                    .onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(val))))
+            SimpleListViewBuilder<String> listViewBuilder = new SimpleListViewBuilder<>();
+            listViewBuilder
+                    .onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(v))))
                     .cellFactory((String st) -> st.replaceAll(".+/", ""))
-                    .onKey(KeyCode.DELETE, s -> {
-                        Path path = Paths.get(new URI(s));
-                        Files.deleteIfExists(path);
+                    .multipleSelection().onKey(KeyCode.DELETE, () -> {
                         SimpleDialogBuilder.closeStage(imageView);
+                        for (String s : listViewBuilder.selected()) {
+                            Files.deleteIfExists(Paths.get(new URI(s)));
+                        }
                         makeReportConsultasEditImages();
                     })
-                    .items(collect).build();
+                    .items(collect);
             Rectangle rectangle = new Rectangle();
             rectangle.setStroke(Color.TRANSPARENT);
             rectangle.setFill(Color.TRANSPARENT);
             StackPane stackPane = new StackPane(imageView, rectangle);
             rectangle.setManaged(false);
             imageView.setManaged(false);
+            ListView<String> build = listViewBuilder.build();
             SplitPane pane = new SplitPane(build, stackPane);
 
             pane.getDividers().get(0).positionProperty().addListener(
                     (ob, old, val) -> imageView
-                            .setFitWidth((1 - val.doubleValue()) * 0.9 * imageView.getScene().getWidth()));
+                            .setFitWidth((1 - val.doubleValue()) * 0.99 * imageView.getScene().getWidth()));
 
             RotateUtils.moveArea(stackPane, rectangle, imageView,
                     img -> onImageSelected(mapaSubstituicao, reportFile, build, img));

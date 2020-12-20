@@ -10,6 +10,7 @@ import static kibana.QueryObjects.CLIENT_IP_QUERY;
 import static kibana.QueryObjects.URL_QUERY;
 import static utils.StringSigaUtils.toDouble;
 
+import extract.WhoIsScanner;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,7 +27,6 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import ml.graph.DataframeExplorer;
 import ml.graph.IPFill;
-import ml.graph.WhoIsScanner;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
@@ -129,10 +129,7 @@ public class ConsultasInvestigator extends Application {
                     List<Map<String, String>> whoIsInfo = kibanaQuery.parallelStream()
                             .filter(m -> !getFirst(params, m).matches(ConsultasInvestigator.IGNORE_IPS_REGEX))
                             .map(e -> {
-                                Map<String, String> ipInformation = whoIsScanner.getIpInformation(getFirst(params, e));
-                                ipInformation.remove("last_analysis_stats");
-                                ipInformation.remove("malicious");
-                                e.putAll(ipInformation);
+                                e.putAll(whoIsScanner.getIpInformation(getFirst(params, e)));
                                 return e;
                             }).collect(Collectors.toList());
                     Map<String,

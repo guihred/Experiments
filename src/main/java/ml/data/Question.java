@@ -2,8 +2,10 @@
 package ml.data;
 
 import java.util.Objects;
+import java.util.function.Predicate;
+import ml.graph.ExplorerVariables;
 
-public class Question {
+public class Question implements Predicate<Object> {
     private final String colName;
     private final Object ob;
     private final QuestionType type;
@@ -66,8 +68,17 @@ public class Question {
         return Objects.hash(colName, ob, getType(), not);
     }
 
+    public boolean isNot() {
+        return not;
+    }
+
     public void setInfoGain(double infoGain) {
         this.infoGain = infoGain;
+    }
+
+    @Override
+    public boolean test(Object input) {
+        return answer(input);
     }
 
     public boolean toggleNot() {
@@ -78,7 +89,23 @@ public class Question {
     @Override
     public String toString() {
         String string = not ? "%s not %s %s" : "%s %s %s";
-        return String.format(string, getColName(), getType().getSign(), ob instanceof String ? "\"" + ob + "\"" : Objects.toString(ob, ""));
+        return String.format(string, getColName(), getType().getSign(),
+                ob instanceof String ? "\"" + ob + "\"" : Objects.toString(ob, ""));
+    }
+
+    public static Question parseQuestion(DataframeML build, String question) {
+        String[] split = question.split(" +");
+        if (split.length < 2) {
+            return null;
+        }
+        String string = split[1];
+        boolean not = "not".equals(string);
+
+        QuestionType type = QuestionType.getBySign(not ? split[2] : split[1]);
+        String string2 = type == QuestionType.EMPTY ? null : split[split.length - 1];
+        String colName2 = split[0];
+        Object queryObject = ExplorerVariables.getQueryObject(build, type, colName2, string2);
+        return new Question(colName2, queryObject, type, not);
     }
 
 }

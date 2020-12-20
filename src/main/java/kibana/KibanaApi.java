@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import extract.JsonExtractor;
 import extract.PhantomJSUtils;
+import extract.WhoIsScanner;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +19,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import ml.graph.IPFill;
-import ml.graph.WhoIsScanner;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CommonsFX;
@@ -55,7 +55,7 @@ public class KibanaApi {
 
     public static Map<String, String> getGeridCredencial(String finalIP) {
         Map<String, String> makeKibanaSearch2 =
-                KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", finalIP, 1, "message");
+                KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", finalIP, 3, "message");
         String orDefault = makeKibanaSearch2.getOrDefault("message", "");
         String regex = "WHO:\\s+(.+)";
         List<String> collect =
@@ -85,9 +85,7 @@ public class KibanaApi {
             return Collections.emptyMap();
         }
         String key = "key";
-
         String valueCol = "value";
-        String dateKey = "key_as_string";
 
 
         WhoIsScanner whoIsScanner = new WhoIsScanner();
@@ -110,39 +108,37 @@ public class KibanaApi {
             Map<String, String> destinationSearch =
                     makeKibanaSearch("destinationQuery.json", query, days, key, valueCol);
             convertToBytes(valueCol, destinationSearch);
+            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n"))
+                    .map(whoIsScanner::reverseDNS).collect(Collectors.joining("\n")));
             return display(destinationSearch);
         });
         fullScan.put("TOP conexões WEB",
                 () -> display(makeKibanaSearch("acessosQuery.json", query, days, key, "doc_count")));
         fullScan.put("Ultimo Acesso", () -> {
             Map<String, String> trafficSearch =
-                    makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime", "country_code2");
+                    makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime");
             trafficSearch.computeIfPresent("ReceiveTime",
                     (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
             return display(trafficSearch);
         });
         fullScan.put("Total Bytes Received", () -> {
             Map<String, String> totalBytesQuery =
-                    makeKibanaSearch("totalBytesQuery.json", query, days + 3, dateKey, valueCol);
-            convertToBytes(valueCol, totalBytesQuery);
-            removeDateZone(dateKey, totalBytesQuery);
+                    makeKibanaSearch("totalBytesQuery.json", query, days + 3, valueCol);
+            convertToStats(valueCol, totalBytesQuery);
             return display(totalBytesQuery);
         });
         fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", query, days, key)));
         fullScan.put("Total Bytes Sent", () -> {
             Map<String, String> totalBytesSent =
-                    makeKibanaSearch("paloAltoQuery.json", query, days + 3, dateKey, valueCol);
-            convertToBytes(valueCol, totalBytesSent);
-            removeDateZone(dateKey, totalBytesSent);
+                    makeKibanaSearch("paloAltoQuery.json", query, days + 3, valueCol);
+            convertToStats(valueCol, totalBytesSent);
             return display(totalBytesSent);
         });
-        Set<Entry<String, SupplierEx<String>>> entrySet = fullScan.entrySet();
-
         Map<String, String> fullScan2 = new LinkedHashMap<>();
         CommonsFX.update(progress, 0);
-        for (Entry<String, SupplierEx<String>> entry : entrySet) {
+        for (Entry<String, SupplierEx<String>> entry : fullScan.entrySet()) {
             fullScan2.put(entry.getKey(), SupplierEx.get(entry.getValue()));
-            CommonsFX.addProgress(progress, 1. / entrySet.size());
+            CommonsFX.addProgress(progress, 1. / fullScan.size());
         }
         LOG.info("KIBANA RESULT{}", fullScan2);
         CommonsFX.update(progress, 1);
@@ -231,6 +227,20 @@ public class KibanaApi {
                 (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
     }
 
+    private static void convertToStats(String valueCol, Map<String, String> destinationSearch) {
+        destinationSearch.computeIfPresent(valueCol, (k, v) -> {
+            String[] split = v.split("\n");
+            DoubleSummaryStatistics summaryStatistics =
+                    Stream.of(split).skip(1).mapToDouble(StringSigaUtils::toDouble).summaryStatistics();
+            String min = StringSigaUtils.getFileSize(summaryStatistics.getMin());
+            String max = StringSigaUtils.getFileSize(summaryStatistics.getMax());
+            String last = Stream.of(split).skip(Math.max(1, split.length - 2L)).findFirst()
+                    .map(StringSigaUtils::toDouble)
+                    .map(StringSigaUtils::getFileSize).orElse("");
+            return String.format("%s (%s a %s)", last, min, max);
+        });
+    }
+
     private static String display(Map<String, String> ob) {
         List<List<String>> collect =
                 ob.values().stream().map(s -> Stream.of(s.split("\n")).collect(Collectors.toList()))
@@ -248,11 +258,6 @@ public class KibanaApi {
 
     private static String getWhoField(String regex, String s) {
         return Stream.of(s.split("\n")).filter(l -> l.matches(regex)).findFirst().orElse("").replaceAll(regex, "$1");
-    }
-
-    private static void removeDateZone(String dateKey, Map<String, String> totalBytesQuery) {
-        totalBytesQuery.computeIfPresent(dateKey,
-        (k1, v1) -> Stream.of(v1.split("\n")).map(s->s.replaceAll("T.+", "")).collect(Collectors.joining("\n")));
     }
 
     private static String removeExtension(File file) {

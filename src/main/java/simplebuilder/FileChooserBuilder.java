@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventTarget;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.stage.DirectoryChooser;
@@ -84,10 +83,9 @@ public class FileChooserBuilder {
     }
 
     public void openFileAction(ActionEvent e) {
-        EventTarget target2 = e.getTarget();
         fileChooser.setInitialDirectory(
                 SupplierEx.nonNull(fileChooser.getInitialDirectory(), LAST_FILES.get(evocationLine)));
-        Node target = target2 instanceof Node ? (Node) target2 : null;
+        Node target = e != null && e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
         File fileChosen = fileChooser.showOpenDialog(FunctionEx.mapIf(target, t -> t.getScene().getWindow()));
         LAST_FILES.put(evocationLine, FunctionEx.mapIf(fileChosen, File::getParentFile));
         runIf(fileChosen, onSelect);

@@ -8,7 +8,11 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javafx.scene.image.Image;
+import ml.data.DataframeBuilder;
+import ml.data.DataframeML;
+import ml.data.DataframeUtils;
 import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.xddf.usermodel.text.XDDFTextParagraph;
 import org.apache.poi.xslf.usermodel.*;
@@ -56,17 +60,50 @@ public final class PPTService {
         if (list.isEmpty()) {
             return;
         }
-        Object ob = list.remove(0);
-        if (!(ob instanceof Image)) {
+        Object ob = list.get(0);
+        if (ob instanceof File) {
+            addTable(slide, ob);
             return;
         }
-        Image image = (Image) ob;
+        Image image = (Image) list.remove(0);
         byte[] pictureData = SupplierEx.get(() -> ImageFXUtils.toByteArray(image));
         XSLFPictureData pd = ppt.addPicture(pictureData, PictureData.PictureType.PNG);
         XSLFPictureShape picture = slide.createPicture(pd);
         int width = 600;
         int height = (int) (image.getHeight() * width / image.getWidth());
         picture.setAnchor(new Rectangle(60, 120, width, Math.min(300, height)));
+    }
+
+    private static void addTable(XSLFSlide slide, Object ob) {
+        List<XSLFShape> shapes = slide.getShapes();
+        DataframeML build = DataframeBuilder.build((File) ob);
+        String string = DataframeUtils.toString(build);
+        LOG.info(string);
+        XSLFTable table = shapes.stream().filter(s -> s instanceof XSLFTable).findFirst().map(XSLFTable.class::cast)
+                .orElseGet(() -> {
+                    XSLFTable createTable = slide.createTable(1, 2);
+                    List<String> cols = build.cols();
+                    for (int i = 0; i < 2 && i < cols.size(); i++) {
+                        XSLFTableCell cell = createTable.getCell(0, i);
+                        cell.setText(cols.get(i));
+                    }
+                    return createTable;
+                });
+        int numberOfColumns = table.getNumberOfColumns();
+        for (int i = 0; i < numberOfColumns; i++) {
+            XSLFTableCell cell = table.getCell(0, i);
+            String text = cell.getText();
+            List<XSLFTableRow> rows = table.getRows();
+            int size = rows.size();
+            String columnName =
+                    build.cols().stream().filter(text::equalsIgnoreCase).findFirst().orElse(text.toLowerCase());
+            for (int j = 0; j < build.getSize(); j++) {
+                Object at = build.getAt(columnName, j);
+                XSLFTableRow row = j + 1 >= size ? table.addRow() : table.getRows().get(j + 1);
+                XSLFTableCell xslfTableCell = i < row.getCells().size() ? row.getCells().get(i) : row.addCell();
+                xslfTableCell.setText(Objects.toString(at, ""));
+            }
+        }
     }
 
     private static void getPowerPoint(Map<String, Object> replacementMap, File arquivo, File outStream) {

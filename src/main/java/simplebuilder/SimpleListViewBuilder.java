@@ -110,6 +110,10 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         return this;
     }
 
+    public ObservableList<T> selected() {
+        return node.getSelectionModel().getSelectedItems();
+    }
+
     public static <T> void copyContent(ListView<T> table, KeyEvent ev) {
         if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
             List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices().isEmpty()

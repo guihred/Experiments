@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
@@ -35,9 +36,9 @@ public final class VirusTotalApi {
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
         }
-        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES,
-                LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "type_description", "tags", "type", "trid", "magic",
-                "meaningful_name", "file_type", "probability");
+        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES, LAST_ANALYSIS_STATS,
+                MALICIOUS_ATTR, "type_description", "tags", "type", "trid", "magic", "meaningful_name", "file_type",
+                "probability");
         Matcher matcher = Pattern.compile(MALICIOUS_POSITIVE_REGEX).matcher(displayJsonFromFile);
         if (matcher.find()) {
             String group = matcher.group(1);
@@ -73,8 +74,13 @@ public final class VirusTotalApi {
             if (!outFile.exists()) {
                 getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
             }
-            return JsonExtractor.makeMapFromJsonFile(outFile, "id", "as_owner", "country", 
-                    LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "network");
+            Map<String, String> jsonFile =
+                    JsonExtractor.makeMapFromJsonFile(outFile, "id", "as_owner", "country", "network", "error");
+            if (jsonFile.containsKey("error")) {
+                Files.deleteIfExists(outFile.toPath());
+                CIDRUtils.makeNetworkCSV();
+            }
+            return jsonFile;
         }, null, e -> LOG.info("ERROR SEARCHING {} {}", ip, e.getMessage()));
     }
 

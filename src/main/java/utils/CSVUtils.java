@@ -165,9 +165,9 @@ public class CSVUtils {
 
     }
 
-    public static void fixEmptyLine(List<String> header, List<String> line2) {
+    public static void fixEmptyLine(List<String> header, List<String> line2, int size) {
         if (header.size() != line2.size()) {
-            LOGGER.error("ERROR FIELDS COUNT");
+            LOGGER.error("ERROR FIELDS COUNT line {}", size);
             createNullRow(header, line2);
         }
     }

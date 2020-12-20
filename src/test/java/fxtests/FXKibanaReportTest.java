@@ -1,8 +1,11 @@
 package fxtests;
 
+import java.util.Map;
+import java.util.stream.Collectors;
 import kibana.ConsultasInvestigator;
 import kibana.KibanaApi;
 import kibana.ReportApplication;
+import kibana.ReportHelper;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -31,8 +34,13 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordReportGeridCredenciais() {
-        String finalIP = "187.46.91.147";
-        measureTime("KibanaApi.getGeridCredencial", () -> KibanaApi.getGeridCredencial(finalIP));
+        String finalIP = "200.193.192.134";
+        measureTime("KibanaApi.getGeridCredencial", () -> {
+            Map<String, String> geridCredencial = KibanaApi.getGeridCredencial(finalIP);
+            geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
+            getLogger().info("{}", geridCredencial.keySet());
+            return geridCredencial;
+        });
     }
 
 }
