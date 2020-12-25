@@ -19,6 +19,7 @@ import javafx.util.Callback;
 import utils.CSVUtils;
 import utils.ExcelService;
 import utils.ImageFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 
@@ -172,16 +173,22 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         });
     }
 
+    public static <T> void autoColumnsWidth(TableView<T> node) {
+        double[] array = node.getColumns().stream().mapToDouble(e -> {
+            String cellData = StringSigaUtils.toStringSpecial(e.getCellData(0)).split("\n")[0];
+            return Math.max(e.getText().length(), cellData.length());
+        }).toArray();
+        prefWidthColumns(node, array);
+    }
+
     public static <T> void copyContent(TableView<T> table, KeyEvent ev) {
         if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
             List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
-            String collect =
-                    selectedItems
-                            .stream().map(l -> table.getColumns().stream()
-                                    .filter(c -> !"Nº".equals(c.getText()))
-                                    .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
-                            .collect(Collectors.joining("\n"));
-            ImageFXUtils.setClipboardContent(collect);
+            String content = selectedItems.stream()
+                    .map(l -> table.getColumns().stream().filter(c -> !"Nº".equals(c.getText()))
+                            .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
+                    .collect(Collectors.joining("\n"));
+            ImageFXUtils.setClipboardContent(content);
         }
     }
 

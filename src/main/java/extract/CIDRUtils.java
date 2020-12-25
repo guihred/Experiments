@@ -25,6 +25,7 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class CIDRUtils {
+    private static final String NETWORK = "network";
     private static final Logger LOG = HasLogging.log();
     private static final String NETWORKS_CSV = "csv/networks.csv";
     private static DataframeML networkFile;
@@ -41,7 +42,7 @@ public class CIDRUtils {
         }
         networkFile =
                 SupplierEx.orElse(networkFile, () -> DataframeBuilder.build(outFile));
-        Map<?, ?> d = networkFile.findFirst("network", v -> isSameNetworkAddress(Objects.toString(v, ""), ip));
+        Map<?, ?> d = networkFile.findFirst(NETWORK, v -> isSameNetworkAddress(Objects.toString(v, ""), ip));
         return (Map<String, String>) d;
     }
     public static boolean isSameNetworkAddress(String cidr, String ip) {
@@ -72,22 +73,23 @@ public class CIDRUtils {
         RunnableEx.run(() -> Files.deleteIfExists(outFile.toPath()));
         List<Path> firstFileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile(),
                 p -> p.getFileName().toString().matches("(\\d+\\.){3}\\d+\\.json"));
-        List<Map<String, Object>> collect = firstFileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readMap))
+        List<Map<String, Object>> networkLoaded =
+                firstFileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readMap))
                 .filter(e -> e.size() == 3)
                 .distinct().collect(Collectors.toList());
-        QuickSortML.sortMapList(collect, "network", true);
-        CSVUtils.appendLines(outFile, collect);
-        return collect;
+        QuickSortML.sortMapList(networkLoaded, NETWORK, true);
+        CSVUtils.appendLines(outFile, networkLoaded);
+        return networkLoaded;
     }
 
     public static InetAddress toInetAddress(String ip) throws UnknownHostException {
-        List<Byte> collect =
+        List<Byte> bytes =
                 Stream.of(ip.split("\\.")).map(t -> Integer.valueOf(t).byteValue()).collect(Collectors.toList());
-        byte[] addr = new byte[] { collect.get(0), collect.get(1), collect.get(2), collect.get(3) };
+        byte[] addr = new byte[] { bytes.get(0), bytes.get(1), bytes.get(2), bytes.get(3) };
         return InetAddress.getByAddress(addr);
     }
 
     private static Map<String, Object> readMap(Path e) throws IOException {
-        return JsonExtractor.accessMap(JsonExtractor.toObject(e.toFile(), "network", "as_owner", "country"));
+        return JsonExtractor.accessMap(JsonExtractor.toObject(e.toFile(), NETWORK, "as_owner", "country"));
     }
 }

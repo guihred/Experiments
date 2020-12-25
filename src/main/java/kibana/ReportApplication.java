@@ -81,11 +81,7 @@ public class ReportApplication extends Application {
         LOG.info("MAKING REPORT {} {}", params, modelFile.getName());
         RunnableEx.runNewThread(() -> {
             Map<String, Object> mapaSubstituicao = JsonExtractor.accessMap(JsonExtractor.toObject(modelFile));
-            params.put("\\$gatheredDate", DateFormatUtils.currentTime("ddMMyyyy"));
-            params.put("\\$dateInverted", DateFormatUtils.currentTime("yyyy-MM-dd"));
-            params.put("\\$currentHour", DateFormatUtils.currentHour());
-            params.put("\\$currentMonth", DateFormatUtils.currentTime("MMMM yyyy"));
-            params.put("\\$date", DateFormatUtils.currentDate());
+            addCommonParams();
             String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
             String extension = getExtension(replaceString);
             File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
@@ -102,11 +98,7 @@ public class ReportApplication extends Application {
         LOG.info("MAKING REPORT {} {}", params, modelFile.getName());
         RunnableEx.runNewThread(() -> {
             Map<String, Object> mapaSubstituicao = JsonExtractor.accessMap(JsonExtractor.toObject(modelFile));
-            params.put("\\$gatheredDate", DateFormatUtils.currentTime("ddMMyyyy"));
-            params.put("\\$dateInverted", DateFormatUtils.currentTime("yyyy-MM-dd"));
-            params.put("\\$currentHour", DateFormatUtils.currentHour());
-            params.put("\\$currentMonth", DateFormatUtils.currentTime("MMMM yyyy"));
-            params.put("\\$date", DateFormatUtils.currentDate());
+            addCommonParams();
             String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
             String extension = getExtension(replaceString);
             File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
@@ -116,7 +108,7 @@ public class ReportApplication extends Application {
             ImageView imageView = new ImageView();
             imageView.setFitWidth(500);
             imageView.setPreserveRatio(true);
-            List<String> collect = mapaSubstituicao.values().stream().flatMap(ReportApplication::objectList)
+            List<String> imageUrls = mapaSubstituicao.values().stream().flatMap(ReportApplication::objectList)
                     .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).collect(Collectors.toList());
 
             SimpleListViewBuilder<String> listViewBuilder = new SimpleListViewBuilder<>();
@@ -130,7 +122,7 @@ public class ReportApplication extends Application {
                         }
                         makeReportConsultasEditImages();
                     })
-                    .items(collect);
+                    .items(imageUrls);
             Rectangle rectangle = new Rectangle();
             rectangle.setStroke(Color.TRANSPARENT);
             rectangle.setFill(Color.TRANSPARENT);
@@ -159,14 +151,22 @@ public class ReportApplication extends Application {
         primaryStage.setMaximized(true);
     }
 
+    private void addCommonParams() {
+        params.put("\\$gatheredDate", DateFormatUtils.currentTime("ddMMyyyy"));
+        params.put("\\$dateInverted", DateFormatUtils.currentTime("yyyy-MM-dd"));
+        params.put("\\$currentHour", DateFormatUtils.currentHour());
+        params.put("\\$currentMonth", DateFormatUtils.currentTime("MMMM yyyy"));
+        params.put("\\$date", DateFormatUtils.currentDate());
+    }
+
     private void addGeridInfo(Map<String, Object> mapaSubstituicao) {
         if (mapaSubstituicao.containsKey("gerid")) {
             LOG.info("GETTING GERID CREDENTIALS ");
             Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip"));
             params.put("\\$creds", makeKibanaSearch.keySet().stream().collect(Collectors.joining("\n")));
-            List<Object> collect =
+            List<Object> textAsImage =
                     makeKibanaSearch.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
-            ReportHelper.mergeImage(mapaSubstituicao, collect);
+            ReportHelper.mergeImage(mapaSubstituicao, textAsImage);
         }
     }
 

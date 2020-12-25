@@ -99,7 +99,7 @@ public class PointGraph extends Canvas {
         double j2 = (MAX_LAYOUT - layout.doubleValue()) / ybins.intValue();
         gc.setLineWidth(5);
         gc.setFill(Color.GREEN);
-        gc.setLineWidth(0.5);
+        gc.setLineWidth(1. / 2);
         for (int k = 0; k < data.getSize(); k++) {
             double x = ((Number) entrySetX.get(k)).doubleValue();
             double x1 = (x - xStats.getMin()) / xProportion * j + layout.doubleValue();

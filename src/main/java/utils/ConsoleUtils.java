@@ -38,7 +38,7 @@ public final class ConsoleUtils {
             while (PROCESSES.values().stream().anyMatch(e -> !e)) {
                 long count = PROCESSES.values().stream().filter(e -> !e).count();
                 CommonsFX.update(progress, (n - count) / n);
-                RunnableEx.sleepSeconds(0.5);
+                RunnableEx.sleepSeconds(1. / 2);
             }
             CommonsFX.update(progress, 1);
         });

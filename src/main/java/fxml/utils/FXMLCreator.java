@@ -154,15 +154,15 @@ public final class FXMLCreator {
             Object fieldValue = ClassReflectionUtils.mapProperty(getFieldValue(f, "id"));
             String id = Objects.toString(fieldValue, "").replaceAll("[\\W_]", "");
             if (StringUtils.isNotBlank(id)) {
-                String string = Character.isLowerCase(id.charAt(0)) ? id : changeCase(id);
-                if (StringUtils.isNumeric(string)) {
-                    return changeCase(f.getClass().getSimpleName()) + string;
+                String finalID = Character.isLowerCase(id.charAt(0)) ? id : changeCase(id);
+                if (StringUtils.isNumeric(finalID)) {
+                    return changeCase(f.getClass().getSimpleName()) + finalID;
                 }
-                if (referencedNodes.values().stream().anyMatch(string::equals)
-                    || TermFrequency.getJavaKeywords().contains(string)) {
-                    return string + referencedNodes.size();
+                if (referencedNodes.values().stream().anyMatch(finalID::equals)
+                        || TermFrequency.getJavaKeywords().contains(finalID)) {
+                    return finalID + referencedNodes.size();
                 }
-                return string;
+                return finalID;
             }
         }
         String simpleName = f.getClass().getSimpleName();
@@ -274,17 +274,17 @@ public final class FXMLCreator {
                 make(() -> mapElement.setAttribute(key, value), e -> LOG.error("error setting attribute {}={}", k, v))
                     .run();
             });
-        } else {
-            properties.forEach((k, v) -> {
-                String string = Objects.toString(k);
-                if (FXMLConstants.getPropertyRemap().containsKey(string)) {
-                    String key = FXMLConstants.getPropertyRemap().getOrDefault(string, string);
-                    String value = Objects.toString(v);
-                    make(() -> element.setAttribute(key, value), e -> LOG.error("error setting attribute {}={}", k, v))
-                        .run();
-                }
-            });
+            return;
         }
+        properties.forEach((k, v) -> {
+            String string = Objects.toString(k);
+            if (FXMLConstants.getPropertyRemap().containsKey(string)) {
+                String key = FXMLConstants.getPropertyRemap().getOrDefault(string, string);
+                String value = Objects.toString(v);
+                make(() -> element.setAttribute(key, value), e -> LOG.error("error setting attribute {}={}", k, v))
+                        .run();
+            }
+        });
     }
 
     private void processMethod(Element element, String fieldName, Object fieldValue, Object parent) {

@@ -31,8 +31,8 @@ public final class VirusTotalApi {
     }
 
     public static File[] getFilesInformation(Path path, String hash) throws IOException {
-        String string = path.getName(path.getNameCount() - 1).toString();
-        File outFile = newJsonFile(string);
+        String filename = path.getName(path.getNameCount() - 1).toString();
+        File outFile = newJsonFile(filename);
         if (!outFile.exists()) {
             getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
         }
@@ -86,12 +86,12 @@ public final class VirusTotalApi {
 
     public static File[] getUrlInformation(String url) throws IOException {
 
-        String string = SupplierEx.getFirst(() -> tryToCreateUrl(url),
+        String fullUrl = SupplierEx.getFirst(() -> tryToCreateUrl(url),
                 () -> url.contains("/") ? "https://" + url : "http://" + url + "/");
 
-        File outFile = newJsonFile(string);
+        File outFile = newJsonFile(fullUrl);
         if (!outFile.exists()) {
-            getFromURL("https://www.virustotal.com/api/v3/urls/" + HashVerifier.getSha256Hash(string), outFile);
+            getFromURL("https://www.virustotal.com/api/v3/urls/" + HashVerifier.getSha256Hash(fullUrl), outFile);
         }
         String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile);
         Matcher matcher = Pattern.compile(MALICIOUS_POSITIVE_REGEX).matcher(displayJsonFromFile);

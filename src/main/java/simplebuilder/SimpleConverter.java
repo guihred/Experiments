@@ -27,8 +27,8 @@ public class SimpleConverter<T> extends StringConverter<T> {
         this.name = name;
         this.func = makeFunction(f -> Objects.toString(invoke(f, name), ""));
         if (name != null && name.contains(".")) {
-            String[] split = name.split("\\.");
-            this.func = makeFunction(f -> Objects.toString(invoke(invoke(f, split[0]), split[1]), ""));
+            String[] subFields = name.split("\\.");
+            this.func = makeFunction(f -> Objects.toString(invoke(invoke(f, subFields[0]), subFields[1]), ""));
         }
 
     }

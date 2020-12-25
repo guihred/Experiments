@@ -153,8 +153,8 @@ public class RegressionModel {
     }
 
     private DoubleStream doubleStream() {
-        bestSlope = (Math.random() - .5) * 10;
-        bestInitial = (Math.random() - .5) * 10;
+        bestSlope = (Math.random() - 1. / 2) * 10;
+        bestInitial = (Math.random() - 1. / 2) * 10;
         i = 0;
         return DoubleStream.generate(this::random).limit(MAX_SIZE);
     }
@@ -165,7 +165,7 @@ public class RegressionModel {
     }
 
     private double random() {
-        double e = (Math.random() - .5) * 5;
+        double e = (Math.random() - 1. / 2) * 5;
         return bestInitial + e + bestSlope * i++;
     }
 

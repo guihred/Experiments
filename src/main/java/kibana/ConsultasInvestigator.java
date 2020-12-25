@@ -10,6 +10,7 @@ import static kibana.QueryObjects.CLIENT_IP_QUERY;
 import static kibana.QueryObjects.URL_QUERY;
 import static utils.StringSigaUtils.toDouble;
 
+import extract.CIDRUtils;
 import extract.WhoIsScanner;
 import java.io.File;
 import java.util.*;
@@ -111,9 +112,9 @@ public class ConsultasInvestigator extends Application {
     }
 
     public void makeAutomatedNetworkSearch() {
-        Map<String, String> filter1 = new HashMap<>();
         RunnableEx.runNewThread(() -> {
             CommonsFX.update(progress.progressProperty(), 0);
+            Map<String, String> filter1 = new HashMap<>();
             List<String> applicationList = getApplicationList();
             List<QueryObjects> queries = queryList.stream()
                     .filter(q -> q.getLineChart() == null && QueryObjects.CLIENT_IP_QUERY.equals(q.getQuery()))
@@ -133,22 +134,31 @@ public class ConsultasInvestigator extends Application {
                                 return e;
                             }).collect(Collectors.toList());
                     Map<String,
-                            Double> collect = whoIsInfo.stream()
+                            Double> netHistogram = whoIsInfo.stream()
                                     .collect(Collectors.groupingBy(
                                             m -> IPFill.getKey(m, "as_owner", "") + "\t"
                                                     + IPFill.getKey(m, "network", "id"),
                                             Collectors.summingDouble(m -> getNumber(numberCol, m))));
                     DoubleSummaryStatistics summaryStatistics =
-                            collect.values().stream().mapToDouble(e -> e).summaryStatistics();
+                            netHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
                     double avg = summaryStatistics.getAverage();
                     double max = summaryStatistics.getMax();
                     double min = summaryStatistics.getMin();
                     double range = (max - min) * .40;
-                    String collect3 = collect.entrySet().stream().filter(m -> m.getValue() > avg + range)
+                    List<String> networks = netHistogram.entrySet().stream().filter(m -> m.getValue() > avg + range)
                             .filter(m -> excludeOwners.stream().noneMatch(ow -> m.getKey().startsWith(ow)))
-                            .map(s -> "\t" + s).collect(Collectors.joining("\n"));
-                    if (StringUtils.isNotBlank(collect3)) {
-                        LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, collect3);
+                            .map(s -> "\t" + s).collect(Collectors.toList());
+                    if (!networks.isEmpty()) {
+
+                        List<String> nets =
+                                networks.stream().map(e -> e.replaceAll(".+\t(.+)", "$1")).collect(Collectors.toList());
+                        LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, networks);
+                        List<Map<String, String>> aboveAvgInfo = kibanaQuery.parallelStream()
+                                .filter(m -> !getFirst(params, m).matches(ConsultasInvestigator.IGNORE_IPS_REGEX))
+                                .filter(e -> nets.stream()
+                                        .anyMatch(net -> CIDRUtils.isSameNetworkAddress(net, getFirst(params, e))))
+                                .collect(Collectors.toList());
+                        mergeFilter(params, queryField, aboveAvgInfo);
                     }
 
                     CommonsFX.addProgress(progress.progressProperty(), 1. / applicationList.size() / queries.size());
@@ -214,7 +224,7 @@ public class ConsultasInvestigator extends Application {
 
     public void onExportExcel() {
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
-        Map<String, List<Map<String, String>>> collect = queryList.stream().filter(e -> e.getTable() != null)
+        Map<String, List<Map<String, String>>> itemsBySheet = queryList.stream().filter(e -> e.getTable() != null)
                 .collect(toMap(QueryObjects::getQueryFile, QueryObjects::getItems));
         List<String> collect2 =
                 queryList.stream().filter(e -> e.getTable() != null).flatMap(e -> e.getTable().getColumns().stream())
@@ -223,7 +233,7 @@ public class ConsultasInvestigator extends Application {
             mapa.put(text, t -> t.getOrDefault(text, ""));
         }
         File outFile = ResourceFXUtils.getOutFile("xlsx/investigation.xlsx");
-        ExcelService.getExcel(collect, mapa, outFile);
+        ExcelService.getExcel(itemsBySheet, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
     }
 
@@ -238,8 +248,8 @@ public class ConsultasInvestigator extends Application {
             QueryObjects orElse =
                     queryList.stream().filter(e -> e.getTable() == lookup).findFirst().orElse(queryList.get(0));
             TableView<Map<String, String>> table = orElse.getTable();
-            String collect = filter.values().stream().map(s -> s.replaceAll(".+/(.+)", "$1")).collect(joining());
-            File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + collect + ".csv");
+            String tableFullName = filter.values().stream().map(s -> s.replaceAll(".+/(.+)", "$1")).collect(joining());
+            File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + tableFullName + ".csv");
             CSVUtils.saveToFile(table, ev);
             new SimpleDialogBuilder().bindWindow(tabPane0).show(DataframeExplorer.class).addStats(ev);
         });
@@ -257,8 +267,8 @@ public class ConsultasInvestigator extends Application {
 
     private void addToFilter(String s) {
         if (s.contains("=")) {
-            String[] split = s.split("=");
-            filter.merge(split[0], split[1], this::merge);
+            String[] entry = s.split("=");
+            filter.merge(entry[0], entry[1], this::merge);
             return;
         }
         if (s.matches(WhoIsScanner.IP_REGEX)) {

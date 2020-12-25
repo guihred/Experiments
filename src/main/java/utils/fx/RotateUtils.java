@@ -1,6 +1,5 @@
 package utils.fx;
 
-
 import static utils.DrawOnPoint.getWithinRange;
 import static utils.ex.RunnableEx.runIf;
 
@@ -39,6 +38,7 @@ public final class RotateUtils {
     private RotateUtils() {
 
     }
+
     public static List<Circle> createDraggableRectangle(final Rectangle rect) {
         final double handleRadius = 5;
         // top left resize handle:
@@ -91,14 +91,17 @@ public final class RotateUtils {
         moveHandle.setOnMouseDragged(event -> onMoveHandleDrag(rect, handleRadius, mouseLocation, event));
         return nodes;
     }
+
     public static double getAngle(final double ax, final double ay, final double bx, final double by) {
         double a = ax - bx;
         double b = ay - by;
         return a > 0 ? Math.PI + Math.atan(b / a) : Math.atan(b / a);
     }
+
     public static double getAngle(Line line) {
         return getAngle(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
     }
+
     public static List<String> getUrl(Dragboard db) {
         if (db.hasFiles()) {
             return db.getFiles().stream().map(e -> e.toURI().toString()).collect(Collectors.toList());
@@ -108,6 +111,7 @@ public final class RotateUtils {
         }
         return Collections.emptyList();
     }
+
     public static void initSceneDragAndDrop(Scene scene, ConsumerEx<String> onUrl) {
         scene.setOnDragOver(event -> {
             Dragboard db = event.getDragboard();
@@ -126,6 +130,7 @@ public final class RotateUtils {
             event.consume();
         });
     }
+
     public static void makeZoomable(Node control) {
 
         final double MAX_SCALE = 20.0;
@@ -156,7 +161,7 @@ public final class RotateUtils {
             initialY.set(e.getY());
             area.setStroke(Color.BLACK);
         });
-        stackPane.sceneProperty().addListener((ob,old,val)->val.setOnKeyReleased(e -> {
+        stackPane.sceneProperty().addListener((ob, old, val) -> val.setOnKeyReleased(e -> {
             KeyCode code = e.getCode();
             if (code == KeyCode.A && e.isControlDown()) {
                 Bounds bounds = imageView.getBoundsInLocal();
@@ -166,19 +171,8 @@ public final class RotateUtils {
                 int height = (int) bounds.getHeight();
                 area.setWidth(width);
                 area.setHeight(height);
-                Image image = imageView.getImage();
-                WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(), image.getHeight());
-                double p = srcImage.getWidth() / imageView.getFitWidth();
-                double x = area.getLayoutX() * p;
-                double y = area.getLayoutY() * p;
-                double width1 = width * p;
-                double height1 = height * p;
-                WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
-                RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage,
-                        imageSelected, Color.TRANSPARENT);
-                ConsumerEx.accept(onImageCropped, imageSelected);
-                area.setStroke(Color.TRANSPARENT);
-    
+                cropImage(area, imageView, onImageCropped, width, height);
+
             }
         }));
         stackPane.setOnMouseDragged(e -> {
@@ -197,21 +191,9 @@ public final class RotateUtils {
         stackPane.setOnMouseReleased(e -> {
             int width = Math.max(1, (int) area.getWidth());
             int height = Math.max(1, (int) area.getHeight());
-            Image image = imageView.getImage();
-            WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(),
-                    image.getHeight());
-            double p = srcImage.getWidth() / imageView.getFitWidth();
-            double x = area.getLayoutX() * p;
-            double y = area.getLayoutY() * p;
-            double width1 = width * p;
-            double height1 = height * p;
-            WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
-            RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage,
-                    imageSelected, Color.TRANSPARENT);
-            ConsumerEx.accept(onImageCropped, imageSelected);
-            area.setStroke(Color.TRANSPARENT);
+            cropImage(area, imageView, onImageCropped, width, height);
         });
-    
+
     }
 
     public static void setMovable(Node node) {
@@ -309,8 +291,24 @@ public final class RotateUtils {
         return scale;
     }
 
+    private static void cropImage(Rectangle area, ImageView imageView, ConsumerEx<Image> onImageCropped, int width,
+            int height) {
+        Image image = imageView.getImage();
+        WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(), image.getHeight());
+        double p = srcImage.getWidth() / imageView.getFitWidth();
+        double x = area.getLayoutX() * p;
+        double y = area.getLayoutY() * p;
+        double width1 = width * p;
+        double height1 = height * p;
+        WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
+        RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage, imageSelected,
+                Color.TRANSPARENT);
+        ConsumerEx.accept(onImageCropped, imageSelected);
+        area.setStroke(Color.TRANSPARENT);
+    }
+
     private static void onMoveHandleDrag(final Rectangle rect, final double handleRadius,
-        Wrapper<Point2D> mouseLocation, MouseEvent event) {
+            Wrapper<Point2D> mouseLocation, MouseEvent event) {
         if (mouseLocation.value != null) {
             double deltaX = event.getSceneX() - mouseLocation.value.getX();
             double deltaY = event.getSceneY() - mouseLocation.value.getY();
@@ -329,7 +327,7 @@ public final class RotateUtils {
     }
 
     private static void onNWDrag(final Rectangle rect, final double handleRadius, Wrapper<Point2D> mouseLocation,
-        MouseEvent event) {
+            MouseEvent event) {
         if (mouseLocation.value != null) {
             double deltaX = event.getSceneX() - mouseLocation.value.getX();
             double deltaY = event.getSceneY() - mouseLocation.value.getY();
@@ -348,7 +346,7 @@ public final class RotateUtils {
     }
 
     private static void onSEDrag(final Rectangle rect, final double handleRadius, Wrapper<Point2D> mouseLocation,
-        MouseEvent event) {
+            MouseEvent event) {
         if (mouseLocation.value != null) {
             double deltaX = event.getSceneX() - mouseLocation.value.getX();
             double deltaY = event.getSceneY() - mouseLocation.value.getY();

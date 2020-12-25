@@ -349,13 +349,13 @@ public final class LeitorArquivos {
 
     private static Medicamento tryReadRosarioLine(Map<String, IntUnaryOperator> mapaFields, String[] linhas, int i) {
         String s = linhas[i];
-        String[] split = s.trim().split("\\s+");
-        if (split.length > 2 && (s.toLowerCase().contains("descricao") || s.toLowerCase().contains(CODPRODUTO)
+        String[] words = s.trim().split("\\s+");
+        if (words.length > 2 && (s.toLowerCase().contains("descricao") || s.toLowerCase().contains(CODPRODUTO)
             || s.toLowerCase().contains(QTESTOQUECOMERCIAL))) {
-            if (split[1].equalsIgnoreCase(CODPRODUTO)) {
+            if (words[1].equalsIgnoreCase(CODPRODUTO)) {
                 mapaFields.put(CODPRODUTO, j -> j - 2);
             }
-            if (split[0].equalsIgnoreCase(CODPRODUTO)) {
+            if (words[0].equalsIgnoreCase(CODPRODUTO)) {
                 mapaFields.put(CODPRODUTO, j -> 0);
             }
             mapaFields.put(QTESTOQUECOMERCIAL, j -> j - 1);
@@ -363,17 +363,19 @@ public final class LeitorArquivos {
         if (!s.endsWith(",00")) {
             return null;
         }
-        if (split.length >= 2) {
+        if (words.length >= 2) {
             Medicamento medicamento = new Medicamento();
-            String s2 = split[mapaFields.getOrDefault(CODPRODUTO, j -> 0).applyAsInt(split.length)];
+            String s2 = words[mapaFields.getOrDefault(CODPRODUTO, j -> 0).applyAsInt(words.length)];
 
             medicamento.setCodigo(Integer.valueOf(s2));
-            medicamento.setNome(IntStream.range(0, split.length)
+            medicamento.setNome(IntStream.range(0, words.length)
                 .filter(
-                    e -> mapaFields.values().stream().mapToInt(j -> j.applyAsInt(split.length)).noneMatch(j -> j == e))
-                .mapToObj(e -> split[e]).collect(Collectors.joining(" ")));
+                            e -> mapaFields.values().stream().mapToInt(j -> j.applyAsInt(words.length))
+                                    .noneMatch(j -> j == e))
+                    .mapToObj(e -> words[e]).collect(Collectors.joining(" ")));
             medicamento.setQuantidade(
-                Integer.valueOf(split[mapaFields.getOrDefault(QTESTOQUECOMERCIAL, j -> j - 1).applyAsInt(split.length)]
+                    Integer.valueOf(
+                            words[mapaFields.getOrDefault(QTESTOQUECOMERCIAL, j -> j - 1).applyAsInt(words.length)]
                     .replace(",00", "").replace(".", "")));
             return medicamento;
         }
@@ -384,23 +386,25 @@ public final class LeitorArquivos {
         int i) {
         Medicamento medicamento = m;
         try {
-            String[] split = linhas[i].trim().split("\\s+");
-            if ("Página:".equals(split[0]) || !StringUtil.isNumeric(split[split.length - 1])) {
+            String[] words = linhas[i].trim().split("\\s+");
+            if ("Página:".equals(words[0]) || !StringUtil.isNumeric(words[words.length - 1])) {
                 return medicamento;
             }
-            if (split.length == 4 || split.length == 3) {
+            if (words.length == 4 || words.length == 3) {
                 medicamento
-                    .setLote(!StringUtil.isNumeric(split[0]) ? split[0] : Integer.toString(Integer.valueOf(split[0])));
-                medicamento.setRegistro(split[1].replaceAll("\\D+", ""));
-                medicamento.setQuantidade(Integer.valueOf(split[split.length - 1]));
+                        .setLote(!StringUtil.isNumeric(words[0]) ? words[0]
+                                : Integer.toString(Integer.valueOf(words[0])));
+                medicamento.setRegistro(words[1].replaceAll("\\D+", ""));
+                medicamento.setQuantidade(Integer.valueOf(words[words.length - 1]));
                 arrayList.add(medicamento);
                 medicamento = medicamento.clonar();
             } else {
-                medicamento.setCodigo(Integer.valueOf(split[0]));
+                medicamento.setCodigo(Integer.valueOf(words[0]));
                 medicamento
-                    .setNome(Stream.of(split).skip(1).limit((long) split.length - 2).collect(Collectors.joining(" ")));
+                        .setNome(Stream.of(words).skip(1).limit((long) words.length - 2)
+                                .collect(Collectors.joining(" ")));
 
-                medicamento.setQuantidade(Integer.valueOf(split[split.length - 1]));
+                medicamento.setQuantidade(Integer.valueOf(words[words.length - 1]));
             }
         } catch (Exception e) {
             LOGGER.info("ERRO LINHA ={}", i);

@@ -159,8 +159,8 @@ public final class IadesHelper {
             .collect(Collectors.toList());
         StringBuilder answers = new StringBuilder();
         for (String string : answersList) {
-            String split = of(string.split("")).filter(s -> s.matches("[A-E#]")).collect(Collectors.joining());
-            answers.append(split);
+            String letters = of(string.split("")).filter(s -> s.matches("[A-E#]")).collect(Collectors.joining());
+            answers.append(letters);
             if (answers.length() >= entities.getListQuestions().size()) {
                 return answers.toString();
             }
@@ -204,8 +204,8 @@ public final class IadesHelper {
             File gabaritoFile = ExtractUtils.extractURL(gabarito.getValue());
             List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
                 .collect(Collectors.toList());
-            String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");
-            String cargo = split[split.length - 1].trim();
+            String[] parts = Objects.toString(vaga, "").split("\\s*-\\s*");
+            String cargo = parts[parts.length - 1].trim();
             Optional<String> findFirst = linesRead.stream()
                 .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
             if (!findFirst.isPresent()) {

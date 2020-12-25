@@ -410,8 +410,8 @@ public enum Country {
             try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.displayName())) {
                 while (scanner.hasNext()) {
                     String firstLine = StringSigaUtils.fixEncoding(scanner.nextLine()).replaceAll("\"", "");
-                    String[] split = firstLine.split(";");
-                    Country.valueOf(split[0]).path = split[1];
+                    String[] parts = firstLine.split(";");
+                    Country.valueOf(parts[0]).path = parts[1];
                 }
             }
         });

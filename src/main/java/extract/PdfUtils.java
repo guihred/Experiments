@@ -76,6 +76,14 @@ public final class PdfUtils {
         }, ERROR_IN_FILE + file);
     }
 
+    public static COSDocument parseAndGet(RandomAccessFile source) {
+        return remap(() -> {
+            PDFParser parser = new PDFParser(source);
+            parser.parse();
+            return parser.getDocument();
+        }, ERROR_IN_FILE + source);
+    }
+
     public static PdfInfo readFile(File file1) {
         return readFile(new PdfInfo(), file1, null);
     }
@@ -102,14 +110,6 @@ public final class PdfUtils {
             IntConsumer onPage, Consumer<String[]> onLines, BiConsumer<Integer, List<PdfImage>> onImages) {
         PdfUtils.extractImages(file);
         ignore(() -> runOnLines(init, file, onTextPosition, onPage, onLines, onImages));
-    }
-
-    protected static COSDocument parseAndGet(RandomAccessFile source) {
-        return remap(() -> {
-            PDFParser parser = new PDFParser(source);
-            parser.parse();
-            return parser.getDocument();
-        }, ERROR_IN_FILE + source);
     }
 
     private static Map<Integer, List<PdfImage>> extractImages(File file) {
@@ -157,11 +157,11 @@ public final class PdfUtils {
 
                 String[] pageLines = parsedText.split("\r\n");
                 List<String> lines1 = new ArrayList<>();
-                for (String string : pageLines) {
-                    if (string.split(SPLIT_WORDS_REGEX).length >= 4 * string.length() / 10) {
-                        string = string.replaceAll("(?<=[^\\s]) (?=[^\\s])", "");
+                for (String remappedLines : pageLines) {
+                    if (remappedLines.split(SPLIT_WORDS_REGEX).length >= 4 * remappedLines.length() / 10) {
+                        remappedLines = remappedLines.replaceAll("(?<=[^\\s]) (?=[^\\s])", "");
                     }
-                    lines1.add(string.replaceAll("\t", " "));
+                    lines1.add(remappedLines.replaceAll("\t", " "));
                 }
                 pdfInfo.getPages().add(lines1);
                 if (out != null) {

@@ -78,7 +78,7 @@ public final class ImageCracker {
                 if (DrawOnPoint.withinImage(x2, y2, image)) {
                     Color color = pixelReader.getColor(x2, y2);
                     double brightness = color.getBrightness();
-                    blacks += brightness < 0.5 ? 1 : -1;
+                    blacks += brightness < 1. / 2 ? 1 : -1;
                 }
             }
         }
@@ -90,7 +90,7 @@ public final class ImageCracker {
         if (Math.abs(blacks) > limit) {
             return blacks > 0 ? black : white;
         }
-        return brightness > 0.5 ? white : black;
+        return brightness > 1. / 2 ? white : black;
     }
 
     private static Tesseract getInstance() {

@@ -66,7 +66,7 @@ public class JapanRefactoring {
                 if (!t.matches(LESSON_REGEX)) {
                     return;
                 }
-                String[] split = t.replaceAll(LESSON_REGEX, "$1@$2@$3@$4@$5").split("@");
+                String[] lessonParts = t.replaceAll(LESSON_REGEX, "$1@$2@$3@$4@$5").split("@");
                 if (lesson >= 50) {
                     chapter++;
                     lesson = 0;
@@ -75,7 +75,7 @@ public class JapanRefactoring {
                 print.println(String.format(
                     "INSERT INTO JAPANESE_LESSON"
                         + "(english,japanese,romaji,exercise,lesson) VALUES('%s','%s','%s',%d,%d);",
-                    split[0], split[1], split[2], ++lesson, chapter));
+                        lessonParts[0], lessonParts[1], lessonParts[2], ++lesson, chapter));
 
             });
         } catch (Exception e) {

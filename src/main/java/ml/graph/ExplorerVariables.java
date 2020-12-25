@@ -85,12 +85,12 @@ public abstract class ExplorerVariables extends Application {
             return;
         }
         QuestionType type = list.size() == 1 ? QuestionType.EQ : QuestionType.IN;
-        String collect = list.stream().map(Data<String, Number>::getXValue).collect(Collectors.joining(";"));
+        String selectedElements = list.stream().map(Data<String, Number>::getXValue).collect(Collectors.joining(";"));
         Entry<String, DataframeStatisticAccumulator> selectedItem =
                 columns.stream().filter(e -> e.getKey().equals(barChart.getTitle())).findFirst().orElse(null);
         if (type != null && selectedItem != null) {
             String colName = selectedItem.getKey();
-            String text2 = collect;
+            String text2 = selectedElements;
             Object tryNumber = getQueryObject(type, colName, text2);
             Question question = new Question(colName, tryNumber, type, !add);
             questions.add(question);

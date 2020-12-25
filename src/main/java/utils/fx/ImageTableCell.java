@@ -56,11 +56,11 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
     }
 
     public static List<ImageView> createImagesMaxWidth(String item, ReadOnlyDoubleProperty maxProperty) {
-        List<Image> collect = Stream.of(item.split(";")).map(ImageTableCell::getImageLink).filter(Objects::nonNull)
+        List<Image> images = Stream.of(item.split(";")).map(ImageTableCell::getImageLink).filter(Objects::nonNull)
                 .map(Image::new).filter(Objects::nonNull)
                 .sorted(Comparator.comparing(e -> -e.getWidth() * e.getHeight())).collect(Collectors.toList());
-        double maxWidth = collect.stream().mapToDouble(Image::getWidth).max().orElse(1);
-        return collect.stream().map(image -> {
+        double maxWidth = images.stream().mapToDouble(Image::getWidth).max().orElse(1);
+        return images.stream().map(image -> {
             ImageView imageView = new ImageView(image);
             imageView.fitWidthProperty().bind(maxProperty.multiply(image.getWidth() / maxWidth));
             imageView.setPreserveRatio(true);

@@ -101,15 +101,14 @@ public final class CoverageUtils {
         Map<String, Long> count = displayTestsToBeRun.stream()
             .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
-        List<Class<? extends Application>> collect = displayTestsToBeRun.stream().distinct()
+        List<Class<? extends Application>> applications = displayTestsToBeRun.stream().distinct()
             .sorted(Comparator.comparing(count::get).reversed())
             .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e))).collect(Collectors.toList());
-        if (!collect.isEmpty()) {
-            LOG.error("{} APPS FOUND= {}", collect.size(),
-                collect.stream().map(Class::getName)
+        if (!applications.isEmpty()) {
+            LOG.error("{} APPS FOUND= {}", applications.size(), applications.stream().map(Class::getName)
                 .collect(Collectors.joining(", ", "[", "]")));
         }
-        return collect;
+        return applications;
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications2(Collection<String> uncovered) {

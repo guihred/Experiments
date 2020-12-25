@@ -172,12 +172,12 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         }
 
         return kunReadings.stream().filter(e -> e.contains(".")).peek(e -> {
-            String[] split = e.split("\\.");
-            mapReading.putIfAbsent(currentWord + split[1].charAt(0), split[0]);
+            String[] verbParts = e.split("\\.");
+            mapReading.putIfAbsent(currentWord + verbParts[1].charAt(0), verbParts[0]);
         }).filter(JapaneseVerbConjugate::isVerb).flatMap(e -> JapaneseVerbConjugate.conjugateVerb(e).stream())
                 .peek(e -> {
-                    String[] split = e.split("\\.");
-                    mapReading.putIfAbsent(currentWord + split[1].charAt(0), split[0]);
+                    String[] verbParts = e.split("\\.");
+                    mapReading.putIfAbsent(currentWord + verbParts[1].charAt(0), verbParts[0]);
                 }).filter(e -> e.split("\\.")[1].charAt(0) == currentLetter).findFirst();
     }
 
@@ -212,12 +212,12 @@ public class CrawlerFuriganaTask extends CrawlerTask {
     }
 
     private StringBuilder placeFurigana(String line) {
-        String[] split = line.split("");
+        String[] letters = line.split("");
         StringBuilder currentWord = new StringBuilder();
         StringBuilder currentLine = new StringBuilder();
         UnicodeBlock currentBlock = null;
-        for (int i = 0; i < split.length && !split[i].isEmpty(); i++) {
-            char currentLetter = split[i].charAt(0);
+        for (int i = 0; i < letters.length && !letters[i].isEmpty(); i++) {
+            char currentLetter = letters[i].charAt(0);
             UnicodeBlock of = UnicodeBlock.of(currentLetter);
             if (KANJI_BLOCK.contains(of)) {
                 currentWord.append(currentLetter);
@@ -244,8 +244,8 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             File outFile = ResourceFXUtils.getOutFile(FURIGANA_READING);
             if (outFile.exists()) {
                 Files.lines(outFile.toPath(), StandardCharsets.UTF_8).forEach(ConsumerEx.makeConsumer(l -> {
-                    String[] split = l.split("=");
-                    mapReading.put(split[0], split[1]);
+                    String[] entry = l.split("=");
+                    mapReading.put(entry[0], entry[1]);
                 }));
             }
             mapReading.addListener((MapChangeListener<String, String>) change -> {

@@ -129,8 +129,8 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         if (!matches) {
             return false;
         }
-        Integer split = StringSigaUtils.getApenasNumerosInt(s0);
-        return Objects.equals(split, number);
+        Integer numbers = StringSigaUtils.getApenasNumerosInt(s0);
+        return Objects.equals(numbers, number);
     }
 
     public void setAnswer(char charAt) {
@@ -185,7 +185,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     }
 
     public static boolean isQuestionPattern(String s) {
-        return s.matches(QUESTION_PATTERN) || s.startsWith(QUESTAO);
+        return s != null && (s.matches(QUESTION_PATTERN) || s.startsWith(QUESTAO));
     }
 
 }

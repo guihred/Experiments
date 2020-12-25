@@ -114,6 +114,7 @@ public final class DocumentHelper {
 
     public static void saveToHtmlFile(Document document, File file) throws TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
         Transformer transformer = transformerFactory.newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
@@ -121,9 +122,9 @@ public final class DocumentHelper {
         StreamResult streamResult = new StreamResult(file);
         transformer.transform(domSource, streamResult);
         RunnableEx.run(() -> {
-            String string = "<!DOCTYPE html>\n" + Files.toString(file, StandardCharsets.UTF_8)
+            String htmlContent = "<!DOCTYPE html>\n" + Files.toString(file, StandardCharsets.UTF_8)
                     .replaceAll("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
-            String lowerCase = StringSigaUtils.replaceToLowerCase(string);
+            String lowerCase = StringSigaUtils.replaceToLowerCase(htmlContent);
             Files.write(lowerCase, file, StandardCharsets.UTF_8);
         });
 

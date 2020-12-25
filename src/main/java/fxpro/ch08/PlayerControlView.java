@@ -146,8 +146,8 @@ public class PlayerControlView extends BaseSongView {
         playImg = new Image("https://cdn3.iconfinder.com/data/icons/google-material-design-icons/"
             + "48/ic_play_circle_outline_48px-128.png");
         playPauseIcon = new ImageView(playImg);
-        playPauseIcon.setScaleX(0.5);
-        playPauseIcon.setScaleY(0.5);
+        playPauseIcon.setScaleX(1. / 2);
+        playPauseIcon.setScaleY(1. / 2);
         final Button playPauseButton = new Button(null, playPauseIcon);
         playPauseButton.setId("playPauseButton");
 

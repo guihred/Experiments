@@ -85,9 +85,9 @@ public final class BrazilianWordSyllableSplitter {
 			String sy = syllable.get(syllable.size() - 1);
 			if (isAscending(sy)) {
 				syllable.remove(syllable.size() - 1);
-				String[] split = sy.split(REGEX_DIPHTHONG);
-				syllable.add(split[0]);
-				syllable.add(split[1]);
+                String[] dipthongParts = sy.split(REGEX_DIPHTHONG);
+                syllable.add(dipthongParts[0]);
+                syllable.add(dipthongParts[1]);
 			}
 		}
 

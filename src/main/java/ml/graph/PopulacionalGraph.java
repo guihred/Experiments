@@ -66,12 +66,12 @@ public class PopulacionalGraph extends Canvas {
         double maxLayout1 = maxLayout.get();
         double lineSize1 = 5;
         gc.strokeLine(layout1, maxLayout1, maxLayout1, maxLayout1);
-        double xMid = prop(layout1, maxLayout1, 0.5);
+        double xMid = prop(layout1, maxLayout1, 1. / 2);
         double xMA = prop(layout1, maxLayout1, BORDER_LEFT);
         double xFE = prop(layout1, maxLayout1, BORDER_RIGHT);
         gc.strokeLine(xMA, layout1, xMA, maxLayout1);
         gc.strokeLine(xFE, layout1, xFE, maxLayout1);
-        prop(layout1, maxLayout1, 0.5);
+        prop(layout1, maxLayout1, 1. / 2);
         gc.setTextAlign(TextAlignment.CENTER);
         double j = (xMA - layout1) / xbins;
         for (int i = 0; i <= xbins; i++) {

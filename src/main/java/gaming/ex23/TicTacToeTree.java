@@ -92,15 +92,15 @@ public class TicTacToeTree {
     }
 
     private TicTacToePlayer player() {
-        Map<TicTacToePlayer, Long> collect = squares.stream().filter(e -> e != TicTacToePlayer.NONE)
+        Map<TicTacToePlayer, Long> nonBlankPoints = squares.stream().filter(e -> e != TicTacToePlayer.NONE)
             .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-        Long x = collect.getOrDefault(TicTacToePlayer.X, 0L);
-        Long o = collect.getOrDefault(TicTacToePlayer.O, 0L);
+        Long x = nonBlankPoints.getOrDefault(TicTacToePlayer.X, 0L);
+        Long o = nonBlankPoints.getOrDefault(TicTacToePlayer.O, 0L);
         if (Objects.equals(x, o) && action != -1) {
             return squares.get(action).opposite();
         }
         return Stream.of(TicTacToePlayer.X, TicTacToePlayer.O)
-            .min(Comparator.comparing(e -> collect.getOrDefault(e, 0L))).orElse(TicTacToePlayer.X);
+                .min(Comparator.comparing(e -> nonBlankPoints.getOrDefault(e, 0L))).orElse(TicTacToePlayer.X);
 
     }
 

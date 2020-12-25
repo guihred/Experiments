@@ -36,10 +36,10 @@ public class PackageTopology extends BaseTopology {
         List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
         Map<String, Map<String, Long>> packageDependencyMap =
                 createFileDependencyMap(allFileDependencies, chosenPackageName);
-        List<String> collect = packageDependencyMap.entrySet().stream()
+        List<String> allPackagesInvolved = packageDependencyMap.entrySet().stream()
                 .flatMap(e -> Stream.concat(Stream.of(e.getKey()), e.getValue().keySet().stream())).distinct()
                 .collect(Collectors.toList());
-        for (String packageName : collect) {
+        for (String packageName : allPackagesInvolved) {
             graph.getModel().addCell(packageName, CellType.RECTANGLE);
         }
         List<Cell> cells = graph.getModel().getAddedCells();

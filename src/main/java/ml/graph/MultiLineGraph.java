@@ -167,7 +167,7 @@ public class MultiLineGraph extends Canvas {
         double j2 = (maxLayout.get() - d) / ybins.get();
         gc.setFill(p);
         gc.setStroke(p);
-        gc.setLineWidth(0.5);
+        gc.setLineWidth(1. / 2);
         for (int k = 0; k < entrySet.size(); k++) {
             double i = k / xProportion;
             double x1 = i * j + d;

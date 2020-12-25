@@ -76,12 +76,12 @@ public final class PPTService {
     }
 
     private static void addTable(XSLFSlide slide, Object ob) {
-        DataframeML build = DataframeBuilder.build((File) ob);
-        String string = DataframeUtils.toString(build);
-        LOG.info(string);
+        DataframeML dataframe = DataframeBuilder.build((File) ob);
+        String dataframeStr = DataframeUtils.toString(dataframe);
+        LOG.info(dataframeStr);
         XSLFTable table = getShapeStream(slide, XSLFTable.class).findFirst().orElseGet(() -> {
             XSLFTable createTable = slide.createTable(1, 2);
-            List<String> cols = build.cols();
+            List<String> cols = dataframe.cols();
             for (int i = 0; i < 2 && i < cols.size(); i++) {
                 XSLFTableCell cell = createTable.getCell(0, i);
                 cell.setText(cols.get(i));
@@ -95,9 +95,9 @@ public final class PPTService {
             List<XSLFTableRow> rows = table.getRows();
             int size = rows.size();
             String columnName =
-                    build.cols().stream().filter(text::equalsIgnoreCase).findFirst().orElse(text.toLowerCase());
-            for (int j = 0; j < build.getSize(); j++) {
-                Object at = build.getAt(columnName, j);
+                    dataframe.cols().stream().filter(text::equalsIgnoreCase).findFirst().orElse(text.toLowerCase());
+            for (int j = 0; j < dataframe.getSize(); j++) {
+                Object at = dataframe.getAt(columnName, j);
                 XSLFTableRow row = j + 1 >= size ? table.addRow() : table.getRows().get(j + 1);
                 XSLFTableCell xslfTableCell = i < row.getCells().size() ? row.getCells().get(i) : row.addCell();
                 xslfTableCell.setText(Objects.toString(at, ""));

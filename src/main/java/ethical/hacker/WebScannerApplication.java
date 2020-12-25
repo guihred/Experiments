@@ -83,10 +83,10 @@ public class WebScannerApplication extends Application {
         String text = cookieField.getText();
         if (StringUtils.isNotBlank(text)) {
 
-            String[] split = text.split("; ");
-            for (String string3 : split) {
-                String[] split2 = string3.split("=");
-                whoIsScanner.cookie(split2[0], split2[1]);
+            String[] cookies = text.split("; ");
+            for (String cookie : cookies) {
+                String[] cookieEntry = cookie.split("=");
+                whoIsScanner.cookie(cookieEntry[0], cookieEntry[1]);
             }
         }
     }

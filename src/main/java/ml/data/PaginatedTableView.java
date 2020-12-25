@@ -41,11 +41,8 @@ public final class PaginatedTableView extends VBox {
 
     @FXML
     private IntegerProperty maxSize;
-
     private ObservableList<Integer> items;
-
     private FilteredList<Integer> filteredItems;
-
     @FXML
     private TableColumn<Integer, Number> numberColumn;
     @FXML
@@ -87,6 +84,7 @@ public final class PaginatedTableView extends VBox {
         SimpleTableViewBuilder.addClosableColumn(table, name.get(), func).textProperty().bind(name);
         updateItems();
     }
+
 
     public void clearColumns() {
         TableColumn<Integer, ?> tableColumn = table.getColumns().get(0);

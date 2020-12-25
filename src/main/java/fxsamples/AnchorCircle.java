@@ -15,7 +15,7 @@ public class AnchorCircle extends Circle {
 
     public AnchorCircle(Color color, DoubleProperty x, DoubleProperty y) {
         super(x.get(), y.get(), 10);
-        setFill(color.deriveColor(1, 1, 1, 0.5));
+        setFill(color.deriveColor(1, 1, 1, 1. / 2));
         setStroke(color);
         setStrokeWidth(2);
         setStrokeType(StrokeType.OUTSIDE);

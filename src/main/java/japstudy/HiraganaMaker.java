@@ -107,11 +107,11 @@ public class HiraganaMaker {
                 if (!t.matches(LESSON_REGEX)) {
                     return;
                 }
-                String[] split = t.replaceAll(LESSON_REGEX, "$1@$2@$3@$4@$5").split("@");
+                String[] lessonParts = t.replaceAll(LESSON_REGEX, "$1@$2@$3@$4@$5").split("@");
 
-                String replaceAll = split[2].replaceAll("\\([^\n]*\\)", "");
+                String replaceAll = lessonParts[2].replaceAll("\\([^\n]*\\)", "");
                 String convertHiragana = convertHiragana(replaceAll);
-                LOG.trace("{}={}={}", replaceAll, convertHiragana, split[1]);
+                LOG.trace("{}={}={}", replaceAll, convertHiragana, lessonParts[1]);
 
             });
         } catch (Exception e) {

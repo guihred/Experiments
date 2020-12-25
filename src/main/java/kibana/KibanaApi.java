@@ -56,13 +56,13 @@ public class KibanaApi {
     public static Map<String, String> getGeridCredencial(String finalIP) {
         Map<String, String> makeKibanaSearch2 =
                 KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", finalIP, 3, "message");
-        String orDefault = makeKibanaSearch2.getOrDefault("message", "");
+        String message = makeKibanaSearch2.getOrDefault("message", "");
         String regex = "WHO:\\s+(.+)";
-        List<String> collect =
-                Stream.of(orDefault.split("\n")).filter(l -> l.matches(regex)).map(s -> s.replaceAll(regex, "$1"))
+        List<String> linesThatMatch =
+                Stream.of(message.split("\n")).filter(l -> l.matches(regex)).map(s -> s.replaceAll(regex, "$1"))
                         .distinct().filter(StringUtils::isNumeric).collect(Collectors.toList());
-        String[] split = orDefault.split("Audit trail record BEGIN");
-        return Stream.of(split).filter(l -> collect.contains(getWhoField(regex, l))).distinct()
+        String[] messages = message.split("Audit trail record BEGIN");
+        return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(regex, l))).distinct()
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s, SupplierEx::nonNull));
     }
 
@@ -232,30 +232,33 @@ public class KibanaApi {
 
     private static void convertToStats(String valueCol, Map<String, String> destinationSearch) {
         destinationSearch.computeIfPresent(valueCol, (k, v) -> {
-            String[] split = v.split("\n");
+            String[] lines = v.split("\n");
             DoubleSummaryStatistics summaryStatistics =
-                    Stream.of(split).skip(1).mapToDouble(StringSigaUtils::toDouble).summaryStatistics();
+                    Stream.of(lines).skip(1).mapToDouble(StringSigaUtils::toDouble).summaryStatistics();
             String min = StringSigaUtils.getFileSize(summaryStatistics.getMin());
             String max = StringSigaUtils.getFileSize(summaryStatistics.getMax());
-            String last = Stream.of(split).skip(Math.max(1, split.length - 2L)).findFirst()
+            String last = Stream.of(lines).skip(Math.max(1, lines.length - 2L)).findFirst()
                     .map(StringSigaUtils::toDouble)
                     .map(StringSigaUtils::getFileSize).orElse("");
+            if (summaryStatistics.getCount() == 0) {
+                return "";
+            }
             return String.format("%s (%s a %s)", last, min, max);
         });
     }
 
     private static String display(Map<String, String> ob) {
-        List<List<String>> collect =
+        List<List<String>> listOfFields =
                 ob.values().stream().map(s -> Stream.of(s.split("\n")).collect(Collectors.toList()))
                         .collect(Collectors.toList());
-        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
-        collect.forEach(l -> {
-            if (l.size() < orElse) {
+        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
+        listOfFields.forEach(l -> {
+            if (l.size() < maxNumFields) {
                 l.add(0, "\t");
             }
         });
-        return IntStream.range(0, orElse).mapToObj(
-                j -> collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
+        return IntStream.range(0, maxNumFields).mapToObj(
+                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
                 .distinct().collect(Collectors.joining("\n"));
     }
 

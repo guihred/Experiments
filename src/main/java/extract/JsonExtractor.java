@@ -72,11 +72,7 @@ public final class JsonExtractor {
     }
 
     public static String convertObj(JsonNode jsonNode) {
-        String asText = jsonNode.asText();
-        // if (!asText.matches("\\d{10}")) {
-            return asText;
-        // }
-        // return DateFormatUtils.epochSecondToLocalDate(asText).toString();
+        return jsonNode.asText();
     }
 
     public static String displayJsonFromFile(File outFile, String... a) throws IOException {
@@ -161,38 +157,38 @@ public final class JsonExtractor {
         RunnableEx.remap(() -> tryToRead(build, allItems, file), "ERROR READING");
     }
 
-    public static List<Map<String, String>> remap(Map<String, String> ob) {
-        List<List<String>> collect =
-                ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
-        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
-        List<String> keys = ob.keySet().stream().collect(Collectors.toList());
-        List<Map<String, String>> arrayList = new ArrayList<>();
-        for (int i = 0; i < orElse; i++) {
-            Map<String, String> linkedHashMap = new LinkedHashMap<>();
+    public static List<Map<String, String>> remap(Map<String, String> object) {
+        List<List<String>> listOfFields =
+                object.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
+        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
+        List<String> keys = object.keySet().stream().collect(Collectors.toList());
+        List<Map<String, String>> remappedObjs = new ArrayList<>();
+        for (int i = 0; i < maxNumFields; i++) {
+            Map<String, String> mapOfFields = new LinkedHashMap<>();
             int j = i;
-            List<String> collect2 =
-                    collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
-            IntStream.range(0, keys.size()).forEach(k -> linkedHashMap.put(keys.get(k), collect2.get(k)));
-            arrayList.add(linkedHashMap);
+            List<String> remapped =
+                    listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
+            IntStream.range(0, keys.size()).forEach(k -> mapOfFields.put(keys.get(k), remapped.get(k)));
+            remappedObjs.add(mapOfFields);
         }
-        return arrayList;
+        return remappedObjs;
     }
 
     public static List<Map<String, String>> remap(Map<String, String> ob, String regex) {
         if (StringUtils.isBlank(regex)) {
             return remap(ob);
         }
-        List<List<String>> collect =
+        List<List<String>> listOfFields =
                 ob.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
-        int orElse = collect.stream().mapToInt(List<String>::size).max().orElse(0);
+        int maxNumOfFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
         List<String> keys = ob.keySet().stream().collect(Collectors.toList());
         List<Map<String, String>> finalList = new ArrayList<>();
         List<List<String>> partialList = new ArrayList<>();
         Map<String, String> reference = null;
-        for (int i = 0; i < orElse; i++) {
+        for (int i = 0; i < maxNumOfFields; i++) {
             int j = i;
             List<String> collect2 =
-                    collect.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
+                    listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
             if (collect2.stream().anyMatch(s -> s.matches(regex))) {
                 reference = new LinkedHashMap<>();
                 Map<String, String> m = reference;
@@ -221,16 +217,16 @@ public final class JsonExtractor {
         Set<Entry<String, String>> entrySet = newItem.entrySet();
         list.clear();
         for (Entry<String, String> entry : entrySet) {
-            List<Map<String, String>> collect = Stream.of(entry.getValue().split("\n"))
+            List<Map<String, String>> valueLines = Stream.of(entry.getValue().split("\n"))
                     .map(e -> newMap(entry.getKey(), e)).collect(Collectors.toList());
             if (!list.isEmpty()) {
                 for (int i = 0; i < list.size(); i++) {
                     Map<String, String> map = list.get(i);
-                    map.putAll(collect.get(i));
+                    map.putAll(valueLines.get(i));
                 }
                 continue;
             }
-            list.addAll(collect);
+            list.addAll(valueLines);
         }
         return true;
     }
@@ -329,9 +325,9 @@ public final class JsonExtractor {
             String key = next.getKey();
             if (filters.length == 0 || Arrays.asList(filters).contains(key)) {
                 yaml.append("\n" + repeat + " \"" + key + "\":");
-                ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(filters));
-                arrayList.remove(key);
-                String[] array = arrayList.toArray(new String[] {});
+                List<String> filtersCopy = new ArrayList<>(Arrays.asList(filters));
+                filtersCopy.remove(key);
+                String[] array = filtersCopy.toArray(new String[] {});
                 processNode(next.getValue(), yaml, depth + 1, array);
                 if (iterator.hasNext()) {
                     yaml.append(",");
@@ -342,9 +338,9 @@ public final class JsonExtractor {
     }
 
     private static void clearEmptyEntries(Map<String, String> newMap) {
-        List<String> collect = newMap.entrySet().stream().filter(eb -> StringUtils.isBlank(eb.getValue()))
+        List<String> blankValues = newMap.entrySet().stream().filter(eb -> StringUtils.isBlank(eb.getValue()))
                 .map(Entry<String, String>::getKey).collect(Collectors.toList());
-        for (String key : collect) {
+        for (String key : blankValues) {
             newMap.remove(key);
         }
     }
@@ -509,9 +505,7 @@ public final class JsonExtractor {
         JsonNode rootNode = objectMapper.readTree(Files.newInputStream(file.toPath()));
         List<JsonNode> currentNodes = new ArrayList<>();
         currentNodes.add(rootNode);
-        Map<String, String> collect =
-                toMap(rootNode);
-        TreeItem<Map<String, String>> value = new TreeItem<>(collect);
+        TreeItem<Map<String, String>> value = new TreeItem<>(toMap(rootNode));
         value.setGraphic(SimpleTextBuilder.newBoldText(rootNode.asText()));
         build.setRoot(value);
         allItems.put(rootNode, value);

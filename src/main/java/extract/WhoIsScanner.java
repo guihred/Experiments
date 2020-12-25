@@ -40,8 +40,8 @@ public class WhoIsScanner {
     private File print;
 
     public boolean containsWait(File htmlFile) throws IOException {
-        String string = com.google.common.io.Files.toString(htmlFile, StandardCharsets.UTF_8);
-        return Stream.of(subFolder).allMatch(t -> !string.contains(t)) || string.contains(waitStr);
+        String fileContent = com.google.common.io.Files.toString(htmlFile, StandardCharsets.UTF_8);
+        return Stream.of(subFolder).allMatch(t -> !fileContent.contains(t)) || fileContent.contains(waitStr);
     }
 
     public WhoIsScanner cookie(String string, String string2) {
@@ -91,9 +91,9 @@ public class WhoIsScanner {
 
     public ObservableList<Map<String, String>> scanIps(String ip) {
         ObservableList<Map<String, String>> observableArrayList = FXCollections.observableArrayList();
-        String[] split = ip.split("[\\s,;]+");
+        String[] ips = ip.split("[\\s,;]+");
         RunnableEx.runNewThread(() -> {
-            for (String string : split) {
+            for (String string : ips) {
                 RunnableEx.run(() -> observableArrayList.add(whoIsScan(string)));
             }
         });

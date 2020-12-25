@@ -125,9 +125,9 @@ public class EthicalHackController extends EthicalHackApp {
 
     public void onActionReverseDNS() {
         items.clear();
-        String[] split = address.getText().split("[ ,;]+");
+        String[] ips = address.getText().split("[ ,;]+");
         WhoIsScanner whoIsScanner = new WhoIsScanner();
-        for (String ip : split) {
+        for (String ip : ips) {
             Map<String, String> linkedHashMap = new LinkedHashMap<>();
             String reverseDns = whoIsScanner.reverseDNS(ip);
             linkedHashMap.put("IP", ip);

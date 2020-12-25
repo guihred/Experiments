@@ -75,12 +75,13 @@ public class RegressionChartExample extends Application {
     private static void onChangeCountry(DataframeML x, String column, LineChart<Number, Number> data,
         List<Object> list2, Object country) {
         Map<String, Object> rowMap = x.rowMap(list2.indexOf(country));
-        List<Entry<String, Object>> collect = rowMap.entrySet().stream().filter(e -> StringUtils.isNumeric(e.getKey()))
+        List<Entry<String, Object>> numericKeys =
+                rowMap.entrySet().stream().filter(e -> StringUtils.isNumeric(e.getKey()))
             .collect(Collectors.toList());
         RegressionModel regressionModel = new RegressionModel();
         Series<Number, Number> series = regressionModel.createSeries(rowMap.get(column).toString(),
-            collect.stream().map(e -> StringSigaUtils.toInteger(e.getKey())).collect(Collectors.toList()),
-            collect.stream().map(Entry<String, Object>::getValue).collect(Collectors.toList()));
+                numericKeys.stream().map(e -> StringSigaUtils.toInteger(e.getKey())).collect(Collectors.toList()),
+                numericKeys.stream().map(Entry<String, Object>::getValue).collect(Collectors.toList()));
         Series<Number, Number> expected = regressionModel.getExpectedSeries();
         Series<Number, Number> polinominalSeries = regressionModel.getPolinominalSeries();
 

@@ -187,12 +187,12 @@ public class JsonViewer extends Application {
             list.clear();
             sideTable.getColumns().clear();
             addColumns(sideTable, Arrays.asList("Key", "Value"));
-            List<Map<String, String>> collect = map.entrySet().stream().map(e -> {
+            List<Map<String, String>> remappedEntry = map.entrySet().stream().map(e -> {
                 Map<String, String> newMap = newMap("Key", e.getKey());
                 newMap.put("Value", e.getValue());
                 return newMap;
             }).collect(Collectors.toList());
-            list.addAll(collect);
+            list.addAll(remappedEntry);
         }
     }
 
@@ -202,15 +202,15 @@ public class JsonViewer extends Application {
         }
 
         Map<String, FunctionEx<Map<String, String>, Object>> mapa = new HashMap<>();
-        List<Map<String, String>> collect = tree.getItems();
-        List<String> collect2 =
-                collect.stream().flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList());
-        for (String key : collect2) {
+        List<Map<String, String>> treeItems = tree.getItems();
+        List<String> flatItems =
+                treeItems.stream().flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList());
+        for (String key : flatItems) {
             mapa.put(key, t -> t.get(key));
         }
 
         File outFile = ResourceFXUtils.getOutFile("xlsx/" + file.getName().replaceAll(".json", ".xlsx"));
-        ExcelService.getExcel(collect, mapa, outFile);
+        ExcelService.getExcel(treeItems, mapa, outFile);
         ImageFXUtils.openInDesktop(outFile);
     }
 
@@ -247,9 +247,9 @@ public class JsonViewer extends Application {
         if (valueKeySet.isEmpty()) {
             list.clear();
             addColumns(sideTable, keySet);
-            List<Map<String, String>> collect = newValue.getChildren().stream()
+            List<Map<String, String>> childrenValues = newValue.getChildren().stream()
                     .map(TreeItem<Map<String, String>>::getValue).collect(Collectors.toList());
-            list.addAll(collect);
+            list.addAll(childrenValues);
             return;
         }
         changeDisplayIfTooBig(list, sideTable);

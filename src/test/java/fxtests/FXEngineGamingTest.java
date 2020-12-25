@@ -59,13 +59,14 @@ public class FXEngineGamingTest extends AbstractTestExecution {
                 whitePieces = queryAll.stream().filter(e -> e.getState() == CheckersPlayer.WHITE).collect(toList());
                 tryClickOn(randomRemoveItem(whitePieces));
             }
-            List<CheckersSquare> collect = queryAll.stream().filter(CheckersSquare::getHighlight).collect(toList());
-            tryClickOn(randomItem(collect));
+            List<CheckersSquare> squares = queryAll.stream().filter(CheckersSquare::getHighlight).collect(toList());
+            tryClickOn(randomItem(squares));
         }
-        List<CheckersSquare> collect = IntStream.range(0, 8 * 8).mapToObj(i -> new CheckersSquare(i % 2 == i / 8 % 2))
+        List<CheckersSquare> allSquares =
+                IntStream.range(0, 8 * 8).mapToObj(i -> new CheckersSquare(i % 2 == i / 8 % 2))
             .collect(Collectors.toList());
-        CheckersHelper.reset(collect);
-        getLogger().info("{}", new CheckersTree(collect, 0, null));
+        CheckersHelper.reset(allSquares);
+        getLogger().info("{}", new CheckersTree(allSquares, 0, null));
 
     }
 

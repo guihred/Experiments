@@ -181,10 +181,10 @@ public class PaintController {
         availableColors.add(Color.WHITE);
         availableColors.add(Color.grayRgb(colorDiff * 2));
         for (int i = 0; i < 6; i++) {
-            availableColors.add(Color.hsb(i * step, 1, 0.5));
+            availableColors.add(Color.hsb(i * step, 1, 1. / 2));
         }
         for (int i = 6; i < 11; i++) {
-            availableColors.add(Color.hsb(i * step, .5, 1));
+            availableColors.add(Color.hsb(i * step, 1. / 2, 1));
         }
         availableColors.add(Color.TRANSPARENT.invert());
         return availableColors;

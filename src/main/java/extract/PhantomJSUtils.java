@@ -62,9 +62,9 @@ public final class PhantomJSUtils {
         HttpResponse response = client.execute(post);
         HttpEntity entity = response.getEntity();
         BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
-        List<String> collect = rd.lines().collect(Collectors.toList());
-        Files.write(outFile.toPath(), collect);
-        return collect;
+        List<String> allLines = rd.lines().collect(Collectors.toList());
+        Files.write(outFile.toPath(), allLines);
+        return allLines;
     }
 
     public static void postJson(String url, String content, Map<String, String> headers, File outFile)
@@ -118,7 +118,7 @@ public final class PhantomJSUtils {
             ghostDriver.manage().window().maximize();
             ghostDriver.get(url);
             RunnableEx.run(() -> cookies.forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v))));
-            RunnableEx.sleepSeconds(.5);
+            RunnableEx.sleepSeconds(1. / 2);
             String pageSource = ghostDriver.getPageSource();
             for (int i = 0; StringUtils.isNotBlank(loadingStr) && pageSource.contains(loadingStr) && i < 10; i++) {
                 RunnableEx.sleepSeconds(5);

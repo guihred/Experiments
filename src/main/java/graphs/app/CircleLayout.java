@@ -43,11 +43,11 @@ public class CircleLayout extends Layout {
         int bound = radius(cells.size(), mul,
             cells.stream().mapToDouble(value -> value.getBoundsInLocal().getWidth()).max().orElse(20));
 
-        List<Cell> collect =
+        List<Cell> allCells =
                 LayerSplitter.getLayers(cells, allEdges).stream().flatMap(List<Cell>::stream)
                         .collect(Collectors.toList());
         allEdges.forEach(e -> e.setSelected(false));
-        generateCircle(collect, centerX, centerY, 0, bound);
+        generateCircle(allCells, centerX, centerY, 0, bound);
     }
 
     public static int radius(int size2, int mul, double cellBound) {

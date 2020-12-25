@@ -146,9 +146,9 @@ public class SVGChanger {
 	private String replaceCommand(final String group) {
 		String svgCommand = group.substring(0, 1);
 		int args = SVGCommand.valueOf(svgCommand.toUpperCase()).getArgs();
-		String[] split = group.split("[\\s,[A-Za-z]]+|(?<=\\d)(?=-)");
+        String[] commandParts = group.split("[\\s,[A-Za-z]]+|(?<=\\d)(?=-)");
 		if (args == 1) {
-			return replaceOneCommand(split, svgCommand);
+            return replaceOneCommand(commandParts, svgCommand);
 		}
 		if (args == 0) {
 			currentX.set(moveX);
@@ -156,10 +156,10 @@ public class SVGChanger {
 			return group.toLowerCase();
 		}
 		if (args % 2 == 0) {
-			return replaceEvenCommand(split, svgCommand, args);
+            return replaceEvenCommand(commandParts, svgCommand, args);
 		}
 		if (args == 7) {
-			return replaceArcCommand(split, svgCommand, args);
+            return replaceArcCommand(commandParts, svgCommand, args);
 		}
 		return group;
 	}

@@ -132,7 +132,7 @@ public class CSVUtils {
     public static void appendLines(File file, List<Map<String, Object>> rowMap) {
         boolean exists = file.exists();
         List<String> keySet = rowMap.get(0).keySet().stream().collect(Collectors.toList());
-        String csvHeader = keySet.stream().collect(Collectors.joining("\",\"", "\"", "\""));
+        String csvHeader = join(keySet.stream());
         if (exists) {
             String csvHeader2 = SupplierEx.get(() -> getHeader(file));
             if (!csvHeader.equals(csvHeader2)) {
@@ -146,9 +146,8 @@ public class CSVUtils {
             }
             for (Map<String, Object> map : rowMap) {
                 keySet.forEach(s -> map.putIfAbsent(s, ""));
-                fw.append(map.entrySet().stream().sorted(Comparator.comparing(t -> keySet.indexOf(t.getKey())))
-                        .map(Entry<String, Object>::getValue).map(Object::toString)
-                        .collect(Collectors.joining("\",\"", "\"", "\"\n")));
+                fw.append(join(map.entrySet().stream().sorted(Comparator.comparing(t -> keySet.indexOf(t.getKey())))
+                        .map(Entry<String, Object>::getValue).map(Object::toString)));
             }
         } catch (Exception e1) {
             LOGGER.error("{}", e1);
@@ -242,13 +241,12 @@ public class CSVUtils {
 
         List<TableColumn<T, ?>> columns =
                 table.getColumns().stream().filter(c -> !"Nº".equals(c.getText())).collect(Collectors.toList());
-        String collect2 =
-                columns.stream().map(TableColumn::getText).collect(Collectors.joining("\",\"", "\"", "\""));
-        String collect = selectedItems.stream()
-                .map(l -> columns.stream().map(e -> Objects.toString(e.getCellData(l), ""))
-                        .map(s -> s.replaceAll("\"", "\\\"")).collect(Collectors.joining("\",\"", "\"", "\"")))
+        String fields = join(columns.stream().map(TableColumn::getText));
+        String lines = selectedItems.stream()
+                .map(l -> join(columns.stream().map(e -> Objects.toString(e.getCellData(l), ""))
+                        .map(s -> s.replaceAll("\"", "\\\""))))
                 .collect(Collectors.joining("\n"));
-        Files.write(f.toPath(), Arrays.asList(collect2, collect), StandardCharsets.UTF_8);
+        Files.write(f.toPath(), Arrays.asList(fields, lines), StandardCharsets.UTF_8);
     }
 
     public static void splitFile(File source, int columnIndex) {
@@ -297,6 +295,10 @@ public class CSVUtils {
 
     private static char getPreviousChar(char[] chars, int i) {
         return i > 0 ? chars[i - 1] : ' ';
+    }
+
+    private static String join(Stream<String> stream) {
+        return stream.collect(Collectors.joining("\",\"", "\"", "\""));
     }
 
     private static Writer newWrite(File source, String firstLine, String string) throws IOException {

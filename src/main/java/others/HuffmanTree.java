@@ -24,13 +24,13 @@ public class HuffmanTree {
     }
 
     public String decode(String text) {
-        List<String> collect =
+        List<String> codesAsString =
                 text.codePoints().mapToObj(e -> String.valueOf(Character.toChars(e))).collect(Collectors.toList());
         HuffmanTree cur = this;
         StringBuilder decoded = new StringBuilder();
         StringBuilder curString = new StringBuilder();
-        for (int i = 0; i < collect.size(); i++) {
-            curString.append(collect.get(i));
+        for (int i = 0; i < codesAsString.size(); i++) {
+            curString.append(codesAsString.get(i));
             String str = curString.toString();
             if (cur.entry == null) {
                 cur = cur.oned.code.startsWith(str) ? cur.oned : cur.zerod;

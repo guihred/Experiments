@@ -52,13 +52,13 @@ public class DataframeUtils extends DataframeML {
         List<Object> list = dataframe.list(feature);
         List<Object> list2 = dataframe.list(target);
 
-        Map<Object, Double> collect = IntStream.range(0, dataframe.getSize())
+        Map<Object, Double> asSeries = IntStream.range(0, dataframe.getSize())
                 .filter(i -> i < list.size() && i < list2.size())
                 .filter(i -> list.get(i) != null && list2.get(i) != null).boxed()
                 .collect(Collectors.groupingBy(list::get, LinkedHashMap::new,
                         Collectors.mapping(list2::get, Collectors.summingDouble(t -> ((Number) t).doubleValue()))));
 
-        return collect.entrySet().stream().sorted(Comparator.comparing(Entry<Object, Double>::getValue))
+        return asSeries.entrySet().stream().sorted(Comparator.comparing(Entry<Object, Double>::getValue))
                 .collect(Collectors.toList());
     }
 
@@ -470,10 +470,12 @@ public class DataframeUtils extends DataframeML {
         int max = m.stream().mapToInt(e -> e != null ? e.size() : 0).max().orElse(1);
         for (int j = 0; j < max; j++) {
             int i1 = j;
-            List<Object> collect = m.stream().map(c -> c != null ? c.stream().skip(i1).findFirst().orElse(null) : null)
+            List<Object> crossFeature =
+                    m.stream().map(c -> c != null ? c.stream().skip(i1).findFirst().orElse(null) : null)
                     .collect(Collectors.toList());
-            dataframe.getDataframe().put(header + j, collect);
-            dataframe.putFormat(header + j, (Class<? extends Comparable<?>>) collect.stream().filter(Objects::nonNull)
+            dataframe.getDataframe().put(header + j, crossFeature);
+            dataframe.putFormat(header + j, (Class<? extends Comparable<?>>) crossFeature.stream()
+                    .filter(Objects::nonNull)
                     .findFirst().map(Object::getClass).orElse(null));
         }
     }
@@ -496,10 +498,10 @@ public class DataframeUtils extends DataframeML {
         int max = m.size();
         for (int j = 0; j < max; j++) {
             int i1 = j;
-            Object collect = m.stream().skip(i1).findFirst().orElse(null);
-            dataframe.getDataframe().computeIfAbsent(header + j, h -> new ArrayList<>()).add(collect);
+            Object crossFeature = m.stream().skip(i1).findFirst().orElse(null);
+            dataframe.getDataframe().computeIfAbsent(header + j, h -> new ArrayList<>()).add(crossFeature);
             dataframe.formatMap.putIfAbsent(header + j,
-                    (Class<? extends Comparable<?>>) FunctionEx.mapIf(collect, Object::getClass));
+                    (Class<? extends Comparable<?>>) FunctionEx.mapIf(crossFeature, Object::getClass));
         }
     }
 
@@ -508,10 +510,10 @@ public class DataframeUtils extends DataframeML {
         Map<?, ?> m = (Map<?, ?>) apply;
         List<Object> max = m.keySet().stream().collect(Collectors.toList());
         for (Object j : max) {
-            Object collect = m.get(j);
-            dataframe.getDataframe().computeIfAbsent(header + j, h -> new ArrayList<>()).add(collect);
+            Object crossFeature = m.get(j);
+            dataframe.getDataframe().computeIfAbsent(header + j, h -> new ArrayList<>()).add(crossFeature);
             dataframe.formatMap.putIfAbsent(header + j,
-                    (Class<? extends Comparable<?>>) FunctionEx.mapIf(collect, Object::getClass));
+                    (Class<? extends Comparable<?>>) FunctionEx.mapIf(crossFeature, Object::getClass));
         }
     }
 
@@ -521,9 +523,10 @@ public class DataframeUtils extends DataframeML {
         List<Object> max = m.stream().flatMap(e -> e != null ? e.keySet().stream() : Stream.empty()).distinct()
                 .collect(Collectors.toList());
         for (Object i1 : max) {
-            List<Object> collect = m.stream().map(c -> c != null ? c.get(i1) : null).collect(Collectors.toList());
-            dataframe.getDataframe().put(header + i1, collect);
-            dataframe.putFormat(header + i1, (Class<? extends Comparable<?>>) collect.stream().filter(Objects::nonNull)
+            List<Object> crossFeature = m.stream().map(c -> c != null ? c.get(i1) : null).collect(Collectors.toList());
+            dataframe.getDataframe().put(header + i1, crossFeature);
+            dataframe.putFormat(header + i1, (Class<? extends Comparable<?>>) crossFeature.stream()
+                    .filter(Objects::nonNull)
                     .findFirst().map(Object::getClass).orElse(null));
         }
     }
@@ -541,8 +544,8 @@ public class DataframeUtils extends DataframeML {
         int max = m.size();
         for (int j = 0; j < max; j++) {
             int i1 = j;
-            Object collect = m.stream().skip(i1).findFirst().orElse(null);
-            dataframeML.stats.computeIfAbsent(header1 + j, h -> accumulator(dataframeML, h)).accept(collect);
+            Object cross = m.stream().skip(i1).findFirst().orElse(null);
+            dataframeML.stats.computeIfAbsent(header1 + j, h -> accumulator(dataframeML, h)).accept(cross);
         }
     }
 
@@ -550,8 +553,8 @@ public class DataframeUtils extends DataframeML {
         Map<?, ?> m = (Map<?, ?>) apply;
         List<Object> max = m.keySet().stream().collect(Collectors.toList());
         for (Object j : max) {
-            Object collect = m.get(j);
-            dataframeML.stats.computeIfAbsent(header1 + j, h -> accumulator(dataframeML, h)).accept(collect);
+            Object cross = m.get(j);
+            dataframeML.stats.computeIfAbsent(header1 + j, h -> accumulator(dataframeML, h)).accept(cross);
         }
     }
 

@@ -52,9 +52,9 @@ public final class QuadrixHelper {
         ObservableList<Concurso> concursos) {
         runNewThread(() -> {
             if (e2.getVagas().isEmpty()) {
-                List<Entry<String, String>> collect = linksFound.stream()
+                List<Entry<String, String>> linksWithResult = linksFound.stream()
                     .filter(t -> containsIgnoreCase(t.getKey(), "Resultado")).collect(toList());
-                for (Entry<String, String> entry : collect) {
+                for (Entry<String, String> entry : linksWithResult) {
                     getVagas(e2, entry);
                     if (!e2.getVagas().isEmpty()) {
                         break;
@@ -138,13 +138,14 @@ public final class QuadrixHelper {
         Concurso value1 = concurso.getValue();
         ObservableList<Entry<String, String>> linksFound = value1.getLinksFound();
         String number = Objects.toString(value) + "";
-        List<Entry<String, String>> collect = linksFound.stream()
+        List<Entry<String, String>> linksWithProva = linksFound.stream()
             .filter(e -> e.getKey().contains("Provas") || e.getKey().contains(number))
             .sorted(Comparator.comparing(e -> IadesHelper.containsNumber(number, e))).collect(toList());
-        File file = collect.stream().map(QuadrixHelper::getFilesFromPage).filter(e -> !e.isEmpty()).map(e -> e.get(0))
+        File file = linksWithProva.stream().map(QuadrixHelper::getFilesFromPage).filter(e -> !e.isEmpty())
+                .map(e -> e.get(0))
             .findFirst().orElse(null);
         if (file == null) {
-            LOG.info("COULD NOT DOWNLOAD {}/{} - {}", collect, value1, value);
+            LOG.info("COULD NOT DOWNLOAD {}/{} - {}", linksWithProva, value1, value);
             return;
         }
         File file2 = IadesHelper.getPDF(value, file);
@@ -170,8 +171,8 @@ public final class QuadrixHelper {
         }
         List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
             .collect(toList());
-        String[] split = Objects.toString(vaga, "").split("\\s*-\\s*");
-        String cargo = split[split.length - 1].trim();
+        String[] parts = Objects.toString(vaga, "").split("\\s*-\\s*");
+        String cargo = parts[parts.length - 1].trim();
         Optional<String> findFirst = linesRead.stream()
             .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
         if (!findFirst.isPresent()) {
@@ -192,20 +193,20 @@ public final class QuadrixHelper {
     }
 
     private static void extrairVagas(Concurso e2, File f) {
-        for (String string : PdfUtils.getAllLines(f)) {
-            if (string.matches("(?i).+\\(código \\d+\\).*")) {
-                String split = string.split(" *\\(")[0];
-                addVaga(e2, split);
+        for (String line : PdfUtils.getAllLines(f)) {
+            if (line.matches("(?i).+\\(código \\d+\\).*")) {
+                String firstWord = line.split(" *\\(")[0];
+                addVaga(e2, firstWord);
                 continue;
             }
-            String[] split = string.split(" ");
+            String[] words = line.split(" ");
             String regex = "\\d{3}\\.\\d+\\/\\d";
-            List<String> asList = Arrays.asList(split);
-            Optional<String> findFirst = asList.stream().filter(e -> e.matches(regex)).findFirst();
+            List<String> wordList = Arrays.asList(words);
+            Optional<String> findFirst = wordList.stream().filter(e -> e.matches(regex)).findFirst();
             if (findFirst.isPresent()) {
-                int indexOf = asList.indexOf(findFirst.get());
-                String collect = Stream.of(split).skip(1).limit(indexOf - 1L).collect(Collectors.joining(" "));
-                String vaga = collect.split(" *-")[0];
+                int indexOf = wordList.indexOf(findFirst.get());
+                String skipFirstWord = Stream.of(words).skip(1).limit(indexOf - 1L).collect(Collectors.joining(" "));
+                String vaga = skipFirstWord.split(" *-")[0];
                 if (!vaga.matches(".*" + regex + ".*")) {
                     addVaga(e2, vaga);
                 }

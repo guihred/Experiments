@@ -57,7 +57,7 @@ public final class ImageFXUtils {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 float value = noise[x][y];
-                double gray = ImageFXUtils.normalizeValue(value, -.5, .5, 0., 1.);
+                double gray = ImageFXUtils.normalizeValue(value, -1. / 2, 1. / 2, 0., 1.);
                 gray = DrawOnPoint.clamp(gray, 0, 1);
                 Color color = Color.RED.interpolate(Color.YELLOW, gray);
                 pw.setColor(x, y, color);
@@ -226,20 +226,20 @@ public final class ImageFXUtils {
     }
 
     private static Image gatherImages(List<File> files) {
-        List<Image> collect =
+        List<Image> images =
                 files.stream().map(FunctionEx.makeFunction(f -> new Image(convertToURL(f).toExternalForm())))
                         .filter(Objects::nonNull).collect(Collectors.toList());
-        if (collect.isEmpty()) {
+        if (images.isEmpty()) {
             return null;
         }
-        if (collect.size() == 1) {
-            return collect.get(0);
+        if (images.size() == 1) {
+            return images.get(0);
         }
-        double width = collect.stream().mapToDouble(Image::getWidth).max().orElse(0);
-        double height = collect.stream().mapToDouble(Image::getHeight).max().orElse(0);
-        WritableImage writableImage = new WritableImage((int) width, (int) height * collect.size());
+        double width = images.stream().mapToDouble(Image::getWidth).max().orElse(0);
+        double height = images.stream().mapToDouble(Image::getHeight).max().orElse(0);
+        WritableImage writableImage = new WritableImage((int) width, (int) height * images.size());
         int x = 0;
-        for (Image image : collect) {
+        for (Image image : images) {
             int height2 = (int) image.getHeight();
             writableImage.getPixelWriter().setPixels(0, x, (int) image.getWidth(), height2, image.getPixelReader(), 0,
                     0);

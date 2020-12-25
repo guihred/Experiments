@@ -20,13 +20,13 @@ public class CandidatoDAO extends BaseDAO {
     }
 
     public Map<String, Long> distinctFields() {
-        List<String> fields2 = ClassReflectionUtils.getFields(Candidato.class);
+        List<String> allFields = ClassReflectionUtils.getFields(Candidato.class);
         return execute(session -> {
             StringBuilder hql = new StringBuilder();
             hql.append("SELECT   ");
-            String collect = fields2.stream().map(f -> String.format(" COUNT(DISTINCT %s ) as %s", f, f))
+            String fieldsCount = allFields.stream().map(f -> String.format(" COUNT(DISTINCT %s ) as %s", f, f))
                     .collect(Collectors.joining(","));
-            hql.append(collect);
+            hql.append(fieldsCount);
             hql.append(" FROM  Candidato ");
             return toMap( session.createQuery(hql.toString()));
         });

@@ -184,9 +184,9 @@ public class FXFileReadersTest extends AbstractTestExecution {
                     String string = convert(l.get(0));
                     if (string.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
                         Map<String, String> kibanaFullScan = KibanaApi.kibanaFullScan(string);
-                        List<String> collect = kibanaFullScan.values().stream().collect(Collectors.toList());
-                        collect.add(1, "Guilherme");
-                        return collect;
+                        List<String> kibanaScanned = kibanaFullScan.values().stream().collect(Collectors.toList());
+                        kibanaScanned.add(1, "Guilherme");
+                        return kibanaScanned;
                     }
                     return null;
                 }, ResourceFXUtils.getOutFile("apiResult2.xlsx")));

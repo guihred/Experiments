@@ -47,21 +47,21 @@ public class Crypto {
 		String cipherText = getCipherText();
 
 		int sqrtCipher = (int) Math.floor(Math.sqrt(cipherText.length()));
-		String[] split = cipherText.split("(?<=\\G.{" + sqrtCipher + "})");
-		if (split.length > 1) {
-			int length = split[split.length - 1].length();
+        String[] parts = cipherText.split("(?<=\\G.{" + sqrtCipher + "})");
+        if (parts.length > 1) {
+            int length = parts[parts.length - 1].length();
 			while (length < sqrtCipher - 1) {
 				for (int i = sqrtCipher - length-1,j=0; i > 0; i--,j++) {
-					String a = split[split.length - 2 - j];
-					String b = split[split.length - 1 - j];
-					split[split.length - 2 - j] = a.substring(0, a.length() - 1);
-					split[split.length - 1 - j] = a.substring(a.length() - 1, a.length()) + b;
+                    String a = parts[parts.length - 2 - j];
+                    String b = parts[parts.length - 1 - j];
+                    parts[parts.length - 2 - j] = a.substring(0, a.length() - 1);
+                    parts[parts.length - 1 - j] = a.substring(a.length() - 1, a.length()) + b;
 				}
-				length = split[split.length - 1].length();
+                length = parts[parts.length - 1].length();
 			}
 		}
 
-		return Stream.of(split).collect(Collectors.joining(" "));
+        return Stream.of(parts).collect(Collectors.joining(" "));
 	}
 
 	public String getNormalizedPlaintext() {

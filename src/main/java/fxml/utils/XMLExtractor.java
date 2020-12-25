@@ -44,16 +44,16 @@ public final class XMLExtractor {
             return;
         }
         NodeList childNodes = item.getChildNodes();
-        List<Node> collect =
+        List<Node> allChildren =
                 IntStream.range(0, childNodes.getLength()).mapToObj(childNodes::item).collect(Collectors.toList());
-        if (collect.stream().allMatch(n -> n.getNodeType() == Node.TEXT_NODE)) {
-            if (collect.size() == 1) {
-                String nodeValue = collect.get(0).getNodeValue();
+        if (allChildren.stream().allMatch(n -> n.getNodeType() == Node.TEXT_NODE)) {
+            if (allChildren.size() == 1) {
+                String nodeValue = allChildren.get(0).getNodeValue();
                 String nodeName = item.getNodeName();
                 e.setValue(newMap(nodeName, nodeValue));
                 return;
             }
-            for (Node item2 : collect) {
+            for (Node item2 : allChildren) {
                 if (item2.getNodeType() == Node.TEXT_NODE) {
                     String nodeValue = item2.getNodeValue();
                     String nodeName = item.getNodeName();
@@ -120,9 +120,9 @@ public final class XMLExtractor {
                 keySet.addAll(newItem.keySet());
                 sideTable.getColumns().clear();
                 addColumns(sideTable, keySet);
-                List<Map<String, String>> collect = newValue.getChildren().stream()
+                List<Map<String, String>> treeItemChildren = newValue.getChildren().stream()
                         .map(TreeItem<Map<String, String>>::getValue).collect(Collectors.toList());
-                for (Map<String, String> t : collect) {
+                for (Map<String, String> t : treeItemChildren) {
                     if (newItem.keySet().stream().anyMatch(t::containsKey)) {
                         newItem = new SimpleMap();
                         list.add(newItem);
@@ -168,9 +168,9 @@ public final class XMLExtractor {
         while (!lista.isEmpty()) {
             TreeItem<Map<String, String>> treeItem = lista.remove(0);
             if (anyChildLeaf(treeItem)) {
-                Map<String, String> collect = toMap(treeItem);
-                addHeader(finalList, collect);
-                finalList.add(collect);
+                Map<String, String> treeItemAsMap = toMap(treeItem);
+                addHeader(finalList, treeItemAsMap);
+                finalList.add(treeItemAsMap);
             } else if (treeItem.isLeaf()) {
                 finalList.add(treeItem.getValue());
             } else {

@@ -109,7 +109,7 @@ public class HeatGraph extends Canvas {
 
         gc.setLineWidth(5);
         gc.setFill(Color.GREEN);
-        gc.setLineWidth(0.5);
+        gc.setLineWidth(1. / 2);
         List<Object> entrySetX = data.list(xHeader.get());
         List<Object> entrySetY = data.list(yHeader.get());
         List<Object> entrySetZ = data.list(zHeader.get());

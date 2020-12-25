@@ -97,7 +97,7 @@ public class BoundsDisplay extends Rectangle {
 
     private void makeShape() {
         setFill(Color.LIGHTGRAY.deriveColor(1, 1, 1, 7. / 20));
-        setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 0.5));
+        setStroke(Color.LIGHTGRAY.deriveColor(1, 1, 1, 1. / 2));
         setStrokeType(StrokeType.INSIDE);
         setStrokeWidth(3);
 

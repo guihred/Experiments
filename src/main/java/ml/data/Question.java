@@ -94,16 +94,16 @@ public class Question implements Predicate<Object> {
     }
 
     public static Question parseQuestion(DataframeML build, String question) {
-        String[] split = question.split(" +");
-        if (split.length < 2) {
+        String[] tokens = question.split(" +");
+        if (tokens.length < 2) {
             return null;
         }
-        String string = split[1];
+        String string = tokens[1];
         boolean not = "not".equals(string);
 
-        QuestionType type = QuestionType.getBySign(not ? split[2] : split[1]);
-        String string2 = type == QuestionType.EMPTY ? null : split[split.length - 1];
-        String colName2 = split[0];
+        QuestionType type = QuestionType.getBySign(not ? tokens[2] : tokens[1]);
+        String string2 = type == QuestionType.EMPTY ? null : tokens[tokens.length - 1];
+        String colName2 = tokens[0];
         Object queryObject = ExplorerVariables.getQueryObject(build, type, colName2, string2);
         return new Question(colName2, queryObject, type, not);
     }

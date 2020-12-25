@@ -10,9 +10,9 @@ import javafx.scene.canvas.GraphicsContext;
 public class PolygonFractal extends Canvas {
 
     private static final double SIZE = 500;
-    private DoubleProperty limit = new SimpleDoubleProperty(10);
-    private DoubleProperty ratio = new SimpleDoubleProperty(.5);
-    private IntegerProperty spirals = new SimpleIntegerProperty(3);
+    private final DoubleProperty limit = new SimpleDoubleProperty(10);
+    private final DoubleProperty ratio = new SimpleDoubleProperty(.5);
+    private final IntegerProperty spirals = new SimpleIntegerProperty(3);
 
     public PolygonFractal() {
         super(SIZE, SIZE);

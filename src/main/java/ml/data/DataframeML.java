@@ -142,11 +142,11 @@ public class DataframeML extends BaseDataframe {
         }
     }
 
-    public void sortHeaders(List<String> headers) {
-        List<Entry<String, List<Object>>> collect = dataframe.entrySet().stream().collect(Collectors.toList());
+    public void sortHeaders(List<String> headersOrder) {
+        List<Entry<String, List<Object>>> frameHeader = dataframe.entrySet().stream().collect(Collectors.toList());
         dataframe.clear();
-        collect.sort(Comparator.comparing(e -> headers.indexOf(e.getKey())));
-        collect.forEach(e -> dataframe.put(e.getKey(), e.getValue()));
+        frameHeader.sort(Comparator.comparing(e -> headersOrder.indexOf(e.getKey())));
+        frameHeader.forEach(e -> dataframe.put(e.getKey(), e.getValue()));
     }
 
 

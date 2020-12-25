@@ -2,8 +2,11 @@ package ml.graph;
 
 import extract.WhoIsScanner;
 import java.io.File;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
@@ -24,7 +27,8 @@ public final class IPFill {
     }
 
     public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn, DoubleProperty count) {
-        builder.filterOut(ipColumn, s -> !s.toString().matches("^10\\..+") && s.toString().matches(WhoIsScanner.IP_REGEX));
+        builder.filterOut(ipColumn,
+                s -> !s.toString().matches("^10\\..+") && s.toString().matches(WhoIsScanner.IP_REGEX));
     
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         ObservableMap<String, Map<String, String>> ipInfoCache = FXCollections.observableHashMap();
@@ -50,7 +54,8 @@ public final class IPFill {
 
     public static String getFromCache(WhoIsScanner whoIsScanner, ObservableMap<String, Map<String, String>> ipInfo,
             Object[] e, String... string) {
-        return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> WhoIsScanner.getIpInformation(whoIsScanner, ip)), string);
+        return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> WhoIsScanner.getIpInformation(whoIsScanner, ip)),
+                string);
     }
 
     public static String getIPColumn(DataframeBuilder builder) {

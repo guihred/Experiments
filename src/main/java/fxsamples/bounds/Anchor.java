@@ -13,7 +13,7 @@ public class Anchor extends Circle {
     public Anchor(String id, DoubleProperty x, DoubleProperty y) {
         super(x.get(), y.get(), 10);
         setId(id);
-        setFill(Color.GOLD.deriveColor(1, 1, 1, 0.5));
+        setFill(Color.GOLD.deriveColor(1, 1, 1, 1. / 2));
         setStroke(Color.GOLD);
         setStrokeWidth(2);
         setStrokeType(StrokeType.OUTSIDE);

@@ -17,7 +17,7 @@ public class FractalApp extends Application {
         VBox radiusSlider = SimpleSliderBuilder.newSlider("Radius", 1, 360, treeFractal.initialRadiusProperty());
         VBox angleSlider = SimpleSliderBuilder.newSlider("Angle", 0, 2 * Math.PI, treeFractal.deltaAngleProperty());
         final double ratioMax = 0.85;
-        VBox ratioSlider = SimpleSliderBuilder.newSlider("Ratio", 0.5, ratioMax, treeFractal.ratioProperty());
+        VBox ratioSlider = SimpleSliderBuilder.newSlider("Ratio", 1. / 2, ratioMax, treeFractal.ratioProperty());
         VBox thicknessSlider = SimpleSliderBuilder.newSlider("Thickness", 1. / 100, 1.,
             treeFractal.thicknessProperty());
         VBox leafSlider = SimpleSliderBuilder.newSlider("Leaf", 1, 360, treeFractal.leafProperty());

@@ -48,13 +48,13 @@ public final class TermFrequency {
         return SupplierEx.get(() -> {
             String stackMatch =
                     HasLogging.getStackMatch(s -> !s.startsWith("simplebuilder") && !s.startsWith("fxml.utils"));
-            String[] split = stackMatch.split("[:\\.]+");
-            String line = split[split.length - 1];
-            String fileName = split[split.length - 2];
+            String[] stackParts = stackMatch.split("[:\\.]+");
+            String line = stackParts[stackParts.length - 1];
+            String fileName = stackParts[stackParts.length - 2];
             Path javaPath = FileTreeWalker.getFirstPathByExtension(new File("src"), fileName + ".java");
             try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
                 // String[] split2 =
-                return lines.skip(StringSigaUtils.toInteger(line) - 1).filter(s -> s.contains("=")).findFirst()
+                return lines.skip(StringSigaUtils.toLong(line) - 1L).filter(s -> s.contains("=")).findFirst()
                         .map(s -> Stream.of(s.split("[\\s=]+")).filter(StringUtils::isNotBlank)
                                 .filter(t -> !getJavaKeywords().contains(t))
                                 .filter(m -> Character.isLowerCase(m.charAt(0))).findFirst().orElse(s))

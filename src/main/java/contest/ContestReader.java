@@ -68,12 +68,12 @@ public class ContestReader extends ContestDTO {
         if (contestQuestion.getOptions() != null && !contestQuestion.getOptions().isEmpty()) {
             contestQuestion.getOptions().clear();
         }
-        String[] split = s.split("(?=\\()");
-        for (int j = 0; j < split.length; j++) {
-            String string = split[j];
+        String[] words = s.split("(?=\\()");
+        for (int j = 0; j < words.length; j++) {
+            String answerLine = words[j];
             answer = new ContestQuestionAnswer();
             answer.setExercise(contestQuestion);
-            answer.appendAnswer(string);
+            answer.appendAnswer(answerLine);
             answer.setNumber(j);
             contestQuestion.addOption(answer);
         }
@@ -94,23 +94,23 @@ public class ContestReader extends ContestDTO {
                 setState(ContestDTO.ReaderState.IGNORE);
                 return;
             }
-            String string = linhas[i + 1];
-            if (ContestText.hasTexto(string)) {
+            String line = linhas[i + 1];
+            if (ContestText.hasTexto(line)) {
                 addQuestion();
                 setState(ContestDTO.ReaderState.TEXT);
                 return;
             }
-            if (string.matches(SUBJECT_2_PATTERN)) {
+            if (line.matches(SUBJECT_2_PATTERN)) {
                 addQuestion();
                 setState(ContestDTO.ReaderState.IGNORE);
                 return;
             }
-            if (ContestQuestion.isQuestionPattern(string)) {
+            if (ContestQuestion.isQuestionPattern(line)) {
                 addQuestion();
                 setState(ContestDTO.ReaderState.QUESTION);
                 return;
             }
-            if (StringUtils.containsIgnoreCase(string, "Questões") && s.matches(".+\\.\\s*")) {
+            if (StringUtils.containsIgnoreCase(line, "Questões") && s.matches(".+\\.\\s*")) {
                 addQuestion();
                 setState(ContestDTO.ReaderState.IGNORE);
             }
@@ -354,8 +354,8 @@ public class ContestReader extends ContestDTO {
         changeTypeOfQuestions(s);
         if (ContestText.hasTexto(s)) {
             setState(ContestDTO.ReaderState.TEXT);
-            String[] split = s.split("\\D+");
-            IntSummaryStatistics stats = Stream.of(split).filter(StringUtils::isNotBlank)
+            String[] numbers = s.split("\\D+");
+            IntSummaryStatistics stats = Stream.of(numbers).filter(StringUtils::isNotBlank)
                 .mapToInt(StringSigaUtils::intValue).summaryStatistics();
             text.setMin(stats.getMin());
             text.setMax(stats.getMax());

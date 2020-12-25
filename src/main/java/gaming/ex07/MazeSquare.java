@@ -117,19 +117,14 @@ public class MazeSquare extends BorderPane {
     public boolean isInBounds(double x, double y) {
         if (bounds == null) {
 
-            double layoutX = i * MazeSquare.SQUARE_SIZE;
-            double layoutX2 = MazeSquare.MAZE_SIZE * 2 * MazeSquare.SQUARE_SIZE - i * MazeSquare.SQUARE_SIZE
-                - MazeSquare.SQUARE_SIZE;
-            double layoutY = j * MazeSquare.SQUARE_SIZE;
-            double layoutY2 = MazeSquare.MAZE_SIZE * 2 * MazeSquare.SQUARE_SIZE - j * MazeSquare.SQUARE_SIZE
-                - MazeSquare.SQUARE_SIZE;
-            List<BoundingBox> arrayList = new ArrayList<>();
-            arrayList.add(new BoundingBox(layoutX, layoutY, MazeSquare.SQUARE_SIZE, MazeSquare.SQUARE_SIZE));
-            arrayList.add(new BoundingBox(layoutX, layoutY2, MazeSquare.SQUARE_SIZE, MazeSquare.SQUARE_SIZE));
-            arrayList.add(new BoundingBox(layoutX2, layoutY, MazeSquare.SQUARE_SIZE, MazeSquare.SQUARE_SIZE));
-            arrayList.add(new BoundingBox(layoutX2, layoutY2, MazeSquare.SQUARE_SIZE, MazeSquare.SQUARE_SIZE));
-
-            bounds = arrayList;
+            double layoutX = i * SQUARE_SIZE;
+            double layoutX2 = MAZE_SIZE * 2 * SQUARE_SIZE - i * SQUARE_SIZE - SQUARE_SIZE;
+            double layoutY = j * SQUARE_SIZE;
+            double layoutY2 = MAZE_SIZE * 2 * SQUARE_SIZE - j * SQUARE_SIZE - SQUARE_SIZE;
+            bounds = Arrays.asList(new BoundingBox(layoutX, layoutY, SQUARE_SIZE, SQUARE_SIZE),
+                    new BoundingBox(layoutX, layoutY2, SQUARE_SIZE, SQUARE_SIZE),
+                    new BoundingBox(layoutX2, layoutY, SQUARE_SIZE, SQUARE_SIZE),
+                    new BoundingBox(layoutX2, layoutY2, SQUARE_SIZE, SQUARE_SIZE));
         }
         return bounds.stream().anyMatch(e -> e.contains(x, y));
 

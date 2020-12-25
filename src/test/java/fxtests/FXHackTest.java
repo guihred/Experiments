@@ -170,9 +170,9 @@ public class FXHackTest extends AbstractTestExecution {
         measureTime("PortScanner.scanPossibleOSes",
                 () -> PortScanner.scanPossibleOSes(TracerouteScanner.NETWORK_ADDRESS));
         measureTime("PingTraceRoute.traceRoute", () -> PingTraceRoute.traceRoute(TracerouteScanner.NETWORK_ADDRESS));
-        String collect = IntStream.range(0, 4).map(e -> nextInt(256)).mapToObj(Objects::toString)
+        String randomIP = IntStream.range(0, 4).map(e -> nextInt(256)).mapToObj(Objects::toString)
                 .collect(Collectors.joining("."));
-        measureTime("PingTraceRoute.traceRoute", () -> PingTraceRoute.traceRoute(collect));
+        measureTime("PingTraceRoute.traceRoute", () -> PingTraceRoute.traceRoute(randomIP));
         measureTime("ProcessScan.scanProcesses", () -> ProcessScan.scanNetstats());
 
         measureTime("NetworkInformationScanner.displayNetworkInformation",

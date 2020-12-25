@@ -44,11 +44,11 @@ public class PieGraphExample extends Application {
         SimpleComboBoxBuilder<String> onSelect =
                 new SimpleComboBoxBuilder<String>().onSelect(e -> canvas.setDataframe(dataframeObj.get(), e));
         dataframeObj.addListener((ob, old, val) -> {
-            List<String> collect =
+            List<String> fields =
                     val.getFormatMap().entrySet().stream().map(Entry<String, Class<? extends Comparable<?>>>::getKey)
                             .filter(StringUtils::isNotBlank).collect(Collectors.toList());
-            onSelect.items(collect);
-            onSelect.select(collect.size() - 1);
+            onSelect.items(fields);
+            onSelect.select(fields.size() - 1);
         });
         ProgressIndicator progress = new ProgressIndicator(0);
         DataframeML dataframe = DataframeBuilder.builder("WDICountry.csv").build(progress.progressProperty());

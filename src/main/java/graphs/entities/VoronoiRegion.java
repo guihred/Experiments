@@ -28,7 +28,8 @@ public class VoronoiRegion extends Group {
         double w = p.getC().getBoundsInLocal().getWidth() / 2;
         double h = p.getC().getBoundsInLocal().getHeight() / 2;
         List<double[]> pontosImportantes = triangles.stream().flatMap(Triangle::allPoints).filter(pon -> !p.equals(pon))
-            .distinct().map(p::add).map(po -> po.mult(0.5)).map(po -> new double[] { po.getX() + w, po.getY() + h })
+                .distinct().map(p::add).map(po -> po.mult(1. / 2))
+                .map(po -> new double[] { po.getX() + w, po.getY() + h })
             .collect(Collectors.toList());
 
         double[] array = centerPoints.stream().sorted(comparator).flatMap((double[] t) -> Stream.of(cen(t)))

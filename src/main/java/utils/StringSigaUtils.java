@@ -208,10 +208,6 @@ public class StringSigaUtils extends StringUtils {
         return split(Objects.toString(nome, ""), "[\n\r]+");
     }
 
-    public static void main(String[] args) {
-        System.out.println(getFileSize(9.1308466E7));
-    }
-
 
     public static String putNumbers(List<String> map) {
         int orElse = map.stream().map(v -> Objects.toString(v, "")).mapToInt(String::length).max().orElse(0);
@@ -284,9 +280,9 @@ public class StringSigaUtils extends StringUtils {
         if (isBlank(sizeInBytes) || sizeInBytes.matches("0+") || !sizeInBytes.matches("(?i)[\\d\\.]+(B|KB|MB|GB|TB)")) {
             return 0;
         }
-        String[] split = sizeInBytes.split("(?<=[\\d\\.]+)(?=[A-Z]+)");
-        Double integer = Double.valueOf(split[0]);
-        int indexOf = Arrays.asList(SIZES).indexOf(split[1].toUpperCase());
+        String[] tokens = sizeInBytes.split("(?<=[\\d\\.]+)(?=[A-Z]+)");
+        Double integer = Double.valueOf(tokens[0]);
+        int indexOf = Arrays.asList(SIZES).indexOf(tokens[1].toUpperCase());
         double pow = Math.pow(BYTES_IN_A_KILOBYTE, indexOf);
         return (long) (pow * integer);
     }

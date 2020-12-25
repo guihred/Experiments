@@ -62,7 +62,6 @@ public final class ReportHelper {
         CommonsFX.update(progress, 1);
     }
 
-    @SuppressWarnings("unchecked")
     public static void addParametersNotCrop(Map<String, Object> mapaSubstituicao, Map<String, String> params,
             WebView browser, DoubleProperty progress) {
         List<String> keys = mapaSubstituicao.keySet().stream().collect(Collectors.toList());
@@ -71,19 +70,7 @@ public final class ReportHelper {
             mapaSubstituicao.compute(key, (k, v) -> {
                 if (v instanceof List) {
                     List<?> list = (List<?>) v;
-                    return list.stream().map(e -> {
-                        if (e instanceof Map) {
-                            Map<String, Object> e2 = (Map<String, Object>) e;
-                            if (e2.containsKey("url")) {
-                                return getUncroppedImage(e2, browser, params);
-                            }
-                            return getCSV(e2, params);
-                        }
-                        if (e instanceof Image) {
-                            return e;
-                        }
-                        return replaceString(params, e);
-                    }).filter(Objects::nonNull)
+                    return list.stream().map(e -> remapUncroppred(params, browser, e)).filter(Objects::nonNull)
                             .peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
                             .collect(Collectors.toList());
                 }
@@ -238,6 +225,21 @@ public final class ReportHelper {
     }
 
     @SuppressWarnings("unchecked")
+    private static Object remapUncroppred(Map<String, String> params, WebView browser, Object e) {
+        if (e instanceof Map) {
+            Map<String, Object> e2 = (Map<String, Object>) e;
+            if (e2.containsKey("url")) {
+                return getUncroppedImage(e2, browser, params);
+            }
+            return getCSV(e2, params);
+        }
+        if (e instanceof Image) {
+            return e;
+        }
+        return replaceString(params, e);
+    }
+
+    @SuppressWarnings("unchecked")
     private static void saveCSV(File srcFile, Map<String, Object> params, File outFile) {
         DataframeML build = DataframeBuilder.build(srcFile);
         List<String> cols = build.cols();
@@ -245,9 +247,8 @@ public final class ReportHelper {
         cols.removeIf(s -> s.matches(columns));
         build.removeCol(cols.toArray(new String[0]));
         List<Object> o = (List<Object>) params.getOrDefault("questions", new ArrayList<>());
-        List<Question> a =
-                o.stream().map(Objects::toString).map(t -> Question.parseQuestion(build, t))
-                        .collect(Collectors.toList());
+        List<Question> a = o.stream().map(Objects::toString).map(t -> Question.parseQuestion(build, t))
+                .collect(Collectors.toList());
 
         for (Question question : a) {
             build.filter(question.getColName(), question);

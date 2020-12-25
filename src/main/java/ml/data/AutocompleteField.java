@@ -136,14 +136,14 @@ public class AutocompleteField extends TextField {
         }
         entriesPopup.hide();
         if (text.contains(wordSeparator)) {
-            String[] split = text.split(wordSeparator);
-            if (split.length > 0) {
-                String s = split[split.length - 1];
-                String collect = Stream.of(split).limit(split.length - 1L).collect(Collectors.joining(wordSeparator));
+            String[] words = text.split(wordSeparator);
+            if (words.length > 0) {
+                String s = words[words.length - 1];
+                String matches = Stream.of(words).limit(words.length - 1L).collect(Collectors.joining(wordSeparator));
 
                 Collection<String> wordsNearestSum = searchResult(s);
                 searchResult.addAll(wordsNearestSum.stream().filter(e -> !s.equals(e))
-                        .map(e -> collect + wordSeparator + e).collect(Collectors.toList()));
+                        .map(e -> matches + wordSeparator + e).collect(Collectors.toList()));
                 addSearchResults(searchResult, s);
             }
         }

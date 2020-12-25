@@ -112,16 +112,16 @@ public final class JsoupUtils {
                 "twitter:app:url:googleplay" };
         // Connect to URL and extract source code
         Document doc = Jsoup.connect("http://stackoverflow.com/").get();
-        List<String> arrayList = new ArrayList<>();
+        List<String> twitterEntries = new ArrayList<>();
         for (String twitterTag : twitterTags) {
             // find a matching meta tag
             Element meta = doc.select("meta[name=" + twitterTag + "]").first();
             // if found, get the value of the content attribute
             String content = meta != null ? meta.attr("content") : "";
             // display results
-            arrayList.add(twitterTag + "=" + content);
+            twitterEntries.add(twitterTag + "=" + content);
         }
-        return arrayList;
+        return twitterEntries;
     }
 
     // Extracting email adresses & links to other pages
@@ -179,14 +179,14 @@ public final class JsoupUtils {
 
     public static List<String> getTables(Element renderPage) {
         Elements select = renderPage.select("table");
-        List<String> arrayList = new ArrayList<>();
+        List<String> tablesFound = new ArrayList<>();
         for (Element table : select) {
-            String collect = table.children().stream().flatMap(tbody -> tbody.children().stream())
+            String tableElements = table.children().stream().flatMap(tbody -> tbody.children().stream())
                     .map(tr -> tr.children().stream().map(Element::text).collect(Collectors.joining("\t")))
                     .collect(Collectors.joining("\n"));
-            arrayList.add(collect);
+            tablesFound.add(tableElements);
         }
-        return arrayList;
+        return tablesFound;
     }
 
     // Below is an example request that will log you into the GitHub website

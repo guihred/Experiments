@@ -81,8 +81,8 @@ public class IadesCrawler extends Application {
             Concurso e2 = new Concurso();
             e2.setUrl(url.getValue());
             String key = url.getKey();
-            String[] split = key.split("Processo|Inscriç|Concurso|Vestibular");
-            e2.setNome(split[0]);
+            String[] name = key.split("Processo|Inscriç|Concurso|Vestibular");
+            e2.setNome(name[0]);
             e2.setLinksFound(linksFound);
             doc.select("fieldset").stream().filter(e -> e.select("legend").text().contains("Vagas"))
                     .flatMap(e -> e.select("b").stream()).forEach(e -> e2.getVagas().add(e.text()));

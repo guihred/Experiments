@@ -65,10 +65,10 @@ public final class DotsHelper {
     }
 
     public static Timeline createAnimation(int nplayed, double[] center, double[] center2, Line line2) {
-        return new SimpleTimelineBuilder().addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endXProperty(), center[0])
-            .addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endXProperty(), center2[0])
-            .addKeyFrame(Duration.seconds(nplayed * 0.5), line2.endYProperty(), center[1])
-            .addKeyFrame(Duration.seconds(0.5 + nplayed * 0.5), line2.endYProperty(), center2[1]).build();
+        return new SimpleTimelineBuilder().addKeyFrame(Duration.seconds(nplayed / 2.), line2.endXProperty(), center[0])
+                .addKeyFrame(Duration.seconds(1. / 2 + nplayed / 2.), line2.endXProperty(), center2[0])
+                .addKeyFrame(Duration.seconds(nplayed / 2.), line2.endYProperty(), center[1])
+                .addKeyFrame(Duration.seconds(1. / 2 + nplayed / 2.), line2.endYProperty(), center2[1]).build();
     }
 
     public static boolean dNotContainsC(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {

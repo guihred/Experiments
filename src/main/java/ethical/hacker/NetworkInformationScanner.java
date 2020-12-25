@@ -26,7 +26,7 @@ public final class NetworkInformationScanner {
         Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
         Map<Class<?>, FunctionEx<Object, String>> toStringMAp = new HashMap<>();
         toStringMAp.put(byte[].class, o -> convertToString((byte[]) o));
-        List<String> arrayList = new ArrayList<>();
+        List<String> networkInfo = new ArrayList<>();
         while (e.hasMoreElements()) {
             NetworkInterface n = e.nextElement();
             if (n.getInterfaceAddresses().isEmpty() || !n.isUp() || n.isLoopback()
@@ -36,10 +36,10 @@ public final class NetworkInformationScanner {
             String description = ClassReflectionUtils.getDescription(n, toStringMAp);
             if (!description.isEmpty()) {
                 LOG.trace("{}", description);
-                arrayList.add(description);
+                networkInfo.add(description);
             }
         }
-        return arrayList;
+        return networkInfo;
     }
 
     public static List<Map<String, String>> getIpConfigInformation() {
@@ -72,7 +72,7 @@ public final class NetworkInformationScanner {
             Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
             Map<Class<?>, FunctionEx<Object, String>> toStringMAp = new HashMap<>();
             toStringMAp.put(byte[].class, o -> convertToString((byte[]) o));
-            List<Map<String, String>> arrayList = new ArrayList<>();
+            List<Map<String, String>> networkInformation = new ArrayList<>();
             toStringMAp.put(InetAddress.class, o -> CIDRUtils.convertToString((InetAddress) o));
             while (e.hasMoreElements()) {
                 NetworkInterface n = e.nextElement();
@@ -83,10 +83,10 @@ public final class NetworkInformationScanner {
                 Map<String, String> description = ClassReflectionUtils.getDescriptionMap(n, toStringMAp);
                 if (!description.isEmpty()) {
                     LOG.trace("{}", description);
-                    arrayList.add(description);
+                    networkInformation.add(description);
                 }
             }
-            return arrayList;
+            return networkInformation;
         }, Collections.emptyList());
     }
 

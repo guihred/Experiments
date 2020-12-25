@@ -68,8 +68,7 @@ public class DataframeExplorer extends ExplorerVariables {
                 .onKey(KeyCode.DELETE, col -> {
                     columns.remove(col);
                     getDataframe().removeCol(col.getKey());
-                }).addContextMenu("_Split", e -> splitByColumn())
-                .addContextMenu("Add Mapping",
+                }).addContextMenu("_Split", e -> splitByColumn()).addContextMenu("Add Mapping",
                         e0 -> Mapping.showDialog(barChart, columnsList.getSelectionModel().getSelectedItems().stream()
                                 .map(Entry<String, DataframeStatisticAccumulator>::getKey).toArray(String[]::new),
                                 getDataframe(), this::addStats));
@@ -189,33 +188,34 @@ public class DataframeExplorer extends ExplorerVariables {
     }
 
     private void onQuestionsChange(Change<? extends Question> c) {
-        while (c.next()) {
-            if (getDataframe() != null) {
-                if (getDataframe().isLoaded() && c.wasAdded() && !c.wasRemoved()) {
-                    for (Question question : c.getList()) {
-                        if (question.getType() == QuestionType.DISTINCT) {
-                            ((Set<?>)question.getOb()).clear();
-                        }
-                        getDataframe().filter(question.getColName(), question::answer);
-                    }
-                    int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
-                    columns.setAll(DataframeUtils.makeStats(getDataframe()).entrySet());
-                    headersCombo.getSelectionModel().select(selectedIndex);
-
-                    CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
-                } else {
-                    addStats(getDataframe().getFile());
+        c.next();
+        if (getDataframe() == null) {
+            return;
+        }
+        if (getDataframe().isLoaded() && c.wasAdded() && !c.wasRemoved()) {
+            for (Question question : c.getList()) {
+                if (question.getType() == QuestionType.DISTINCT) {
+                    ((Set<?>) question.getOb()).clear();
                 }
+                getDataframe().filter(question.getColName(), question::answer);
             }
+            int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
+            columns.setAll(DataframeUtils.makeStats(getDataframe()).entrySet());
+            headersCombo.getSelectionModel().select(selectedIndex);
+
+            CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
+        } else {
+            addStats(getDataframe().getFile());
         }
     }
 
     private void retainOnly(ObservableList<Entry<String, DataframeStatisticAccumulator>> selectedItems) {
-        List<Entry<String, DataframeStatisticAccumulator>> collect =
+        List<Entry<String, DataframeStatisticAccumulator>> notSelectedCols =
                 columns.stream().filter(s -> !selectedItems.contains(s)).collect(Collectors.toList());
-        columns.removeAll(collect);
-        getDataframe().removeCol(collect.stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
-                .toArray(String[]::new));
+        columns.removeAll(notSelectedCols);
+        getDataframe().removeCol(
+                notSelectedCols.stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
+                        .toArray(String[]::new));
     }
 
     private void splitByColumn() {

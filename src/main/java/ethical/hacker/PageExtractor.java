@@ -114,25 +114,24 @@ public class PageExtractor extends Application {
         List<Integer> items = paginatedTableView.getFilteredItems();
         List<String> columns = paginatedTableView.getColumns();
         Map<String, FunctionEx<Integer, Object>> mapa = new LinkedHashMap<>();
-        List<Integer> collect = items;
         for (String column : columns) {
-            String string = columnMap.get(column);
-            mapa.put(column, i -> getColumnValue(value, string, i));
+            String fieldName = columnMap.get(column);
+            mapa.put(column, i -> getColumnValue(value, fieldName, i));
         }
-        ExcelService.getExcel(collect, mapa, file);
+        ExcelService.getExcel(items, mapa, file);
     }
 
     private static void exportPDF(PaginatedTableView paginatedTableView, ActionEvent e0) {
         List<List<Object>> elements = paginatedTableView.getElements();
         List<String> columns = paginatedTableView.getColumns();
-        List<Image> collect = elements.stream()
+        List<Image> images = elements.stream()
                 .flatMap(list -> list.stream()
                         .map(e -> e instanceof ImageView ? ((ImageView) e).getImage()
                                 : ImageFXUtils.toImage(new Text(Objects.toString(e)))))
                 .flatMap(PageExtractor::splitImage).collect(Collectors.toList());
 
         PrintConfig printConfig =
-                new SimpleDialogBuilder().bindWindow(paginatedTableView).show(PrintConfig.class, collect);
+                new SimpleDialogBuilder().bindWindow(paginatedTableView).show(PrintConfig.class, images);
         printConfig.setLinesColumns(columns.size(), 1);
         printConfig.printToPDF(e0);
 
@@ -141,9 +140,9 @@ public class PageExtractor extends Application {
     private static Node getColumnHtml(ObservableList<Document> value, String text, Integer i) {
         Document document = value.get(i);
         Elements select = document.select(text);
-        String collect =
+        String elementsHtml =
                 select.stream().map(Element::html).filter(StringUtils::isNotBlank).collect(Collectors.joining("\n"));
-        String format = String.format("<!DOCTYPE html><html><body>%s</body></html>", collect);
+        String format = String.format("<!DOCTYPE html><html><body>%s</body></html>", elementsHtml);
         File outFile = ResourceFXUtils.getOutFile("png/" + (text + i).replaceAll("[ #,\\.]+", "-") + ".png");
         PhantomJSUtils.saveHtmlImage(format, outFile);
         return new ImageView(ResourceFXUtils.convertToURL(outFile).toExternalForm());

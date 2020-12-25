@@ -89,8 +89,8 @@ public final class ExtractUtils {
     public static File extractURL(String url) {
         return SupplierEx.get(() -> {
             String file = new URL(url).getFile();
-            String[] split = file.split("/");
-            String out = split[split.length - 1];
+            String[] urlParts = file.split("/");
+            String out = urlParts[urlParts.length - 1];
             return extractURL(out, url);
         });
     }

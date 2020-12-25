@@ -299,7 +299,7 @@ public class WorldMapGraph extends Canvas {
         pattern.addListener(ob -> drawGraph());
         drawGraph();
         scale = RotateUtils.setZoomable(this);
-        scale.setX(0.5);
-        scale.setY(0.5);
+        scale.setX(1. / 2);
+        scale.setY(1. / 2);
 	}
 }

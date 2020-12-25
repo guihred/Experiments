@@ -23,9 +23,8 @@ public final class InstallCert {
     }
 
     public static void installCertificate(String url) throws GeneralSecurityException {
-        String string = getFullURL(url);
-
-        String[] c = string.split(":");
+        String urlFullInformation = getFullURL(url);
+        String[] c = urlFullInformation.split(":");
         String host = c[0];
         int port = c.length == 1 ? 443 : Integer.parseInt(c[1]);
 

@@ -70,9 +70,10 @@ public final class PingTraceRoute {
         Map<String, String> executeInConsole =
                 ConsoleUtils.executeInConsole("ping " + address + " -i " + i + " -n 1 ", responses);
 
-        String string = executeInConsole.get(route);
-        if (string != null && !string.matches("Host de destino inacess.+") && i < 100 && !n.contains(string)) {
-            n.add(string);
+        String lineFromConsole = executeInConsole.get(route);
+        if (lineFromConsole != null && !lineFromConsole.matches("Host de destino inacess.+") && i < 100
+                && !n.contains(lineFromConsole)) {
+            n.add(lineFromConsole);
             return traceRoute(n, address, i + 1);
         }
         n.add(executeInConsole.get(ipRegex));

@@ -48,12 +48,12 @@ public class FXSSHTest extends AbstractTestExecution {
     @Test
     public void verifySSHApp() {
         show(SSHSessionApp.class);
-        List<Button> collect = lookupList(Button.class);
-        clickOn(last(collect));
+        List<Button> allButtons = lookupList(Button.class);
+        clickOn(last(allButtons));
         List<TextField> fields = lookupList(TextField.class);
         clickOn(last(fields));
         type(typeText("git push"));
-        tryClickOn(collect.get(0));
+        tryClickOn(allButtons.get(0));
     }
 
     @Test
@@ -66,14 +66,14 @@ public class FXSSHTest extends AbstractTestExecution {
     @Test(expected = RuntimeIOException.class)
     public void verifySSHSessionApp2() {
         show(SSHSessionApp.class);
-        List<Button> collect = lookupList(Button.class);
-        clickOn(last(collect));
+        List<Button> allButtons = lookupList(Button.class);
+        clickOn(last(allButtons));
         WaitForAsyncUtils.waitForFxEvents();
         sleep(5000);
         List<TextField> fields = lookupList(TextField.class);
         clickOn(last(fields));
         type(typeText("ipconfig"));
-        tryClickOn(collect.get(0));
+        tryClickOn(allButtons.get(0));
         sleep(5000);
         WaitForAsyncUtils.waitForFxEvents();
     }

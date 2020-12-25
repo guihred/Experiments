@@ -168,8 +168,8 @@ public class WebBrowserApplication extends Application {
                 HttpEntity entity = response.getEntity();
                 BufferedReader rd =
                         new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
-                String collect = rd.lines().collect(Collectors.joining("\n"));
-                engine.loadContent(collect);
+                String allLines = rd.lines().collect(Collectors.joining("\n"));
+                engine.loadContent(allLines);
             }
 
         });

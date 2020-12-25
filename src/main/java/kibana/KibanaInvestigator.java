@@ -53,6 +53,7 @@ public class KibanaInvestigator extends Application {
         DoubleExpression totalProgress = new SimpleDoubleProperty(0);
         for (String ip : items2) {
             SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
+            totalProgress = totalProgress.add(progress);
             RunnableEx.runNewThread(
                     () -> KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem(), progress),
                     ns -> CommonsFX.runInPlatform(() -> {
@@ -60,12 +61,10 @@ public class KibanaInvestigator extends Application {
                             SimpleTableViewBuilder.addColumns(commonTable, ns.keySet());
                         }
                         items.add(ns);
-                        if (items.size() == items2.size()) {
-                            CommonsFX.update(progressIndicator.progressProperty(), 1);
-                        }
-
+                        CommonsFX.update(progressIndicator.progressProperty(),
+                                Math.max(progressIndicator.getProgress(), items.size() / (double) items2.size()));
+                        SimpleTableViewBuilder.autoColumnsWidth(commonTable);
                     }));
-            totalProgress = totalProgress.add(progress);
         }
         CommonsFX.bind(totalProgress.divide(items2.size()), progressIndicator.progressProperty());
     }

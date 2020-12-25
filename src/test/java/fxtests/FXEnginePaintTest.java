@@ -147,11 +147,11 @@ public class FXEnginePaintTest extends AbstractTestExecution {
             RunnableEx.ignore(() -> doubleClickOn(colors.remove(nextInt(colors.size())), MouseButton.PRIMARY));
             tryClickButtons();
         }
-        List<String> collect = queryAll.stream().map(e -> e.getUserData()).map(e -> e.getClass().getSimpleName())
+        List<String> classNames = queryAll.stream().map(e -> e.getUserData()).map(e -> e.getClass().getSimpleName())
                 .collect(Collectors.toList());
 
         Map<String, Double> coverageMap =
-                CoverageUtils.buildDataframe().stream().filter(e -> collect.contains(e.getKey()))
+                CoverageUtils.buildDataframe().stream().filter(e -> classNames.contains(e.getKey()))
                         .collect(Collectors.toMap(e -> e.getKey().toString(), Entry<Object, Double>::getValue));
         for (Node next : queryAll) {
             Object userData = next.getUserData();

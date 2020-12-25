@@ -170,12 +170,12 @@ public final class GraphModelAlgorithms {
             cell.addText(String.format(Locale.US, "%.9f", pageRank[i]));
         }
         double[] rank = pageRank;
-        String collect = IntStream.range(0, pageRank.length)
+        String orderedPageRank = IntStream.range(0, pageRank.length)
                 .boxed().sorted(Comparator.comparing(e -> -rank[e]))
                 .map(allCells::get).map(Cell::getCellId)
                 .collect(Collectors.joining("\n\t", "\n\t", ""));
 
-        LOG.info("ORDERED PAGE RANK = {}", collect);
+        LOG.info("ORDERED PAGE RANK = {}", orderedPageRank);
 
         return pageRank;
     }

@@ -132,8 +132,8 @@ public final class TermFrequencyIndex {
                 readLine = bufferedReader.readLine();
                 if (readLine != null) {
 
-                    String[] split = StringSigaUtils.splitCamelCase(readLine);
-                    List<String> asList = Arrays.asList(split);
+                    String[] splitByCamelCase = StringSigaUtils.splitCamelCase(readLine);
+                    List<String> asList = Arrays.asList(splitByCamelCase);
                     asList.parallelStream().filter(a -> !a.isEmpty()).reduce(frequencyMap, (mapa, a) -> {
                         Long long1 = mapa.computeIfAbsent(a.toLowerCase(), m -> 0L);
                         mapa.put(a.toLowerCase(), long1 + 1L);
