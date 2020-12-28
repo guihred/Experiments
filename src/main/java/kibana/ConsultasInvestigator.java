@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
@@ -41,9 +42,11 @@ public class ConsultasInvestigator extends Application {
 
     private static final Logger LOG = HasLogging.log();
     public static final String IGNORE_IPS_REGEX = "10\\..+|::1|127.0.0.1";
-    private static final List<String> APPLICATION_LIST =
-            Arrays.asList("consultas.inss.gov.br", "vip-pmeuinssprxr.inss.gov.br",
-                    "vip-auxilioemergencial.dataprev.gov.br");
+    private static final List<String> APPLICATION_LIST = Arrays.asList("consultas.inss.gov.br",
+            "vip-pmeuinssprxr.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br");
+    private static final List<String> EXCLUDE_OWNERS =
+            Arrays.asList("CAIXA ECONOMICA FEDERAL", "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO",
+                    "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC", "BANCO MERCANTIL DO BRASIL S/A");
     @FXML
     private TextField resultsFilter;
     @FXML
@@ -64,22 +67,19 @@ public class ConsultasInvestigator extends Application {
     private TabPane tabPane0;
     private final List<QueryObjects> queryList = new ArrayList<>();
     private ObservableMap<String, String> filter = FXCollections.observableHashMap();
+
     @FXML
     private ComboBox<String> ipCombo;
-
     @FXML
     private ComboBox<String> uidCombo;
+
     @FXML
     private LineChart<Number, Number> timelineUsuarios;
-
     @FXML
     private SplitPane splitPane0;
+
     @FXML
     private LineChart<Number, Number> timelineIPs;
-
-    private List<String> excludeOwners = Arrays.asList("CAIXA ECONOMICA FEDERAL",
-            "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO", "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.",
-            "Google LLC", "BANCO MERCANTIL DO BRASIL S/A");
 
     public List<QueryObjects> getQueryList() {
         return queryList;
@@ -108,63 +108,15 @@ public class ConsultasInvestigator extends Application {
                 filterList.getItems().add(new AbstractMap.SimpleEntry<>(change.getKey(), change.getValueAdded()));
             }
         });
-        splitPane0.setDividerPositions(0.1);
+        splitPane0.setDividerPositions(1. / 10);
     }
 
     public void makeAutomatedNetworkSearch() {
         RunnableEx.runNewThread(() -> {
-            CommonsFX.update(progress.progressProperty(), 0);
-            Map<String, String> filter1 = new HashMap<>();
-            List<String> applicationList = getApplicationList();
             List<QueryObjects> queries = queryList.stream()
                     .filter(q -> q.getLineChart() == null && QueryObjects.CLIENT_IP_QUERY.equals(q.getQuery()))
                     .collect(Collectors.toList());
-            WhoIsScanner whoIsScanner = new WhoIsScanner();
-            for (String application : applicationList) {
-                for (QueryObjects queryObjects : queries) {
-                    filter1.put(QueryObjects.ACESSOS_SISTEMA_QUERY, application);
-                    String[] params = queryObjects.getParams();
-                    String numberCol = params[queryObjects.getParams().length - 1];
-                    List<Map<String, String>> kibanaQuery = queryObjects.searchRemap(filter1, days.getValue());
-                    String queryField = queryObjects.getQuery();
-                    List<Map<String, String>> whoIsInfo = kibanaQuery.parallelStream()
-                            .filter(m -> !getFirst(params, m).matches(ConsultasInvestigator.IGNORE_IPS_REGEX))
-                            .map(e -> {
-                                e.putAll(whoIsScanner.getIpInformation(getFirst(params, e)));
-                                return e;
-                            }).collect(Collectors.toList());
-                    Map<String,
-                            Double> netHistogram = whoIsInfo.stream()
-                                    .collect(Collectors.groupingBy(
-                                            m -> IPFill.getKey(m, "as_owner", "") + "\t"
-                                                    + IPFill.getKey(m, "network", "id"),
-                                            Collectors.summingDouble(m -> getNumber(numberCol, m))));
-                    DoubleSummaryStatistics summaryStatistics =
-                            netHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
-                    double avg = summaryStatistics.getAverage();
-                    double max = summaryStatistics.getMax();
-                    double min = summaryStatistics.getMin();
-                    double range = (max - min) * .40;
-                    List<String> networks = netHistogram.entrySet().stream().filter(m -> m.getValue() > avg + range)
-                            .filter(m -> excludeOwners.stream().noneMatch(ow -> m.getKey().startsWith(ow)))
-                            .map(s -> "\t" + s).collect(Collectors.toList());
-                    if (!networks.isEmpty()) {
-
-                        List<String> nets =
-                                networks.stream().map(e -> e.replaceAll(".+\t(.+)", "$1")).collect(Collectors.toList());
-                        LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, networks);
-                        List<Map<String, String>> aboveAvgInfo = kibanaQuery.parallelStream()
-                                .filter(m -> !getFirst(params, m).matches(ConsultasInvestigator.IGNORE_IPS_REGEX))
-                                .filter(e -> nets.stream()
-                                        .anyMatch(net -> CIDRUtils.isSameNetworkAddress(net, getFirst(params, e))))
-                                .collect(Collectors.toList());
-                        mergeFilter(params, queryField, aboveAvgInfo);
-                    }
-
-                    CommonsFX.addProgress(progress.progressProperty(), 1. / applicationList.size() / queries.size());
-                }
-            }
-            CommonsFX.update(progress.progressProperty(), 1);
+            networkSearch(filter, queries, getApplicationList(), days.getValue(), progress.progressProperty());
         });
     }
 
@@ -177,9 +129,6 @@ public class ConsultasInvestigator extends Application {
                     queryList.stream().filter(q -> q.getLineChart() == null).collect(Collectors.toList());
             for (String application : applicationList) {
                 for (QueryObjects queryObjects : queries) {
-                    if (queryObjects.getLineChart() != null) {
-                        continue;
-                    }
                     filter1.put(QueryObjects.ACESSOS_SISTEMA_QUERY, application);
                     String[] params = queryObjects.getParams();
                     String numberCol = params[queryObjects.getParams().length - 1];
@@ -189,7 +138,7 @@ public class ConsultasInvestigator extends Application {
                     List<Map<String, String>> aboveAvgInfo =
                             getAboveAvgInfo(summaryStatistics, kibanaQuery, numberCol, params);
                     if (!aboveAvgInfo.isEmpty()) {
-                        mergeFilter(params, fieldQuery, aboveAvgInfo);
+                        mergeFilter(filter, params, fieldQuery, aboveAvgInfo);
                         LOG.info("\n\t{}\n\t{}\n{}", application, fieldQuery, join(aboveAvgInfo));
                     }
                     CommonsFX.addProgress(progress.progressProperty(), 1. / applicationList.size() / queries.size());
@@ -268,19 +217,19 @@ public class ConsultasInvestigator extends Application {
     private void addToFilter(String s) {
         if (s.contains("=")) {
             String[] entry = s.split("=");
-            filter.merge(entry[0], entry[1], this::merge);
+            filter.merge(entry[0], entry[1], ConsultasInvestigator::merge);
             return;
         }
         if (s.matches(WhoIsScanner.IP_REGEX)) {
-            filter.merge(CLIENT_IP_QUERY, s, this::merge);
+            filter.merge(CLIENT_IP_QUERY, s, ConsultasInvestigator::merge);
             return;
         }
         if (s.startsWith("/")) {
-            filter.merge(URL_QUERY, s, this::merge);
+            filter.merge(URL_QUERY, s, ConsultasInvestigator::merge);
             return;
         }
         if (!StringUtils.isNumeric(s)) {
-            filter.merge(ACESSOS_SISTEMA_QUERY, s, this::merge);
+            filter.merge(ACESSOS_SISTEMA_QUERY, s, ConsultasInvestigator::merge);
         }
     }
 
@@ -311,12 +260,12 @@ public class ConsultasInvestigator extends Application {
         double avg = summaryStatistics.getAverage();
         double max = summaryStatistics.getMax();
         double min = summaryStatistics.getMin();
-        double range = (max - min) * .45;
+        final double range = (max - min) * .45;
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         return makeKibanaQuery.parallelStream().filter(m -> !getFirst(params, m).matches(IGNORE_IPS_REGEX))
                 .filter(m -> getNumber(numberCol, m) > avg + range)
                 .map(e -> completeInformation(params, whoIsScanner, e))
-                .filter(m -> !excludeOwners.contains(m.getOrDefault("as_owner", "")))
+                .filter(m -> !EXCLUDE_OWNERS.contains(m.getOrDefault("as_owner", "")))
                 .filter(m -> isNotBlocked(days.getValue(), getFirst(params, m))).collect(toList());
     }
 
@@ -334,18 +283,6 @@ public class ConsultasInvestigator extends Application {
 
     private void makeTimelionQuery(QueryObjects queryObjects) {
         queryObjects.makeTimelionQuery(filter);
-    }
-
-    private String merge(String a, String b) {
-        return concat(of(a.split("\n")), of(b.split("\n"))).distinct().sorted().collect(joining("\n"));
-    }
-
-    private void mergeFilter(String[] params, String fieldQuery, List<Map<String, String>> aboveAvgInfo) {
-        CommonsFX.runInPlatform(() -> {
-            for (Map<String, String> map : aboveAvgInfo) {
-                filter.merge(fieldQuery, getFirst(params, map), this::merge);
-            }
-        });
     }
 
     public static QueryObjects configureTimeline(String field, List<QueryObjects> queryList, String userNameQuery,
@@ -397,6 +334,67 @@ public class ConsultasInvestigator extends Application {
 
     private static String join(List<Map<String, String>> collect) {
         return collect.stream().map(e -> "\t" + e.values().stream().collect(joining("\t"))).collect(joining("\n"));
+    }
+
+    private static String merge(String a, String b) {
+        return concat(of(a.split("\n")), of(b.split("\n"))).distinct().sorted().collect(joining("\n"));
+    }
+
+    private static void mergeFilter(Map<String, String> filter, String[] params, String fieldQuery,
+            List<Map<String, String>> aboveAvgInfo) {
+        CommonsFX.runInPlatform(() -> {
+            for (Map<String, String> map : aboveAvgInfo) {
+                filter.merge(fieldQuery, getFirst(params, map), ConsultasInvestigator::merge);
+            }
+        });
+    }
+
+    private static void networkSearch(Map<String, String> filter, List<QueryObjects> queries,
+            List<String> applicationList, Integer day, DoubleProperty progress) {
+        CommonsFX.update(progress, 0);
+        Map<String, String> filter1 = new HashMap<>();
+        WhoIsScanner whoIsScanner = new WhoIsScanner();
+        for (String application : applicationList) {
+            for (QueryObjects queryObjects : queries) {
+                filter1.put(QueryObjects.ACESSOS_SISTEMA_QUERY, application);
+                String[] params = queryObjects.getParams();
+                List<Map<String, String>> kibanaQuery = queryObjects.searchRemap(filter1, day);
+                List<Map<String, String>> whoIsInfo = kibanaQuery.parallelStream()
+                        .filter(m -> !getFirst(params, m).matches(ConsultasInvestigator.IGNORE_IPS_REGEX)).map(e -> {
+                            e.putAll(whoIsScanner.getIpInformation(getFirst(params, e)));
+                            return e;
+                        }).collect(Collectors.toList());
+                String numberCol = params[queryObjects.getParams().length - 1];
+                Map<String,
+                        Double> netHistogram = whoIsInfo.stream().collect(Collectors.groupingBy(
+                                m -> IPFill.getKey(m, "as_owner", "") + "\t" + IPFill.getKey(m, "network", "id"),
+                                Collectors.summingDouble(m -> getNumber(numberCol, m))));
+                DoubleSummaryStatistics summaryStatistics =
+                        netHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
+                double avg = summaryStatistics.getAverage();
+                double max = summaryStatistics.getMax();
+                double min = summaryStatistics.getMin();
+                double range = (max - min) * .40;
+                List<String> networks = netHistogram.entrySet().stream().filter(m -> m.getValue() > avg + range)
+                        .filter(m -> EXCLUDE_OWNERS.stream().noneMatch(ow -> m.getKey().startsWith(ow)))
+                        .map(s -> "\t" + s).collect(Collectors.toList());
+                if (!networks.isEmpty()) {
+                    List<String> nets =
+                            networks.stream().map(e -> e.replaceAll(".+\t(.+)", "$1")).collect(Collectors.toList());
+                    String queryField = queryObjects.getQuery();
+                    LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, networks);
+                    List<Map<String, String>> aboveAvgInfo = kibanaQuery.parallelStream()
+                            .filter(m -> !getFirst(params, m).matches(ConsultasInvestigator.IGNORE_IPS_REGEX))
+                            .filter(e -> nets.stream()
+                                    .anyMatch(net -> CIDRUtils.isSameNetworkAddress(net, getFirst(params, e))))
+                            .collect(Collectors.toList());
+                    mergeFilter(filter, params, queryField, aboveAvgInfo);
+                }
+
+                CommonsFX.addProgress(progress, 1. / applicationList.size() / queries.size());
+            }
+        }
+        CommonsFX.update(progress, 1);
     }
 
 }

@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -27,7 +28,7 @@ public class AllNodes extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Map<Class<?>, Node> hashMap = new HashMap<>();
+        Map<Class<?>, Node> nodeMap = new HashMap<>();
 
         Text right = new Text("");
         ExtractUtils.insertProxyConfig();
@@ -40,12 +41,14 @@ public class AllNodes extends Application {
         TextField resultsFilter = new TextField();
         ScrollPane right2 = new ScrollPane(right);
         ListView<Class<?>> build = new SimpleListViewBuilder<Class<?>>()
-                .onSelect((old, t) -> right2.setContent(hashMap.computeIfAbsent(t, AllNodes::createInstance)))
+                .onSelect((old, t) -> right2.setContent(nodeMap.computeIfAbsent(t, AllNodes::createInstance)))
                 .items(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true))).build();
         right2.setPrefSize(100, 100);
         right2.vmaxProperty().addListener(e -> right2.setVvalue(right2.getVmax()));
 
-        primaryStage.setScene(new Scene(new VBox(new Text("Filter"), resultsFilter, new SplitPane(build, right2))));
+        SplitPane splitPane = new SplitPane(build, right2);
+        VBox.setVgrow(splitPane, Priority.ALWAYS);
+        primaryStage.setScene(new Scene(new VBox(new Text("Filter"), resultsFilter, splitPane)));
         primaryStage.show();
     }
 

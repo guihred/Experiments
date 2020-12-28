@@ -19,8 +19,8 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebView;
-import javafx.stage.Stage;
 import netscape.javascript.JSObject;
+import simplebuilder.SimpleDialogBuilder;
 import utils.ResourceFXUtils;
 import utils.ex.RunnableEx;
 
@@ -40,11 +40,9 @@ public class BrowserView extends Region {
     private final WebView smallView = new WebView();
     private final ComboBox<String> comboBox = new ComboBox<>();
     private boolean needDocumentationButton;
-    private final Stage stage;
     private final JavaApp javaApp = new JavaApp();
 
-    public BrowserView(Stage stage) {
-        this.stage = stage;
+    public BrowserView() {
         getStyleClass().add("browser");
         for (int i = 0; i < captions.length; i++) {
             Hyperlink hpl = hpls[i] = new Hyperlink(captions[i]);
@@ -103,7 +101,7 @@ public class BrowserView extends Region {
         });
         cmItem1.setOnAction(e -> {
             PrinterJob job = PrinterJob.createPrinterJob();
-            if (job != null && job.showPrintDialog(stage)) {
+            if (job != null && job.showPrintDialog(getScene().getWindow())) {
                 webEngine.print(job);
                 job.endJob();
             }
@@ -117,9 +115,6 @@ public class BrowserView extends Region {
         return javaApp;
     }
 
-    public Stage getStage() {
-        return stage;
-    }
 
     @Override
     protected double computePrefHeight(double width) {
@@ -148,7 +143,7 @@ public class BrowserView extends Region {
 
     public class JavaApp {
         public void exit() {
-            getStage().close();
+            SimpleDialogBuilder.closeStage(browser);
         }
     }
 }

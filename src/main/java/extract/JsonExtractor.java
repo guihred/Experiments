@@ -187,20 +187,20 @@ public final class JsonExtractor {
         Map<String, String> reference = null;
         for (int i = 0; i < maxNumOfFields; i++) {
             int j = i;
-            List<String> collect2 =
+            List<String> elementsAtJ =
                     listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
-            if (collect2.stream().anyMatch(s -> s.matches(regex))) {
+            if (elementsAtJ.stream().anyMatch(s -> s.matches(regex))) {
                 reference = new LinkedHashMap<>();
                 Map<String, String> m = reference;
-                IntStream.range(0, keys.size()).forEach(k -> JsonExtractor.merge(regex, keys, collect2, m, k));
+                IntStream.range(0, keys.size()).forEach(k -> JsonExtractor.merge(regex, keys, elementsAtJ, m, k));
                 reference = JsonExtractor.processPartialList(regex, keys, finalList, partialList, reference);
             } else if (reference == null) {
-                partialList.add(collect2);
+                partialList.add(elementsAtJ);
             } else {
                 Map<String, String> newMap = new LinkedHashMap<>(reference);
                 newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
                         .map(Entry<String, String>::getKey).orElse(null));
-                IntStream.range(0, keys.size()).forEach(k -> JsonExtractor.merge(regex, keys, collect2, newMap, k));
+                IntStream.range(0, keys.size()).forEach(k -> JsonExtractor.merge(regex, keys, elementsAtJ, newMap, k));
                 finalList.add(newMap);
             }
     

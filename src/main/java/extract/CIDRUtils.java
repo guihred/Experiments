@@ -36,12 +36,14 @@ public class CIDRUtils {
 
     @SuppressWarnings("unchecked")
     public static Map<String, String> findNetwork(String ip) {
-        File outFile = ResourceFXUtils.getOutFile(NETWORKS_CSV);
-        if (!outFile.exists()) {
-            makeNetworkCSV();
-        }
         networkFile =
-                SupplierEx.orElse(networkFile, () -> DataframeBuilder.build(outFile));
+                SupplierEx.orElse(networkFile, () -> {
+                    File outFile = ResourceFXUtils.getOutFile(NETWORKS_CSV);
+                    if (!outFile.exists()) {
+                        makeNetworkCSV();
+                    }
+                    return DataframeBuilder.build(outFile);
+                });
         Map<?, ?> d = networkFile.findFirst(NETWORK, v -> isSameNetworkAddress(Objects.toString(v, ""), ip));
         return (Map<String, String>) d;
     }

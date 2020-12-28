@@ -7,6 +7,7 @@ import java.util.function.IntConsumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class DataframeML extends BaseDataframe {
@@ -95,13 +96,10 @@ public class DataframeML extends BaseDataframe {
     public Map<String, Object> findFirst(String header, Predicate<Object> v) {
         List<Object> list = dataframe.get(header);
         if (list != null) {
-            for (int i = 0; i < list.size(); i++) {
-                Object object = list.get(i);
-                if (v.test(object)) {
-                    return rowMap(i);
-                }
-            }
+            return IntStream.rangeClosed(0, list.size()).parallel().filter(i -> v.test(list.get(i)))
+                    .mapToObj(this::rowMap).findFirst().orElse(null);
         }
+
         return null;
     }
 

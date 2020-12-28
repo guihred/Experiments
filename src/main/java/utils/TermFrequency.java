@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
+import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public final class TermFrequency {
@@ -33,21 +34,16 @@ public final class TermFrequency {
 
         File file = new File("src");
         if (file.exists()) {
-            try {
-                Map<File, Map<String, Long>> mapa = getMapaDocumentos(file, ".java");
-                mapa.forEach((k, v) -> v.entrySet().stream()
-                        .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-                        .forEach(p -> LOGGER.trace("{},{}={}", k.getName(), p.getKey(), p.getValue())));
-            } catch (Exception e) {
-                LOGGER.debug("", e);
-            }
+            Map<File, Map<String, Long>> mapa = getMapaDocumentos(file, ".java");
+            mapa.forEach((k, v) -> v.entrySet().stream()
+                    .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                    .forEach(p -> LOGGER.trace("{},{}={}", k.getName(), p.getKey(), p.getValue())));
         }
     }
 
     public static String getField() {
         return SupplierEx.get(() -> {
-            String stackMatch =
-                    HasLogging.getStackMatch(s -> !s.startsWith("simplebuilder") && !s.startsWith("fxml.utils"));
+            String stackMatch = HasLogging.getStackMatch(s -> !s.startsWith("simplebuilder") && !s.startsWith("utils"));
             String[] stackParts = stackMatch.split("[:\\.]+");
             String line = stackParts[stackParts.length - 1];
             String fileName = stackParts[stackParts.length - 2];
@@ -68,20 +64,20 @@ public final class TermFrequency {
         if (!f.getName().endsWith(suffix)) {
             return map;
         }
-        try (BufferedReader buff = Files.newBufferedReader(f.toPath())) {
-            String readLine;
-            do {
-                readLine = buff.readLine();
-                if (readLine != null) {
-                    Stream.of(StringSigaUtils.splitCamelCase(readLine)).parallel().map(String::toLowerCase)
-                            .filter(e -> !StringUtils.isNumeric(e))
-                            .filter(t -> !TermFrequency.getJavaKeywords().contains(t))
-                            .reduce(map, TermFrequency::reduceToMap, (m1, m2) -> m1);
-                }
-            } while (readLine != null);
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
+        RunnableEx.run(() -> {
+            try (BufferedReader buff = Files.newBufferedReader(f.toPath())) {
+                String readLine;
+                do {
+                    readLine = buff.readLine();
+                    if (readLine != null) {
+                        Stream.of(StringSigaUtils.splitCamelCase(readLine)).parallel().map(String::toLowerCase)
+                                .filter(e -> !StringUtils.isNumeric(e))
+                                .filter(t -> !TermFrequency.getJavaKeywords().contains(t))
+                                .reduce(map, TermFrequency::reduceToMap, (m1, m2) -> m1);
+                    }
+                } while (readLine != null);
+            }
+        });
         return map;
     }
 
@@ -107,11 +103,7 @@ public final class TermFrequency {
             String[] list = file.list();
             if (list != null) {
                 for (String f : list) {
-                    try {
-                        TermFrequency.getMapaDocumentos(new File(file, f), suffix);
-                    } catch (Exception e) {
-                        LOGGER.error("", e);
-                    }
+                    RunnableEx.run(() -> TermFrequency.getMapaDocumentos(new File(file, f), suffix));
                 }
             }
         }

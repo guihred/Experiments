@@ -105,43 +105,7 @@ public class ReportApplication extends Application {
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
             addGeridInfo(mapaSubstituicao);
             ReportHelper.addParametersNotCrop(mapaSubstituicao, params, browser, progressBar.progressProperty());
-            ImageView imageView = new ImageView();
-            imageView.setFitWidth(500);
-            imageView.setPreserveRatio(true);
-            List<String> imageUrls = mapaSubstituicao.values().stream().flatMap(ReportApplication::objectList)
-                    .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).collect(Collectors.toList());
-
-            SimpleListViewBuilder<String> listViewBuilder = new SimpleListViewBuilder<>();
-            listViewBuilder
-                    .onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(v))))
-                    .cellFactory((String st) -> st.replaceAll(".+/", ""))
-                    .multipleSelection().onKey(KeyCode.DELETE, () -> {
-                        SimpleDialogBuilder.closeStage(imageView);
-                        for (String s : listViewBuilder.selected()) {
-                            Files.deleteIfExists(Paths.get(new URI(s)));
-                        }
-                        makeReportConsultasEditImages();
-                    })
-                    .items(imageUrls);
-            Rectangle rectangle = new Rectangle();
-            rectangle.setStroke(Color.TRANSPARENT);
-            rectangle.setFill(Color.TRANSPARENT);
-            StackPane stackPane = new StackPane(imageView, rectangle);
-            rectangle.setManaged(false);
-            imageView.setManaged(false);
-            ListView<String> build = listViewBuilder.build();
-            SplitPane pane = new SplitPane(build, stackPane);
-
-            pane.getDividers().get(0).positionProperty().addListener(
-                    (ob, old, val) -> imageView
-                            .setFitWidth((1 - val.doubleValue()) * 0.99 * imageView.getScene().getWidth()));
-
-            RotateUtils.moveArea(stackPane, rectangle, imageView,
-                    img -> onImageSelected(mapaSubstituicao, reportFile, build, img));
-            CommonsFX.runInPlatform(() -> {
-                new SimpleDialogBuilder().bindWindow(browser).title("Crop Images").node(pane).displayDialog();
-                build.prefHeightProperty().bind(imageView.getScene().heightProperty());
-            });
+            displayEditDialog(mapaSubstituicao, reportFile);
         });
     }
 
@@ -168,6 +132,46 @@ public class ReportApplication extends Application {
                     makeKibanaSearch.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
             ReportHelper.mergeImage(mapaSubstituicao, textAsImage);
         }
+    }
+
+    private void displayEditDialog(Map<String, Object> mapaSubstituicao, File reportFile) {
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(500);
+        imageView.setPreserveRatio(true);
+        List<String> imageUrls = mapaSubstituicao.values().stream().flatMap(ReportApplication::objectList)
+                .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).collect(Collectors.toList());
+
+        SimpleListViewBuilder<String> listViewBuilder = new SimpleListViewBuilder<>();
+        listViewBuilder
+                .onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(v))))
+                .cellFactory((String st) -> st.replaceAll(".+/", ""))
+                .multipleSelection().onKey(KeyCode.DELETE, () -> {
+                    SimpleDialogBuilder.closeStage(imageView);
+                    for (String s : listViewBuilder.selected()) {
+                        Files.deleteIfExists(Paths.get(new URI(s)));
+                    }
+                    makeReportConsultasEditImages();
+                })
+                .items(imageUrls);
+        Rectangle rectangle = new Rectangle();
+        rectangle.setStroke(Color.TRANSPARENT);
+        rectangle.setFill(Color.TRANSPARENT);
+        StackPane stackPane = new StackPane(imageView, rectangle);
+        rectangle.setManaged(false);
+        imageView.setManaged(false);
+        ListView<String> build = listViewBuilder.build();
+        SplitPane pane = new SplitPane(build, stackPane);
+
+        pane.getDividers().get(0).positionProperty().addListener(
+                (ob, old, val) -> imageView
+                        .setFitWidth((1 - val.doubleValue()) * 0.99 * imageView.getScene().getWidth()));
+
+        RotateUtils.moveArea(stackPane, rectangle, imageView,
+                img -> onImageSelected(mapaSubstituicao, reportFile, build, img));
+        CommonsFX.runInPlatform(() -> {
+            new SimpleDialogBuilder().bindWindow(browser).title("Crop Images").node(pane).displayDialog();
+            build.prefHeightProperty().bind(imageView.getScene().heightProperty());
+        });
     }
 
     private Node getNode(String k, Object v) {
@@ -238,9 +242,9 @@ public class ReportApplication extends Application {
             }
         }
         if (build.getItems().isEmpty()) {
-            LOG.info("APPLYING MAP {}", mapaSubstituicao);
-            finalizeReport(mapaSubstituicao, reportFile);
             SimpleDialogBuilder.closeStage(build);
+            LOG.info("APPLYING MAP {}", mapaSubstituicao);
+            RunnableEx.runNewThread(() -> finalizeReport(mapaSubstituicao, reportFile));
         }
     }
 

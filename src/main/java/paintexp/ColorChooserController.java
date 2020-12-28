@@ -140,8 +140,8 @@ public class ColorChooserController {
         if (Thread.currentThread().getStackTrace().length > MAX_THREAD_HEAP) {
             return;
         }
-        for (int x = 0; x < 256; x++) {
-            for (int y = 0; y < 256; y++) {
+        for (int x = 0; x <= MAX_BYTE; x++) {
+            for (int y = 0; y <= MAX_BYTE; y++) {
                 colorsImage.getPixelWriter().setColor(x, y, Color.hsb(hueSlider.getValue(), (double) x / MAX_BYTE,
                     (MAX_BYTE - (double) y) / MAX_BYTE, opacitySlider.getValue()));
             }
@@ -155,9 +155,12 @@ public class ColorChooserController {
 
     private void setSliderImage() {
         double height = sliderImage.getHeight();
-        for (int x = 0; x < 20; x++) {
+        final int maxDegrees = 360;
+        final int maxWidth = 20;
+        for (int x = 0; x < maxWidth; x++) {
             for (int y = 0; y < height; y++) {
-                sliderImage.getPixelWriter().setColor(x, y, Color.hsb((360 - y * 360 / height) % 360, 1, 1));
+                sliderImage.getPixelWriter().setColor(x, y,
+                        Color.hsb((maxDegrees - y * maxDegrees / height) % maxDegrees, 1, 1));
             }
         }
         hueSlider.setBackground(new Background(

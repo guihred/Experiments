@@ -20,7 +20,7 @@
         {
             "zoom":1.05,
             "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/a22f3940-4cef-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!(),params:(expression:'.es(index%3Dinss-*-prod*,q%3D%22dtpsistema:portalatendimento%20AND%20mdc.ip:$ip%22,split%3Dmdc.ip:10).label(!'$1!',!'.*%3E.*:(.*)%3E.*!')',interval:auto),title:'%5BSistemas%5D%20%5BSatCentral%5D%20Timeline%20Endere%C3%A7o%20de%20Origem',type:timelion))",
-            "name": "timeline$ip",
+            "name": "timelineSatCentral$ip",
             "width": 1,
             "height": 1,
             "x": 0,
@@ -39,7 +39,16 @@
             "x": 0,
             "y": 0.05
 		},
-		"Acessos a outros sistemas",
+        "Padrão de acesso automatizado",
+        {
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/09fbe670-fa19-11e8-a078-93662b30045b?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:kuery,query:''),uiState:(),vis:(aggs:!(),params:(expression:'.es(index%3D*apache-prod*,q%3D%22clientip:$ip%20AND%20(%20dtptype:nginx%20OR%20dtptype:apache%20OR%20dtptype:varnish)%22,split%3Ddtpsistema.keyword:5).label(!'$1!',!'.*%3E.*:(.*)%3E.*!')',interval:auto),title:'%5BAcesso%20Web%5D%20Top%20Aplica%C3%A7%C3%B5es%20por%20n%C3%BAmero%20de%20requisi%C3%A7%C3%B5es%20-%20Timeline',type:timelion))",
+            "name": "timeline$ip",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        },
+        "Acessos a outros sistemas",
 		{
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/191e1a10-9e56-11e9-bffd-37ab21b02682?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!f,params:!('$ip'),type:phrases,value:'$ip'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(clientip.keyword:'$ip'))))))),linked:!f,query:(language:lucene,query:''),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:dtpsistema.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:200),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20Web%5D%20Quantidade%20de%20Acessos%20por%20Sistema',type:table))",
 			"name": "sistemas$ip",

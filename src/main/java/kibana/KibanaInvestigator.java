@@ -4,10 +4,14 @@ import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleExpression;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -50,21 +54,17 @@ public class KibanaInvestigator extends Application {
         items.clear();
         CommonsFX.update(progressIndicator.progressProperty(), 0);
         ObservableList<String> items2 = filterList.getItems();
-        DoubleExpression totalProgress = new SimpleDoubleProperty(0);
+        List<SimpleDoubleProperty> collect = IntStream.range(0, items2.size())
+                .mapToObj(i -> new SimpleDoubleProperty(0)).collect(Collectors.toList());
+        Iterator<SimpleDoubleProperty> iterator = collect.iterator();
+        DoubleProperty totalProgress = new SimpleDoubleProperty(0);
         for (String ip : items2) {
-            SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
-            totalProgress = totalProgress.add(progress);
+            SimpleDoubleProperty progress = iterator.next();
+            progress.addListener(
+                    (ob, old, val) -> totalProgress.set(collect.stream().mapToDouble(DoubleProperty::get).sum()));
             RunnableEx.runNewThread(
                     () -> KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem(), progress),
-                    ns -> CommonsFX.runInPlatform(() -> {
-                        if (commonTable.getColumns().isEmpty()) {
-                            SimpleTableViewBuilder.addColumns(commonTable, ns.keySet());
-                        }
-                        items.add(ns);
-                        CommonsFX.update(progressIndicator.progressProperty(),
-                                Math.max(progressIndicator.getProgress(), items.size() / (double) items2.size()));
-                        SimpleTableViewBuilder.autoColumnsWidth(commonTable);
-                    }));
+                    ns -> CommonsFX.runInPlatform(() -> addToTable(items2, ns)));
         }
         CommonsFX.bind(totalProgress.divide(items2.size()), progressIndicator.progressProperty());
     }
@@ -82,6 +82,16 @@ public class KibanaInvestigator extends Application {
     public void start(final Stage primaryStage) {
         final int width = 600;
         CommonsFX.loadFXML("Kibana Investigator", "KibanaInvestigator.fxml", this, primaryStage, width, width);
+    }
+
+    private void addToTable(ObservableList<String> items2, Map<String, String> ns) {
+        if (commonTable.getColumns().isEmpty()) {
+            SimpleTableViewBuilder.addColumns(commonTable, ns.keySet());
+        }
+        items.add(ns);
+        CommonsFX.update(progressIndicator.progressProperty(),
+                Math.max(progressIndicator.getProgress(), items.size() / (double) items2.size()));
+        SimpleTableViewBuilder.autoColumnsWidth(commonTable);
     }
 
     public static void main(String[] args) {

@@ -41,7 +41,7 @@ public final class CommonsFX {
 
     public static void addProgress(Property<Number> progress, double value) {
         if (progress != null) {
-            CommonsFX.runInPlatform(() -> progress.setValue(progress.getValue().doubleValue()+value));
+            CommonsFX.runInPlatformSync(() -> progress.setValue(progress.getValue().doubleValue() + value));
         }
     }
     public static <T> void bind(ObservableValue<T> source, Property<T> target) {

@@ -50,8 +50,8 @@ public class SonarApi extends Application {
         HBox.setHgrow(build, Priority.ALWAYS);
         primaryStage.setTitle("Sonar API");
         primaryStage.setScene(new Scene(new HBox(new VBox(new Text("Filter"), filterField,
-                        SimpleButtonBuilder.newButton("Update", () -> onUpdate(issuesList, build)),
-                        SimpleButtonBuilder.newButton("Open Dataframe", () -> openDataframe(filterField, build))),
+                SimpleButtonBuilder.newButton("_Update", () -> onUpdate(issuesList, build)),
+                SimpleButtonBuilder.newButton("_Open Dataframe", () -> openDataframe(filterField, build))),
                 build)));
         primaryStage.show();
     }

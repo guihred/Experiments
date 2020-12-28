@@ -151,25 +151,22 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public static <T, V> TableColumn<T, V> addClosableColumn(TableView<T> node, String name, FunctionEx<T, V> func) {
         TableColumn<T, V> e2 = new TableColumn<>(name);
-        Hyperlink value = new Hyperlink("X");
-        value.setOnAction(e -> node.getColumns().remove(e2));
-        value.setStyle("-fx-text-fill: red;");
-        e2.setGraphic(value);
+        addCloseButton(node, e2);
         e2.setCellValueFactory(m -> new SimpleObjectProperty<>(FunctionEx.apply(func, m.getValue())));
         node.getColumns().add(e2);
         return e2;
     }
 
-    public static <T> void addColumns(final TableView<Map<String, T>> simpleTableViewBuilder,
-            final Collection<String> keySet) {
-        simpleTableViewBuilder.getColumns().clear();
+    public static <T> void addColumns(TableView<Map<String, T>> table, Collection<String> keySet) {
+        table.getColumns().clear();
         keySet.forEach(key -> {
             TableColumn<Map<String, T>, String> column = new TableColumn<>(key);
             column.setSortable(true);
             column.setCellValueFactory(
                     param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
-            column.prefWidthProperty().bind(simpleTableViewBuilder.widthProperty().divide(keySet.size()).add(-5));
-            simpleTableViewBuilder.getColumns().add(column);
+            column.prefWidthProperty().bind(table.widthProperty().divide(keySet.size()).add(-5));
+            addCloseButton(table, column);
+            table.getColumns().add(column);
         });
     }
 
@@ -264,6 +261,16 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
                 setText(FunctionEx.apply(func, item));
             }
         };
+    }
+
+    private static<T> void addCloseButton(TableView< T> table, TableColumn< T, ?> column) {
+        Hyperlink value = new Hyperlink("X");
+        value.setOnAction(e -> {
+            table.getColumns().remove(column);
+            autoColumnsWidth(table);
+        });
+        value.setStyle("-fx-text-fill: red;");
+        column.setGraphic(value);
     }
 
     public abstract static class CustomableTableCell<M, X> extends TableCell<M, X> {

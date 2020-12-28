@@ -64,7 +64,7 @@ public final class IPFill {
     }
 
     public static String getKey(Map<String, String> first, String... keys) {
-        return Stream.of(keys).map(first::get).filter(Objects::nonNull).findFirst().orElse(null);
+        return Stream.of(keys).map(first::get).filter(Objects::nonNull).findFirst().orElse("");
     
     }
 

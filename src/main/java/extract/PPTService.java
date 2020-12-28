@@ -70,9 +70,12 @@ public final class PPTService {
         byte[] pictureData = SupplierEx.get(() -> ImageFXUtils.toByteArray(image));
         XSLFPictureData pd = ppt.addPicture(pictureData, PictureData.PictureType.PNG);
         XSLFPictureShape picture = slide.createPicture(pd);
-        int width = 600;
+        final int width = 600;
         int height = (int) (image.getHeight() * width / image.getWidth());
-        picture.setAnchor(new Rectangle(60, 120, width, Math.min(300, height)));
+        final int offsetX = 60;
+        final int offsetY = 120;
+        final int maxHeight = 300;
+        picture.setAnchor(new Rectangle(offsetX, offsetY, width, Math.min(maxHeight, height)));
     }
 
     private static void addTable(XSLFSlide slide, Object ob) {

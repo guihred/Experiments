@@ -45,6 +45,8 @@ public class KibanaApi {
             .put("Referer", "https://n321p000124.fast.prevnet/app/kibana").put("Cookie", "io=3PIP6uXMWNC7_9EfAAAE")
             .build();
 
+    private static final WhoIsScanner WHOIS_SCANNER = new WhoIsScanner();
+
     protected KibanaApi() {
     }
 
@@ -80,6 +82,7 @@ public class KibanaApi {
         return kibanaFullScan(query, days, null);
 
     }
+
     public static Map<String, String> kibanaFullScan(String query, int days, Property<Number> progress) {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
@@ -87,61 +90,46 @@ public class KibanaApi {
         String key = "key";
         String valueCol = "value";
 
-
-        WhoIsScanner whoIsScanner = new WhoIsScanner();
         Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", () -> query);
-        fullScan.put("Provedor",
-                () -> {
-                    Map<String, String> ipInformation = whoIsScanner.getIpInformation(query);
-                    return Objects.toString(IPFill.getKey(ipInformation, "as_owner", "HostName"), "");
-                });
-        fullScan.put("Geolocation",
-                () -> {
-                    Map<String, String> ipInformation = whoIsScanner.getIpInformation(query);
-                    return Objects
-                            .toString(ipInformation.getOrDefault("country", ""));
-                });
+        fullScan.put("Provedor", () -> IPFill.getKey(WHOIS_SCANNER.getIpInformation(query), "as_owner", "HostName"));
+        fullScan.put("Geolocation", () -> IPFill.getKey(WHOIS_SCANNER.getIpInformation(query), "country", ""));
         fullScan.put("Bloqueio WAF", () -> display(makeKibanaSearch("policiesQuery.json", query, days, key)));
         fullScan.put("Palo Alto Threat", () -> display(makeKibanaSearch("threatQuery.json", query, days, key)));
         fullScan.put("TOP Conexão FW", () -> {
             Map<String, String> destinationSearch =
                     makeKibanaSearch("destinationQuery.json", query, days, key, valueCol);
             convertToBytes(valueCol, destinationSearch);
-            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n"))
-                    .map(whoIsScanner::reverseDNS).collect(Collectors.joining("\n")));
+            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n")).map(WHOIS_SCANNER::reverseDNS)
+                    .collect(Collectors.joining("\n")));
             return display(destinationSearch);
         });
         fullScan.put("TOP conexões WEB",
                 () -> display(makeKibanaSearch("acessosQuery.json", query, days, key, "doc_count")));
         fullScan.put("Ultimo Acesso", () -> {
-            Map<String, String> trafficSearch =
-                    makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime");
+            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime");
             trafficSearch.computeIfPresent("ReceiveTime",
                     (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
             return display(trafficSearch);
         });
-        fullScan.put("Total Bytes Received", () -> {
-            Map<String, String> totalBytesQuery =
-                    makeKibanaSearch("totalBytesQuery.json", query, days + 3, valueCol);
+        fullScan.put("Bytes Received", () -> {
+            Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", query, days + 3, valueCol);
             convertToStats(valueCol, totalBytesQuery);
             return display(totalBytesQuery);
         });
-        fullScan.put("WAF", () -> {
-            Map<String, String> makeKibanaSearch = makeKibanaSearch("wafQuery.json", query, days, "Name", "Value");
-            return display(makeKibanaSearch);
-        });
-        fullScan.put("Total Bytes Sent", () -> {
-            Map<String, String> totalBytesSent =
-                    makeKibanaSearch("paloAltoQuery.json", query, days + 3, valueCol);
+        fullScan.put("Bytes Sent", () -> {
+            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", query, days + 3, valueCol);
             convertToStats(valueCol, totalBytesSent);
             return display(totalBytesSent);
         });
+        fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", query, days, "Name", "Value")));
         Map<String, String> fullScan2 = new LinkedHashMap<>();
         CommonsFX.update(progress, 0);
         for (Entry<String, SupplierEx<String>> entry : fullScan.entrySet()) {
-            fullScan2.put(entry.getKey(), SupplierEx.get(entry.getValue()));
-            CommonsFX.addProgress(progress, 1. / fullScan.size());
+            RunnableEx.measureTime(entry.getKey(), () -> {
+                fullScan2.put(entry.getKey(), SupplierEx.get(entry.getValue()));
+                CommonsFX.addProgress(progress, 1. / fullScan.size());
+            });
         }
         LOG.info("KIBANA RESULT{}", fullScan2);
         CommonsFX.update(progress, 1);
@@ -238,19 +226,18 @@ public class KibanaApi {
             String min = StringSigaUtils.getFileSize(summaryStatistics.getMin());
             String max = StringSigaUtils.getFileSize(summaryStatistics.getMax());
             String last = Stream.of(lines).skip(Math.max(1, lines.length - 2L)).findFirst()
-                    .map(StringSigaUtils::toDouble)
-                    .map(StringSigaUtils::getFileSize).orElse("");
+                    .map(StringSigaUtils::toDouble).map(StringSigaUtils::getFileSize).orElse("");
             if (summaryStatistics.getCount() == 0) {
                 return "";
             }
             return String.format("%s (%s a %s)", last, min, max);
         });
+
     }
 
     private static String display(Map<String, String> ob) {
-        List<List<String>> listOfFields =
-                ob.values().stream().map(s -> Stream.of(s.split("\n")).collect(Collectors.toList()))
-                        .collect(Collectors.toList());
+        List<List<String>> listOfFields = ob.values().stream()
+                .map(s -> Stream.of(s.split("\n")).collect(Collectors.toList())).collect(Collectors.toList());
         int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
         listOfFields.forEach(l -> {
             if (l.size() < maxNumFields) {
