@@ -40,9 +40,8 @@ public final class CommonsFX {
     }
 
     public static void addProgress(Property<Number> progress, double value) {
-        if (progress != null) {
-            CommonsFX.runInPlatformSync(() -> progress.setValue(progress.getValue().doubleValue() + value));
-        }
+        RunnableEx.runIf(progress,
+                p -> CommonsFX.runInPlatformSync(() -> p.setValue(p.getValue().doubleValue() + value)));
     }
     public static <T> void bind(ObservableValue<T> source, Property<T> target) {
         source.addListener((ob, old, val) -> runInPlatform(() -> target.setValue(val)));
@@ -134,9 +133,9 @@ public final class CommonsFX {
     public static <T> FilteredList<T> newFastFilter(TextField filterField, FilteredList<T> filteredData) {
         filterField.textProperty()
                 .addListener((o, old,
-                        value) -> filteredData.setPredicate(row -> StringUtils.isBlank(value)
+                        value) -> RunnableEx.run(() -> filteredData.setPredicate(row -> StringUtils.isBlank(value)
                                 || StringUtils.containsIgnoreCase(row.toString(), value)
-                                || PredicateEx.test(s -> s.matches(value), row.toString())));
+                                || PredicateEx.test(s -> s.matches(value), row.toString()))));
         return filteredData;
     }
 
