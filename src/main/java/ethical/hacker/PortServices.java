@@ -68,8 +68,8 @@ public final class PortServices {
     public static void loadServiceNames() {
         RunnableEx.run(() -> {
             try (InputStream inStr = ResourceFXUtils.toStream("nmap-services");
-                InputStreamReader inStrReader = new InputStreamReader(inStr, Charset.defaultCharset());
-                BufferedReader bRead = new BufferedReader(inStrReader)) {
+                    InputStreamReader inStrReader = new InputStreamReader(inStr, Charset.defaultCharset());
+                    BufferedReader bRead = new BufferedReader(inStrReader)) {
                 for (String line = bRead.readLine(); line != null; line = bRead.readLine()) {
                     classifyService(line.trim());
                 }
@@ -112,7 +112,7 @@ public final class PortServices {
         } else {
             LOG.error("Unrecognized protocol in line: \"{}\"", line);
         }
-        
+
     }
 
 }

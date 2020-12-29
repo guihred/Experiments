@@ -1,8 +1,11 @@
 
 package kibana;
 
+import static utils.ex.RunnableEx.measureTime;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
+import ethical.hacker.PortServices;
 import extract.JsonExtractor;
 import extract.PhantomJSUtils;
 import extract.WhoIsScanner;
@@ -106,6 +109,15 @@ public class KibanaApi {
         });
         fullScan.put("TOP conexões WEB",
                 () -> display(makeKibanaSearch("acessosQuery.json", query, days, key, "doc_count")));
+        fullScan.put("Ports Accessed", () -> {
+            Map<String, String> makeKibanaSearch =
+                    makeKibanaSearch("destinationPortQuery.json", query, days, key, "doc_count");
+            makeKibanaSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
+                    .map(PortServices::getServiceByPort)
+                    .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription().replaceAll(",.+", ""))
+                    .collect(Collectors.joining("\n")));
+            return display(makeKibanaSearch);
+        });
         fullScan.put("Ultimo Acesso", () -> {
             Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime");
             trafficSearch.computeIfPresent("ReceiveTime",
@@ -125,13 +137,12 @@ public class KibanaApi {
         fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", query, days, "Name", "Value")));
         Map<String, String> fullScan2 = new LinkedHashMap<>();
         CommonsFX.update(progress, 0);
-        for (Entry<String, SupplierEx<String>> entry : fullScan.entrySet()) {
-            RunnableEx.measureTime(entry.getKey(), () -> {
+        measureTime("Kibana Full Scan " + query, () -> {
+            for (Entry<String, SupplierEx<String>> entry : fullScan.entrySet()) {
                 fullScan2.put(entry.getKey(), SupplierEx.get(entry.getValue()));
                 CommonsFX.addProgress(progress, 1. / fullScan.size());
-            });
-        }
-        LOG.info("KIBANA RESULT{}", fullScan2);
+            }
+        });
         CommonsFX.update(progress, 1);
 
         return fullScan2;

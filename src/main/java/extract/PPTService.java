@@ -9,11 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.scene.image.Image;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.xddf.usermodel.text.XDDFTextParagraph;
 import org.apache.poi.xslf.usermodel.*;
@@ -134,23 +136,22 @@ public final class PPTService {
     }
 
     private static void replaceSlide(Map<String, Object> replacementMap, XSLFSlide slide, XMLSlideShow ppt) {
-        getShapeStream(slide, XSLFTextBox.class).forEach((XSLFTextBox textBox) -> {
-
+        List<XSLFTextBox> shapeStream = getShapeStream(slide, XSLFTextBox.class).collect(Collectors.toList());
+        for (XSLFTextBox textBox : shapeStream) {
             List<XDDFTextParagraph> paragraphs = textBox.getTextBody().getParagraphs();
             for (XDDFTextParagraph paragraph : paragraphs) {
                 String text = paragraph.getText();
                 Object object = replacementMap.getOrDefault(text, replacementMap.get(text.trim()));
                 if (object instanceof List<?>) {
-                    List<?> object2 = (List<?>) object;
-                    addImage(slide, ppt, object2);
+                    addImage(slide, ppt, (List<?>) object);
                 } else if (object instanceof String) {
                     LOG.info("\"{}\" replaced to \"{}\"", text, object);
                     paragraph.setText((String) object);
-                } else {
+                } else if (StringUtils.isNotBlank(text)) {
                     LOG.info("{}", text);
                 }
             }
-        });
+        }
     }
 
 }

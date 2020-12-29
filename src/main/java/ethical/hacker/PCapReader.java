@@ -30,6 +30,9 @@ public final class PCapReader {
                 UDPPacket udpPacket = (UDPPacket) packet.getPacket(Protocol.UDP);
                 Map<String, String> description = ClassReflectionUtils.getDescriptionRecursive(udpPacket);
                 packets.add(description);
+            } else {
+                Map<String, String> description = ClassReflectionUtils.getDescriptionRecursive(packet);
+                packets.add(description);
             }
             return true;
         });

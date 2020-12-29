@@ -209,8 +209,8 @@ public final class JsonExtractor {
     }
 
     public static boolean splitList(List<Map<String, String>> list, Map<String, String> newItem) {
-        long count = newItem.values().stream().filter(Objects::nonNull).mapToInt(e -> e.split("\n").length)
-                .filter(i -> i > 1).distinct().count();
+        long count =
+                newItem.values().stream().mapToInt(e -> e.split("\n").length).filter(i -> i > 1).distinct().count();
         if (count != 1) {
             return false;
         }
@@ -298,14 +298,15 @@ public final class JsonExtractor {
             String value = processNode(next.getValue(), ob, depth + 1, filters);
             yaml.append(value);
             if (filters.length == 0 || Arrays.asList(filters).contains(key)) {
-                ob.merge(key, value,
-                        (o, n) -> Stream.of(o, n).filter(StringUtils::isNotBlank)
-                        .collect(Collectors.joining("\n")));
+                ob.merge(key, value, (o, n) -> Stream.of(o, n).collect(Collectors.joining("\n")).trim());
                 int orElse = ob.values().stream().mapToInt(s -> s.split("\n").length).max().orElse(0);
                 ob.entrySet().stream().filter(e -> e.getValue().split("\n").length < orElse - 1).forEach(e -> {
-                    String[] value2 = e.getValue().split("\n");
-                    ob.merge(e.getKey(), value2[value2.length - 1], (o, n) -> Stream.of(o, n)
-                            .filter(StringUtils::isNotBlank).collect(Collectors.joining("\n")));
+                    String[] split = e.getValue().split("\n");
+                    int a = Math.abs(split.length - orElse + 1);
+                    for (int i = 0; i < a; i++) {
+                        ob.merge(e.getKey(), split[split.length - 1],
+                                (o, n) -> Stream.of(o, n).collect(Collectors.joining("\n")).trim());
+                    }
                 });
 
             }
@@ -438,11 +439,10 @@ public final class JsonExtractor {
 
     private static SimpleMap toMap(JsonNode rootNode) {
         Object object = toObject(rootNode, 1);
-        if(object instanceof Map) {
+        if (object instanceof Map) {
             return accessMap(object).entrySet().stream().filter(e -> e.getValue() instanceof String)
                     .collect(Collectors.toMap(e -> StringSigaUtils.toStringSpecial(e.getKey()),
-                            e -> StringSigaUtils.toStringSpecial(e.getValue()), (u, v) -> u,
-                            SimpleMap::new));
+                            e -> StringSigaUtils.toStringSpecial(e.getValue()), (u, v) -> u, SimpleMap::new));
         }
         return new SimpleMap();
     }

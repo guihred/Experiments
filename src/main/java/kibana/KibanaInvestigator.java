@@ -54,19 +54,20 @@ public class KibanaInvestigator extends Application {
         items.clear();
         CommonsFX.update(progressIndicator.progressProperty(), 0);
         ObservableList<String> items2 = filterList.getItems();
-        List<SimpleDoubleProperty> collect = IntStream.range(0, items2.size())
+        List<SimpleDoubleProperty> progresses = IntStream.range(0, items2.size())
                 .mapToObj(i -> new SimpleDoubleProperty(0)).collect(Collectors.toList());
-        Iterator<SimpleDoubleProperty> iterator = collect.iterator();
         DoubleProperty totalProgress = new SimpleDoubleProperty(0);
+        totalProgress.addListener(
+                (ob, old, val) -> progressIndicator.progressProperty().setValue(val.doubleValue() / items2.size()));
+        Iterator<SimpleDoubleProperty> iterator = progresses.iterator();
         for (String ip : items2) {
             SimpleDoubleProperty progress = iterator.next();
             progress.addListener(
-                    (ob, old, val) -> totalProgress.set(collect.stream().mapToDouble(DoubleProperty::get).sum()));
+                    ob -> totalProgress.set(progresses.stream().mapToDouble(DoubleProperty::get).sum()));
             RunnableEx.runNewThread(
                     () -> KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem(), progress),
                     ns -> CommonsFX.runInPlatform(() -> addToTable(items2, ns)));
         }
-        CommonsFX.bind(totalProgress.divide(items2.size()), progressIndicator.progressProperty());
     }
 
     public void onOpenDataframe() {

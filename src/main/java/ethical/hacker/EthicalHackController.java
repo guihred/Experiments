@@ -28,8 +28,8 @@ public class EthicalHackController extends EthicalHackApp {
     public void initialize() {
         ports.textProperty().bind(
                 Bindings.createStringBinding(() -> String.format("Port Services %s", portsSelected), portsSelected));
-        of(commonTable).items(newFastFilter(resultsFilter, items.filtered(e -> true))).multipleSelection()
-                .copiable().savable().onSortClicked((col, b) -> QuickSortML.sortMapList(items, col, b));
+        of(commonTable).items(newFastFilter(resultsFilter, items.filtered(e -> true))).multipleSelection().copiable()
+                .savable().onSortClicked((col, b) -> QuickSortML.sortMapList(items, col, b));
         Map<Integer, String> tcpServices = PortServices.getTcpServices();
         ObservableList<Entry<Integer, String>> tcpItems =
                 FXCollections.synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet()
@@ -121,6 +121,17 @@ public class EthicalHackController extends EthicalHackApp {
             progressIndicator.progressProperty().bind(defineProgress);
             ConsoleUtils.waitAllProcesses();
         });
+    }
+
+    public void onActionReadPCap(ActionEvent e) {
+        new FileChooserBuilder().extensions("PCAP", "*.pcap").onSelect(f -> {
+            items.clear();
+            List<Map<String, String>> pcapFile = PCapReader.readPCAPngFile(f);
+            items.addAll(pcapFile);
+            Set<String> keySet = items.stream().flatMap(m -> m.keySet().stream())
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+            SimpleTableViewBuilder.addColumns(commonTable, keySet);
+        }).openFileAction(e);
     }
 
     public void onActionReverseDNS() {

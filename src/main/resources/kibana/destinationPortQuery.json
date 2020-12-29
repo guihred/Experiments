@@ -1,0 +1,101 @@
+{"index":"dtp-pl*","ignore_unavailable":true,"preference":1609255103121}
+{
+	"aggs": {
+		"2": {
+			"terms": {
+				"field": "DestinationPort",
+				"size": 1000,
+				"order": {
+					"_count": "desc"
+				}
+			}
+		}
+	},
+	"size": 0,
+	"version": true,
+	"_source": {
+		"excludes": []
+	},
+	"stored_fields": [
+		"*"
+	],
+	"script_fields": {
+		
+	},
+	"docvalue_fields": [
+		{
+			"field": "@timestamp",
+			"format": "date_time"
+		},
+		{
+			"field": "GeneratedTime",
+			"format": "date_time"
+		},
+		{
+			"field": "ReceiveTime",
+			"format": "date_time"
+		},
+		{
+			"field": "StartTime",
+			"format": "date_time"
+		}
+	],
+	"query": {
+		"bool": {
+			"must": [
+				{
+					"query_string": {
+						"query": "SourceIP: \"%s\"",
+						"analyze_wildcard": true,
+						"default_field": "*"
+					}
+				},
+				{
+					"match_all": {
+						
+					}
+				},
+				{
+					"match_all": {
+						
+					}
+				},
+				{
+					"range": {
+						"@timestamp": {
+							"gte": %s,
+							"lte": %s,
+							"format": "epoch_millis"
+						}
+					}
+				}
+			],
+			"filter": [],
+			"should": [],
+			"must_not": [
+				{
+					"match_phrase": {
+						"dtpcategoria": {
+							"query": "threat"
+						}
+					}
+				}
+			]
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"@kibana-highlighted-field@"
+		],
+		"post_tags": [
+			"@/kibana-highlighted-field@"
+		],
+		"fields": {
+			"*": {
+				
+			}
+		},
+		"fragment_size": 2147483647
+	},
+	"timeout": "30000ms"
+}

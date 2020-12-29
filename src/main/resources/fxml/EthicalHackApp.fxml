@@ -15,6 +15,8 @@
 					text="Export Excel" />
 				<Text text="Filter Results" />
 				<TextField fx:id="resultsFilter" />
+				<Button onAction="#onActionReadPCap"
+					text="Read _PCap" />
 				<Button id="_Network Information" onAction="#onActionNetworkInformation"
 					text="_Network Information" />
 				<Button id="NetStats" onAction="#onActionNetstats" text="Net _Stats" />
