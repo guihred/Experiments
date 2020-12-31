@@ -3,11 +3,12 @@ package ml.graph;
 import static utils.StringSigaUtils.toDouble;
 
 import extract.WhoIsScanner;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -28,13 +29,11 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.stage.Stage;
 import ml.data.*;
 import simplebuilder.ListHelper;
-import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
 public abstract class ExplorerVariables extends Application {
-    protected static final int MAX_ELEMENTS = 3000;
     @FXML
     protected ComboBox<Entry<String, DataframeStatisticAccumulator>> headersCombo;
     @FXML
@@ -106,7 +105,7 @@ public abstract class ExplorerVariables extends Application {
     }
 
     protected Object getQueryObject(QuestionType type, String colName, String text2) {
-        return getQueryObject(getDataframe(), type, colName, text2);
+        return Question.getQueryObject(getDataframe(), type, colName, text2);
     }
 
     protected void interruptCurrentThread() {
@@ -141,7 +140,7 @@ public abstract class ExplorerVariables extends Application {
             pieChart.setTitle(val.getKey());
             barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
             pieChart.setData(pieData);
-            addToPieChart(barList, countMap);
+            ExplorerHelper.addToPieChart(barList, countMap);
             return;
         }
         if (!getDataframe().isLoaded()) {
@@ -150,7 +149,7 @@ public abstract class ExplorerVariables extends Application {
             pieChart.setData(pieData);
             barChart.setTitle(val.getKey());
             pieChart.setTitle(val.getKey());
-            addToPieChart(barList, countMap);
+            ExplorerHelper.addToPieChart(barList, countMap);
             return;
         }
 
@@ -161,7 +160,7 @@ public abstract class ExplorerVariables extends Application {
                 String title = barChart.getTitle();
                 barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
                 pieChart.setData(pieData);
-                addToPieChart(barList, toPie(getDataframe(), title, key));
+                ExplorerHelper.addToPieChart(barList, ExplorerHelper.toPie(getDataframe(), title, key));
             }
             return;
         }
@@ -170,7 +169,7 @@ public abstract class ExplorerVariables extends Application {
             pieChart.setData(pieData);
             String title = barChart.getTitle();
             String key = val.getKey();
-            addToPieChart(barList, toPie(getDataframe(), title, key));
+            ExplorerHelper.addToPieChart(barList, ExplorerHelper.toPie(getDataframe(), title, key));
         }
     }
 
@@ -181,15 +180,15 @@ public abstract class ExplorerVariables extends Application {
             statistics.clearColumns();
         }
         List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList = c.getList();
-        addEntries(statistics, addedSubList);
+        ExplorerHelper.addEntries(statistics, addedSubList);
         if (!getDataframe().isLoaded()) {
-            addEntries(dataTable, addedSubList);
+            ExplorerHelper.addEntries(dataTable, addedSubList);
         } else {
             addedSubList.forEach(
                     entry -> dataTable.addColumn(entry.getKey(), i -> getDataframe().getAt(entry.getKey(), i)));
             dataTable.setListSize(getDataframe().getSize());
-            double[] array =
-                    addedSubList.stream().mapToDouble(e -> Math.max(getTopLength(e), e.getKey().length())).toArray();
+            double[] array = addedSubList.stream()
+                    .mapToDouble(e -> Math.max(ExplorerHelper.getTopLength(e), e.getKey().length())).toArray();
             dataTable.setColumnsWidth(array);
         }
     }
@@ -224,89 +223,5 @@ public abstract class ExplorerVariables extends Application {
         lineChart.getYAxis().setLabel(val.getKey());
         a.setData(data);
         lineChart.setData(value);
-    }
-
-    public static Object getQueryObject(DataframeML dataframe2, QuestionType type, String colName, String text2) {
-        if (type == QuestionType.DISTINCT) {
-            return new LinkedHashSet<>();
-        }
-        if (type == QuestionType.IN) {
-            List<Object> arrayList = new ArrayList<>();
-            for (String string : text2.split("[,;\t\n]+")) {
-                arrayList.add(DataframeUtils.tryNumber(dataframe2, colName, string));
-            }
-            return arrayList;
-        }
-        return DataframeUtils.tryNumber(dataframe2, colName, text2);
-    }
-
-    private static void addEntries(PaginatedTableView dataTable2,
-            List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList) {
-        Map<Integer, Map<String, Object>> cache = new HashMap<>();
-        List<String> asList = Arrays.asList("Header", "Mean", "Max", "Min", "Distinct", "Median25", "Median50",
-                "Median75", "Sum", "Count");
-        for (String key : asList) {
-            dataTable2.addColumn(key, i -> getStatAt(addedSubList, cache, key.toLowerCase(), i));
-        }
-        dataTable2.setListSize(addedSubList.size());
-        double[] array = asList.stream().mapToDouble(e -> Math
-                .max(Objects.toString(getStatAt(addedSubList, cache, e.toLowerCase(), 0)).length(), e.length()))
-                .toArray();
-        dataTable2.setColumnsWidth(array);
-    }
-
-    private static void addToList(ObservableList<Data<String, Number>> dataList, List<Data<String, Number>> array,
-            Data<String, Number> others, Function<Data<String, Number>, Double> keyExtractor) {
-        CommonsFX.runInPlatformSync(() -> {
-            if (dataList.size() >= MAX_ELEMENTS / 4) {
-                others.setYValue(keyExtractor.apply(others) + array.stream().mapToDouble(keyExtractor::apply).sum());
-                if (!dataList.contains(others)) {
-                    dataList.add(others);
-                }
-            } else {
-                array.sort(Comparator.comparing(keyExtractor).reversed());
-                dataList.addAll(array);
-            }
-        });
-    }
-
-    private static <T extends Number> void addToPieChart(ObservableList<Data<String, Number>> bar2List,
-            Collection<Entry<String, T>> countMap) {
-        RunnableEx.runNewThread(() -> {
-            List<Data<String, Number>> barList = Collections.synchronizedList(new ArrayList<>());
-            Data<String, Number> others = new Data<>("Others", 0);
-            countMap.forEach(entry -> {
-                String k = entry.getKey();
-                Number v = entry.getValue();
-                barList.add(new Data<>(k, v));
-                if (barList.size() % (MAX_ELEMENTS / 10) == 0) {
-                    addToList(bar2List, new ArrayList<>(barList), others, m -> m.getYValue().doubleValue());
-                    barList.clear();
-                }
-            });
-            addToList(bar2List, barList, others, m -> m.getYValue().doubleValue());
-        });
-    }
-
-    private static <T extends Number> void addToPieChart(ObservableList<Data<String, Number>> barList,
-            Map<String, T> countMap) {
-        addToPieChart(barList, countMap.entrySet());
-    }
-
-    private static Object getStatAt(List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList,
-            Map<Integer, Map<String, Object>> cache, String key, Integer i) {
-        return cache.computeIfAbsent(i, k -> ClassReflectionUtils.getGetterMap(addedSubList.get(k).getValue()))
-                .get(key);
-    }
-
-    private static int getTopLength(Entry<String, DataframeStatisticAccumulator> e) {
-        String string = Objects.toString(e.getValue().getTop(), "");
-        return Stream.of(string.split("\n")).mapToInt(String::length).max().orElse(string.length());
-    }
-
-    private static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {
-        List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, title, key);
-        return createSeries.stream().map(e -> new AbstractMap.SimpleEntry<>((String) e.getKey(), (Number) e.getValue()))
-                .collect(Collectors.toList());
     }
 }

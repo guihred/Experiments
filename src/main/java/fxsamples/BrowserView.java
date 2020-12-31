@@ -45,7 +45,7 @@ public class BrowserView extends Pane {
     private final JavaApp javaApp = new JavaApp();
 
     @FXML
-    ContextMenu cm;
+    private ContextMenu cm;
     @FXML
     private ComboBox<String> comboBox0;
 

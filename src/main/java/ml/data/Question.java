@@ -1,9 +1,11 @@
 
 package ml.data;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import ml.graph.ExplorerVariables;
 
 public class Question implements Predicate<Object> {
     private final String colName;
@@ -93,6 +95,20 @@ public class Question implements Predicate<Object> {
                 ob instanceof String ? "\"" + ob + "\"" : Objects.toString(ob, ""));
     }
 
+    public static Object getQueryObject(DataframeML dataframe2, QuestionType type, String colName, String text2) {
+        if (type == QuestionType.DISTINCT) {
+            return new LinkedHashSet<>();
+        }
+        if (type == QuestionType.IN) {
+            List<Object> arrayList = new ArrayList<>();
+            for (String string : text2.split("[,;\t\n]+")) {
+                arrayList.add(DataframeUtils.tryNumber(dataframe2, colName, string));
+            }
+            return arrayList;
+        }
+        return DataframeUtils.tryNumber(dataframe2, colName, text2);
+    }
+
     public static Question parseQuestion(DataframeML build, String question) {
         String[] tokens = question.split(" +");
         if (tokens.length < 2) {
@@ -104,7 +120,7 @@ public class Question implements Predicate<Object> {
         QuestionType type = QuestionType.getBySign(not ? tokens[2] : tokens[1]);
         String string2 = type == QuestionType.EMPTY ? null : tokens[tokens.length - 1];
         String colName2 = tokens[0];
-        Object queryObject = ExplorerVariables.getQueryObject(build, type, colName2, string2);
+        Object queryObject = Question.getQueryObject(build, type, colName2, string2);
         return new Question(colName2, queryObject, type, not);
     }
 

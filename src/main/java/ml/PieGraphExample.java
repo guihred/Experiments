@@ -12,7 +12,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -41,19 +40,18 @@ public class PieGraphExample extends Application {
         Scene theScene = new Scene(root, SIZE, SIZE);
         theStage.setScene(theScene);
         PieGraph canvas = new PieGraph();
-        SimpleComboBoxBuilder<String> onSelect =
+        SimpleComboBoxBuilder<String> columnCombo =
                 new SimpleComboBoxBuilder<String>().onSelect(e -> canvas.setDataframe(dataframeObj.get(), e));
         dataframeObj.addListener((ob, old, val) -> {
             List<String> fields =
                     val.getFormatMap().entrySet().stream().map(Entry<String, Class<? extends Comparable<?>>>::getKey)
                             .filter(StringUtils::isNotBlank).collect(Collectors.toList());
-            onSelect.items(fields);
-            onSelect.select(fields.size() - 1);
+            columnCombo.items(fields);
+            columnCombo.select(fields.size() - 1);
         });
         ProgressIndicator progress = new ProgressIndicator(0);
         DataframeML dataframe = DataframeBuilder.builder("WDICountry.csv").build(progress.progressProperty());
         dataframeObj.set(dataframe);
-        ComboBox<String> build = onSelect.build();
         Button exportButton = newButton("Export", e -> ImageFXUtils.take(canvas));
         VBox radiusSlider = newSlider("Radius", 1, 500, canvas.radiusProperty());
         VBox binsSlider = newSlider("Bins", 1, 50, canvas.binsProperty());
@@ -66,12 +64,13 @@ public class PieGraphExample extends Application {
                         () -> DataframeBuilder.builder(f).build(progress.progressProperty()),
                         o -> CommonsFX.runInPlatform(() -> dataframeObj.set(o))))
                 .buildOpenButton();
-        root.getChildren().add(new VBox(newCheck, radiusSlider, binsSlider, start, xSlider, propSlider, build,
+        root.getChildren()
+                .add(new VBox(newCheck, radiusSlider, binsSlider, start, xSlider, propSlider, columnCombo.build(),
                 chooseFile, progress, exportButton));
         HBox.setHgrow(canvas, Priority.ALWAYS);
         root.getChildren().add(new HBox(canvas));
         theStage.show();
-        onSelect.select("Region");
+        columnCombo.select("Region");
     }
 
     public static void main(final String[] args) {

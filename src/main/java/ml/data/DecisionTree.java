@@ -146,12 +146,12 @@ public class DecisionTree {
 
     public static void testCatanDecisionTree() {
         File csvFile = ResourceFXUtils.getOutFile("txt/catan_log.txt");
-        DataframeML build = DataframeBuilder.build(csvFile);
-        List<Object> list = build.list("ACTION");
+        DataframeML decisionsData = DataframeBuilder.build(csvFile);
+        List<Object> list = decisionsData.list("ACTION");
         if (list != null) {
             list.add(list.remove(0));
-            build.removeCol("WINNER", "PLAYER");
-            DecisionNode buildTree = buildTree(build, "ACTION");
+            decisionsData.removeCol("WINNER", "PLAYER");
+            DecisionNode buildTree = buildTree(decisionsData, "ACTION");
             LOG.trace("\n{}", buildTree);
             LOG.trace("{}", buildTree.size());
             LOG.trace("\n{}", buildTree.shuffle());

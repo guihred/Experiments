@@ -71,10 +71,10 @@ public class CubeFace extends Parent {
 		tilePane.setPrefRows(3);
 
         final double proportion = 0.375;
-        PerspectiveTransform build = new SimplePerspectiveTransformBuilder().ulx(0).uly(0)
+        PerspectiveTransform perspective = new SimplePerspectiveTransformBuilder().ulx(0).uly(0)
                 .urx(EDGE_LENGTH).ury(0).llx(EDGE_LENGTH * proportion).lly(EDGE_LENGTH * proportion)
                 .lrx(EDGE_LENGTH * (1 - proportion)).lry(EDGE_LENGTH * proportion).build();
-		tilePane.setEffect(build);
+        tilePane.setEffect(perspective);
 
 		for (int y = 5; y <= 7; y++) {
 			loadFace(tilePane, xOffset, y);

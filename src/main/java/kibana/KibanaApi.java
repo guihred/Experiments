@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.Property;
-import ml.graph.IPFill;
+import ml.graph.ExplorerHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CommonsFX;
@@ -95,8 +95,8 @@ public class KibanaApi {
 
         Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", () -> query);
-        fullScan.put("Provedor", () -> IPFill.getKey(WHOIS_SCANNER.getIpInformation(query), "as_owner", "HostName"));
-        fullScan.put("Geolocation", () -> IPFill.getKey(WHOIS_SCANNER.getIpInformation(query), "country", ""));
+        fullScan.put("Provedor", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(query), "as_owner", "HostName"));
+        fullScan.put("Geolocation", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(query), "country", ""));
         fullScan.put("Bloqueio WAF", () -> display(makeKibanaSearch("policiesQuery.json", query, days, key)));
         fullScan.put("Palo Alto Threat", () -> display(makeKibanaSearch("threatQuery.json", query, days, key)));
         fullScan.put("TOP Conexão FW", () -> {

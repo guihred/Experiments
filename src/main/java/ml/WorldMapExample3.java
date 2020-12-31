@@ -33,9 +33,9 @@ public class WorldMapExample3 extends Application {
         canvas.valueHeaderProperty().set("Currency Unit");
         canvas.setDataframe(x,
                 x.cols().stream().filter(e -> e.contains("able N")).findFirst().orElse("﻿Table Name"));
-        ComboBox<String> build = new SimpleComboBoxBuilder<String>().items(x.cols()).select("Currency Unit")
+        ComboBox<String> countryCombo = new SimpleComboBoxBuilder<String>().items(x.cols()).select("Currency Unit")
                 .onSelect(canvas.valueHeaderProperty()::set).build();
-        root.getChildren().add(build);
+        root.getChildren().add(countryCombo);
         root.getChildren().add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas)));
         root.getChildren().add(canvas);
 		theStage.show();

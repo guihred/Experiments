@@ -70,10 +70,10 @@ public class CubeNode extends Parent {
         angleY.addListener((ov, oldValue, newValue) -> arrangeFacesZOrder());
 
         rearFace = new CubeFace(CubeFace.REAR_FACE);
-        final Rotate build =
+        final Rotate rotate =
                 new SimpleRotateBuilder().angle(180.0).axis(Rotate.Y_AXIS).pivotX(CubeFace.EDGE_LENGTH / 2).build();
 
-        rearFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH), build);
+        rearFace.getTransforms().setAll(new Translate(0, 0, CubeFace.EDGE_LENGTH), rotate);
 
         bottomFace = new CubeFace(CubeFace.BOTTOM_FACE);
         final Rotate rotate90 =

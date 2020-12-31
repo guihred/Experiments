@@ -125,9 +125,9 @@ public final class CommonsFX {
     }
 
     public static CheckBox newCheckBox(final String text, final boolean disabled) {
-        CheckBox build = new CheckBox(text);
-        build.setDisable(disabled);
-        return build;
+        CheckBox checkBox = new CheckBox(text);
+        checkBox.setDisable(disabled);
+        return checkBox;
     }
 
     public static <T> FilteredList<T> newFastFilter(TextField filterField, FilteredList<T> filteredData) {

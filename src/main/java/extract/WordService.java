@@ -105,6 +105,17 @@ public final class WordService {
         }
     }
 
+    private static void replaceCollection(XWPFRun xwpfRun, Collection<?> object) {
+        for (Object ob0 :  object) {
+            if (ob0 instanceof String) {
+                setText(xwpfRun, (String) ob0);
+            }
+            if (ob0 instanceof Image) {
+                replaceImage(xwpfRun, (Image) ob0);
+            }
+        }
+    }
+
     private static void replaceImage(XWPFRun createRun, Image object) {
         RunnableEx.run(() -> {
             String imgFile = object.hashCode() + ".png";
@@ -168,14 +179,7 @@ public final class WordService {
                 setText(xwpfRun, object.toString());
             }
             if (object instanceof Collection) {
-                for (Object ob0 : (Collection<?>) object) {
-                    if (ob0 instanceof String) {
-                        setText(xwpfRun, (String) ob0);
-                    }
-                    if (ob0 instanceof Image) {
-                        replaceImage(xwpfRun, (Image) ob0);
-                    }
-                }
+                replaceCollection(xwpfRun, (Collection<?>)object);
             }
         }
     }

@@ -1,17 +1,16 @@
 package kibana;
 
 import extract.JsonExtractor;
-import extract.PPTService;
-import extract.WordService;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
@@ -22,7 +21,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -83,13 +81,13 @@ public class ReportApplication extends Application {
             Map<String, Object> mapaSubstituicao = JsonExtractor.accessMap(JsonExtractor.toObject(modelFile));
             addCommonParams();
             String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
-            String extension = getExtension(replaceString);
+            String extension = ReportHelper.getExtension(replaceString);
             File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
             addGeridInfo(mapaSubstituicao);
             ReportHelper.addParameters(mapaSubstituicao, params, browser, progressBar.progressProperty());
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
-            finalizeReport(mapaSubstituicao, reportFile);
+            ReportHelper.finalizeReport(mapaSubstituicao, reportFile);
         });
     }
 
@@ -100,7 +98,7 @@ public class ReportApplication extends Application {
             Map<String, Object> mapaSubstituicao = JsonExtractor.accessMap(JsonExtractor.toObject(modelFile));
             addCommonParams();
             String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
-            String extension = getExtension(replaceString);
+            String extension = ReportHelper.getExtension(replaceString);
             File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
             addGeridInfo(mapaSubstituicao);
@@ -138,16 +136,16 @@ public class ReportApplication extends Application {
         ImageView imageView = new ImageView();
         imageView.setFitWidth(500);
         imageView.setPreserveRatio(true);
-        List<String> imageUrls = mapaSubstituicao.values().stream().flatMap(ReportApplication::objectList)
+        List<String> imageUrls = mapaSubstituicao.values().stream().flatMap(ReportHelper::objectList)
                 .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).collect(Collectors.toList());
 
-        SimpleListViewBuilder<String> listViewBuilder = new SimpleListViewBuilder<>();
-        listViewBuilder
+        SimpleListViewBuilder<String> urlsListView = new SimpleListViewBuilder<>();
+        urlsListView
                 .onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(v))))
                 .cellFactory((String st) -> st.replaceAll(".+/", ""))
                 .multipleSelection().onKey(KeyCode.DELETE, () -> {
                     SimpleDialogBuilder.closeStage(imageView);
-                    for (String s : listViewBuilder.selected()) {
+                    for (String s : urlsListView.selected()) {
                         Files.deleteIfExists(Paths.get(new URI(s)));
                     }
                     makeReportConsultasEditImages();
@@ -159,7 +157,7 @@ public class ReportApplication extends Application {
         StackPane stackPane = new StackPane(imageView, rectangle);
         rectangle.setManaged(false);
         imageView.setManaged(false);
-        ListView<String> build = listViewBuilder.build();
+        ListView<String> build = urlsListView.build();
         SplitPane pane = new SplitPane(build, stackPane);
 
         pane.getDividers().get(0).positionProperty().addListener(
@@ -167,7 +165,7 @@ public class ReportApplication extends Application {
                         .setFitWidth((1 - val.doubleValue()) * 0.99 * imageView.getScene().getWidth()));
 
         RotateUtils.moveArea(stackPane, rectangle, imageView,
-                img -> onImageSelected(mapaSubstituicao, reportFile, build, img));
+                img -> ReportHelper.onImageSelected(mapaSubstituicao, reportFile, build, img));
         CommonsFX.runInPlatform(() -> {
             new SimpleDialogBuilder().bindWindow(browser).title("Crop Images").node(pane).displayDialog();
             build.prefHeightProperty().bind(imageView.getScene().heightProperty());
@@ -192,60 +190,12 @@ public class ReportApplication extends Application {
         Map<Object, Object> accessMap = JsonExtractor.accessMap(JsonExtractor.toObject(path.toFile()), "params");
         accessMap.forEach((k, v) -> {
             Node node = getNode(k.toString(), v);
-            VBox newVBox = SimpleVBoxBuilder.newVBox(StringSigaUtils.changeCase(k + ""), node);
-            paramsPane.getChildren().add(newVBox);
+            paramsPane.getChildren().add(SimpleVBoxBuilder.newVBox(StringSigaUtils.changeCase(k + ""), node));
         });
     }
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    private static void finalizeReport(Map<String, Object> mapaSubstituicao, File reportFile) {
-        String modelUsed = mapaSubstituicao.get("model").toString();
-        String extension = getExtension(reportFile.getName());
-        if ("pptx".equals(extension)) {
-            PPTService.getPowerPoint(mapaSubstituicao, modelUsed, reportFile);
-        } else {
-            WordService.getWord(mapaSubstituicao, modelUsed, reportFile);
-        }
-        ImageFXUtils.openInDesktop(reportFile);
-    }
-
-    private static String getExtension(String replaceString) {
-        return replaceString.replaceAll(".+\\.(\\w+)$", "$1");
-    }
-
-    private static Stream<Image> objectList(Object e) {
-        if (!(e instanceof Collection)) {
-            return Stream.empty();
-        }
-        return ((Collection<?>) e).stream().filter(o -> o instanceof Image).map(Image.class::cast);
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    private static void onImageSelected(Map<String, Object> mapaSubstituicao, File reportFile, ListView<String> build,
-            Image img) {
-        String selectedItem = build.getSelectionModel().getSelectedItem();
-        Collection<Object> values = mapaSubstituicao.values();
-        for (Object e : values) {
-            if (e instanceof List) {
-                List<Object> collection = (List<Object>) e;
-                collection.stream()
-                        .filter(o -> o instanceof Image
-                                && Objects.equals(selectedItem, ClassReflectionUtils.invoke(o, "impl_getUrl")))
-                        .findFirst().ifPresent(o -> {
-                            int indexOf = collection.indexOf(o);
-                            collection.set(indexOf, img);
-                            build.getItems().remove(selectedItem);
-                        });
-            }
-        }
-        if (build.getItems().isEmpty()) {
-            SimpleDialogBuilder.closeStage(build);
-            LOG.info("APPLYING MAP {}", mapaSubstituicao);
-            RunnableEx.runNewThread(() -> finalizeReport(mapaSubstituicao, reportFile));
-        }
     }
 
 }

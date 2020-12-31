@@ -115,7 +115,7 @@ public final class FileTreeWalker implements FileVisitor<Path> {
         return Stream.of(other).anyMatch(ex -> StringUtils.endsWithIgnoreCase(e.toString(), ex));
     }
 
-    static void walk(File start, List<Path> pathList, String... other) throws IOException {
+    private static void walk(File start, List<Path> pathList, String... other) throws IOException {
         Files.walkFileTree(start.toPath(), new FileTreeWalker(pathList, other));
     }
 }

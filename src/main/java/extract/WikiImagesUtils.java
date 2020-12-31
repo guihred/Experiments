@@ -32,18 +32,28 @@ public final class WikiImagesUtils {
 
     }
 
-    public static void displayCountByExtension() {
-        RunnableEx.run(() -> {
-            try (Stream<Path> find = Files.find(new File("").toPath(), 20, (a, b) -> !a.toFile().isDirectory())) {
-                Map<String, Long> fileExtensionCount = find.collect(Collectors
-                    .groupingBy(e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
-                fileExtensionCount.entrySet().stream()
-                    .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
-                    .forEach(ex -> LOG.info("{}={}", ex.getKey(), ex.getValue()));
-            }
+    public static BufferedImage decodeToImage(String imageString) {
+        return SupplierEx.get(() -> {
+            String formatName = imageString.replaceAll("data:image/(\\w+);.*", "$1");
+            String replaceAll = imageString.replaceAll("data:image/" + formatName + ";base64,", "");
+            byte[] imageByte = Base64.getDecoder().decode(replaceAll);
+            ImageReader next = ImageIO.getImageReadersByFormatName(formatName).next();
+            next.setInput(new ByteArrayImageInputStream(imageByte));
+            return next.read(0);
         });
     }
 
+    public static void displayCountByExtension() {
+        RunnableEx.run(() -> {
+            try (Stream<Path> find = Files.find(new File("").toPath(), 20, (a, b) -> !a.toFile().isDirectory())) {
+                Map<String, Long> fileExtensionCount = find.collect(Collectors.groupingBy(
+                        e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
+                fileExtensionCount.entrySet().stream()
+                        .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                        .forEach(ex -> LOG.info("{}={}", ex.getKey(), ex.getValue()));
+            }
+        });
+    }
 
     public static ObservableList<String> getImagensForked(String artista, ObservableList<String> images) {
         ExtractUtils.insertProxyConfig();
@@ -56,18 +66,6 @@ public final class WikiImagesUtils {
         images.addAll(SupplierEx.getIgnore(() -> readPage(url2), Collections.emptyList()));
         return images;
     }
-
-    static BufferedImage decodeToImage(String imageString) {
-        return SupplierEx.get(() -> {
-            String formatName = imageString.replaceAll("data:image/(\\w+);.*", "$1");
-            String replaceAll = imageString.replaceAll("data:image/" + formatName + ";base64,", "");
-            byte[] imageByte = Base64.getDecoder().decode(replaceAll);
-            ImageReader next = ImageIO.getImageReadersByFormatName(formatName).next();
-            next.setInput(new ByteArrayImageInputStream(imageByte));
-            return next.read(0);
-        });
-    }
-
 
     private static List<String> readPage(String urlString) {
         return SupplierEx.remap(() -> {

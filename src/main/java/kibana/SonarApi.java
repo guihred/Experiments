@@ -23,6 +23,7 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CSVUtils;
 import utils.CommonsFX;
+import utils.QuickSortML;
 import utils.ResourceFXUtils;
 
 public class SonarApi extends Application {
@@ -44,15 +45,16 @@ public class SonarApi extends Application {
     public void start(Stage primaryStage) throws Exception {
         TextField filterField = new TextField();
         ObservableList<Map<String, Object>> issuesList = FXCollections.observableArrayList();
-        TableView<Map<String, Object>> build =
+        TableView<Map<String, Object>> issuesTable =
                 new SimpleTableViewBuilder<Map<String, Object>>().id("sonarTable").savable().copiable()
-                .items(CommonsFX.newFastFilter(filterField, issuesList.filtered(s -> true))).build();
-        HBox.setHgrow(build, Priority.ALWAYS);
+                        .items(CommonsFX.newFastFilter(filterField, issuesList.filtered(s -> true)))
+                        .onSortClicked((s, b) -> QuickSortML.sortMapList(issuesList, s, b)).build();
+        HBox.setHgrow(issuesTable, Priority.ALWAYS);
         primaryStage.setTitle("Sonar API");
         primaryStage.setScene(new Scene(new HBox(new VBox(new Text("Filter"), filterField,
-                SimpleButtonBuilder.newButton("_Update", () -> onUpdate(issuesList, build)),
-                SimpleButtonBuilder.newButton("_Open Dataframe", () -> openDataframe(filterField, build))),
-                build)));
+                SimpleButtonBuilder.newButton("_Update", () -> onUpdate(issuesList, issuesTable)),
+                SimpleButtonBuilder.newButton("_Open Dataframe", () -> openDataframe(filterField, issuesTable))),
+                issuesTable)));
         primaryStage.show();
     }
 

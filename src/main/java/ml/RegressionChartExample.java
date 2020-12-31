@@ -37,12 +37,12 @@ public class RegressionChartExample extends Application {
         ObservableList<Series<Number, Number>> data = observableArrayList();
         LineChart<Number, Number> lineChart = lineChart(data, "");
         List<Object> list2 = dataframe.list(key);
-        ComboBox<Object> build = new SimpleComboBoxBuilder<>().items(list2)
+        ComboBox<Object> countryCombo = new SimpleComboBoxBuilder<>().items(list2)
             .onSelect(country -> onChangeCountry(dataframe, key, lineChart, list2, country)).select(0).build();
         ComboBox<String> file = new SimpleComboBoxBuilder<String>().items(Arrays.asList(list))
-            .onSelect(datafile -> onChangeFile(key, lineChart, build, datafile)).select(0).build();
+                .onSelect(datafile -> onChangeFile(key, lineChart, countryCombo, datafile)).select(0).build();
         VBox root = new VBox();
-        root.getChildren().add(new HBox(file, build));
+        root.getChildren().add(new HBox(file, countryCombo));
         root.getChildren().add(lineChart);
 
         primaryStage.setTitle("Regression Chart Example");

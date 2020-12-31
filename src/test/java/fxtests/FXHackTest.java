@@ -17,7 +17,7 @@ import javafx.scene.input.KeyCode;
 import kibana.*;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
-import ml.graph.IPFill;
+import ml.graph.ExplorerHelper;
 import org.junit.Test;
 import utils.*;
 import utils.ex.RunnableEx;
@@ -104,8 +104,8 @@ public class FXHackTest extends AbstractTestExecution {
         File csvFile = new File(
                 "C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Acesso Web] Top Origens x URL Únicas acessadas.csv");
         measureTime("WhoIsScanner.fillIPInformation", () -> {
-            DataframeML dataframe = IPFill.fillIPInformation(csvFile);
-            String reorderAndLog = IPFill.reorderAndLog(dataframe, IPFill.getLastNumberField(dataframe));
+            DataframeML dataframe = ExplorerHelper.fillIPInformation(csvFile);
+            String reorderAndLog = ExplorerHelper.reorderAndLog(dataframe, ExplorerHelper.getLastNumberField(dataframe));
             getLogger().info("{}", reorderAndLog);
             DataframeUtils.save(dataframe, ResourceFXUtils.getOutFile("csv/" + csvFile.getName()));
         });

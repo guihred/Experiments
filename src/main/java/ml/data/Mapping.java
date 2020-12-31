@@ -65,7 +65,7 @@ public final class Mapping {
                 .filtered(m -> ClassReflectionUtils.isAllowed(allowedTypes, m.getParameterTypes()));
         VBox vBox = new VBox();
 
-        ComboBox<Method> build =
+        ComboBox<Method> methodsCombo =
                 new SimpleComboBoxBuilder<>(methods2).id("methodCombo").select(0).converter(Mapping::methodName)
                         .onChange((old, method) -> adjustToMethod(dependencies, vBox, method)).build();
 
@@ -74,8 +74,8 @@ public final class Mapping {
         for (String string : dependencies) {
             dialog.text(string + " (" + dataframe.getFormat(string).getSimpleName() + ")");
         }
-        dialog.node(build).node(vBox)
-                .button("Add", () -> addMapping(dependencies, dataframe, vBox, build, button), () -> {
+        dialog.node(methodsCombo).node(vBox)
+                .button("Add", () -> addMapping(dependencies, dataframe, vBox, methodsCombo, button), () -> {
                     File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
                     DataframeUtils.save(dataframe, outFile);
                     ConsumerEx.accept(run, outFile);

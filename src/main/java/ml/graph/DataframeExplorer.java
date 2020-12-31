@@ -45,7 +45,7 @@ public class DataframeExplorer extends ExplorerVariables {
                     lineChart.setData(FXCollections.emptyObservableList());
                 });
             }
-            readDataframe(file, MAX_ELEMENTS);
+            readDataframe(file, ExplorerHelper.MAX_ELEMENTS);
             currentThread = null;
         });
     }
@@ -129,11 +129,11 @@ public class DataframeExplorer extends ExplorerVariables {
             }
             String ipColumn = selectedItem.getKey();
             DataframeBuilder builder = builderWithQuestions(getDataframe().getFile(), questions);
-            setDataframe(IPFill.fillIPInformation(builder, ipColumn, progress.progressProperty()));
+            setDataframe(ExplorerHelper.fillIPInformation(builder, ipColumn, progress.progressProperty()));
             File outFile = ResourceFXUtils.getOutFile("csv/" + getDataframe().getFile().getName());
             LOG.info("File {} SAVING IN", outFile);
             DataframeUtils.save(getDataframe(), outFile);
-            readDataframe(outFile, MAX_ELEMENTS);
+            readDataframe(outFile, ExplorerHelper.MAX_ELEMENTS);
             LOG.info("File {} IPS FILLED", getDataframe().getFile().getName());
             currentThread = null;
         });

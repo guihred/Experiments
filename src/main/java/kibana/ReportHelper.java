@@ -2,13 +2,12 @@ package kibana;
 
 import static utils.StringSigaUtils.toDouble;
 
+import extract.PPTService;
 import extract.PhantomJSUtils;
+import extract.WordService;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,6 +15,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker.State;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.shape.Rectangle;
@@ -28,10 +28,8 @@ import ml.data.Question;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.FileChooserBuilder;
-import utils.CommonsFX;
-import utils.ImageFXUtils;
-import utils.ResourceFXUtils;
-import utils.StringSigaUtils;
+import simplebuilder.SimpleDialogBuilder;
+import utils.*;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
@@ -81,6 +79,21 @@ public final class ReportHelper {
         CommonsFX.update(progress, 1);
     }
 
+    public static void finalizeReport(Map<String, Object> mapaSubstituicao, File reportFile) {
+        String modelUsed = mapaSubstituicao.get("model").toString();
+        String extension = ReportHelper.getExtension(reportFile.getName());
+        if ("pptx".equals(extension)) {
+            PPTService.getPowerPoint(mapaSubstituicao, modelUsed, reportFile);
+        } else {
+            WordService.getWord(mapaSubstituicao, modelUsed, reportFile);
+        }
+        ImageFXUtils.openInDesktop(reportFile);
+    }
+
+    public static String getExtension(String replaceString) {
+        return replaceString.replaceAll(".+\\.(\\w+)$", "$1");
+    }
+
     public static boolean isLoading(WebEngine engine) {
         return engine.getLoadWorker().getState() == State.RUNNING;
     }
@@ -98,6 +111,38 @@ public final class ReportHelper {
             ((List<?>) o).addAll((List) n);
             return o;
         });
+    }
+
+    public static Stream<Image> objectList(Object e) {
+        if (!(e instanceof Collection)) {
+            return Stream.empty();
+        }
+        return ((Collection<?>) e).stream().filter(o -> o instanceof Image).map(Image.class::cast);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public static void onImageSelected(Map<String, Object> mapaSubstituicao, File reportFile, ListView<String> build,
+            Image img) {
+        String selectedItem = build.getSelectionModel().getSelectedItem();
+        Collection<Object> values = mapaSubstituicao.values();
+        for (Object e : values) {
+            if (e instanceof List) {
+                List<Object> collection = (List<Object>) e;
+                collection.stream()
+                        .filter(o -> o instanceof Image
+                                && Objects.equals(selectedItem, ClassReflectionUtils.invoke(o, "impl_getUrl")))
+                        .findFirst().ifPresent(o -> {
+                            int indexOf = collection.indexOf(o);
+                            collection.set(indexOf, img);
+                            build.getItems().remove(selectedItem);
+                        });
+            }
+        }
+        if (build.getItems().isEmpty()) {
+            SimpleDialogBuilder.closeStage(build);
+            LOG.info("APPLYING MAP {}", mapaSubstituicao);
+            RunnableEx.runNewThread(() -> finalizeReport(mapaSubstituicao, reportFile));
+        }
     }
 
     public static String replaceString(Map<String, String> params, Object v) {
@@ -241,20 +286,20 @@ public final class ReportHelper {
 
     @SuppressWarnings("unchecked")
     private static void saveCSV(File srcFile, Map<String, Object> params, File outFile) {
-        DataframeML build = DataframeBuilder.build(srcFile);
-        List<String> cols = build.cols();
+        DataframeML dataframe = DataframeBuilder.build(srcFile);
+        List<String> cols = dataframe.cols();
         String columns = params.getOrDefault("columns", "").toString();
         cols.removeIf(s -> s.matches(columns));
-        build.removeCol(cols.toArray(new String[0]));
+        dataframe.removeCol(cols.toArray(new String[0]));
         List<Object> o = (List<Object>) params.getOrDefault("questions", new ArrayList<>());
-        List<Question> a = o.stream().map(Objects::toString).map(t -> Question.parseQuestion(build, t))
+        List<Question> a = o.stream().map(Objects::toString).map(t -> Question.parseQuestion(dataframe, t))
                 .collect(Collectors.toList());
 
         for (Question question : a) {
-            build.filter(question.getColName(), question);
+            dataframe.filter(question.getColName(), question);
         }
-        build.sortHeaders(Stream.of(columns.split("\\|")).collect(Collectors.toList()));
-        DataframeUtils.save(build, outFile);
+        dataframe.sortHeaders(Stream.of(columns.split("\\|")).collect(Collectors.toList()));
+        DataframeUtils.save(dataframe, outFile);
     }
 
     private static WritableImage saveImage(Map<String, Object> info, File outFile, WebView browser2) {
