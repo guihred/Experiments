@@ -8,10 +8,12 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import utils.ExtractUtils;
 
 public class EarthCubeMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
+        ExtractUtils.insertProxyConfig();
 		CubeNode cube = new CubeNode();
         Group root = new Group(cube);
 		cube.setFocusTraversable(true);

@@ -146,8 +146,9 @@ public class CSVUtils {
             }
             for (Map<String, Object> map : rowMap) {
                 keySet.forEach(s -> map.putIfAbsent(s, ""));
-                fw.append(join(map.entrySet().stream().sorted(Comparator.comparing(t -> keySet.indexOf(t.getKey())))
-                        .map(Entry<String, Object>::getValue).map(Object::toString)));
+                fw.append(map.entrySet().stream().sorted(Comparator.comparing(t -> keySet.indexOf(t.getKey())))
+                        .map(Entry<String, Object>::getValue).map(Object::toString)
+                        .collect(Collectors.joining("\",\"", "\"", "\"\n")));
             }
         } catch (Exception e1) {
             LOGGER.error("{}", e1);

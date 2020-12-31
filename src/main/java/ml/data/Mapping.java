@@ -98,7 +98,7 @@ public final class Mapping {
         }
         String params = Arrays.toString(ob);
         String strDepen = Arrays.toString(dependencies);
-        LOG.info("RUNNING {} {} {}", method, params, strDepen);
+        LOG.info("RUNNING {} {} {}", method, strDepen, params);
         runNewThread(() -> {
             if (!dataframe.isLoaded()) {
                 DataframeML build2 = DataframeBuilder.builder(dataframe.getFile())

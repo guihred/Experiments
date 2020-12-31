@@ -4,11 +4,11 @@ import static ml.data.JavaFileDependency.getAllFileDependencies;
 import static utils.CommonsFX.newFastFilter;
 import static utils.HibernateUtil.shutdown;
 import static utils.ex.PredicateEx.makeTest;
-import static utils.ex.RunnableEx.run;
 
 import ethical.hacker.ssh.PrintTextStream;
 import fxml.utils.FXMLCreatorHelper;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -32,7 +32,7 @@ import utils.ex.SupplierEx;
 public class AllApps extends Application {
 
     @FXML
-    private ListView<Class<? extends Application>> stackParts;
+    private ListView<Class<?>> stackParts;
     @FXML
     private TextField textField0;
     @FXML
@@ -53,8 +53,12 @@ public class AllApps extends Application {
 
     public void onActionToFXML() {
         RunnableEx.runNewThread(() -> {
-            List<Class<? extends Application>> selectedItems = stackParts.getSelectionModel().getSelectedItems();
-            FXMLCreatorHelper.testApplications(selectedItems, false);
+            List<Class<?>> selectedItems = stackParts.getSelectionModel().getSelectedItems();
+            for (Class<?> appClass : selectedItems) {
+                if (Application.class.isAssignableFrom(appClass)) {
+                    FXMLCreatorHelper.testApplications(Arrays.asList(asAppClass(appClass)), false);
+                }
+            }
         });
     }
 
@@ -78,11 +82,15 @@ public class AllApps extends Application {
     }
 
     @SuppressWarnings("unchecked")
+    private static Class<? extends Application> asAppClass(Class<?> appClass) {
+        return (Class<? extends Application>) appClass;
+    }
+
     private static void invoke(Class<?> appClass) {
         if (Application.class.isAssignableFrom(appClass)) {
-            new SimpleDialogBuilder().show((Class<? extends Application>) appClass);
+            new SimpleDialogBuilder().show(asAppClass(appClass));
             return;
         }
-        run(() -> appClass.getMethod("main", String[].class).invoke(null, new Object[] { new String[0] }));
+        RunnableEx.run(() -> appClass.getMethod("main", String[].class).invoke(null, new Object[] { new String[0] }));
     }
 }

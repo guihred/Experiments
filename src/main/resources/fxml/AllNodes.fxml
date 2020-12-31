@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.geometry.*?>
+<VBox xmlns:fx="http://javafx.com/fxml">
+	<children>
+		<HBox>
+			<Text fx:id="text0" text="Filter" />
+			<Button onAction="#onActionToFXML" text="To _FXML">
+				<padding>
+					<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+				</padding>
+			</Button>
+		</HBox>
+		<TextField fx:id="textField1">
+			<padding>
+				<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
+			</padding>
+		</TextField>
+		<SplitPane VBox.vgrow="ALWAYS" fx:id="splitPane2">
+			<items>
+				<ListView fx:id="build" id="build" />
+				<ScrollPane fx:id="scrollPane4" prefHeight="100.0"
+					prefWidth="100.0">
+					<content>
+						<Text fx:id="text5" />
+					</content>
+				</ScrollPane>
+			</items>
+			<padding>
+				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+			</padding>
+		</SplitPane>
+	</children>
+</VBox>

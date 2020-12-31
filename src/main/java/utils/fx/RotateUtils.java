@@ -300,6 +300,9 @@ public final class RotateUtils {
         double y = area.getLayoutY() * p;
         double width1 = width * p;
         double height1 = height * p;
+        if (width1 <= 0 || height1 <= 0) {
+            return;
+        }
         WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
         RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage, imageSelected,
                 Color.TRANSPARENT);

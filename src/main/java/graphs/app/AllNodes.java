@@ -1,5 +1,6 @@
 package graphs.app;
 
+import fxml.utils.FXMLCreatorHelper;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,11 +9,14 @@ import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.Parent;
+import javafx.scene.control.Cell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -21,35 +25,48 @@ import simplebuilder.SimpleListViewBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.ExtractUtils;
+import utils.ResourceFXUtils;
 import utils.ex.PredicateEx;
 import utils.ex.RunnableEx;
 
 public class AllNodes extends Application {
 
-    @Override
-    public void start(Stage primaryStage) {
-        Map<Class<?>, Node> nodeMap = new HashMap<>();
+    @FXML
+    private ScrollPane scrollPane4;
+    @FXML
+    private TextField textField1;
+    @FXML
+    private ListView<Class<? extends Node>> build;
 
-        Text right = new Text("");
+    public void initialize() {
+        Map<Class<?>, Node> nodeMap = new HashMap<>();
         ExtractUtils.insertProxyConfig();
-        primaryStage.setTitle("All Nodes");
-        ObservableList<Class<?>> items = FXCollections.observableArrayList();
+        ObservableList<Class<? extends Node>> items = FXCollections.observableArrayList();
         RunnableEx.runNewThread(() -> CoverageUtils.getClasses(Node.class, Arrays.asList("com.")).stream()
                 .filter(Objects::nonNull).filter(e -> !Cell.class.isAssignableFrom(e))
                 .filter(PredicateEx.makeTest(ClassReflectionUtils::isClassPublic))
                 .collect(Collectors.toCollection(() -> items)));
-        TextField resultsFilter = new TextField();
-        ScrollPane right2 = new ScrollPane(right);
-        ListView<Class<?>> build = new SimpleListViewBuilder<Class<?>>()
+        ScrollPane right2 = scrollPane4;
+        SimpleListViewBuilder.of(build)
                 .onSelect((old, t) -> right2.setContent(nodeMap.computeIfAbsent(t, AllNodes::createInstance)))
-                .items(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true))).build();
+                .items(CommonsFX.newFastFilter(textField1, items.filtered(e -> true))).build();
         right2.setPrefSize(100, 100);
         right2.vmaxProperty().addListener(e -> right2.setVvalue(right2.getVmax()));
+    }
 
-        SplitPane splitPane = new SplitPane(build, right2);
-        VBox.setVgrow(splitPane, Priority.ALWAYS);
-        primaryStage.setScene(new Scene(new VBox(new Text("Filter"), resultsFilter, splitPane)));
-        primaryStage.show();
+    public void onActionToFXML() {
+        RunnableEx.runNewThread(() -> {
+            Node instance = scrollPane4.getContent();
+            Parent node = instance instanceof Parent ? (Parent) instance : new VBox(instance);
+
+            FXMLCreatorHelper.createXMLFile(node,
+                    ResourceFXUtils.getOutFile("fxml/" + instance.getClass().getSimpleName() + ".fxml"));
+        });
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        CommonsFX.loadFXML("All Nodes", "AllNodes.fxml", this, primaryStage);
     }
 
     public static void main(String[] args) {

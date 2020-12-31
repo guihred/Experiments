@@ -65,6 +65,8 @@ public class DataframeExplorer extends ExplorerVariables {
         statistics.onDoubleClick(i -> columnsList.getSelectionModel().select(i));
         SimpleListViewBuilder.of(columnsList).items(columns).multipleSelection().onSelect(this::onColumnChosen)
                 .onKey(KeyCode.ADD, () -> retainOnly(columnsList.getSelectionModel().getSelectedItems()))
+                .onKey(KeyCode.SUBTRACT, () -> retainOnly(
+                        columns.stream().filter(e -> e.getValue().getDistinct() > 0).collect(Collectors.toList())))
                 .onKey(KeyCode.DELETE, col -> {
                     columns.remove(col);
                     getDataframe().removeCol(col.getKey());
@@ -209,7 +211,7 @@ public class DataframeExplorer extends ExplorerVariables {
         }
     }
 
-    private void retainOnly(ObservableList<Entry<String, DataframeStatisticAccumulator>> selectedItems) {
+    private void retainOnly(List<Entry<String, DataframeStatisticAccumulator>> selectedItems) {
         List<Entry<String, DataframeStatisticAccumulator>> notSelectedCols =
                 columns.stream().filter(s -> !selectedItems.contains(s)).collect(Collectors.toList());
         columns.removeAll(notSelectedCols);

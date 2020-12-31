@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import fxsamples.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.Pane">
+	<fx:define>
+		<Button text="Toggle Help Topics" fx:id="toggleHelpTopics"
+			onAction="#onActionToggleHelp" />
+		<Image backgroundLoading="false" fx:id="image8" preserveRatio="false"
+			requestedHeight="0" requestedWidth="0" smooth="false" url="@/product.jpg" />
+		<Insets bottom="2.5" fx:id="insets3" left="3.8" right="3.8"
+			top="2.5" />
+		<Image backgroundLoading="false" fx:id="image9" preserveRatio="false"
+			requestedHeight="0" requestedWidth="0" smooth="false" url="@/blog.png" />
+		<Image backgroundLoading="false" fx:id="image10" preserveRatio="false"
+			requestedHeight="0" requestedWidth="0" smooth="false" url="@/documentation.png" />
+		<Image backgroundLoading="false" fx:id="image11" preserveRatio="false"
+			requestedHeight="0" requestedWidth="0" smooth="false" url="@/partners.png" />
+		<Image backgroundLoading="false" fx:id="image12" preserveRatio="false"
+			requestedHeight="0" requestedWidth="0" smooth="false" url="@/help.png" />
+		<ContextMenu fx:id="cm">
+            <items>
+                <MenuItem fx:id="menuItem12" onAction="#onActionMenuItem12" text="Print"/>
+            </items>
+        </ContextMenu>
+	</fx:define>
+	<children>
+		<HBox alignment="CENTER" styleClass="browser-toolbar" fx:id="toolBar">
+			<children>
+				<ComboBox fx:id="comboBox0" onAction="#onActionComboBox0"
+					prefWidth="60.0">
+					<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="https://www.oracle.com/products/" />
+						</FXCollections>
+					</items>
+				</ComboBox>
+				<Hyperlink fx:id="hyperlink1" onAction="#onActionHyperlink1"
+					text="Products" textFill="0x0096c9ff">
+					<graphic>
+						<ImageView image="$image8" mouseTransparent="true" />
+					</graphic>
+					<padding>
+						<fx:reference source="insets3" />
+					</padding>
+				</Hyperlink>
+				<Hyperlink fx:id="hyperlink2" onAction="#onActionHyperlink1"
+					padding="$insets3" text="Blogs" textFill="0x0096c9ff">
+					<graphic>
+						<ImageView image="$image9" mouseTransparent="true" />
+					</graphic>
+				</Hyperlink>
+				<Hyperlink fx:id="hyperlink4" onAction="#onActionHyperlink1"
+					padding="$insets3" text="Documentation" textFill="0x0096c9ff">
+					<graphic>
+						<ImageView image="$image10" mouseTransparent="true" />
+					</graphic>
+				</Hyperlink>
+				<Hyperlink fx:id="hyperlink5" onAction="#onActionHyperlink1"
+					padding="$insets3" text="Partners" textFill="0x0096c9ff">
+					<graphic>
+						<ImageView image="$image11" mouseTransparent="true" />
+					</graphic>
+				</Hyperlink>
+				<Hyperlink fx:id="hyperlink6" onAction="#onActionHyperlink1"
+					padding="$insets3" text="Help" textFill="0x0096c9ff">
+					<graphic>
+						<ImageView image="$image12" mouseTransparent="true" />
+					</graphic>
+				</Hyperlink>
+				<Region HBox.hgrow="ALWAYS" fx:id="region7" />
+			</children>
+		</HBox>
+		<WebView fx:id="browser" />
+	</children>
+</fx:root>

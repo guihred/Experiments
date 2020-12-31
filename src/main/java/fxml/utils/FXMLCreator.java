@@ -34,6 +34,7 @@ public final class FXMLCreator {
     private static final String FX_DEFINE = "fx:define";
     private static final Logger LOG = HasLogging.log();
 
+    private static final String PACKAGE_NAME = FXMLCreator.class.getPackage().getName();
     private Collection<Class<?>> referenceClasses = new HashSet<>(FXMLConstants.getReferenceClasses());
     private Document document;
     private Map<Object, org.w3c.dom.Node> nodeMap = new IdentityHashMap<>();
@@ -42,21 +43,21 @@ public final class FXMLCreator {
     private Set<String> packages = new LinkedHashSet<>();
     private Map<String, String> referencedMethod = new LinkedHashMap<>();
     private Map<Object, String> referencedNodes = new IdentityHashMap<>();
+
     private LinkedHashMap<Class<?>, List<String>> differencesMap = new LinkedHashMap<>();
 
     public void createFXMLFile(Object node, File file) {
-        String packageName = FXMLCreator.class.getPackage().getName();
         RunnableEx.remap(() -> {
             document = DocumentHelper.newDocument();
             allNode.add(node);
-            processNodes(file, packageName);
+            processNodes(file);
 
             Node firstChild = document.getFirstChild();
             document.removeChild(firstChild);
             packages.forEach(p -> document.appendChild(document.createProcessingInstruction("import", p + ".*")));
             document.appendChild(firstChild);
             DocumentHelper.saveToFile(document, file);
-            createController(file, packageName);
+            createController(file);
         }, "ERROR in file " + file.getName());
     }
 
@@ -84,19 +85,19 @@ public final class FXMLCreator {
         return fieldName + nodeId2 + signature;
     }
 
-    private void createController(File file, String packageName) throws IOException {
+    private void createController(File file) throws IOException {
         String name = file.getName().replaceAll("\\.fxml", "") + "Controller";
         File outFile = getOutFile("java/" + name + ".java");
         List<String> lines = new ArrayList<>();
-        lines.add("package " + packageName + ";");
+        lines.add("package " + PACKAGE_NAME + ";");
         lines.add("import javafx.fxml.*;");
         lines.addAll(packages.stream().map(e -> "import " + e + ".*;").collect(toList()));
         lines.add("public class " + name + "{");
-        lines.addAll(referencedNodes.entrySet().stream()
-            .map(e -> String.format("\t@FXML%n\tprivate %s %s;", e.getKey().getClass().getSimpleName(), e.getValue()))
-            .collect(toList()));
-        lines.addAll(
-            referencedMethod.values().stream().map(e -> String.format("\tpublic void %s{%n\t}", e)).collect(toList()));
+        lines.addAll(referencedNodes.entrySet().stream().map(
+                e -> String.format("\t@FXML%n\tprivate %s %s;", e.getKey().getClass().getSimpleName(), e.getValue()))
+                .collect(toList()));
+        lines.addAll(referencedMethod.values().stream().map(e -> String.format("\tpublic void %s{%n\t}", e))
+                .collect(toList()));
         lines.add("}");
         Files.write(outFile.toPath(), lines);
         List<String> compileClass = ControllerCompiler.compileClass(outFile);
@@ -123,10 +124,10 @@ public final class FXMLCreator {
         Class<?> cl = ob1.getClass();
         if (ob1 instanceof Image) {
             String url = (String) ClassReflectionUtils.invoke(ob1, "impl_getUrl");
-            if (url != null) {
-                String mapUrl = mapUrl(url);
+            RunnableEx.runIf(url, u -> {
+                String mapUrl = mapUrl(u);
                 diffFields.put("url", mapUrl);
-            }
+            });
         }
         try {
             Object ob2 = getInstance(cl);
@@ -134,11 +135,11 @@ public final class FXMLCreator {
         } catch (Exception e) {
             LOG.trace("", e);
             List<String> mappedDifferences = differencesMap.computeIfAbsent(cl,
-                c -> allNode.stream().filter(ob -> ob.getClass() == cl && ob != ob1).limit(100)
-                    .flatMap(ob2 -> getDifferences(c, ob1, ob2).stream()).distinct().collect(toList()));
+                    c -> allNode.stream().filter(ob -> ob.getClass() == cl && ob != ob1).limit(100)
+                            .flatMap(ob2 -> getDifferences(c, ob1, ob2).stream()).distinct().collect(toList()));
             mappedDifferences.addAll(getNamedArgs(cl));
             Map<String, Object> fieldMap = mappedDifferences.stream().distinct().filter(m -> invoke(ob1, m) != null)
-                .collect(toMap(m -> m, m -> invoke(ob1, m), SupplierEx::nonNull, LinkedHashMap::new));
+                    .collect(toMap(m -> m, m -> invoke(ob1, m), SupplierEx::nonNull, LinkedHashMap::new));
             diffFields.putAll(fieldMap);
         }
         return diffFields;
@@ -146,7 +147,7 @@ public final class FXMLCreator {
 
     private boolean isReferenceableList(String fieldName, Collection<?> list) {
         return list.stream().filter(Objects::nonNull).anyMatch(o -> !containsSame(allNode, o))
-            || !"children".equals(fieldName) && !list.getClass().getSimpleName().contains("Unmodifiable");
+                || !"children".equals(fieldName) && !list.getClass().getSimpleName().contains("Unmodifiable");
     }
 
     private String newName(Object f) {
@@ -221,7 +222,7 @@ public final class FXMLCreator {
             return;
         }
         if (list.stream().filter(Objects::nonNull)
-            .anyMatch(o -> hasClass(FXMLConstants.getAttributeClasses(), o.getClass()))) {
+                .anyMatch(o -> hasClass(FXMLConstants.getAttributeClasses(), o.getClass()))) {
             Element appendTo = createListElement(element, fieldName, parent, list);
             list.stream().filter(Objects::nonNull).forEach(object -> {
                 packages.add(object.getClass().getPackage().getName());
@@ -232,7 +233,7 @@ public final class FXMLCreator {
             return;
         }
         if (list.stream().filter(Objects::nonNull)
-            .anyMatch(o -> hasClass(FXMLConstants.getNewTagClasses(), o.getClass()))) {
+                .anyMatch(o -> hasClass(FXMLConstants.getNewTagClasses(), o.getClass()))) {
             if (isReferenceableList(fieldName, list)) {
                 addReferenceList(element, fieldName, parent, list);
                 return;
@@ -242,7 +243,7 @@ public final class FXMLCreator {
         }
 
         if (list.stream().filter(Objects::nonNull).allMatch(o -> isClassPublic(o.getClass()))
-            && hasField(parent.getClass(), fieldName)) {
+                && hasField(parent.getClass(), fieldName)) {
             Element createElement2 = createListElement(element, fieldName, parent, list);
             for (Object object : list) {
                 if (object != null) {
@@ -272,7 +273,7 @@ public final class FXMLCreator {
                 String key = FXMLConstants.getPropertyRemap().getOrDefault(string, string);
                 String value = Objects.toString(v, "");
                 make(() -> mapElement.setAttribute(key, value), e -> LOG.error("error setting attribute {}={}", k, v))
-                    .run();
+                        .run();
             });
             return;
         }
@@ -290,7 +291,7 @@ public final class FXMLCreator {
     private void processMethod(Element element, String fieldName, Object fieldValue, Object parent) {
         String nodeName = referencedNodes.computeIfAbsent(parent, this::newName);
         String nameMethod = referencedMethod.computeIfAbsent(fieldValue.getClass().getName(),
-            e -> computeMethod(parent, fieldName, fieldValue, nodeName));
+                e -> computeMethod(parent, fieldName, fieldValue, nodeName));
         element.setAttribute(fieldName, "#" + nameMethod.replaceAll("\\(.+\\)", ""));
     }
 
@@ -316,7 +317,7 @@ public final class FXMLCreator {
         }
     }
 
-    private void processNodes(File file, String packageName) {
+    private void processNodes(File file) {
         for (int i = 0; i < allNode.size(); i++) {
             Object node2 = allNode.get(i);
             org.w3c.dom.Node parent = nodeMap.getOrDefault(node2, document);
@@ -356,7 +357,7 @@ public final class FXMLCreator {
             if (parent == document) {
                 createElement.setAttribute("xmlns:fx", "http://javafx.com/fxml");
                 String replaceAll = file.getName().replaceAll("\\.fxml", "");
-                createElement.setAttribute("fx:controller", packageName + "." + replaceAll + "Controller");
+                createElement.setAttribute("fx:controller", PACKAGE_NAME + "." + replaceAll + "Controller");
             }
         }
     }
@@ -395,13 +396,13 @@ public final class FXMLCreator {
     }
 
     private boolean tryCreateAttribute(Element element, String fieldName, Object fieldValue, Object parent) {
-        boolean a =false;
+        boolean a = false;
         if (hasClass(FXMLConstants.getConditionalTagClasses(), fieldValue.getClass())
-            && hasField(parent.getClass(), fieldName)) {
+                && hasField(parent.getClass(), fieldName)) {
             Element createElement2 = document.createElement(fieldName);
             element.appendChild(createElement2);
             addToAllNode(fieldValue, createElement2);
-            a =true;
+            a = true;
         }
         return a;
     }
@@ -433,7 +434,7 @@ public final class FXMLCreator {
 
     private static String getClassName(Object node2) {
         if (node2.getClass().getEnclosingClass() != null) {
-           return node2.getClass().getEnclosingClass().getSimpleName() + "." + node2.getClass().getSimpleName();
+            return node2.getClass().getEnclosingClass().getSimpleName() + "." + node2.getClass().getSimpleName();
         }
         return node2.getClass().getSimpleName().replaceAll("\\$", ".");
     }
@@ -444,8 +445,8 @@ public final class FXMLCreator {
 
     private static boolean isSuitableAsAttribute(String fieldName, Object fieldValue, Object parent) {
         return hasClass(FXMLConstants.getAttributeClasses(), fieldValue.getClass())
-            && hasField(parent.getClass(), fieldName)
-            && (fieldValue instanceof String || isSetterMatches(fieldName, fieldValue, parent));
+                && hasField(parent.getClass(), fieldName)
+                && (fieldValue instanceof String || isSetterMatches(fieldName, fieldValue, parent));
     }
 
     private static void logIfNotAttribute(Object fieldValue) {

@@ -79,6 +79,13 @@ public class ExcelDataReader extends DataframeUtils {
         }
     }
 
+    private static void fixMapSize(List<String> header, Map<String, Object> map) {
+        if (header.size() != map.size()) {
+            LOG.error("ERROR FIELDS COUNT");
+            createNullRow(header, map);
+        }
+    }
+
     private static String getHeader(Sheet sheet, List<Integer> collect, int cellIndex) {
         for (int i = collect.size() - 1; i >= 0; i--) {
             Integer integer = collect.get(i);
@@ -125,11 +132,12 @@ public class ExcelDataReader extends DataframeUtils {
             dataframe.putFormat(column, String.class);
         }
         for (Map<String, Object> map : scanner) {
-            dataframe.size++;
-            if (header.size() != map.size()) {
-                LOG.error("ERROR FIELDS COUNT");
-                createNullRow(header, map);
+            if (skipFirstLine(dataframe, map)) {
+                continue;
             }
+
+            dataframe.size++;
+            fixMapSize(header, map);
             for (int i = 0; i < header.size(); i++) {
                 String key = header.get(i);
                 String field = Objects.toString(map.get(key));
@@ -164,5 +172,10 @@ public class ExcelDataReader extends DataframeUtils {
             }
             rowi++;
         }
+    }
+
+    private static boolean skipFirstLine(DataframeML dataframe, Map<String, Object> map) {
+        return dataframe.size == 0
+                && map.entrySet().stream().allMatch(e -> Objects.equals(e.getKey(), e.getValue()));
     }
 }
