@@ -1,6 +1,5 @@
 package fxpro.ch02;
 
-import static utils.CommonsFX.newTextField;
 import static utils.CommonsFX.onCloseWindow;
 
 import java.util.List;
@@ -57,43 +56,44 @@ public class StageControlExample extends Application {
                     .findFirst().orElse(stageStyle);
             }
         }
-        final Stage stageRef = stage;
-        TextField titleTextField = newTextField("Stage Coach", 10);
-        final Button toFrontButton = SimpleButtonBuilder.newButton("toFront()", e -> stageRef.toFront());
-        final Button closeButton = SimpleButtonBuilder.newButton("close()", e -> stageRef.close());
-        final Button toBackButton = SimpleButtonBuilder.newButton("toBack()", e -> stageRef.toBack());
-        final VBox hbox = new VBox(new Label("title:"), titleTextField);
-        CheckBox checkBoxResizable = CommonsFX.newCheckBox("resizable",
-            stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED);
+        TextField textField = new TextField("Stage Coach");
+        textField.setPrefColumnCount(10);
+        TextField titleField = textField;
+        final Button toFrontButton = SimpleButtonBuilder.newButton("toFront()", e -> stage.toFront());
+        final Button closeButton = SimpleButtonBuilder.newButton("close()", e -> stage.close());
+        final Button toBackButton = SimpleButtonBuilder.newButton("toBack()", e -> stage.toBack());
+        final VBox hbox = new VBox(new Label("title:"), titleField);
+        CheckBox checkBox = new CheckBox("resizable");
+        checkBox.setDisable(stageStyle == StageStyle.TRANSPARENT || stageStyle == StageStyle.UNDECORATED);
         StackPane rootGroup = new StackPane(
             new SimpleVBoxBuilder().spacing(10).children(textStageX, textStageY, textStageW, textStageH, textStageF,
-                checkBoxResizable, checkBoxFullScreen, hbox, toBackButton, toFrontButton, closeButton).build());
+                checkBox, checkBoxFullScreen, hbox, toBackButton, toFrontButton, closeButton).build());
         Scene scene = new Scene(rootGroup, Color.TRANSPARENT);
         CommonsFX.addCSS(scene, "stageControl.css");
         scene.setFill(Color.TRANSPARENT);
         // When mouse button is pressed, save the initial position of screen
         rootGroup.setOnMousePressed((MouseEvent me) -> {
-            dragAnchorX = me.getScreenX() - stageRef.getX();
-            dragAnchorY = me.getScreenY() - stageRef.getY();
+            dragAnchorX = me.getScreenX() - stage.getX();
+            dragAnchorY = me.getScreenY() - stage.getY();
         });
         // When screen is dragged, translate it accordingly
 
         rootGroup.setOnMouseDragged((MouseEvent me) -> {
-            stageRef.setX(me.getScreenX() - dragAnchorX);
-            stageRef.setY(me.getScreenY() - dragAnchorY);
+            stage.setX(me.getScreenX() - dragAnchorX);
+            stage.setY(me.getScreenY() - dragAnchorY);
         });
-        textStageX.textProperty().bind(new SimpleStringProperty("x: ").concat(stageRef.xProperty().asString()));
-        textStageY.textProperty().bind(new SimpleStringProperty("y: ").concat(stageRef.yProperty().asString()));
-        textStageW.textProperty().bind(new SimpleStringProperty("width: ").concat(stageRef.widthProperty().asString()));
+        textStageX.textProperty().bind(new SimpleStringProperty("x: ").concat(stage.xProperty().asString()));
+        textStageY.textProperty().bind(new SimpleStringProperty("y: ").concat(stage.yProperty().asString()));
+        textStageW.textProperty().bind(new SimpleStringProperty("width: ").concat(stage.widthProperty().asString()));
         textStageH.textProperty()
-            .bind(new SimpleStringProperty("height: ").concat(stageRef.heightProperty().asString()));
+            .bind(new SimpleStringProperty("height: ").concat(stage.heightProperty().asString()));
         textStageF.textProperty()
-            .bind(new SimpleStringProperty("focused: ").concat(stageRef.focusedProperty().asString()));
+            .bind(new SimpleStringProperty("focused: ").concat(stage.focusedProperty().asString()));
         stage.setResizable(true);
-        checkBoxResizable.selectedProperty().bindBidirectional(stage.resizableProperty());
+        checkBox.selectedProperty().bindBidirectional(stage.resizableProperty());
         checkBoxFullScreen.selectedProperty().addListener(
-            (ov, oldValue, newValue) -> stageRef.setFullScreen(checkBoxFullScreen.selectedProperty().getValue()));
-        title.bind(titleTextField.textProperty());
+            (ov, oldValue, newValue) -> stage.setFullScreen(checkBoxFullScreen.selectedProperty().getValue()));
+        title.bind(titleField.textProperty());
         stage.setScene(scene);
         title.addListener((ob, old, val) -> stage.setTitle(val));
 

@@ -24,7 +24,8 @@ public class SavingTrustManager implements X509TrustManager {
 
     @Override
     public void checkServerTrusted(X509Certificate[] chain1, String authType) throws CertificateException {
-        checkClientTrusted(chain1, authType);
+        chain.addAll(new ArrayList<>(Arrays.asList(chain1)));
+        tm.checkServerTrusted(chain1, authType);
     }
 
     @Override

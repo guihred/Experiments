@@ -83,7 +83,6 @@ public class QueryObjects {
     }
 
     public QueryObjects configureTimeline(ComboBox<String> combo) {
-        QueryObjects fieldObjects = new QueryObjects(query, queryFile, lineChart);
         NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
         xAxis.setTickLabelFormatter(new StringConverter<Number>() {
             @Override
@@ -96,6 +95,7 @@ public class QueryObjects {
                 return Instant.ofEpochMilli(object.longValue()).atZone(ZoneId.systemDefault()).toLocalTime().toString();
             }
         });
+        QueryObjects fieldObjects = new QueryObjects(query, queryFile, lineChart);
         ObservableList<Series<Number, Number>> timelionFullScan = fieldObjects.getSeries();
 
         ObservableList<String> mapping = ListHelper.mapping(timelionFullScan, Series<Number, Number>::getName);

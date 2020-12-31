@@ -118,9 +118,17 @@ public class Vertex {
         return getId() == other.getId();
     }
 
+    public Map<Vertex, Integer> getEdges() {
+		return edges;
+	}
+
+    public int getId() {
+		return id;
+	}
+
     public String getName() {
         if (!NAMED) {
-            return Integer.toString(getId());
+            return ""+getId();
         }
 
         return name;
@@ -153,6 +161,10 @@ public class Vertex {
         edges.put(v, weight);
         return this;
     }
+
+    public void setEdges(Map<Vertex, Integer> edges) {
+		this.edges = edges;
+	}
 
     @Override
     public String toString() {
@@ -253,11 +265,11 @@ public class Vertex {
         return distance;
     }
 
-    public static Map<Vertex, Integer> weightedNegative(List<Vertex> graph) {
+	public static Map<Vertex, Integer> weightedNegative(List<Vertex> graph) {
         return weightedNegative(graph, graph.get(0));
     }
 
-    public static Map<Vertex, Integer> weightedNegative(List<Vertex> graph, Vertex vertex) {
+	public static Map<Vertex, Integer> weightedNegative(List<Vertex> graph, Vertex vertex) {
         Map<Vertex, Integer> distance = new HashMap<>();
         Queue<Vertex> q = new LinkedList<>();
         for (Vertex v : graph) {
@@ -283,21 +295,9 @@ public class Vertex {
         return distance;
     }
 
-    private static Vertex getMinDistanceVertex(Map<Vertex, Integer> distance, Map<Vertex, Boolean> known) {
+	private static Vertex getMinDistanceVertex(Map<Vertex, Integer> distance, Map<Vertex, Boolean> known) {
         return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
             .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
             .orElseThrow(() -> new Exception("There should be something")).getKey();
     }
-
-	public Map<Vertex, Integer> getEdges() {
-		return edges;
-	}
-
-	public void setEdges(Map<Vertex, Integer> edges) {
-		this.edges = edges;
-	}
-
-	public int getId() {
-		return id;
-	}
 }

@@ -164,10 +164,10 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             column.setSortable(true);
             column.setCellValueFactory(
                     param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
-            column.prefWidthProperty().bind(table.widthProperty().divide(keySet.size()).add(-5));
             addCloseButton(table, column);
             table.getColumns().add(column);
         });
+        autoColumnsWidth(table);
     }
 
     public static <T> void autoColumnsWidth(TableView<T> node) {

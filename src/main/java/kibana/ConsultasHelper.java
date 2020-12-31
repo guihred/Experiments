@@ -28,7 +28,7 @@ public final class ConsultasHelper {
     private ConsultasHelper() {
     }
 
-    public static void automatedSearch(List<QueryObjects> queries, List<String> applicationList,
+    public static void automatedSearch(Collection<QueryObjects> queries, Collection<String> applicationList,
             DoubleProperty progressp, Integer days2, Map<String, String> filter2) {
 
         CommonsFX.update(progressp, 0);
@@ -58,8 +58,8 @@ public final class ConsultasHelper {
         return concat(of(a.split("\n")), of(b.split("\n"))).distinct().sorted().collect(joining("\n"));
     }
 
-    public static void networkSearch(Map<String, String> filter, List<QueryObjects> queries,
-            List<String> applicationList, Integer day, DoubleProperty progress) {
+    public static void networkSearch(Map<String, String> filter, Collection<QueryObjects> queries,
+            Collection<String> applicationList, Integer day, DoubleProperty progress) {
         CommonsFX.update(progress, 0);
         Map<String, String> filter1 = new HashMap<>();
         WhoIsScanner whoIsScanner = new WhoIsScanner();
@@ -75,9 +75,11 @@ public final class ConsultasHelper {
                         }).collect(Collectors.toList());
                 String numberCol = params[queryObjects.getParams().length - 1];
                 Map<String,
-                        Double> netHistogram = whoIsInfo.stream().collect(Collectors.groupingBy(
-                                m -> ExplorerHelper.getKey(m, "as_owner", "") + "\t" + ExplorerHelper.getKey(m, "network", "id"),
-                                Collectors.summingDouble(m -> getNumber(numberCol, m))));
+                        Double> netHistogram = whoIsInfo.stream()
+                                .collect(Collectors.groupingBy(
+                                        m -> ExplorerHelper.getKey(m, "as_owner", "") + "\t"
+                                                + ExplorerHelper.getKey(m, "network", "id"),
+                                        Collectors.summingDouble(m -> getNumber(numberCol, m))));
                 DoubleSummaryStatistics summaryStatistics =
                         netHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
                 double avg = summaryStatistics.getAverage();

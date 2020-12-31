@@ -101,7 +101,7 @@ public class Question implements Predicate<Object> {
         }
         if (type == QuestionType.IN) {
             List<Object> arrayList = new ArrayList<>();
-            for (String string : text2.split("[,;\t\n]+")) {
+            for (String string : Objects.toString(text2, "").split("[,;\t\n]+")) {
                 arrayList.add(DataframeUtils.tryNumber(dataframe2, colName, string));
             }
             return arrayList;

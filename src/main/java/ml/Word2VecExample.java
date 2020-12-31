@@ -15,70 +15,50 @@ import utils.ex.HasLogging;
 
 public final class Word2VecExample {
 
-	private static final String RAW_SENTENCES_TXT = "raw_sentences.txt";
+    private static final String RAW_SENTENCES_TXT = "raw_sentences.txt";
     public static final String PATH_TO_SAVE_MODEL_TXT = "zip/pathToSaveModel.zip";
-	private static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
 
-	private Word2VecExample() {
-	}
-	public static Word2Vec createWord2Vec() throws FileNotFoundException {
-		File pathToSave = getPathToSave();
-		if (pathToSave.exists()) {
-			return WordVectorSerializer.readWord2VecModel(pathToSave.getAbsoluteFile());
+    private Word2VecExample() {
+    }
 
-		}
+    public static Word2Vec createWord2Vec() throws FileNotFoundException {
+        File pathToSave = getPathToSave();
+        if (pathToSave.exists()) {
+            return WordVectorSerializer.readWord2VecModel(pathToSave.getAbsoluteFile());
 
-		File filePath = ResourceFXUtils.toFile(RAW_SENTENCES_TXT).getAbsoluteFile();
-		// Strip white space before and after for each line
-		SentenceIterator iter = new BasicLineIterator(filePath);
-		// Split on white spaces in the line to get words
-		TokenizerFactory t = new DefaultTokenizerFactory();
+        }
 
-		/*
-            CommonPreprocessor will apply the following regex to each token: [\d\.:,"'\(\)\[\]|/?!;]+
-            So, effectively all numbers, punctuation symbols and some special symbols are stripped off.
-            Additionally it forces lower case for all tokens.
-		 */
-		t.setTokenPreProcessor(new CommonPreprocessor());
+        File filePath = ResourceFXUtils.toFile(RAW_SENTENCES_TXT).getAbsoluteFile();
+        // Strip white space before and after for each line
+        SentenceIterator iter = new BasicLineIterator(filePath);
+        // Split on white spaces in the line to get words
+        TokenizerFactory t = new DefaultTokenizerFactory();
 
-		final int seed = 42;
-		Word2Vec vec = new Word2Vec.Builder()
-				.minWordFrequency(5)
-				.iterations(1)
-				.layerSize(10)
-				.seed(seed)
-				.windowSize(5)
-				.allowParallelTokenization(true)
-				.iterate(iter)
-				.tokenizerFactory(t)
-				.build();
-		vec.fit();
+        /*
+         * CommonPreprocessor will apply the following regex to each token:
+         * [\d\.:,"'\(\)\[\]|/?!;]+ So, effectively all numbers, punctuation symbols and
+         * some special symbols are stripped off. Additionally it forces lower case for
+         * all tokens.
+         */
+        t.setTokenPreProcessor(new CommonPreprocessor());
 
-		LOG.info("Writing word vectors to text file....");
-		WordVectorSerializer.writeWord2VecModel(vec, pathToSave);
-		// Prints out the closest 10 words to "day". An example on what to do with these Word Vectors.
-		LOG.info("Closest Words:");
-		return vec;
-	}
+        final int seed = 42;
+        Word2Vec vec = new Word2Vec.Builder().minWordFrequency(5).iterations(1).layerSize(10).seed(seed).windowSize(5)
+                .allowParallelTokenization(true).iterate(iter).tokenizerFactory(t).build();
+        vec.fit();
 
-	public static void fit() throws FileNotFoundException {
-		Word2Vec word2Vec = createWord2Vec();
+        LOG.info("Writing word vectors to text file....");
+        WordVectorSerializer.writeWord2VecModel(vec, pathToSave);
+        // Prints out the closest 10 words to "day". An example on what to do with these
+        // Word Vectors.
+        LOG.info("Closest Words:");
+        return vec;
+    }
 
-		SentenceIterator iterator = new BasicLineIterator(ResourceFXUtils.toFile(RAW_SENTENCES_TXT));
-		TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
-		tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
 
-		word2Vec.setTokenizerFactory(tokenizerFactory);
-		word2Vec.setSentenceIterator(iterator);
-
-		LOG.info("Word2vec uptraining...");
-
-		word2Vec.fit();
-
-	}
-
-	public static File getPathToSave() {
+    public static File getPathToSave() {
         return ResourceFXUtils.getOutFile(PATH_TO_SAVE_MODEL_TXT);
-	}
+    }
 
 }

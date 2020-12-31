@@ -326,6 +326,7 @@ public final class GraphModelAlgorithms {
                 assignLow(num, low, parent, w, allEdges);
                 if (low.get(w) >= num.get(v)) {
                     v.setSelected(true);
+                    LOG.info("{}", v.getCellId());
                 }
                 low.put(v, Integer.min(low.get(v), low.get(w)));
 

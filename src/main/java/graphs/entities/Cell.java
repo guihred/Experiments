@@ -93,7 +93,7 @@ public class Cell extends Pane {
 	}
 
 	public void setText(String s) {
-	    addText(s);
+	    text.setText(cellId + "\n" + s);
 	}
 
 	public void setView(Node view) {

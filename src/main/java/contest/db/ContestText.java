@@ -77,7 +77,7 @@ public class ContestText extends BaseEntity implements HasImage {
             return true;
         }
 
-        return hasTexto(s0);
+        return hasTexto(Objects.toString(s0));
     }
 
     public void setContest(Contest contest) {

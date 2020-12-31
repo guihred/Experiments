@@ -21,7 +21,7 @@ import utils.ex.RunnableEx;
 
 public final class ExplorerHelper {
 
-    protected static final int MAX_ELEMENTS = 3000;
+    public static final int MAX_ELEMENTS = 3000;
 
     private ExplorerHelper() {
     }

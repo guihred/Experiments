@@ -124,12 +124,6 @@ public final class CommonsFX {
         return checkBox;
     }
 
-    public static CheckBox newCheckBox(final String text, final boolean disabled) {
-        CheckBox checkBox = new CheckBox(text);
-        checkBox.setDisable(disabled);
-        return checkBox;
-    }
-
     public static <T> FilteredList<T> newFastFilter(TextField filterField, FilteredList<T> filteredData) {
         filterField.textProperty()
                 .addListener((o, old,
@@ -137,12 +131,6 @@ public final class CommonsFX {
                                 || StringUtils.containsIgnoreCase(row.toString(), value)
                                 || PredicateEx.test(s -> s.matches(value), row.toString()))));
         return filteredData;
-    }
-
-    public static TextField newTextField(final String text, final int prefColumnCount) {
-        TextField textField = new TextField(text);
-        textField.setPrefColumnCount(prefColumnCount);
-        return textField;
     }
 
     public static void onCloseWindow(Stage stage, RunnableEx run) {

@@ -95,7 +95,8 @@ public class KibanaApi {
 
         Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", () -> query);
-        fullScan.put("Provedor", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(query), "as_owner", "HostName"));
+        fullScan.put("Provedor",
+                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(query), "as_owner", "HostName"));
         fullScan.put("Geolocation", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(query), "country", ""));
         fullScan.put("Bloqueio WAF", () -> display(makeKibanaSearch("policiesQuery.json", query, days, key)));
         fullScan.put("Palo Alto Threat", () -> display(makeKibanaSearch("threatQuery.json", query, days, key)));
@@ -112,10 +113,11 @@ public class KibanaApi {
         fullScan.put("Ports Accessed", () -> {
             Map<String, String> makeKibanaSearch =
                     makeKibanaSearch("destinationPortQuery.json", query, days, key, "doc_count");
-            makeKibanaSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
-                    .map(PortServices::getServiceByPort)
-                    .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription().replaceAll(",.+", ""))
-                    .collect(Collectors.joining("\n")));
+            makeKibanaSearch.computeIfPresent(key,
+                    (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
+                            .map(PortServices::getServiceByPort)
+                            .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription().replaceAll(",.+", ""))
+                            .collect(Collectors.joining("\n")));
             return display(makeKibanaSearch);
         });
         fullScan.put("Ultimo Acesso", () -> {
@@ -234,13 +236,13 @@ public class KibanaApi {
             String[] lines = v.split("\n");
             DoubleSummaryStatistics summaryStatistics =
                     Stream.of(lines).skip(1).mapToDouble(StringSigaUtils::toDouble).summaryStatistics();
+            if (summaryStatistics.getCount() == 0) {
+                return "";
+            }
             String min = StringSigaUtils.getFileSize(summaryStatistics.getMin());
             String max = StringSigaUtils.getFileSize(summaryStatistics.getMax());
             String last = Stream.of(lines).skip(Math.max(1, lines.length - 2L)).findFirst()
                     .map(StringSigaUtils::toDouble).map(StringSigaUtils::getFileSize).orElse("");
-            if (summaryStatistics.getCount() == 0) {
-                return "";
-            }
             return String.format("%s (%s a %s)", last, min, max);
         });
 

@@ -162,16 +162,15 @@ public final class RotateUtils {
             area.setStroke(Color.BLACK);
         });
         stackPane.sceneProperty().addListener((ob, old, val) -> val.setOnKeyReleased(e -> {
-            KeyCode code = e.getCode();
-            if (code == KeyCode.A && e.isControlDown()) {
-                Bounds bounds = imageView.getBoundsInLocal();
+            if (e.getCode() == KeyCode.A && e.isControlDown()) {
                 area.setLayoutX(0);
                 area.setLayoutY(0);
-                int width = (int) bounds.getWidth();
-                int height = (int) bounds.getHeight();
+                Bounds bounds = imageView.getBoundsInLocal();
+                double width = bounds.getWidth();
+                double height = bounds.getHeight();
                 area.setWidth(width);
                 area.setHeight(height);
-                cropImage(area, imageView, onImageCropped, width, height);
+                cropImage(area, imageView, onImageCropped, (int) width, (int) height);
 
             }
         }));
@@ -296,14 +295,14 @@ public final class RotateUtils {
         Image image = imageView.getImage();
         WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(), image.getHeight());
         double p = srcImage.getWidth() / imageView.getFitWidth();
-        double x = area.getLayoutX() * p;
-        double y = area.getLayoutY() * p;
         double width1 = width * p;
         double height1 = height * p;
         if (width1 <= 0 || height1 <= 0) {
             return;
         }
         WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
+        double x = area.getLayoutX() * p;
+        double y = area.getLayoutY() * p;
         RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage, imageSelected,
                 Color.TRANSPARENT);
         ConsumerEx.accept(onImageCropped, imageSelected);
