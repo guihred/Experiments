@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 import javafx.scene.image.Image;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ public final class FXMLCreator {
     private Document document;
     private Map<Object, org.w3c.dom.Node> nodeMap = new IdentityHashMap<>();
     private Map<Object, List<org.w3c.dom.Node>> originalMap = new IdentityHashMap<>();
+    private List<String> persistentFields = new ArrayList<>();
     private List<Object> allNode = new ArrayList<>();
     private Set<String> packages = new LinkedHashSet<>();
     private Map<String, String> referencedMethod = new LinkedHashMap<>();
@@ -46,6 +48,12 @@ public final class FXMLCreator {
 
     private LinkedHashMap<Class<?>, List<String>> differencesMap = new LinkedHashMap<>();
 
+    public FXMLCreator() {
+    }
+
+    public FXMLCreator(List<String> persistentFields) {
+        this.persistentFields.addAll(persistentFields);
+    }
     public void createFXMLFile(Object node, File file) {
         RunnableEx.remap(() -> {
             document = DocumentHelper.newDocument();
@@ -142,6 +150,9 @@ public final class FXMLCreator {
                     .collect(toMap(m -> m, m -> invoke(ob1, m), SupplierEx::nonNull, LinkedHashMap::new));
             diffFields.putAll(fieldMap);
         }
+        Map<String, Object> collect = persistentFields.stream().filter(s -> ClassReflectionUtils.hasGetter(cl, s))
+                .collect(Collectors.toMap(s -> s, s -> invoke(ob1, s)));
+        diffFields.putAll(collect);
         return diffFields;
     }
 

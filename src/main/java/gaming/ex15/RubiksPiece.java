@@ -38,28 +38,29 @@ public class RubiksPiece extends Group {
 		rec2.setTranslateX(-size / 2);
 		rec2.setTranslateY(0);
 		rec2.setRotationAxis(Rotate.X_AXIS);
-		rec2.setRotate(90);
+        final int straightAngle = 90;
+        rec2.setRotate(straightAngle);
 		// right face
 		Box rec3 = new Box(size, size, 1);
 		rec3.setMaterial(new PhongMaterial(Color.WHITE));
 		rec3.setTranslateX(-1 * size);
 		rec3.setTranslateY(-size / 2);
 		rec3.setRotationAxis(Rotate.Y_AXIS);
-		rec3.setRotate(90);
+        rec3.setRotate(straightAngle);
 		// left face
 		Box rec4 = new Box(size, size, 1);
 		rec4.setMaterial(new PhongMaterial(Color.BLUE));
 		rec4.setTranslateX(0);
 		rec4.setTranslateY(-size / 2);
 		rec4.setRotationAxis(Rotate.Y_AXIS);
-		rec4.setRotate(90);
+        rec4.setRotate(straightAngle);
 		// top face
 		Box rec5 = new Box(size, size, 1);
 		rec5.setMaterial(new PhongMaterial(Color.YELLOW));
 		rec5.setTranslateX(-size / 2);
 		rec5.setTranslateY(-1 * size);
 		rec5.setRotationAxis(Rotate.X_AXIS);
-		rec5.setRotate(90);
+        rec5.setRotate(straightAngle);
 		// front face
 		Box rec6 = new Box(size, size, 1);
 		rec6.setMaterial(new PhongMaterial(Color.RED));
@@ -80,7 +81,7 @@ public class RubiksPiece extends Group {
 				text.setRotationAxis(node.getRotationAxis());
 				text.setRotate(node.getRotate());
 				if (i % 3 == 0 || i == 4) {
-					Rotate e = new Rotate(180);
+                    Rotate e = new Rotate(straightAngle * 2);
 					e.setAxis(i % 3 == 0 ? Rotate.Y_AXIS : Rotate.X_AXIS);
 					text.getTransforms().add(e);
 				}
@@ -88,9 +89,7 @@ public class RubiksPiece extends Group {
 				arrayList.add(text);
 			}
 			getChildren().addAll(arrayList);
-
 		}
-
 	}
 
 	public Map<Point3D, Rotate> getRotations() {

@@ -151,7 +151,7 @@ public class ExcelDataReader extends DataframeUtils {
                 dataframe.list(key).add(tryNumber);
             }
             if (dataframe.size > dataframe.maxSize) {
-                break;
+                return;
             }
         }
     }

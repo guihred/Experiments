@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,7 +15,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import utils.CSVUtils;
 import utils.FileTreeWalker;
@@ -48,7 +53,10 @@ public class CIDRUtils {
         return (Map<String, String>) d;
     }
     public static boolean isSameNetworkAddress(String cidr, String ip) {
-        if (StringUtils.isBlank(cidr)) {
+        if (StringUtils.isBlank(cidr) || StringUtils.isBlank(ip)) {
+            return false;
+        }
+        if (!cidr.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+") && !ip.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
             return false;
         }
 
@@ -79,6 +87,11 @@ public class CIDRUtils {
                 firstFileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readMap))
                 .filter(e -> e.size() == 3)
                 .distinct().collect(Collectors.toList());
+        List<Path> first2FileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile(),
+                p -> p.getFileName().toString().matches("(\\d+\\.){3}\\d+\\.xml"));
+        List<Map<String, Object>> xmlLoaded = first2FileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readXML))
+                .distinct().collect(Collectors.toList());
+        networkLoaded.addAll(xmlLoaded);
         QuickSortML.sortMapList(networkLoaded, NETWORK, true);
         CSVUtils.appendLines(outFile, networkLoaded);
         return networkLoaded;
@@ -93,5 +106,15 @@ public class CIDRUtils {
 
     private static Map<String, Object> readMap(Path e) throws IOException {
         return JsonExtractor.accessMap(JsonExtractor.toObject(e.toFile(), NETWORK, "as_owner", "country"));
+    }
+
+    private static Map<String, Object> readXML(Path xmlFile) throws IOException {
+        Document document = Jsoup.parse(xmlFile.toFile(), StandardCharsets.UTF_8.name());
+        Map<String, Object> map = new HashMap<>();
+        document.getElementsByTag("ip").forEach(
+                e -> e.children().forEach(m -> map.put(m.tagName(), StringEscapeUtils.unescapeHtml4(m.text()))));
+        map.put("as_owner", map.get("asname"));
+        map.put("country", map.get("ascountry"));
+        return map;
     }
 }

@@ -35,6 +35,11 @@ public final class FXMLCreatorHelper {
         new FXMLCreator().createFXMLFile(node, file);
     }
 
+    public static void createXMLFile(Parent node, File file, List<String> persistentFields) {
+        FXMLCreator fxmlCreator = new FXMLCreator(persistentFields);
+        fxmlCreator.createFXMLFile(node, file);
+    }
+
     public static Stage duplicateStage(File file, String title, double... size) {
         Stage primaryStage = new Stage();
         CommonsFX.loadFXML(title, file, primaryStage, size);

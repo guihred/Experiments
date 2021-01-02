@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
@@ -76,7 +77,7 @@ public final class VirusTotalApi {
             }
             Map<String, String> jsonFile =
                     JsonExtractor.makeMapFromJsonFile(outFile, "id", "as_owner", "country", "network", "error");
-            if (jsonFile.containsKey("error")) {
+            if (StringUtils.isNotBlank(jsonFile.get("error"))) {
                 Files.deleteIfExists(outFile.toPath());
                 CIDRUtils.makeNetworkCSV();
             }

@@ -57,10 +57,12 @@ public class AllNodes extends Application {
     public void onActionToFXML() {
         RunnableEx.runNewThread(() -> {
             Node instance = scrollPane4.getContent();
-            Parent node = instance instanceof Parent ? (Parent) instance : new VBox(instance);
+            Parent node = instance instanceof Parent ? (Parent) instance
+                    : CommonsFX.runInPlatformSync(() -> new VBox(instance));
 
             FXMLCreatorHelper.createXMLFile(node,
-                    ResourceFXUtils.getOutFile("fxml/" + instance.getClass().getSimpleName() + ".fxml"));
+                    ResourceFXUtils.getOutFile("fxml/" + instance.getClass().getSimpleName() + ".fxml"),
+                    Arrays.asList("children", "transforms"));
         });
     }
 

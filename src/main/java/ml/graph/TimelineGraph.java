@@ -19,10 +19,10 @@ public class TimelineGraph extends Canvas {
     private static final int SIZE = 550;
     private static final double MAX_LAYOUT = 480;
     private String countryNameColumn = "﻿Country Name";
-    private DoubleProperty layout = new SimpleDoubleProperty(60);
-    private DoubleProperty lineSize = new SimpleDoubleProperty(20);
-    private IntegerProperty bins = new SimpleIntegerProperty(20);
-    private IntegerProperty ybins = new SimpleIntegerProperty(20);
+    private final DoubleProperty layout = new SimpleDoubleProperty(60);
+    private final DoubleProperty lineSize = new SimpleDoubleProperty(20);
+    private final IntegerProperty bins = new SimpleIntegerProperty(20);
+    private final IntegerProperty ybins = new SimpleIntegerProperty(20);
     private BooleanProperty showLabels = new SimpleBooleanProperty(false);
     private final DoubleProperty xProportion = new SimpleDoubleProperty();
     private double yProportion;

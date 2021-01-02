@@ -57,6 +57,7 @@ public class MusicOrganizer extends Application {
                 .initialDir(ResourceFXUtils.getUserFolder("Music")).onSelect(selectedFile -> {
                     musicas = MusicReader.getMusicas(selectedFile, progress.progressProperty());
                     configurarFiltroRapido(filterText, musicaTable, musicas);
+                    SimpleTableViewBuilder.autoColumnsWidth(musicaTable);
                 }).openDirectoryAction(e);
     }
 
@@ -67,6 +68,7 @@ public class MusicOrganizer extends Application {
                     FileTreeWalker.getPathByExtensionAsync(selectedFile, v -> musicas.add(new Music(v.toFile())),
                             ".mp4", ".wma", ".webm", ".wav");
                     configurarFiltroRapido(filterText, musicaTable, musicas);
+                    SimpleTableViewBuilder.autoColumnsWidth(musicaTable);
                 }).openDirectoryAction(e);
     }
 

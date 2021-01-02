@@ -4,6 +4,7 @@ import gaming.ex07.MazeSquare;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Stream;
+import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -35,23 +36,25 @@ public class PacmanGhost extends Group {
     private GhostColor color;
 
     private Random random = new Random();
+
     public PacmanGhost() {
         this(GhostColor.BLUE);
     }
 
-    public PacmanGhost(GhostColor color) {
+    public PacmanGhost(@NamedArg("color") GhostColor color) {
         this.color = color;
         Polygon polygon = new Polygon();
         final double radius = 12;
-        for (int i = 180; i <= 360; i += 5) {
+        final int fullCircle = 360;
+        for (int i = fullCircle / 2; i <= fullCircle; i += 5) {
             double x = Math.cos(Math.toRadians(i)) * radius;
             double y = Math.sin(Math.toRadians(i)) * radius;
             polygon.getPoints().addAll(x, y);
         }
-		getCircle().setFill(color.getColor());
-		polygon.setFill(color.getColor());
+        getCircle().setFill(color.getColor());
+        polygon.setFill(color.getColor());
         polygon.fillProperty()
-				.bind(Bindings.when(status.isEqualTo(GhostStatus.ALIVE)).then(color.getColor())
+                .bind(Bindings.when(status.isEqualTo(GhostStatus.ALIVE)).then(color.getColor())
                         .otherwise(Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.BLUEVIOLET)
                                 .otherwise(Color.TRANSPARENT)));
         polygon.getPoints().addAll(-radius, 0D, -radius, 20D, -8D, 10D, -4D, 20D, 0D, 10D, 4D, 20D, 8D, 10D, radius,
@@ -77,6 +80,11 @@ public class PacmanGhost extends Group {
         getChildren().add(ellipse2);
         getChildren().add(rightEye);
         getChildren().add(leftEye);
+    }
+
+    public PacmanGhost(@NamedArg("children") ObservableList<Node> children) {
+        this(GhostColor.BLUE);
+        getChildren().setAll(children);
     }
 
     public final Circle getCircle() {
@@ -127,6 +135,7 @@ public class PacmanGhost extends Group {
         adjustEyes(1);
 
     }
+
     public void setStartPosition(double startX, double startY) {
         setLayoutX(startX);
         setLayoutY(startY);
@@ -252,14 +261,12 @@ public class PacmanGhost extends Group {
 
     private static int adjustedX(double layoutX) {
         double paci = layoutX / PacmanBall.SQUARE_SIZE - 1;
-        return (int) (paci > PacmanBall.MAZE_SIZE ? -paci + 2 * PacmanBall.MAZE_SIZE - 1 : paci)
-                % PacmanBall.MAZE_SIZE;
+        return (int) (paci > PacmanBall.MAZE_SIZE ? -paci + 2 * PacmanBall.MAZE_SIZE - 1 : paci) % PacmanBall.MAZE_SIZE;
     }
 
     private static int adjustedY(double layoutX) {
         double paci = layoutX / PacmanBall.SQUARE_SIZE - 1;
-        return (int) (paci > PacmanBall.MAZE_SIZE ? -paci - 1 + 2 * PacmanBall.MAZE_SIZE : paci)
-                % PacmanBall.MAZE_SIZE;
+        return (int) (paci > PacmanBall.MAZE_SIZE ? -paci - 1 + 2 * PacmanBall.MAZE_SIZE : paci) % PacmanBall.MAZE_SIZE;
     }
 
     private static GhostDirection changeDirection(final double hx, final double hy) {

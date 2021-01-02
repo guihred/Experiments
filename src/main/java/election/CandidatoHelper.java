@@ -1,6 +1,6 @@
 package election;
 
-import static simplebuilder.SimpleTableViewBuilder.equalColumns;
+import static simplebuilder.SimpleTableViewBuilder.autoColumnsWidth;
 import static simplebuilder.SimpleTableViewBuilder.setFormat;
 
 import java.time.LocalDate;
@@ -60,7 +60,7 @@ public final class CandidatoHelper {
         cidade.setCellFactory(setFormat(Cidade::getCity));
         eleito.setCellFactory(setFormat(StringSigaUtils::simNao));
         nascimento.setCellFactory(setFormat(DateFormatUtils::formatDate));
-        equalColumns(tableView2);
+        autoColumnsWidth(tableView2);
     }
 
     public static List<String> distinct(String field) {

@@ -17,11 +17,11 @@ import utils.ImageFXUtils;
 
 public class HistogramGraph extends Canvas {
     private static final int SIZE = 550;
-    private DoubleProperty layout = new SimpleDoubleProperty(90);
-    private DoubleProperty maxLayout = new SimpleDoubleProperty(SIZE);
-    private DoubleProperty lineSize = new SimpleDoubleProperty(5);
-    private IntegerProperty bins = new SimpleIntegerProperty(20);
-    private LongProperty ybins = new SimpleLongProperty(20);
+    private final DoubleProperty layout = new SimpleDoubleProperty(90);
+    private final DoubleProperty maxLayout = new SimpleDoubleProperty(SIZE);
+    private final DoubleProperty lineSize = new SimpleDoubleProperty(5);
+    private final IntegerProperty bins = new SimpleIntegerProperty(20);
+    private final LongProperty ybins = new SimpleLongProperty(20);
     private double xProportion;
     private double yProportion;
     private GraphicsContext gc;
@@ -130,7 +130,8 @@ public class HistogramGraph extends Canvas {
                 double x1 = i * j + layout1;
                 Long y = entry.getValue();
                 double y1 = maxLayout1 - y / yProportion * j2;
-                gc.fillRect(x1, y1, 20, maxLayout1 - y1);
+                final int barsLength = 20;
+                gc.fillRect(x1, y1, barsLength, maxLayout1 - y1);
             }
         });
         drawAxis();

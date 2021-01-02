@@ -233,7 +233,7 @@ public class DataframeUtils extends DataframeML {
         readCSV(ResourceFXUtils.toFile(csvFile), dataframeML);
     }
 
-    public static void save(DataframeML dataframe, File outFile) {
+    public static void save(BaseDataframe dataframe, File outFile) {
         RunnableEx.run(() -> {
             List<String> lines = new ArrayList<>();
             List<String> cols = dataframe.cols();

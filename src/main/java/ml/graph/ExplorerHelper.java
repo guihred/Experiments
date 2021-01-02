@@ -15,14 +15,17 @@ import javafx.collections.ObservableMap;
 import javafx.scene.chart.XYChart.Data;
 import ml.data.*;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
+import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
 public final class ExplorerHelper {
 
     public static final int MAX_ELEMENTS = 3000;
 
+    private static final Logger LOG = HasLogging.log();
     private ExplorerHelper() {
     }
 
@@ -82,9 +85,9 @@ public final class ExplorerHelper {
     public static String reorderAndLog(DataframeML dataframe, String numberField) {
         DataframeUtils.sort(dataframe, numberField);
         List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, "Network", numberField);
-        createSeries.forEach(s2 -> WhoIsScanner.LOG.info("{}", s2));
+        createSeries.forEach(s2 -> LOG.info("{}", s2));
         List<Entry<Object, Double>> series = DataframeUtils.createSeries(dataframe, "Owner", numberField);
-        series.forEach(s1 -> WhoIsScanner.LOG.info("{}", s1));
+        series.forEach(s1 -> LOG.info("{}", s1));
         dataframe.removeCol("filters");
         return DataframeUtils.toString(dataframe, 30);
 

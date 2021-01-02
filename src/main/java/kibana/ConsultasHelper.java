@@ -91,7 +91,7 @@ public final class ConsultasHelper {
                         .map(s -> "\t" + s).collect(Collectors.toList());
                 if (!networks.isEmpty()) {
                     List<String> nets =
-                            networks.stream().map(e -> e.replaceAll(".+\t(.+)", "$1")).collect(Collectors.toList());
+                            networks.stream().map(e -> e.replaceAll(".*?\t(.*)", "$1")).collect(Collectors.toList());
                     String queryField = queryObjects.getQuery();
                     LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, networks);
                     List<Map<String, String>> aboveAvgInfo = kibanaQuery.parallelStream()

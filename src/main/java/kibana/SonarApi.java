@@ -57,10 +57,16 @@ public class SonarApi extends Application {
         ObservableList<String> components = FXCollections.observableArrayList();
         ListView<String> componentsList = new SimpleListViewBuilder<String>().items(components)
                 .onDoubleClick(s -> filterField.setText(s.replaceAll("\t.+", ""))).build();
+        ObservableList<String> rules = FXCollections.observableArrayList();
+        ListView<String> rulesList = new SimpleListViewBuilder<String>().items(rules)
+                .onDoubleClick(s -> filterField.setText(s.replaceAll("\t.+", ""))).build();
         primaryStage.setScene(new Scene(new HBox(new VBox(new Text("Filter"), filterField,
-                SimpleButtonBuilder.newButton("_Update", () -> onUpdate(issuesList, issuesTable, components)),
+                SimpleButtonBuilder.newButton("_Update", () -> onUpdate(issuesList, issuesTable, components, rules)),
                 SimpleButtonBuilder.newButton("_Open Dataframe", () -> openDataframe(filterField, issuesTable)),
-                componentsList), issuesTable)));
+                new Text("Components"),
+                componentsList, new Text("Rules"), rulesList
+
+        ), issuesTable)));
         primaryStage.show();
     }
 
@@ -79,7 +85,7 @@ public class SonarApi extends Application {
     }
 
     private static void onUpdate(ObservableList<Map<String, Object>> issuesList, TableView<Map<String, Object>> build,
-            ObservableList<String> components) throws IOException {
+            ObservableList<String> components, ObservableList<String> rules) throws IOException {
         Object sonarRequest = getFromURLJson(getApiUrl(1), ResourceFXUtils.getOutFile("json/sonarRequest.json"));
         List<Map<String, Object>> newJson = JsonExtractor.accessList(sonarRequest, "issues");
         issuesList.addAll(newJson);
@@ -99,6 +105,11 @@ public class SonarApi extends Application {
                 .entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
                 .map(e -> e.getKey() + "\t" + e.getValue()).collect(Collectors.toList());
         components.setAll(collect);
+        List<String> ruless = issuesList.stream()
+                .collect(Collectors.groupingBy(s -> Objects.toString(s.get("rule")), Collectors.counting())).entrySet()
+                .stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                .map(e -> e.getKey() + "\t" + e.getValue()).collect(Collectors.toList());
+        rules.setAll(ruless);
 
         List<String> keySet = new ArrayList<>(newJson.get(0).keySet());
         keySet.removeAll(Arrays.asList("updateDate", "comments", "fromHotspot", "project", "effort", "creationDate",

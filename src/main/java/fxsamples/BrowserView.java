@@ -29,6 +29,8 @@ import utils.ResourceFXUtils;
 import utils.ex.RunnableEx;
 
 public class BrowserView extends Pane {
+    private static final int PREF_WIDTH = 900;
+    private static final int PREF_HEIGHT = 600;
     private static final String[] captions = new String[] { "Products", "Blogs", "Documentation", "Partners", "Help" };
     private static final String[] urls = new String[] { "http://www.oracle.com/products/index.html",
             "http://blogs.oracle.com/", "http://docs.oracle.com/javase/index.html",
@@ -56,7 +58,6 @@ public class BrowserView extends Pane {
         CommonsFX.loadRoot("BrowserView.fxml", this);
         webEngine = browser.getEngine();
         webEngine.setCreatePopupHandler(config -> {
-            smallView.setFontScale(0.8);
             if (!toolBar.getChildren().contains(smallView)) {
                 toolBar.getChildren().add(smallView);
             }
@@ -116,12 +117,12 @@ public class BrowserView extends Pane {
 
     @Override
     protected double computePrefHeight(double width) {
-        return 600;
+        return PREF_HEIGHT;
     }
 
     @Override
     protected double computePrefWidth(double height) {
-        return 900;
+        return PREF_WIDTH;
     }
 
     @Override

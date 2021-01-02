@@ -29,8 +29,9 @@ public class WorldMapExample2 extends Application {
 		WorldMapGraph2 canvas = new WorldMapGraph2();
         root.getChildren().add(SimpleSliderBuilder.newSlider("Labels", 1, 10, canvas.binsProperty()));
 		root.getChildren().add(SimpleSliderBuilder.newSlider("Radius", -2, 2, canvas.radiusProperty()));
-		root.getChildren().add(SimpleSliderBuilder.newSlider("X", -360, 360, canvas.yScaleProperty()));
-		root.getChildren().add(SimpleSliderBuilder.newSlider("Y", -360, 360, canvas.xScaleProperty()));
+        final int fullCircle = 360;
+        root.getChildren().add(SimpleSliderBuilder.newSlider("X", -fullCircle, fullCircle, canvas.yScaleProperty()));
+        root.getChildren().add(SimpleSliderBuilder.newSlider("Y", -fullCircle, fullCircle, canvas.xScaleProperty()));
         root.getChildren().add(CommonsFX.newCheck("Neighbors", canvas.showNeighborsProperty()));
         DataframeML points = DataframeBuilder.builder("cities.csv").build();
 		String latDegree = "Lat Degree";

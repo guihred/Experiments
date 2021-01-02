@@ -17,6 +17,7 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public final class InstallCert {
+    private static final int HTTPS_PORT = 443;
     private static final Logger LOG = HasLogging.log();
 
     private InstallCert() {
@@ -26,7 +27,7 @@ public final class InstallCert {
         String urlFullInformation = getFullURL(url);
         String[] c = urlFullInformation.split(":");
         String host = c[0];
-        int port = c.length == 1 ? 443 : Integer.parseInt(c[1]);
+        int port = c.length == 1 ? HTTPS_PORT : Integer.parseInt(c[1]);
 
         installCertificate(host, port, "changeit".toCharArray());
     }
@@ -60,7 +61,8 @@ public final class InstallCert {
 
         LOG.info("Opening connection to {}:{}...", host, port);
         try (SSLSocket socket = (SSLSocket) factory.createSocket(host, port)) {
-            socket.setSoTimeout(10000);
+            final int timeout = 10000;
+            socket.setSoTimeout(timeout);
             LOG.info("Starting SSL handshake...");
             socket.startHandshake();
             LOG.info("");

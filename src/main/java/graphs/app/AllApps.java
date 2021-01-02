@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import ml.data.JavaFileDependency;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
+import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.ex.FunctionEx;
@@ -37,6 +38,7 @@ public class AllApps extends Application {
     private TextField textField0;
     @FXML
     private TextArea textArea5;
+    private PrintStream out;
 
     public void initialize() {
         ExtractUtils.insertProxyConfig();
@@ -45,7 +47,7 @@ public class AllApps extends Application {
                 .map(FunctionEx.ignore(Class::forName)).filter(Objects::nonNull)
                 .filter(makeTest(e -> e.getMethod("main", String[].class) != null)).collect(Collectors.toList()),
                 items -> CommonsFX.runInPlatform(() -> applications.setAll(items)));
-        System.setOut(SupplierEx.remap(() -> new PrintTextStream(System.out, true, "UTF-8", textArea5.textProperty()),
+        System.setOut(SupplierEx.remap(() -> new PrintTextStream(out, true, "UTF-8", textArea5.textProperty()),
                 "ERROR CREATING STREAM"));
         SimpleListViewBuilder.of(stackParts).onDoubleClick(AllApps::invoke)
                 .items(newFastFilter(textField0, applications.filtered(e -> true)));
@@ -64,7 +66,7 @@ public class AllApps extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        PrintStream out = System.out;
+        out = System.out;
         CommonsFX.loadFXML("All Apps", "AllApps.fxml", this, primaryStage);
         primaryStage.setOnCloseRequest(e -> {
             shutdown();
@@ -91,6 +93,9 @@ public class AllApps extends Application {
             new SimpleDialogBuilder().show(asAppClass(appClass));
             return;
         }
-        RunnableEx.run(() -> appClass.getMethod("main", String[].class).invoke(null, new Object[] { new String[0] }));
+        RunnableEx.run(() -> {
+            Object[] args = new Object[] { new String[0] };
+            ClassReflectionUtils.invoke(null, appClass.getMethod("main", String[].class), args);
+        });
     }
 }

@@ -248,6 +248,17 @@ public final class ClassReflectionUtils {
         return hasSetterMethods(targetClass, field) || hasBuiltArg(targetClass, field);
     }
 
+    public static boolean hasGetter(Class<?> targetClass, String field) {
+        Class<?> cur = targetClass;
+        for (int i = 0; cur != Object.class && i < 10; i++, cur = cur.getSuperclass()) {
+            List<Method> gett = getters(cur);
+            if (gett.stream().anyMatch(m -> getFieldNameCase(m).equals(field))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean hasPublicConstructor(Class<? extends Object> class1) {
         return Modifier.isPublic(class1.getModifiers())
                 && Stream.of(class1.getConstructors()).anyMatch(e1 -> Modifier.isPublic(e1.getModifiers()));

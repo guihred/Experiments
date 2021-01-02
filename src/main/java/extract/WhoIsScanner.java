@@ -30,7 +30,7 @@ public class WhoIsScanner {
 
     public static final String IP_REGEX = "^\\d+\\.\\d+\\.\\d+\\.\\d+$";
 
-    public static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
     private String name = "";
     private String waitStr = "";
     private final Map<String, String> cookies = new HashMap<>();
@@ -168,8 +168,8 @@ public class WhoIsScanner {
             return hashMap;
         }
         Map<String, String> first =
-                SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip), () -> VirusTotalApi.getIpTotalInfo(ip),
-                        () -> whoIsScanner.whoIsScan(ip));
+                SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip), () -> whoIsScanner.whoIsScan(ip),
+                        () -> VirusTotalApi.getIpTotalInfo(ip));
         if (ip.matches("^200\\.152\\..+")) {
             first.put(REVERSE_DNS, whoIsScanner.reverseDNS(ip));
         }

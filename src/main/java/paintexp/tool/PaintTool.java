@@ -15,7 +15,10 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
@@ -24,6 +27,7 @@ import utils.ResourceFXUtils;
 import utils.ex.RunnableEx;
 
 public abstract class PaintTool extends Group implements CommonTool {
+    private static final int PREF_WIDTH = 30;
     @FXML
     private Node icon;
 
@@ -32,8 +36,8 @@ public abstract class PaintTool extends Group implements CommonTool {
         icon = createIcon();
         if (icon != null) {
             getChildren().add(icon);
-            icon.setScaleX(1 / (icon.getBoundsInLocal().getWidth() / 30));
-            icon.setScaleY(1 / (icon.getBoundsInLocal().getHeight() / 30));
+            icon.setScaleX(1 / (icon.getBoundsInLocal().getWidth() / PREF_WIDTH));
+            icon.setScaleY(1 / (icon.getBoundsInLocal().getHeight() / PREF_WIDTH));
         }
     }
 
@@ -84,7 +88,7 @@ public abstract class PaintTool extends Group implements CommonTool {
     }
 
     public static ImageView getIconByURL(String src) {
-        return getIconByURL(src, 30);
+        return getIconByURL(src, PREF_WIDTH);
     }
 
     public static ImageView getIconByURL(String src, double width) {

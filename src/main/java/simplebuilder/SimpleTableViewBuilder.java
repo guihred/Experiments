@@ -1,6 +1,5 @@
 package simplebuilder;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -157,7 +156,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return e2;
     }
 
-    public static <T> void addColumns(TableView<Map<String, T>> table, Collection<String> keySet) {
+    public static <T> void addColumns(TableView<Map<String, T>> table, Iterable<String> keySet) {
         table.getColumns().clear();
         keySet.forEach(key -> {
             TableColumn<Map<String, T>, String> column = new TableColumn<>(key);

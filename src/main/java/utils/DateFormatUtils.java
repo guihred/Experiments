@@ -56,7 +56,7 @@ public final class DateFormatUtils {
 
     public static ZonedDateTime getCreationDate(Path path) {
         return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime()
-                .toInstant().atZone(ZoneId.systemDefault()), () -> ZonedDateTime.now());
+                .toInstant().atZone(ZoneId.systemDefault()), ZonedDateTime::now);
     }
 
     public static int getYearCreation(Path path) {
