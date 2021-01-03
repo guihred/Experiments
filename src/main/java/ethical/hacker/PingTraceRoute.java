@@ -1,9 +1,6 @@
 package ethical.hacker;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import utils.ConsoleUtils;
@@ -30,19 +27,9 @@ public final class PingTraceRoute {
         Map<String, String> executeInConsole =
                 ConsoleUtils.executeInConsole("ping " + address + " -f -n 1 ", responses);
         // Pacotes: Enviados = 4, Recebidos = 0, Perdidos = 4
-        Map<String, String> info = new HashMap<>();
+        Map<String, String> info = new LinkedHashMap<>();
 
-        LOG.info("IP = {}", executeInConsole.getOrDefault(ipRegex, address));
-        LOG.info("SENT = {}", executeInConsole.get(sent));
         String arg = executeInConsole.get(received);
-        LOG.info("RECEIVED = {}", arg);
-        LOG.info("LOST = {}", executeInConsole.get(lost));
-        LOG.info("TTL = {}", executeInConsole.get(ttl));
-        if (!"0".equals(arg)) {
-            List<String> traceRoute = traceRoute(address);
-            LOG.info("ROUTE = {}", traceRoute);
-            LOG.info("HOPS = {}", traceRoute.size());
-        }
         info.put("IP", executeInConsole.get(ipRegex));
         info.put("SENT", executeInConsole.get(sent));
         info.put("RECEIVED", arg);
@@ -54,6 +41,7 @@ public final class PingTraceRoute {
             info.put("HOPS", Integer.toString(traceRoute.size()));
         }
 
+        LOG.info("Ping Trace = {}", info);
         return info;
     }
 
