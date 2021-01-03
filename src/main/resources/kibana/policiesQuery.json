@@ -1,4 +1,4 @@
-{"index":"dtp-*prod*","ignore_unavailable":true,"preference":1604067409010}
+{"index": "dtp-*prod*","ignore_unavailable": true,"preference": 1604067409010}
 {
 	"aggs": {
 		"2": {
@@ -29,7 +29,9 @@
 	"stored_fields": [
 		"*"
 	],
-	"script_fields": {},
+	"script_fields": {
+		
+	},
 	"docvalue_fields": [
 		{
 			"field": "@timestamp",
@@ -40,10 +42,10 @@
 		"bool": {
 			"must": [
 				{
-					"match_phrase": {
-						"SourceIP": {
-							"query": "%s"
-						}
+					"query_string": {
+						"query": "SourceIP:\"%s\"",
+						"analyze_wildcard": true,
+						"default_field": "*"
 					}
 				},
 				{
@@ -56,7 +58,7 @@
 					}
 				}
 			],
-     		"filter": [],
+			"filter": [],
 			"should": [],
 			"must_not": []
 		}

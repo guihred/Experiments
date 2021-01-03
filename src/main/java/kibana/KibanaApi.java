@@ -6,6 +6,7 @@ import static utils.ex.RunnableEx.measureTime;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import ethical.hacker.PortServices;
+import extract.CIDRUtils;
 import extract.JsonExtractor;
 import extract.PhantomJSUtils;
 import extract.WhoIsScanner;
@@ -90,53 +91,7 @@ public class KibanaApi {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
         }
-        String key = "key";
-        String valueCol = "value";
-
-        Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
-        fullScan.put("IP", () -> query);
-        fullScan.put("Provedor",
-                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(query), "as_owner", "HostName"));
-        fullScan.put("Geolocation", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(query), "country", ""));
-        fullScan.put("Bloqueio WAF", () -> display(makeKibanaSearch("policiesQuery.json", query, days, key)));
-        fullScan.put("Palo Alto Threat", () -> display(makeKibanaSearch("threatQuery.json", query, days, key)));
-        fullScan.put("TOP Conexão FW", () -> {
-            Map<String, String> destinationSearch =
-                    makeKibanaSearch("destinationQuery.json", query, days, key, valueCol);
-            convertToBytes(valueCol, destinationSearch);
-            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n")).map(WHOIS_SCANNER::reverseDNS)
-                    .collect(Collectors.joining("\n")));
-            return display(destinationSearch);
-        });
-        fullScan.put("TOP conexões WEB",
-                () -> display(makeKibanaSearch("acessosQuery.json", query, days, key, "doc_count")));
-        fullScan.put("Ports Accessed", () -> {
-            Map<String, String> makeKibanaSearch =
-                    makeKibanaSearch("destinationPortQuery.json", query, days, key, "doc_count");
-            makeKibanaSearch.computeIfPresent(key,
-                    (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
-                            .map(PortServices::getServiceByPort)
-                            .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription().replaceAll(",.+", ""))
-                            .collect(Collectors.joining("\n")));
-            return display(makeKibanaSearch);
-        });
-        fullScan.put("Ultimo Acesso", () -> {
-            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", query, days, "ReceiveTime");
-            trafficSearch.computeIfPresent("ReceiveTime",
-                    (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
-            return display(trafficSearch);
-        });
-        fullScan.put("Bytes Received", () -> {
-            Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", query, days + 3, valueCol);
-            convertToStats(valueCol, totalBytesQuery);
-            return display(totalBytesQuery);
-        });
-        fullScan.put("Bytes Sent", () -> {
-            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", query, days + 3, valueCol);
-            convertToStats(valueCol, totalBytesSent);
-            return display(totalBytesSent);
-        });
-        fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", query, days, "Name", "Value")));
+        Map<String, SupplierEx<String>> fullScan = scanByIp(query, days);
         Map<String, String> fullScan2 = new LinkedHashMap<>();
         CommonsFX.update(progress, 0);
         measureTime("Kibana Full Scan " + query, () -> {
@@ -215,7 +170,7 @@ public class KibanaApi {
     }
 
     protected static File newJsonFile(String string) {
-        String replaceAll = string.replaceAll("[:/{}\" /\n]+", "_");
+        String replaceAll = string.replaceAll("[:/{}\" */\n]+", "_");
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
     }
 
@@ -268,5 +223,57 @@ public class KibanaApi {
 
     private static String removeExtension(File file) {
         return file.getName().replaceAll("\\.json", "");
+    }
+
+    private static Map<String, SupplierEx<String>> scanByIp(String ip, int days) {
+        String key = "key";
+        String valueCol = "value";
+        String pattern = CIDRUtils.addressToPattern(ip);
+        Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
+        fullScan.put("IP", () -> ip);
+        fullScan.put("Provedor",
+                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "HostName", "asname"));
+        fullScan.put("Geolocation",
+                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry"));
+        fullScan.put("Bloqueio WAF", () -> display(makeKibanaSearch("policiesQuery.json", ip, days, key)));
+        fullScan.put("Palo Alto Threat", () -> display(makeKibanaSearch("threatQuery.json", ip, days, key)));
+        fullScan.put("TOP Conexão FW", () -> {
+            Map<String, String> destinationSearch =
+                    makeKibanaSearch("destinationQuery.json", ip, days, key, valueCol);
+            convertToBytes(valueCol, destinationSearch);
+            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n")).map(WHOIS_SCANNER::reverseDNS)
+                    .collect(Collectors.joining("\n")));
+            return display(destinationSearch);
+        });
+        fullScan.put("TOP conexões WEB",
+                () -> display(makeKibanaSearch("acessosQuery.json", pattern, days, key, "doc_count")));
+        fullScan.put("Ports Accessed", () -> {
+            Map<String, String> makeKibanaSearch =
+                    makeKibanaSearch("destinationPortQuery.json", ip, days, key, "doc_count");
+            makeKibanaSearch.computeIfPresent(key,
+                    (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
+                            .map(PortServices::getServiceByPort)
+                            .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription().replaceAll(",.+", ""))
+                            .collect(Collectors.joining("\n")));
+            return display(makeKibanaSearch);
+        });
+        fullScan.put("Ultimo Acesso", () -> {
+            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", ip, days, "ReceiveTime");
+            trafficSearch.computeIfPresent("ReceiveTime",
+                    (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
+            return display(trafficSearch);
+        });
+        fullScan.put("Bytes Received", () -> {
+            Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", ip, days + 3, valueCol);
+            convertToStats(valueCol, totalBytesQuery);
+            return display(totalBytesQuery);
+        });
+        fullScan.put("Bytes Sent", () -> {
+            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", ip, days + 3, valueCol);
+            convertToStats(valueCol, totalBytesSent);
+            return display(totalBytesSent);
+        });
+        fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", pattern, days, "Name", "Value")));
+        return fullScan;
     }
 }

@@ -23,7 +23,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
-import ml.data.DataframeUtils;
 import ml.data.Question;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -184,8 +183,10 @@ public final class ReportHelper {
     }
 
     private static Object getCSV(Map<String, Object> imageObj, Map<String, String> params) {
+        String extension = "xlsx";
         File outFile = ResourceFXUtils
-                .getOutFile("csv/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".csv");
+                .getOutFile(extension + "/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + "."
+                        + extension);
         if (outFile.exists()) {
             return outFile;
         }
@@ -298,8 +299,17 @@ public final class ReportHelper {
         for (Question question : a) {
             dataframe.filter(question.getColName(), question);
         }
-        dataframe.sortHeaders(Stream.of(columns.split("\\|")).collect(Collectors.toList()));
-        DataframeUtils.save(dataframe, outFile);
+        List<String> finalHeaders = Stream.of(columns.split("\\|")).collect(Collectors.toList());
+        dataframe.sortHeaders(finalHeaders);
+        List<Map<String, Object>> items2 = new ArrayList<>();
+        dataframe.forEachRow(items2::add);
+        if (items2.isEmpty()) {
+            Map<String, Object> e = new LinkedHashMap<>();
+            finalHeaders.forEach(c -> e.put(c, ""));
+            items2.add(e);
+        }
+        ExcelService.getExcel(items2, outFile);
+
     }
 
     private static WritableImage saveImage(Map<String, Object> info, File outFile, WebView browser2) {

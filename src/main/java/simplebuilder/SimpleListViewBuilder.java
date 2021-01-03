@@ -168,7 +168,8 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
 
     private static <T> String getSelectedContent(ListView<T> table, List<Integer> selectedItems) {
         if (table.getCellFactory() == null) {
-            return selectedItems.stream().map(l -> StringSigaUtils.toStringSpecial(table.getItems().get(l)))
+            return selectedItems.stream().filter(l -> table.getItems().size() > l)
+                    .map(l -> StringSigaUtils.toStringSpecial(table.getItems().get(l)))
                     .collect(Collectors.joining("\n"));
         }
         CustomListCell<T> call = getCustomList(table);

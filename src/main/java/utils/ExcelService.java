@@ -31,13 +31,13 @@ public final class ExcelService extends ExcelHelper {
         RunnableEx.run(() -> makeExcelWithReplace(arquivo, map, outStream));
     }
 
-    public static void getExcel(List<Map<String, String>> items2, File outFile) {
-        Map<String, FunctionEx<Map<String, String>, Object>> mapa = new LinkedHashMap<>();
+    public static <T> void getExcel(List<Map<String, T>> items2, File outFile) {
+        Map<String, FunctionEx<Map<String, T>, Object>> mapa = new LinkedHashMap<>();
         List<String> columns =
                 items2.stream().flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList());
         for (String tableColumn : columns) {
             String text = tableColumn;
-            mapa.put(text, t -> t.getOrDefault(text, ""));
+            mapa.put(text, t -> t.get(text));
         }
         ExcelService.getExcel(items2, mapa, outFile);
     }

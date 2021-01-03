@@ -35,10 +35,43 @@ public class CIDRUtils {
     private static final String NETWORKS_CSV = "csv/networks.csv";
     private static DataframeML networkFile;
 
+    public static String addressToPattern(String cidr) {
+        if (StringUtils.isBlank(cidr) || !cidr.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
+            return cidr;
+        }
+        
+        String[] network = cidr.split("/");
+        
+        List<Integer> net = Stream.of(network[0].split("\\.")).map(Integer::valueOf).collect(Collectors.toList());
+        final int mask = Integer.parseInt(network[1]);
+        int mas = mask;
+        StringBuilder pattern = new StringBuilder();
+        for (Integer integer : net) {
+            if (mas <= 0) {
+                break;
+            }
+            if (mas < 8) {
+                int i = integer & toPartialMask(mas);
+                int j = ~toPartialMask(mas) & 255;
+                String i2 = j == 0 ? "" : j + "";
+
+                pattern.append(("" + i).replaceAll(".{" + i2.length() + "}$", "") + "*");
+            }
+            if (mas > 8) {
+                pattern.append(integer + ".");
+            }
+            if (mas == 8) {
+                pattern.append(integer + ".*");
+            }
+
+            mas -= 8;
+        }
+        return pattern.toString().replaceAll("\\.0+", ".");
+    }
+
     public static String convertToString(InetAddress o) {
         return o.getHostAddress();
     }
-
     @SuppressWarnings("unchecked")
     public static Map<String, String> findNetwork(String ip) {
         networkFile =
@@ -49,9 +82,11 @@ public class CIDRUtils {
                     }
                     return DataframeBuilder.build(outFile);
                 });
-        Map<?, ?> d = networkFile.findFirst(NETWORK, v -> isSameNetworkAddress(Objects.toString(v, ""), ip));
+        Map<?, ?> d = networkFile.findFirst(NETWORK,
+                v -> Objects.equals(v, ip) || isSameNetworkAddress(Objects.toString(v, ""), ip));
         return (Map<String, String>) d;
     }
+
     public static boolean isSameNetworkAddress(String cidr, String ip) {
         if (StringUtils.isBlank(cidr) || StringUtils.isBlank(ip)) {
             return false;
@@ -64,17 +99,22 @@ public class CIDRUtils {
 
         int net = Stream.of(network[0].split("\\.")).mapToInt(Integer::parseInt).reduce(0, (a, i) -> (a << 8) + i);
         int fullAddress = Stream.of(ip.split("\\.")).mapToInt(Integer::parseInt).reduce(0, (a, i) -> (a << 8) + i);
-        int fullMask = 0;
         final int mask = Integer.parseInt(network[1]);
-        for (int i = mask; i > 0; i--) {
-            fullMask = 1 | fullMask << 1;
-        }
-        fullMask <<= 32 - mask;
+        int fullMask = toFullMask(mask);
         return (fullAddress & fullMask) == net;
     }
 
     public static void main(String[] args) {
-        LOG.info("{}", makeNetworkCSV());
+        String cidr = "189.110.0.0/15";
+        LOG.info("{} = {}", cidr, addressToPattern(cidr));
+        cidr = "189.110.0.0/16";
+        LOG.info("{} = {}", cidr, addressToPattern(cidr));
+        cidr = "189.110.12.0/17";
+        LOG.info("{} = {}", cidr, addressToPattern(cidr));
+        cidr = "189.110.120.153/22";
+        LOG.info("{} = {}", cidr, addressToPattern(cidr));
+        cidr = "189.110.19.0/24";
+        LOG.info("{} = {}", cidr, addressToPattern(cidr));
     }
 
     public static List<Map<String, Object>> makeNetworkCSV() {
@@ -110,11 +150,31 @@ public class CIDRUtils {
 
     private static Map<String, Object> readXML(Path xmlFile) throws IOException {
         Document document = Jsoup.parse(xmlFile.toFile(), StandardCharsets.UTF_8.name());
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map2 = new HashMap<>();
         document.getElementsByTag("ip").forEach(
-                e -> e.children().forEach(m -> map.put(m.tagName(), StringEscapeUtils.unescapeHtml4(m.text()))));
-        map.put("as_owner", map.get("asname"));
-        map.put("country", map.get("ascountry"));
+                e -> e.children().forEach(m -> map2.put(m.tagName(), StringEscapeUtils.unescapeHtml4(m.text()))));
+        Map<String, Object> map = new HashMap<>();
+        map.put(NETWORK, map2.get(NETWORK));
+        map.put("as_owner", map2.get("asname"));
+        map.put("country", map2.get("ascountry"));
         return map;
+    }
+
+    private static int toFullMask(final int mask) {
+        int fullMask = 0;
+        for (int i = mask; i > 0; i--) {
+            fullMask = 1 | fullMask << 1;
+        }
+        fullMask <<= 32 - mask;
+        return fullMask;
+    }
+
+    private static int toPartialMask(final int mask) {
+        int fullMask = 0;
+        for (int i = mask; i > 0; i--) {
+            fullMask = 1 | fullMask << 1;
+        }
+        fullMask <<= 8 - mask;
+        return fullMask;
     }
 }

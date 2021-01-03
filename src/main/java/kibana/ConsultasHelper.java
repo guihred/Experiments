@@ -77,7 +77,7 @@ public final class ConsultasHelper {
                 Map<String,
                         Double> netHistogram = whoIsInfo.stream()
                                 .collect(Collectors.groupingBy(
-                                        m -> ExplorerHelper.getKey(m, "as_owner", "") + "\t"
+                                        m -> ExplorerHelper.getKey(m, "as_owner", "asname") + "\t"
                                                 + ExplorerHelper.getKey(m, "network", "id"),
                                         Collectors.summingDouble(m -> getNumber(numberCol, m))));
                 DoubleSummaryStatistics summaryStatistics =
@@ -91,14 +91,15 @@ public final class ConsultasHelper {
                         .map(s -> "\t" + s).collect(Collectors.toList());
                 if (!networks.isEmpty()) {
                     List<String> nets =
-                            networks.stream().map(e -> e.replaceAll(".*?\t(.*)", "$1")).collect(Collectors.toList());
+                            networks.stream().map(e -> e.replaceAll(".+?\t(.+)=.+", "$1")).collect(Collectors.toList());
                     String queryField = queryObjects.getQuery();
-                    LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, networks);
+                    String topNets = networks.stream().collect(Collectors.joining("\t\n"));
+                    LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, topNets);
                     List<Map<String, String>> aboveAvgInfo = kibanaQuery.parallelStream()
-                            .filter(m -> !getFirst(params, m).matches(ConsultasHelper.IGNORE_IPS_REGEX))
-                            .filter(e -> nets.stream()
-                                    .anyMatch(net -> CIDRUtils.isSameNetworkAddress(net, getFirst(params, e))))
-                            .collect(Collectors.toList());
+                            .filter(m -> !getFirst(params, m).matches(ConsultasHelper.IGNORE_IPS_REGEX)).filter(e -> {
+                                String first = getFirst(params, e);
+                                return nets.stream().anyMatch(net -> CIDRUtils.isSameNetworkAddress(net, first));
+                            }).collect(Collectors.toList());
                     mergeFilter(filter, params, queryField, aboveAvgInfo);
                 }
 
@@ -133,7 +134,7 @@ public final class ConsultasHelper {
         return makeKibanaQuery.parallelStream().filter(m -> !getFirst(params, m).matches(IGNORE_IPS_REGEX))
                 .filter(m -> getNumber(numberCol, m) > avg + range)
                 .map(e -> completeInformation(params, whoIsScanner, e))
-                .filter(m -> !EXCLUDE_OWNERS.contains(m.getOrDefault("as_owner", "")))
+                .filter(m -> !EXCLUDE_OWNERS.contains(ExplorerHelper.getKey(m, "as_owner", "asname")))
                 .filter(m -> isNotBlocked(day, getFirst(params, m))).collect(toList());
     }
 

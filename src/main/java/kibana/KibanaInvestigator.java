@@ -47,7 +47,7 @@ public class KibanaInvestigator extends Application {
         SimpleTableViewBuilder.of(commonTable).copiable().savable()
                 .onSortClicked((c, a) -> QuickSortML.sortMapList(items, c, a));
         SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
-                .pasteable(s -> StringSigaUtils.getMatches(s, "(\\d+\\.\\d+\\.\\d+\\.\\d+)"));
+                .pasteable(s -> StringSigaUtils.getMatches(s, "(\\d+\\.\\d+\\.\\d+\\.\\d+/*\\d*)"));
     }
 
     public void onActionKibanaScan() {

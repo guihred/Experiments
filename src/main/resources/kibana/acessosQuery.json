@@ -31,12 +31,13 @@
 		"bool": {
 			"must": [
 				{
-					"match_phrase": {
-						"clientip": {
-							"query": "%s"
-						}
-					}
+					"query_string": {
+                        "query": "clientip:\"%s\"",
+                        "analyze_wildcard": true,
+                        "default_field": "*"
+                    }
 				},
+				
 				{
 					"range": {
 						"@timestamp": {

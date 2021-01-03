@@ -51,16 +51,6 @@
 					}
 				},
 				{
-					"match_all": {
-						
-					}
-				},
-				{
-					"match_all": {
-						
-					}
-				},
-				{
 					"range": {
 						"@timestamp": {
 							"gte": %s,

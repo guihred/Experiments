@@ -65,15 +65,10 @@
         "bool": {
             "must": [
                 {
-                    "bool": {
-                        "should": [
-                            {
-                                "match_phrase": {
-                                    "SourceIP": "%s"
-                                }
-                            }
-                        ],
-                        "minimum_should_match": 1
+                    "query_string": {
+                        "query": "SourceIP: \"%s\"",
+                        "analyze_wildcard": true,
+                        "default_field": "*"
                     }
                 },
                 {

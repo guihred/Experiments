@@ -41,11 +41,11 @@
 		"bool": {
 			"must": [
 				{
-					"match_phrase": {
-						"SourceIP": {
-							"query": "%s"
-						}
-					}
+					"query_string": {
+                        "query": "SourceIP: \"%s\"",
+                        "analyze_wildcard": true,
+                        "default_field": "*"
+                    }
 				},
 				{
 					"range": {
