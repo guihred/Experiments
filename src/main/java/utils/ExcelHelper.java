@@ -1,7 +1,6 @@
 package utils;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
@@ -294,18 +293,6 @@ public class ExcelHelper {
 
 
     protected static void setValorPorClasse(Map<Class<?>, CellStyle> formatMap, Row row, int colIndex, Object content) {
-        if (content instanceof Date) {
-            Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
-            createCell.setCellValue((Date) content);
-            createCell.setCellStyle(formatMap.get(Date.class));
-            return;
-        }
-        if (content instanceof BigDecimal) {
-            Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
-            createCell.setCellValue(((BigDecimal) content).doubleValue());
-            createCell.setCellStyle(formatMap.get(BigDecimal.class));
-            return;
-        }
         if (content instanceof Number) {
             Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
             createCell.setCellValue(((Number) content).doubleValue());
@@ -333,15 +320,12 @@ public class ExcelHelper {
         CreationHelper createHelper = workbook.getCreationHelper();
         CellStyle formatoData = workbook.createCellStyle();
         formatoData.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
-        CellStyle formatoBigDecimal = workbook.createCellStyle();
-        formatoBigDecimal.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.00"));
         CellStyle defaultStyle = workbook.createCellStyle();
         defaultStyle.setAlignment(HorizontalAlignment.LEFT);
         defaultStyle.setVerticalAlignment(VerticalAlignment.TOP);
         defaultStyle.setWrapText(true);
         Map<Class<?>, CellStyle> formatMap = new HashMap<>();
         formatMap.put(Date.class, formatoData);
-        formatMap.put(BigDecimal.class, formatoBigDecimal);
         formatMap.put(String.class, defaultStyle);
         return formatMap;
     }

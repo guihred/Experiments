@@ -17,10 +17,9 @@ public class EdgeCatan extends Group {
 
     private final Set<SettlePoint> points = new LinkedHashSet<>();
     private final Line line = new Line(0, 0, 0, 0);
-    private final FadeTransition highlightTransition = new SimpleFadeTransitionBuilder().node(line)
-        .duration(Duration.millis(200)).fromValue(1).toValue(0).build();
+    private final FadeTransition highlightTransition =
+            new SimpleFadeTransitionBuilder().node(line).duration(Duration.millis(200)).fromValue(1).toValue(0).build();
     private CatanResource element;
-
 
     public EdgeCatan(@NamedArg("a") final SettlePoint a, @NamedArg("b") final SettlePoint b) {
         double x = a.getLayoutX() + b.getLayoutX();
@@ -40,9 +39,10 @@ public class EdgeCatan extends Group {
         points.add(b);
         setManaged(false);
     }
+
     public boolean edgeAcceptRoad(final Road road) {
         return getElement() == null && (matchColor(road.getPlayer()) || getPoints().stream().anyMatch(p -> p.getEdges()
-            .stream().anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == road.getPlayer())));
+                .stream().anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == road.getPlayer())));
     }
 
     @Override
@@ -76,6 +76,10 @@ public class EdgeCatan extends Group {
         return element;
     }
 
+    public Set<SettlePoint> getPoints() {
+        return points;
+    }
+
     @Override
     public int hashCode() {
         return points.hashCode();
@@ -93,17 +97,14 @@ public class EdgeCatan extends Group {
         element.setLayoutY(-element.getImage().getHeight() / 2);
         fadeOut(true);
         double angulo = RotateUtils.getAngle(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
-        element.setRotate(Math.toDegrees(angulo) - 90);
+        final int straightAngle = 90;
+        element.setRotate(Math.toDegrees(angulo) - straightAngle);
         this.element = element;
     }
 
     @Override
     public String toString() {
         return "(" + points + ")";
-    }
-
-    Set<SettlePoint> getPoints() {
-        return points;
     }
 
     private EdgeCatan toggleFade(final int r, final boolean enable) {
@@ -118,14 +119,14 @@ public class EdgeCatan extends Group {
 
     public static long countRoadSize(PlayerColor player, Collection<EdgeCatan> edges) {
         List<EdgeCatan> playersEdges = edges.stream().filter(e -> e.getElement() != null)
-            .filter(e -> e.getElement().getPlayer() == player).collect(Collectors.toList());
+                .filter(e -> e.getElement().getPlayer() == player).collect(Collectors.toList());
         if (playersEdges.size() >= 5) {
-            List<SettlePoint> collect2 = playersEdges.stream().flatMap(e -> e.getPoints().stream()).distinct()
-                .collect(Collectors.toList());
+            List<SettlePoint> collect2 =
+                    playersEdges.stream().flatMap(e -> e.getPoints().stream()).distinct().collect(Collectors.toList());
 
-            return collect2.stream().map(m -> dijkstra(m, collect2, playersEdges))
-                .mapToInt(d -> d.values().stream().mapToInt(e -> e).filter(e -> e != Integer.MAX_VALUE).max().orElse(0))
-                .max().orElse(0);
+            return collect2.stream().map(m -> dijkstra(m, collect2, playersEdges)).mapToInt(
+                    d -> d.values().stream().mapToInt(e -> e).filter(e -> e != Integer.MAX_VALUE).max().orElse(0)).max()
+                    .orElse(0);
         }
 
         return 0;
@@ -141,7 +142,7 @@ public class EdgeCatan extends Group {
 
     private static Collection<SettlePoint> adjacents(final SettlePoint v, final List<EdgeCatan> allEdges) {
         return allEdges.stream().filter(e -> e.getPoints().contains(v))
-            .flatMap(e -> e.getPoints().stream().filter(p -> p != v)).collect(Collectors.toList());
+                .flatMap(e -> e.getPoints().stream().filter(p -> p != v)).collect(Collectors.toList());
     }
 
     private static Integer cost(final SettlePoint v, final SettlePoint w, final List<EdgeCatan> allEdges) {
@@ -149,7 +150,7 @@ public class EdgeCatan extends Group {
     }
 
     private static Map<SettlePoint, Boolean> createDistanceMap(final SettlePoint source,
-        final Map<SettlePoint, Integer> distance, final List<SettlePoint> allCells) {
+            final Map<SettlePoint, Integer> distance, final List<SettlePoint> allCells) {
         Map<SettlePoint, Boolean> known = new HashMap<>();
         for (SettlePoint v : allCells) {
             distance.put(v, Integer.MAX_VALUE);
@@ -160,7 +161,7 @@ public class EdgeCatan extends Group {
     }
 
     private static Map<SettlePoint, Integer> dijkstra(final SettlePoint s, final List<SettlePoint> allSettlePoints,
-        final List<EdgeCatan> allEdges) {
+            final List<EdgeCatan> allEdges) {
         Map<SettlePoint, Integer> distance = new HashMap<>();
         Map<SettlePoint, Boolean> known = createDistanceMap(s, distance, allSettlePoints);
         while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
@@ -180,9 +181,9 @@ public class EdgeCatan extends Group {
     }
 
     private static SettlePoint getMinDistanceSettlePoint(final Map<SettlePoint, Integer> distance,
-        final Map<SettlePoint, Boolean> known) {
+            final Map<SettlePoint, Boolean> known) {
         return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
-            .min(Comparator.comparing(Entry<SettlePoint, Integer>::getValue))
-            .orElseThrow(() -> new RuntimeException("There should be someone")).getKey();
+                .min(Comparator.comparing(Entry<SettlePoint, Integer>::getValue))
+                .orElseThrow(() -> new RuntimeException("There should be someone")).getKey();
     }
 }

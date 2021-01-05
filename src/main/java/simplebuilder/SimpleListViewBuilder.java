@@ -98,7 +98,7 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
         SimpleNodeBuilder.onKeyReleased(node, e -> {
             if (KeyCode.V == e.getCode() && e.isControlDown()) {
                 String string = Objects.toString(ImageFXUtils.getClipboardString(), "");
-                for (String string2 : string.split("[\n,\t]+")) {
+                for (String string2 : string.split("[\n,\t\r]+")) {
                     T apply = FunctionEx.apply(f, string2);
                     if (apply != null && StringUtils.isNotBlank(Objects.toString(apply, ""))
                             && !node.getItems().contains(apply)) {

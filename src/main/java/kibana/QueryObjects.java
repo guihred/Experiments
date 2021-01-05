@@ -5,9 +5,6 @@ import static javafx.collections.FXCollections.synchronizedObservableList;
 
 import com.google.common.collect.ImmutableMap;
 import extract.JsonExtractor;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import simplebuilder.ListHelper;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
+import utils.DateFormatUtils;
 import utils.QuickSortML;
 import utils.ex.ConsumerEx;
 
@@ -84,15 +82,16 @@ public class QueryObjects {
 
     public QueryObjects configureTimeline(ComboBox<String> combo) {
         NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
+        final String FORMAT = "H:m:s\nd/M/yy";
         xAxis.setTickLabelFormatter(new StringConverter<Number>() {
             @Override
             public Number fromString(String string) {
-                return LocalDateTime.parse(string).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                return DateFormatUtils.toNumber(FORMAT, string);
             }
 
             @Override
             public String toString(Number object) {
-                return Instant.ofEpochMilli(object.longValue()).atZone(ZoneId.systemDefault()).toLocalTime().toString();
+                return DateFormatUtils.format(FORMAT, object.longValue());
             }
         });
         QueryObjects fieldObjects = new QueryObjects(query, queryFile, lineChart);
@@ -163,7 +162,7 @@ public class QueryObjects {
         return remap;
     }
 
-    public void makeTimelionQuery(Map<String, String> filter) {
+    public void makeTimelionQuery(Map<String, String> filter, Integer days) {
         ObservableList<Series<Number, Number>> data = getSeries();
         CommonsFX.runInPlatformSync(() -> {
             data.clear();
@@ -176,7 +175,7 @@ public class QueryObjects {
             }
         });
 
-        TimelionApi.timelionScan(data, getQueryFile(), filter, "now-d");
+        TimelionApi.timelionScan(data, getQueryFile(), filter, "now-" + days * 24 + "h");
     }
 
     public List<Map<String, String>> searchRemap(Map<String, String> filter1, Integer days) {

@@ -9,6 +9,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -18,6 +19,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import org.slf4j.Logger;
+import utils.CommonsFX;
 import utils.ex.HasLogging;
 
 public class PacmanGhost extends Group {
@@ -26,16 +28,24 @@ public class PacmanGhost extends Group {
     private ObjectProperty<GhostStatus> status = new SimpleObjectProperty<>(GhostStatus.ALIVE);
 
     private GhostDirection direction = GhostDirection.NORTH;
-
-    private Circle leftEye = new Circle(2);
-    private Circle rightEye = new Circle(2);
+    @FXML
+    private Circle leftEye;
+    @FXML
+    private Circle rightEye;
     private double startX;
     private double startY;
     private MazeSquare mazeSquare;
-    private final Circle circle = new Circle(2);
+    private Circle circle = new Circle(2);
     private GhostColor color;
 
     private Random random = new Random();
+    @FXML
+    private Polygon polygon;
+
+    @FXML
+    private Ellipse ellipse;
+    @FXML
+    private Ellipse ellipse2;
 
     public PacmanGhost() {
         this(GhostColor.BLUE);
@@ -43,48 +53,7 @@ public class PacmanGhost extends Group {
 
     public PacmanGhost(@NamedArg("color") GhostColor color) {
         this.color = color;
-        Polygon polygon = new Polygon();
-        final double radius = 12;
-        final int fullCircle = 360;
-        for (int i = fullCircle / 2; i <= fullCircle; i += 5) {
-            double x = Math.cos(Math.toRadians(i)) * radius;
-            double y = Math.sin(Math.toRadians(i)) * radius;
-            polygon.getPoints().addAll(x, y);
-        }
-        getCircle().setFill(color.getColor());
-        polygon.setFill(color.getColor());
-        polygon.fillProperty()
-                .bind(Bindings.when(status.isEqualTo(GhostStatus.ALIVE)).then(color.getColor())
-                        .otherwise(Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.BLUEVIOLET)
-                                .otherwise(Color.TRANSPARENT)));
-        polygon.getPoints().addAll(-radius, 0D, -radius, 20D, -8D, 10D, -4D, 20D, 0D, 10D, 4D, 20D, 8D, 10D, radius,
-                20D, radius, 0D);
-        Ellipse ellipse = new Ellipse(4, 6);
-        ellipse.setFill(Color.WHITE);
-        ellipse.setLayoutX(-5);
-        Ellipse ellipse2 = new Ellipse(4, 6);
-        ellipse2.setFill(Color.WHITE);
-        ellipse2.setLayoutX(5);
-        ellipse.fillProperty().bind(
-                Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.TRANSPARENT).otherwise(Color.WHITE));
-        ellipse2.fillProperty().bind(
-                Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.TRANSPARENT).otherwise(Color.WHITE));
-
-        rightEye.setLayoutX(5);
-        rightEye.setLayoutY(2);
-        leftEye.setLayoutX(-5);
-        leftEye.setLayoutY(2);
-
-        getChildren().add(polygon);
-        getChildren().add(ellipse);
-        getChildren().add(ellipse2);
-        getChildren().add(rightEye);
-        getChildren().add(leftEye);
-    }
-
-    public PacmanGhost(@NamedArg("children") ObservableList<Node> children) {
-        this(GhostColor.BLUE);
-        getChildren().setAll(children);
+        load();
     }
 
     public final Circle getCircle() {
@@ -106,24 +75,19 @@ public class PacmanGhost extends Group {
     public void move(long now, Pacman pacman, ObservableList<Node> observableList, MazeSquare[][] maze) {
         if (status.get() == GhostStatus.ALIVE) {
             shortestMovement(now, observableList, pacman, maze);
-        } else if (status.get() == GhostStatus.DEAD) {
-            int step = 1;
-            if (startX > getLayoutX()) {
-                setLayoutX(getLayoutX() + step);
-            } else if (startX < getLayoutX()) {
-                setLayoutX(getLayoutX() - step);
-            }
-            if (startY > getLayoutY()) {
-                setLayoutY(getLayoutY() + step);
-            } else if (startY < getLayoutY()) {
-                setLayoutY(getLayoutY() - step);
-            }
+            return;
+        }
+        if (status.get() == GhostStatus.DEAD) {
+            int step = (int) Math.signum(startX - getLayoutX());
+            setLayoutX(getLayoutX() + step);
+            int stepY = (int) Math.signum(startY - getLayoutY());
+            setLayoutY(getLayoutY() + stepY);
             if (Math.abs(startX - getLayoutX()) < 3 && Math.abs(startY - getLayoutY()) < 3) {
                 setStatus(GhostStatus.ALIVE);
             }
-        } else {
-            randomMovement(now, observableList);
+            return;
         }
+        randomMovement(now, observableList);
     }
 
     public void setDirection(GhostDirection direction) {
@@ -184,10 +148,22 @@ public class PacmanGhost extends Group {
 
         mazeSquare = getBestMaze(maze, hx, hy, hxg, hyg);
         if (mazeSquare != null) {
-            getCircle().setLayoutX(readjustedX(mazeSquare.i));
-            getCircle().setLayoutY(readjustedY(mazeSquare.j));
+            circle.setLayoutX(readjustedX(mazeSquare.i));
+            circle.setLayoutY(readjustedY(mazeSquare.j));
         }
 
+    }
+
+    private final void load() {
+        CommonsFX.loadRoot("PacmanGhost.fxml", this);
+        polygon.fillProperty()
+                .bind(Bindings.when(status.isEqualTo(GhostStatus.ALIVE)).then(color.getColor())
+                        .otherwise(Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.BLUEVIOLET)
+                                .otherwise(Color.TRANSPARENT)));
+        ellipse.fillProperty().bind(
+                Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.TRANSPARENT).otherwise(Color.WHITE));
+        ellipse2.fillProperty().bind(
+                Bindings.when(status.isEqualTo(GhostStatus.AFRAID)).then(Color.TRANSPARENT).otherwise(Color.WHITE));
     }
 
     private void randomMovement(long now, ObservableList<Node> observableList) {

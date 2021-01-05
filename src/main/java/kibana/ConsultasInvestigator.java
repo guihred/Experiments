@@ -236,7 +236,7 @@ public class ConsultasInvestigator extends Application {
     }
 
     private void makeTimelionQuery(QueryObjects queryObjects) {
-        queryObjects.makeTimelionQuery(filter);
+        queryObjects.makeTimelionQuery(filter, days.getSelectionModel().getSelectedItem());
     }
 
     public static QueryObjects configureTimeline(String field, List<QueryObjects> queryList, String userNameQuery,

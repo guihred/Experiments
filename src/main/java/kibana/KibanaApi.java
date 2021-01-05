@@ -170,7 +170,7 @@ public class KibanaApi {
     }
 
     protected static File newJsonFile(String string) {
-        String replaceAll = string.replaceAll("[:/{}\" */\n]+", "_");
+        String replaceAll = string.replaceAll("[:/{}\" */\n?]+", "_");
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
     }
 
@@ -235,7 +235,8 @@ public class KibanaApi {
                 () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "HostName", "asname"));
         fullScan.put("Geolocation",
                 () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry"));
-        fullScan.put("Bloqueio WAF", () -> display(makeKibanaSearch("policiesQuery.json", ip, days, key)));
+        fullScan.put("Bloqueio WAF", () -> display(
+                makeKibanaSearch("wafQuery.json", ip, days, "action", "policy-name", "alert.description")));
         fullScan.put("Palo Alto Threat", () -> display(makeKibanaSearch("threatQuery.json", ip, days, key)));
         fullScan.put("TOP Conexão FW", () -> {
             Map<String, String> destinationSearch =

@@ -33,7 +33,7 @@ public final class DateFormatUtils {
     }
 
     public static String currentTime(String fmt) {
-        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).format(LocalDateTime.now()));
+        return format(fmt, LocalDateTime.now());
     }
 
     public static LocalDate epochSecondToLocalDate(String asText) {
@@ -43,6 +43,10 @@ public final class DateFormatUtils {
 
     public static LocalDate extractDate(final String children) {
         return SupplierEx.get(() -> LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+    }
+
+    public static String format(String fmt, long now) {
+        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).format(Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault()).toLocalDateTime()));
     }
 
     public static String format(TemporalAccessor text) {
@@ -66,5 +70,13 @@ public final class DateFormatUtils {
 
     public static TemporalAccessor parse(CharSequence text) {
         return TIME_OF_SECONDS_FORMAT.parse(text);
+    }
+
+    public static long toNumber(String fmt, String now) {
+        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).parse(now).get(ChronoField.INSTANT_SECONDS));
+    }
+
+    private static String format(String fmt, LocalDateTime now) {
+        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).format(now));
     }
 }

@@ -19,19 +19,16 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.slf4j.Logger;
 import utils.CSVUtils;
 import utils.FileTreeWalker;
 import utils.QuickSortML;
 import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
-import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class CIDRUtils {
     private static final String NETWORK = "network";
-    private static final Logger LOG = HasLogging.log();
     private static final String NETWORKS_CSV = "csv/networks.csv";
     private static DataframeML networkFile;
 
@@ -52,7 +49,8 @@ public class CIDRUtils {
             }
             if (mas < 8) {
                 int i = integer & toPartialMask(mas);
-                int j = ~toPartialMask(mas) & 255;
+                final int MAX_BYTE = 255;
+                int j = ~toPartialMask(mas) & MAX_BYTE;
                 String i2 = j == 0 ? "" : j + "";
 
                 pattern.append(("" + i).replaceAll(".{" + i2.length() + "}$", "") + "*");
@@ -105,16 +103,7 @@ public class CIDRUtils {
     }
 
     public static void main(String[] args) {
-        String cidr = "189.110.0.0/15";
-        LOG.info("{} = {}", cidr, addressToPattern(cidr));
-        cidr = "189.110.0.0/16";
-        LOG.info("{} = {}", cidr, addressToPattern(cidr));
-        cidr = "189.110.12.0/17";
-        LOG.info("{} = {}", cidr, addressToPattern(cidr));
-        cidr = "189.110.120.153/22";
-        LOG.info("{} = {}", cidr, addressToPattern(cidr));
-        cidr = "189.110.19.0/24";
-        LOG.info("{} = {}", cidr, addressToPattern(cidr));
+        makeNetworkCSV();
     }
 
     public static List<Map<String, Object>> makeNetworkCSV() {

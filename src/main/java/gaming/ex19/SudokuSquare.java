@@ -17,7 +17,7 @@ import javafx.geometry.VPos;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -28,7 +28,7 @@ import javafx.scene.text.TextAlignment;
  *
  * @author Note
  */
-public final class SudokuSquare extends Region {
+public final class SudokuSquare extends Pane {
 
     public static final int MAP_NUMBER = 3;
     private final IntegerProperty number = new SimpleIntegerProperty(0);
@@ -110,8 +110,7 @@ public final class SudokuSquare extends Region {
     }
 
     public boolean isInArea(int row1, int col1) {
-        return row / SudokuSquare.MAP_NUMBER == row1 / SudokuSquare.MAP_NUMBER
-            && col / SudokuSquare.MAP_NUMBER == col1 / SudokuSquare.MAP_NUMBER;
+        return row / MAP_NUMBER == row1 / MAP_NUMBER && col / MAP_NUMBER == col1 / MAP_NUMBER;
     }
 
     public boolean isInCol(int col1) {
@@ -174,19 +173,15 @@ public final class SudokuSquare extends Region {
     private void updateStyle() {
         StringBuilder style = new StringBuilder();
 
-        if (permanent) {
-            style.append("-fx-background-color: lightgray;");
-        } else {
-            style.append("-fx-background-color: white;");
-        }
-
+        style.append("-fx-background-color:");
+        style.append(permanent ? " lightgray;" : " white;");
         style.append("-fx-border-color: black;");
 
         style.append("-fx-border-width: ");
-        style.append(col % SudokuSquare.MAP_NUMBER == 0 ? " 2" : " 1");
-        style.append(row % SudokuSquare.MAP_NUMBER == SudokuSquare.MAP_NUMBER - 1 ? " 2" : " 1");
-        style.append(col % SudokuSquare.MAP_NUMBER == SudokuSquare.MAP_NUMBER - 1 ? " 2" : " 1");
-        style.append(row % SudokuSquare.MAP_NUMBER == 0 ? " 2" : " 1");
+        style.append(col % MAP_NUMBER == 0 ? " 2" : " 1");
+        style.append(row % MAP_NUMBER == MAP_NUMBER - 1 ? " 2" : " 1");
+        style.append(col % MAP_NUMBER == MAP_NUMBER - 1 ? " 2" : " 1");
+        style.append(row % MAP_NUMBER == 0 ? " 2" : " 1");
 
         style.append(";");
         setStyle(style.toString());

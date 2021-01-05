@@ -109,9 +109,7 @@ public class HistogramGraph extends Canvas {
             .mapToDouble(DoubleSummaryStatistics::getMin).min().orElse(0);
         double xbins = bins.get();
         xProportion = (xmax - xmin) / xbins;
-
-        yHistogram.forEach(entryS -> {
-
+        for (Entry<String, LongSummaryStatistics> entryS : yHistogram) {
             String key = entryS.getKey();
             Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, key, bins.get());
 
@@ -133,7 +131,7 @@ public class HistogramGraph extends Canvas {
                 final int barsLength = 20;
                 gc.fillRect(x1, y1, barsLength, maxLayout1 - y1);
             }
-        });
+        }
         drawAxis();
 
     }

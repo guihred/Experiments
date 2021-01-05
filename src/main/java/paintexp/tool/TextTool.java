@@ -165,7 +165,8 @@ public class TextTool extends PaintTool {
         options = CommonsFX.loadParent("TextTool.fxml", this);
         fontFamily.setItems(FXCollections.observableArrayList(Font.getFamilies()));
         FileTreeWalker.getPathByExtensionAsync(ResourceFXUtils.getUserFolder("Documents"), p -> {
-            Font loadFont = Font.loadFont(p.toUri().toURL().toExternalForm(), 12);
+            final int defaultSize = 12;
+            Font loadFont = Font.loadFont(p.toUri().toURL().toExternalForm(), defaultSize);
             if (loadFont != null && !fontFamily.getItems().contains(loadFont.getFamily())) {
                 fontFamily.getItems().add(loadFont.getFamily());
             }

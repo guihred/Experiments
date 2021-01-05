@@ -4,14 +4,7 @@ import static extract.DocumentHelper.addProperties;
 import static extract.DocumentHelper.onDocumentChange;
 
 import extract.DocumentHelper;
-import extract.JsoupUtils;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener.Change;
 import javafx.concurrent.Worker;
@@ -29,12 +22,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.jsoup.Connection.Response;
 import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
@@ -63,7 +50,6 @@ public class WebBrowserApplication extends Application {
     @FXML
     private WebView browser;
     private WebEngine engine;
-    private Map<String, String> cookies = new HashMap<>();
 
     public void initialize() {
         ExtractUtils.insertProxyConfig();
@@ -154,26 +140,6 @@ public class WebBrowserApplication extends Application {
             return;
         }
         LOG.error("ERROR LOADING {}", url, newException);
-        RunnableEx.runNewThread(() -> {
-
-            Response executeRequest = JsoupUtils.executeRequest(url, cookies);
-            String body = executeRequest.body();
-            String contentType = executeRequest.contentType();
-            if (contentType.contains("html")) {
-                engine.loadContent(body, contentType);
-            } else {
-                HttpClient client = HttpClientBuilder.create().build();
-                HttpGet post = new HttpGet(url);
-                HttpResponse response = client.execute(post);
-                HttpEntity entity = response.getEntity();
-                BufferedReader rd =
-                        new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
-                String allLines = rd.lines().collect(Collectors.joining("\n"));
-                engine.loadContent(allLines);
-            }
-
-        });
-
     }
 
     public static void main(String[] args) {

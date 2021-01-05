@@ -39,7 +39,7 @@ public class BrowserView extends Pane {
     private HBox toolBar;
     @FXML
     private WebView browser;
-    private final WebEngine webEngine;
+    private WebEngine webEngine;
     @FXML
     private Button toggleHelpTopics;
     private final WebView smallView = new WebView();
@@ -54,37 +54,7 @@ public class BrowserView extends Pane {
     private WebHistory history;
 
     public BrowserView() {
-        ExtractUtils.insertProxyConfig();
-        CommonsFX.loadRoot("BrowserView.fxml", this);
-        webEngine = browser.getEngine();
-        webEngine.setCreatePopupHandler(config -> {
-            if (!toolBar.getChildren().contains(smallView)) {
-                toolBar.getChildren().add(smallView);
-            }
-            return smallView.getEngine();
-        });
-        history = webEngine.getHistory();
-        history.getEntries().addListener((Change<? extends Entry> c) -> {
-            c.next();
-            c.getRemoved().stream().forEach(e -> comboBox0.getItems().remove(e.getUrl()));
-            c.getAddedSubList().stream().forEach(e -> comboBox0.getItems().add(e.getUrl()));
-        });
-        webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
-            toolBar.getChildren().remove(toggleHelpTopics);
-            if (newState == State.SUCCEEDED) {
-                JSObject win = (JSObject) webEngine.executeScript("window");
-                win.setMember("app", getJavaApp());
-                if (needDocumentationButton) {
-                    toolBar.getChildren().add(toggleHelpTopics);
-                }
-            }
-        });
-        toolBar.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
-                cm.show(toolBar, e.getScreenX(), e.getScreenY());
-            }
-        });
-        webEngine.load("http://www.oracle.com/products/index.html");
+        init();
     }
 
     public JavaApp getJavaApp() {
@@ -132,6 +102,40 @@ public class BrowserView extends Pane {
         double tbHeight = toolBar.prefHeight(w);
         layoutInArea(browser, 0, 0, w, h - tbHeight, 0, HPos.CENTER, VPos.CENTER);
         layoutInArea(toolBar, 0, h - tbHeight, w, tbHeight, 0, HPos.CENTER, VPos.CENTER);
+    }
+
+    private final void init() {
+        ExtractUtils.insertProxyConfig();
+        CommonsFX.loadRoot("BrowserView.fxml", this);
+        webEngine = browser.getEngine();
+        webEngine.setCreatePopupHandler(config -> {
+            if (!toolBar.getChildren().contains(smallView)) {
+                toolBar.getChildren().add(smallView);
+            }
+            return smallView.getEngine();
+        });
+        history = webEngine.getHistory();
+        history.getEntries().addListener((Change<? extends Entry> c) -> {
+            c.next();
+            c.getRemoved().stream().forEach(e -> comboBox0.getItems().remove(e.getUrl()));
+            c.getAddedSubList().stream().forEach(e -> comboBox0.getItems().add(e.getUrl()));
+        });
+        webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
+            toolBar.getChildren().remove(toggleHelpTopics);
+            if (newState == State.SUCCEEDED) {
+                JSObject win = (JSObject) webEngine.executeScript("window");
+                win.setMember("app", getJavaApp());
+                if (needDocumentationButton) {
+                    toolBar.getChildren().add(toggleHelpTopics);
+                }
+            }
+        });
+        toolBar.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                cm.show(toolBar, e.getScreenX(), e.getScreenY());
+            }
+        });
+        webEngine.load("http://www.oracle.com/products/index.html");
     }
 
     public class JavaApp {

@@ -3,7 +3,7 @@
     "params":{
         "ip":"",
         "hour":["-24h","-12h","-36h","-48h","-60h","-72h","-84h"],
-        "sistemaDtp":["vip-pmeuinssprxr.inss.gov.br","servicos.mte.gov.br","mteempregabr","postos","geridmte","meuinss","www2","psabiwebapl01","refisprod.dataprev.gov.br","www2sp.dataprev.gov.br","agendamento.inss.gov.br","papimgateway.prevnet"]
+        "sistemaDtp":["vip-pmeuinssprxr.inss.gov.br","servicos.mte.gov.br","mteempregabr","postos","geridmte","meuinss","www2","psabiwebapl01","refisprod.dataprev.gov.br","www2sp.dataprev.gov.br","agendamento.inss.gov.br","papimgateway.prevnet","esisrec.inss.gov.br"]
     },
     
     "name": "Reporte_Eventos_MeuINSS_$ip.docx",

@@ -9,7 +9,8 @@ public class SelectRectTool extends AreaTool {
 
 	@Override
 	public Node createIcon() {
-		return new SimpleRectangleBuilder().width(30).height(30).fill(Color.TRANSPARENT).stroke(Color.BLUE)
+        final int iconSize = 30;
+        return new SimpleRectangleBuilder().width(iconSize).height(iconSize).fill(Color.TRANSPARENT).stroke(Color.BLUE)
 				.strokeDashArray(1, 2, 1, 2).build();
 	}
 

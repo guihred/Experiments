@@ -20,7 +20,8 @@ public class ReversiPiece extends Region {
         reflection.setFraction(1);
         reflection.topOffsetProperty().bind(heightProperty().multiply(-3 / 4.));
         setEffect(reflection);
-        setPrefSize(180, 180);
+        final int prefHeight = 180;
+        setPrefSize(prefHeight, prefHeight);
         setMouseTransparent(true);
     }
 

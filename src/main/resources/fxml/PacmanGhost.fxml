@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><?import gaming.ex14.*?><?import javafx.collections.*?><?import javafx.scene.shape.*?><?import java.lang.*?>
+<fx:root type="javafx.scene.Group" xmlns:fx="http://javafx.com/fxml"
+	layoutX="12.0" layoutY="12.0">
+	<children>
+		<Polygon fill="0x0000ffff" fx:id="polygon">
+			<points>
+				<Double fx:value="-12.0" />
+				<Double fx:value="1.4695761589768238E-15" />
+				<Double fx:value="-11.954336377100947" />
+				<Double fx:value="-1.0458689129718954" />
+				<Double fx:value="-11.817693036146496" />
+				<Double fx:value="-2.0837781320031654" />
+				<Double fx:value="-11.59110991546882" />
+				<Double fx:value="-3.1058285412302444" />
+				<Double fx:value="-11.276311449430901" />
+				<Double fx:value="-4.104241719908024" />
+				<Double fx:value="-10.8756934444398" />
+				<Double fx:value="-5.071419140888391" />
+				<Double fx:value="-10.392304845413264" />
+				<Double fx:value="-6.000000000000002" />
+				<Double fx:value="-9.829824531467905" />
+				<Double fx:value="-6.88291723621255" />
+				<Double fx:value="-9.192533317427738" />
+				<Double fx:value="-7.713451316238471" />
+				<Double fx:value="-8.485281374238571" />
+				<Double fx:value="-8.48528137423857" />
+				<Double fx:value="-7.713451316238474" />
+				<Double fx:value="-9.192533317427735" />
+				<Double fx:value="-6.882917236212556" />
+				<Double fx:value="-9.8298245314679" />
+				<Double fx:value="-6.000000000000005" />
+				<Double fx:value="-10.392304845413262" />
+				<Double fx:value="-5.0714191408883895" />
+				<Double fx:value="-10.8756934444398" />
+				<Double fx:value="-4.104241719908033" />
+				<Double fx:value="-11.2763114494309" />
+				<Double fx:value="-3.1058285412302475" />
+				<Double fx:value="-11.59110991546882" />
+				<Double fx:value="-2.083778132003164" />
+				<Double fx:value="-11.817693036146496" />
+				<Double fx:value="-1.045868912971899" />
+				<Double fx:value="-11.954336377100947" />
+				<Double fx:value="-2.204364238465236E-15" />
+				<Double fx:value="-12.0" />
+				<Double fx:value="1.0458689129718945" />
+				<Double fx:value="-11.954336377100947" />
+				<Double fx:value="2.0837781320031596" />
+				<Double fx:value="-11.817693036146498" />
+				<Double fx:value="3.1058285412302435" />
+				<Double fx:value="-11.59110991546882" />
+				<Double fx:value="4.104241719908028" />
+				<Double fx:value="-11.2763114494309" />
+				<Double fx:value="5.071419140888386" />
+				<Double fx:value="-10.875693444439804" />
+				<Double fx:value="6.000000000000002" />
+				<Double fx:value="-10.392304845413264" />
+				<Double fx:value="6.882917236212553" />
+				<Double fx:value="-9.829824531467901" />
+				<Double fx:value="7.713451316238471" />
+				<Double fx:value="-9.192533317427738" />
+				<Double fx:value="8.485281374238568" />
+				<Double fx:value="-8.485281374238571" />
+				<Double fx:value="9.192533317427733" />
+				<Double fx:value="-7.713451316238475" />
+				<Double fx:value="9.8298245314679" />
+				<Double fx:value="-6.882917236212558" />
+				<Double fx:value="10.39230484541326" />
+				<Double fx:value="-6.000000000000005" />
+				<Double fx:value="10.8756934444398" />
+				<Double fx:value="-5.07141914088839" />
+				<Double fx:value="11.276311449430898" />
+				<Double fx:value="-4.104241719908034" />
+				<Double fx:value="11.59110991546882" />
+				<Double fx:value="-3.105828541230248" />
+				<Double fx:value="11.817693036146496" />
+				<Double fx:value="-2.0837781320031645" />
+				<Double fx:value="11.954336377100947" />
+				<Double fx:value="-1.0458689129718999" />
+				<Double fx:value="12.0" />
+				<Double fx:value="-2.9391523179536475E-15" />
+				<Double fx:value="-12.0" />
+				<Double fx:value="0.0" />
+				<Double fx:value="-12.0" />
+				<Double fx:value="20.0" />
+				<Double fx:value="-8.0" />
+				<Double fx:value="10.0" />
+				<Double fx:value="-4.0" />
+				<Double fx:value="20.0" />
+				<Double fx:value="0.0" />
+				<Double fx:value="10.0" />
+				<Double fx:value="4.0" />
+				<Double fx:value="20.0" />
+				<Double fx:value="8.0" />
+				<Double fx:value="10.0" />
+				<Double fx:value="12.0" />
+				<Double fx:value="20.0" />
+				<Double fx:value="12.0" />
+				<Double fx:value="0.0" />
+			</points>
+		</Polygon>
+		<Ellipse fill="0xffffffff" fx:id="ellipse" layoutX="-5.0"
+			radiusX="4.0" radiusY="6.0" />
+		<Ellipse fill="0xffffffff" fx:id="ellipse2" layoutX="5.0"
+			radiusX="4.0" radiusY="6.0" />
+		<Circle layoutX="5.0" fx:id="leftEye" layoutY="2.0" radius="2.0" />
+		<Circle layoutX="-5.0" fx:id="rightEye" layoutY="2.0" radius="2.0" />
+	</children>
+</fx:root>

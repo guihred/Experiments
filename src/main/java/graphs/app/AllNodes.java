@@ -62,7 +62,7 @@ public class AllNodes extends Application {
 
             FXMLCreatorHelper.createXMLFile(node,
                     ResourceFXUtils.getOutFile("fxml/" + instance.getClass().getSimpleName() + ".fxml"),
-                    Arrays.asList("children", "transforms"));
+                    Arrays.asList("children", "transforms", "background"));
         });
     }
 

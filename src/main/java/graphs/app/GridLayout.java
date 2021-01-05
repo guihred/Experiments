@@ -27,7 +27,8 @@ public class GridLayout extends Layout {
 
 
     public static int radius(int size2) {
-        return 100 * (size2 / 50 + 1);
+        int r = 100;
+        return r * (size2 / r * 2 + 1);
     }
 
     private static void layoutInGrid(Cell[] cells, Graph graph) {
@@ -48,7 +49,8 @@ public class GridLayout extends Layout {
             }
             int j = i / sqrt;
             int f = -radius / 2;
-            double x = i % sqrt * radius + (j % 2 == 0 ? 0 : f) + RND.nextInt(11) - 5.;
+            final int bound = 11;
+            double x = i % sqrt * radius + (j % 2 == 0 ? 0 : f) + RND.nextInt(bound) - 5.;
             int k = j * radius;
             double y = k * sqrt2 / 2;
 

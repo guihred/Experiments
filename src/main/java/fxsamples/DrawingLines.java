@@ -30,17 +30,18 @@ public class DrawingLines extends Application {
 		redLine.setStrokeWidth(10);
 		redLine.setStrokeLineCap(StrokeLineCap.BUTT);
 		// creating a dashed pattern
-		redLine.getStrokeDashArray().addAll(10D, 5D, 15D, 5D, 20D);
+        final Double[] dashArray = { 10D, 5D, 15D, 5D, 20D };
+        redLine.getStrokeDashArray().addAll(dashArray);
 		redLine.setStrokeDashOffset(0);
 		root.getChildren().add(redLine);
 		// White line
-		Line whiteLine = new Line(10, 30, endX, 30);
+        final Line whiteLine = new Line(10, 30, endX, 30);
 		whiteLine.setStroke(Color.WHITE);
 		whiteLine.setStrokeWidth(10);
 		whiteLine.setStrokeLineCap(StrokeLineCap.ROUND);
 		root.getChildren().add(whiteLine);
 		// Blue line
-		Line blueLine = new Line(10, 50, endX, 50);
+        final Line blueLine = new Line(10, 50, endX, 50);
 		blueLine.setStroke(Color.BLUE);
 		blueLine.setStrokeWidth(10);
 		root.getChildren().add(blueLine);
