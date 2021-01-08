@@ -1,18 +1,24 @@
-{"index":"dtp-pl*","ignore_unavailable":true,"preference":1609255103121}
+{"index": "dtp-pl*","ignore_unavailable": true,"preference": 1609255103121}
 {
 	"aggs": {
 		"2": {
 			"terms": {
 				"field": "DestinationPort",
-				"size": 1000,
+				"size": 5,
 				"order": {
-					"_count": "desc"
+					"1": "desc"
+				}
+			},
+			"aggs": {
+				"1": {
+					"sum": {
+						"field": "Bytes"
+					}
 				}
 			}
 		}
 	},
 	"size": 0,
-	"version": true,
 	"_source": {
 		"excludes": []
 	},
@@ -44,48 +50,26 @@
 		"bool": {
 			"must": [
 				{
-					"query_string": {
-						"query": "SourceIP: \"%s\"",
-						"analyze_wildcard": true,
-						"default_field": "*"
-					}
-				},
-				{
-					"range": {
-						"@timestamp": {
-							"gte": %s,
-							"lte": %s,
-							"format": "epoch_millis"
-						}
-					}
-				}
+                    "query_string": {
+                        "query": "SourceIP:\"%s\"",
+                        "analyze_wildcard": true,
+                        "default_field": "*"
+                    }
+                },
+                {
+                    "range": {
+                        "@timestamp": {
+                            "gte": %s,
+                            "lte": %s,
+                            "format": "epoch_millis"
+                        }
+                    }
+                }
 			],
-			"filter": [],
+            "filter": [],
 			"should": [],
-			"must_not": [
-				{
-					"match_phrase": {
-						"dtpcategoria": {
-							"query": "threat"
-						}
-					}
-				}
-			]
+			"must_not": []
 		}
-	},
-	"highlight": {
-		"pre_tags": [
-			"@kibana-highlighted-field@"
-		],
-		"post_tags": [
-			"@/kibana-highlighted-field@"
-		],
-		"fields": {
-			"*": {
-				
-			}
-		},
-		"fragment_size": 2147483647
 	},
 	"timeout": "30000ms"
 }

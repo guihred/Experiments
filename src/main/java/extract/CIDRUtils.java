@@ -106,7 +106,7 @@ public class CIDRUtils {
         makeNetworkCSV();
     }
 
-    public static List<Map<String, Object>> makeNetworkCSV() {
+    public static synchronized List<Map<String, Object>> makeNetworkCSV() {
         File outFile = ResourceFXUtils.getOutFile(NETWORKS_CSV);
 
         RunnableEx.run(() -> Files.deleteIfExists(outFile.toPath()));

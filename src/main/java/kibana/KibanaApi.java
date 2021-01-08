@@ -208,8 +208,7 @@ public class KibanaApi {
             }
             String min = StringSigaUtils.getFileSize(summaryStatistics.getMin());
             String max = StringSigaUtils.getFileSize(summaryStatistics.getMax());
-            String last = Stream.of(lines).skip(Math.max(1, lines.length - 2L)).findFirst()
-                    .map(StringSigaUtils::toDouble).map(StringSigaUtils::getFileSize).orElse("");
+            String last = StringSigaUtils.getFileSize(summaryStatistics.getSum());
             return String.format("%s (%s a %s)", last, min, max);
         });
 
@@ -261,14 +260,15 @@ public class KibanaApi {
         fullScan.put("TOP conexões WEB",
                 () -> display(makeKibanaSearch("acessosQuery.json", pattern, days, key, "doc_count")));
         fullScan.put("Ports Accessed", () -> {
-            Map<String, String> makeKibanaSearch =
-                    makeKibanaSearch("destinationPortQuery.json", ip, days, key, "doc_count");
-            makeKibanaSearch.computeIfPresent(key,
+            Map<String, String> destinationPort =
+                    makeKibanaSearch("destinationPortQuery.json", ip, days, key, valueCol);
+            destinationPort.computeIfPresent(key,
                     (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
                             .map(PortServices::getServiceByPort)
                             .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription().replaceAll(",.+", ""))
                             .collect(Collectors.joining("\n")));
-            return display(makeKibanaSearch);
+            convertToBytes(valueCol, destinationPort);
+            return display(destinationPort);
         });
         fullScan.put("Ultimo Acesso", () -> {
             Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", ip, days, "ReceiveTime");
