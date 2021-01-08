@@ -4,6 +4,7 @@ import static extract.DocumentHelper.addProperties;
 import static extract.DocumentHelper.onDocumentChange;
 
 import extract.DocumentHelper;
+import extract.InstallCert;
 import java.io.File;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener.Change;
@@ -136,7 +137,7 @@ public class WebBrowserApplication extends Application {
         }
         LOG.info("ERROR LOADING {} {}", url, message);
         if ("SSL handshake failed".equalsIgnoreCase(message)) {
-            // RunnableEx.run(() -> InstallCert.installCertificate(siteField.getText()))
+            RunnableEx.run(() -> InstallCert.installCertificate(siteField.getText()));
             return;
         }
         LOG.error("ERROR LOADING {}", url, newException);

@@ -32,7 +32,10 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyAllApps() {
-        show(AllApps.class);
+        AllApps show = show(AllApps.class);
+        while (show.getApplications().isEmpty()) {
+            sleep(500);
+        }
         doubleClickOn(randomItem(lookup(ListCell.class)));
 
     }

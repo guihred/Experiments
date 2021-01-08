@@ -17,6 +17,7 @@ import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class VirusTotalApi {
+    private static final String ERROR_TAG = "error";
     private static final String MALICIOUS_POSITIVE_REGEX = "malicious=([^0]\\d*)";
     private static final String LAST_ANALYSIS_STATS = "last_analysis_stats";
     private static final String MALICIOUS_ATTR = "malicious";
@@ -76,8 +77,8 @@ public final class VirusTotalApi {
                 getFromURL("https://www.virustotal.com/api/v3/ip_addresses/" + ip, outFile);
             }
             Map<String, String> jsonFile =
-                    JsonExtractor.makeMapFromJsonFile(outFile, "id", "as_owner", "country", "network", "error");
-            if (StringUtils.isNotBlank(jsonFile.get("error"))) {
+                    JsonExtractor.makeMapFromJsonFile(outFile, "id", "as_owner", "country", "network", ERROR_TAG);
+            if (StringUtils.isNotBlank(jsonFile.get(ERROR_TAG))) {
                 Files.deleteIfExists(outFile.toPath());
                 CIDRUtils.makeNetworkCSV();
             }
@@ -85,6 +86,18 @@ public final class VirusTotalApi {
         }, null, e -> LOG.info("ERROR SEARCHING {} {}", ip, e.getMessage()));
     }
 
+    public static Map<String, Object> getUrlInfo(String url) {
+
+        return SupplierEx.getHandle(() -> {
+            File outFile = getUrlInformation(url)[0];
+            Map<String, Object> jsonFile = JsonExtractor.accessMap(JsonExtractor.toFullObject(outFile));
+            if (Objects.nonNull(jsonFile.get(ERROR_TAG))) {
+                Files.deleteIfExists(outFile.toPath());
+            }
+            return jsonFile;
+        }, null, e -> LOG.info("ERROR SEARCHING {} {}", url, e.getMessage()));
+
+    }
     public static File[] getUrlInformation(String url) throws IOException {
 
         String fullUrl = SupplierEx.getFirst(() -> tryToCreateUrl(url),

@@ -18,7 +18,8 @@ import javafx.scene.shape.Shape3D;
 
 public class QuartoPiece extends Group {
 
-	private final int number;
+    private static final int STD_HEIGHT = 20;
+    private final int number;
 	private final BooleanProperty selected = new SimpleBooleanProperty(false);
 	private final PhongMaterial material;
 
@@ -27,8 +28,8 @@ public class QuartoPiece extends Group {
 
         material = new PhongMaterial();
         material.setSpecularColor(Color.WHITE);
-        int height = 20;
-        Shape3D shape = (1 & number) == 0 ? new Box(20, 20, 20) : new Cylinder(10, 20);
+        int height = STD_HEIGHT;
+        Shape3D shape = (1 & number) == 0 ? new Box(height, height, height) : new Cylinder(10, 20);
 
         shape.setMaterial(material);
         final Color color = (2 & number) == 0 ? Color.WHITE : Color.DARKVIOLET;

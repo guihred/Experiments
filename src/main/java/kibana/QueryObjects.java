@@ -73,7 +73,7 @@ public class QueryObjects {
         ObservableList<Map<String, String>> ipItems2 = getItems();
         final int columnWidth = 120;
         table.prefWidthProperty().bind(Bindings.selectDouble(table.parentProperty(), "width").add(-columnWidth));
-        table.setItems(CommonsFX.newFastFilter(resultsFilter, ipItems2.filtered(e -> true)));
+        table.setItems(CommonsFX.newFastFilter(resultsFilter, ipItems2));
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         SimpleTableViewBuilder.of(table).copiable().savable().onDoubleClickMany(onClick)
                 .onSortClicked((col, ascending) -> QuickSortML.sortMapList(ipItems2, col, ascending));

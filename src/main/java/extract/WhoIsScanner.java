@@ -155,11 +155,6 @@ public class WhoIsScanner {
         }, (path, ex) -> LOG.error("ERROR COPYING {}", path, ex)));
     }
 
-    public static Document evaluateURL(String url, String name, String waitStr, String... subFolder)
-            throws IOException {
-        WhoIsScanner whoIsScanner = new WhoIsScanner();
-        return whoIsScanner.name(name).waitStr(waitStr).subFolder(subFolder).evaluateURL(url);
-    }
 
     public static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String ip) {
         if (ip.matches("^10\\..+")) {

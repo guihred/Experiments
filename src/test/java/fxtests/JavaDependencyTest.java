@@ -43,7 +43,6 @@ public class JavaDependencyTest {
         List<String> failedTests = new ArrayList<>();
         measureTime("JavaFileDependency.testUncovered", () -> {
             List<String> paths = new ArrayList<>();
-            List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getJavaFileDependencies("fxtests");
             List<String> tests = CoverageUtils.getUncoveredTests(paths);
             List<String> allPaths =
                     paths.stream().map(e -> e.replaceAll(".+\\.(\\w+)$", "$1")).collect(Collectors.toList());
@@ -86,6 +85,7 @@ public class JavaDependencyTest {
                     continue;
                 }
                 Object ob = forName.newInstance();
+                List<JavaFileDependency> javaFileDependencies = JavaFileDependency.getJavaFileDependencies("fxtests");
                 List<String> methods = CoverageUtils.getUncoveredMethods(javaFileDependencies, allPaths, className);
 
                 LOG.info(" To Be Run Methods {}", methods);

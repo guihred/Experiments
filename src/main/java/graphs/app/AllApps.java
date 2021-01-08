@@ -40,17 +40,21 @@ public class AllApps extends Application {
     private TextArea textArea5;
     private PrintStream out;
 
+    private ObservableList<Class<?>> applications = FXCollections.observableArrayList();
+    public ObservableList<Class<?>> getApplications() {
+        return applications;
+    }
+
     public void initialize() {
         ExtractUtils.insertProxyConfig();
-        ObservableList<Class<?>> applications = FXCollections.observableArrayList();
         RunnableEx.runNewThread(() -> getAllFileDependencies().stream().map(JavaFileDependency::getFullName)
                 .map(FunctionEx.ignore(Class::forName)).filter(Objects::nonNull)
                 .filter(makeTest(e -> e.getMethod("main", String[].class) != null)).collect(Collectors.toList()),
-                items -> CommonsFX.runInPlatform(() -> applications.setAll(items)));
+                items -> CommonsFX.runInPlatform(() -> getApplications().setAll(items)));
         System.setOut(SupplierEx.remap(() -> new PrintTextStream(out, true, "UTF-8", textArea5.textProperty()),
                 "ERROR CREATING STREAM"));
         SimpleListViewBuilder.of(stackParts).onDoubleClick(AllApps::invoke)
-                .items(newFastFilter(textField0, applications.filtered(e -> true)));
+                .items(newFastFilter(textField0, getApplications().filtered(e -> true)));
     }
 
     public void onActionToFXML() {
@@ -98,4 +102,5 @@ public class AllApps extends Application {
             ClassReflectionUtils.invoke(null, appClass.getMethod("main", String[].class), args);
         });
     }
+
 }

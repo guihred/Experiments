@@ -1,10 +1,7 @@
 package fxtests;
 
 import ethical.hacker.*;
-import extract.HashVerifier;
-import extract.InstallCert;
-import extract.VirusTotalApi;
-import extract.WhoIsScanner;
+import extract.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
@@ -18,6 +15,7 @@ import kibana.*;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import ml.graph.ExplorerHelper;
+import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import utils.*;
 import utils.ex.RunnableEx;
@@ -76,6 +74,45 @@ public class FXHackTest extends AbstractTestExecution {
                     .subFolder("#gradeA", "#warningBox", "ratingTitle", "reportTitle").evaluateURL(
                             "https://www.ssllabs.com/ssltest/analyze.html?d=" + url + "&ignoreMismatch=on&latest"));
         });
+    }
+
+    @Test
+    public void testAcesso() {
+
+        ExtractUtils.insertProxyConfig();
+        measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate("www-acesso"));
+        measureTime("Acesso",
+                () -> {
+                    HashMap<String, String> headers = new LinkedHashMap<>();
+                    HashMap<String, String> cookies = new HashMap<>();
+                    JsoupUtils.getDocument("https://www-acesso/gwdc/", cookies);
+                    String collect =
+                            cookies.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
+                    headers.put("Host", "www-acesso");
+                    headers.put("User-Agent",
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0");
+                    headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+                    headers.put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3");
+                    headers.put("Accept-Encoding", "gzip, deflate, br");
+                    headers.put("Content-Type", "application/x-www-form-urlencoded");
+                    headers.put("Content-Length", "41");
+                    headers.put("Origin", "https://www-acesso");
+                    headers.put("DNT", "1");
+                    headers.put("Connection", "keep-alive");
+                    headers.put("Referer", "https://www-acesso/gwdc/");
+                    headers.put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization());
+                    headers.put("Cookie",
+                            collect);
+                    headers.put("Upgrade-Insecure-Requests", "1");
+                    ContentType contnet = ContentType.APPLICATION_FORM_URLENCODED;
+                    PhantomJSUtils.postContent(
+                            "https://www-acesso/gwdc/?action=search&object=personUser&filter=70812788176",
+                            "uid=guilherme.hmedeiros&password=30-sanJU", contnet, headers,
+                            ResourceFXUtils.getOutFile("test.html"));
+                    return JsoupUtils.getDocument(
+                            "https://www-acesso/gwdc/?action=search&object=personUser&filter=70812788176", cookies);
+
+                });
     }
 
     @Test

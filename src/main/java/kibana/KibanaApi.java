@@ -59,9 +59,10 @@ public class KibanaApi {
                 "ERROR IN FILE " + file).replaceAll("[\n\t]", "");
     }
 
-    public static Map<String, String> getGeridCredencial(String finalIP) {
+    public static Map<String, String> getGeridCredencial(String index, String finalIP) {
         Map<String, String> makeKibanaSearch2 =
-                KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", finalIP, 3, "message");
+                KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", 3, new String[] { index, finalIP },
+                        "message");
         String message = makeKibanaSearch2.getOrDefault("message", "");
         String regex = "WHO:\\s+(.+)";
         List<String> linesThatMatch =
@@ -106,21 +107,32 @@ public class KibanaApi {
     }
 
     public static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
+        return makeKibanaSearch(file, days, new String[] { query }, params);
+    }
+
+    public static Map<String, String> makeKibanaSearch(File file, int days, String[] query, String... params) {
         return SupplierEx.getHandle(() -> {
-            File outFile = newJsonFile(removeExtension(file) + query + days);
+            File outFile = newJsonFile(removeExtension(file) + Stream.of(query).collect(Collectors.joining()) + days);
             if (!outFile.exists() || oneHourModified(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
-                RunnableEx.make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, getContent(file, query, gte, lte), outFile),
+                RunnableEx
+                        .make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL,
+                                getContent(file, Stream.concat(Stream.of(query), Stream.of(gte, lte)).toArray()),
+                                outFile),
                         e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
     }
-
     public static Map<String, String> makeKibanaSearch(String file, int days, Map<String, String> search,
             String... params) {
         return makeNewKibanaSearch(ResourceFXUtils.toFile(file), days, search, params);
+    }
+
+    public static Map<String, String> makeKibanaSearch(String file, int days, String[] query, String... params) {
+        
+        return makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + file), days, query , params);
     }
 
     public static Map<String, String> makeKibanaSearch(String file, String query, int days, String... params) {
@@ -228,15 +240,15 @@ public class KibanaApi {
     private static Map<String, SupplierEx<String>> scanByIp(String ip, int days) {
         String key = "key";
         String valueCol = "value";
-        String pattern = CIDRUtils.addressToPattern(ip);
         Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", () -> ip);
         fullScan.put("Provedor",
                 () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "HostName", "asname"));
         fullScan.put("Geolocation",
                 () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry"));
+        String pattern = CIDRUtils.addressToPattern(ip);
         fullScan.put("Bloqueio WAF", () -> display(
-                makeKibanaSearch("wafQuery.json", ip, days, "action", "policy-name", "alert.description")));
+                makeKibanaSearch("wafQuery.json", pattern, days, "action", "policy-name", "alert.description")));
         fullScan.put("Palo Alto Threat", () -> display(makeKibanaSearch("threatQuery.json", ip, days, key)));
         fullScan.put("TOP Conexão FW", () -> {
             Map<String, String> destinationSearch =
@@ -265,12 +277,12 @@ public class KibanaApi {
             return display(trafficSearch);
         });
         fullScan.put("Bytes Received", () -> {
-            Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", ip, days + 3, valueCol);
+            Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", ip, days, valueCol);
             convertToStats(valueCol, totalBytesQuery);
             return display(totalBytesQuery);
         });
         fullScan.put("Bytes Sent", () -> {
-            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", ip, days + 3, valueCol);
+            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", ip, days, valueCol);
             convertToStats(valueCol, totalBytesSent);
             return display(totalBytesSent);
         });

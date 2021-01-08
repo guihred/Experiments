@@ -22,7 +22,8 @@ import java.util.stream.StreamSupport;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ExtractUtils;
+import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.PredicateEx;
 import utils.ex.RunnableEx;
@@ -84,7 +85,8 @@ public final class Chapter8 {
     public static void ex10() {
         File original = new File("src");
         RunnableEx.run(() -> {
-            try (Stream<Path> walk = Files.walk(original.toPath(), 20)) {
+            final int maxDepth = 20;
+            try (Stream<Path> walk = Files.walk(original.toPath(), maxDepth)) {
                 walk.map(Path::toFile).filter(PredicateEx.makeTest(file -> {
                     if (file.canRead() && file.isFile()) {
                         List<String> wordsAsList = getWordsAsList(file.toPath());
@@ -177,9 +179,10 @@ public final class Chapter8 {
      * the three gives you the least hassle with negative values?
      */
     public static void ex3() {
+        final int b = 40;
+        final int a = 20;
         if (LOGGER.isInfoEnabled()) {
-            final int b = 40;
-            for (Integer i : Arrays.asList(20, b)) {
+            for (Integer i : Arrays.asList(a, b)) {
                 for (int j = -1; j <= 1; j++) {
                     LOGGER.trace("gcd1 {}", gcd1(i, j * b));
                     LOGGER.trace("gcd2 {}", gcd2(i, j * b));

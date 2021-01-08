@@ -57,7 +57,7 @@ public final class CoverageUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> List<Class<? extends T>> getClasses(Class<T> cl,List<String> excludePackages) {
+    public static <T> List<Class<? extends T>> getClasses(Class<T> cl, List<String> excludePackages) {
         List<Class<? extends T>> appClass = new ArrayList<>();
         return SupplierEx.get(() -> ClassPath.from(Thread.currentThread().getContextClassLoader()).getTopLevelClasses()
                 .stream().filter(e -> excludePackages.stream().noneMatch(p -> e.getName().contains(p)))
@@ -68,8 +68,8 @@ public final class CoverageUtils {
 
     public static File getCoverageFile() {
         return FileTreeWalker.getPathByExtension(new File("target/site/"), ".csv").stream().map(Path::toFile)
-            .filter(e -> ResourceFXUtils.computeAttributes(e).size() > 0L)
-            .max(Comparator.comparing(e -> ResourceFXUtils.computeAttributes(e).size())).orElse(null);
+                .filter(e -> ResourceFXUtils.computeAttributes(e).size() > 0L)
+                .max(Comparator.comparing(e -> ResourceFXUtils.computeAttributes(e).size())).orElse(null);
     }
 
     public static double getPercentage(double[] arr) {
@@ -95,18 +95,19 @@ public final class CoverageUtils {
             dependecy.setDependents(allFileDependencies);
         }
         List<Class<? extends Application>> classes = CoverageUtils.getClasses(Application.class);
-        List<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, m -> contains(classes, m),
-            path);
+        List<String> displayTestsToBeRun =
+                JavaFileDependency.displayTestsToBeRun(uncovered, m -> contains(classes, m), path);
 
-        Map<String, Long> count = displayTestsToBeRun.stream()
-            .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+        Map<String, Long> count =
+                displayTestsToBeRun.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
-        List<Class<? extends Application>> applications = displayTestsToBeRun.stream().distinct()
-            .sorted(Comparator.comparing(count::get).reversed())
-            .flatMap(e -> classes.stream().filter(cl -> cl.getSimpleName().equals(e))).collect(Collectors.toList());
+        List<Class<? extends Application>> applications =
+                displayTestsToBeRun.stream().distinct().sorted(Comparator.comparing(count::get).reversed())
+                        .flatMap(e -> classes.stream().filter(cl -> Objects.equals(cl.getSimpleName(), e)))
+                        .collect(Collectors.toList());
         if (!applications.isEmpty()) {
-            LOG.error("{} APPS FOUND= {}", applications.size(), applications.stream().map(Class::getName)
-                .collect(Collectors.joining(", ", "[", "]")));
+            String appsFound = applications.stream().map(Class::getName).collect(Collectors.joining(", ", "[", "]"));
+            LOG.error("{} APPS FOUND= {}", applications.size(), appsFound);
         }
         return applications;
     }
@@ -120,8 +121,8 @@ public final class CoverageUtils {
         List<JavaFileDependency> path = new ArrayList<>();
         List<Class<? extends Application>> classes = CoverageUtils.getClasses(Application.class);
         List<String> collect2 = allFileDependencies.stream().filter(e -> uncovered.contains(e.getName()))
-            .filter(d -> d.search(m -> contains(classes, m), visited, path)).distinct().map(JavaFileDependency::getName)
-            .collect(Collectors.toList());
+                .filter(d -> d.search(m -> contains(classes, m), visited, path)).distinct()
+                .map(JavaFileDependency::getName).collect(Collectors.toList());
         uncovered.addAll(collect2);
         uncovered.addAll(path.stream().map(JavaFileDependency::getName).collect(Collectors.toList()));
         return classes.stream().filter(e -> uncovered.contains(e.getSimpleName())).collect(Collectors.toList());
@@ -136,11 +137,11 @@ public final class CoverageUtils {
     }
 
     public static List<String> getUncoveredMethods(Collection<JavaFileDependency> javaFileDependencies,
-        List<String> allPaths, String className) {
+            List<String> allPaths, String className) {
         return javaFileDependencies.parallelStream().filter(j -> j.getName().equals(className))
-            .map(JavaFileDependency::getPublicMethodsMap).flatMap(m -> m.entrySet().stream())
-            .filter(e -> containsPath(allPaths, e)).map(Entry<String, List<String>>::getKey)
-            .collect(Collectors.toList());
+                .map(JavaFileDependency::getPublicMethodsMap).flatMap(m -> m.entrySet().stream())
+                .filter(e -> containsPath(allPaths, e)).map(Entry<String, List<String>>::getKey)
+                .collect(Collectors.toList());
     }
 
     public static List<String> getUncoveredTests() {
@@ -157,10 +158,10 @@ public final class CoverageUtils {
         DataframeML b = DataframeBuilder.build(csvFile);
         Set<String> cols = new HashSet<>(b.cols());
         List<String> coveredAttr = cols.stream().filter(e -> e.endsWith(COVERED)).map(e -> e.replaceFirst(COVERED, ""))
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
         for (String colName : coveredAttr) {
             DataframeUtils.crossFeature(b, PERCENTAGE + "_" + colName, CoverageUtils::getPercentage, colName + MISSED,
-                colName + COVERED);
+                    colName + COVERED);
         }
         Map<String, DataframeStatisticAccumulator> makeStats = DataframeUtils.makeStats(b);
         for (String colName : coveredAttr) {
@@ -178,12 +179,12 @@ public final class CoverageUtils {
     }
 
     private static boolean contains(List<Class<? extends Application>> classes, JavaFileDependency m) {
-        return classes.stream().anyMatch(cl -> cl.getSimpleName().equals(m.getName()));
+        return classes.stream().anyMatch(cl -> Objects.equals(cl.getSimpleName(), m.getName()));
     }
 
     private static boolean containsPath(List<String> allPaths, Entry<String, List<String>> e) {
         return e.getValue().stream()
-            .anyMatch(l -> allPaths.stream().anyMatch(t -> StringUtils.containsIgnoreCase(l, t)));
+                .anyMatch(l -> allPaths.stream().anyMatch(t -> StringUtils.containsIgnoreCase(l, t)));
     }
 
     private static <T> List<T> getByCoverage(Function<List<String>, List<T>> func) {
@@ -222,10 +223,10 @@ public final class CoverageUtils {
     private static List<String> getUncoveredFxTest(List<String> uncovered, List<String> allPaths) {
         List<String> displayTestsToBeRun = JavaFileDependency.displayTestsToBeRun(uncovered, "fxtests", allPaths);
 
-        Map<String, Long> count = displayTestsToBeRun.stream()
-            .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+        Map<String, Long> count =
+                displayTestsToBeRun.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
         return displayTestsToBeRun.stream().distinct().sorted().sorted(Comparator.comparing(count::get).reversed())
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 }

@@ -162,7 +162,7 @@ public final class RotateUtils {
             area.setStroke(Color.BLACK);
         });
         stackPane.sceneProperty().addListener((ob, old, val) -> val.setOnKeyReleased(e -> {
-            if (e.getCode() == KeyCode.A && e.isControlDown()) {
+            if (e.getCode() == KeyCode.A && e.isAltDown()) {
                 area.setLayoutX(0);
                 area.setLayoutY(0);
                 Bounds bounds = imageView.getBoundsInLocal();

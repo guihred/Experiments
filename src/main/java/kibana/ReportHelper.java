@@ -99,7 +99,9 @@ public final class ReportHelper {
 
     public static void loadSite(WebEngine engine2, String url) {
         RunnableEx.ignore(() -> {
-            engine2.load(url);
+            if (!Objects.equals(engine2.getLocation(), url)) {
+                engine2.load(url);
+            }
             LOG.info("LOADED {}", url);
         });
     }

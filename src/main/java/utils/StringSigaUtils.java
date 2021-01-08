@@ -36,6 +36,9 @@ public class StringSigaUtils extends StringUtils {
     public static final ImmutableMap<Class<? extends Comparable<?>>, Function<String, ?>> FORMAT_HIERARCHY_MAP =
             ImmutableMap.copyOf(formatHierarchy());
 
+    public static boolean anyMatches(String line, String classRegex) {
+        return Pattern.compile(classRegex).matcher(line).find();
+    }
     public static Map<String, String> asMap(String line) {
         return asMap(line, ":");
     }
@@ -45,7 +48,6 @@ public class StringSigaUtils extends StringUtils {
                         s -> Stream.of(s.split(separator)).skip(1).collect(Collectors.joining(separator)),
                         (u, v) -> u + "\n" + v));
     }
-
     public static String changeCase(String str) {
         if (isBlank(str)) {
             return "";
@@ -206,6 +208,15 @@ public class StringSigaUtils extends StringUtils {
 
     public static String[] lines(String nome) {
         return split(Objects.toString(nome, ""), "[\n\r]+");
+    }
+
+    public static List<String> matches(String line, String classRegex) {
+        Matcher matcher = Pattern.compile(classRegex).matcher(line);
+        List<String> linkedList = new LinkedList<>();
+        while (matcher.find()) {
+            linkedList.add(matcher.group(1));
+        }
+        return linkedList;
     }
 
 

@@ -11,6 +11,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
@@ -43,10 +44,12 @@ public final class CommonsFX {
         RunnableEx.runIf(progress,
                 p -> CommonsFX.runInPlatformSync(() -> p.setValue(p.getValue().doubleValue() + value)));
     }
+
     public static <T> void bind(ObservableValue<T> source, Property<T> target) {
         source.addListener((ob, old, val) -> runInPlatform(() -> target.setValue(val)));
         target.setValue(source.getValue());
     }
+
     public static <T> void bindBidirectional(Property<T> prop1, Property<T> prop2) {
         prop1.addListener((ob, old, val) -> prop2.setValue(val));
         prop2.addListener((ob, old, val) -> prop1.setValue(val));
@@ -130,6 +133,17 @@ public final class CommonsFX {
                         value) -> RunnableEx.run(() -> filteredData.setPredicate(row -> StringUtils.isBlank(value)
                                 || StringUtils.containsIgnoreCase(row.toString(), value)
                                 || PredicateEx.test(s -> s.matches(value), row.toString()))));
+        return filteredData;
+    }
+
+    public static <T> FilteredList<T> newFastFilter(TextField filterField, ObservableList<T> data) {
+        FilteredList<T> filteredData = data.filtered(e -> true);
+        filterField.textProperty()
+                .addListener((o, old,
+                        value) -> RunnableEx.run(() -> filteredData.setPredicate(row -> StringUtils.isBlank(value)
+                                || StringUtils.containsIgnoreCase(row.toString(), value)
+                                || PredicateEx.test(s -> s.matches(value), row.toString())
+                                || PredicateEx.test(s -> StringSigaUtils.anyMatches(s, value), row.toString()))));
         return filteredData;
     }
 

@@ -67,13 +67,14 @@ public final class PhantomJSUtils {
         return allLines;
     }
 
-    public static void postJson(String url, String content, Map<String, String> headers, File outFile)
+    public static void postContent(String url, String content, ContentType applicationJson, Map<String, String> headers,
+            File outFile)
             throws IOException {
         ExtractUtils.insertProxyConfig();
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
         get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());
-        get.setEntity(new StringEntity(content, ContentType.APPLICATION_JSON));
+        get.setEntity(new StringEntity(content, applicationJson));
         headers.forEach(get::addHeader);
         LOG.info("Request \n\t{} \n{} \n\t{} ", url, content, outFile.getName());
         HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
@@ -85,9 +86,15 @@ public final class PhantomJSUtils {
         ExtractUtils.copy(rd, outFile);
     }
 
+    public static void postJson(String url, String content, Map<String, String> headers, File outFile)
+            throws IOException {
+        postContent(url, content, ContentType.APPLICATION_JSON, headers, outFile);
+    }
+
     public static void postNdJson(String url, String cont, Map<String, String> headers, File outFile)
             throws IOException {
         ExtractUtils.insertProxyConfig();
+
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
         String content = cont.replaceAll("[\n\t]+", "").replaceFirst("\\}\\{", "}\n{") + "\n";

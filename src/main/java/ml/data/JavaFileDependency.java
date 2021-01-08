@@ -12,11 +12,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 
 public class JavaFileDependency {
@@ -73,7 +72,7 @@ public class JavaFileDependency {
 
     public List<String> getInvocations(Stream<String> lines, Collection<JavaFileDependency> dependsOn2) {
         return lines.map(JavaFileDependency::removeStrings).filter(t -> !t.matches(PUBLIC_METHOD_REGEX))
-                .map(t -> matches(t, INVOKE_METHOD_REGEX)).flatMap(List<String>::stream)
+                .map(t -> StringSigaUtils.matches(t, INVOKE_METHOD_REGEX)).flatMap(List<String>::stream)
                 .flatMap(invoke -> Stream.concat(dependsOn2.stream(), Stream.of(this))
                         .flatMap(e -> e.getPublicMethods().stream().filter(invoke::equals)
                                 .map(publicMethod -> e.getName() + "." + publicMethod)))
@@ -108,7 +107,8 @@ public class JavaFileDependency {
     public List<String> getPublicMethods() {
         return orElse(publicMethods, () -> publicMethods = get(() -> {
             try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
-                return lines.map(JavaFileDependency::removeStrings).map(t -> matches(t, PUBLIC_METHOD_REGEX))
+                return lines.map(JavaFileDependency::removeStrings)
+                        .map(t -> StringSigaUtils.matches(t, PUBLIC_METHOD_REGEX))
                         .flatMap(List<String>::stream).collect(Collectors.toList());
             }
         }));
@@ -250,16 +250,7 @@ public class JavaFileDependency {
     }
 
     private static List<String> linesMatches(String line) {
-        return matches(line, CLASS_REGEX);
-    }
-
-    private static List<String> matches(String line, String classRegex) {
-        Matcher matcher = Pattern.compile(classRegex).matcher(line);
-        List<String> linkedList = new LinkedList<>();
-        while (matcher.find()) {
-            linkedList.add(matcher.group(1));
-        }
-        return linkedList;
+        return StringSigaUtils.matches(line, CLASS_REGEX);
     }
 
     private static boolean matchesAndNotIn(Predicate<JavaFileDependency> test, List<JavaFileDependency> path,

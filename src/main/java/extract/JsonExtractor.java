@@ -137,7 +137,8 @@ public final class JsonExtractor {
     }
 
     public static Map<String, String> processPartialList(String regex, List<String> keys,
-            List<Map<String, String>> finalList, List<List<String>> partialList, Map<String, String> reference) {
+            Collection<Map<String, String>> finalList, Collection<List<String>> partialList,
+            Map<String, String> reference) {
         if (partialList.isEmpty()) {
             return reference;
         }

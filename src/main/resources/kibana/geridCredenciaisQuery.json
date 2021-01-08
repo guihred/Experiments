@@ -1,4 +1,4 @@
-{"index":"inss-*-prod-*","ignore_unavailable":true,"preference":1603971139102}
+{"index":"%s","ignore_unavailable":true,"preference":1603971139102}
 {
 	"version": true,
 	"size": 500,

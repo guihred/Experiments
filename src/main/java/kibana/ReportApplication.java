@@ -124,7 +124,8 @@ public class ReportApplication extends Application {
     private void addGeridInfo(Map<String, Object> mapaSubstituicao) {
         if (mapaSubstituicao.containsKey("gerid")) {
             LOG.info("GETTING GERID CREDENTIALS ");
-            Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip"));
+            String index = params.get("\\$index");
+            Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(index, params.get("\\$ip"));
             params.put("\\$creds", makeKibanaSearch.keySet().stream().collect(Collectors.joining("\n")));
             List<Object> textAsImage =
                     makeKibanaSearch.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
@@ -140,17 +141,14 @@ public class ReportApplication extends Application {
                 .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).collect(Collectors.toList());
 
         SimpleListViewBuilder<String> urlsListView = new SimpleListViewBuilder<>();
-        urlsListView
-                .onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(v))))
-                .cellFactory((String st) -> st.replaceAll(".+/", ""))
-                .multipleSelection().onKey(KeyCode.DELETE, () -> {
+        urlsListView.onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(v))))
+                .cellFactory((String st) -> st.replaceAll(".+/", "")).multipleSelection().onKey(KeyCode.DELETE, () -> {
                     SimpleDialogBuilder.closeStage(imageView);
                     for (String s : urlsListView.selected()) {
                         Files.deleteIfExists(Paths.get(new URI(s)));
                     }
                     makeReportConsultasEditImages();
-                })
-                .items(imageUrls);
+                }).items(imageUrls);
         Rectangle rectangle = new Rectangle();
         rectangle.setStroke(Color.TRANSPARENT);
         rectangle.setFill(Color.TRANSPARENT);
@@ -160,9 +158,8 @@ public class ReportApplication extends Application {
         ListView<String> build = urlsListView.build();
         SplitPane pane = new SplitPane(build, stackPane);
 
-        pane.getDividers().get(0).positionProperty().addListener(
-                (ob, old, val) -> imageView
-                        .setFitWidth((1 - val.doubleValue()) * 0.99 * imageView.getScene().getWidth()));
+        pane.getDividers().get(0).positionProperty().addListener((ob, old, val) -> imageView
+                .setFitWidth((1 - val.doubleValue()) * 0.99 * imageView.getScene().getWidth()));
 
         RotateUtils.moveArea(stackPane, rectangle, imageView,
                 img -> ReportHelper.onImageSelected(mapaSubstituicao, reportFile, build, img));
