@@ -65,7 +65,7 @@ public class ReportApplication extends Application {
         WebEngine engine = browser.getEngine();
         Worker<Void> loadWorker = engine.getLoadWorker();
         engine.locationProperty().addListener((ob, old, val) -> loc.setText(StringUtils.abbreviate(val, 100)));
-        progressIndicator.progressProperty().bind(loadWorker.progressProperty());
+        CommonsFX.bind(loadWorker.progressProperty(), progressIndicator.progressProperty());
         File parentFile = ResourceFXUtils.toFile("kibana/modeloRelatorio.json").getParentFile();
         List<Path> firstFileMatch = FileTreeWalker
                 .getFirstFileMatch(parentFile, p -> p.getFileName().toString().startsWith("modeloRelatorio")).stream()
@@ -119,18 +119,25 @@ public class ReportApplication extends Application {
         params.put("\\$currentHour", DateFormatUtils.currentHour());
         params.put("\\$currentMonth", DateFormatUtils.currentTime("MMMM yyyy"));
         params.put("\\$date", DateFormatUtils.currentDate());
+
     }
 
     private void addGeridInfo(Map<String, Object> mapaSubstituicao) {
         if (mapaSubstituicao.containsKey("gerid")) {
             LOG.info("GETTING GERID CREDENTIALS ");
             String index = params.get("\\$index");
-            Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(index, params.get("\\$ip"));
+            Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip"), index);
             params.put("\\$creds", makeKibanaSearch.keySet().stream().collect(Collectors.joining("\n")));
             List<Object> textAsImage =
                     makeKibanaSearch.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
             ReportHelper.mergeImage(mapaSubstituicao, textAsImage);
         }
+        if (JsonExtractor.accessMap(mapaSubstituicao, "params").containsKey("ip")) {
+            int days = (int) Math.ceil(Math.max(1., StringSigaUtils.toInteger(params.get("\\$hour")) / 24.));
+            KibanaApi.kibanaFullScan(params.get("\\$ip"), days, progressIndicator.progressProperty())
+                    .forEach((k, v) -> params.put("\\$" + k, v));
+        }
+
     }
 
     private void displayEditDialog(Map<String, Object> mapaSubstituicao, File reportFile) {

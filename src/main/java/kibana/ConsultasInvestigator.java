@@ -186,7 +186,7 @@ public class ConsultasInvestigator extends Application {
     }
 
     private void addToFilter(String s) {
-        if (s.contains("=")) {
+        if (s.matches("[\\.\\w]+=.+")) {
             String[] entry = s.split("=");
             filter.merge(entry[0], entry[1], ConsultasHelper::merge);
             return;

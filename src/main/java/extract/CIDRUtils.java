@@ -70,7 +70,6 @@ public class CIDRUtils {
     public static String convertToString(InetAddress o) {
         return o.getHostAddress();
     }
-    @SuppressWarnings("unchecked")
     public static Map<String, String> findNetwork(String ip) {
         networkFile =
                 SupplierEx.orElse(networkFile, () -> {
@@ -80,9 +79,7 @@ public class CIDRUtils {
                     }
                     return DataframeBuilder.build(outFile);
                 });
-        Map<?, ?> d = networkFile.findFirst(NETWORK,
-                v -> Objects.equals(v, ip) || isSameNetworkAddress(Objects.toString(v, ""), ip));
-        return (Map<String, String>) d;
+        return searchInFile(networkFile, NETWORK, ip);
     }
 
     public static boolean isSameNetworkAddress(String cidr, String ip) {
@@ -124,6 +121,11 @@ public class CIDRUtils {
         QuickSortML.sortMapList(networkLoaded, NETWORK, true);
         CSVUtils.appendLines(outFile, networkLoaded);
         return networkLoaded;
+    }
+
+    public static Map<String, String> searchInFile(DataframeML dataframe, String network2, String ip) {
+        return dataframe.findFirst(network2,
+                v -> Objects.equals(v, ip) || isSameNetworkAddress(Objects.toString(v, ""), ip));
     }
 
     public static InetAddress toInetAddress(String ip) throws UnknownHostException {

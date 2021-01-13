@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import ml.data.DataframeBuilder;
+import ml.data.DataframeML;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -158,9 +160,15 @@ public class WhoIsScanner {
 
     public static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String ip) {
         if (ip.matches("^10\\..+")) {
-            Map<String, String> hashMap = new HashMap<>();
-            hashMap.put(REVERSE_DNS, whoIsScanner.reverseDNS(ip));
-            return hashMap;
+            Map<String, String> internalNetworkScan = SupplierEx.getFirst(() -> {
+                DataframeML networksFile = DataframeBuilder.build("networks/redes2.csv");
+                return CIDRUtils.searchInFile(networksFile, "network", ip);
+            }, () -> {
+                DataframeML networksFile = DataframeBuilder.build("networks/redes3.csv");
+                return CIDRUtils.searchInFile(networksFile, "network", ip);
+            }, LinkedHashMap::new);
+            internalNetworkScan.put(REVERSE_DNS, whoIsScanner.reverseDNS(ip));
+            return internalNetworkScan;
         }
         Map<String, String> first =
                 SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip), () -> whoIsScanner.whoIsScan(ip),

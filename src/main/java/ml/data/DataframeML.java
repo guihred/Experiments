@@ -93,10 +93,11 @@ public class DataframeML extends BaseDataframe {
         return this;
     }
 
-    public Map<String, Object> findFirst(String header, Predicate<Object> v) {
+    @SuppressWarnings("unchecked")
+    public <T> Map<String, T> findFirst(String header, Predicate<Object> v) {
         List<Object> list = dataframe.get(header);
         if (list != null) {
-            return IntStream.rangeClosed(0, list.size()).parallel().filter(i -> v.test(list.get(i)))
+            return (Map<String, T>) IntStream.rangeClosed(0, list.size()).parallel().filter(i -> v.test(list.get(i)))
                     .mapToObj(this::rowMap).findFirst().orElse(null);
         }
 

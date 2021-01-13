@@ -35,8 +35,8 @@ public final class PPTService {
     private PPTService() {
     }
 
-    public static void getPowerPoint(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
-        getPowerPoint(mapaSubstituicao, ResourceFXUtils.toFile(arquivo), outStream);
+    public static void getPowerPoint(Map<String, Object> replacementMap, String file, File outStream) {
+        getPowerPoint(replacementMap, ResourceFXUtils.toFile("models/" + file), outStream);
     }
 
     public static void getPowerPointImages(File arquivo) {
@@ -56,7 +56,7 @@ public final class PPTService {
         mapaSubstituicao.put("Hora: HH/MM h", String.format("Hora: %s", DateFormatUtils.currentHour()));
         mapaSubstituicao.put("Julho 2020", DateFormatUtils.currentTime("MMMM yyyy"));
         File outFile = ResourceFXUtils.getOutFile("pptx/result.pptx");
-        getPowerPoint(mapaSubstituicao, "modeloRelatorioRadarEventos.pptx", outFile);
+        getPowerPoint(mapaSubstituicao, "Radar_Eventos_v01122020REL1.pptx", outFile);
     }
 
     private static void addImage(XSLFSlide slide, XMLSlideShow ppt, List<?> list) {

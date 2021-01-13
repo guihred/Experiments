@@ -11,11 +11,11 @@ import simplebuilder.SimpleDialogBuilder;
 public class UserChart extends UserChartVariables {
 
     public long countPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
-        Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
+            Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
         long pointsCount = settlePoints.stream().filter(s -> s.getElement() instanceof Village)
-            .filter(e -> e.getElement().getPlayer() == newPlayer).count();
+                .filter(e -> e.getElement().getPlayer() == newPlayer).count();
         pointsCount += settlePoints.stream().filter(s -> s.getElement() instanceof City)
-            .filter(e -> e.getElement().getPlayer() == newPlayer).count() * 2;
+                .filter(e -> e.getElement().getPlayer() == newPlayer).count() * 2;
         pointsCount += usedCards.get(newPlayer).stream().filter(e -> e == DevelopmentType.UNIVERSITY).count();
         long armySize = usedCards.get(newPlayer).stream().filter(e1 -> e1 == DevelopmentType.KNIGHT).count();
         if (armySize >= 3 && largestArmy.getRecord() < armySize) {
@@ -37,11 +37,11 @@ public class UserChart extends UserChartVariables {
     }
 
     public PlayerColor getWinner(List<SettlePoint> settlePoints2, Map<PlayerColor, List<DevelopmentType>> usedCards2,
-        List<EdgeCatan> edges2, Map<PlayerColor, List<CatanCard>> cards2) {
+            List<EdgeCatan> edges2, Map<PlayerColor, List<CatanCard>> cards2) {
         return PlayerColor.vals().stream()
-            .max(Comparator.comparing((PlayerColor e) -> countPoints(e, settlePoints2, usedCards2, edges2))
-                .thenComparing(e -> cards2.get(e).size()))
-            .orElse(getColor());
+                .max(Comparator.comparingLong((PlayerColor e) -> countPoints(e, settlePoints2, usedCards2, edges2))
+                        .thenComparingInt(e -> cards2.get(e).size()))
+                .orElse(getColor());
     }
 
     public void setCards(List<CatanCard> currentCards) {
@@ -49,7 +49,7 @@ public class UserChart extends UserChartVariables {
     }
 
     public void setPoints(PlayerColor newPlayer, List<SettlePoint> settlePoints,
-        Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
+            Map<PlayerColor, List<DevelopmentType>> usedCards, List<EdgeCatan> edges) {
         for (PlayerColor playerColor : PlayerColor.values()) {
             long points = countPoints(playerColor, settlePoints, usedCards, edges);
             playersPoints.get(playerColor).set(points);
@@ -74,15 +74,15 @@ public class UserChart extends UserChartVariables {
     }
 
     public void updatePorts(final PlayerColor newV, List<Port> ports, List<SettlePoint> settlePoints,
-        ObjectProperty<PlayerColor> currentPlayer) {
+            ObjectProperty<PlayerColor> currentPlayer) {
         ports.stream().filter(p -> !availablePorts.getChildren().contains(p.getStatus()))
-            .filter(p -> settlePoints.stream().filter(s -> s.getElement() != null)
-                .filter(s -> s.getElement().getPlayer() == newV).anyMatch(p.getPoints()::contains))
-            .forEach(p -> {
-                Pane newStatus = p.getStatus();
-                availablePorts.getChildren().add(newStatus);
-                newStatus.visibleProperty().bind(currentPlayer.isEqualTo(newV));
-            });
+                .filter(p -> settlePoints.stream().filter(s -> s.getElement() != null)
+                        .filter(s -> s.getElement().getPlayer() == newV).anyMatch(p.getPoints()::contains))
+                .forEach(p -> {
+                    Pane newStatus = p.getStatus();
+                    availablePorts.getChildren().add(newStatus);
+                    newStatus.visibleProperty().bind(currentPlayer.isEqualTo(newV));
+                });
     }
 
 }

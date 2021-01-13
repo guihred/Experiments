@@ -18,7 +18,9 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import simplebuilder.ListHelper;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleDialogBuilder;
 import utils.ClassReflectionUtils;
@@ -59,50 +61,80 @@ public final class Mapping {
                         .collect(Collectors.toList()));
     }
 
+    public static void showDialog(Node barChart, DataframeML dataframe, String[] dependencies, ConsumerEx<File> run) {
+        List<Class<?>> allowedTypes = Stream.of(dependencies).map(dataframe::getFormat).collect(Collectors.toList());
+        ObservableList<Method> methods2 = FXCollections.observableArrayList(Mapping.getMethods())
+                .filtered(m -> ClassReflectionUtils.isAllowed(allowedTypes, m.getParameterTypes()));
+        VBox vBox = new VBox();
+        
+        ComboBox<Method> methodsCombo =
+                new SimpleComboBoxBuilder<>(methods2).id("methodCombo").select(0).converter(Mapping::methodName)
+                .onChange((old, method) -> adjustToMethod(dependencies, vBox, method)).build();
+        
+        TextField crossFeature = new TextField(Stream.of(dependencies).collect(Collectors.joining("_")) + 1);
+        SimpleDialogBuilder dialog = new SimpleDialogBuilder().bindWindow(barChart).node(crossFeature);
+        for (String string : dependencies) {
+            dialog.text(string + " (" + dataframe.getFormat(string).getSimpleName() + ")");
+        }
+        dialog.node(methodsCombo).node(vBox)
+        .button("Add", () -> {
+            Method method = methodsCombo.getSelectionModel().getSelectedItem();
+            List<Object> otherParams = otherParams(dependencies, vBox, method);
+            return addMapping(dataframe, method, crossFeature.getText(), dependencies, otherParams);
+        }, () -> {
+            File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
+            DataframeUtils.save(dataframe, outFile);
+            ConsumerEx.accept(run, outFile);
+        }).displayDialog();
+    }
+
     public static void showDialog(Node barChart, String[] dependencies, DataframeML dataframe, ConsumerEx<File> run) {
         List<Class<?>> allowedTypes = Stream.of(dependencies).map(dataframe::getFormat).collect(Collectors.toList());
         ObservableList<Method> methods2 = FXCollections.observableArrayList(Mapping.getMethods())
                 .filtered(m -> ClassReflectionUtils.isAllowed(allowedTypes, m.getParameterTypes()));
         VBox vBox = new VBox();
-
+        ObservableList<String> mapping = ListHelper.mapping(methods2, Mapping::methodName);
         ComboBox<Method> methodsCombo =
                 new SimpleComboBoxBuilder<>(methods2).id("methodCombo").select(0).converter(Mapping::methodName)
                         .onChange((old, method) -> adjustToMethod(dependencies, vBox, method)).build();
-
-        TextField button = new TextField(Stream.of(dependencies).collect(Collectors.joining("_")) + 1);
-        SimpleDialogBuilder dialog = new SimpleDialogBuilder().bindWindow(barChart).node(button);
+        AutocompleteField autocompleteField = new AutocompleteField();
+        autocompleteField.setOnTextSelected(result -> {
+            Method byName = methods2.stream().filter(m -> Mapping.methodName(m).equals(result)).findFirst()
+                    .orElse(methodsCombo.getSelectionModel().getSelectedItem());
+            methodsCombo.getSelectionModel().select(byName);
+            return "";
+        });
+        autocompleteField.setEntries(mapping);
+        TextField crossFeature = new TextField(Stream.of(dependencies).collect(Collectors.joining("_")) + 1);
+        SimpleDialogBuilder dialog = new SimpleDialogBuilder().bindWindow(barChart).node(crossFeature);
         for (String string : dependencies) {
             dialog.text(string + " (" + dataframe.getFormat(string).getSimpleName() + ")");
         }
-        dialog.node(methodsCombo).node(vBox)
-                .button("Add", () -> addMapping(dependencies, dataframe, vBox, methodsCombo, button), () -> {
+        dialog.node(autocompleteField, methodsCombo).node(vBox)
+                .button("Add", () -> {
+                    Method method = methodsCombo.getSelectionModel().getSelectedItem();
+                    List<Object> otherParams = otherParams(dependencies, vBox, method);
+                    return addMapping(dataframe, method, crossFeature.getText(), dependencies, otherParams);
+                }, () -> {
                     File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
                     DataframeUtils.save(dataframe, outFile);
                     ConsumerEx.accept(run, outFile);
-                }).displayDialog();
+                }).title("Map (" + StringUtils.join(dependencies, ",") + ")").displayDialog();
     }
 
-    private static DoubleExpression addMapping(String[] dependencies, DataframeML dataframe, VBox vBox,
-            ComboBox<Method> build, TextField button) {
-        Method method = build.getSelectionModel().getSelectedItem();
+    private static DoubleExpression addMapping(DataframeML dataframe, Method method, String crossFeatureName,
+            String[] dependencies, List<Object> otherParams) {
         SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
         Object[] ob = new Object[method.getParameterCount()];
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        for (int i = 0; i < parameterTypes.length; i++) {
-            if (i >= dependencies.length) {
-                TextField node = (TextField) vBox.getChildren().get(i - dependencies.length);
-                Object tryAsNumber = StringSigaUtils.FORMAT_HIERARCHY_MAP.getOrDefault(parameterTypes[i], e -> e)
-                        .apply(node.getText());
-                ob[i] = tryAsNumber;
-            }
+        for (int i = 0; i < otherParams.size(); i++) {
+            ob[i + dependencies.length] = otherParams.get(i);
         }
-        String params = Arrays.toString(ob);
         String strDepen = Arrays.toString(dependencies);
-        LOG.info("RUNNING {} {} {}", method, strDepen, params);
+        LOG.info("RUNNING {} {} {}", method, strDepen, otherParams);
         runNewThread(() -> {
             if (!dataframe.isLoaded()) {
                 DataframeML build2 = DataframeBuilder.builder(dataframe.getFile())
-                        .addCrossFeature(button.getText(), dependencies, o -> {
+                        .addCrossFeature(crossFeatureName, dependencies, o -> {
                             for (int i = 0; i < o.length; i++) {
                                 ob[i] = o[i];
                             }
@@ -112,7 +144,7 @@ public final class Mapping {
                 dataframe.getFormatMap().putAll(build2.getFormatMap());
                 return;
             }
-            DataframeUtils.crossFeatureObject(dataframe, button.getText(), progress, o -> {
+            DataframeUtils.crossFeatureObject(dataframe, crossFeatureName, progress, o -> {
                 for (int i = 0; i < o.length; i++) {
                     ob[i] = o[i];
                 }
@@ -138,6 +170,18 @@ public final class Mapping {
         return String.format("%s %s.%s(%s)", m.getReturnType().getSimpleName(), m.getDeclaringClass().getSimpleName(),
                 m.getName(),
                 Stream.of(m.getParameterTypes()).map(Class::getSimpleName).collect(Collectors.joining(",")));
+    }
+
+    private static List<Object> otherParams(String[] dependencies, VBox vBox, Method method) {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        List<Object> otherParams= new ArrayList<>();
+        for (int i = dependencies.length; i < parameterTypes.length; i++) {
+                String text = ((TextField) vBox.getChildren().get(i - dependencies.length)).getText();
+                Object tryAsNumber = StringSigaUtils.FORMAT_HIERARCHY_MAP.getOrDefault(parameterTypes[i], e -> e)
+                        .apply(text);
+                otherParams.add(tryAsNumber);
+        }
+        return otherParams;
     }
 
 }

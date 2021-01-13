@@ -1,0 +1,74 @@
+{
+    "model":"ModeloGeralReporteConsultas.docx",
+    "params":{
+        "ip":"",
+        "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h"],
+        "index":["inss-*-prod-*","mte-log4j-prod-*"],
+        "gerid":["geridmte","geridinss","geriddtp","geridprevic"]
+    },
+    "name": "Reporte_Eventos_consultas_$ip.docx",
+    "figurasSat": [
+        "Alta quantidade de tráfego registrado",   
+        {
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/ead869e0-d1a2-11ea-b3aa-4f2d12d8184e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:kuery,query:'SourceIP:$ip'),uiState:(vis:(params:(sort:(columnIndex:2,direction:desc)))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'Total+de+Bytes',field:Bytes),schema:metric,type:sum),(enabled:!t,id:'2',params:(customLabel:'IP+de+Origem',field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms),(enabled:!t,id:'3',params:(customLabel:'IP+de+Destino',field:DestinationIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:10),schema:bucket,type:terms),(enabled:!t,id:'4',params:(customLabel:'Bytes+recebidos',field:BytesReceived),schema:metric,type:sum)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:2,direction:desc),totalFunc:sum),title:'%5BPalo+Alto%5D+Top+talkers+-+Origem%2FDestino+-+Total+Bytes',type:table))",
+            "name": "paloAlto$ip",
+            "width": 0.25,
+            "height": 0.42,
+            "x": 0.25,
+            "y": 0.15
+        }
+    ],
+
+	"figurasContexto": [
+		"Número de acessos concentrado em páginas",
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/feecd360-fa19-11e8-a078-93662b30045b?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:dtpcategoria,negate:!f,params:(query:access,type:phrase),type:phrase,value:access),query:(match:(dtpcategoria:(query:access,type:phrase)))),('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!f,params:!('$ip'),type:phrases,value:'$ip'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(clientip.keyword:'$ip'))))))),linked:!f,query:(language:lucene,query:''),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:request.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:500),schema:bucket,type:terms),(enabled:!t,id:'3',params:(field:dtpsistema.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20WEB%5D%20TOP%20Request%20PATH',type:table))",
+			"name": "urls$ip",
+			"width": 1,
+            "height": 0.4,
+            "x": 0,
+            "y": 0.05
+		},
+        "Padrão de acesso automatizado",
+        {
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/09fbe670-fa19-11e8-a078-93662b30045b?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:kuery,query:''),uiState:(),vis:(aggs:!(),params:(expression:'.es(index%3D*apache-prod*,q%3D%22clientip:$ip%20AND%20(%20dtptype:nginx%20OR%20dtptype:apache%20OR%20dtptype:varnish)%22,split%3Ddtpsistema.keyword:5).label(!'$1!',!'.*%3E.*:(.*)%3E.*!')',interval:auto),title:'%5BAcesso%20Web%5D%20Top%20Aplica%C3%A7%C3%B5es%20por%20n%C3%BAmero%20de%20requisi%C3%A7%C3%B5es%20-%20Timeline',type:timelion))",
+            "name": "timeline$ip",
+            "width": 1,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        },
+        "Acessos a outros sistemas",
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/191e1a10-9e56-11e9-bffd-37ab21b02682?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:clientip.keyword,negate:!f,params:!('$ip'),type:phrases,value:'$ip'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(clientip.keyword:'$ip'))))))),linked:!f,query:(language:lucene,query:''),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:dtpsistema.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:200),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20Web%5D%20Quantidade%20de%20Acessos%20por%20Sistema',type:table))",
+			"name": "sistemas$ip",
+			"width": 0.85,
+            "height": 0.3,
+            "x": 0,
+            "y": 0.05
+		}
+	],
+	"Informar os indicadores de ameaça": [
+		"– A aplicação possui histórico de padrão de ataques automatizados, utilizam acessos autenticados para exfiltrar informações",
+        "– Volumetria de acessos acima da média dos demais usuários",
+        "– Padrão de acesso alto e automatizado" 
+	],
+	"Log Aplicação- Consultas/SAT - ELK":"Palo Alto - ELK",
+	"enderecoOrigem": [
+        "Informações endereço de origem",	
+		{
+			"url": "https://registro.br/tecnologia/ferramentas/whois/?search=$ip",
+			"name": "whoIs$ip",
+			"width": 0.25,
+            "height": 0.42,
+            "x": 0.25,
+            "y": 0.15
+		}
+	],
+	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados ao $gerid",
+	"Informar data de início/fim": "$date",
+	"ips": "$ip",
+	"Foi realizado o bloqueio temporário dos endereços no WAF.": "Foi realizado o bloqueio temporário dos endereços e de credenciais no WAF.",
+	"cred": "$creds",
+	"gerid": ["Uso de Credenciais pelo IP $ip"]
+}

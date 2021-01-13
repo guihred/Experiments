@@ -135,7 +135,7 @@ public class VigenereXORCipher {
                 Map<Integer, Long> mapBigFreq = keySizeList.stream().filter(bite -> current++ % i == 0)
                         .collect(Collectors.groupingBy(b -> b, Collectors.counting()));
                 List<Entry<Integer, Long>> sorted = mapBigFreq.entrySet().stream()
-                        .sorted(Comparator.comparing(Entry<Integer, Long>::getValue).reversed())
+                        .sorted(Comparator.comparingLong(Entry<Integer, Long>::getValue).reversed())
                         .collect(Collectors.toList());
                 if (max < sorted.get(0).getValue()) {
                     max = sorted.get(0).getValue();

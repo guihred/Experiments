@@ -30,12 +30,12 @@ import utils.QuickSortML;
 import utils.ex.ConsumerEx;
 
 public class QueryObjects {
-    public static final String MDC_UID_KEYWORD = "mdc.uid.keyword";
-    public static final String URL_QUERY = "request.keyword";
+    public static final String MDC_UID_KEYWORD = "mdc.uid";
+    public static final String URL_QUERY = "request";
 
-    public static final String CLIENT_IP_QUERY = "clientip.keyword";
-    public static final String ACESSOS_SISTEMA_QUERY = "dtpsistema.keyword";
-    public static final String USER_NAME_QUERY = "http.user-name.keyword";
+    public static final String CLIENT_IP_QUERY = "clientip";
+    public static final String ACESSOS_SISTEMA_QUERY = "dtpsistema";
+    public static final String USER_NAME_QUERY = "http.user-name";
     private static final ImmutableMap<String, String> REPLACEMENT_MAP = ImmutableMap.<String, String>builder()
             .put(USER_NAME_QUERY, MDC_UID_KEYWORD).put(ACESSOS_SISTEMA_QUERY, "dtpsistema").build();
 
@@ -180,7 +180,7 @@ public class QueryObjects {
 
     public List<Map<String, String>> searchRemap(Map<String, String> filter1, Integer days) {
         Map<String, String> nsInformation =
-                KibanaApi.makeKibanaSearch("kibana/" + getQueryFile(), days, filter1, getParams());
+                KibanaApi.makeKibanaSearch("kibana/" + getQueryFile(), days, filter1, params);
         return JsonExtractor.remap(nsInformation, getGroup());
     }
 

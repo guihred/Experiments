@@ -209,12 +209,15 @@ public final class ReportHelper {
 
         WebEngine engine = browser.getEngine();
         Property<Image> image = new SimpleObjectProperty<>();
-        Integer zoom = StringSigaUtils.toInteger(imageObj.getOrDefault("zoom", 1));
         String kibanaURL = Objects.toString(imageObj.get("url"), "");
 
         String finalURL = replaceString(params, kibanaURL);
         CommonsFX.runInPlatform(() -> {
-            browser.setZoom(zoom);
+            if (imageObj.containsKey("zoom")) {
+                Integer zoom = StringSigaUtils.toInteger(imageObj.getOrDefault("zoom", 1));
+                browser.setZoom(zoom);
+            }
+
             loadSite(engine, finalURL);
         });
         RunnableEx.measureTime("Load Site " + replaceString(params, imageObj.get("name")), () -> {

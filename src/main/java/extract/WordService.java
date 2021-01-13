@@ -65,7 +65,7 @@ public final class WordService {
     }
 
     public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
-        getWord(mapaSubstituicao, ResourceFXUtils.toFile(arquivo), outStream);
+        getWord(mapaSubstituicao, ResourceFXUtils.toFile("models/" + arquivo), outStream);
     }
 
     private static void changeHeader(Map<String, Object> mapaSubstituicao, XWPFDocument document1) {

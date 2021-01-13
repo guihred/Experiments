@@ -330,7 +330,7 @@ public class ContestReader extends ContestDTO {
             .collect(Collectors.toList());
         for (PdfImage pdfImage : images) {
             Optional<QuestionPosition> min = questionPosition.stream().filter(e -> e.getPage() == currentPage)
-                .min(Comparator.comparing(position -> position.distance(pdfImage.getX(), pdfImage.getY())));
+                    .min(Comparator.comparingDouble(position -> position.distance(pdfImage.getX(), pdfImage.getY())));
             if (min.isPresent()) {
                 QuestionPosition position = min.get();
                 imageElements.stream().filter(p -> p.matches(position.getLine())).findFirst().ifPresent(p -> p

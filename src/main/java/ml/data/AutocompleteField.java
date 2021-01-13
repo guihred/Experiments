@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import org.apache.commons.lang3.StringUtils;
+import utils.ex.FunctionEx;
 
 public class AutocompleteField extends TextField {
     protected final SortedSet<String> entries = new TreeSet<>();
@@ -23,6 +24,7 @@ public class AutocompleteField extends TextField {
     private boolean popupHidden;
     private String textOccurenceStyle = "-fx-font-weight: bold; -fx-fill: red;";
     protected int maxEntries = 10;
+    protected FunctionEx<String, String> onTextSelected = s -> s;
 
     private String wordSeparator = " ";
 
@@ -73,6 +75,10 @@ public class AutocompleteField extends TextField {
         this.maxEntries = maxEntries;
     }
 
+    public void setOnTextSelected(FunctionEx<String, String> wordSeparator) {
+        onTextSelected=wordSeparator;
+    }
+
     public void setPopupHidden(boolean popupHidden) {
         this.popupHidden = popupHidden;
     }
@@ -80,10 +86,14 @@ public class AutocompleteField extends TextField {
     public void setTextOccurenceStyle(String textOccurenceStyle) {
         this.textOccurenceStyle = textOccurenceStyle;
     }
-
     public void setWordSeparator(String wordSeparator) {
         this.wordSeparator = wordSeparator;
     }
+
+    protected void onTextSelected(String result) {
+        setText(FunctionEx.apply(onTextSelected, result));
+    }
+
 
     protected Collection<String> searchResult(String s) {
         return entries.stream().filter(m -> StringUtils.contains(m, s)).limit(maxEntries + 1L)
@@ -176,7 +186,7 @@ public class AutocompleteField extends TextField {
 
             CustomMenuItem item = new CustomMenuItem(entryFlow, true);
             item.setOnAction(actionEvent -> {
-                setText(result);
+                onTextSelected(result);
                 entriesPopup.hide();
             });
             menuItems.add(item);

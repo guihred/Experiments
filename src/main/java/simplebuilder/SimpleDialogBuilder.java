@@ -15,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -113,6 +114,11 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
 
     public SimpleDialogBuilder node(Node button) {
         group.getChildren().add(button);
+        return this;
+    }
+
+    public SimpleDialogBuilder node(Node... buttons) {
+        group.getChildren().add(new HBox(buttons));
         return this;
     }
 
