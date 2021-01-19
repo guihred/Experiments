@@ -80,7 +80,8 @@
         }
     ],
 	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados ao vip-auxilioemergencial.dataprev.gov.br",
-	"Informar data de início/fim": "$date",
-	"ips": "$ip",
-	"cred": "Não se aplica"
+    "Informar data de início/fim": "$Acesso",
+	"ips": "$ip",  
+	"Credenciais": "URLs Acessadas",
+    "cred": "$URLs"
 }

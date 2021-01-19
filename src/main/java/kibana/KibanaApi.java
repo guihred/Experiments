@@ -26,15 +26,14 @@ import javafx.beans.property.Property;
 import ml.graph.ExplorerHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.CommonsFX;
-import utils.ExtractUtils;
-import utils.ResourceFXUtils;
-import utils.StringSigaUtils;
+import utils.*;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class KibanaApi {
+
+    private static final String KIBANA_FOLDER = "kibana/";
 
     private static final String ELASTICSEARCH_MSEARCH_URL =
             "https://n321p000124.fast.prevnet/elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true";
@@ -61,13 +60,20 @@ public class KibanaApi {
     }
 
     public static Map<String, String> getGeridCredencial(String finalIP, String index) {
+        return getGeridCredencial(finalIP, index, 3);
+    }
+
+    public static Map<String, String> getGeridCredencial(String finalIP, String index, int days) {
         Map<String, String> makeKibanaSearch2 =
-                KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", 3, new String[] { index, finalIP }, "message");
+                KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", days, new String[] { index, finalIP },
+                        "message");
         String message = makeKibanaSearch2.getOrDefault("message", "");
         String regex = "WHO:\\s+(.+)";
         List<String> linesThatMatch =
                 Stream.of(message.split("\n")).filter(l -> l.matches(regex)).map(s -> s.replaceAll(regex, "$1"))
-                        .distinct().filter(StringUtils::isNumeric).collect(Collectors.toList());
+                        .distinct()
+                        // .filter(StringUtils::isNumeric)
+                        .collect(Collectors.toList());
         String[] messages = message.split("Audit trail record BEGIN");
         return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(regex, l))).distinct()
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s, SupplierEx::nonNull));
@@ -89,6 +95,11 @@ public class KibanaApi {
     }
 
     public static Map<String, String> kibanaFullScan(String query, int days, Property<Number> progress) {
+        return kibanaFullScan(query, days, progress, Arrays.asList());
+    }
+
+    public static Map<String, String> kibanaFullScan(String query, int days, Property<Number> progress,
+            List<String> cols) {
         if (StringUtils.isBlank(query)) {
             return Collections.emptyMap();
         }
@@ -97,7 +108,9 @@ public class KibanaApi {
         CommonsFX.update(progress, 0);
         measureTime("Kibana Full Scan " + query, () -> {
             for (Entry<String, SupplierEx<String>> entry : fullScan.entrySet()) {
-                fullScan2.put(entry.getKey(), SupplierEx.get(entry.getValue()));
+                if (cols.isEmpty() || cols.contains(entry.getKey())) {
+                    fullScan2.put(entry.getKey(), SupplierEx.get(entry.getValue()));
+                }
                 CommonsFX.addProgress(progress, 1. / fullScan.size());
             }
         });
@@ -128,16 +141,16 @@ public class KibanaApi {
 
     public static Map<String, String> makeKibanaSearch(String file, int days, Map<String, String> search,
             String... params) {
-        return makeNewKibanaSearch(ResourceFXUtils.toFile(file), days, search, params);
+        return makeNewKibanaSearch(ResourceFXUtils.toFile(KIBANA_FOLDER + file), days, search, params);
     }
 
     public static Map<String, String> makeKibanaSearch(String file, int days, String[] query, String... params) {
 
-        return makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + file), days, query, params);
+        return makeKibanaSearch(ResourceFXUtils.toFile(KIBANA_FOLDER + file), days, query, params);
     }
 
     public static Map<String, String> makeKibanaSearch(String file, String query, int days, String... params) {
-        return makeKibanaSearch(ResourceFXUtils.toFile("kibana/" + file), days, query, params);
+        return makeKibanaSearch(ResourceFXUtils.toFile(KIBANA_FOLDER + file), days, query, params);
     }
 
     public static Map<String, String> makeNewKibanaSearch(File file, int days, Map<String, String> search,
@@ -149,9 +162,10 @@ public class KibanaApi {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 String keywords = convertSearchKeywords(search);
+                String content = getContent(file, keywords, gte, lte);
                 RunnableEx
-                        .make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, getContent(file, keywords, gte, lte),
-                                outFile), e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage()))
+                        .make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, content, outFile),
+                                e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage()))
                         .run();
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
@@ -162,10 +176,11 @@ public class KibanaApi {
         return search.entrySet().stream().map(e -> {
             if (e.getValue().contains("\n")) {
                 return Stream.of(e.getValue().split("\n"))
-                        .map(v -> String.format("{\"match_phrase\":{\"%s\":\"%s\"}}", e.getKey(), v))
+                        .map(v -> String.format("{\"query_string\": {\"query\": \"%s:%s\",\"analyze_wildcard\": true,"
+                                + "\"default_field\": \"*\"}}", e.getKey(), v))
                         .collect(Collectors.joining(",", "{\"bool\":{\"should\":[", "],\"minimum_should_match\":1}},"));
             }
-            return String.format("{\"query_string\": {\"query\": \"%s:\\\"%s\\\"\",\"analyze_wildcard\": true,"
+            return String.format("{\"query_string\": {\"query\": \"%s:%s\",\"analyze_wildcard\": true,"
                     + "\"default_field\": \"*\"}},", e.getKey(), e.getValue());
         }).collect(Collectors.joining("\n"));
     }
@@ -195,6 +210,14 @@ public class KibanaApi {
         return between > 1;
     }
 
+    private static void adjustToMax(List<List<String>> listOfFields, int maxNumFields) {
+        listOfFields.forEach(l -> {
+            if (l.size() < maxNumFields) {
+                l.add(0, "\t");
+            }
+        });
+    }
+
     private static void convertToBytes(String valueCol, Map<String, String> destinationSearch) {
         destinationSearch.computeIfPresent(valueCol,
                 (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
@@ -217,22 +240,36 @@ public class KibanaApi {
     }
 
     private static <T> String display(Map<String, T> ob) {
-        List<List<String>> listOfFields = ob.values().stream().map(StringSigaUtils::toStringSpecial)
-                .map(s -> Stream.of(s.split("\n")).collect(Collectors.toList())).collect(Collectors.toList());
+        List<List<String>> listOfFields = getFieldList(ob);
         int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
-        listOfFields.forEach(l -> {
-            if (l.size() < maxNumFields) {
-                l.add(0, "\t");
-            }
-        });
+        adjustToMax(listOfFields, maxNumFields);
+        return IntStream.range(0, maxNumFields).mapToObj(
+                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
+                // .distinct()
+                .collect(Collectors.joining("\n"));
+    }
+
+    private static <T> String displayDistinct(Map<String, T> ob) {
+        List<List<String>> listOfFields = getFieldList(ob);
+        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
+        adjustToMax(listOfFields, maxNumFields);
         return IntStream.range(0, maxNumFields).mapToObj(
                 j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
                 .distinct().collect(Collectors.joining("\n"));
     }
 
+    private static <T> List<List<String>> getFieldList(Map<String, T> ob) {
+        return ob.values().stream().map(StringSigaUtils::toStringSpecial)
+                .map(s -> Stream.of(s.split("\n")).map(m -> StringUtils.abbreviate(m, 100))
+                        .collect(Collectors.toList()))
+                .collect(Collectors.toList());
+    }
+
     private static String getURL(Map<String, String> e) {
         return e.get("key0")
-                .replaceAll("(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+|.+(?=\\.(css|js|png|woff|ttf|gif|jpg|svg|ico))", "*");
+                .replaceAll(
+                        "(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+|.+(?=\\.(css|png|woff|ttf|gif|jpg|svg|ico|eot))|.+(?=\\.(js)\\W*.*$)",
+                        "*");
     }
 
     private static String getWhoField(String regex, String s) {
@@ -253,62 +290,73 @@ public class KibanaApi {
         fullScan.put("Geolocation",
                 () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry", "Descrição"));
         String pattern = CIDRUtils.addressToPattern(ip);
-        fullScan.put("WAF_Policy", () -> display(
+        fullScan.put("WAF_Policy", () -> displayDistinct(
                 makeKibanaSearch("wafQuery.json", pattern, days, "action", "policy-name", "alert.description")));
-        fullScan.put("PaloAlto_Threat", () -> display(makeKibanaSearch("threatQuery.json", ip, days, key)));
+        fullScan.put("PaloAlto_Threat", () -> displayDistinct(makeKibanaSearch("threatQuery.json", ip, days, key)));
         fullScan.put("TOP_FW", () -> {
             Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", ip, days, key, valueCol);
             convertToBytes(valueCol, destinationSearch);
             destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n")).map(WHOIS_SCANNER::reverseDNS)
                     .collect(Collectors.joining("\n")));
-            return display(destinationSearch);
+            return displayDistinct(destinationSearch).replaceAll("^.+\t\n", "");
         });
         fullScan.put("TOP_WEB",
-                () -> display(makeKibanaSearch("acessosQuery.json", pattern, days, key, "doc_count")));
+                () -> displayDistinct(makeKibanaSearch("acessosQuery.json", pattern, days, key, "doc_count")));
         fullScan.put("Ports", () -> {
             Map<String, String> destinationPort =
                     makeKibanaSearch("destinationPortQuery.json", ip, days, key, valueCol);
             destinationPort.computeIfPresent(key,
                     (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
+                            .filter(i -> i != 0)
                             .map(PortServices::getServiceByPort)
                             .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription().replaceAll(",.+", ""))
                             .collect(Collectors.joining("\n")));
             convertToBytes(valueCol, destinationPort);
-            return display(destinationPort);
+            return displayDistinct(destinationPort);
         });
         fullScan.put("Acesso", () -> {
-            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", ip, days, "ReceiveTime");
-            trafficSearch.computeIfPresent("ReceiveTime",
-                    (k, v) -> Stream.of(v.split("\n")).filter(e -> !e.endsWith("Z")).collect(Collectors.joining("\n")));
-            return display(trafficSearch);
+            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", ip, days, valueCol);
+            trafficSearch.computeIfPresent(valueCol,
+                    (k, v) -> Stream.of(v.split("\n"))
+                            .map(i -> DateFormatUtils.format("dd/MM/yyyy", StringSigaUtils.toLong(i))).distinct()
+                            .collect(Collectors.joining("–")));
+            return displayDistinct(trafficSearch);
         });
         fullScan.put("Bytes_Received", () -> {
             Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", ip, days, valueCol);
             convertToStats(valueCol, totalBytesQuery);
-            return display(totalBytesQuery);
+            return displayDistinct(totalBytesQuery);
         });
         fullScan.put("Bytes_Sent", () -> {
             Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", ip, days, valueCol);
             convertToStats(valueCol, totalBytesSent);
-            return display(totalBytesSent);
+            return displayDistinct(totalBytesSent);
         });
-        fullScan.put("URLs", () -> {
-            Map<String, String> filter1 = new LinkedHashMap<>();
-            filter1.put("clientip.keyword", pattern);
-            String docCount = "doc_count";
-            Map<String, String> nsInformation =
-                    KibanaApi.makeKibanaSearch("kibana/requestedPath.json", days, filter1, key, docCount);
-            List<Map<String, String>> remap = JsonExtractor.remap(nsInformation, "^/.*");
-            Map<String, Long> collect = remap.stream()
+        fullScan.put("URLs", () -> urls(days, pattern));
+        fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", pattern, days, "Name", "Value")));
+        return fullScan;
+    }
+
+    private static String urls(int days, String pattern) {
+        Map<String, String> filter1 = new LinkedHashMap<>();
+        filter1.put("clientip", pattern);
+        String docCount = "doc_count";
+        Map<String, String> nsInformation =
+                KibanaApi.makeKibanaSearch("requestedPath.json", days, filter1, "key", docCount);
+        List<Map<String, String>> remap = JsonExtractor.remap(nsInformation, "^/.*");
+        Map<String, List<Map<String, String>>> collect2 =
+                remap.stream().collect(Collectors.groupingBy(e -> e.get("key1"),
+                        LinkedHashMap<String, List<Map<String, String>>>::new, Collectors.toList()));
+        return collect2.entrySet().stream().map(entry -> {
+            Map<String, Long> collect = entry.getValue().stream()
                     .map(e -> new AbstractMap.SimpleEntry<>(getURL(e), StringSigaUtils.toLong(e.get(docCount + "0"))))
                     .collect(Collectors.groupingBy(SimpleEntry<String, Long>::getKey,
                             Collectors.summingLong(SimpleEntry<String, Long>::getValue)));
-            return collect.entrySet().stream()
+            String collect3 = collect.entrySet().stream()
                     .sorted(Comparator.comparingLong(Entry<String, Long>::getValue).reversed())
                     .map(e -> e.getKey() + "\t" + e.getValue()).filter(s -> !s.startsWith("*"))
                     .collect(Collectors.joining("\n"));
-        });
-        fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", pattern, days, "Name", "Value")));
-        return fullScan;
+            return entry.getKey() + "\n" + collect3;
+        }).collect(Collectors.joining("\n"));
     }
 }

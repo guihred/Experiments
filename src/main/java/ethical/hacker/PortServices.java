@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
@@ -40,6 +42,11 @@ public final class PortServices {
         return type;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s %s %s", description, type, Arrays.toString(ports));
+    }
+
     public static PortServices getServiceByPort(Integer port) {
         if (TCP_SERVICES.isEmpty() || UDP_SERVICES.isEmpty()) {
             loadServiceNames();
@@ -47,7 +54,8 @@ public final class PortServices {
         String tcpService = TCP_SERVICES.get(port);
         String udpService = UDP_SERVICES.get(port);
         if (tcpService != null && udpService != null) {
-            return new PortServices(tcpService + ",\t" + udpService, "TCP/UDP", port);
+            return new PortServices(Stream.of(tcpService, udpService).distinct().collect(Collectors.joining(",\t")),
+                    "TCP/UDP", port);
         }
         if (tcpService != null) {
             return new PortServices(tcpService, "TCP", port);
@@ -56,6 +64,9 @@ public final class PortServices {
             return new PortServices(tcpService, "UDP", port);
         }
         return new PortServices("Unknown", "", port);
+    }
+    public static String getServiceDescriptionByPort(Integer port) {
+        return getServiceByPort(port)+"";
     }
 
     public static Map<Integer, String> getTcpServices() {

@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,6 +41,8 @@ public class WhoIsScanner {
     private String[] subFolder = new String[] {};
 
     private File print;
+
+    private Map<String, DataframeML> dataframeLookup = new HashMap<>();
 
     public boolean containsWait(File htmlFile) throws IOException {
         String fileContent = com.google.common.io.Files.toString(htmlFile, StandardCharsets.UTF_8);
@@ -88,7 +91,7 @@ public class WhoIsScanner {
     }
 
     public String reverseDNS(String ip) {
-        return cache.computeIfAbsent(ip, WhoIsScanner::getReverseDNS);
+        return cache.computeIfAbsent(ip, CIDRUtils::getReverseDNS);
     }
 
     public ObservableList<Map<String, String>> scanIps(String ip) {
@@ -157,30 +160,44 @@ public class WhoIsScanner {
         }, (path, ex) -> LOG.error("ERROR COPYING {}", path, ex)));
     }
 
-
-    public static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String ip) {
-        if (ip.matches("^10\\..+")) {
+    private static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String name) {
+        String ip = !name.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+/*\\d*$")
+                ? SupplierEx.get(() -> CIDRUtils.toIPByName(name).getHostAddress(), name)
+                : name;
+        if (CIDRUtils.isPrivateNetwork(ip) || ip.matches("^200\\.152\\..+")) {
+            String reverseDNS = whoIsScanner.reverseDNS(ip);
             Map<String, String> internalNetworkScan = SupplierEx.getFirst(() -> {
-                DataframeML networksFile = DataframeBuilder.build("networks/redes2.csv");
+                DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/SDMResources.csv",
+                        DataframeBuilder::build);
+                Map<String, String> first =
+                        SupplierEx.getFirst(() -> networksFile.findFirst("IP0", v -> Objects.equals(v, ip)),
+                                () -> networksFile.findFirst("ID do IC alternativo",
+                                        v -> Objects.equals(v, ip) || Objects.equals(v, reverseDNS)),
+                                () -> networksFile.findFirst("IP1", v -> Objects.equals(v, ip)),
+                                () -> networksFile.findFirst("IP2", v -> Objects.equals(v, ip))
+
+                        );
+                RunnableEx.runIf(first, f -> f.put("Descrição", f.values().stream().filter(StringUtils::isNotBlank)
+                        .distinct().collect(Collectors.joining("\n"))));
+                return first;
+            }, () -> {
+                DataframeML networksFile =
+                        whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes3.csv", DataframeBuilder::build);
                 return CIDRUtils.searchInFile(networksFile, "network", ip);
             }, () -> {
-                DataframeML networksFile = DataframeBuilder.build("networks/redes3.csv");
+                DataframeML networksFile =
+                        whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes2.csv", DataframeBuilder::build);
                 return CIDRUtils.searchInFile(networksFile, "network", ip);
             }, LinkedHashMap::new);
-            internalNetworkScan.put(REVERSE_DNS, whoIsScanner.reverseDNS(ip));
+            internalNetworkScan.put(REVERSE_DNS, reverseDNS);
             return internalNetworkScan;
         }
-        Map<String, String> first =
-                SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip), () -> whoIsScanner.whoIsScan(ip),
-                        () -> VirusTotalApi.getIpTotalInfo(ip));
+        Map<String, String> first = SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip),
+                () -> whoIsScanner.whoIsScan(ip), () -> VirusTotalApi.getIpTotalInfo(ip));
         if (ip.matches("^200\\.152\\..+")) {
             first.put(REVERSE_DNS, whoIsScanner.reverseDNS(ip));
         }
         return first;
-    }
-
-    public static String getReverseDNS(String ip) {
-        return SupplierEx.get(() -> CIDRUtils.toInetAddress(ip).getCanonicalHostName(), ip);
     }
 
 }

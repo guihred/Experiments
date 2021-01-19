@@ -61,7 +61,7 @@ public final class ExplorerHelper {
 
     public static String getFromCache(WhoIsScanner whoIsScanner, ObservableMap<String, Map<String, String>> ipInfo,
             Object[] e, String... string) {
-        return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> WhoIsScanner.getIpInformation(whoIsScanner, ip)),
+        return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> whoIsScanner.getIpInformation(ip)),
                 string);
     }
 

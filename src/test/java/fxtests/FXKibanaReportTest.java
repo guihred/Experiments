@@ -34,7 +34,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordReportGeridCredenciais() {
-        String finalIP = "200.193.192.134";
+        String finalIP = "177.37.183.109";
         measureTime("KibanaApi.getGeridCredencial", () -> {
             Map<String, String> geridCredencial = KibanaApi.getGeridCredencial(finalIP, "inss-*-prod-*");
             geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());

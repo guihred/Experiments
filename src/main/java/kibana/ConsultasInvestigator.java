@@ -8,6 +8,7 @@ import static kibana.QueryObjects.ACESSOS_SISTEMA_QUERY;
 import static kibana.QueryObjects.CLIENT_IP_QUERY;
 import static kibana.QueryObjects.URL_QUERY;
 
+import extract.CIDRUtils;
 import extract.WhoIsScanner;
 import java.io.File;
 import java.util.*;
@@ -193,6 +194,10 @@ public class ConsultasInvestigator extends Application {
         }
         if (s.matches(WhoIsScanner.IP_REGEX)) {
             filter.merge(CLIENT_IP_QUERY, s, ConsultasHelper::merge);
+            return;
+        }
+        if (s.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+$")) {
+            filter.merge(CLIENT_IP_QUERY, CIDRUtils.addressToPattern(s), ConsultasHelper::merge);
             return;
         }
         if (s.startsWith("/")) {

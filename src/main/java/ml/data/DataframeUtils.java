@@ -51,7 +51,9 @@ public class DataframeUtils extends DataframeML {
     public static List<Entry<Object, Double>> createSeries(DataframeML dataframe, String feature, String target) {
         List<Object> list = dataframe.list(feature);
         List<Object> list2 = dataframe.list(target);
-
+        if (list == null || list2 == null) {
+            return new ArrayList<>();
+        }
         Map<Object, Double> asSeries = IntStream.range(0, dataframe.getSize())
                 .filter(i -> i < list.size() && i < list2.size())
                 .filter(i -> list.get(i) != null && list2.get(i) != null).boxed()

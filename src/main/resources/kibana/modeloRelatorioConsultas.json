@@ -3,9 +3,10 @@
     "params":{
         "ip":"",
         "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h"],
-        "index":["inss-*-prod-*","mte-log4j-prod-*"]
+        "index":["inss-*-prod-*","mte-log4j-prod-*"],
+        "sistema":["consultas.inss.gov.br","tarefas.inss.gov.br"]
     },
-    "name": "Reporte_Eventos_consultas_$ip.docx",
+    "name": "Reporte_Eventos_$sistema_$ip.docx",
     "figurasSat": [
         "Alto número de acessos por IP ",
         {
@@ -65,7 +66,7 @@
         "– Padrão de acesso alto e automatizado" 
 	],
 	"enderecoOrigem": [
-        "Informações endereço de origem",	
+        "Informações endereço de origem ($Provedor - $Geolocation)",	
 		{
 			"url": "https://registro.br/tecnologia/ferramentas/whois/?search=$ip",
 			"name": "whoIs$ip",
@@ -75,8 +76,8 @@
             "y": 0.15
 		}
 	],
-	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados ao consultas.inss.gov.br",
-	"Informar data de início/fim": "$date",
+	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados ao $sistema",
+    "Informar data de início/fim": "$Acesso",
 	"ips": "$ip",
 	"Foi realizado o bloqueio temporário dos endereços no WAF.": "Foi realizado o bloqueio temporário dos endereços e de credenciais no WAF.",
 	"cred": "$creds",

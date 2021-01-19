@@ -282,6 +282,10 @@ public class StringSigaUtils extends StringUtils {
         return Objects.toString(readLine, "").split(REGEX_CAMEL_CASE);
     }
 
+    public static List<String> splitDistinct(String readLine, String split) {
+        return Stream.of(Objects.toString(readLine, "").split(split)).distinct().collect(Collectors.toList());
+    }
+
     public static String splitMergeCamelCase(String readLine) {
         return Stream.of(Objects.toString(readLine, "").split(StringSigaUtils.REGEX_CAMEL_CASE))
                 .collect(Collectors.joining(" "));

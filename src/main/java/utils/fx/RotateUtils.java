@@ -293,6 +293,10 @@ public final class RotateUtils {
     private static void cropImage(Rectangle area, ImageView imageView, ConsumerEx<Image> onImageCropped, int width,
             int height) {
         Image image = imageView.getImage();
+        if (image == null) {
+            return;
+        }
+
         WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(), image.getHeight());
         double p = srcImage.getWidth() / imageView.getFitWidth();
         double width1 = width * p;

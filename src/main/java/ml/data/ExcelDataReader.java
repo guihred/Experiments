@@ -74,8 +74,13 @@ public class ExcelDataReader extends DataframeUtils {
         if (!data.isEmpty()) {
             keySet.addAll(data.keySet());
         }
-        if (data.isEmpty() || data.size() != keySet.size()) {
-            finalList.remove(finalList.size() - 1);
+        if (data.isEmpty()) {
+            finalList.remove(data);
+        }
+        if (data.size() != keySet.size()) {
+            for (String key : keySet) {
+                data.putIfAbsent(key, null);
+            }
         }
     }
 

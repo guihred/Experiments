@@ -180,7 +180,7 @@ public class QueryObjects {
 
     public List<Map<String, String>> searchRemap(Map<String, String> filter1, Integer days) {
         Map<String, String> nsInformation =
-                KibanaApi.makeKibanaSearch("kibana/" + getQueryFile(), days, filter1, params);
+                KibanaApi.makeKibanaSearch(getQueryFile(), days, filter1, params);
         return JsonExtractor.remap(nsInformation, getGroup());
     }
 

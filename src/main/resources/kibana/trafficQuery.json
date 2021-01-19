@@ -1,15 +1,18 @@
-{"index":"dtp-pl*","ignore_unavailable":true,"preference":1600792228289}
+{"index":"dtp-pl*","ignore_unavailable":true,"preference":1610794415222}
 {
-	"version": true,
-	"size": 1,
-	"sort": [
-		{
-			"@timestamp": {
-				"order": "desc",
-				"unmapped_type": "boolean"
+	"aggs": {
+		"1": {
+			"min": {
+				"field": "@timestamp"
+			}
+		},
+		"2": {
+			"max": {
+				"field": "@timestamp"
 			}
 		}
-	],
+	},
+	"size": 0,
 	"_source": {
 		"excludes": []
 	},
@@ -42,10 +45,10 @@
 			"must": [
 				{
 					"query_string": {
-                        "query": "SourceIP: \"%s\"",
-                        "analyze_wildcard": true,
-                        "default_field": "*"
-                    }
+						"query": "SourceIP: \"%s\"",
+						"analyze_wildcard": true,
+						"default_field": "*"
+					}
 				},
 				{
 					"range": {
@@ -57,31 +60,16 @@
 					}
 				}
 			],
-			"filter": [],
-			"should": [],
-			"must_not": [
+			"filter": [
 				{
-					"match_phrase": {
-						"dtpcategoria": {
-							"query": "threat"
-						}
+					"match_all": {
+						
 					}
 				}
-			]
+			],
+			"should": [],
+			"must_not": []
 		}
 	},
-	"highlight": {
-		"pre_tags": [
-			"@kibana-highlighted-field@"
-		],
-		"post_tags": [
-			"@/kibana-highlighted-field@"
-		],
-		"fields": {
-			"*": {
-				
-			}
-		},
-		"fragment_size": 2147483647
-	}
+	"timeout": "30000ms"
 }
