@@ -165,39 +165,42 @@ public class WhoIsScanner {
                 ? SupplierEx.get(() -> CIDRUtils.toIPByName(name).getHostAddress(), name)
                 : name;
         if (CIDRUtils.isPrivateNetwork(ip) || ip.matches("^200\\.152\\..+")) {
-            String reverseDNS = whoIsScanner.reverseDNS(ip);
-            Map<String, String> internalNetworkScan = SupplierEx.getFirst(() -> {
-                DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/SDMResources.csv",
-                        DataframeBuilder::build);
-                Map<String, String> first =
-                        SupplierEx.getFirst(() -> networksFile.findFirst("IP0", v -> Objects.equals(v, ip)),
-                                () -> networksFile.findFirst("ID do IC alternativo",
-                                        v -> Objects.equals(v, ip) || Objects.equals(v, reverseDNS)),
-                                () -> networksFile.findFirst("IP1", v -> Objects.equals(v, ip)),
-                                () -> networksFile.findFirst("IP2", v -> Objects.equals(v, ip))
-
-                        );
-                RunnableEx.runIf(first, f -> f.put("Descrição", f.values().stream().filter(StringUtils::isNotBlank)
-                        .distinct().collect(Collectors.joining("\n"))));
-                return first;
-            }, () -> {
-                DataframeML networksFile =
-                        whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes3.csv", DataframeBuilder::build);
-                return CIDRUtils.searchInFile(networksFile, "network", ip);
-            }, () -> {
-                DataframeML networksFile =
-                        whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes2.csv", DataframeBuilder::build);
-                return CIDRUtils.searchInFile(networksFile, "network", ip);
-            }, LinkedHashMap::new);
-            internalNetworkScan.put(REVERSE_DNS, reverseDNS);
-            return internalNetworkScan;
+            return lookupInternalInfo(whoIsScanner, ip);
         }
-        Map<String, String> first = SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip),
+        return SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip),
                 () -> whoIsScanner.whoIsScan(ip), () -> VirusTotalApi.getIpTotalInfo(ip));
-        if (ip.matches("^200\\.152\\..+")) {
-            first.put(REVERSE_DNS, whoIsScanner.reverseDNS(ip));
-        }
-        return first;
+    }
+
+    private static Map<String, String> lookupInternalInfo(WhoIsScanner whoIsScanner, String ip) {
+        String reverseDNS = whoIsScanner.reverseDNS(ip);
+        Map<String, String> internalScan =
+                SupplierEx.getFirst(() -> lookupSDM(whoIsScanner, ip, reverseDNS), () -> {
+                    DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes3.csv",
+                            DataframeBuilder::build);
+                    return CIDRUtils.searchInFile(networksFile, "Sub-Rede", ip);
+                }, () -> {
+                    DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes2.csv",
+                            DataframeBuilder::build);
+                    return CIDRUtils.searchInFile(networksFile, "network", ip);
+                }, LinkedHashMap::new);
+        RunnableEx.runIf(internalScan, f -> f.put("Descrição" + "",
+                f.values().stream().filter(StringUtils::isNotBlank).distinct().collect(Collectors.joining("\n"))));
+
+        internalScan.put(REVERSE_DNS, reverseDNS);
+        return internalScan;
+    }
+
+    private static Map<String, String> lookupSDM(WhoIsScanner whoIsScanner, String ip, String reverseDNS) {
+        DataframeML networksFile =
+                whoIsScanner.dataframeLookup.computeIfAbsent("networks/SDMResources.csv", DataframeBuilder::build);
+        return SupplierEx.getFirst(
+                () -> networksFile.findFirst("IP0",
+                        v -> Objects.equals(v, ip)
+                                || StringUtils.equalsIgnoreCase(Objects.toString(v), ip)),
+                () -> networksFile.findFirst("ID do IC alternativo",
+                        v -> Objects.equals(v, ip) || Objects.equals(v, reverseDNS)),
+                () -> networksFile.findFirst("IP1", v -> Objects.equals(v, ip)),
+                () -> networksFile.findFirst("IP2", v -> Objects.equals(v, ip)));
     }
 
 }

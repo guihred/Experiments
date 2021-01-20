@@ -1,4 +1,4 @@
-Nome,Inquilino,Classe,Família,ID do IC alternativo,Ambiente Produtivo,Site,Contato Principal,Última mudança (data),Última mudança por,Endereço IP,IP0,IP1,IP2,IP3,IP4
+﻿Nome,Inquilino,Classe,Família,ID do IC alternativo,Ambiente Produtivo,Site,Contato Principal,Última mudança (data),Última mudança por,Endereço IP,IP0,IP1,IP2,IP3,IP4
 *.k8sd.hom.cloud.dataprev.gov.br,DATAPREV,Balanceamento de Rede,Agrupamento,*.k8sd.hom.cloud.dataprev.gov.br,Homologação,DF,Suporte.EquipeRede(CMDB),2020-06-20T15:15:47,viviane.halmeida,200.152.38.249,200.152.38.249,,,,
 *apps.okdnp.fast.prevnet,DATAPREV,Balanceamento de Rede,Agrupamento,*apps.okdnp.fast.prevnet,Homologação,DF,Suporte.EquipeRede(CMDB),2019-11-04T08:30:04,viviane.halmeida,10.190.128.57,10.190.128.57,,,,
 10.0.151.211,DATAPREV,Balanceamento de Rede,Agrupamento,10.0.151.211,Produção,RJ,Suporte.EquipeRede(CMDB),2017-10-27T17:04:42,cargaDCRJ,10.0.151.211,10.0.151.211,,,,

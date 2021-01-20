@@ -4,6 +4,7 @@ import static simplebuilder.SimpleTextBuilder.newBoldText;
 import static utils.ex.RunnableEx.remap;
 import static utils.ex.RunnableEx.run;
 
+import extract.DocumentHelper;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
@@ -62,8 +63,6 @@ public final class XMLExtractor {
             }
         }
     }
-
-
 
     public static void exportToExcel(TreeView<Map<String, String>> tree, File file) {
         TreeItem<Map<String, String>> selectedItem = tree.getSelectionModel().getSelectedItem();
@@ -181,8 +180,12 @@ public final class XMLExtractor {
         return finalList;
     }
 
-
-
+    private static Node getRootNode(File file) {
+        if (file.getName().endsWith(".html")) {
+            return DocumentHelper.getDoc(file);
+        }
+        return SupplierEx.remap(() -> XmlObject.Factory.parse(file), "ERROR PARSING").getDomNode();
+    }
 
     private static Object getValue(Map<String, String> i, int j) {
         int k = 0;
@@ -248,9 +251,7 @@ public final class XMLExtractor {
 
     private static void tryToRead(TreeView<Map<String, String>> build,
             Map<Node, TreeItem<Map<String, String>>> allItems, File file) {
-        XmlObject parse = SupplierEx.remap(() -> XmlObject.Factory.parse(file), "ERROR PARSING");
-
-        Node rootNode = parse.getDomNode();
+        Node rootNode = getRootNode(file);
         List<Node> currentNodes = new ArrayList<>();
         currentNodes.add(rootNode);
         TreeItem<Map<String, String>> value = new TreeItem<>(newMap(rootNode));

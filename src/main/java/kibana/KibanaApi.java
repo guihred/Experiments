@@ -286,7 +286,8 @@ public class KibanaApi {
         Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", () -> ip);
         fullScan.put("Provedor",
-                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "HostName", "asname"));
+                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "Nome", "HostName",
+                        "asname"));
         fullScan.put("Geolocation",
                 () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry", "Descrição"));
         String pattern = CIDRUtils.addressToPattern(ip);

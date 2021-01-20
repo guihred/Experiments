@@ -9,6 +9,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import utils.ex.HasLogging;
 
 public class DataframeML extends BaseDataframe {
     public DataframeML() {
@@ -97,10 +98,11 @@ public class DataframeML extends BaseDataframe {
     public <T> Map<String, T> findFirst(String header, Predicate<Object> v) {
         List<Object> list = dataframe.get(header);
         if (list != null) {
-            return (Map<String, T>) IntStream.rangeClosed(0, list.size()).parallel().filter(i -> v.test(list.get(i)))
+            return (Map<String, T>) IntStream.rangeClosed(0, list.size())
+                    .filter(i -> v.test(list.get(i)))
                     .mapToObj(this::rowMap).findFirst().orElse(null);
         }
-
+        HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
         return null;
     }
 
