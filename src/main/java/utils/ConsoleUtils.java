@@ -32,6 +32,12 @@ public final class ConsoleUtils {
     private ConsoleUtils() {
     }
 
+    public static long countActiveProcesses() {
+        return PROCESSES.entrySet().stream().filter(e -> !e.getValue())
+        .count();
+        
+    }
+
     public static DoubleProperty defineProgress(final double n) {
         SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
         RunnableEx.runNewThread(() -> {
@@ -179,7 +185,6 @@ public final class ConsoleUtils {
     public static Process startProcessAndWait(final String cmd, String regex) {
         return SupplierEx.remap(() -> makeProcessAndWait(cmd, regex), "ERROR CREATING PROCESS");
     }
-
     public static void waitAllProcesses() {
         long currentTimeMillis = System.currentTimeMillis();
         while (PROCESSES.values().stream().anyMatch(e -> !e)) {

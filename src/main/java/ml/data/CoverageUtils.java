@@ -102,7 +102,7 @@ public final class CoverageUtils {
                 displayTestsToBeRun.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
         List<Class<? extends Application>> applications =
-                displayTestsToBeRun.stream().distinct().sorted(Comparator.comparing(count::get).reversed())
+                displayTestsToBeRun.stream().distinct().sorted(Comparator.comparingLong(count::get).reversed())
                         .flatMap(e -> classes.stream().filter(cl -> Objects.equals(cl.getSimpleName(), e)))
                         .collect(Collectors.toList());
         if (!applications.isEmpty()) {
@@ -226,7 +226,7 @@ public final class CoverageUtils {
         Map<String, Long> count =
                 displayTestsToBeRun.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
-        return displayTestsToBeRun.stream().distinct().sorted().sorted(Comparator.comparing(count::get).reversed())
+        return displayTestsToBeRun.stream().distinct().sorted().sorted(Comparator.comparingLong(count::get).reversed())
                 .collect(Collectors.toList());
     }
 }

@@ -4,7 +4,7 @@ import extract.WhoIsScanner;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
+import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
@@ -26,6 +27,7 @@ public final class ExplorerHelper {
     public static final int MAX_ELEMENTS = 3000;
 
     private static final Logger LOG = HasLogging.log();
+    private static WhoIsScanner whoIsScanner = new WhoIsScanner();
     private ExplorerHelper() {
     }
 
@@ -35,21 +37,20 @@ public final class ExplorerHelper {
 
     public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn, DoubleProperty count) {
         builder.filterOut(ipColumn,
-                s -> !s.toString().matches("^10\\..+") && s.toString().matches(WhoIsScanner.IP_REGEX));
+                s -> s.toString().matches(WhoIsScanner.IP_REGEX));
 
-        WhoIsScanner whoIsScanner = new WhoIsScanner();
         ObservableMap<String, Map<String, String>> ipInfoCache = FXCollections.observableHashMap();
         builder.addCrossFeature("", e -> {
             Map<String, String> hashMap = new LinkedHashMap<>();
-            hashMap.put("Network", ExplorerHelper.getFromCache(whoIsScanner, ipInfoCache, e, "network"));
-            hashMap.put("Owner", ExplorerHelper.getFromCache(whoIsScanner, ipInfoCache, e, "asname", "as_owner"));
-            RunnableEx.runIf(ExplorerHelper.getFromCache(whoIsScanner, ipInfoCache, e, WhoIsScanner.REVERSE_DNS),
-                    s -> hashMap.put("Reverse DNS", s));
-            hashMap.put("Country", ExplorerHelper.getFromCache(whoIsScanner, ipInfoCache, e, "country", "ascountry"));
+            hashMap.put("Network", ExplorerHelper.getFromCache(ipInfoCache, e, "network", "Sub-Rede"));
+            hashMap.put("Owner", ExplorerHelper.getFromCache(ipInfoCache, e, "asname", "as_owner", "Nome",
+                    WhoIsScanner.REVERSE_DNS));
+            hashMap.put("Country", ExplorerHelper.getFromCache(ipInfoCache, e, "country", "ascountry", "Descrição"));
             return hashMap;
         }, ipColumn);
         DataframeML filledDataframe = builder.build(count);
         filledDataframe.removeCol("");
+        LOG.info(DataframeUtils.toString(filledDataframe, 200));
         return filledDataframe;
     }
 
@@ -59,19 +60,13 @@ public final class ExplorerHelper {
         return fillIPInformation(builder, ipColumn);
     }
 
-    public static String getFromCache(WhoIsScanner whoIsScanner, ObservableMap<String, Map<String, String>> ipInfo,
-            Object[] e, String... string) {
-        return getKey(ipInfo.computeIfAbsent(e[0].toString(), ip -> whoIsScanner.getIpInformation(ip)),
-                string);
-    }
-
     public static String getIPColumn(DataframeBuilder builder) {
         return builder.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
                 .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
     }
 
-    public static String getKey(Map<String, String> first, String... keys) {
-        return Stream.of(keys).map(first::get).filter(Objects::nonNull).findFirst().orElse("");
+    public static <T> T getKey(Map<String, T> first, String... keys) {
+        return Stream.of(keys).map(FunctionEx.ignore(first::get)).filter(Objects::nonNull).findFirst().orElse(null);
 
     }
 
@@ -111,15 +106,15 @@ public final class ExplorerHelper {
     }
 
     static void addToList(ObservableList<Data<String, Number>> dataList, List<Data<String, Number>> array,
-            Data<String, Number> others, Function<Data<String, Number>, Double> keyExtractor) {
+            Data<String, Number> others, ToDoubleFunction<Data<String, Number>> keyExtractor) {
         CommonsFX.runInPlatformSync(() -> {
             if (dataList.size() >= ExplorerHelper.MAX_ELEMENTS / 4) {
-                others.setYValue(keyExtractor.apply(others) + array.stream().mapToDouble(keyExtractor::apply).sum());
+                others.setYValue(keyExtractor.applyAsDouble(others) + array.stream().mapToDouble(keyExtractor).sum());
                 if (!dataList.contains(others)) {
                     dataList.add(others);
                 }
             } else {
-                array.sort(Comparator.comparing(keyExtractor).reversed());
+                array.sort(Comparator.comparingDouble(keyExtractor).reversed());
                 dataList.addAll(array);
             }
         });
@@ -157,6 +152,12 @@ public final class ExplorerHelper {
         List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, title, key);
         return createSeries.stream().map(e -> new AbstractMap.SimpleEntry<>((String) e.getKey(), (Number) e.getValue()))
                 .collect(Collectors.toList());
+    }
+
+    private static String getFromCache(ObservableMap<String, Map<String, String>> ipInfo,
+            Object[] e, String... string) {
+        return getKey(ipInfo.computeIfAbsent(e[0].toString(), whoIsScanner::getIpInformation),
+                string);
     }
 
     private static Object getStatAt(List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList,

@@ -1,4 +1,4 @@
-{"index":"dtp-pl*","ignore_unavailable":true,"preference":1607521027619}
+{"index":"dtp-*prod*","ignore_unavailable":true,"preference":1607521027619}
 {
     "aggs": {
         "2": {

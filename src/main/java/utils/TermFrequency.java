@@ -36,7 +36,7 @@ public final class TermFrequency {
         if (file.exists()) {
             Map<File, Map<String, Long>> mapa = getMapaDocumentos(file, ".java");
             mapa.forEach((k, v) -> v.entrySet().stream()
-                    .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                    .sorted(Comparator.comparingLong(Entry<String, Long>::getValue).reversed())
                     .forEach(p -> LOGGER.trace("{},{}={}", k.getName(), p.getKey(), p.getValue())));
         }
     }

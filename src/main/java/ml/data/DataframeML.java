@@ -19,7 +19,7 @@ public class DataframeML extends BaseDataframe {
         super(frame);
     }
 
-    public void add(Map<String, Object> row) {
+    public <T> void add(Map<String, T> row) {
         row.forEach(this::add);
     }
 
@@ -98,7 +98,7 @@ public class DataframeML extends BaseDataframe {
     public <T> Map<String, T> findFirst(String header, Predicate<Object> v) {
         List<Object> list = dataframe.get(header);
         if (list != null) {
-            return (Map<String, T>) IntStream.rangeClosed(0, list.size())
+            return (Map<String, T>) IntStream.range(0, list.size())
                     .filter(i -> v.test(list.get(i)))
                     .mapToObj(this::rowMap).findFirst().orElse(null);
         }
@@ -130,8 +130,23 @@ public class DataframeML extends BaseDataframe {
                 .orElse(null);
     }
 
-    public void map(String header, UnaryOperator<Object> mapper) {
-        dataframe.put(header, dataframe.get(header).stream().map(mapper).collect(Collectors.toList()));
+    @SuppressWarnings("unchecked")
+    public List<Object> map(String destination,String header, UnaryOperator<Object> mapper) {
+        List<Object> collect = dataframe.get(header).stream().map(
+
+                mapper
+
+        ).collect(Collectors.toList());
+        dataframe.put(destination, collect);
+        Class<? extends Object> orElse = collect.stream().filter(Objects::nonNull).findFirst().map(e->e.getClass()).orElse(null);
+        putFormat(destination, (Class<? extends Comparable<?>>) orElse);
+        return collect;
+    }
+
+    public List<Object> map(String header, UnaryOperator<Object> mapper) {
+        List<Object> collect = dataframe.get(header).stream().map(mapper).collect(Collectors.toList());
+        dataframe.put(header, collect);
+        return collect;
     }
 
     public void only(String header, Predicate<String> v, IntConsumer cons) {

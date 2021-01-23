@@ -38,7 +38,7 @@ public final class ExtractUtils {
     }
 
     public static String addDomain(String domain, String url) {
-        if (url.startsWith("http") || url.startsWith("data:image")) {
+        if (url.startsWith("http") || url.startsWith("data:image") || url.startsWith("file:")) {
             return url;
         }
         if (url.startsWith(domain)) {

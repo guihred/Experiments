@@ -57,7 +57,6 @@ public class StringSigaUtils extends StringUtils {
         }
         return str.substring(0, 1).toLowerCase() + str.substring(1);
     }
-
     public static String codificar(String nome) {
         return getIgnore(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
@@ -115,6 +114,15 @@ public class StringSigaUtils extends StringUtils {
             return "%s\t";
         }
         return "%" + s.length() + "s\t";
+    }
+
+    public static Object formatIP(Object e) {
+        String stringSpecial = StringSigaUtils.toStringSpecial(e);
+        if (stringSpecial.matches("\\d\\.\\d+E\\d+")) {
+            Long long1 = StringSigaUtils.toLong(stringSpecial.replaceAll("E.+", ""));
+            return String.format("%,d", long1);
+        }
+        return stringSpecial;
     }
 
     public static String getApenasNumeros(String texto) {
@@ -336,8 +344,9 @@ public class StringSigaUtils extends StringUtils {
 
     public static String toStringSpecial(Object n) {
         if (n instanceof Number) {
-            return ((Number) n).doubleValue() % 1 == 0 ? String.format("%.0f", ((Number) n).doubleValue())
-                    : Objects.toString(n);
+            if (((Number) n).doubleValue() % 1 == 0) {
+                return String.format("%.0f", ((Number) n).doubleValue());
+            }
         }
         return Objects.toString(n, "");
     }

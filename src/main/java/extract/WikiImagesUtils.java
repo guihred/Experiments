@@ -49,7 +49,7 @@ public final class WikiImagesUtils {
                 Map<String, Long> fileExtensionCount = find.collect(Collectors.groupingBy(
                         e -> com.google.common.io.Files.getFileExtension(e.toString()), Collectors.counting()));
                 fileExtensionCount.entrySet().stream()
-                        .sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                        .sorted(Comparator.comparingLong(Entry<String, Long>::getValue).reversed())
                         .forEach(ex -> LOG.info("{}={}", ex.getKey(), ex.getValue()));
             }
         });

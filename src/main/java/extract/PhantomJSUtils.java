@@ -2,13 +2,11 @@ package extract;
 
 import gui.ava.html.image.generator.HtmlImageGenerator;
 import java.awt.Dimension;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,25 +49,66 @@ public final class PhantomJSUtils {
 
     private static final int WAIT_TIME = 100_000;
 
-    private PhantomJSUtils() {
+    private PhantomJSDriver ghostDriver;
+
+    public PhantomJSUtils() {
+        ghostDriver = getGhostDriver();
     }
 
+    public void quit() {
+        ghostDriver.quit();
+    }
 
-    public static List<String> makeGet(String url, Map<String, String> headers, File outFile) throws IOException {
+    public Document render(String url, Map<String, String> cookies) {
+        ghostDriver.setLogLevel(Level.OFF);
+        ghostDriver.manage().window().maximize();
+        Set<Cookie> cookies2 = ghostDriver.manage().getCookies();
+        ghostDriver.get(url);
+        cookies.forEach((k, v) -> {
+            if (cookies2.stream().noneMatch(c -> c.getName().equals(k))) {
+                RunnableEx.run(() -> ghostDriver.manage().addCookie(new Cookie(k, v)));
+            }
+        });
+        ghostDriver.get(url);
+        return Jsoup.parse(ghostDriver.getPageSource());
+    }
+
+    public static List<String> makeGet(String url, Map<String, String> headers) throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet post = new HttpGet(url);
         headers.forEach(post::addHeader);
         HttpResponse response = client.execute(post);
         HttpEntity entity = response.getEntity();
         BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
-        List<String> allLines = rd.lines().collect(Collectors.toList());
+        return rd.lines().collect(Collectors.toList());
+    }
+
+    public static List<String> makeGet(String url, Map<String, String> headers, File outFile) throws IOException {
+        List<String> allLines = makeGet(url, headers);
         Files.write(outFile.toPath(), allLines);
         return allLines;
     }
 
+    public static List<String> makeGetAppend(String url, Map<String, String> headers, File outFile) throws IOException {
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet post = new HttpGet(url);
+        headers.forEach(post::addHeader);
+        HttpResponse response = client.execute(post);
+        HttpEntity entity = response.getEntity();
+        InputStream in = entity.getContent();
+        Path path = outFile.toPath();
+        byte[] b = new byte[256];
+        int read;
+        do {
+            read = in.read(b);
+            Files.write(path, b, StandardOpenOption.APPEND);
+        } while (read != -1);
+
+        return null;
+    }
+
     public static void postContent(String url, String content, ContentType applicationJson, Map<String, String> headers,
-            File outFile)
-            throws IOException {
+            File outFile) throws IOException {
         ExtractUtils.insertProxyConfig();
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
@@ -103,7 +142,9 @@ public final class PhantomJSUtils {
                 StringSigaUtils.fixEncoding(content, StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1),
                 ContentType.create("application/x-ndjson")));
         headers.forEach(get::addHeader);
-        LOG.info("Request \n\t{} \n\t{} ", url, outFile.getName());
+        String collect = headers.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue())
+                .collect(Collectors.joining("\n"));
+        LOG.info("Request \n\t{} \n\t{} \n\t{}", url, collect, content);
         HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
             InstallCert.installCertificate(url);
             return client.execute(get);
@@ -113,17 +154,26 @@ public final class PhantomJSUtils {
         ExtractUtils.copy(rd, outFile);
     }
 
+    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr) {
+        return renderPage(url, cookies, loadingStr, driver -> {
+            // DOES NOTHING
+        });
+    }
+
     @SafeVarargs
     public static Document renderPage(String url, Map<String, String> cookies, String loadingStr,
             ConsumerEx<PhantomJSDriver>... onload) {
-        PhantomJSDriverService createDefaultService =
-                new PhantomJSDriverService.Builder().usingPhantomJSExecutable(PHANTOM_JS.toFile()).usingAnyFreePort()
-                        .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log")).build();
-        PhantomJSDriver ghostDriver = new PhantomJSDriver(createDefaultService, DesiredCapabilities.firefox());
+        PhantomJSDriver ghostDriver = getGhostDriver();
         try {
             ghostDriver.setLogLevel(Level.OFF);
             ghostDriver.manage().window().maximize();
             ghostDriver.get(url);
+            cookies.forEach((k, v) -> RunnableEx.run(() -> ghostDriver.manage().addCookie(new Cookie(k, v))));
+            ghostDriver.get(url);
+            Set<Cookie> cookies2 = ghostDriver.manage().getCookies();
+            for (Cookie cookie : cookies2) {
+                cookies.put(cookie.getName(), cookie.getValue());
+            }
             RunnableEx.run(() -> cookies.forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v))));
             RunnableEx.sleepSeconds(1. / 2);
             String pageSource = ghostDriver.getPageSource();
@@ -133,10 +183,6 @@ public final class PhantomJSUtils {
             }
             for (ConsumerEx<PhantomJSDriver> consumerEx : onload) {
                 ConsumerEx.accept(consumerEx, ghostDriver);
-            }
-            Set<Cookie> cookies2 = ghostDriver.manage().getCookies();
-            for (Cookie cookie : cookies2) {
-                cookies.put(cookie.getName(), cookie.getValue());
             }
             return Jsoup.parse(ghostDriver.getPageSource());
         } finally {
@@ -162,6 +208,16 @@ public final class PhantomJSUtils {
         imageGenerator.loadHtml(html);
         imageGenerator.saveAsImage(file);
         return new Image(ResourceFXUtils.convertToURL(file).toExternalForm());
+    }
+
+    private static PhantomJSDriver getGhostDriver() {
+        PhantomJSDriverService createDefaultService = new PhantomJSDriverService.Builder()
+                .usingPhantomJSExecutable(PHANTOM_JS.toFile()).usingAnyFreePort()
+                .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log"))
+                .usingGhostDriverCommandLineArguments(new String[] { "examples/responsive-screenshot.js" })
+
+                .build();
+        return new PhantomJSDriver(createDefaultService, DesiredCapabilities.firefox());
     }
 
 }

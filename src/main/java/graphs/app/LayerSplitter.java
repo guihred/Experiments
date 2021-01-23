@@ -27,8 +27,8 @@ public final class LayerSplitter {
                 int ceil = (int) Math.ceil(list.size() / 2.);
                 List<Cell> subList = new ArrayList<>(list.subList(0, ceil));
                 List<Cell> subList2 = new ArrayList<>(list.subList(ceil, list.size()));
-                subList.sort(Comparator.comparing((Cell t) -> GraphModelAlgorithms.edgesNumber(t, edges)));
-                subList2.sort(Comparator.comparing((Cell t) -> GraphModelAlgorithms.edgesNumber(t, edges)).reversed());
+                subList.sort(Comparator.comparingLong(t -> GraphModelAlgorithms.edgesNumber(t, edges)));
+                subList2.sort(Comparator.comparingLong((Cell t) -> GraphModelAlgorithms.edgesNumber(t, edges)).reversed());
                 list.clear();
                 list.addAll(subList);
                 list.addAll(subList2);

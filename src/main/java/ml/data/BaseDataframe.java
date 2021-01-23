@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
 
 public class BaseDataframe {
 
@@ -80,7 +81,12 @@ public class BaseDataframe {
     }
 
     public Object getAt(String header, int i) {
-        return dataframe.get(header).get(i);
+        List<Object> list = dataframe.get(header);
+        if (list == null) {
+            HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
+            return null;
+        }
+        return list.get(i);
     }
 
     public Map<String, List<Object>> getDataframe() {

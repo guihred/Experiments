@@ -31,7 +31,7 @@ public class ImageLoader {
         ObservableList<String> images = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
         images.addListener(
                 (Change<? extends String> c) -> CommonsFX.runInPlatform(() -> addImages(children, text1, c)));
-        CommonsFX.runInPlatform(() -> {
+        CommonsFX.runInPlatformSync(() -> {
             children.clear();
             LOG.trace("CLEARING IMAGES");
         });

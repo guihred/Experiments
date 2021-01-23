@@ -125,6 +125,10 @@ public class ReportApplication extends Application {
     private void addGeridInfo(Map<String, Object> mapaSubstituicao) {
 
         int days = (int) Math.max(1., Math.ceil(StringSigaUtils.toInteger(params.get("\\$hour")) / 24.));
+        if (JsonExtractor.accessMap(mapaSubstituicao, "params").containsKey("ip")) {
+            KibanaApi.kibanaFullScan(params.get("\\$ip"), days, progressIndicator.progressProperty())
+                    .forEach((k, v) -> params.put("\\$" + k, v));
+        }
         if (mapaSubstituicao.containsKey("gerid")) {
             LOG.info("GETTING GERID CREDENTIALS ");
             String index = params.get("\\$index");
@@ -133,10 +137,6 @@ public class ReportApplication extends Application {
             List<Object> textAsImage =
                     makeKibanaSearch.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
             ReportHelper.mergeImage(mapaSubstituicao, textAsImage);
-        }
-        if (JsonExtractor.accessMap(mapaSubstituicao, "params").containsKey("ip")) {
-            KibanaApi.kibanaFullScan(params.get("\\$ip"), days, progressIndicator.progressProperty())
-                    .forEach((k, v) -> params.put("\\$" + k, v));
         }
 
     }
@@ -156,6 +156,13 @@ public class ReportApplication extends Application {
                         Files.deleteIfExists(Paths.get(new URI(s)));
                     }
                     makeReportConsultasEditImages();
+                }).onKey(KeyCode.ENTER, t -> {
+                    imageUrls.remove(t);
+                    if (imageUrls.isEmpty()) {
+                        SimpleDialogBuilder.closeStage(imageView);
+                        LOG.info("APPLYING MAP {}", mapaSubstituicao);
+                        RunnableEx.runNewThread(() -> ReportHelper.finalizeReport(mapaSubstituicao, reportFile));
+                    }
                 }).items(imageUrls);
         Rectangle rectangle = new Rectangle();
         rectangle.setStroke(Color.TRANSPARENT);

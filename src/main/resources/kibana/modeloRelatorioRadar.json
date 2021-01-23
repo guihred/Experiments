@@ -47,6 +47,11 @@
             "height": 1,
             "x": 0,
             "y": 0
+        },{
+            "csv": "",
+            "name": "source$gatheredDate",
+            "columns":"IP|Hostname|Tráfego|Tipo de Tráfego|Tráfego esperado|motivação",
+            "questions":[]
         }
 	],
 	"Acessos volumétricos por destino - Firewall": [
@@ -57,6 +62,11 @@
             "height": 1,
             "x": 0,
             "y": 0
+        },{
+            "csv": "",
+            "name": "destination$gatheredDate",
+            "columns":"IP|Hostname|Tráfego|Tipo de Tráfego|Tráfego esperado|motivação",
+            "questions":[]
         }
 	],
 	"Volume de Ataques barrados pelo WAF": [

@@ -102,7 +102,7 @@ public class SonarApi extends Application {
             components.add(Objects.toString(compute, ""));
         }
         List<String> collect = components.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting()))
-                .entrySet().stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())
+                .entrySet().stream().sorted(Comparator.comparingLong(Entry<String, Long>::getValue).reversed())
                 .map(e -> e.getKey() + "\t" + e.getValue()).collect(Collectors.toList());
         components.setAll(collect);
         List<String> ruless = issuesList.stream()

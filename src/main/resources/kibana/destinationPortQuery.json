@@ -51,7 +51,7 @@
 			"must": [
 				{
                     "query_string": {
-                        "query": "SourceIP:\"%s\"",
+                        "query": "SourceIP:\"%s\" OR DestinationIP:\"%s\"",
                         "analyze_wildcard": true,
                         "default_field": "*"
                     }

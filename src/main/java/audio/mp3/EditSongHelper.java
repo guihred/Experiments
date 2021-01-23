@@ -8,6 +8,8 @@ import extract.Music;
 import extract.MusicReader;
 import extract.SongUtils;
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
@@ -19,6 +21,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -32,6 +35,7 @@ import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ExtractUtils;
+import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
@@ -59,21 +63,37 @@ public final class EditSongHelper {
             SongUtils.stopAndDispose(mediaPlayer.get());
             MusicReader.saveMetadata(selectedItem);
         });
-        new SimpleDialogBuilder().text(value).node(builder).bindWindow(stage).displayDialog();
+        File parentFile = selectedItem.getArquivo().getParentFile();
+        VBox.setVgrow(builder, Priority.ALWAYS);
+        new SimpleDialogBuilder().title("Searching Image").text(value).node(builder).bindWindow(stage).displayDialog();
         ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
-            selectedItem.getTitulo());
+                selectedItem.getTitulo());
+        RunnableEx.runNewThread(() -> {
+            RunnableEx.sleepSeconds(5);
+            return FileTreeWalker.getPathByExtension(parentFile, ".jpg", ".png");
+        }, pathByExtension -> {
+            if (!pathByExtension.isEmpty()) {
+                CommonsFX.runInPlatform(() -> {
+                    LOG.info("ADDING FOLDER IMAGES");
+                    List<ImageView> collect = pathByExtension.stream().map(
+                            e -> ImageLoader.convertToImage(ResourceFXUtils.convertToURL(e.toFile()).toExternalForm()))
+                            .collect(Collectors.toList());
+                    children.addAll(0, collect);
+                });
+            }
+        });
     }
 
     public static void splitAndSave(Music selectedItem, Slider initialSlider, Slider finalSlider, File outFile,
-        ProgressIndicator progressIndicator, ObjectProperty<MediaPlayer> mediaPlayer) {
+            ProgressIndicator progressIndicator, ObjectProperty<MediaPlayer> mediaPlayer) {
         MediaPlayer mediaPlayer2 = mediaPlayer.get();
         if (!isAbleToChange(mediaPlayer2)) {
             LOG.error("Cannot Split And Save Audio {}", selectedItem);
             return;
         }
         DoubleProperty progress = SongUtils.splitAudio(selectedItem.getArquivo(), outFile,
-            mediaPlayer.get().getTotalDuration().multiply(initialSlider.getValue()),
-            mediaPlayer.get().getTotalDuration().multiply(finalSlider.getValue()));
+                mediaPlayer.get().getTotalDuration().multiply(initialSlider.getValue()),
+                mediaPlayer.get().getTotalDuration().multiply(finalSlider.getValue()));
         progressIndicator.progressProperty().bind(progress);
         progressIndicator.setVisible(true);
         CommonsFX.runInPlatform(() -> SongUtils.stopAndDispose(mediaPlayer.get()));
@@ -93,7 +113,7 @@ public final class EditSongHelper {
     }
 
     public static void splitAudio(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
-        ObjectProperty<Duration> startTime) {
+            ObjectProperty<Duration> startTime) {
         MediaPlayer mediaPlayer2 = mediaPlayer.get();
         if (!isAbleToChange(mediaPlayer2)) {
             LOG.error("CAN'T Split Audio {}", file);
@@ -111,16 +131,17 @@ public final class EditSongHelper {
         root.getChildren().addAll(progressIndicator);
 
         Button splitButton = SimpleButtonBuilder.newButton("_Split", a -> EditSongHelper.splitInFiles(mediaPlayer, file,
-            currentSlider, currentTime, music, progressIndicator, startTime));
+                currentSlider, currentTime, music, progressIndicator, startTime));
         root.getChildren().addAll(splitButton);
         new SimpleDialogBuilder().text("Split Multiple").node(root).bindWindow(currentSlider).displayDialog();
     }
 
     public static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
-        Duration currentTime, Music music, ProgressIndicator progressIndicator, ObjectProperty<Duration> startTime) {
+            Duration currentTime, Music music, ProgressIndicator progressIndicator,
+            ObjectProperty<Duration> startTime) {
         SongUtils.stopAndDispose(mediaPlayer.get());
         String format = FunctionEx.mapIf(music.getArtista(), a -> String.format("%s-%s.mp3", music.getTitulo(), a),
-            music.getTitulo().replaceAll("\\..+", ".mp3"));
+                music.getTitulo().replaceAll("\\..+", ".mp3"));
 
         File newFile = ResourceFXUtils.getOutFile("mp3/" + format);
         DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime.get(), currentTime);
@@ -136,9 +157,9 @@ public final class EditSongHelper {
                 mediaPlayer.get().totalDurationProperty().addListener(b -> {
                     SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer.get());
                     currentSlider.valueChangingProperty().addListener(
-                        (o, oldValue, newValue) -> updateMediaPlayer(mediaPlayer.get(), currentSlider, newValue));
+                            (o, oldValue, newValue) -> updateMediaPlayer(mediaPlayer.get(), currentSlider, newValue));
                     mediaPlayer.get().currentTimeProperty()
-                        .addListener(c -> updateCurrentSlider(mediaPlayer.get(), currentSlider));
+                            .addListener(c -> updateCurrentSlider(mediaPlayer.get(), currentSlider));
                     mediaPlayer.get().play();
                 });
                 StageHelper.closeStage(progressIndicator);

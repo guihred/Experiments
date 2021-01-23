@@ -316,7 +316,7 @@ public class DataframeUtils extends DataframeML {
             int j = i;
             dataframe.forEach((s, l) -> {
                 if (l.size() > j) {
-                    String string = Objects.toString(l.get(j), "");
+                    String string = StringSigaUtils.toStringSpecial(l.get(j));
                     if (string.length() > maxFormatMap.get(s)) {
                         string = string.substring(0, maxFormatMap.get(s));
                     }

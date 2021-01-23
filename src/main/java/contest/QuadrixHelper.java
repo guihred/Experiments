@@ -3,7 +3,6 @@ package contest;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static utils.StringSigaUtils.decodificar;
 import static utils.ex.RunnableEx.run;
 import static utils.ex.RunnableEx.runNewThread;
 import static utils.ex.SupplierEx.getIgnore;
@@ -72,15 +71,9 @@ public final class QuadrixHelper {
     }
 
     public static File getFileFromPage(String text, String url3) throws IOException {
-        // PDFs are redirected to an html visualization page
-        if (!text.endsWith(".pdf")) {
-            return ExtractUtils.getFile(text, url3);
-        }
-        String fileParameter = decodificar(JsoupUtils.executeRequest(url3, COOKIES).url().getQuery().split("=")[1]);
-        return SupplierEx
-            .makeSupplier(() -> ExtractUtils.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
-            .get();
+        return IadesHelper.getFileFromPage(text, url3, COOKIES);
     }
+
 
     public static List<File> getFilesFromPage(Entry<String, String> link) {
         String url = link.getValue();

@@ -169,6 +169,7 @@ public final class MusicReader {
             tags.setArtist(a.getArtista());
             tags.setTitle(a.getTitulo());
             tags.setYear(a.getAno());
+            tags.setGenreDescription(a.getGenero());
             if (a.getImage() != null) {
                 String value = getDescription(a);
                 Image image = a.getImage();

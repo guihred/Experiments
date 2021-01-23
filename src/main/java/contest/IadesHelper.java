@@ -2,12 +2,15 @@ package contest;
 
 import static java.util.stream.Stream.of;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static utils.StringSigaUtils.decodificar;
 import static utils.StringSigaUtils.removerDiacritico;
 
 import contest.db.ContestQuestion;
 import contest.db.Organization;
+import extract.JsoupUtils;
 import extract.PdfUtils;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
@@ -28,8 +31,8 @@ import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class IadesHelper {
-    private static final String VERMELHO = "vermelho";
-    private static final String AMARELO = "amarelo";
+    public static final String VERMELHO = "vermelho";
+    public static final String AMARELO = "amarelo";
     private static final Logger LOG = HasLogging.log();
     private static final List<String> IT_KEYWORDS = Arrays.asList("Informação", "Sistema", "Tecnologia", "Informática");
 
@@ -41,8 +44,7 @@ public final class IadesHelper {
         cell.getStyleClass().removeAll(AMARELO, VERMELHO);
         if (IadesHelper.hasTI(con.getVagas())) {
             cell.getStyleClass().add(AMARELO);
-            return;
-        }
+        } else
         if (con.getVagas().isEmpty()) {
             cell.getStyleClass().add(VERMELHO);
             con.getVagas().addListener((Observable c) -> {
@@ -94,6 +96,17 @@ public final class IadesHelper {
         return instance;
     }
 
+    public static File getFileFromPage(String text, String url3, Map<String, String> cookies) throws IOException {
+        // PDFs are redirected to an html visualization page
+        if (!text.endsWith(".pdf")) {
+            return ExtractUtils.getFile(text, url3);
+        }
+        String fileParameter = decodificar(JsoupUtils.executeRequest(url3, cookies).url().getQuery().split("=")[1]);
+        return SupplierEx
+            .makeSupplier(() -> ExtractUtils.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
+            .get();
+    }
+
     public static File getPDF(String number, File file) {
         if (file.getName().endsWith(".pdf")) {
             return file;
@@ -105,6 +118,11 @@ public final class IadesHelper {
 
     public static boolean hasFileExtension(String key) {
         return key.endsWith(".pdf") || key.endsWith(".zip") || key.endsWith(".rar");
+    }
+
+    public static boolean hasItKeyword(String e) {
+        return IadesHelper.IT_KEYWORDS.stream()
+            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m)));
     }
 
     public static boolean hasTI(Collection<?> observableList) {
@@ -171,11 +189,6 @@ public final class IadesHelper {
     private static Path getFirstPDF(File file, String number) {
         return FileTreeWalker.getFirstFileMatch(file, path -> nameMatches(number, path)).stream().findFirst()
             .orElseGet(() -> FileTreeWalker.getFirstPathByExtension(file, ".pdf"));
-    }
-
-    private static boolean hasItKeyword(String e) {
-        return IadesHelper.IT_KEYWORDS.stream()
-            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m)));
     }
 
     private static boolean nameMatches(String number, Path path) {

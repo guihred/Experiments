@@ -64,7 +64,9 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
     public static void fixSongs(TableView<Music> musicasTable) {
         ObservableList<Music> items = musicasTable.getItems();
         Optional<Music> findFirst = items.stream().filter(m -> StringUtils.isBlank(m.getArtista())
-                || StringUtils.isBlank(m.getAlbum()) || m.getTitulo().contains("-")).findFirst();
+                || StringUtils.isBlank(m.getAlbum()) || m.getTitulo().contains("-") || m.getArtista().contains("/")
+                || m.toString().contains("mari brasil mix"))
+                .findFirst();
         if (!findFirst.isPresent()) {
             return;
         }

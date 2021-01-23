@@ -156,7 +156,7 @@ public final class ConsultasHelper {
         if (ip.matches(WhoIsScanner.IP_REGEX)) {
             Map<String, String> blocked = KibanaApi.makeKibanaSearch("policiesQuery.json", ip, days, "key");
             if (blocked.values().stream().anyMatch(s -> s.contains("block"))) {
-                return false;
+                return true;
             }
         }
         return true;

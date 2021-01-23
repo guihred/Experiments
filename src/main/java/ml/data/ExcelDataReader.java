@@ -107,6 +107,9 @@ public class ExcelDataReader extends DataframeUtils {
     }
 
     private static Object getValue(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
         if (cell.getCellType() == CellType.STRING) {
             return cell.getStringCellValue().trim();
         }
@@ -180,7 +183,9 @@ public class ExcelDataReader extends DataframeUtils {
     }
 
     private static boolean skipFirstLine(DataframeML dataframe, Map<String, Object> map) {
-        return dataframe.size == 0
-                && map.entrySet().stream().allMatch(e -> Objects.equals(e.getKey(), e.getValue()));
+        return dataframe.size == 0 && map.entrySet().stream().filter(e -> !e.getKey().equals("Sheet")).allMatch(e -> {
+            return Objects.equals(e.getKey(), e.getValue())
+                    || Objects.equals(Objects.toString(e.getKey(), ""), Objects.toString(e.getValue(), ""));
+        });
     }
 }

@@ -27,13 +27,14 @@
 	<logger name="utils.ExtractUtils" level="INFO" />
 	<logger name="extract.PhantomJSUtils" level="OFF" />
 	<logger name="utils.ConsoleUtils" level="INFO" />
- 	<logger name="extract.WhoIsScanner" level="OFF" /> 
+ 	<logger name="extract.WhoIsScanner" level="INFO" /> 
  	<logger name="rosario.LeitorArquivos" level="OFF" /> 
+	<logger name="fxml.utils.FXMLCreator" level="OFF" />
 
+	<logger name="org.openqa.selenium.remote.RemoteWebDriver" level="OFF" />
 	<logger name="ch.qos.logback.classic" level="OFF" />
  	<logger name="com.github.junrar" level="OFF" /> 
 	<logger name="org.apache.pdfbox" level="OFF" />
-	<logger name="fxml.utils.FXMLCreator" level="OFF" />
 	<logger name="org.deeplearning4j.models" level="OFF" />
 	<logger name="org.nd4j" level="OFF" />
 

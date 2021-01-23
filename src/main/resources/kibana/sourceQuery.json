@@ -1,9 +1,9 @@
-{"index":"dtp-*prod*","ignore_unavailable":true,"preference":1600792228289}
+{"index":"dtp-pl*","ignore_unavailable":true,"preference":1611142058423}
 {
 	"aggs": {
 		"2": {
 			"terms": {
-				"field": "DestinationIP",
+				"field": "SourceIP",
 				"size": 10,
 				"order": {
 					"1": "desc"
@@ -51,7 +51,7 @@
 			"must": [
 			    {
                     "query_string": {
-                        "query": "SourceIP:%s",
+                        "query": "DestinationIP:%s",
                         "analyze_wildcard": true,
                         "default_field": "*"
                     }

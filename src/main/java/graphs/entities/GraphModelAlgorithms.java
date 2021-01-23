@@ -72,7 +72,7 @@ public final class GraphModelAlgorithms {
         List<Color> availableColors = ImageFXUtils.generateRandomColors(allCells2.size());
         int i = 0;
         List<Cell> vertices =
-                allCells2.stream().sorted(Comparator.comparing((Cell e) -> biedgesNumber(e, allEdges)).reversed())
+                allCells2.stream().sorted(Comparator.comparingLong((Cell e) -> biedgesNumber(e, allEdges)).reversed())
                         .peek(p -> p.setColor(null)).collect(Collectors.toList());
         while (vertices.stream().anyMatch(v -> v.getColor() == null)) {
             List<Cell> v = vertices.stream().filter(c -> c.getColor() == null).collect(Collectors.toList());

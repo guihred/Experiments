@@ -26,15 +26,6 @@ public class CIDRUtils {
     private static final String NETWORKS_CSV = "csv/networks.csv";
     private static DataframeML networkFile;
 
-    public static String getReverseDNS(String ip) {
-        return SupplierEx.get(() -> toInetAddress(ip).getCanonicalHostName(), ip);
-    }
-
-    public static boolean isPrivateNetwork(String ip) {
-        List<String> asList = Arrays.asList("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16");
-        return asList.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
-    }
-
     public static String addressToPattern(String cidr) {
         if (StringUtils.isBlank(cidr) || !cidr.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
             return cidr;
@@ -73,6 +64,7 @@ public class CIDRUtils {
     public static String convertToString(InetAddress o) {
         return o.getHostAddress();
     }
+
     public static Map<String, String> findNetwork(String ip) {
         networkFile =
                 SupplierEx.orElse(networkFile, () -> {
@@ -82,7 +74,16 @@ public class CIDRUtils {
                     }
                     return DataframeBuilder.build(outFile);
                 });
-        return searchInFile(networkFile, NETWORK, ip);
+        return strMap(searchInFile(networkFile, NETWORK, ip));
+    }
+
+    public static String getReverseDNS(String ip) {
+        return SupplierEx.get(() -> toInetAddress(ip).getCanonicalHostName(), null);
+    }
+
+    public static boolean isPrivateNetwork(String ip) {
+        List<String> asList = Arrays.asList("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16");
+        return asList.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
     }
 
     public static boolean isSameNetworkAddress(String cidr, String ip) {
@@ -127,9 +128,18 @@ public class CIDRUtils {
         return networkLoaded;
     }
 
-    public static Map<String, String> searchInFile(DataframeML dataframe, String network2, String ip) {
+    public static Map<String, Object> searchInFile(DataframeML dataframe, String network2, String ip) {
         return dataframe.findFirst(network2,
                 v -> Objects.equals(v, ip) || isSameNetworkAddress(Objects.toString(v, ""), ip));
+    }
+
+    public static Map<String, String> strMap(Map<String, Object> first) {
+        if (first != null) {
+            return first.entrySet().stream()
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> Objects.toString(e.getValue(), "")));
+        }
+
+        return null;
     }
 
     public static InetAddress toInetAddress(String ip) throws UnknownHostException {

@@ -172,6 +172,66 @@ public class KibanaApi {
         }, new HashMap<>());
     }
 
+    public static Map<String, SupplierEx<String>> scanByIp(String ip, int days) {
+        String key = "key";
+        String valueCol = "value";
+        Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
+        fullScan.put("IP", () -> ip);
+        fullScan.put("Provedor",
+                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "Nome", "HostName",
+                        "asname"));
+        fullScan.put("Geolocation",
+                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry", "Descrição"));
+        String pattern = CIDRUtils.addressToPattern(ip);
+        fullScan.put("WAF_Policy", () -> displayDistinct(
+                makeKibanaSearch("wafQuery.json", pattern, days, "action", "policy-name", "alert.description")));
+        fullScan.put("PaloAlto_Threat", () -> displayDistinct(makeKibanaSearch("threatQuery.json", ip, days, key)));
+        fullScan.put("TOP_FW", () -> {
+            Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", ip, days, key, valueCol);
+            convertToBytes(valueCol, destinationSearch);
+            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n"))
+                    .map(WHOIS_SCANNER::reverseDNS)
+                    .collect(Collectors.joining("\n")));
+            return displayDistinct(destinationSearch).replaceAll("^.+\t\n", "");
+        });
+        fullScan.put("TOP_WEB",
+                () -> displayDistinct(makeKibanaSearch("acessosQuery.json", pattern, days, key, "doc_count")));
+        fullScan.put("Ports", () -> {
+            Map<String, String> destinationPort =
+                    makeKibanaSearch("destinationPortQuery.json", days, new String[] { ip, ip }, key, valueCol);
+            destinationPort.computeIfPresent(key,
+                    (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
+                            .filter(i -> i != 0)
+                            .map(PortServices::getServiceByPort)
+                            .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription())
+                            .collect(Collectors.joining("\n")));
+            convertToBytes(valueCol, destinationPort);
+            return displayDistinct(destinationPort);
+        });
+        fullScan.put("Acesso", () -> {
+            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", ip, days, valueCol);
+            trafficSearch.computeIfPresent(valueCol,
+                    (k, v) -> Stream.of(v.split("\n"))
+                            .map(i -> DateFormatUtils.format("dd/MM/yyyy", StringSigaUtils.toLong(i))).distinct()
+                            .collect(Collectors.joining("–")));
+            return displayDistinct(trafficSearch);
+        });
+        fullScan.put("Bytes_Received", () -> {
+            Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", ip, days, valueCol);
+            convertToStats(valueCol, totalBytesQuery);
+            return displayDistinct(totalBytesQuery);
+        });
+        fullScan.put("Bytes_Sent", () -> {
+            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", ip, days, valueCol);
+            convertToStats(valueCol, totalBytesSent);
+            return display(totalBytesSent);
+        });
+        fullScan.put("URLs", () -> urls(days, pattern));
+        // fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", pattern,
+        // days, "Name", "Value")));
+        return fullScan;
+    }
+
     protected static String convertSearchKeywords(Map<String, String> search) {
         return search.entrySet().stream().map(e -> {
             if (e.getValue().contains("\n")) {
@@ -244,7 +304,7 @@ public class KibanaApi {
         int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
         adjustToMax(listOfFields, maxNumFields);
         return IntStream.range(0, maxNumFields).mapToObj(
-                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
+                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining(" ")))
                 // .distinct()
                 .collect(Collectors.joining("\n"));
     }
@@ -278,64 +338,6 @@ public class KibanaApi {
 
     private static String removeExtension(File file) {
         return file.getName().replaceAll("\\.json", "");
-    }
-
-    private static Map<String, SupplierEx<String>> scanByIp(String ip, int days) {
-        String key = "key";
-        String valueCol = "value";
-        Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
-        fullScan.put("IP", () -> ip);
-        fullScan.put("Provedor",
-                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "Nome", "HostName",
-                        "asname"));
-        fullScan.put("Geolocation",
-                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry", "Descrição"));
-        String pattern = CIDRUtils.addressToPattern(ip);
-        fullScan.put("WAF_Policy", () -> displayDistinct(
-                makeKibanaSearch("wafQuery.json", pattern, days, "action", "policy-name", "alert.description")));
-        fullScan.put("PaloAlto_Threat", () -> displayDistinct(makeKibanaSearch("threatQuery.json", ip, days, key)));
-        fullScan.put("TOP_FW", () -> {
-            Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", ip, days, key, valueCol);
-            convertToBytes(valueCol, destinationSearch);
-            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n")).map(WHOIS_SCANNER::reverseDNS)
-                    .collect(Collectors.joining("\n")));
-            return displayDistinct(destinationSearch).replaceAll("^.+\t\n", "");
-        });
-        fullScan.put("TOP_WEB",
-                () -> displayDistinct(makeKibanaSearch("acessosQuery.json", pattern, days, key, "doc_count")));
-        fullScan.put("Ports", () -> {
-            Map<String, String> destinationPort =
-                    makeKibanaSearch("destinationPortQuery.json", ip, days, key, valueCol);
-            destinationPort.computeIfPresent(key,
-                    (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
-                            .filter(i -> i != 0)
-                            .map(PortServices::getServiceByPort)
-                            .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription().replaceAll(",.+", ""))
-                            .collect(Collectors.joining("\n")));
-            convertToBytes(valueCol, destinationPort);
-            return displayDistinct(destinationPort);
-        });
-        fullScan.put("Acesso", () -> {
-            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", ip, days, valueCol);
-            trafficSearch.computeIfPresent(valueCol,
-                    (k, v) -> Stream.of(v.split("\n"))
-                            .map(i -> DateFormatUtils.format("dd/MM/yyyy", StringSigaUtils.toLong(i))).distinct()
-                            .collect(Collectors.joining("–")));
-            return displayDistinct(trafficSearch);
-        });
-        fullScan.put("Bytes_Received", () -> {
-            Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", ip, days, valueCol);
-            convertToStats(valueCol, totalBytesQuery);
-            return displayDistinct(totalBytesQuery);
-        });
-        fullScan.put("Bytes_Sent", () -> {
-            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", ip, days, valueCol);
-            convertToStats(valueCol, totalBytesSent);
-            return displayDistinct(totalBytesSent);
-        });
-        fullScan.put("URLs", () -> urls(days, pattern));
-        fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", pattern, days, "Name", "Value")));
-        return fullScan;
     }
 
     private static String urls(int days, String pattern) {

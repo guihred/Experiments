@@ -177,14 +177,18 @@ public class WhoIsScanner {
                 SupplierEx.getFirst(() -> lookupSDM(whoIsScanner, ip, reverseDNS), () -> {
                     DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes3.csv",
                             DataframeBuilder::build);
-                    return CIDRUtils.searchInFile(networksFile, "Sub-Rede", ip);
+                    return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "Sub-Rede", ip));
                 }, () -> {
                     DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes2.csv",
                             DataframeBuilder::build);
-                    return CIDRUtils.searchInFile(networksFile, "network", ip);
+                    return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "network", ip));
+                }, () -> {
+                    DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes1.csv",
+                            DataframeBuilder::build);
+                    return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "network", ip));
                 }, LinkedHashMap::new);
-        RunnableEx.runIf(internalScan, f -> f.put("Descrição" + "",
-                f.values().stream().filter(StringUtils::isNotBlank).distinct().collect(Collectors.joining("\n"))));
+        internalScan.put("Descrição", internalScan.values().stream().map(Objects::toString)
+                .filter(StringUtils::isNotBlank).distinct().collect(Collectors.joining(" - ")));
 
         internalScan.put(REVERSE_DNS, reverseDNS);
         return internalScan;
@@ -193,7 +197,7 @@ public class WhoIsScanner {
     private static Map<String, String> lookupSDM(WhoIsScanner whoIsScanner, String ip, String reverseDNS) {
         DataframeML networksFile =
                 whoIsScanner.dataframeLookup.computeIfAbsent("networks/SDMResources.csv", DataframeBuilder::build);
-        return SupplierEx.getFirst(
+        Map<String, Object> first = SupplierEx.getFirst(
                 () -> networksFile.findFirst("IP0",
                         v -> Objects.equals(v, ip)
                                 || StringUtils.equalsIgnoreCase(Objects.toString(v), ip)),
@@ -201,6 +205,9 @@ public class WhoIsScanner {
                         v -> Objects.equals(v, ip) || Objects.equals(v, reverseDNS)),
                 () -> networksFile.findFirst("IP1", v -> Objects.equals(v, ip)),
                 () -> networksFile.findFirst("IP2", v -> Objects.equals(v, ip)));
+        return CIDRUtils.strMap(first);
     }
+
+
 
 }

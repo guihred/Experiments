@@ -3,7 +3,7 @@
 <VBox xmlns:fx="http://javafx.com/fxml"
 	stylesheets="@/css/filesComparator.css">
 	<children>
-		<SplitPane fx:id="splitPane0">
+		<SplitPane fx:id="splitPane0" VBox.vgrow="ALWAYS">
 			<items>
 				<TreeView fx:id="treeBuilder">
 					<root>
