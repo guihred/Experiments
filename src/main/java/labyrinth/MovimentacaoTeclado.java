@@ -7,7 +7,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
-	private static final double CAMERA_MODIFIER = 50.0;
+    private static final int STRAIGHT_ANGLE = 90;
+    private static final double CAMERA_MODIFIER = 50.0;
 	private static final double CAMERA_QUANTITY = 5.0;
 	private final CommomLabyrinth labyrinth3dWallTexture;
 	private PerspectiveCamera camera;
@@ -83,8 +84,8 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
     }
 
     private void moveLeft(double change) {
-        double sin = Math.sin(Math.toRadians(camera.getRotate() + 90)) * change;
-        double cos = Math.cos(Math.toRadians(camera.getRotate() + 90)) * change;
+        double sin = Math.sin(Math.toRadians(camera.getRotate() + STRAIGHT_ANGLE)) * change;
+        double cos = Math.cos(Math.toRadians(camera.getRotate() + STRAIGHT_ANGLE)) * change;
 
         camera.setTranslateX(camera.getTranslateX() - sin);
         if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {
@@ -97,8 +98,8 @@ public class MovimentacaoTeclado implements EventHandler<KeyEvent> {
     }
 
 	private void moveRight(double change) {
-        double sin = Math.sin(Math.toRadians(camera.getRotate() - 90)) * change;
-        double cos = Math.cos(Math.toRadians(camera.getRotate() - 90)) * change;
+        double sin = Math.sin(Math.toRadians(camera.getRotate() - STRAIGHT_ANGLE)) * change;
+        double cos = Math.cos(Math.toRadians(camera.getRotate() - STRAIGHT_ANGLE)) * change;
 
         camera.setTranslateX(camera.getTranslateX() - sin);
         if (labyrinth3dWallTexture.checkColision(camera.getBoundsInParent())) {

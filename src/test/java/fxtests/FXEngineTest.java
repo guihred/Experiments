@@ -1,6 +1,9 @@
 package fxtests;
 
+import static fxtests.FXTesting.measureTimeExpectException;
+
 import ex.j8.Chapter4;
+import ex.j8.Chapter8;
 import extract.FileAttrApp;
 import fractal.LeafFractalApp;
 import fxml.utils.XmlViewer;
@@ -31,6 +34,29 @@ import utils.ex.RunnableEx;
 public class FXEngineTest extends AbstractTestExecution {
 
     @Test
+    public void testChapter4() throws Throwable {
+        AbstractTestExecution.testApps(Chapter4.Ex1.class, Chapter4.Ex4.class, Chapter4.Ex10.class, Chapter4.Ex5.class,
+            Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class);
+    }
+
+    @Test
+    public void testChapter8() {
+        measureTime("Chapter8.ex1", Chapter8::ex1);
+        measureTimeExpectException("Chapter8.ex2", Chapter8::ex2);
+        measureTime("Chapter8.ex3", Chapter8::ex3);
+        measureTime("Chapter8.ex4", Chapter8::ex4);
+        measureTime("Chapter8.ex5", Chapter8::ex5);
+        measureTime("Chapter8.ex6", Chapter8::ex6);
+        measureTime("Chapter8.ex7", Chapter8::ex7);
+        measureTime("Chapter8.ex9", Chapter8::ex9);
+        measureTime("Chapter8.ex10", Chapter8::ex10);
+        measureTime("Chapter8.ex11", Chapter8::ex11);
+        measureTime("Chapter8.ex15", Chapter8::ex15);
+        measureTime("Chapter8.ex16", Chapter8::ex16);
+        measureTime("Chapter8.ex9", Chapter8::ex9);
+        measureTimeExpectException("Chapter8.ex14", Chapter8::ex14);
+    }
+    @Test
     public void verifyAllApps() {
         AllApps show = show(AllApps.class);
         while (show.getApplications().isEmpty()) {
@@ -42,15 +68,14 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyButtons() {
-        List<Class<? extends Application>> applications = Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class,
-            Chapter4.Ex10.class);
+        List<Class<? extends Application>> applications =
+                Arrays.asList(Chapter4.Ex5.class, Chapter4.Ex9.class, Chapter4.Ex10.class);
         for (Class<? extends Application> class1 : applications) {
             show(class1);
             clickButtonsWait(WAIT_TIME);
             moveSliders(100);
         }
     }
-
 
     @Test
     public void verifyFileAttrApp() {

@@ -30,6 +30,7 @@ import utils.ex.SupplierEx;
 
 public class DataframeUtils extends DataframeML {
 
+    private static final int MAX_COLUMN_SIZE = 30;
     private static final Logger LOG = HasLogging.log();
 
     protected DataframeUtils() {
@@ -304,7 +305,7 @@ public class DataframeUtils extends DataframeML {
                             e -> maxFormatMap.merge(s,
                                     format2 == Double.class ? Objects.toString(e).replaceAll("\\.\\d+$", "").length()
                                             : Objects.toString(e).length(),
-                                    (t, u) -> Integer.min(Integer.max(t, u), 30)));
+                                    (t, u) -> Integer.min(Integer.max(t, u), MAX_COLUMN_SIZE)));
         });
 
         dataframe.forEach((s, l) -> str.append(StringSigaUtils.format(maxFormatMap.get(s), s)));

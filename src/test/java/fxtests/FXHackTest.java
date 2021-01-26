@@ -19,6 +19,7 @@ import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import utils.*;
 import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public class FXHackTest extends AbstractTestExecution {
     @Test
@@ -259,7 +260,11 @@ public class FXHackTest extends AbstractTestExecution {
         ImageFXUtils.setShowImage(false);
         show(EthicalHackController.class);
         lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
-                .forEach(this::tryClickOn);
+                .forEach(t -> {
+                    SupplierEx.getIgnore(() -> super.clickOn(t));
+                    sleep(WAIT_TIME);
+                    type(KeyCode.ESCAPE);
+                });
         ConsoleUtils.waitAllProcesses();
         tryClickOn(lookupFirst(CheckBox.class));
     }

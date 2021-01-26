@@ -13,7 +13,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class ReversiPieceTest extends Application {
+public class ReversiPieceExample extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {

@@ -124,7 +124,8 @@ public class ReportApplication extends Application {
 
     private void addGeridInfo(Map<String, Object> mapaSubstituicao) {
 
-        int days = (int) Math.max(1., Math.ceil(StringSigaUtils.toInteger(params.get("\\$hour")) / 24.));
+        final double hoursInADay = 24.;
+        int days = (int) Math.max(1., Math.ceil(StringSigaUtils.toInteger(params.get("\\$hour")) / hoursInADay));
         if (JsonExtractor.accessMap(mapaSubstituicao, "params").containsKey("ip")) {
             KibanaApi.kibanaFullScan(params.get("\\$ip"), days, progressIndicator.progressProperty())
                     .forEach((k, v) -> params.put("\\$" + k, v));
@@ -173,8 +174,9 @@ public class ReportApplication extends Application {
         ListView<String> build = urlsListView.build();
         SplitPane pane = new SplitPane(build, stackPane);
 
+        final double fitRatio = 0.99;
         pane.getDividers().get(0).positionProperty().addListener((ob, old, val) -> imageView
-                .setFitWidth((1 - val.doubleValue()) * 0.99 * imageView.getScene().getWidth()));
+                .setFitWidth((1 - val.doubleValue()) * fitRatio * imageView.getScene().getWidth()));
 
         RotateUtils.moveArea(stackPane, rectangle, imageView,
                 img -> ReportHelper.onImageSelected(mapaSubstituicao, reportFile, build, img));

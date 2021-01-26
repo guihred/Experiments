@@ -22,13 +22,14 @@ public class CurveTool extends PaintTool {
         icon.setStartX(0);
         icon.setStartY(0);
         icon.setControlX1(0);
-        icon.setControlY1(30);
-        icon.setControlX2(30);
+        final int control = 30;
+        icon.setControlY1(control);
+        icon.setControlX2(control);
         icon.setControlY2(0);
 
         icon.setStartY(0);
-        icon.setEndX(30);
-        icon.setEndY(30);
+        icon.setEndX(control);
+        icon.setEndY(control);
         return icon;
     }
 

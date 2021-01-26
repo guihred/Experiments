@@ -21,13 +21,14 @@ import simplebuilder.SimpleDialogBuilder;
  */
 public class RoundMazeModel {
 
+    private static final double FULL_CIRCLE = 360.;
     public static final double CANVAS_WIDTH = 500;
     private RoundMazeSquare[][] maze = new RoundMazeSquare[RoundMazeHandler.MAZE_WIDTH][RoundMazeHandler.MAZE_HEIGHT];
     private int x = RoundMazeHandler.MAZE_WIDTH - 1;
     private int y = RoundMazeHandler.MAZE_HEIGHT - 1;
     private GraphicsContext gc;
     private Canvas canvas;
-    private Rotate angle = new Rotate(90);
+    private final Rotate angle = new Rotate(90);
 
     public RoundMazeModel(Scene scene, Canvas canvas) {
         this.canvas = canvas;
@@ -68,7 +69,7 @@ public class RoundMazeModel {
     private void goLeft() {
         if (maze[x][y].isWest()) {
             y = (y - 1 + RoundMazeHandler.MAZE_HEIGHT) % RoundMazeHandler.MAZE_HEIGHT;
-            angle.setAngle(angle.getAngle() - 360. / RoundMazeHandler.MAZE_HEIGHT);
+            angle.setAngle(angle.getAngle() - FULL_CIRCLE / RoundMazeHandler.MAZE_HEIGHT);
         }
     }
 
@@ -81,7 +82,7 @@ public class RoundMazeModel {
     private void goRight() {
         if (maze[x][y].isEast()) {
             y = (y + 1) % RoundMazeHandler.MAZE_HEIGHT;
-            angle.setAngle(angle.getAngle() + 360. / RoundMazeHandler.MAZE_HEIGHT);
+            angle.setAngle(angle.getAngle() + FULL_CIRCLE / RoundMazeHandler.MAZE_HEIGHT);
         }
     }
 
@@ -130,7 +131,8 @@ public class RoundMazeModel {
 
     private void reset() {
         initializeMaze();
-        angle.setAngle(90);
+        final int straightAngle = 90;
+        angle.setAngle(straightAngle);
         x = RoundMazeHandler.MAZE_WIDTH - 1;
         y = RoundMazeHandler.MAZE_HEIGHT - 1;
         maze[RoundMazeHandler.MAZE_WIDTH - 1][RoundMazeHandler.MAZE_HEIGHT - 1].setCenter(true);
@@ -143,7 +145,7 @@ public class RoundMazeModel {
     }
 
     public static void draw(RoundMazeSquare sq, GraphicsContext gc) {
-        double length = -360.0 / RoundMazeHandler.MAZE_HEIGHT;
+        double length = -FULL_CIRCLE / RoundMazeHandler.MAZE_HEIGHT;
         double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / RoundMazeHandler.MAZE_WIDTH / 2;
         double angle = length * (sq.j + 1);
         double m = (sq.i + 2) * CANVAS_WIDTH / 2 / RoundMazeHandler.MAZE_WIDTH;

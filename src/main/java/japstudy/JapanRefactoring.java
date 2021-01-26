@@ -19,7 +19,7 @@ public class JapanRefactoring {
         + "\\(english,japanese,romaji,exercise,lesson\\) VALUES"
         + "\\('([^\n]+)','([^\n]+)','([^\n]+)',(\\d+),(\\d+)\\);";
 
-    private static final String OUTPUT_FILE = "sql/create_database.sql";
+    private static final String OUTPUT_FILE = "create_database.sql";
     public static final String TXT_FILE = ResourceFXUtils.toFullPath(OUTPUT_FILE);
 
     private static int chapter = 1;

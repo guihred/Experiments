@@ -14,8 +14,9 @@ public class TetrisSquare extends Region {
     public TetrisSquare() {
 
         setPadding(new Insets(10));
-        setPrefSize(30, 30);
-        setShape(new Rectangle(30, 30));
+        final int prefWidth = 30;
+        setPrefSize(prefWidth, prefWidth);
+        setShape(new Rectangle(prefWidth, prefWidth));
 
         styleProperty().bind(
                 Bindings.when(state.isEqualTo(TetrisPieceState.EMPTY))

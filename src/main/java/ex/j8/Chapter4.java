@@ -25,6 +25,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.slf4j.Logger;
 import simplebuilder.*;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
@@ -212,6 +213,8 @@ public final class Chapter4 {
      */
     public static class Ex5 extends Application {
 
+        private static final Logger LOG = HasLogging.log();
+
         @Override
         public void start(Stage stage) {
             final Pane pane = new VBox(20);
@@ -225,7 +228,7 @@ public final class Chapter4 {
             button.disableProperty().bind(observe(t -> t.doubleValue() > maxValue, slider.valueProperty()));
             ObservableValue<String> observe = observe((t, b) -> (t.doubleValue() > 50) + " " + b,
                     slider.valueProperty(), check.selectedProperty());
-            observe.addListener((o, old, newV) -> HasLogging.log().info("{} {}", old, newV));
+            observe.addListener((o, old, newV) -> LOG.info("{} {}", old, newV));
             message.textProperty().bind(observe);
             pane.getChildren().addAll(slider, check, button, message);
             stage.setScene(scene);

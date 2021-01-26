@@ -56,7 +56,7 @@ public class ShellFractal extends Canvas {
 		if (r < limit.get()) {
 			double x = Math.sin(Math.toRadians(angle)) * r0;
 			double y = Math.cos(Math.toRadians(angle)) * r0;
-            drawCircle(gc, x0 + x, y0 + y, r + r0, r, (angle + fullCircle / 4) % fullCircle);
+            drawCircle(gc, x0 + x, y0 + y, r + r0, r, (angle + fullCircle / 4.) % fullCircle);
 		}
 	}
 

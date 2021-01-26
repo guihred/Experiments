@@ -172,9 +172,8 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
     @Test
     public void testLoadKibanaApi() {
-        measureTime("ExcelService.getExcel",
-                () -> ExcelService.getExcel(ResourceFXUtils.toFile("networks/Lista de IP da Caixa.xls"),
-                        (List<Object> l) -> {
+        measureTime("ExcelService.getExcel", () -> ExcelService
+                .getExcel(ResourceFXUtils.toFile("networks/Lista de IP da Caixa.xls"), (List<Object> l) -> {
                     if (l.isEmpty()) {
                         return null;
                     }
@@ -220,13 +219,12 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
     @Test
     public void testWordFile() {
-        measureTime("PPTService.getPowerPointImages",
-                () -> PPTService.getPowerPointImages(ResourceFXUtils.toFile("models/testPowerPoint.pptx")));
+        measureTime("PPTService.getPowerPointImages", () -> PPTService
+                .getPowerPointImages(ResourceFXUtils.toFile("models/Radar_Eventos_v01122020REL1.pptx")));
         measureTime("WordService.getWord", () -> {
             Map<String, Object> mapaSubstituicao = new HashMap<>();
             File file = ResourceFXUtils.getOutFile("resultado.docx");
             WordService.getWord(mapaSubstituicao, "ModeloGeralReporte.docx", file);
-
         });
     }
 

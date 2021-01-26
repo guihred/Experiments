@@ -50,7 +50,9 @@ public final class ExplorerHelper {
         }, ipColumn);
         DataframeML filledDataframe = builder.build(count);
         filledDataframe.removeCol("");
-        LOG.info(DataframeUtils.toString(filledDataframe, 200));
+        final int maxSizeDisplayed = 200;
+        String dataAsStr = DataframeUtils.toString(filledDataframe, maxSizeDisplayed);
+        LOG.info(dataAsStr);
         return filledDataframe;
     }
 
@@ -84,7 +86,7 @@ public final class ExplorerHelper {
         List<Entry<Object, Double>> series = DataframeUtils.createSeries(dataframe, "Owner", numberField);
         series.forEach(s1 -> LOG.info("{}", s1));
         dataframe.removeCol("filters");
-        return DataframeUtils.toString(dataframe, 30);
+        return DataframeUtils.toString(dataframe);
 
     }
 

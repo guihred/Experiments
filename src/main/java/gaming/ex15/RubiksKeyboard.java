@@ -9,7 +9,8 @@ import org.slf4j.Logger;
 import utils.ex.HasLogging;
 
 public class RubiksKeyboard implements EventHandler<KeyEvent> {
-	private static final Logger LOGGER = HasLogging.log();
+    private static final int STRAIGHT_ANGLE = 90;
+    private static final Logger LOGGER = HasLogging.log();
 	private static final double CAMERA_MODIFIER = 50.0;
 	private static final double CAMERA_QUANTITY = 5.0;
 	/**
@@ -83,7 +84,7 @@ public class RubiksKeyboard implements EventHandler<KeyEvent> {
 	}
 
 	private void moveLeft(double change) {
-		double sin = Math.sin(Math.toRadians(camera.getRotate() + 90)) * change;
+        double sin = Math.sin(Math.toRadians(camera.getRotate() + STRAIGHT_ANGLE)) * change;
 		double cos = Math.cos(Math.toRadians(camera.getRotate() + 90)) * change;
 
 		camera.setTranslateX(camera.getTranslateX() - sin);

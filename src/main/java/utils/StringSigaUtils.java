@@ -343,10 +343,8 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String toStringSpecial(Object n) {
-        if (n instanceof Number) {
-            if (((Number) n).doubleValue() % 1 == 0) {
-                return String.format("%.0f", ((Number) n).doubleValue());
-            }
+        if (n instanceof Number && ((Number) n).doubleValue() % 1. == 0) {
+            return String.format("%.0f", ((Number) n).doubleValue());
         }
         return Objects.toString(n, "");
     }

@@ -169,7 +169,8 @@ public class ConsultasInvestigator extends Application {
             QueryObjects orElse =
                     queryList.stream().filter(e -> e.getTable() == lookup).findFirst().orElse(queryList.get(0));
             TableView<Map<String, String>> table = orElse.getTable();
-            String tableFullName = filter.values().stream().map(s -> s.replaceAll(".+/(.+)", "$1")).collect(joining());
+            String tableFullName = filter.values().stream().map(s -> s.replaceAll(".+/(.+)", "$1"))
+                    .map(s -> s.replaceAll("[\\?=]+", "")).collect(joining());
             File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + tableFullName + ".csv");
             CSVUtils.saveToFile(table, ev);
             new SimpleDialogBuilder().bindWindow(tabPane0).show(DataframeExplorer.class).addStats(ev);

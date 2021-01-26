@@ -36,7 +36,7 @@ public class ArkanoidModel {
         circle.setCenterX(rectangle.getX() + rectangle.getWidth() / 2);
         circle.setCenterY(rectangle.getY() - circle.getRadius());
 
-        int cols = 15;
+        final int cols = 15;
         final int spacing = 25;
         group.getChildren().add(rectangle);
         int rows = 6;
@@ -89,7 +89,9 @@ public class ArkanoidModel {
         circle.setCenterY(circle.getCenterY() + y);
         Node touchingNode2 = group.getChildren().stream()
             .filter(c -> c != circle && circle.intersects(c.getBoundsInLocal())).findAny().orElse(null);
-        if (touchingNode2 != null || circle.getCenterY() <= 5 || circle.getCenterY() > scene.getHeight() - 30) {
+        final int touchDistance = 30;
+        if (touchingNode2 != null || circle.getCenterY() <= 5
+                || circle.getCenterY() > scene.getHeight() - touchDistance) {
             y = -y;
         }
         removeIfBlock(touchingNode2);
@@ -108,7 +110,8 @@ public class ArkanoidModel {
     }
 
     private static Rectangle newRect(int cols, final int spacing, int i) {
-        Rectangle rectangle2 = new Rectangle(i % cols * spacing + 10, i / cols * cols + 50, 20, 10);
+        final int padding = 50;
+        Rectangle rectangle2 = new Rectangle(i % cols * spacing + 10, i / cols * cols + padding, 20, 10);
         rectangle2.setFill(Color.AQUA);
         return rectangle2;
     }

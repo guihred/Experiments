@@ -2,17 +2,24 @@ package fxtests;
 
 import java.util.Map;
 import java.util.stream.Collectors;
-import kibana.ConsultasInvestigator;
-import kibana.KibanaApi;
-import kibana.ReportApplication;
-import kibana.ReportHelper;
+import kibana.*;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import utils.ExtractUtils;
 import utils.ImageFXUtils;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FXKibanaReportTest extends AbstractTestExecution {
+
+    @Test
+    public void testAcessosVolumetricos() {
+        measureTime("AcessosVolumetricos", ()->{
+            ExtractUtils.insertProxyConfig();
+            AcessosVolumetricos.getVolumetria("destinationQuery.json", "destination");
+            AcessosVolumetricos.getVolumetria("sourceQuery.json", "source");
+        });
+    }
 
     @Test
     public void testAutomatedSearch() {

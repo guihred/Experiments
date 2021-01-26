@@ -15,10 +15,12 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 
 public class JavaFileDependency {
+    private static final Logger LOG = HasLogging.log();
     private static final String IMPORT_REGEX =
             "import ([\\w\\.]+)\\.[\\w\\*]+;" + "|import static ([\\w\\.]+)\\.\\w+\\.\\w+;";
     private static final String CLASS_REGEX = "\\W+([A-Z]\\w+)\\W";
@@ -189,7 +191,7 @@ public class JavaFileDependency {
                     List<String> filesFullPath =
                             path.stream().map(JavaFileDependency::getFullName).collect(Collectors.toList());
                     allPaths.addAll(filesFullPath);
-                    HasLogging.log().info("{} {} {}", dependecy.getFullName(), tests.size(), filesFullPath);
+                    LOG.info("{} {} {}", dependecy.getFullName(), tests.size(), filesFullPath);
                 }
                 testClasses.addAll(tests);
             }

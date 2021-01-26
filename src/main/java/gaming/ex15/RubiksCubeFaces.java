@@ -36,7 +36,9 @@ enum RubiksCubeFaces {
 
 	public void rotate(RubiksPiece e, DoubleProperty angle, boolean clockwise) {
 		Rotate rotate = e.getRotations().get(getAxis());
-		double angle2 = Math.ceil((rotate.getAngle() + 360) % 360 / 90) * 90;
+        final int fullCircle = 360;
+        final int straightAngle = 90;
+        double angle2 = Math.ceil((rotate.getAngle() + fullCircle) % fullCircle / straightAngle) * straightAngle;
 		DoubleBinding add = clockwise ^ (this == RubiksCubeFaces.BACK || this == RubiksCubeFaces.FRONT)
 				? angle.add(angle2)
 				: angle.multiply(-1).add(angle2);

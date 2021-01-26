@@ -54,7 +54,8 @@ public enum Combination {
                 return elementCount.getOrDefault(Village.class, 0L) >= 5
                     || settlePoints.stream().noneMatch(s -> s.acceptVillage(player));
             case ROAD:
-                return elementCount.getOrDefault(Road.class, 0L) >= 15;
+                final int roadLimit = 15;
+                return elementCount.getOrDefault(Road.class, 0L) >= roadLimit;
             case DEVELOPMENT:
             default:
                 return developmentCards.isEmpty();
@@ -93,7 +94,9 @@ public enum Combination {
         for (int i = 0; i < combinations.length; i++) {
             Combination combination = combinations[i];
             List<ResourceType> resources = combination.getResources();
-            Button button = SimpleButtonBuilder.newButton(newImage(combination.getElement(), 30, 30), "" + combination,
+            final int defaultSize = 30;
+            Button button = SimpleButtonBuilder.newButton(newImage(combination.getElement(), defaultSize, defaultSize),
+                    "" + combination,
                 e -> onClick.accept(combination));
             button.setUserData(combination);
             button.disableProperty()

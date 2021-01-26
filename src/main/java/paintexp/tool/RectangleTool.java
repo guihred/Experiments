@@ -25,7 +25,8 @@ public class RectangleTool extends PaintTool {
 
     @Override
     public Shape createIcon() {
-        return new SimpleRectangleBuilder().width(30).height(30).fill(Color.TRANSPARENT).stroke(Color.BLACK)
+        final int size = 30;
+        return new SimpleRectangleBuilder().width(size).height(size).fill(Color.TRANSPARENT).stroke(Color.BLACK)
                 .smooth(false).build();
     }
 
@@ -81,7 +82,8 @@ public class RectangleTool extends PaintTool {
 
     @Override
     public void onSelected(final PaintModel model) {
-        Rectangle rectangle = new Rectangle(50, 50, Color.TRANSPARENT);
+        final int defaultSize = 50;
+        Rectangle rectangle = new Rectangle(defaultSize, defaultSize, Color.TRANSPARENT);
         rectangle.setStroke(Color.GRAY);
         rectangle.strokeProperty().bind(model.frontColorProperty());
         rectangle.arcWidthProperty().bind(getArea().arcWidthProperty());

@@ -54,9 +54,11 @@ public class PieGraphExample extends Application {
         dataframeObj.set(dataframe);
         Button exportButton = newButton("Export", e -> ImageFXUtils.take(canvas));
         VBox radiusSlider = newSlider("Radius", 1, 500, canvas.radiusProperty());
-        VBox binsSlider = newSlider("Bins", 1, 50, canvas.binsProperty());
+        final int maxBins = 50;
+        VBox binsSlider = newSlider("Bins", 1, maxBins, canvas.binsProperty());
         VBox xSlider = newSlider("X", -SIZE, SIZE, canvas.xOffsetProperty());
-        VBox start = newSlider("Start", -180, 180, canvas.startProperty());
+        final int halfCircle = 180;
+        VBox start = newSlider("Start", -halfCircle, halfCircle, canvas.startProperty());
         VBox propSlider = newSlider("Legend Distance", 0, 1., canvas.legendsRadiusProperty());
         CheckBox newCheck = CommonsFX.newCheck("", canvas.showLinesProperty());
         Button chooseFile = new FileChooserBuilder().name("Choose CSV").title("CSV").extensions("CSV", "*.csv")

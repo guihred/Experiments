@@ -74,8 +74,9 @@ public class SudokuModel {
         pressedSquare = pressed.get();
         Bounds boundsInParent = pressedSquare.getBoundsInParent();
         int halfTheSize = MAP_N_SQUARED / 2;
-        double maxY = pressedSquare.getCol() > halfTheSize ? boundsInParent.getMinY() - 90 : boundsInParent.getMaxY();
-        double maxX = pressedSquare.getRow() > halfTheSize ? boundsInParent.getMinX() - 90 : boundsInParent.getMaxX();
+        final int pad = 90;
+        double maxY = pressedSquare.getCol() > halfTheSize ? boundsInParent.getMinY() - pad : boundsInParent.getMaxY();
+        double maxX = pressedSquare.getRow() > halfTheSize ? boundsInParent.getMinX() - pad : boundsInParent.getMaxX();
         numberBoard.setPadding(new Insets(maxY, 0, 0, maxX));
         numberBoard.setVisible(true);
         handleMouseMoved(ev);

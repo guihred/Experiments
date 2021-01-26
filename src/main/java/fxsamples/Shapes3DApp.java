@@ -21,6 +21,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class Shapes3DApp extends Application {
+    private static final int MAX_BYTE = 256;
     private double mousePosX;
     private double mousePosY;
     private double mouseOldX;
@@ -37,7 +38,7 @@ public class Shapes3DApp extends Application {
         PixelWriter pw = wr.getPixelWriter();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                int r = rnd.nextInt(256);
+                int r = rnd.nextInt(MAX_BYTE);
                 int g = rnd.nextInt(256);
                 int b = rnd.nextInt(256);
                 Color color = Color.rgb(r, g, b);
@@ -57,7 +58,8 @@ public class Shapes3DApp extends Application {
         Image diffuseMap = createImage(imageSize);
         ImageView iv = new ImageView(diffuseMap);
         iv.setRotationAxis(Rotate.X_AXIS);
-        iv.setRotate(90);
+        final int straightAngle = 90;
+        iv.setRotate(straightAngle);
         iv.setTranslateX(-diffuseMap.getWidth() / 2);
         iv.setTranslateY(-diffuseMap.getHeight() / 5);
         group.getChildren().add(iv);

@@ -115,7 +115,8 @@ public class Ch3 {
 
     public static void tasks() {
 		StringBuilder s = new StringBuilder();
-        Runnable[] array = IntStream.range(1, 12).mapToObj(r -> (Runnable) () -> s.append(r + " "))
+        final int exampleTasks = 12;
+        Runnable[] array = IntStream.range(1, exampleTasks).mapToObj(r -> (Runnable) () -> s.append(r + " "))
             .toArray(Runnable[]::new);
 
         runInOrder(array);
@@ -223,9 +224,10 @@ public class Ch3 {
      * implements Sequence<BigInteger> .
      */
     public static class SquareSequence implements Sequence<BigInteger> {
+        private static final int EXAMPLE_LIMIT = 50;
         private BigInteger i = BigInteger.ZERO;
         private int c;
-        private int limit = 50;
+        private int limit = EXAMPLE_LIMIT;
 
         @Override
         public boolean hasNext() {

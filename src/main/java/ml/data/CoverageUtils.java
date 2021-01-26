@@ -33,7 +33,7 @@ public final class CoverageUtils {
 
     private static final String PERCENTAGE = "PERCENTAGE";
 
-    private static final int LINES_MIN_COVERAGE = 30;
+    private static final int LINES_MIN_COVERAGE = 10;
 
     private static final int BRANCH_MIN_COVERAGE = 20;
 

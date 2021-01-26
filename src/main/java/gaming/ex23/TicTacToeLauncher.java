@@ -14,11 +14,13 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ex.HasLogging;
 
 public class TicTacToeLauncher extends Application {
 
+    private static final Logger LOG = HasLogging.log();
     @FXML
     private GridPane gridPane;
     private int currentPlayer;
@@ -65,7 +67,7 @@ public class TicTacToeLauncher extends Application {
             squares.get(action).setState(x);
             TicTacToeHelper.verifyWin(squares, gridPane, () -> CommonsFX.runInPlatform(this::runAI));
         } else {
-            HasLogging.log().error("ERROR IN LOGIC");
+            LOG.error("ERROR IN LOGIC");
         }
         locked = false;
     }

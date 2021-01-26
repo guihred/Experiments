@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ml.data.DataframeBuilder;
@@ -26,13 +27,15 @@ public class CIDRUtils {
     private static final String NETWORKS_CSV = "csv/networks.csv";
     private static DataframeML networkFile;
 
+    private static final List<String> PRIVATE_NETWORKS = Arrays.asList("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16");
+
     public static String addressToPattern(String cidr) {
         if (StringUtils.isBlank(cidr) || !cidr.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
             return cidr;
         }
-        
+
         String[] network = cidr.split("/");
-        
+
         List<Integer> net = Stream.of(network[0].split("\\.")).map(Integer::valueOf).collect(Collectors.toList());
         final int mask = Integer.parseInt(network[1]);
         int mas = mask;
@@ -65,15 +68,14 @@ public class CIDRUtils {
         return o.getHostAddress();
     }
 
-    public static Map<String, String> findNetwork(String ip) {
-        networkFile =
-                SupplierEx.orElse(networkFile, () -> {
-                    File outFile = ResourceFXUtils.getOutFile(NETWORKS_CSV);
-                    if (!outFile.exists()) {
-                        makeNetworkCSV();
-                    }
-                    return DataframeBuilder.build(outFile);
-                });
+    public static synchronized Map<String, String> findNetwork(String ip) {
+        networkFile = SupplierEx.orElse(networkFile, () -> {
+            File outFile = ResourceFXUtils.getOutFile(NETWORKS_CSV);
+            if (!outFile.exists()) {
+                makeNetworkCSV();
+            }
+            return DataframeBuilder.build(outFile);
+        });
         return strMap(searchInFile(networkFile, NETWORK, ip));
     }
 
@@ -82,8 +84,7 @@ public class CIDRUtils {
     }
 
     public static boolean isPrivateNetwork(String ip) {
-        List<String> asList = Arrays.asList("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16");
-        return asList.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
+        return PRIVATE_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
     }
 
     public static boolean isSameNetworkAddress(String cidr, String ip) {
@@ -99,6 +100,9 @@ public class CIDRUtils {
                 (a, i) -> (a << 8) + i);
         int fullAddress =
                 Stream.of(ip.split("\\.")).mapToInt(StringSigaUtils::toInteger).reduce(0, (a, i) -> (a << 8) + i);
+        if (network.length != 2) {
+            return false;
+        }
         final int mask = Integer.parseInt(network[1]);
         int fullMask = toFullMask(mask);
         return (fullAddress & fullMask) == net;
@@ -115,9 +119,8 @@ public class CIDRUtils {
         List<Path> firstFileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile(),
                 p -> p.getFileName().toString().matches("(\\d+\\.){3}\\d+\\.json"));
         List<Map<String, Object>> networkLoaded =
-                firstFileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readMap))
-                .filter(e -> e.size() == 3)
-                .distinct().collect(Collectors.toList());
+                firstFileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readMap)).filter(e -> e.size() == 3)
+                        .distinct().collect(Collectors.toList());
         List<Path> first2FileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile(),
                 p -> p.getFileName().toString().matches("(\\d+\\.){3}\\d+\\.xml"));
         List<Map<String, Object>> xmlLoaded = first2FileMatch.stream().map(FunctionEx.makeFunction(CIDRUtils::readXML))
@@ -136,7 +139,7 @@ public class CIDRUtils {
     public static Map<String, String> strMap(Map<String, Object> first) {
         if (first != null) {
             return first.entrySet().stream()
-                    .collect(Collectors.toMap(e -> e.getKey(), e -> Objects.toString(e.getValue(), "")));
+                    .collect(Collectors.toMap(Entry<String, Object>::getKey, e -> Objects.toString(e.getValue(), "")));
         }
 
         return null;
@@ -174,7 +177,8 @@ public class CIDRUtils {
         for (int i = mask; i > 0; i--) {
             fullMask = 1 | fullMask << 1;
         }
-        fullMask <<= 32 - mask;
+        final int bitsInAnAddress = 32;
+        fullMask <<= bitsInAnAddress - mask;
         return fullMask;
     }
 

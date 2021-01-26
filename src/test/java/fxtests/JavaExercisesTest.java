@@ -1,7 +1,6 @@
 package fxtests;
 
 import static fxtests.FXTesting.measureTime;
-import static fxtests.FXTesting.measureTimeExpectException;
 
 import ex.j8.*;
 import furigana.JapaneseVerbConjugate;
@@ -87,23 +86,7 @@ public final class JavaExercisesTest {
         measureTime("Chapter6.ex10", Chapter6::ex10);
     }
 
-    @Test
-	public void testChapter8() {
-        measureTime("Chapter8.ex1", Chapter8::ex1);
-        measureTimeExpectException("Chapter8.ex2", Chapter8::ex2);
-        measureTime("Chapter8.ex3", Chapter8::ex3);
-        measureTime("Chapter8.ex4", Chapter8::ex4);
-        measureTime("Chapter8.ex5", Chapter8::ex5);
-        measureTime("Chapter8.ex6", Chapter8::ex6);
-        measureTime("Chapter8.ex7", Chapter8::ex7);
-        measureTime("Chapter8.ex9", Chapter8::ex9);
-        measureTime("Chapter8.ex10", Chapter8::ex10);
-        measureTime("Chapter8.ex11", Chapter8::ex11);
-        measureTime("Chapter8.ex15", Chapter8::ex15);
-        measureTime("Chapter8.ex16", Chapter8::ex16);
-        measureTime("Chapter8.ex9", Chapter8::ex9);
-        measureTimeExpectException("Chapter8.ex14", Chapter8::ex14);
-    }
+
 
 
 

@@ -22,6 +22,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 public class Shapes3DTexture extends Application {
+    private static final int MAX_BYTE = 256;
     private double mousePosX;
     private double mousePosY;
     private double mouseOldX;
@@ -40,7 +41,7 @@ public class Shapes3DTexture extends Application {
         PixelWriter pw = wr.getPixelWriter();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int r = rnd.nextInt(256);
+                int r = rnd.nextInt(MAX_BYTE);
                 int g = rnd.nextInt(256);
                 int b = rnd.nextInt(256);
                 Color color = Color.rgb(r, g, b);
@@ -65,7 +66,8 @@ public class Shapes3DTexture extends Application {
         ImageView iv = new ImageView(diffuseMap);
         iv.setTranslateX(-size / 2);
         iv.setTranslateY(-size / 5);
-        iv.setRotate(90);
+        final int straightAngle = 90;
+        iv.setRotate(straightAngle);
         iv.setRotationAxis(new Point3D(1, 0, 0));
         group.getChildren().add(iv);
         // create material out of the noise image

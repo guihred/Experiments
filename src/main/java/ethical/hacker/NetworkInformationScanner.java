@@ -17,6 +17,7 @@ import utils.ex.SupplierEx;
 
 public final class NetworkInformationScanner {
 
+    private static final int MAX_BYTE = 256;
     private static final Logger LOG = HasLogging.log();
 
     private NetworkInformationScanner() {
@@ -95,7 +96,7 @@ public final class NetworkInformationScanner {
             String[] a = new String[ipOrMacAddress.length / 2];
             for (int j = 0; j < ipOrMacAddress.length; j += 2) {
                 a[j / 2] = Integer.toHexString(
-                    Byte.toUnsignedInt(ipOrMacAddress[j]) * 256 + Byte.toUnsignedInt(ipOrMacAddress[j + 1]));
+                        Byte.toUnsignedInt(ipOrMacAddress[j]) * MAX_BYTE + Byte.toUnsignedInt(ipOrMacAddress[j + 1]));
             }
             return Stream.of(a);
         }

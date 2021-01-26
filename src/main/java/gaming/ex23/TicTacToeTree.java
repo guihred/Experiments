@@ -4,11 +4,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public class TicTacToeTree {
 
+    private static final Logger LOG = HasLogging.log();
     private final List<TicTacToePlayer> squares;
     private List<TicTacToeTree> children;
     private TicTacToePlayer winner;
@@ -115,7 +117,7 @@ public class TicTacToeTree {
         TicTacToeTree ticTacToeTree = new TicTacToeTree(
             IntStream.range(0, 9).mapToObj(i -> TicTacToePlayer.NONE).collect(Collectors.toList()));
         TicTacToeTree makeDecision = ticTacToeTree.makeDecision(TicTacToePlayer.X);
-        HasLogging.log().info("{}", makeDecision);
+        LOG.info("{}", makeDecision);
     }
 
 }

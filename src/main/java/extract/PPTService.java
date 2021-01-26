@@ -42,8 +42,7 @@ public final class PPTService {
     public static void getPowerPointImages(File arquivo) {
         RunnableEx.run(() -> {
             try (XMLSlideShow a = new XMLSlideShow(new FileInputStream(arquivo))) {
-                List<XSLFPictureData> pictureData = a.getPictureData();
-                for (XSLFPictureData data : pictureData) {
+                for (XSLFPictureData data : a.getPictureData()) {
                     recordPicture(data);
                 }
             }

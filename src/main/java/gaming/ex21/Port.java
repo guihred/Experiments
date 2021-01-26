@@ -23,6 +23,7 @@ import utils.fx.RotateUtils;
 
 public class Port extends Group {
 
+    private static final int DEFAULT_FONT = 12;
     private static final String BOAT_PNG = "boat.png";
     public static final double SIZE = CatanResource.RADIUS * 0.9;
     private final ResourceType type;
@@ -62,7 +63,7 @@ public class Port extends Group {
             Text text = new Text();
             text.textProperty().bind(number.asString());
             Node newResource = type != ResourceType.DESERT ? newResource() : newInterrogation();
-            status = new HBox(text, newResource, new SimpleTextBuilder().text("->?").size(12).build());
+            status = new HBox(text, newResource, new SimpleTextBuilder().text("->?").size(DEFAULT_FONT).build());
             status.managedProperty().bind(status.visibleProperty());
         }
         return status;
@@ -78,7 +79,8 @@ public class Port extends Group {
 
     private Text newNumberText() {
         final double layoutY = SIZE * 13. / 20;
-        return new SimpleTextBuilder().size(12).textAlignment(TextAlignment.CENTER).text(number.asString().concat(":1"))
+        return new SimpleTextBuilder().size(DEFAULT_FONT).textAlignment(TextAlignment.CENTER)
+                .text(number.asString().concat(":1"))
             .layoutX(SIZE * 2 / 5).layoutY(layoutY).build();
     }
 
@@ -158,9 +160,9 @@ public class Port extends Group {
 
     private static Text newInterrogation() {
         Text e = new Text("?");
-        e.setFont(Font.font(15));
+        e.setFont(Font.font(DEFAULT_FONT + 3));
         e.setLayoutX(SIZE / 2);
-        e.setLayoutY(SIZE * 5 / 12.);
+        e.setLayoutY(SIZE * 5. / DEFAULT_FONT);
         return e;
     }
 

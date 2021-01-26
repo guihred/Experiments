@@ -36,11 +36,12 @@ public class HeatGraphExample extends Application {
 		DataframeML x = DataframeBuilder.build("california_housing_train.csv");
 		DataframeUtils.crossFeature(x, "rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         canvas.setTitle("California Housing");
-        root.getChildren().add(newSlider("Radius", 10, 50, canvas.radiusProperty()));
-        root.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        final int maxBins = 50;
+        root.getChildren().add(newSlider("Radius", 10, maxBins, canvas.radiusProperty()));
+        root.getChildren().add(newSlider("Line", 1, maxBins, canvas.lineSizeProperty()));
         root.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        root.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
-        root.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        root.getChildren().add(newSlider("X Bins", 1, maxBins, canvas.binsProperty()));
+        root.getChildren().add(newSlider("Y Bins", 1, maxBins, canvas.ybinsProperty()));
         root.getChildren()
                 .add(new SimpleComboBoxBuilder<ColorPattern>().items(ColorPattern.values())
                         .selectedItem(canvas.colorPatternProperty()).build());

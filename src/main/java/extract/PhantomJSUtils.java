@@ -60,6 +60,10 @@ public final class PhantomJSUtils {
     }
 
     public Document render(String url, Map<String, String> cookies) {
+        return render(url, cookies, 0);
+    }
+
+    public Document render(String url, Map<String, String> cookies, double delay) {
         ghostDriver.setLogLevel(Level.OFF);
         ghostDriver.manage().window().maximize();
         Set<Cookie> cookies2 = ghostDriver.manage().getCookies();
@@ -70,6 +74,9 @@ public final class PhantomJSUtils {
             }
         });
         ghostDriver.get(url);
+        if (delay > 0) {
+            RunnableEx.sleepSeconds(delay);
+        }
         return Jsoup.parse(ghostDriver.getPageSource());
     }
 
@@ -89,7 +96,7 @@ public final class PhantomJSUtils {
         return allLines;
     }
 
-    public static List<String> makeGetAppend(String url, Map<String, String> headers, File outFile) throws IOException {
+    public static void makeGetAppend(String url, Map<String, String> headers, File outFile) throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet post = new HttpGet(url);
         headers.forEach(post::addHeader);
@@ -97,14 +104,13 @@ public final class PhantomJSUtils {
         HttpEntity entity = response.getEntity();
         InputStream in = entity.getContent();
         Path path = outFile.toPath();
-        byte[] b = new byte[256];
+        final int bufferSize = 256;
+        byte[] b = new byte[bufferSize];
         int read;
         do {
             read = in.read(b);
             Files.write(path, b, StandardOpenOption.APPEND);
         } while (read != -1);
-
-        return null;
     }
 
     public static void postContent(String url, String content, ContentType applicationJson, Map<String, String> headers,
@@ -203,7 +209,8 @@ public final class PhantomJSUtils {
     public static Image saveHtmlImage(String html, File file) {
         HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
         Dimension dim = imageGenerator.getDefaultSize();
-        dim.setSize(Math.min(800, dim.getWidth()), dim.getHeight());
+        final int preferredWidth = 800;
+        dim.setSize(Math.min(preferredWidth, dim.getWidth()), dim.getHeight());
         imageGenerator.setSize(dim);
         imageGenerator.loadHtml(html);
         imageGenerator.saveAsImage(file);

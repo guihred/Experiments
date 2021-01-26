@@ -109,7 +109,7 @@ public class KibanaApi {
         measureTime("Kibana Full Scan " + query, () -> {
             for (Entry<String, SupplierEx<String>> entry : fullScan.entrySet()) {
                 if (cols.isEmpty() || cols.contains(entry.getKey())) {
-                    fullScan2.put(entry.getKey(), SupplierEx.get(entry.getValue()));
+                    fullScan2.put(entry.getKey(), Objects.toString(SupplierEx.get(entry.getValue()), ""));
                 }
                 CommonsFX.addProgress(progress, 1. / fullScan.size());
             }

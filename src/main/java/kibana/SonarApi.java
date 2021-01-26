@@ -88,9 +88,9 @@ public class SonarApi extends Application {
             ObservableList<String> components, ObservableList<String> rules) throws IOException {
         Object sonarRequest = getFromURLJson(getApiUrl(1), ResourceFXUtils.getOutFile("json/sonarRequest.json"));
         List<Map<String, Object>> newJson = JsonExtractor.accessList(sonarRequest, "issues");
-        issuesList.addAll(newJson);
-        Integer valueOf = JsonExtractor.access(sonarRequest, Integer.class, "total");
-        for (int i = 1; i <= valueOf / 100; i++) {
+        issuesList.setAll(newJson);
+        Integer total = JsonExtractor.access(sonarRequest, Integer.class, "total");
+        for (int i = 1; i <= total / 100; i++) {
             Object fromURLJson =
                     getFromURLJson(getApiUrl(i + 1), ResourceFXUtils.getOutFile("json/sonarRequest" + i + ".json"));
             List<Map<String, Object>> newJson2 = JsonExtractor.accessList(fromURLJson, "issues");

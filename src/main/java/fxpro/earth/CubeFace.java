@@ -66,7 +66,9 @@ public class CubeFace extends Parent {
 		TilePane tilePane;
 		int xOffset = (sideNum + 1) * 2;
 		tilePane = new TilePane();
-		tilePane.setRotate(sideNum * 90 % 360);
+        final int fullCircle = 360;
+        final int straightAngle = 90;
+        tilePane.setRotate(sideNum * straightAngle % fullCircle);
 		tilePane.setPrefColumns(2);
 		tilePane.setPrefRows(3);
 

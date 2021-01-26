@@ -38,10 +38,11 @@ public class PointsExample extends Application {
 		DataframeML x = DataframeBuilder.build("california_housing_train.csv");
 		DataframeUtils.crossFeature(x, "rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         VBox vBox = new VBox();
-        vBox.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        final int max = 50;
+        vBox.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, max, canvas.lineSizeProperty()));
         vBox.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        vBox.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
-        vBox.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        vBox.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, max, canvas.binsProperty()));
+        vBox.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, max, canvas.ybinsProperty()));
         final Canvas canvas1 = canvas;
         vBox.getChildren()
 				.add(SimpleButtonBuilder.newButton("Export", e -> ImageFXUtils.take(canvas1)));

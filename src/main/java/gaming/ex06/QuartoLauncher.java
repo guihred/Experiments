@@ -76,16 +76,19 @@ public class QuartoLauncher extends Application {
         whiteMaterial.setSpecularColor(Color.WHITE);
         final Box board = new Box(240, 1, 240);
         board.setMaterial(blackMaterial);
+        final int straighAngle = 90;
         final Circle cs = new SimpleCircleBuilder().radius(110).fill(Color.BLACK).translateY(2)
-            .rotationAxis(Rotate.X_AXIS).rotate(90).build();
+                .rotationAxis(Rotate.X_AXIS).rotate(straighAngle).build();
         final Circle cs2 = new Circle(120, Color.WHITE);
         cs2.setTranslateY(1);
         cs2.setRotationAxis(Rotate.X_AXIS);
-        cs2.setRotate(90);
+        cs2.setRotate(straighAngle);
         final Group group = new Group(board, cs2, cs);
-        for (int i = 0; i < 16; i++) {
+        final int N_QUARTO_PIECES = 16;
+        for (int i = 0; i < N_QUARTO_PIECES; i++) {
             final Circle circle = new SimpleCircleBuilder().radius(10).fill(Color.WHITE).translateX(getPosition(i % 4))
-                .translateZ(getPosition(i / 4)).translateY(3).rotationAxis(Rotate.X_AXIS).rotate(90).build();
+                    .translateZ(getPosition(i / 4)).translateY(3).rotationAxis(Rotate.X_AXIS).rotate(straighAngle)
+                    .build();
             circle.fillProperty().bind(Bindings.when(circle.hoverProperty()).then(Color.BLUE).otherwise(Color.WHITE));
             model.getMap()[i % 4][i / 4] = circle;
             group.getChildren().add(circle);
@@ -108,7 +111,8 @@ public class QuartoLauncher extends Application {
         cameraXform.getChildren().add(cameraXform2);
         cameraXform2.getChildren().add(cameraXform3);
         cameraXform3.getChildren().add(camera);
-        cameraXform3.setRz(180);
+        final int halfCircle = 180;
+        cameraXform3.setRz(halfCircle);
 
         final double nearClip = 0.2;
         camera.setNearClip(nearClip);
@@ -229,6 +233,7 @@ public class QuartoLauncher extends Application {
 
     private static int getPosition(int i) {
         final int spacing = 40;
-        return i * spacing - 60;
+        final int pad = 60;
+        return i * spacing - pad;
     }
 }

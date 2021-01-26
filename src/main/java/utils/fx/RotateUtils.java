@@ -165,9 +165,9 @@ public final class RotateUtils {
             if (e.getCode() == KeyCode.A && e.isAltDown()) {
                 area.setLayoutX(0);
                 area.setLayoutY(0);
-                Bounds bounds = imageView.getBoundsInLocal();
-                double width = bounds.getWidth();
-                double height = bounds.getHeight();
+                Bounds imageArea = imageView.getBoundsInLocal();
+                double width = imageArea.getWidth();
+                double height = imageArea.getHeight();
                 area.setWidth(width);
                 area.setHeight(height);
                 cropImage(area, imageView, onImageCropped, (int) width, (int) height);
