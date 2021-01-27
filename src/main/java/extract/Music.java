@@ -17,6 +17,7 @@ public class Music {
 
     private StringProperty ano = new SimpleStringProperty("");
     private Image image;
+    private String version;
 
     private File arquivo;
 
@@ -120,6 +121,10 @@ public class Music {
         return trilha.get();
     }
 
+    public String getVersion() {
+        return version;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(album, ano, arquivo, artista, genero, image, pasta, titulo, trilha);
@@ -173,14 +178,18 @@ public class Music {
         this.trilha.set(trilha);
     }
 
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
     public StringProperty tituloProperty() {
         return titulo;
     }
 
     @Override
     public String toString() {
-        return String.format("[%s, %s, %s, %s, %s, %s, %s]", titulo.get(), artista.get(), album.get(), ano.get(),
-            trilha.get(), genero.get(), arquivo.getPath());
+        return String.format("[%s, %s, %s, %s, %s, %s, %s, %s]", titulo.get(), artista.get(), album.get(), ano.get(),
+                trilha.get(), genero.get(), arquivo.getPath(), version);
     }
 
     public StringProperty trilhaProperty() {

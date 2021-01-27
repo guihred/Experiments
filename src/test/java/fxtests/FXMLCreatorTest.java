@@ -1,5 +1,6 @@
 package fxtests;
 
+import ethical.hacker.CoverageUtils;
 import fxml.utils.FXMLCreatorHelper;
 import fxpro.ch02.PongLauncher;
 import java.util.ArrayList;
@@ -7,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import ml.data.CoverageUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;

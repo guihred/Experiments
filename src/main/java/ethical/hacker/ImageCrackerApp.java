@@ -15,10 +15,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import ml.data.PaginatedTableView;
 import simplebuilder.FileChooserBuilder;
 import utils.ExcelService;
 import utils.ex.FunctionEx;
+import utils.fx.PaginatedTableView;
 
 public class ImageCrackerApp extends Application {
     private Map<File, String> crackImages;

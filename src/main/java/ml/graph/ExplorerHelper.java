@@ -1,6 +1,6 @@
 package ml.graph;
 
-import extract.WhoIsScanner;
+import extract.web.WhoIsScanner;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
@@ -21,6 +21,7 @@ import utils.CommonsFX;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
+import utils.fx.PaginatedTableView;
 
 public final class ExplorerHelper {
 

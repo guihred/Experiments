@@ -1,5 +1,5 @@
 
-package ml.data;
+package ethical.hacker;
 
 import static utils.ex.PredicateEx.makeTest;
 
@@ -13,8 +13,10 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import ml.data.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
 import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
@@ -188,11 +190,26 @@ public final class CoverageUtils {
     }
 
     private static <T> List<T> getByCoverage(Function<List<String>, List<T>> func) {
-        for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE; i += 5) {
+
+        for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE / 2; i += 5) {
             List<String> uncovered = getUncovered(i);
             List<T> uncoveredApplications = func.apply(uncovered);
             if (!uncoveredApplications.isEmpty()) {
                 LOG.info("LINE COVERAGE = {}% APPS = {}", i, uncovered);
+                return uncoveredApplications;
+            }
+        }
+        if (ExtractUtils.isPortOpen(SonarApi.SONAR_API_ISSUES)) {
+            List<Map<String, Object>> issuesList = new ArrayList<>();
+            SonarApi.onUpdate(issuesList);
+            List<String> uncovered = issuesList.stream()
+                    .filter(e -> "common-java:InsufficientLineCoverage".equals(e.get("rule")))
+                    .map(e -> e.getOrDefault("component", "")).map(t -> Objects.toString(t, ""))
+                    .filter(StringUtils::isNotBlank)
+                    .map(s -> s.replaceAll(".+/(\\w+)\\.java$", "$1")).collect(Collectors.toList());
+            List<T> uncoveredApplications = func.apply(uncovered);
+            if (!uncoveredApplications.isEmpty()) {
+                LOG.info("LINE COVERAGE = {}% APPS = {}", uncovered, uncoveredApplications);
                 return uncoveredApplications;
             }
         }

@@ -49,7 +49,6 @@ public final class TermFrequency {
             String fileName = stackParts[stackParts.length - 2];
             Path javaPath = FileTreeWalker.getFirstPathByExtension(new File("src"), fileName + ".java");
             try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
-                // String[] split2 =
                 return lines.skip(StringSigaUtils.toLong(line) - 1L).filter(s -> s.contains("=")).findFirst()
                         .map(s -> Stream.of(s.split("[\\s=]+")).filter(StringUtils::isNotBlank)
                                 .filter(t -> !getJavaKeywords().contains(t))

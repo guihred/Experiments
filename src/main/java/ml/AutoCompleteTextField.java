@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import ml.data.AutocompleteField;
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
 import utils.ex.RunnableEx;
+import utils.fx.AutocompleteField;
 
 public class AutoCompleteTextField extends AutocompleteField {
     private Word2Vec word2Vec;

@@ -8,8 +8,8 @@ import static kibana.QueryObjects.ACESSOS_SISTEMA_QUERY;
 import static kibana.QueryObjects.CLIENT_IP_QUERY;
 import static kibana.QueryObjects.URL_QUERY;
 
-import extract.CIDRUtils;
-import extract.WhoIsScanner;
+import extract.web.CIDRUtils;
+import extract.web.WhoIsScanner;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;

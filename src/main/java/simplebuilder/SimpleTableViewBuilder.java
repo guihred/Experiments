@@ -30,6 +30,10 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         super(new TableView<T>());
     }
 
+    private SimpleTableViewBuilder(TableView<T> node) {
+        super(node);
+    }
+
     public <V> SimpleTableViewBuilder<T> addClosableColumn(String name, FunctionEx<T, V> func) {
         addClosableColumn(node, name, func);
         return this;
@@ -205,9 +209,7 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
     }
 
     public static <V> SimpleTableViewBuilder<V> of(TableView<V> table) {
-        SimpleTableViewBuilder<V> simpleTableViewBuilder = new SimpleTableViewBuilder<>();
-        simpleTableViewBuilder.node = table;
-        return simpleTableViewBuilder;
+        return new SimpleTableViewBuilder<>(table);
     }
 
     public static <T> void onDoubleClick(TableView<T> table2, ConsumerEx<T> object) {

@@ -179,8 +179,16 @@ public final class ExtractUtils {
         return !IS_PROXIED;
     }
 
+    public static boolean isPortOpen(String url) {
+        URL url2 = SupplierEx.get(() -> new URL(url));
+        return isPortOpen(url2.getHost(), url2.getPort());
+    }
+    public static boolean isPortOpen(String ip0, int porta) {
+        final int timeout = 5000;
+        return isPortOpen(ip0, porta, timeout);
+    }
     public static boolean isPortOpen(String ip0, int porta, int timeout) {
-        return PredicateEx.test((String ip) -> {
+        return PredicateEx.test(ip -> {
             try (Socket socket = new Socket()) {
                 socket.connect(new InetSocketAddress(ip, porta), timeout);
                 return true;

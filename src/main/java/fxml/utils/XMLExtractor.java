@@ -4,7 +4,7 @@ import static simplebuilder.SimpleTextBuilder.newBoldText;
 import static utils.ex.RunnableEx.remap;
 import static utils.ex.RunnableEx.run;
 
-import extract.DocumentHelper;
+import extract.web.DocumentHelper;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;

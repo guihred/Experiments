@@ -1,6 +1,6 @@
 package kibana;
 
-import extract.JsonExtractor;
+import extract.web.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;

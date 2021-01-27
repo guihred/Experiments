@@ -1,7 +1,7 @@
 package ethical.hacker;
 
-import extract.HashVerifier;
-import extract.WhoIsScanner;
+import extract.web.HashVerifier;
+import extract.web.WhoIsScanner;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;

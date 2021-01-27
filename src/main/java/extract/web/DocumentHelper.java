@@ -1,4 +1,4 @@
-package extract;
+package extract.web;
 
 import com.google.common.io.Files;
 import java.io.File;

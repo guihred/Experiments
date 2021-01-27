@@ -1,5 +1,6 @@
 package fxtests;
 
+import ethical.hacker.CoverageUtils;
 import fxpro.earth.CubeNode;
 import fxpro.earth.EarthCubeMain;
 import fxsamples.GlobeSphereApp;
@@ -14,7 +15,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.input.KeyCode;
-import ml.data.CoverageUtils;
 import org.junit.Test;
 import simplebuilder.StageHelper;
 import utils.FileTreeWalker;

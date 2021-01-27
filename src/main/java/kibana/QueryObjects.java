@@ -4,7 +4,7 @@ import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
 import com.google.common.collect.ImmutableMap;
-import extract.JsonExtractor;
+import extract.web.JsonExtractor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class QueryObjects {
     public static final String ACESSOS_SISTEMA_QUERY = "dtpsistema";
     public static final String USER_NAME_QUERY = "http.user-name";
     private static final ImmutableMap<String, String> REPLACEMENT_MAP = ImmutableMap.<String, String>builder()
-            .put(USER_NAME_QUERY, MDC_UID_KEYWORD).put(ACESSOS_SISTEMA_QUERY, "dtpsistema").build();
+            .put(USER_NAME_QUERY, MDC_UID_KEYWORD).build();
 
     private final String query;
     private boolean allowEmpty = true;

@@ -7,6 +7,7 @@
 <?import javafx.scene.chart.*?>
 <?import javafx.geometry.*?>
 <?import javafx.collections.*?>
+<?import utils.fx.*?>
 <?import ml.data.*?>
 <?import simplebuilder.*?>
 <?import javafx.scene.text.*?>

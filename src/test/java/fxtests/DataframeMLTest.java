@@ -1,5 +1,6 @@
 package fxtests;
 
+import ethical.hacker.CoverageUtils;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;

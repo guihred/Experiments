@@ -6,14 +6,13 @@ import static utils.ex.RunnableEx.measureTime;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import ethical.hacker.PortServices;
-import extract.CIDRUtils;
-import extract.JsonExtractor;
-import extract.PhantomJSUtils;
-import extract.WhoIsScanner;
+import extract.web.CIDRUtils;
+import extract.web.JsonExtractor;
+import extract.web.PhantomJSUtils;
+import extract.web.WhoIsScanner;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -64,16 +63,14 @@ public class KibanaApi {
     }
 
     public static Map<String, String> getGeridCredencial(String finalIP, String index, int days) {
-        Map<String, String> makeKibanaSearch2 =
-                KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", days, new String[] { index, finalIP },
-                        "message");
+        Map<String, String> makeKibanaSearch2 = KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", days,
+                new String[] { index, finalIP }, "message");
         String message = makeKibanaSearch2.getOrDefault("message", "");
         String regex = "WHO:\\s+(.+)";
-        List<String> linesThatMatch =
-                Stream.of(message.split("\n")).filter(l -> l.matches(regex)).map(s -> s.replaceAll(regex, "$1"))
-                        .distinct()
-                        // .filter(StringUtils::isNumeric)
-                        .collect(Collectors.toList());
+        List<String> linesThatMatch = Stream.of(message.split("\n")).filter(l -> l.matches(regex))
+                .map(s -> s.replaceAll(regex, "$1")).distinct()
+                // .filter(StringUtils::isNumeric)
+                .collect(Collectors.toList());
         String[] messages = message.split("Audit trail record BEGIN");
         return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(regex, l))).distinct()
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s, SupplierEx::nonNull));
@@ -84,6 +81,7 @@ public class KibanaApi {
         return SupplierEx.get(() -> java.nio.file.Files.lines(file.toPath()).anyMatch(query::equals) ? "sim" : "não",
                 "não");
     }
+
 
     public static Map<String, String> kibanaFullScan(String query) {
         return kibanaFullScan(query, 1, null);
@@ -126,7 +124,7 @@ public class KibanaApi {
     public static Map<String, String> makeKibanaSearch(File file, int days, String[] query, String... params) {
         return SupplierEx.getHandle(() -> {
             File outFile = newJsonFile(removeExtension(file) + Stream.of(query).collect(Collectors.joining()) + days);
-            if (!outFile.exists() || oneHourModified(outFile)) {
+            if (JsonExtractor.isNotRecentFile(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 RunnableEx
@@ -158,28 +156,26 @@ public class KibanaApi {
         return SupplierEx.get(() -> {
             String values = search.values().stream().collect(Collectors.joining());
             File outFile = newJsonFile(removeExtension(file) + values + days);
-            if (!outFile.exists() || oneHourModified(outFile)) {
+            if (JsonExtractor.isNotRecentFile(outFile)) {
                 String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
                 String lte = Objects.toString(Instant.now().toEpochMilli());
                 String keywords = convertSearchKeywords(search);
                 String content = getContent(file, keywords, gte, lte);
-                RunnableEx
-                        .make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, content, outFile),
-                                e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage()))
-                        .run();
+                RunnableEx.make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, content, outFile),
+                        e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
             }
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>());
     }
+
 
     public static Map<String, SupplierEx<String>> scanByIp(String ip, int days) {
         String key = "key";
         String valueCol = "value";
         Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", () -> ip);
-        fullScan.put("Provedor",
-                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "Nome", "HostName",
-                        "asname"));
+        fullScan.put("Provedor", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "Nome",
+                "HostName", "asname"));
         fullScan.put("Geolocation",
                 () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry", "Descrição"));
         String pattern = CIDRUtils.addressToPattern(ip);
@@ -189,8 +185,7 @@ public class KibanaApi {
         fullScan.put("TOP_FW", () -> {
             Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", ip, days, key, valueCol);
             convertToBytes(valueCol, destinationSearch);
-            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n"))
-                    .map(WHOIS_SCANNER::reverseDNS)
+            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n")).map(WHOIS_SCANNER::reverseDNS)
                     .collect(Collectors.joining("\n")));
             return displayDistinct(destinationSearch).replaceAll("^.+\t\n", "");
         });
@@ -200,8 +195,7 @@ public class KibanaApi {
             Map<String, String> destinationPort =
                     makeKibanaSearch("destinationPortQuery.json", days, new String[] { ip, ip }, key, valueCol);
             destinationPort.computeIfPresent(key,
-                    (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger)
-                            .filter(i -> i != 0)
+                    (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger).filter(i -> i != 0)
                             .map(PortServices::getServiceByPort)
                             .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription())
                             .collect(Collectors.joining("\n")));
@@ -263,13 +257,6 @@ public class KibanaApi {
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
     }
 
-    protected static boolean oneHourModified(File outFile) {
-        FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
-        Instant instant = lastModifiedTime.toInstant();
-        long between = ChronoUnit.HOURS.between(instant, Instant.now());
-        return between > 1;
-    }
-
     private static void adjustToMax(List<List<String>> listOfFields, int maxNumFields) {
         listOfFields.forEach(l -> {
             if (l.size() < maxNumFields) {
@@ -319,17 +306,14 @@ public class KibanaApi {
     }
 
     private static <T> List<List<String>> getFieldList(Map<String, T> ob) {
-        return ob.values().stream().map(StringSigaUtils::toStringSpecial)
-                .map(s -> Stream.of(s.split("\n")).map(m -> StringUtils.abbreviate(m, 100))
-                        .collect(Collectors.toList()))
+        return ob.values().stream().map(StringSigaUtils::toStringSpecial).map(
+                s -> Stream.of(s.split("\n")).map(m -> StringUtils.abbreviate(m, 100)).collect(Collectors.toList()))
                 .collect(Collectors.toList());
     }
 
     private static String getURL(Map<String, String> e) {
-        return e.get("key0")
-                .replaceAll(
-                        "(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+|.+(?=\\.(css|png|woff|ttf|gif|jpg|svg|ico|eot))|.+(?=\\.(js)\\W*.*$)",
-                        "*");
+        return e.get("key0").replaceAll("(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+"
+                + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|svg|ico|eot))|.+(?=\\.(js)\\W*.*$)", "*");
     }
 
     private static String getWhoField(String regex, String s) {
@@ -360,6 +344,6 @@ public class KibanaApi {
                     .map(e -> e.getKey() + "\t" + e.getValue()).filter(s -> !s.startsWith("*"))
                     .collect(Collectors.joining("\n"));
             return entry.getKey() + "\n" + collect3;
-        }).collect(Collectors.joining("\n"));
+        }).collect(Collectors.joining("\r\n"));
     }
 }

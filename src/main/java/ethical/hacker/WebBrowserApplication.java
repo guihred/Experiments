@@ -1,10 +1,10 @@
 package ethical.hacker;
 
-import static extract.DocumentHelper.addProperties;
-import static extract.DocumentHelper.onDocumentChange;
+import static extract.web.DocumentHelper.addProperties;
+import static extract.web.DocumentHelper.onDocumentChange;
 
-import extract.DocumentHelper;
-import extract.InstallCert;
+import extract.web.DocumentHelper;
+import extract.web.InstallCert;
 import java.io.File;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener.Change;

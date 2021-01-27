@@ -7,8 +7,8 @@ import static utils.StringSigaUtils.removerDiacritico;
 
 import contest.db.ContestQuestion;
 import contest.db.Organization;
-import extract.JsoupUtils;
 import extract.PdfUtils;
+import extract.web.JsoupUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;

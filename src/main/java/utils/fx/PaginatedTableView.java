@@ -1,4 +1,4 @@
-package ml.data;
+package utils.fx;
 
 import static java.util.stream.DoubleStream.concat;
 import static java.util.stream.DoubleStream.of;

@@ -1,6 +1,6 @@
 package kibana;
 
-import extract.JsonExtractor;
+import extract.web.JsonExtractor;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +38,7 @@ public final class TimelionApi extends KibanaApi {
             String replaceAll = timelionQuery.replaceAll(".+split=(.+?):.+", "$1");
 
             File outFile = newJsonFile(replaceAll + Stream.of(values, time).collect(Collectors.joining()));
-            if (!outFile.exists() || oneHourModified(outFile)) {
+            if (JsonExtractor.isNotRecentFile(outFile)) {
                 String keywords = convertSearchKeywords(search);
                 String content = getContent(file, timelionQuery, keywords, time);
                 getFromURLJson(TIMELION_URL, content, outFile);

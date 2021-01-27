@@ -1,7 +1,5 @@
 package audio.mp3;
 
-import static simplebuilder.SimpleVBoxBuilder.newVBox;
-
 import extract.Music;
 import extract.MusicReader;
 import extract.SongUtils;
@@ -9,9 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.stream.Collectors;
 import javafx.beans.NamedArg;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
@@ -21,7 +19,6 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -31,12 +28,13 @@ import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleButtonBuilder;
 import simplebuilder.SimpleDialogBuilder;
+import simplebuilder.SimpleVBoxBuilder;
 import simplebuilder.StageHelper;
-import utils.ClassReflectionUtils;
-import utils.ExtractUtils;
-import utils.ResourceFXUtils;
-import utils.StringSigaUtils;
+import utils.*;
 import utils.ex.ConsumerEx;
+import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
+import utils.fx.AutocompleteField;
 
 public final class MusicHandler implements EventHandler<MouseEvent> {
     private final TableView<Music> musicaTable;
@@ -54,6 +52,7 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
             handleMousePressed(getMusicaTable().getSelectionModel().getSelectedItems());
         }
     }
+
     @Override
     public void handle(MouseEvent e) {
         if (e.isPrimaryButtonDown() && e.getClickCount() == 2) {
@@ -63,26 +62,36 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
 
     public static void fixSongs(TableView<Music> musicasTable) {
         ObservableList<Music> items = musicasTable.getItems();
-        Optional<Music> findFirst = items.stream().filter(m -> StringUtils.isBlank(m.getArtista())
-                || StringUtils.isBlank(m.getAlbum()) || m.getTitulo().contains("-") || m.getArtista().contains("/")
-                || m.toString().contains("mari brasil mix"))
-                .findFirst();
-        if (!findFirst.isPresent()) {
+        Music music = items.stream()
+                .filter(m -> StringUtils.isBlank(m.getArtista()) || StringUtils.isBlank(m.getAlbum())
+                        || m.getTitulo().contains("-") || m.getArtista().contains("/")
+                        || m.toString().contains("mari brasil mix"))
+                .findFirst().orElseGet(() -> musicasTable.getSelectionModel().getSelectedItem());
+        if (music == null) {
             return;
         }
-        Music music = findFirst.get();
         VBox vBox = new VBox(10);
         vBox.setPadding(new Insets(10));
         List<String> fields = ClassReflectionUtils.getFields(Music.class);
+        Map<String, AutocompleteField> mappedFields = new LinkedHashMap<>();
         for (String name : fields) {
             Object fieldValue = ClassReflectionUtils.getFieldValue(music, name);
             if (fieldValue instanceof StringProperty) {
                 StringProperty a = (StringProperty) fieldValue;
-                TextField textField = new TextField();
+                AutocompleteField textField = new AutocompleteField();
                 textField.textProperty().bindBidirectional(a);
-                vBox.getChildren().add(newVBox(StringSigaUtils.changeCase(name), textField));
+                mappedFields.put(name, textField);
+                String fieldName = StringSigaUtils.changeCase(name);
+                vBox.getChildren().add(SimpleVBoxBuilder.newVBox(fieldName, textField));
             }
         }
+        RunnableEx.runNewThread(() -> makeFieldMap(items, mappedFields.keySet()), o -> {
+            if ("1.0".equals(music.getVersion())) {
+                o.put("genero", MusicReader.getID3v1Genres());
+            }
+
+            CommonsFX.runInPlatform(() -> o.forEach((name, entries) -> mappedFields.get(name).setEntries(entries)));
+        });
         if (StringUtils.isBlank(music.getAlbum())) {
             music.setAlbum(music.getPasta());
         }
@@ -94,8 +103,9 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
             MusicReader.saveMetadata(music);
             StageHelper.closeStage(vBox);
         }));
-        new SimpleDialogBuilder().text("Fix Fields").node(vBox).bindWindow(musicasTable).displayDialog();
-    
+        new SimpleDialogBuilder().title("Fix Song").text("Fix Fields").node(vBox).bindWindow(musicasTable)
+                .displayDialog();
+
     }
 
     public static void handleMousePressed(List<Music> songs) {
@@ -104,8 +114,8 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         }
         Music music = songs.get(0);
         if (!music.isNotMP3()) {
-            new SimpleDialogBuilder().show(EditSongController.class,music);
-            
+            new SimpleDialogBuilder().show(EditSongController.class, music);
+
             return;
         }
         SimpleDialogBuilder dialog = new SimpleDialogBuilder();
@@ -120,7 +130,7 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
                 finalResult = finalResult.add(convertToAudio);
             }
             return finalResult.divide(songs.size());
-        }, () -> ConsumerEx.foreach(songs,s -> onConvertionEnded(s.getArquivo())));
+        }, () -> ConsumerEx.foreach(songs, s -> onConvertionEnded(s.getArquivo())));
         dialog.displayDialog();
     }
 
@@ -136,9 +146,19 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         return imageView;
     }
 
+
+    private static Map<String, Set<String>> makeFieldMap(ObservableList<Music> items,
+            Collection<String> autocompleteMap) {
+        return items.stream().flatMap(mu -> autocompleteMap.stream().map(FunctionEx.ignore(name -> {
+            Object fieldValue = ClassReflectionUtils.getFieldValue(mu, name);
+            StringProperty a = (StringProperty) fieldValue;
+            return new SimpleEntry<>(name, a.get());
+        })).filter(Objects::nonNull)).collect(Collectors.groupingBy(SimpleEntry<String, String>::getKey,
+                Collectors.mapping(SimpleEntry<String, String>::getValue, Collectors.toSet())));
+    }
+
     private static void onConvertionEnded(File arquivo) throws IOException {
-        File file = new File(arquivo.getParentFile(),
-                arquivo.getName().replaceAll("\\..+", ".mp3"));
+        File file = new File(arquivo.getParentFile(), arquivo.getName().replaceAll("\\..+", ".mp3"));
         if (!file.exists()) {
             return;
         }

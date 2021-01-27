@@ -1,5 +1,6 @@
 package graphs.app;
 
+import ethical.hacker.CoverageUtils;
 import fxml.utils.FXMLCreatorHelper;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,7 +21,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import ml.data.CoverageUtils;
 import simplebuilder.SimpleListViewBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;

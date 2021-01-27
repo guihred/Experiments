@@ -1,4 +1,4 @@
-package extract;
+package extract.web;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

@@ -1,7 +1,7 @@
 package kibana;
 
-import extract.JsonExtractor;
-import extract.WhoIsScanner;
+import extract.web.JsonExtractor;
+import extract.web.WhoIsScanner;
 import java.io.File;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;

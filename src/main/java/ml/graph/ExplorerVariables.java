@@ -2,7 +2,7 @@ package ml.graph;
 
 import static utils.StringSigaUtils.toDouble;
 
-import extract.WhoIsScanner;
+import extract.web.WhoIsScanner;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +32,8 @@ import simplebuilder.ListHelper;
 import utils.CommonsFX;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
+import utils.fx.AutocompleteField;
+import utils.fx.PaginatedTableView;
 
 public abstract class ExplorerVariables extends Application {
     @FXML

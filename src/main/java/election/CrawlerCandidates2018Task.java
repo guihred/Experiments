@@ -1,7 +1,7 @@
 package election;
 
 import com.google.common.collect.ImmutableMap;
-import extract.JsoupUtils;
+import extract.web.JsoupUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;

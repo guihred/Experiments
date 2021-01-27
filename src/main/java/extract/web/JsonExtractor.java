@@ -1,8 +1,11 @@
-package extract;
+package extract.web;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -14,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.nd4j.shade.jackson.databind.JsonNode;
 import org.nd4j.shade.jackson.databind.ObjectMapper;
 import simplebuilder.SimpleTextBuilder;
+import utils.ResourceFXUtils;
 import utils.SimpleMap;
 import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
@@ -101,6 +105,10 @@ public final class JsonExtractor {
         return jsonNode.asText();
     }
 
+    public static boolean isNotRecentFile(File outFile) {
+        return !outFile.exists() || oneHourModified(outFile);
+    }
+
     public static Map<String, String> makeMapFromJsonFile(File outFile, String... a) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         // read JSON like DOM Parser
@@ -134,6 +142,13 @@ public final class JsonExtractor {
 
     public static Map<String, String> newMap(String key, String value) {
         return new SimpleMap(key, value);
+    }
+
+    public static boolean oneHourModified(File outFile) {
+        FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
+        Instant instant = lastModifiedTime.toInstant();
+        long between = ChronoUnit.HOURS.between(instant, Instant.now());
+        return between > 1;
     }
 
     public static Map<String, String> processPartialList(String regex, List<String> keys,
@@ -204,7 +219,7 @@ public final class JsonExtractor {
                 IntStream.range(0, keys.size()).forEach(k -> JsonExtractor.merge(regex, keys, elementsAtJ, newMap, k));
                 finalList.add(newMap);
             }
-    
+
         }
         return finalList;
     }

@@ -8,7 +8,7 @@ import static utils.StringSigaUtils.changeCase;
 import static utils.TreeElement.getDifferences;
 import static utils.ex.RunnableEx.make;
 
-import extract.DocumentHelper;
+import extract.web.DocumentHelper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

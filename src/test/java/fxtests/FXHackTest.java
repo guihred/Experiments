@@ -2,6 +2,7 @@ package fxtests;
 
 import ethical.hacker.*;
 import extract.*;
+import extract.web.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;

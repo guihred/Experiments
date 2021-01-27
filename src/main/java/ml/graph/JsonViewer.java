@@ -1,10 +1,10 @@
 
 package ml.graph;
 
-import static extract.JsonExtractor.newMap;
-import static extract.JsonExtractor.readJsonFile;
+import static extract.web.JsonExtractor.newMap;
+import static extract.web.JsonExtractor.readJsonFile;
 
-import extract.JsonExtractor;
+import extract.web.JsonExtractor;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;

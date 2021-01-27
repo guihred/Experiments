@@ -1,6 +1,6 @@
 package fxml.utils;
 
-import extract.DocumentHelper;
+import extract.web.DocumentHelper;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

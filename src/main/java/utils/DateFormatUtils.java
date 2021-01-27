@@ -46,7 +46,8 @@ public final class DateFormatUtils {
     }
 
     public static String format(String fmt, long now) {
-        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).format(Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault()).toLocalDateTime()));
+        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt)
+                .format(Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault()).toLocalDateTime()));
     }
 
     public static String format(TemporalAccessor text) {

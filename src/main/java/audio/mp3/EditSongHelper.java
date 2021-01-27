@@ -3,10 +3,10 @@ package audio.mp3;
 import static utils.CommonsFX.createField;
 import static utils.ex.RunnableEx.run;
 
-import extract.ImageLoader;
 import extract.Music;
 import extract.MusicReader;
 import extract.SongUtils;
+import extract.web.ImageLoader;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;

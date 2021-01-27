@@ -29,6 +29,7 @@ import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
+import utils.fx.AutocompleteField;
 
 /**
  * @author guigu
@@ -93,7 +94,6 @@ public final class Mapping {
         ObservableList<Method> methods2 = FXCollections.observableArrayList(Mapping.getMethods())
                 .filtered(m -> ClassReflectionUtils.isAllowed(allowedTypes, m.getParameterTypes()));
         VBox vBox = new VBox();
-        ObservableList<String> mapping = ListHelper.mapping(methods2, Mapping::methodName);
         ComboBox<Method> methodsCombo =
                 new SimpleComboBoxBuilder<>(methods2).id("methodCombo").select(0).converter(Mapping::methodName)
                         .onChange((old, method) -> adjustToMethod(dependencies, vBox, method)).build();
@@ -104,7 +104,7 @@ public final class Mapping {
             methodsCombo.getSelectionModel().select(byName);
             return "";
         });
-        autocompleteField.setEntries(mapping);
+        autocompleteField.setEntries(ListHelper.mapping(methods2, Mapping::methodName));
         TextField crossFeature = new TextField(Stream.of(dependencies).collect(Collectors.joining("_")) + 1);
         SimpleDialogBuilder dialog = new SimpleDialogBuilder().bindWindow(barChart).node(crossFeature);
         for (String string : dependencies) {

@@ -2,13 +2,13 @@ package fxtests;
 
 import static fxtests.FXTesting.measureTime;
 
+import ethical.hacker.CoverageUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import ml.data.CoverageUtils;
 import ml.data.JavaFileDependency;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
@@ -103,9 +103,8 @@ public class JavaDependencyTest {
 
     private <T extends Annotation> void invoke(List<Method> declaredMethods, Object test, Class<T> annotationClass) {
 
-        declaredMethods.stream().filter(e -> {
-            return e.getAnnotationsByType(annotationClass).length > 0;
-        }).forEach(e -> ClassReflectionUtils.invoke(test, e));
+        declaredMethods.stream().filter(e -> e.getAnnotationsByType(annotationClass).length > 0)
+                .forEach(e -> ClassReflectionUtils.invoke(test, e));
     }
 
     private boolean isNotSame(Throwable e, Class<? extends Throwable> expected) {

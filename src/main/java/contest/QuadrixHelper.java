@@ -9,8 +9,8 @@ import static utils.ex.SupplierEx.getIgnore;
 import static utils.ex.SupplierEx.orElse;
 
 import contest.db.Organization;
-import extract.JsoupUtils;
 import extract.PdfUtils;
+import extract.web.JsoupUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

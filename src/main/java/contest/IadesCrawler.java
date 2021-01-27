@@ -4,7 +4,7 @@ import static contest.IadesHelper.saveContestValues;
 import static utils.CommonsFX.onCloseWindow;
 import static utils.ExtractUtils.addDomain;
 
-import extract.JsoupUtils;
+import extract.web.JsoupUtils;
 import java.net.URL;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;

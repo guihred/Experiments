@@ -1,6 +1,6 @@
 package election;
 
-import extract.JsoupUtils;
+import extract.web.JsoupUtils;
 import java.util.Arrays;
 import java.util.List;
 import org.jsoup.nodes.Document;

@@ -13,6 +13,7 @@ import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
 public class ExcelDataReader extends DataframeUtils {
+    private static final String SHEET_COLUMN = "Sheet";
     private static final Logger LOG = HasLogging.log();
 
     public static DataframeML readExcel(DataframeML dataframeML2, File excelFile) {
@@ -41,7 +42,7 @@ public class ExcelDataReader extends DataframeUtils {
     private static Map<String, Object> addHeaders(Map<String, Object> data, Sheet sheet,
             List<CellRangeAddress> mergedRegions, List<Integer> collect, int cellIndex) {
         if (sheet.getWorkbook().getNumberOfSheets() > 1) {
-            data.put("Sheet", sheet.getSheetName());
+            data.put(SHEET_COLUMN, sheet.getSheetName());
         }
         List<CellRangeAddress> headers = mergedRegions.stream().filter(e -> collect.stream().anyMatch(e::containsRow))
                 .filter(e -> e.containsColumn(cellIndex)).collect(Collectors.toList());
@@ -183,9 +184,8 @@ public class ExcelDataReader extends DataframeUtils {
     }
 
     private static boolean skipFirstLine(DataframeML dataframe, Map<String, Object> map) {
-        return dataframe.size == 0 && map.entrySet().stream().filter(e -> !e.getKey().equals("Sheet")).allMatch(e -> {
-            return Objects.equals(e.getKey(), e.getValue())
-                    || Objects.equals(Objects.toString(e.getKey(), ""), Objects.toString(e.getValue(), ""));
-        });
+        return dataframe.size == 0 && map.entrySet().stream().filter(e -> !SHEET_COLUMN.equals(e.getKey()))
+                .allMatch(e -> Objects.equals(e.getKey(), e.getValue())
+                        || Objects.equals(Objects.toString(e.getKey(), ""), Objects.toString(e.getValue(), "")));
     }
 }

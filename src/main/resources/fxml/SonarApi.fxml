@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.event.*?><?import javafx.scene.input.*?><?import javafx.scene.text.*?><?import javafx.geometry.*?>
+<HBox xmlns:fx="http://javafx.com/fxml" styleClass="root">
+	<children>
+		<VBox>
+			<children>
+				<Text fx:id="text1" text="Filter" />
+				<TextField fx:id="filterField">
+					<padding>
+						<Insets bottom="5.0" left="8.7" right="8.7" top="5.0" />
+					</padding>
+				</TextField>
+				<Button alignment="CENTER" fx:id="update" id="_Update"
+					onAction="#onActionUpdate" text="_Update">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Button alignment="CENTER" fx:id="openDataframe" id="_Open Dataframe"
+					onAction="#onActionOpenDataframe" text="_Open Dataframe">
+					<padding>
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+					</padding>
+				</Button>
+				<Text fx:id="text5" text="Components" />
+				<ListView fx:id="componentsList" id="componentsList">
+					<padding>
+						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+					</padding>
+				</ListView>
+				<Text fx:id="text7" text="Rules" />
+				<ListView fx:id="rulesList" id="rulesList">
+					<padding>
+						<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+					</padding>
+				</ListView>
+			</children>
+		</VBox>
+		<TableView HBox.hgrow="ALWAYS" fx:id="sonarTable">
+			<padding>
+				<Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+			</padding>
+		</TableView>
+	</children>
+</HBox>

@@ -1,6 +1,6 @@
 package election;
 
-import extract.JsoupUtils;
+import extract.web.JsoupUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

@@ -1,8 +1,10 @@
 package graphs.app;
 
+import static graphs.entities.GraphModelAlgorithms.edges;
+import static graphs.entities.GraphModelAlgorithms.edgesNumber;
+
 import graphs.entities.Cell;
 import graphs.entities.Edge;
-import graphs.entities.GraphModelAlgorithms;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -27,8 +29,8 @@ public final class LayerSplitter {
                 int ceil = (int) Math.ceil(list.size() / 2.);
                 List<Cell> subList = new ArrayList<>(list.subList(0, ceil));
                 List<Cell> subList2 = new ArrayList<>(list.subList(ceil, list.size()));
-                subList.sort(Comparator.comparingLong(t -> GraphModelAlgorithms.edgesNumber(t, edges)));
-                subList2.sort(Comparator.comparingLong((Cell t) -> GraphModelAlgorithms.edgesNumber(t, edges)).reversed());
+                subList.sort(Comparator.comparingLong(t -> edgesNumber(t, edges)));
+                subList2.sort(Comparator.comparingLong((Cell t) -> edgesNumber(t, edges)).reversed());
                 list.clear();
                 list.addAll(subList);
                 list.addAll(subList2);
@@ -58,7 +60,7 @@ public final class LayerSplitter {
         }
         marked.add(vertex);
         stack.add(vertex);
-        for (Edge edge : GraphModelAlgorithms.edges(vertex, edges)) {
+        for (Edge edge : edges(vertex, edges)) {
             if (stack.contains(edge.getTarget())) {
                 edges.remove(edge);
                 edge.setSelected(true);

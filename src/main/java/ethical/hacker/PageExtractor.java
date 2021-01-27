@@ -1,7 +1,7 @@
 package ethical.hacker;
 
-import extract.PhantomJSUtils;
 import extract.PrintConfig;
+import extract.web.PhantomJSUtils;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -20,7 +20,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import ml.data.PaginatedTableView;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,6 +31,7 @@ import simplebuilder.SimpleDialogBuilder;
 import utils.*;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
+import utils.fx.PaginatedTableView;
 
 public class PageExtractor extends Application {
 

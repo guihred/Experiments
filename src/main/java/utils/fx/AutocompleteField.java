@@ -1,4 +1,4 @@
-package ml.data;
+package utils.fx;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import org.apache.commons.lang3.StringUtils;
 import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public class AutocompleteField extends TextField {
     protected final SortedSet<String> entries = new TreeSet<>();
@@ -24,7 +25,7 @@ public class AutocompleteField extends TextField {
     private boolean popupHidden;
     private String textOccurenceStyle = "-fx-font-weight: bold; -fx-fill: red;";
     protected int maxEntries = 10;
-    protected FunctionEx<String, String> onTextSelected = s -> s;
+    protected FunctionEx<String, String> textSelected = s -> s;
 
     private String wordSeparator = " ";
 
@@ -76,7 +77,7 @@ public class AutocompleteField extends TextField {
     }
 
     public void setOnTextSelected(FunctionEx<String, String> wordSeparator) {
-        onTextSelected=wordSeparator;
+        textSelected = wordSeparator;
     }
 
     public void setPopupHidden(boolean popupHidden) {
@@ -91,7 +92,7 @@ public class AutocompleteField extends TextField {
     }
 
     protected void onTextSelected(String result) {
-        setText(FunctionEx.apply(onTextSelected, result));
+        setText(FunctionEx.apply(textSelected, result));
     }
 
 
@@ -117,7 +118,7 @@ public class AutocompleteField extends TextField {
         if (!isPopupHidden()) {
             populatePopup(searchResult, text);
             if (!entriesPopup.isShowing()) {
-                entriesPopup.show(AutocompleteField.this, Side.BOTTOM, 0, 0);
+                RunnableEx.ignore(() -> entriesPopup.show(AutocompleteField.this, Side.BOTTOM, 0, 0));
             }
         }
     }

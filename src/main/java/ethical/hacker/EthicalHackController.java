@@ -3,7 +3,7 @@ package ethical.hacker;
 import static simplebuilder.SimpleTableViewBuilder.of;
 import static utils.CommonsFX.newFastFilter;
 
-import extract.WhoIsScanner;
+import extract.web.WhoIsScanner;
 import java.io.File;
 import java.net.URL;
 import java.util.*;

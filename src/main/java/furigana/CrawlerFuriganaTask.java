@@ -2,7 +2,7 @@ package furigana;
 
 import static utils.ex.FunctionEx.makeFunction;
 
-import extract.JsoupUtils;
+import extract.web.JsoupUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;

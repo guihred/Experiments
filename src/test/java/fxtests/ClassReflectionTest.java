@@ -1,5 +1,6 @@
 package fxtests;
 
+import ethical.hacker.CoverageUtils;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
-import ml.data.CoverageUtils;
 import org.junit.Test;
 import utils.BaseEntity;
 import utils.ClassReflectionUtils;

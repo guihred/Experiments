@@ -2,15 +2,14 @@ package extract;
 
 import static utils.ex.RunnableEx.run;
 
-import com.mpatric.mp3agic.ID3v1;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.ID3v24Tag;
-import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,6 +61,10 @@ public final class MusicReader {
                 .collect(Collectors.joining(" - "));
     }
 
+    public static HashSet<String> getID3v1Genres() {
+        return new HashSet<>(Arrays.asList(ID3v1Genres.GENRES));
+    }
+
     public static ObservableList<Music> getMusicas(File file) {
 
         ObservableList<Music> musicas = FXCollections.observableArrayList();
@@ -111,9 +114,10 @@ public final class MusicReader {
         String year = "";
         String track = "";
         String genre2 = "";
+        String version = "";
         try {
             Mp3File mediaFile = new Mp3File(sourceFile);
-
+            version = mediaFile.getVersion();
             ID3v1 tagv1 = mediaFile.getId3v1Tag();
             ID3v2 tagv2 = mediaFile.getId3v2Tag();
             if (mediaFile.hasId3v1Tag()) {
@@ -149,6 +153,7 @@ public final class MusicReader {
         musica.setAno(year);
         musica.setTrilha(track);
         musica.setArquivo(sourceFile);
+        musica.setVersion(version);
         return musica;
     }
 
@@ -169,7 +174,10 @@ public final class MusicReader {
             tags.setArtist(a.getArtista());
             tags.setTitle(a.getTitulo());
             tags.setYear(a.getAno());
-            tags.setGenreDescription(a.getGenero());
+            RunnableEx.make(() -> tags.setGenreDescription(a.getGenero()),
+                    e -> LOG.info("Gender {} not existing in {}", a.getGenero(), Arrays.toString(ID3v1Genres.GENRES)))
+                    .run();
+
             if (a.getImage() != null) {
                 String value = getDescription(a);
                 Image image = a.getImage();

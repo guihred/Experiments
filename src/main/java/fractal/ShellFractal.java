@@ -51,12 +51,12 @@ public class ShellFractal extends Canvas {
 	}
 
 	private void drawCircle(GraphicsContext gc, double x0, double y0, double r, double r0, double angle) {
-        final int fullCircle = 360;
+        final double fullCircle = 360;
         gc.arc(x0, y0, r, r, angle, fullCircle / 4);
 		if (r < limit.get()) {
 			double x = Math.sin(Math.toRadians(angle)) * r0;
 			double y = Math.cos(Math.toRadians(angle)) * r0;
-            drawCircle(gc, x0 + x, y0 + y, r + r0, r, (angle + fullCircle / 4.) % fullCircle);
+            drawCircle(gc, x0 + x, y0 + y, r + r0, r, (angle + fullCircle / 4) % fullCircle);
 		}
 	}
 

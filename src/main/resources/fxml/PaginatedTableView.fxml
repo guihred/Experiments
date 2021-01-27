@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import ml.data.*?>
+<?import utils.fx.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.event.*?>
 <?import javafx.scene.input.*?>
@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.beans.property.SimpleIntegerProperty?>
 
-<fx:root type="ml.data.PaginatedTableView" xmlns:fx="http://javafx.com/fxml">
+<fx:root type="utils.fx.PaginatedTableView" xmlns:fx="http://javafx.com/fxml">
 	<fx:define>
 		<SimpleIntegerProperty fx:id="maxSize" value="${0}" />
 		<SimpleIntegerProperty fx:id="pageSize">

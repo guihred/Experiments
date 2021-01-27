@@ -1,8 +1,8 @@
 package fxtests;
 
 import audio.mp3.PageImage;
+import ethical.hacker.CoverageUtils;
 import javafx.application.Application;
-import ml.data.CoverageUtils;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")

@@ -2,6 +2,7 @@ package fxtests;
 
 import static javafx.scene.input.KeyCode.*;
 
+import ethical.hacker.CoverageUtils;
 import extract.PrintConfig;
 import java.io.File;
 import java.nio.IntBuffer;
@@ -21,7 +22,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import ml.data.CoverageUtils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;

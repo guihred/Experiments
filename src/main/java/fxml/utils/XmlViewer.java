@@ -44,16 +44,14 @@ public class XmlViewer extends Application {
         sideTable.setItems(list);
         tree.setRoot(new TreeItem<>(newMap("Root", null)));
         SimpleTreeViewBuilder.onSelect(tree, newValue -> onSelectTreeItem(list, sideTable, newValue));
-        fileProp.addListener((ob, old, val) -> {
-            RunnableEx.make(()->{
-                if (val != null) {
-                    readXMLFile(tree, allItems, val);
-                }
-            }, e -> {
-                LOG.error("ERROR READING {} ", val, e);
-                fileProp.set(old);
-            }).run();
-        });
+        fileProp.addListener((ob, old, val) -> RunnableEx.make(() -> {
+            if (val != null) {
+                readXMLFile(tree, allItems, val);
+            }
+        }, e -> {
+            LOG.error("ERROR READING {} ", val, e);
+            fileProp.set(old);
+        }).run());
         File file = FileTreeWalker.getFirstPathByExtension(new File("").getAbsoluteFile(), ".xml").toFile();
         fileProp.set(file);
     }
@@ -63,8 +61,7 @@ public class XmlViewer extends Application {
     }
 
     public void onActionImportXML(ActionEvent e) {
-        new FileChooserBuilder().title("Import XML").extensions("Xml/Html", "*.xml", "*.html")
-                .onSelect(fileProp::set)
+        new FileChooserBuilder().title("Import XML").extensions("Xml/Html", "*.xml", "*.html").onSelect(fileProp::set)
                 .openFileAction(e);
     }
 

@@ -3,8 +3,8 @@ package kibana;
 import static utils.StringSigaUtils.toDouble;
 
 import extract.PPTService;
-import extract.PhantomJSUtils;
 import extract.WordService;
+import extract.web.PhantomJSUtils;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;

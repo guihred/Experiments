@@ -1,4 +1,4 @@
-package extract;
+package extract.web;
 
 import gui.ava.html.image.generator.HtmlImageGenerator;
 import java.awt.Dimension;

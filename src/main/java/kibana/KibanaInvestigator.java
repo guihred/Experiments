@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
@@ -39,9 +38,6 @@ public class KibanaInvestigator extends Application {
     private ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
 
     public void initialize() {
-        final int columnWidth = 120;
-        commonTable.prefWidthProperty()
-                .bind(Bindings.selectDouble(commonTable.parentProperty(), "width").add(-columnWidth));
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         SimpleTableViewBuilder.of(commonTable).copiable().savable()
@@ -64,7 +60,9 @@ public class KibanaInvestigator extends Application {
             SimpleDoubleProperty progress = iterator.next();
             progress.addListener(
                     ob -> totalProgress.set(progresses.stream().mapToDouble(DoubleProperty::get).sum()));
-            List<String> cols = commonTable.getColumns().stream().map(e -> e.getText()).collect(Collectors.toList());
+            List<String> cols =
+                    commonTable.getColumns().stream().map(TableColumn::getText)
+                    .collect(Collectors.toList());
             RunnableEx.runNewThread(
                     () -> KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem(), progress, cols),
                     ns -> CommonsFX.runInPlatform(() -> addToTable(items2, ns)));
@@ -73,9 +71,8 @@ public class KibanaInvestigator extends Application {
 
     public void onOpenDataframe() {
         RunnableEx.run(() -> {
-            TableView<Map<String, String>> table = commonTable;
-            File ev = ResourceFXUtils.getOutFile("csv/" + table.getId() + ".csv");
-            CSVUtils.saveToFile(table, ev);
+            File ev = ResourceFXUtils.getOutFile("csv/" + commonTable.getId() + ".csv");
+            CSVUtils.saveToFile(commonTable, ev);
             new SimpleDialogBuilder().bindWindow(commonTable).show(DataframeExplorer.class).addStats(ev);
         });
     }

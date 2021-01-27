@@ -98,8 +98,7 @@ public class DataframeML extends BaseDataframe {
     public <T> Map<String, T> findFirst(String header, Predicate<Object> v) {
         List<Object> list = dataframe.get(header);
         if (list != null) {
-            return (Map<String, T>) IntStream.range(0, list.size())
-                    .filter(i -> v.test(list.get(i)))
+            return (Map<String, T>) IntStream.range(0, list.size()).filter(i -> v.test(list.get(i)))
                     .mapToObj(this::rowMap).findFirst().orElse(null);
         }
         HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
@@ -109,8 +108,6 @@ public class DataframeML extends BaseDataframe {
     public Set<Object> freeCategory(String header) {
         return new HashSet<>(dataframe.get(header));
     }
-
-
 
     public Map<String, Long> histogram(String header) {
         List<Object> list = dataframe.get(header);
@@ -131,14 +128,11 @@ public class DataframeML extends BaseDataframe {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Object> map(String destination,String header, UnaryOperator<Object> mapper) {
-        List<Object> collect = dataframe.get(header).stream().map(
-
-                mapper
-
-        ).collect(Collectors.toList());
+    public List<Object> map(String destination, String header, UnaryOperator<Object> mapper) {
+        List<Object> collect = dataframe.get(header).stream().map(mapper).collect(Collectors.toList());
         dataframe.put(destination, collect);
-        Class<? extends Object> orElse = collect.stream().filter(Objects::nonNull).findFirst().map(e->e.getClass()).orElse(null);
+        Class<? extends Object> orElse =
+                collect.stream().filter(Objects::nonNull).findFirst().map(Object::getClass).orElse(null);
         putFormat(destination, (Class<? extends Comparable<?>>) orElse);
         return collect;
     }
@@ -164,7 +158,6 @@ public class DataframeML extends BaseDataframe {
         frameHeader.sort(Comparator.comparing(e -> headersOrder.indexOf(e.getKey())));
         frameHeader.forEach(e -> dataframe.put(e.getKey(), e.getValue()));
     }
-
 
     public DoubleSummaryStatistics summary(String header) {
         if (!dataframe.containsKey(header)) {
