@@ -27,6 +27,7 @@ import javafx.util.Duration;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
+import utils.ex.RunnableEx;
 
 public class EditSongController extends Application {
     @FXML
@@ -77,7 +78,7 @@ public class EditSongController extends Application {
         bind(artistaField, selectedItem.artistaProperty());
 
         mediaPlayer.get().currentTimeProperty()
-            .addListener(e -> EditSongHelper.updateCurrentSlider(mediaPlayer.get(), currentSlider));
+                .addListener(e -> EditSongHelper.updateCurrentSlider(mediaPlayer.get(), currentSlider));
         mediaPlayer.get().totalDurationProperty().addListener(e -> finalSlider.setValue(1));
         finalSlider.setValue(1 - 1. / 1000);
         Image imageData = MusicReader.extractEmbeddedImage(selectedItem.getArquivo());
@@ -94,18 +95,20 @@ public class EditSongController extends Application {
     }
 
     public void onActionPlayPause() {
-        if (mediaPlayer.get().getStatus() == MediaPlayer.Status.PLAYING) {
-            mediaPlayer.get().pause();
-        } else {
-            mediaPlayer.get().play();
-        }
+        RunnableEx.runIf(mediaPlayer.get(), m -> {
+            if (m.getStatus() == MediaPlayer.Status.PLAYING) {
+                m.pause();
+            } else {
+                m.play();
+            }
+        });
     }
 
     public void onActionSplit(ActionEvent e) {
         File outFile = ResourceFXUtils.getOutFile("mp3/" + selectedItem.getArquivo().getName());
         if (initialSlider.getValue() != 0 || finalSlider.getValue() != 1) {
             EditSongHelper.splitAndSave(selectedItem, initialSlider, finalSlider, outFile, progressIndicator,
-                mediaPlayer);
+                    mediaPlayer);
             return;
         }
         SongUtils.stopAndDispose(mediaPlayer.get());
@@ -116,7 +119,6 @@ public class EditSongController extends Application {
     public void onActionSplitMultiple() {
         EditSongHelper.splitAudio(mediaPlayer, selectedItem.getArquivo(), currentSlider, startTime);
     }
-
 
     @Override
     public void start(Stage primaryStage) {

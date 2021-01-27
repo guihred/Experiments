@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.net.ssl.X509TrustManager;
 
-public class SavingTrustManager implements X509TrustManager {
+class SavingTrustManager implements X509TrustManager {
 
     private final X509TrustManager tm;
     private List<X509Certificate> chain = new ArrayList<>();

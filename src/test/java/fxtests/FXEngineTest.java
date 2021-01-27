@@ -34,8 +34,9 @@ import utils.ex.RunnableEx;
 public class FXEngineTest extends AbstractTestExecution {
 
     @Test
+    @SuppressWarnings("static-method")
     public void testChapter4() throws Throwable {
-        AbstractTestExecution.testApps(Chapter4.Ex1.class, Chapter4.Ex4.class, Chapter4.Ex10.class, Chapter4.Ex5.class,
+        testApps(Chapter4.Ex1.class, Chapter4.Ex4.class, Chapter4.Ex10.class, Chapter4.Ex5.class,
             Chapter4.Ex6.class, Chapter4.Ex7.class, Chapter4.Ex9.class);
     }
 

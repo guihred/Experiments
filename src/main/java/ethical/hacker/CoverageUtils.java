@@ -7,6 +7,7 @@ import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import java.io.File;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
@@ -40,6 +41,10 @@ public final class CoverageUtils {
     private static final int BRANCH_MIN_COVERAGE = 20;
 
     private static final Logger LOG = HasLogging.log();
+
+    private static final String LAST_EXECUTION_REGEX =
+            "\\[WARNING\\] Execution data for class [\\w/]+/([\\w]+)\\$*\\d* .+" + "|"
+                    + "\\[INFO\\] --- jacoco-maven-plugin:0.8.4:report \\(create-merged-report\\) @ Experiments ---";
 
     private CoverageUtils() {
     }
@@ -190,7 +195,23 @@ public final class CoverageUtils {
     }
 
     private static <T> List<T> getByCoverage(Function<List<String>, List<T>> func) {
-
+        File file = new File("target/test.log");
+        if (file.exists()) {
+            List<String> uncovered = SupplierEx.get(
+                    () -> Files.lines(file.toPath()).filter(l -> l.matches(LAST_EXECUTION_REGEX))
+                            .map(s -> s.replaceAll(LAST_EXECUTION_REGEX, "$1")).collect(Collectors.toList()),
+                    Collections.<String>emptyList());
+            int lastIndexOf = uncovered.lastIndexOf("");
+            List<String> lastExecution = uncovered.stream().skip(lastIndexOf + 1).filter(StringUtils::isNotBlank)
+                    .distinct().collect(Collectors.toList());
+            if (!lastExecution.isEmpty()) {
+                List<T> uncoveredApplications = func.apply(lastExecution);
+                if (!uncoveredApplications.isEmpty()) {
+                    LOG.info("NOT COVERED = {}% APPS = {}", uncovered, uncoveredApplications);
+                    return uncoveredApplications;
+                }
+            }
+        }
         for (int i = LINES_MIN_COVERAGE; i < MAX_LINE_COVERAGE / 2; i += 5) {
             List<String> uncovered = getUncovered(i);
             List<T> uncoveredApplications = func.apply(uncovered);
@@ -202,14 +223,14 @@ public final class CoverageUtils {
         if (ExtractUtils.isPortOpen(SonarApi.SONAR_API_ISSUES)) {
             List<Map<String, Object>> issuesList = new ArrayList<>();
             SonarApi.onUpdate(issuesList);
-            List<String> uncovered = issuesList.stream()
-                    .filter(e -> "common-java:InsufficientLineCoverage".equals(e.get("rule")))
-                    .map(e -> e.getOrDefault("component", "")).map(t -> Objects.toString(t, ""))
-                    .filter(StringUtils::isNotBlank)
-                    .map(s -> s.replaceAll(".+/(\\w+)\\.java$", "$1")).collect(Collectors.toList());
+            List<String> uncovered =
+                    issuesList.stream().filter(e -> "common-java:InsufficientLineCoverage".equals(e.get("rule")))
+                            .map(e -> e.getOrDefault("component", "")).map(t -> Objects.toString(t, ""))
+                            .filter(StringUtils::isNotBlank).map(s -> s.replaceAll(".+/(\\w+)\\.java$", "$1"))
+                            .collect(Collectors.toList());
             List<T> uncoveredApplications = func.apply(uncovered);
             if (!uncoveredApplications.isEmpty()) {
-                LOG.info("LINE COVERAGE = {}% APPS = {}", uncovered, uncoveredApplications);
+                LOG.info("SONAR UNCOVERED= {}% APPS = {}", uncovered, uncoveredApplications);
                 return uncoveredApplications;
             }
         }

@@ -23,7 +23,7 @@ import utils.ex.RunnableEx;
 
 @SuppressWarnings("static-method")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class JavaDependencyTest {
+public class CoverageJavaTest {
     private static final Logger LOG = HasLogging.log();
     private static final int NUMBER_TESTS = 4;
 

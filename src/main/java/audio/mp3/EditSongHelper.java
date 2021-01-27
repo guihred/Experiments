@@ -8,6 +8,8 @@ import extract.MusicReader;
 import extract.SongUtils;
 import extract.web.ImageLoader;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.DoubleProperty;
@@ -42,6 +44,7 @@ import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
 public final class EditSongHelper {
+    private static final long MAX_SIZE = 1_000_000L;
     private static final Logger LOG = HasLogging.log();
 
     private EditSongHelper() {
@@ -70,7 +73,13 @@ public final class EditSongHelper {
                 selectedItem.getTitulo());
         RunnableEx.runNewThread(() -> {
             RunnableEx.sleepSeconds(5);
-            return FileTreeWalker.getPathByExtension(parentFile, ".jpg", ".png");
+            List<Path> pathByExtension = FileTreeWalker.getPathByExtension(parentFile, ".jpg", ".png");
+            return
+            pathByExtension.stream().filter(e -> {
+                BasicFileAttributes computeAttributes = ResourceFXUtils.computeAttributes(e.toFile());
+                return computeAttributes.size() < MAX_SIZE;// LESS than a MB
+            }).limit(10)
+                    .collect(Collectors.toList());
         }, pathByExtension -> {
             if (!pathByExtension.isEmpty()) {
                 CommonsFX.runInPlatform(() -> {
@@ -119,7 +128,7 @@ public final class EditSongHelper {
             LOG.error("CAN'T Split Audio {}", file);
             return;
         }
-        LOG.info("Splitting {} status {}", mediaPlayer2, mediaPlayer2.getStatus());
+        LOG.info("Splitting status {}", mediaPlayer2.getStatus());
         Duration currentTime = mediaPlayer2.getTotalDuration().multiply(currentSlider.getValue());
         Music music = new Music(file);
         VBox root = new VBox();

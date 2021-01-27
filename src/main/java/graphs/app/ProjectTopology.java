@@ -36,8 +36,9 @@ public class ProjectTopology extends BaseTopology {
             map.forEach((dep, weight) -> graph.getModel().addEdge(cellId, dep, weight.intValue()));
         }
         graph.endUpdate();
-        double w = graph.getScrollPane().getWidth() / 2;
-        ConcentricLayout.layoutConcentric(graph.getModel().getAllCells(), graph.getModel().getAllEdges(), w);
+        double w = graph.getScrollPane().getViewportBounds().getWidth() / 2;
+        double h = graph.getScrollPane().getViewportBounds().getHeight();
+        LayerLayout.layoutInLayers(graph.getModel().getAllCells(), graph.getModel().getAllEdges(), w, h);
 
     }
 

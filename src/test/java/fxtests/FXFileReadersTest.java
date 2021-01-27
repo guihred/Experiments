@@ -173,7 +173,7 @@ public class FXFileReadersTest extends AbstractTestExecution {
     @Test
     public void testLoadKibanaApi() {
         measureTime("ExcelService.getExcel", () -> ExcelService
-                .getExcel(ResourceFXUtils.toFile("networks/Lista de IP da Caixa.xls"), (List<Object> l) -> {
+                .getExcel(ResourceFXUtils.toFile("networks/Lista de IP da Caixa.xlsx"), (List<Object> l) -> {
                     if (l.isEmpty()) {
                         return null;
                     }

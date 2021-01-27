@@ -1,7 +1,6 @@
 package fxtests;
 
 import ethical.hacker.*;
-import extract.*;
 import extract.web.*;
 import java.io.File;
 import java.nio.file.Path;
@@ -12,7 +11,10 @@ import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import kibana.*;
+import kibana.ConsultasInvestigator;
+import kibana.KibanaApi;
+import kibana.KibanaInvestigator;
+import kibana.TimelionApi;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import ml.graph.ExplorerHelper;

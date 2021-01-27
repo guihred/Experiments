@@ -25,12 +25,12 @@
 	</root>
 	<logger name="contest.ContestReader" level="ERROR" />
 	<logger name="utils.ExtractUtils" level="INFO" />
-	<logger name="extract.PhantomJSUtils" level="ERROR" />
 	<logger name="utils.ConsoleUtils" level="INFO" />
- 	<logger name="extract.WhoIsScanner" level="ERROR" /> 
+	<logger name="extract.web.PhantomJSUtils" level="ERROR" />
+ 	<logger name="extract.web.WhoIsScanner" level="ERROR" /> 
+	<logger name="extract.web.ImageLoader" level="ERROR" />
  	<logger name="rosario.LeitorArquivos" level="ERROR" /> 
 	<logger name="fxml.utils.FXMLCreator" level="ERROR" />
-	<logger name="extract.ImageLoader" level="ERROR" />
 
 	<logger name="org.openqa.selenium.phantomjs.PhantomJSDriverService" level="ERROR" />
 	<logger name="org.openqa.selenium.remote" level="OFF" />
