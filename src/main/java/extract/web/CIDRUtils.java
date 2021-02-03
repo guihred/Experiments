@@ -29,8 +29,10 @@ public class CIDRUtils {
 
     private static final List<String> PRIVATE_NETWORKS = Arrays.asList("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16");
 
+    private static final String CIDR_REGEX = "\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+";
+    private static final String IP_REGEX = "\\d+\\.\\d+\\.\\d+\\.\\d+";
     public static String addressToPattern(String cidr) {
-        if (StringUtils.isBlank(cidr) || !cidr.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
+        if (StringUtils.isBlank(cidr) || !cidr.matches(CIDR_REGEX)) {
             return cidr;
         }
 
@@ -80,31 +82,33 @@ public class CIDRUtils {
     }
 
     public static String getReverseDNS(String ip) {
-        return SupplierEx.get(() -> toInetAddress(ip).getCanonicalHostName(), null);
+        return SupplierEx.getIgnore(() -> toInetAddress(ip).getCanonicalHostName(), ip);
     }
 
     public static boolean isPrivateNetwork(String ip) {
-        return PRIVATE_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
+        return ip.endsWith(".prevnet") ||
+
+                PRIVATE_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
     }
 
     public static boolean isSameNetworkAddress(String cidr, String ip) {
         if (StringUtils.isBlank(cidr) || StringUtils.isBlank(ip)) {
             return false;
         }
-        if (!cidr.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+") && !ip.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
+        if (!cidr.matches(CIDR_REGEX) && !ip.matches(IP_REGEX)) {
             return false;
         }
 
         String[] network = cidr.split("/");
-        int net = Stream.of(network[0].split("\\.")).mapToInt(StringSigaUtils::toInteger).reduce(0,
-                (a, i) -> (a << 8) + i);
-        int fullAddress =
-                Stream.of(ip.split("\\.")).mapToInt(StringSigaUtils::toInteger).reduce(0, (a, i) -> (a << 8) + i);
         if (network.length != 2) {
             return false;
         }
         final int mask = Integer.parseInt(network[1]);
         int fullMask = toFullMask(mask);
+        int net = Stream.of(network[0].split("\\.")).mapToInt(StringSigaUtils::toInteger).reduce(0,
+                (a, i) -> (a << 8) + i);
+        int fullAddress =
+                Stream.of(ip.split("\\.")).mapToInt(StringSigaUtils::toInteger).reduce(0, (a, i) -> (a << 8) + i);
         return (fullAddress & fullMask) == net;
     }
 
@@ -146,6 +150,9 @@ public class CIDRUtils {
     }
 
     public static InetAddress toInetAddress(String ip) throws UnknownHostException {
+        if (!ip.matches(IP_REGEX)) {
+            return null;
+        }
         List<Byte> bytes =
                 Stream.of(ip.split("\\.")).map(t -> Integer.valueOf(t).byteValue()).collect(Collectors.toList());
         byte[] addr = new byte[] { bytes.get(0), bytes.get(1), bytes.get(2), bytes.get(3) };

@@ -62,18 +62,18 @@ public class DataframeStatisticAccumulator {
         return Objects.toString(min);
     }
 
-    public double getCorrelation(String other) {
-        if (getFormat() == String.class || formatMap.get(other) == String.class) {
+    public double getCorrelation(List<Object> otherVariable) {
+        if (getFormat() == String.class
+                || otherVariable.stream().findFirst().map(Object::getClass).orElse(null) == String.class) {
             return 0;
         }
 
         double mean = sum / count;
-        List<Object> variable = dataframe.get(header);
+        List<Object> variable = getList();
         double sum1 = variable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).map(e -> e - mean)
                 .map(e -> e * e).sum();
         double st1 = Math.sqrt(sum1 / (count - 1));
 
-        List<Object> otherVariable = dataframe.get(other);
         double mean2 = otherVariable.stream().filter(Number.class::isInstance).map(Number.class::cast)
                 .mapToDouble(Number::doubleValue).average().getAsDouble();
 
@@ -83,6 +83,10 @@ public class DataframeStatisticAccumulator {
         double covariance = IntStream.range(0, count).mapToDouble(i -> (((Number) variable.get(i)).doubleValue() - mean)
                 * (((Number) otherVariable.get(i)).doubleValue() - mean2)).sum();
         return covariance / st1 / st2;
+    }
+
+    public double getCorrelation(String other) {
+        return getCorrelation(dataframe.get(other));
     }
 
     public int getCount() {
@@ -154,14 +158,12 @@ public class DataframeStatisticAccumulator {
     public double getStd() {
         if (getFormat() == String.class) {
             double mean = sum / countMap.size();
-            double sum2 =
-                    SupplierEx.getIgnore(
-                            () -> countMap.values().stream().mapToDouble(e -> e - mean).map(e -> e * e).sum(),
-                            0.);
+            double sum2 = SupplierEx
+                    .getIgnore(() -> countMap.values().stream().mapToDouble(e -> e - mean).map(e -> e * e).sum(), 0.);
             return Math.sqrt(sum2 / (countMap.size() - 1));
         }
 
-        List<Object> list = dataframe.get(header);
+        List<Object> list = getList();
         double mean = sum / count;
         if (list != null && !list.isEmpty()) {
             double sum2 = list.stream().filter(Number.class::isInstance).map(Number.class::cast)
@@ -273,6 +275,10 @@ public class DataframeStatisticAccumulator {
             }
         }
         return array.get((int) (array.size() * d)).getKey();
+    }
+
+    private List<Object> getList() {
+        return dataframe.get(header);
     }
 
     public static List<Entry<Number, Number>> createNumberEntries(Map<String, List<Object>> dataframe2, int size,

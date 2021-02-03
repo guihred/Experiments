@@ -66,9 +66,9 @@ public class KibanaApi {
         Map<String, String> makeKibanaSearch2 = KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", days,
                 new String[] { index, finalIP }, "message");
         String message = makeKibanaSearch2.getOrDefault("message", "");
-        String regex = "WHO:\\s+(.+)";
+        String regex = "WHO:\\s+(\\d+)|WHAT: supplied credentials: \\[(\\d+)+password\\]";
         List<String> linesThatMatch = Stream.of(message.split("\n")).filter(l -> l.matches(regex))
-                .map(s -> s.replaceAll(regex, "$1")).distinct()
+                .map(s -> s.replaceAll(regex, "$1$2")).distinct()
                 // .filter(StringUtils::isNumeric)
                 .collect(Collectors.toList());
         String[] messages = message.split("Audit trail record BEGIN");
@@ -76,12 +76,17 @@ public class KibanaApi {
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s, SupplierEx::nonNull));
     }
 
+    public static String getURL(String string) {
+        return string.replaceAll("(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+"
+                + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|svg|ico|eot))|.+(?=\\.(js)$)", "*");
+    }
+
+
     public static String isInBlacklist(String query) {
         File file = ResourceFXUtils.toFile("kibana/ip_filter.txt");
         return SupplierEx.get(() -> java.nio.file.Files.lines(file.toPath()).anyMatch(query::equals) ? "sim" : "não",
                 "não");
     }
-
 
     public static Map<String, String> kibanaFullScan(String query) {
         return kibanaFullScan(query, 1, null);
@@ -151,6 +156,7 @@ public class KibanaApi {
         return makeKibanaSearch(ResourceFXUtils.toFile(KIBANA_FOLDER + file), days, query, params);
     }
 
+
     public static Map<String, String> makeNewKibanaSearch(File file, int days, Map<String, String> search,
             String... params) {
         return SupplierEx.get(() -> {
@@ -167,7 +173,6 @@ public class KibanaApi {
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>());
     }
-
 
     public static Map<String, SupplierEx<String>> scanByIp(String ip, int days) {
         String key = "key";
@@ -216,13 +221,14 @@ public class KibanaApi {
             return displayDistinct(totalBytesQuery);
         });
         fullScan.put("Bytes_Sent", () -> {
-            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", ip, days, valueCol);
+            Map<String, String> totalBytesSent =
+                    makeKibanaSearch("paloAltoQuery.json", ip, days, valueCol);
             convertToStats(valueCol, totalBytesSent);
             return display(totalBytesSent);
         });
         fullScan.put("URLs", () -> urls(days, pattern));
         // fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", pattern,
-        // days, "Name", "Value")));
+        // days, "Name", "Value")))
         return fullScan;
     }
 
@@ -253,7 +259,7 @@ public class KibanaApi {
     }
 
     protected static File newJsonFile(String string) {
-        String replaceAll = string.replaceAll("[:/{}\" */\n?]+", "_");
+        String replaceAll = string.replaceAll("[:/{}\" */\n?\\\\=]+", "_");
         return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
     }
 
@@ -278,7 +284,7 @@ public class KibanaApi {
             if (summaryStatistics.getCount() == 0) {
                 return "";
             }
-            String min = StringSigaUtils.getFileSize(summaryStatistics.getMin());
+            String min = StringSigaUtils.getFileSize(summaryStatistics.getAverage());
             String max = StringSigaUtils.getFileSize(summaryStatistics.getMax());
             String last = StringSigaUtils.getFileSize(summaryStatistics.getSum());
             return String.format("%s (%s a %s)", last, min, max);
@@ -311,13 +317,8 @@ public class KibanaApi {
                 .collect(Collectors.toList());
     }
 
-    private static String getURL(Map<String, String> e) {
-        return e.get("key0").replaceAll("(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+"
-                + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|svg|ico|eot))|.+(?=\\.(js)\\W*.*$)", "*");
-    }
-
     private static String getWhoField(String regex, String s) {
-        return Stream.of(s.split("\n")).filter(l -> l.matches(regex)).findFirst().orElse("").replaceAll(regex, "$1");
+        return Stream.of(s.split("\n")).filter(l -> l.matches(regex)).findFirst().orElse("").replaceAll(regex, "$1$2");
     }
 
     private static String removeExtension(File file) {
@@ -336,7 +337,8 @@ public class KibanaApi {
                         LinkedHashMap<String, List<Map<String, String>>>::new, Collectors.toList()));
         return collect2.entrySet().stream().map(entry -> {
             Map<String, Long> collect = entry.getValue().stream()
-                    .map(e -> new AbstractMap.SimpleEntry<>(getURL(e), StringSigaUtils.toLong(e.get(docCount + "0"))))
+                    .map(e -> new AbstractMap.SimpleEntry<>(getURL(e.get("key0")),
+                            StringSigaUtils.toLong(e.get(docCount + "0"))))
                     .collect(Collectors.groupingBy(SimpleEntry<String, Long>::getKey,
                             Collectors.summingLong(SimpleEntry<String, Long>::getValue)));
             String collect3 = collect.entrySet().stream()

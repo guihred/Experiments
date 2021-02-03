@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.scene.image.Image;
@@ -20,10 +19,7 @@ import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.xddf.usermodel.text.XDDFTextParagraph;
 import org.apache.poi.xslf.usermodel.*;
 import org.slf4j.Logger;
-import utils.DateFormatUtils;
-import utils.ExtractUtils;
-import utils.ImageFXUtils;
-import utils.ResourceFXUtils;
+import utils.*;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
@@ -104,7 +100,7 @@ public final class PPTService {
                 Object at = dataframe.getAt(columnName, j);
                 XSLFTableRow row = j + 1 >= size ? table.addRow() : table.getRows().get(j + 1);
                 XSLFTableCell xslfTableCell = i < row.getCells().size() ? row.getCells().get(i) : row.addCell();
-                xslfTableCell.setText(Objects.toString(at, ""));
+                xslfTableCell.setText(StringSigaUtils.toStringSpecial(at));
             }
         }
     }
@@ -112,12 +108,13 @@ public final class PPTService {
     private static void getPowerPoint(Map<String, Object> replacementMap, File arquivo, File outStream) {
         RunnableEx.run(() -> {
             try (InputStream resourceAsStream = new FileInputStream(arquivo);
-                    XMLSlideShow document1 = new XMLSlideShow(resourceAsStream);
-                    FileOutputStream stream = new FileOutputStream(outStream)) {
+                    XMLSlideShow document1 = new XMLSlideShow(resourceAsStream)) {
                 for (XSLFSlide slide : document1.getSlides()) {
                     replaceSlide(replacementMap, slide, document1);
                 }
-                document1.write(stream);
+                try (FileOutputStream stream = new FileOutputStream(outStream)) {
+                    document1.write(stream);
+                }
             }
         });
     }

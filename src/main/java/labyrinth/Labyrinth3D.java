@@ -12,7 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Labyrinth3D extends Application implements CommomLabyrinth {
-	private static final int SIZE = 50;
+    private static final int STRAIGHT_ANGLE = 90;
+    private static final int SIZE = 50;
 	private static final double CAMERA_QUANTITY = 10.0;
 
 	private PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -62,7 +63,7 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 			LabyrinthWall rectangle = new LabyrinthWall(SIZE, color);
 			rectangle.setTranslateX(i * SIZE);
 			rectangle.setTranslateZ(j * SIZE);
-			rectangle.getRy().setAngle(90);
+            rectangle.getRy().setAngle(STRAIGHT_ANGLE);
 			root.getChildren().add(rectangle);
 		} else {
 			LabyrinthWall rectangle = new LabyrinthWall(SIZE, color);
@@ -89,7 +90,7 @@ public class Labyrinth3D extends Application implements CommomLabyrinth {
 					LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);
 					rectangle.setTranslateX(k * SIZE);
 					rectangle.setTranslateZ(l * SIZE);
-					rectangle.getRy().setAngle(90);
+                    rectangle.getRy().setAngle(STRAIGHT_ANGLE);
 					root.getChildren().add(rectangle);
 				} else {
 					LabyrinthWall rectangle = new LabyrinthWall(SIZE, Color.BLUE);

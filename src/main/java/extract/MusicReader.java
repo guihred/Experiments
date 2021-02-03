@@ -5,12 +5,12 @@ import static utils.ex.RunnableEx.run;
 import com.mpatric.mp3agic.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
@@ -61,7 +61,7 @@ public final class MusicReader {
                 .collect(Collectors.joining(" - "));
     }
 
-    public static HashSet<String> getID3v1Genres() {
+    public static Set<String> getID3v1Genres() {
         return new HashSet<>(Arrays.asList(ID3v1Genres.GENRES));
     }
 
@@ -202,12 +202,10 @@ public final class MusicReader {
     }
 
     private static void copyFileBack(File file, File file2) {
-        try {
+        RunnableEx.ignore(() -> {
             ExtractUtils.copy(file2.toPath(), file);
             Files.deleteIfExists(file2.toPath());
-        } catch (IOException e1) {
-            LOG.error("ERROR COPYING " + file.getName() + "-> " + file2.getName(), e1);
-        }
+        });
     }
 
     @SuppressWarnings("unchecked")

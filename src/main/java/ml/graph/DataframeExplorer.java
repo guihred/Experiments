@@ -9,13 +9,10 @@ import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import ml.data.*;
-import org.slf4j.Logger;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
@@ -28,14 +25,13 @@ import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
-public class DataframeExplorer extends ExplorerVariables {
+public class DataframeExplorer extends ExplorerVariables implements HasLogging {
 
-    private static final Logger LOG = HasLogging.log();
 
     public void addStats(File file) {
         interruptCurrentThread();
         currentThread = RunnableEx.runNewThread(() -> {
-            LOG.info("File {} STARTING", file.getName());
+            getLogger().info("File {} STARTING", file.getName());
             if (getDataframe() != null && !file.equals(getDataframe().getFile())) {
                 setDataframe(null);
                 CommonsFX.runInPlatformSync(() -> {
@@ -63,7 +59,8 @@ public class DataframeExplorer extends ExplorerVariables {
                 list -> addQuestion(list.stream().map(barList::get).collect(Collectors.toList()), false));
         histogram.setColumnsWidth(10, 5);
         statistics.onDoubleClick(i -> columnsList.getSelectionModel().select(i));
-        SimpleListViewBuilder.of(columnsList).items(columns).multipleSelection().onSelect(this::onColumnChosen)
+        SimpleListViewBuilder.of(columnsList).items(columns).copiable().multipleSelection()
+                .onSelect(this::onColumnChosen)
                 .onKey(KeyCode.ADD, () -> retainOnly(columnsList.getSelectionModel().getSelectedItems()))
                 .onKey(KeyCode.SUBTRACT, () -> retainOnly(
                         columns.stream().filter(e -> e.getValue().getDistinct() > 0).collect(Collectors.toList())))
@@ -121,20 +118,20 @@ public class DataframeExplorer extends ExplorerVariables {
 
     public void onActionFillIP() {
         currentThread = RunnableEx.runNewThread(() -> {
-            LOG.info("FILLING {} IPS", getDataframe().getFile().getName());
+            getLogger().info("FILLING {} IPS", getDataframe().getFile().getName());
             Entry<String, DataframeStatisticAccumulator> selectedItem =
                     columnsList.getSelectionModel().getSelectedItem();
             if (selectedItem == null) {
                 return;
             }
             String ipColumn = selectedItem.getKey();
-            DataframeBuilder builder = builderWithQuestions(getDataframe().getFile(), questions);
+            DataframeBuilder builder = Question.builderWithQuestions(getDataframe().getFile(), questions);
             setDataframe(ExplorerHelper.fillIPInformation(builder, ipColumn, progress.progressProperty()));
             File outFile = ResourceFXUtils.getOutFile("csv/" + getDataframe().getFile().getName());
-            LOG.info("File {} SAVING IN", outFile);
+            getLogger().info("File {} SAVING IN", outFile);
             DataframeUtils.save(getDataframe(), outFile);
             readDataframe(outFile, ExplorerHelper.MAX_ELEMENTS);
-            LOG.info("File {} IPS FILLED", getDataframe().getFile().getName());
+            getLogger().info("File {} IPS FILLED", getDataframe().getFile().getName());
             currentThread = null;
         });
     }
@@ -154,32 +151,36 @@ public class DataframeExplorer extends ExplorerVariables {
     }
 
     public void readDataframe(File file, int maxSize) {
-        DataframeBuilder builder = builderWithQuestions(file, questions);
+        DataframeBuilder builder = Question.builderWithQuestions(file, questions);
         if (!ExcelService.isExcel(file)) {
             Set<Entry<String, DataframeStatisticAccumulator>> entrySet = builder.columns();
             setDataframe(builder);
             CommonsFX.runInPlatform(() -> columns.setAll(entrySet));
             builder.makeStats(progress.progressProperty());
         }
-        if (ExcelService.isExcel(file) || getDataframe().getSize() <= maxSize) {
+        if (ExcelService.isExcel(file) || maxSize == 0 || getDataframe().getSize() <= maxSize) {
             setDataframe(builder.build(progress.progressProperty()));
             CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
         }
         CommonsFX.runInPlatform(() -> columns.setAll(SupplierEx
                 .orElse(getDataframe().getStats(), () -> DataframeUtils.makeStats(getDataframe())).entrySet()));
-        LOG.info("File {} READ", file.getName());
+        getLogger().info("File {} READ", file.getName());
     }
 
     public Thread save(File outFile) {
         return RunnableEx.runNewThread(() -> {
             List<String> cols = getDataframe().cols();
             if (!getDataframe().isLoaded()) {
-                readDataframe(getDataframe().getFile(), getDataframe().getSize());
+                DataframeBuilder builder = Question.builderWithQuestions(getDataframe().getFile(), questions);
+                setDataframe(builder.build(progress.progressProperty()));
+                CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
+                CommonsFX.runInPlatform(() -> columns.setAll(SupplierEx
+                        .orElse(getDataframe().getStats(), () -> DataframeUtils.makeStats(getDataframe())).entrySet()));
             }
             DataframeML dataframe2 = getDataframe();
             dataframe2.cols().stream().filter(t -> !cols.contains(t)).forEach(dataframe2::removeCol);
             DataframeUtils.save(dataframe2, outFile);
-            LOG.info("{} SAVED", outFile);
+            getLogger().info("{} SAVED", outFile);
         });
     }
 
@@ -199,7 +200,7 @@ public class DataframeExplorer extends ExplorerVariables {
                 if (question.getType() == QuestionType.DISTINCT) {
                     ((Set<?>) question.getOb()).clear();
                 }
-                getDataframe().filter(question.getColName(), question::answer);
+                getDataframe().filter(question.getColName(), question);
             }
             int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
             columns.setAll(DataframeUtils.makeStats(getDataframe()).entrySet());
@@ -215,9 +216,8 @@ public class DataframeExplorer extends ExplorerVariables {
         List<Entry<String, DataframeStatisticAccumulator>> notSelectedCols =
                 columns.stream().filter(s -> !selectedItems.contains(s)).collect(Collectors.toList());
         columns.removeAll(notSelectedCols);
-        getDataframe().removeCol(
-                notSelectedCols.stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
-                        .toArray(String[]::new));
+        getDataframe().removeCol(notSelectedCols.stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
+                .toArray(String[]::new));
     }
 
     private void splitByColumn() {
@@ -231,36 +231,14 @@ public class DataframeExplorer extends ExplorerVariables {
         questions.set(questions.indexOf(t), t);
     }
 
+    public static Boolean isTypeDisabled(QuestionType q, Entry<String, DataframeStatisticAccumulator> it) {
+        return it == null || q == null || !q.matchesClass(it.getValue().getFormat());
+    }
+
+
+
     public static void main(String[] args) {
         launch(args);
-    }
-
-    private static DataframeBuilder builderWithQuestions(File file, List<Question> questions) {
-        DataframeBuilder builder = DataframeBuilder.builder(file);
-        for (Question question : questions) {
-            if (question.getType() == QuestionType.DISTINCT) {
-                ((Set<?>) question.getOb()).clear();
-            }
-            builder.filterOut(question.getColName(), question::answer);
-        }
-        return builder;
-    }
-
-    private static <T> T getSelected(ComboBox<T> headersCombo) {
-        T selectedItem = headersCombo.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            return selectedItem;
-        }
-        ObservableList<T> columns = headersCombo.getItems();
-        int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
-        if (!columns.isEmpty() && selectedIndex >= 0) {
-            return columns.get(selectedIndex % columns.size());
-        }
-        return null;
-    }
-
-    private static Boolean isTypeDisabled(QuestionType q, Entry<String, DataframeStatisticAccumulator> it) {
-        return it == null || q == null || !q.matchesClass(it.getValue().getFormat());
     }
 
 }

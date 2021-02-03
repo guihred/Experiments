@@ -4,6 +4,7 @@ import static utils.StringSigaUtils.toDouble;
 
 import extract.PPTService;
 import extract.WordService;
+import extract.web.JsonExtractor;
 import extract.web.PhantomJSUtils;
 import java.io.File;
 import java.util.*;
@@ -194,7 +195,8 @@ public final class ReportHelper {
         }
         CommonsFX.runInPlatformSync(() -> {
             new FileChooserBuilder().title(replaceString(params, imageObj.getOrDefault("name", "erro")))
-                    .onSelect(f -> saveCSV(f, imageObj, outFile)).extensions("CSV", "*.csv").openFileAction(null);
+                    .onSelect(f -> saveCSV(f, imageObj, outFile)).extensions("Data", "*.csv", "*.xlsx", "*.xls")
+                    .openFileAction(null);
             return;
         });
         return outFile;
@@ -203,7 +205,7 @@ public final class ReportHelper {
     private static Image getImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
         File outFile = ResourceFXUtils
                 .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
-        if (outFile.exists()) {
+        if (!JsonExtractor.isNotRecentFile(outFile)) {
             return crop(imageObj, outFile);
         }
 
@@ -217,7 +219,6 @@ public final class ReportHelper {
                 Integer zoom = StringSigaUtils.toInteger(imageObj.getOrDefault("zoom", 1));
                 browser.setZoom(zoom);
             }
-
             loadSite(engine, finalURL);
         });
         RunnableEx.measureTime("Load Site " + replaceString(params, imageObj.get("name")), () -> {
@@ -235,7 +236,7 @@ public final class ReportHelper {
     private static Image getUncroppedImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
         File outFile = ResourceFXUtils
                 .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
-        if (outFile.exists()) {
+        if (JsonExtractor.isRecentFile(outFile, 6)) {
             String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
             return new Image(externalForm);
         }
@@ -290,14 +291,22 @@ public final class ReportHelper {
         return replaceString(params, e);
     }
 
-    @SuppressWarnings("unchecked")
     private static void saveCSV(File srcFile, Map<String, Object> params, File outFile) {
         DataframeML dataframe = DataframeBuilder.build(srcFile);
+        Map<String, String> mapping = JsonExtractor.accessMap(params, "mappings");
+        if (mapping != null) {
+            List<String> cols2 = dataframe.cols();
+            mapping.forEach((k, v) -> {
+                if (cols2.contains(k)) {
+                    dataframe.map(v, k, m -> m);
+                }
+            });
+        }
         List<String> cols = dataframe.cols();
         String columns = params.getOrDefault("columns", "").toString();
         cols.removeIf(s -> s.matches(columns));
         dataframe.removeCol(cols.toArray(new String[0]));
-        List<Object> o = (List<Object>) params.getOrDefault("questions", new ArrayList<>());
+        List<Object> o = JsonExtractor.accessList(params, "questions");
         List<Question> a = o.stream().map(Objects::toString).map(t -> Question.parseQuestion(dataframe, t))
                 .collect(Collectors.toList());
 
@@ -310,7 +319,7 @@ public final class ReportHelper {
         dataframe.forEachRow(items2::add);
         if (items2.isEmpty()) {
             Map<String, Object> e = new LinkedHashMap<>();
-            finalHeaders.forEach(c -> e.put(c, ""));
+            finalHeaders.forEach(c -> e.put(c, "" + ""));
             items2.add(e);
         }
         ExcelService.getExcel(items2, outFile);

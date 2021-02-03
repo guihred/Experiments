@@ -1,17 +1,16 @@
 package ethical.hacker;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.nio.file.Files;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import ml.data.DataframeBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
@@ -20,6 +19,9 @@ public final class PortServices {
     private static final Map<Integer, String> TCP_SERVICES = new LinkedHashMap<>();
     private static final Map<Integer, String> UDP_SERVICES = new LinkedHashMap<>();
     private static final Logger LOG = HasLogging.log();
+    static {
+        loadServiceNames();
+    }
     private final String description;
     private final String type;
     private final int[] ports;
@@ -63,10 +65,11 @@ public final class PortServices {
         if (udpService != null) {
             return new PortServices(tcpService, "UDP", port);
         }
-        return new PortServices("Unknown", "", port);
+        return new PortServices("", "", port);
     }
+
     public static String getServiceDescriptionByPort(Integer port) {
-        return getServiceByPort(port)+"";
+        return getServiceByPort(port) + "";
     }
 
     public static Map<Integer, String> getTcpServices() {
@@ -78,24 +81,32 @@ public final class PortServices {
 
     public static void loadServiceNames() {
         RunnableEx.run(() -> {
-            try (InputStream inStr = ResourceFXUtils.toStream("nmap-services");
-                    InputStreamReader inStrReader = new InputStreamReader(inStr, Charset.defaultCharset());
-                    BufferedReader bRead = new BufferedReader(inStrReader)) {
-                for (String line = bRead.readLine(); line != null; line = bRead.readLine()) {
-                    classifyService(line.trim());
-                }
-
+            try (BufferedReader bRead = Files.newBufferedReader(ResourceFXUtils.toPath("nmap-services"))) {
+                bRead.lines().forEach(line -> classifyService(line.trim()));
             }
+            DataframeBuilder.build("ports.csv").forEachRow(e -> {
+                String protocol = Objects.toString(e.get("Port"), "");
+                String description = Objects.toString(e.get("Description"), "");
+                Integer port = StringSigaUtils.toInteger(protocol);
+                if (StringUtils.containsIgnoreCase(protocol, "tcp")) {
+                    TCP_SERVICES.putIfAbsent(port, description);
+                }
+                if (StringUtils.containsIgnoreCase(protocol, "udp")) {
+                    UDP_SERVICES.putIfAbsent(port, description);
+                }
+            });
         });
     }
 
     public static void main(String[] args) {
         loadServiceNames();
-        String udpServices = UDP_SERVICES.entrySet().stream().map(Entry<Integer, String>::toString)
+        String udpServices = UDP_SERVICES.entrySet().stream()
+                .sorted(Comparator.comparing(Entry<Integer, String>::getKey)).map(Entry<Integer, String>::toString)
                 .collect(Collectors.joining("\n\t", "\n", ""));
         LOG.info("UDP = {}", udpServices);
-        String tcpServices = TCP_SERVICES.entrySet().stream().map(Entry<Integer, String>::toString)
-                .collect(Collectors.joining("\n\t", "\n\t", ""));
+        String tcpServices =
+                TCP_SERVICES.entrySet().stream().sorted(Comparator.comparing(Entry<Integer, String>::getKey))
+                        .map(Entry<Integer, String>::toString).collect(Collectors.joining("\n\t", "\n\t", ""));
         LOG.info("TCP = {}", tcpServices);
     }
 

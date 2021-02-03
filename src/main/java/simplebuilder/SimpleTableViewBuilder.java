@@ -164,7 +164,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         table.getColumns().clear();
         keySet.forEach(key -> {
             TableColumn<Map<String, T>, String> column = new TableColumn<>(key);
-            column.setSortable(true);
             column.setCellValueFactory(
                     param -> new SimpleStringProperty(Objects.toString(param.getValue().get(key), "-")));
             addCloseButton(table, column);
@@ -241,7 +240,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
             FileChooserBuilder fileChooserBuilder = new FileChooserBuilder();
             fileChooserBuilder.initialFilename(Objects.toString(table.getId(), "table") + ".csv")
                     .extensions("CSV", "*.csv").extensions("Excel", "*.xlsx")
-
                     .onSelect(f -> {
                         String extension = fileChooserBuilder.getExtension();
                         if ("CSV".equals(extension)) {

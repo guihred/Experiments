@@ -30,6 +30,7 @@ import utils.fx.RotateUtils;
 public class Chart3dGraph extends Application {
 
     private static final Logger LOG = HasLogging.log();
+    private static final int STRAIGHT_ANGLE = 90;
 
     // size of graph
     private static final int SIZE = 400;
@@ -86,7 +87,7 @@ public class Chart3dGraph extends Application {
         cube.getChildren().addAll(meshView);
         // testing / debugging stuff: show diffuse map on chart
         ImageView iv = new ImageView(diffuseMap);
-        iv.setRotate(90);
+        iv.setRotate(STRAIGHT_ANGLE);
         iv.setTranslateY(-SIZE / 10D);
         iv.setTranslateX(-SIZE / 2D);
         iv.setRotationAxis(new Point3D(1, 0, 0));
@@ -157,7 +158,7 @@ public class Chart3dGraph extends Application {
         r.setTranslateX(-length / 2);
         r.setTranslateY(0);
         r.setRotationAxis(Rotate.X_AXIS);
-        r.setRotate(90);
+        r.setRotate(STRAIGHT_ANGLE);
         cubeFaces.add(r);
         // left face
         r = new Axis(length);
@@ -165,7 +166,7 @@ public class Chart3dGraph extends Application {
         r.setTranslateX(0);
         r.setTranslateY(-length / 2);
         r.setRotationAxis(Rotate.Y_AXIS);
-        r.setRotate(90);
+        r.setRotate(STRAIGHT_ANGLE);
         cubeFaces.add(r);
         // top face
         // front face

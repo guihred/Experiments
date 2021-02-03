@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.beans.Observable;
@@ -20,6 +19,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TreeCell;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.FileTreeWalker;
@@ -75,12 +76,18 @@ public class SanarHelper {
         }
     }
 
+    public static Document downloadMainPage(String url1) {
+        File outFile = ResourceFXUtils.getOutFile("farmacia.html");
+        return SupplierEx.getFirst(() -> Jsoup.parse(outFile, StandardCharsets.UTF_8.toString()),
+                () -> loadFile(url1, outFile));
+    }
+
     public static DoubleProperty downloadVideo(String nome, String url) {
-        File file = toVideoFileName(nome);
         if (existCopy(nome)) {
-            LOG.info("FILE {} EXISTS", file);
+            LOG.info("FILE {} EXISTS", nome);
             return null;
         }
+        File file = toVideoFileName(nome);
         LOG.info("DOWNLOADING {} ...", file.getName());
         LinkedHashMap<String, String> headers = new LinkedHashMap<>();
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0");
@@ -107,6 +114,18 @@ public class SanarHelper {
         return name.replaceAll("[\\?\\\\/]+| *Baixar arquivo *", "");
     }
 
+    public static Map<String, String> getCookies() {
+        Map<String, String> cookies = new HashMap<>();
+        cookies.put("ESANARSESSID", "m5otcssorltp87a8s62fmoqtc5");
+        cookies.put("intercom-id-sju7o7kl", "1d4fda3e-8f5f-4a98-b129-1f73eb81f9e5");
+        cookies.put("intercom-session-sju7o7kl",
+                "WlFGTXRkc1NlSWZxdGxXL0NmTlk5RmV1ZWVDOVVaWUE5aDNlbWYxNDU5eFl"
+                        + "QQmg1QWl6VTk1SGxsNngvdXRlRi0tS1pNNDlhVWtiMndZRFFWazdKWkRBQT09"
+                        + "--60174817d9b3174e8d0eccfa9f2b797787d1c209");
+        cookies.put("muxData", "mux_viewer_id=e3480ca3-e1f1-44ee-b6b5-d8d7655e92c7&msn=0.12306064932172656");
+        return cookies;
+    }
+
     public static File getFilesFromPage(Entry<String, String> entry) {
         return SupplierEx.get(() -> {
             String name = entry.getKey();
@@ -126,12 +145,33 @@ public class SanarHelper {
         });
     }
 
-    public static boolean isValidLink(int level, SimpleEntry<String, String> t) {
+    public static boolean isValidLink(int level, Map.Entry<String, String> t) {
         return level == 1 || containsIgnoreCase(t.getValue(), E_SANAR_DOMAIN + "/arquivos/esanar_assuntos/");
     }
 
     public static void main(String[] args) {
         organizeFolders();
+    }
+
+    public static void organizeFolders() {
+        String url1 = PREFIX + ",preparatorio-para-farmacia.html";
+        Document doc = downloadMainPage(url1);
+        Elements select = doc.select("#accordion .panel-default");
+        for (Element panel : select) {
+            String folder = fixName(panel.select("h4").text());
+            List<String> filesFound =
+                    panel.select("tr").stream().map(tr -> fixName(tr.text())).collect(Collectors.toList());
+            for (String name : filesFound) {
+                for (String extension : Arrays.asList(".mp4", ".pdf")) {
+                    String finalName = fixName(name).replaceAll(EXTENSION_REGEX, "");
+                    String out = finalName + extension;
+
+                    File fileFound = getFileFound(out);
+                    RunnableEx.runIf(fileFound, f -> rename(folder, out, f));
+                }
+            }
+        }
+        
     }
 
     public static File toVideoFileName(String nome) {
@@ -153,16 +193,27 @@ public class SanarHelper {
         return finalName + ".mp4";
     }
 
+    private static File getFileFound(String out) {
+        File videoFileName = ResourceFXUtils.getOutFile("videos/" + out);
+
+        if (videoFileName.exists()) {
+            return videoFileName;
+        }
+        File pdfFileName = ResourceFXUtils.getOutFile(E_SANAR_FOLDER + out);
+
+        if (pdfFileName.exists()) {
+            return pdfFileName;
+        }
+        Path firstPathByExtension = FileTreeWalker.getFirstPathByExtension(consulta, out);
+        if (firstPathByExtension != null) {
+            return firstPathByExtension.toFile();
+        }
+        return null;
+    }
+
     private static Document loadFile(String url1, File outFile) throws IOException {
         PhantomJSUtils phantomJSUtils = new PhantomJSUtils();
-        Map<String, String> cookies = new HashMap<>();
-        cookies.put("ESANARSESSID", "m5otcssorltp87a8s62fmoqtc5");
-        cookies.put("intercom-id-sju7o7kl", "1d4fda3e-8f5f-4a98-b129-1f73eb81f9e5");
-        cookies.put("intercom-session-sju7o7kl",
-                "WlFGTXRkc1NlSWZxdGxXL0NmTlk5RmV1ZWVDOVVaWUE5aDNlbWYxNDU5eFl"
-                        + "QQmg1QWl6VTk1SGxsNngvdXRlRi0tS1pNNDlhVWtiMndZRFFWazdKWkRBQT09"
-                        + "--60174817d9b3174e8d0eccfa9f2b797787d1c209");
-        cookies.put("muxData", "mux_viewer_id=e3480ca3-e1f1-44ee-b6b5-d8d7655e92c7&msn=0.12306064932172656");
+        Map<String, String> cookies = getCookies();
         Document render = phantomJSUtils.render(url1, cookies, 10);
         phantomJSUtils.quit();
         Document normalise = render.normalise();
@@ -170,37 +221,15 @@ public class SanarHelper {
         return normalise;
     }
 
-    private static void organizeFolders() {
-        String url1 = PREFIX + ",preparatorio-para-farmacia.html";
-        File outFile = ResourceFXUtils.getOutFile("farmacia.html");
-        Document doc = SupplierEx.getFirst(() -> Jsoup.parse(outFile, StandardCharsets.UTF_8.toString()),
-                () -> loadFile(url1, outFile));
-        doc.select("#accordion .panel-default").forEach(panel -> {
-            String folder = fixName(panel.select("h4").text());
-            List<String> filesFound =
-                    panel.select("tr").stream().map(tr -> fixName(tr.text())).collect(Collectors.toList());
-            LOG.info("{}={}", folder, filesFound);
-            for (String name : filesFound) {
-                for (String extension : Arrays.asList(".mp4", ".pdf")) {
-                    String finalName = fixName(name).replaceAll(EXTENSION_REGEX, "");
-                    String out = finalName + extension;
-                    File videoFileName = ResourceFXUtils.getOutFile("videos/" + out);
-                    File pdfFileName = ResourceFXUtils.getOutFile(E_SANAR_FOLDER + out);
-                    Path firstPathByExtension = FileTreeWalker.getFirstPathByExtension(consulta, out);
-                    File fileFound = videoFileName.exists() ? videoFileName
-                            : pdfFileName.exists() ? pdfFileName
-                                    : firstPathByExtension != null ? firstPathByExtension.toFile() : null;
-                    RunnableEx.runIf(fileFound, f -> {
-                        File outFile2 = new File(consulta, folder + "\\" + out);
-                        if (!outFile2.getParentFile().exists()) {
-                            outFile2.getParentFile().mkdir();
-                        }
-                        f.renameTo(outFile2);
-                    });
-                }
-            }
-
-        });
+    private static void rename(String folder, String out, File f) throws IOException {
+        File outFile2 = new File(consulta, folder.replaceAll(":", "_") + "\\" + out);
+        if (!outFile2.getParentFile().exists()) {
+            outFile2.getParentFile().mkdir();
+        }
+        if (!f.equals(outFile2)) {
+            Files.move(f, outFile2);
+            LOG.info("{}->{}", f, outFile2);
+        }
     }
 
 }

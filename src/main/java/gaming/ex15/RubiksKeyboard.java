@@ -85,15 +85,15 @@ public class RubiksKeyboard implements EventHandler<KeyEvent> {
 
 	private void moveLeft(double change) {
         double sin = Math.sin(Math.toRadians(camera.getRotate() + STRAIGHT_ANGLE)) * change;
-		double cos = Math.cos(Math.toRadians(camera.getRotate() + 90)) * change;
+        double cos = Math.cos(Math.toRadians(camera.getRotate() + STRAIGHT_ANGLE)) * change;
 
 		camera.setTranslateX(camera.getTranslateX() - sin);
 		camera.setTranslateZ(camera.getTranslateZ() - cos);
 	}
 
 	private void moveRight(double change) {
-		double sin = Math.sin(Math.toRadians(camera.getRotate() - 90)) * change;
-		double cos = Math.cos(Math.toRadians(camera.getRotate() - 90)) * change;
+        double sin = Math.sin(Math.toRadians(camera.getRotate() - STRAIGHT_ANGLE)) * change;
+        double cos = Math.cos(Math.toRadians(camera.getRotate() - STRAIGHT_ANGLE)) * change;
 		
 		camera.setTranslateX(camera.getTranslateX() - sin);
 		camera.setTranslateZ(camera.getTranslateZ() - cos);

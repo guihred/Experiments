@@ -56,7 +56,7 @@ public class InlineModelViewer extends Application {
 
     private Group buildScene() {
         meshView.setTranslateX(VIEWPORT_SIZE / 2 + MODEL_X_OFFSET);
-        meshView.setTranslateY(VIEWPORT_SIZE / 2 * 9.0 / 16 + MODEL_Y_OFFSET);
+        meshView.setTranslateY(VIEWPORT_SIZE / 2 * 9.0 / 4 / 4 + MODEL_Y_OFFSET);
         meshView.setTranslateZ(VIEWPORT_SIZE / 2 + MODEL_Z_OFFSET);
         meshView.setScaleX(MODEL_SCALE_FACTOR);
         meshView.setScaleY(MODEL_SCALE_FACTOR);
@@ -96,7 +96,8 @@ public class InlineModelViewer extends Application {
     }
 
     private static SubScene createScene3D(Group group) {
-        SubScene scene3d = new SubScene(group, VIEWPORT_SIZE, VIEWPORT_SIZE * 9.0 / 16, true,
+        SubScene scene3d =
+                new SubScene(group, VIEWPORT_SIZE, VIEWPORT_SIZE * 9.0 / 4 / 4, true,
             SceneAntialiasing.BALANCED);
         scene3d.setFill(DARK_BLUE);
         scene3d.setCamera(new PerspectiveCamera());
@@ -120,7 +121,8 @@ public class InlineModelViewer extends Application {
         RotateTransition rotate = new RotateTransition(Duration.seconds(10), group);
         rotate.setAxis(Rotate.Y_AXIS);
         rotate.setFromAngle(0);
-        rotate.setToAngle(360);
+        final int wholeRotation = 360;
+        rotate.setToAngle(wholeRotation);
         rotate.setInterpolator(Interpolator.LINEAR);
         rotate.setCycleCount(Animation.INDEFINITE);
 

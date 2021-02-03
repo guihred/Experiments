@@ -16,7 +16,9 @@ public class LineTool extends PaintTool {
 
     @Override
     public Node createIcon() {
-        return new SimpleLineBuilder().startX(0).startY(0).endX(30).endY(30).stroke(Color.BLACK).build();
+        final int defaultSize = 30;
+        return new SimpleLineBuilder().startX(0).startY(0).endX(defaultSize).endY(defaultSize).stroke(Color.BLACK)
+                .build();
     }
 
     public Line getLine() {

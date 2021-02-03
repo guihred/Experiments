@@ -23,7 +23,7 @@ public class DecisionTree {
         if (question == null || question.getInfoGain() <= minGain) {
             return new DecisionNode(label, frame);
         }
-        DataframeML trueFrame = new DataframeML(frame).filter(question.getColName(), question::answer);
+        DataframeML trueFrame = new DataframeML(frame).filter(question.getColName(), question);
         DataframeML falseFrame = new DataframeML(frame).filter(question.getColName(), c -> !question.answer(c));
 
         DecisionNode trueTree = buildTree(trueFrame, label);
@@ -84,7 +84,7 @@ public class DecisionTree {
             for (QuestionType questionType : values2) {
                 for (Object val : values) {
                     Question question = new Question(col, val, questionType);
-                    DataframeML trueFrame = new DataframeML(dataframe).filter(col, question::answer);
+                    DataframeML trueFrame = new DataframeML(dataframe).filter(col, question);
                     DataframeML falseFrame = new DataframeML(dataframe).filter(col, c -> !question.answer(c));
                     if (trueFrame.getSize() == 0 || falseFrame.getSize() == 0) {
                         continue;

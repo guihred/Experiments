@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.chart.LineChart;
@@ -71,8 +70,6 @@ public class QueryObjects {
 
     public QueryObjects configureTable(TextField resultsFilter, ConsumerEx<List<Map<String, String>>> onClick) {
         ObservableList<Map<String, String>> ipItems2 = getItems();
-        final int columnWidth = 120;
-        table.prefWidthProperty().bind(Bindings.selectDouble(table.parentProperty(), "width").add(-columnWidth));
         table.setItems(CommonsFX.newFastFilter(resultsFilter, ipItems2));
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         SimpleTableViewBuilder.of(table).copiable().savable().onDoubleClickMany(onClick)

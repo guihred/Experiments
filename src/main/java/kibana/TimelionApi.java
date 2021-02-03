@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
@@ -60,6 +61,11 @@ public final class TimelionApi extends KibanaApi {
         return SupplierEx.getHandle(() -> {
             Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
                     timelineUsers, filterMap, time);
+            Object access = JsonExtractor.access(policiesSearch, Object.class, "statusCode");
+            if (StringSigaUtils.toInteger(access) == 500) {
+                return series;
+            }
+
             CommonsFX.runInPlatform(() -> convertToSeries(series, JsonExtractor.accessList(policiesSearch, "sheet")));
             return series;
         }, FXCollections.observableArrayList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));

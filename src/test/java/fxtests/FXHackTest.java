@@ -7,14 +7,11 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javafx.collections.FXCollections;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import kibana.ConsultasInvestigator;
-import kibana.KibanaApi;
-import kibana.KibanaInvestigator;
-import kibana.TimelionApi;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import ml.graph.ExplorerHelper;
@@ -85,59 +82,33 @@ public class FXHackTest extends AbstractTestExecution {
 
         ExtractUtils.insertProxyConfig();
         measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate("www-acesso"));
-        measureTime("Acesso",
-                () -> {
-                    HashMap<String, String> headers = new LinkedHashMap<>();
-                    HashMap<String, String> cookies = new HashMap<>();
-                    JsoupUtils.getDocument("https://www-acesso/gwdc/", cookies);
-                    String collect =
-                            cookies.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
-                    headers.put("Host", "www-acesso");
-                    headers.put("User-Agent",
-                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0");
-                    headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-                    headers.put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3");
-                    headers.put("Accept-Encoding", "gzip, deflate, br");
-                    headers.put("Content-Type", "application/x-www-form-urlencoded");
-                    headers.put("Content-Length", "41");
-                    headers.put("Origin", "https://www-acesso");
-                    headers.put("DNT", "1");
-                    headers.put("Connection", "keep-alive");
-                    headers.put("Referer", "https://www-acesso/gwdc/");
-                    headers.put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization());
-                    headers.put("Cookie",
-                            collect);
-                    headers.put("Upgrade-Insecure-Requests", "1");
-                    ContentType contnet = ContentType.APPLICATION_FORM_URLENCODED;
-                    PhantomJSUtils.postContent(
-                            "https://www-acesso/gwdc/?action=search&object=personUser&filter=70812788176",
-                            "uid=guilherme.hmedeiros&password=30-sanJU", contnet, headers,
-                            ResourceFXUtils.getOutFile("test.html"));
-                    return JsoupUtils.getDocument(
-                            "https://www-acesso/gwdc/?action=search&object=personUser&filter=70812788176", cookies);
+        measureTime("Acesso", () -> {
+            HashMap<String, String> headers = new LinkedHashMap<>();
+            HashMap<String, String> cookies = new HashMap<>();
+            JsoupUtils.getDocument("https://www-acesso/gwdc/", cookies);
+            String collect = cookies.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
+            headers.put("Host", "www-acesso");
+            headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0");
+            headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+            headers.put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3");
+            headers.put("Accept-Encoding", "gzip, deflate, br");
+            headers.put("Content-Type", "application/x-www-form-urlencoded");
+            headers.put("Content-Length", "41");
+            headers.put("Origin", "https://www-acesso");
+            headers.put("DNT", "1");
+            headers.put("Connection", "keep-alive");
+            headers.put("Referer", "https://www-acesso/gwdc/");
+            headers.put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization());
+            headers.put("Cookie", collect);
+            headers.put("Upgrade-Insecure-Requests", "1");
+            ContentType contnet = ContentType.APPLICATION_FORM_URLENCODED;
+            PhantomJSUtils.postContent("https://www-acesso/gwdc/?action=search&object=personUser&filter=70812788176",
+                    "uid=guilherme.hmedeiros&password=30-sanJU", contnet, headers,
+                    ResourceFXUtils.getOutFile("test.html"));
+            return JsoupUtils.getDocument("https://www-acesso/gwdc/?action=search&object=personUser&filter=70812788176",
+                    cookies);
 
-                });
-    }
-
-    @Test
-    public void testConsultasInvestigator() {
-        ImageFXUtils.setShowImage(false);
-        show(ConsultasInvestigator.class);
-        ProgressIndicator lookup = lookupFirst(ProgressIndicator.class);
-        List<Button> buttons = lookupList(Button.class).stream().limit(4).collect(Collectors.toList());
-        for (Node e1 : buttons) {
-            clickOn(e1);
-            waitProgress(lookup);
-        }
-        waitProgress(lookup);
-        Set<Node> queryAll2 = lookup(".tab").queryAll();
-        for (Node node : queryAll2) {
-            tryClickOn(node);
-            Set<Node> queryAs =
-                    lookup(".tab-content-area").queryAll().stream().filter(Node::isVisible).collect(Collectors.toSet());
-            from(queryAs).lookup(TableRow.class::isInstance).queryAll().stream().limit(1).forEach(this::doubleClickOn);
-            waitProgress(lookup);
-        }
+        });
     }
 
     @Test
@@ -165,22 +136,21 @@ public class FXHackTest extends AbstractTestExecution {
         measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash("whatever"));
     }
 
+
+    @Test
+    public void testImageCracker() {
+        measureTime("ImageCracker.readScreenshots",
+                () -> ImageCracker.crackImages(ResourceFXUtils.getOutFile("screenshots")));
+        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA.jpg")));
+        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA2.jpg")));
+        measureTime("ImageCracker.createSelectedImage", () -> ImageCracker.crackImage(
+                ImageCracker.createSelectedImage(new Image(ResourceFXUtils.toExternalForm("CAPTCHA.jpg")))));
+    }
+
     @Test
     public void testInstallCert() {
         String string = "correiov3.dataprev.gov.br";
         measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate(string));
-    }
-
-    @Test
-    public void testKibanaApi() {
-        measureTime("KibanaApi.kibanaFullScan", () -> KibanaApi.kibanaFullScan("187.22.201.244"));
-    }
-
-    @Test
-    public void testKibanaInvestigator() {
-        ImageFXUtils.setShowImage(false);
-        show(KibanaInvestigator.class);
-        clickButtonsWait();
     }
 
     @Test
@@ -196,6 +166,13 @@ public class FXHackTest extends AbstractTestExecution {
             tryClickOn(t);
             type(KeyCode.ESCAPE);
         });
+    }
+
+
+    @Test
+    public void testPCapReader() {
+        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\CiscoCNNA\\two.pcap");
+        measureTime("PCapReader.readPCAPngFile", () -> PCapReader.readPCAPngFile(file));
     }
 
     @Test
@@ -229,11 +206,6 @@ public class FXHackTest extends AbstractTestExecution {
         clickButtonsWait();
     }
 
-    @Test
-    public void testTimelionScan() {
-        measureTime("TimelionApi.timelionScan", () -> TimelionApi.timelionScan(FXCollections.observableArrayList(),
-                TimelionApi.TIMELINE_USERS, new HashMap<>(), "now-1d"));
-    }
 
     @Test
     public void testWebBrowserApplication() {
@@ -294,7 +266,7 @@ public class FXHackTest extends AbstractTestExecution {
         String randomItem = randomItem("safebrowsing.googleapis.com", "tracking-protection.cdn.mozilla.net",
                 "shavar.services.mozilla.com", "lh6.googleusercontent.com", "lh3.googleusercontent.com",
                 "people-pa.clients6.google.com", "people-pa.clients6.google.com", "clients6.google.com",
-                "mail.google.com", "play.google.com", "http://wwwcztapwlwk.net/plafgxc80333067532");
+                "mail.google.com", "play.google.com");
         type(typeText(randomItem));
         clickOn(lookupList.get(1));
         File downloads = ResourceFXUtils.getUserFolder("Downloads");
@@ -319,10 +291,5 @@ public class FXHackTest extends AbstractTestExecution {
         measureTime("VirusTotalApi.getUrlInformation", () -> VirusTotalApi.getUrlInformation(randomItem));
     }
 
-    private static void waitProgress(ProgressIndicator lookup) {
-        while (lookup.getProgress() > 0 && lookup.getProgress() < 1) {
-            // DOES NOTHING
-        }
-    }
 
 }

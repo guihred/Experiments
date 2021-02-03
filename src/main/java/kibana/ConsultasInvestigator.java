@@ -3,7 +3,6 @@ package kibana;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Stream.of;
 import static kibana.QueryObjects.ACESSOS_SISTEMA_QUERY;
 import static kibana.QueryObjects.CLIENT_IP_QUERY;
 import static kibana.QueryObjects.URL_QUERY;
@@ -83,8 +82,7 @@ public class ConsultasInvestigator extends Application {
         configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^/.*").setAllowEmpty(false);
         configureTimeline(ACESSOS_SISTEMA_QUERY, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
-        configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setGroup(WhoIsScanner.IP_REGEX)
-                .setAllowEmpty(false);
+        configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setAllowEmpty(false);
         SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> filter.remove(e.getKey())).pasteable(s -> {
             addToFilter(s);
             return null;
@@ -202,7 +200,9 @@ public class ConsultasInvestigator extends Application {
             return;
         }
         if (s.startsWith("/")) {
-            filter.merge(URL_QUERY, s, ConsultasHelper::merge);
+            String fieldQuery = URL_QUERY;
+            String fixParam = ConsultasHelper.fixParam(fieldQuery, s);
+            filter.merge(fieldQuery, fixParam, ConsultasHelper::merge);
             return;
         }
         if (!StringUtils.isNumeric(s)) {
@@ -216,8 +216,9 @@ public class ConsultasInvestigator extends Application {
         queryList.add(fieldObjects);
         return fieldObjects.configureTable(resultsFilter, e -> {
             for (Map<String, String> map : e) {
-                filter.merge(userNameQuery, map.values().stream().findFirst().orElse("key"),
-                        (u, v) -> of(u, v).distinct().collect(joining("\n")));
+                String s = map.values().stream().findFirst().orElse("key");
+                String fixParam = ConsultasHelper.fixParam(userNameQuery, s);
+                filter.merge(userNameQuery, fixParam, ConsultasHelper::merge);
             }
             resultsFilter.setText("");
             onActionKibanaScan();

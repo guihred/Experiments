@@ -29,17 +29,16 @@ public class Terrain extends Group {
     private final ResourceType type;
     private final IntegerProperty number = new SimpleIntegerProperty();
     private final StackPane stack;
-    private final Circle circle;
-    private final FillTransition highlightTransition;
+    private final Circle circle =
+            new SimpleCircleBuilder().radius(CatanResource.RADIUS / 5.).fill(Color.BEIGE).stroke(Color.BLACK).build();
+    private final FillTransition highlightTransition = new SimpleFillTransitionBuilder().shape(circle)
+            .duration(Duration.millis(200)).fromValue(Color.BEIGE).toValue(Color.GREEN).build();
 
     public Terrain(@NamedArg("type") ResourceType type) {
         this.type = type;
-        circle = new SimpleCircleBuilder().radius(CatanResource.RADIUS / 5.).fill(Color.BEIGE)
-            .visible(type != ResourceType.DESERT).stroke(Color.BLACK).build();
+        circle.setVisible(type != ResourceType.DESERT);
         stack = new StackPane(getPolygon(), getCircle(), getNumberText());
         getChildren().add(stack);
-        highlightTransition = new SimpleFillTransitionBuilder().shape(circle).duration(Duration.millis(200))
-            .fromValue(Color.BEIGE).toValue(Color.GREEN).build();
         setManaged(false);
     }
 

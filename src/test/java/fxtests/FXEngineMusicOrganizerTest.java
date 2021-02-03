@@ -76,6 +76,9 @@ public class FXEngineMusicOrganizerTest extends AbstractTestExecution {
             tryClickOn(textField);
             type(typeText(getRandomString()));
         }
+        clickOn(lookupFirst(TableView.class));
+        holding(KeyCode.CONTROL, () -> type(KeyCode.C));
+        type(KeyCode.ENTER);
     }
 
     @Test

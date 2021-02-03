@@ -41,10 +41,11 @@ public class HistogramExample extends Application {
 		DataframeUtils.crossFeature(x, "rooms_per_person", d -> (d[0] / d[1]), "total_rooms", "population");
         HistogramGraph canvas = new HistogramGraph();
         canvas.setTitle("California Housing");
-        left.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        final int max = 50;
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Line", 1, max, canvas.lineSizeProperty()));
         left.getChildren().add(SimpleSliderBuilder.newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        left.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, 30, canvas.binsProperty()));
-        left.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("X Bins", 1, max, canvas.binsProperty()));
+        left.getChildren().add(SimpleSliderBuilder.newSlider("Y Bins", 1, max, canvas.ybinsProperty()));
 
         ObservableList<Entry<String, Color>> itens = FXCollections.observableArrayList();
         canvas.statsProperty()

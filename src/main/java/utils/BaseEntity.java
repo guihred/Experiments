@@ -53,10 +53,11 @@ public abstract class BaseEntity implements Serializable, HasLogging {
         return getFieldValue(this, e);
     }
 
-    public static Object getFieldValue(Object ob, Field e) {
+    @SuppressWarnings("unchecked")
+    public static <T> T getFieldValue(Object ob, Field e) {
         return SupplierEx.get(() -> {
             e.setAccessible(true);
-            return e.get(ob);
+            return (T) e.get(ob);
         });
 
     }

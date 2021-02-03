@@ -4,23 +4,18 @@ import extract.web.WhoIsScanner;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.scene.chart.XYChart.Data;
 import ml.data.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ClassReflectionUtils;
-import utils.CommonsFX;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
-import utils.ex.RunnableEx;
 import utils.fx.PaginatedTableView;
 
 public final class ExplorerHelper {
@@ -30,6 +25,23 @@ public final class ExplorerHelper {
     private static final Logger LOG = HasLogging.log();
     private static WhoIsScanner whoIsScanner = new WhoIsScanner();
     private ExplorerHelper() {
+    }
+
+    public static void addEntries(PaginatedTableView dataTable2,
+            List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList) {
+        Map<Integer, Map<String, Object>> cache = new HashMap<>();
+        List<String> asList = Arrays.asList("Header", "Mean", "Max", "Min", "Distinct", "Median25", "Median50",
+                "Median75", "Sum", "Count");
+        for (String key : asList) {
+            dataTable2.addColumn(key, i -> ExplorerHelper.getStatAt(addedSubList, cache, key.toLowerCase(), i));
+        }
+        dataTable2.setListSize(addedSubList.size());
+        double[] array = asList.stream()
+                .mapToDouble(e -> Math.max(
+                        Objects.toString(ExplorerHelper.getStatAt(addedSubList, cache, e.toLowerCase(), 0)).length(),
+                        e.length()))
+                .toArray();
+        dataTable2.setColumnsWidth(array);
     }
 
     public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn) {
@@ -80,6 +92,13 @@ public final class ExplorerHelper {
         return numberCols.get(numberCols.size() - 1);
     }
 
+    public static int getTopLength(Entry<String, DataframeStatisticAccumulator> e) {
+        String string = Objects.toString(e.getValue().getTop(), "");
+        return Stream.of(string.split("\n")).mapToInt(String::length).max().orElse(string.length());
+    }
+
+
+
     public static String reorderAndLog(DataframeML dataframe, String numberField) {
         DataframeUtils.sort(dataframe, numberField);
         List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, "Network", numberField);
@@ -91,67 +110,7 @@ public final class ExplorerHelper {
 
     }
 
-    static void addEntries(PaginatedTableView dataTable2,
-            List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList) {
-        Map<Integer, Map<String, Object>> cache = new HashMap<>();
-        List<String> asList = Arrays.asList("Header", "Mean", "Max", "Min", "Distinct", "Median25", "Median50",
-                "Median75", "Sum", "Count");
-        for (String key : asList) {
-            dataTable2.addColumn(key, i -> ExplorerHelper.getStatAt(addedSubList, cache, key.toLowerCase(), i));
-        }
-        dataTable2.setListSize(addedSubList.size());
-        double[] array = asList.stream()
-                .mapToDouble(e -> Math.max(
-                        Objects.toString(ExplorerHelper.getStatAt(addedSubList, cache, e.toLowerCase(), 0)).length(),
-                        e.length()))
-                .toArray();
-        dataTable2.setColumnsWidth(array);
-    }
-
-    static void addToList(ObservableList<Data<String, Number>> dataList, List<Data<String, Number>> array,
-            Data<String, Number> others, ToDoubleFunction<Data<String, Number>> keyExtractor) {
-        CommonsFX.runInPlatformSync(() -> {
-            if (dataList.size() >= ExplorerHelper.MAX_ELEMENTS / 4) {
-                others.setYValue(keyExtractor.applyAsDouble(others) + array.stream().mapToDouble(keyExtractor).sum());
-                if (!dataList.contains(others)) {
-                    dataList.add(others);
-                }
-            } else {
-                array.sort(Comparator.comparingDouble(keyExtractor).reversed());
-                dataList.addAll(array);
-            }
-        });
-    }
-
-    static <T extends Number> void addToPieChart(ObservableList<Data<String, Number>> bar2List,
-            Collection<Entry<String, T>> countMap) {
-        RunnableEx.runNewThread(() -> {
-            List<Data<String, Number>> barList = Collections.synchronizedList(new ArrayList<>());
-            Data<String, Number> others = new Data<>("Others", 0);
-            countMap.forEach(entry -> {
-                String k = entry.getKey();
-                Number v = entry.getValue();
-                barList.add(new Data<>(k, v));
-                if (barList.size() % (ExplorerHelper.MAX_ELEMENTS / 10) == 0) {
-                    addToList(bar2List, new ArrayList<>(barList), others, m -> m.getYValue().doubleValue());
-                    barList.clear();
-                }
-            });
-            addToList(bar2List, barList, others, m -> m.getYValue().doubleValue());
-        });
-    }
-
-    static <T extends Number> void addToPieChart(ObservableList<Data<String, Number>> barList,
-            Map<String, T> countMap) {
-        addToPieChart(barList, countMap.entrySet());
-    }
-
-    static int getTopLength(Entry<String, DataframeStatisticAccumulator> e) {
-        String string = Objects.toString(e.getValue().getTop(), "");
-        return Stream.of(string.split("\n")).mapToInt(String::length).max().orElse(string.length());
-    }
-
-    static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {
+    public static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {
         List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, title, key);
         return createSeries.stream().map(e -> new AbstractMap.SimpleEntry<>((String) e.getKey(), (Number) e.getValue()))
                 .collect(Collectors.toList());

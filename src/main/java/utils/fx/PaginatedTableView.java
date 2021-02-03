@@ -7,7 +7,6 @@ import static simplebuilder.SimpleTableViewBuilder.prefWidthColumns;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.StringProperty;
@@ -54,16 +53,15 @@ public final class PaginatedTableView extends VBox {
         CommonsFX.loadRoot("PaginatedTableView.fxml", this);
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         numberColumn.setCellValueFactory(s -> new SimpleIntegerProperty(s.getValue()));
-        pagination.currentPageIndexProperty().addListener(ob -> updateItems());
-        pageSize.addListener(ob -> updateItems());
-        pageSizeCombo.valueProperty().bindBidirectional(pageSize);
+        pagination.currentPageIndexProperty().addListener((ob, old, val) -> updateItems());
+        pageSize.addListener((ob, old, val) -> updateItems());
+        CommonsFX.bindBidirectional(pageSizeCombo.valueProperty(), pageSize);
         maxSize.addListener((ob, o, n) -> {
             updateItems();
             updatePageSizeCombo(n.intValue());
         });
         pagination.setPageCount(0);
-        pagination.pageCountProperty().bind(
-                Bindings.createIntegerBinding(this::getPageCount, maxSize, pageSize, pageSizeCombo.itemsProperty()));
+        pagination.pageCountProperty().addListener((ob, old, val) -> updateItems());
         updateItems();
         textField.textProperty().addListener(
                 (ob, o, n) -> RunnableEx.runIf(filteredItems, i -> i.setPredicate(e -> containsString(n, e))));
@@ -152,6 +150,7 @@ public final class PaginatedTableView extends VBox {
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
         filteredItems = items.filtered(e -> containsString(textField.getText(), e));
         table.setItems(filteredItems);
+        pagination.setPageCount(getPageCount());
     }
 
     private void updatePageSizeCombo(int n) {

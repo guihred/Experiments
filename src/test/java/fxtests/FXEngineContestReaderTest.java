@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
@@ -98,6 +99,27 @@ public class FXEngineContestReaderTest extends AbstractTestExecution {
         type(KeyCode.SPACE);
         type(KeyCode.DOWN, 1);
     }
+
+    @Test
+    public void testSanarCrawler() {
+        show(SanarCrawler.class);
+        clickOn(lookupFirst(TreeView.class));
+        sleep(10, TimeUnit.SECONDS);
+        type(KeyCode.SPACE);
+        type(KeyCode.RIGHT);
+        type(KeyCode.DOWN, 2);
+        type(KeyCode.TAB);
+        queryYellow();
+        type(KeyCode.TAB);
+        type(KeyCode.SPACE);
+        type(KeyCode.DOWN, 1);
+    }
+
+    @Test
+    public void testSanarHelper() {
+        String name="video";
+        measureTime("SanarHelper.fixName", ()->SanarHelper.fixName(name));
+        }
 
     @Test
     public void verifyContestApplication() {

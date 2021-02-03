@@ -88,6 +88,7 @@ public abstract class BaseTopology implements EventTarget {
     }
 
     protected static double newAngle() {
-        return Math.random() * 360 - 180;
+        final int fullCircle = 360;
+        return Math.random() * fullCircle - fullCircle / 2;
     }
 }

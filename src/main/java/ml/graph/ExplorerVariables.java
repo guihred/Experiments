@@ -1,16 +1,10 @@
 package ml.graph;
 
-import static utils.StringSigaUtils.toDouble;
-
-import extract.web.WhoIsScanner;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.application.Application;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
@@ -21,16 +15,19 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart.Data;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.stage.Stage;
-import ml.data.*;
+import ml.data.DataframeML;
+import ml.data.DataframeStatisticAccumulator;
+import ml.data.Question;
+import ml.data.QuestionType;
 import simplebuilder.ListHelper;
 import utils.CommonsFX;
 import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.fx.AutocompleteField;
 import utils.fx.PaginatedTableView;
@@ -38,8 +35,10 @@ import utils.fx.PaginatedTableView;
 public abstract class ExplorerVariables extends Application {
     @FXML
     protected ComboBox<Entry<String, DataframeStatisticAccumulator>> headersCombo;
+
     @FXML
     protected ListView<Entry<String, DataframeStatisticAccumulator>> columnsList;
+
     @FXML
     protected AutocompleteField text;
     @FXML
@@ -48,7 +47,7 @@ public abstract class ExplorerVariables extends Application {
     protected ListView<Question> questionsList;
     @FXML
     protected ComboBox<QuestionType> questType;
-    protected final ObjectProperty<DataframeML> dataframe = new SimpleObjectProperty<>();
+    protected final SimpleObjectProperty<DataframeML> dataframe = new SimpleObjectProperty<>();
     @FXML
     protected PaginatedTableView statistics;
     @FXML
@@ -61,7 +60,6 @@ public abstract class ExplorerVariables extends Application {
     protected LineChart<Number, Number> lineChart;
     @FXML
     protected PieChart pieChart;
-
     @FXML
     protected BarChart<String, Number> barChart;
 
@@ -71,6 +69,7 @@ public abstract class ExplorerVariables extends Application {
             FXCollections.observableArrayList();
 
     protected ObservableList<Question> questions = FXCollections.observableArrayList();
+
     protected ObservableList<Data<String, Number>> barList = FXCollections.observableArrayList();
 
     public ExplorerVariables() {
@@ -113,7 +112,9 @@ public abstract class ExplorerVariables extends Application {
     protected void interruptCurrentThread() {
         RunnableEx.run(() -> {
             if (currentThread != null && currentThread.isAlive()) {
+                currentThread.checkAccess();
                 currentThread.interrupt();
+                HasLogging.log().info("THREAD INTERRUPTED");
                 setDataframe(null);
             }
         });
@@ -126,10 +127,10 @@ public abstract class ExplorerVariables extends Application {
         }
 
         fillIP.setDisable(true);
-        RunnableEx.runNewThread(() -> {
-            Set<String> unique = val.getValue().getUnique();
-            return unique.isEmpty() || !unique.stream().allMatch(s -> s != null && s.matches(WhoIsScanner.IP_REGEX));
-        }, e -> CommonsFX.runInPlatform(() -> fillIP.setDisable(e)));
+        RunnableEx.runNewThread(
+                () -> val.getValue().getDistinct() == 0 || !val.getValue().getUnique().stream()
+                        .allMatch(s -> s != null && s.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+$")),
+                e -> CommonsFX.runInPlatform(() -> fillIP.setDisable(e)));
         barList.clear();
         ObservableList<PieChart.Data> pieData = ListHelper.mapping(barList,
                 e -> new PieChart.Data(String.format("(%d) %s", e.getYValue().intValue(), e.getXValue()),
@@ -140,38 +141,38 @@ public abstract class ExplorerVariables extends Application {
             Map<String, Integer> countMap = val.getValue().getCountMap();
             barChart.setTitle(val.getKey());
             pieChart.setTitle(val.getKey());
-            barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
+            barChart.setData(ChartHelper.singleSeries(val.getKey(), barList));
             pieChart.setData(pieData);
-            ExplorerHelper.addToPieChart(barList, countMap);
+            ChartHelper.addToPieChart(barList, countMap);
             return;
         }
         if (!getDataframe().isLoaded()) {
             Map<String, Integer> countMap = val.getValue().getCountMap();
-            barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
+            barChart.setData(ChartHelper.singleSeries(val.getKey(), barList));
             pieChart.setData(pieData);
             barChart.setTitle(val.getKey());
             pieChart.setTitle(val.getKey());
-            ExplorerHelper.addToPieChart(barList, countMap);
+            ChartHelper.addToPieChart(barList, countMap);
             return;
         }
 
         if (old != null && old.getValue().getFormat() != String.class) {
-            addToBarChart(getDataframe(), old, val, barChart.getTitle());
+            ChartHelper.addToLineChart(getDataframe(), lineChart, old, val, barChart.getTitle());
             if (barChart.getTitle() != null) {
                 String key = val.getKey();
                 String title = barChart.getTitle();
-                barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
+                barChart.setData(ChartHelper.singleSeries(val.getKey(), barList));
                 pieChart.setData(pieData);
-                ExplorerHelper.addToPieChart(barList, ExplorerHelper.toPie(getDataframe(), title, key));
+                ChartHelper.addToPieChart(barList, ExplorerHelper.toPie(getDataframe(), title, key));
             }
             return;
         }
         if (barChart.getTitle() != null) {
-            barChart.setData(FXCollections.singletonObservableList(new Series<>(val.getKey(), barList)));
+            barChart.setData(ChartHelper.singleSeries(val.getKey(), barList));
             pieChart.setData(pieData);
             String title = barChart.getTitle();
             String key = val.getKey();
-            ExplorerHelper.addToPieChart(barList, ExplorerHelper.toPie(getDataframe(), title, key));
+            ChartHelper.addToPieChart(barList, ExplorerHelper.toPie(getDataframe(), title, key));
         }
     }
 
@@ -195,35 +196,17 @@ public abstract class ExplorerVariables extends Application {
         }
     }
 
-    private void addToBarChart(DataframeML dataframeML, Entry<String, DataframeStatisticAccumulator> old,
-            Entry<String, DataframeStatisticAccumulator> val, String name) {
 
-        ObservableList<Data<Number, Number>> data = FXCollections.observableArrayList();
-        String x = old.getKey();
-        String y = val.getKey();
-        Map<Object, Data<Number, Number>> linkedHashMap = new LinkedHashMap<>();
-        dataframeML.forEachRow(map -> {
-            Data<Number, Number> e = new Data<>((Number) map.get(x), (Number) map.get(y));
-            if (name != null) {
-                linkedHashMap.merge(map.get(name), e, (o, n) -> {
-                    n.setXValue(toDouble(o.getXValue()) + toDouble(n.getXValue()));
-                    n.setYValue(toDouble(o.getYValue()) + toDouble(n.getYValue()));
-                    return n;
-                });
-                e.setExtraValue(map.get(name));
-            }
-            data.add(e);
-        });
-
-        Series<Number, Number> a = new Series<>();
-        ObservableList<Series<Number, Number>> value = FXCollections.observableArrayList();
-        if (name != null) {
-            a.setName(name);
+    protected static <T> T getSelected(ComboBox<T> headersCombo) {
+        T selectedItem = headersCombo.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            return selectedItem;
         }
-        value.add(a);
-        lineChart.getXAxis().setLabel(old.getKey());
-        lineChart.getYAxis().setLabel(val.getKey());
-        a.setData(data);
-        lineChart.setData(value);
+        List<T> columns = headersCombo.getItems();
+        int selectedIndex = headersCombo.getSelectionModel().getSelectedIndex();
+        if (!columns.isEmpty() && selectedIndex >= 0) {
+            return columns.get(selectedIndex % columns.size());
+        }
+        return null;
     }
 }

@@ -199,8 +199,7 @@ public class IndependentTest {
         File file = ResourceFXUtils.toFile(ABOUT_HTML);
         URL url = ResourceFXUtils.convertToURL(file);
         measureTime("JsoupUtils.displayAllElements", () -> JsoupUtils.displayAllElements(file));
-        measureTime("JsoupUtils.displayAllElementsWithOutline",
-                () -> JsoupUtils.displayAllElementsWithOutline(file));
+        measureTime("JsoupUtils.displayAllElementsWithOutline", () -> JsoupUtils.displayAllElementsWithOutline(file));
         measureTime("JsoupUtils.extractDataFromHTML", () -> JsoupUtils.extractDataFromHTML(file));
         measureTime("JsoupUtils.extractingJavaScriptDataWithJsoup",
                 () -> JsoupUtils.extractingJavaScriptDataWithJsoup());
@@ -214,7 +213,8 @@ public class IndependentTest {
         measureTime("JsoupUtils.executeRequest",
                 () -> JsoupUtils.executeRequest("https://pt.wikipedia.org/", new HashMap<>()));
         Document measureTime2 = measureTime("JsoupUtils.getDocument",
-                () -> JsoupUtils.getDocument("https://pt.wikipedia.org/", new HashMap<>()));
+                () -> JsoupUtils.getDocument("https://pt.wikipedia.org/wiki/Lista_de_portas_dos_protocolos_TCP_e_UDP",
+                        new HashMap<>()));
         measureTime("JsoupUtils.getTables", () -> JsoupUtils.getTables(measureTime2));
 
     }

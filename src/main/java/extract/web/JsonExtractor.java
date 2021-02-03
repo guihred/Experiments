@@ -109,6 +109,10 @@ public final class JsonExtractor {
         return !outFile.exists() || oneHourModified(outFile);
     }
 
+    public static boolean isRecentFile(File outFile, int hours) {
+        return outFile.exists() && !moreThanXHoursModified(outFile, hours);
+    }
+
     public static Map<String, String> makeMapFromJsonFile(File outFile, String... a) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         // read JSON like DOM Parser
@@ -136,6 +140,13 @@ public final class JsonExtractor {
         linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
     }
 
+    public static boolean moreThanXHoursModified(File outFile,int hours) {
+        FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
+        Instant instant = lastModifiedTime.toInstant();
+        long between = ChronoUnit.HOURS.between(instant, Instant.now());
+        return between > hours;
+    }
+
     public static Map.Entry<String, String> newEntry(String key, String value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }
@@ -145,10 +156,7 @@ public final class JsonExtractor {
     }
 
     public static boolean oneHourModified(File outFile) {
-        FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
-        Instant instant = lastModifiedTime.toInstant();
-        long between = ChronoUnit.HOURS.between(instant, Instant.now());
-        return between > 1;
+        return moreThanXHoursModified(outFile,1);
     }
 
     public static Map<String, String> processPartialList(String regex, List<String> keys,

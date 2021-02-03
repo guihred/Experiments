@@ -125,7 +125,10 @@ public final class JavaExercisesTest {
         });
 
         Assert.assertEquals("Sum should match", Integer.valueOf(124), nodeSum);
+    }
 
+    @Test
+    public void testJavaExercise2() {
         measureTime("JavaExercise19.testingJavaConcepts", JavaExercise19::testingJavaConcepts);
         measureTime("JavaExercise19.testingJavaConcepts2", JavaExercise19::testingJavaConcepts2);
         measureTime("JavaExercise1to11.fibonacciSeriesProblem", JavaExercise1to11::fibonacciSeriesProblem);

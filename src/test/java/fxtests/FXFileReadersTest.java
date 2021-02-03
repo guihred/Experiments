@@ -1,8 +1,6 @@
 package fxtests;
 
 import com.google.common.collect.ImmutableMap;
-import ethical.hacker.ImageCracker;
-import ethical.hacker.PCapReader;
 import extract.PPTService;
 import extract.WordService;
 import extract.web.DocumentHelper;
@@ -10,21 +8,15 @@ import fxml.utils.XmlToXlsx;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
-import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
-import kibana.KibanaApi;
-import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.testfx.util.WaitForAsyncUtils;
 import org.w3c.dom.Document;
 import pdfreader.BalabolkaApi;
-import rosario.LeitorArquivos;
-import rosario.Medicamento;
 import utils.*;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
@@ -47,53 +39,6 @@ public class FXFileReadersTest extends AbstractTestExecution {
         measureTime("DocumentHelper.getLinks", () -> DocumentHelper.getLinks("oioi.com", doc));
     }
 
-    @Test
-    public void testExcelFile() {
-        ObservableList<Medicamento> medicamentosSNGPCPDF = measureTime("LeitorArquivos.getMedicamentosSNGPCPDF",
-                () -> LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf")));
-        Map<String, FunctionEx<Medicamento, Object>> fields = new LinkedHashMap<>();
-        fields.put("Registro", Medicamento::getRegistro);
-        fields.put("Codigo", Medicamento::getCodigo);
-        fields.put("Lote", Medicamento::getLote);
-        fields.put("Nome", Medicamento::getNome);
-        fields.put("Quantidade", Medicamento::getQuantidade);
-        measureTime("ExcelService.exportList", () -> ExcelService.getExcel(medicamentosSNGPCPDF, fields,
-                ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
-    }
-
-    @Test
-    public void testExcelService() {
-        ObservableList<Medicamento> medicamentosSNGPCPDF =
-                LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf"));
-        Map<String, FunctionEx<Medicamento, Object>> fields = new LinkedHashMap<>();
-        fields.put("Registro", Medicamento::getRegistro);
-        fields.put("Nome", Medicamento::getNome);
-        fields.put("Lote", Medicamento::getLote);
-        fields.put("Quantidade", Medicamento::getQuantidade);
-        fields.put("Codigo", Medicamento::getCodigo);
-        fields.put("Valido", Medicamento::isRegistroValido);
-        measureTime("ExcelService.getExcel", () -> ExcelService.getExcel(medicamentosSNGPCPDF, fields,
-                ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
-
-    }
-
-    @Test
-    public void testExcelService2() {
-        ObservableList<Medicamento> medicamentos =
-                LeitorArquivos.getMedicamentosSNGPCPDF(ResourceFXUtils.toFile("sngpc2808.pdf"));
-        Map<String, FunctionEx<Medicamento, Object>> fields = new LinkedHashMap<>();
-        fields.put("Registro", Medicamento::getRegistro);
-        fields.put("Nome", Medicamento::getNome);
-        fields.put("Lote", Medicamento::getLote);
-        fields.put("Quantidade", Medicamento::getQuantidade);
-        fields.put("Codigo", Medicamento::getCodigo);
-        int maxI = medicamentos.size() - 1;
-        measureTime("ExcelService.getExcel",
-                () -> ExcelService.getExcel(
-                        (i, s) -> medicamentos.subList(Integer.min(i, maxI), Integer.min(i + s, maxI)), fields,
-                        ResourceFXUtils.getOutFile("sngpcMeds.xlsx")));
-
-    }
 
     @Test
     public void testExcelService3() {
@@ -126,76 +71,21 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
     }
 
-    @Test
-    public void testImageCracker() {
-        measureTime("ImageCracker.readScreenshots",
-                () -> ImageCracker.crackImages(ResourceFXUtils.getOutFile("screenshots")));
-        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA.jpg")));
-        measureTime("ImageCracker.crackImage", () -> ImageCracker.crackImage(ResourceFXUtils.toFile("CAPTCHA2.jpg")));
-        measureTime("ImageCracker.createSelectedImage", () -> ImageCracker.crackImage(
-                ImageCracker.createSelectedImage(new Image(ResourceFXUtils.toExternalForm("CAPTCHA.jpg")))));
-    }
 
     @Test
-    public void testLeitorArquivos() {
+    public void testPPTService() throws MalformedURLException {
+        measureTime("PPTService.getPowerPointImages", () -> PPTService
+                .getPowerPointImages(ResourceFXUtils.toFile("models/Radar_Eventos_v01122020REL1.pptx")));
+        Map<String, Object> replacementMap = new HashMap<>();
+        replacementMap.put("Dia: 01/12/2020", "DIA: 01/02/2021");
 
-        File file = ResourceFXUtils.toFile("anvisa2208.xlsx");
-        ObservableList<String> sheetsExcel =
-                measureTime("LeitorArquivos.getSheetsExcel", () -> ExcelService.getSheetsExcel(file));
+        Path image = FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getOutFile("print"), ".png");
+        Path csv = FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getOutFile("csv"), "destination01022021.csv");
 
-        WaitForAsyncUtils.waitForFxEvents();
-        ObservableList<List<String>> listExcel =
-                measureTime("LeitorArquivos.getListExcel", () -> LeitorArquivos.getListExcel(file, sheetsExcel.get(0)));
-        WaitForAsyncUtils.waitForFxEvents();
-        ObservableList<Medicamento> converterMedicamentos = measureTime("LeitorArquivos.converterMedicamentos",
-                () -> LeitorArquivos.converterMedicamentos(listExcel, Arrays.asList(LeitorArquivos.REGISTRO,
-                        LeitorArquivos.NOME, LeitorArquivos.LOTE, LeitorArquivos.QUANTIDADE)));
-        WaitForAsyncUtils.waitForFxEvents();
-        Assert.assertEquals("Size must be equal", 679, converterMedicamentos.size());
-    }
-
-    @Test
-    public void testLeitorArquivosPDF() {
-        measureTime("LeitorArquivos.getMedicamentosSNGPCPDF", () -> {
-            File file = ResourceFXUtils.toFile("sngpc2808.pdf");
-            ObservableList<Medicamento> medicamentos = LeitorArquivos.getMedicamentosSNGPCPDF(file);
-            WaitForAsyncUtils.waitForFxEvents();
-            Assert.assertEquals("Size must be equal", 656, medicamentos.size());
-        });
-        measureTime("LeitorArquivos.getMedicamentosAnvisa", () -> {
-            File file2 = ResourceFXUtils.toFile("anvisa2208.xlsx");
-            ObservableList<Medicamento> medicamentos = LeitorArquivos.getMedicamentosAnvisa(file2);
-            WaitForAsyncUtils.waitForFxEvents();
-            Assert.assertEquals("Size must be equal", 679, medicamentos.size());
-        });
-    }
-
-    @Test
-    public void testLoadKibanaApi() {
-        measureTime("ExcelService.getExcel", () -> ExcelService
-                .getExcel(ResourceFXUtils.toFile("networks/Lista de IP da Caixa.xlsx"), (List<Object> l) -> {
-                    if (l.isEmpty()) {
-                        return null;
-                    }
-                    long count = l.stream().filter(Objects::nonNull).count();
-                    if (count != 1) {
-                        return null;
-                    }
-                    String string = convert(l.get(0));
-                    if (string.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
-                        Map<String, String> kibanaFullScan = KibanaApi.kibanaFullScan(string);
-                        List<String> kibanaScanned = kibanaFullScan.values().stream().collect(Collectors.toList());
-                        kibanaScanned.add(1, "Guilherme");
-                        return kibanaScanned;
-                    }
-                    return null;
-                }, ResourceFXUtils.getOutFile("apiResult2.xlsx")));
-    }
-
-    @Test
-    public void testPCapReader() {
-        File file = new File("C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\CiscoCNNA\\two.pcap");
-        measureTime("PCapReader.readPCAPngFile", () -> PCapReader.readPCAPngFile(file));
+        replacementMap.put("Acessos volumétricos por destino - Firewall", new ArrayList<>(
+                Arrays.asList(new Image(image.toFile().toURI().toURL().toExternalForm()), csv.toFile())));
+        measureTime("PPTService.getPowerPoint", () -> PPTService.getPowerPoint(replacementMap,
+                "Radar_Eventos_v01122020REL1.pptx", ResourceFXUtils.getOutFile("pptx/Teste.pptx")));
     }
 
     @Test
@@ -212,15 +102,9 @@ public class FXFileReadersTest extends AbstractTestExecution {
 
     }
 
-    @Test
-    public void testTalosIsInBlacklist() {
-        measureTime("ExcelService.getExcel", () -> KibanaApi.isInBlacklist("200.201.175.19"));
-    }
 
     @Test
     public void testWordFile() {
-        measureTime("PPTService.getPowerPointImages", () -> PPTService
-                .getPowerPointImages(ResourceFXUtils.toFile("models/Radar_Eventos_v01122020REL1.pptx")));
         measureTime("WordService.getWord", () -> {
             Map<String, Object> mapaSubstituicao = new HashMap<>();
             File file = ResourceFXUtils.getOutFile("resultado.docx");
@@ -244,12 +128,5 @@ public class FXFileReadersTest extends AbstractTestExecution {
         measureTime("BalabolkaApi.speak", () -> BalabolkaApi.speak("It Worked"));
     }
 
-    private static String convert(Object o) {
-        if (o instanceof Double) {
-            long longValue = ((Double) o).longValue();
-            return String.format(Locale.getDefault(), "%,d", longValue);
-        }
-        return Objects.toString(o, "");
-    }
 
 }

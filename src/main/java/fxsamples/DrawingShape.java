@@ -50,7 +50,8 @@ public class DrawingShape extends Application {
         path.setStrokeWidth(3);
 		path.getElements().addAll(moveTo, quadCurveTo, lineTo1, lineTo2,
 				lineTo3);
-		path.setTranslateY(30);
+        final int minY = 30;
+        path.setTranslateY(minY);
 		root.getChildren().add(path);
 
         final QuadCurve quad = new QuadCurve(50, 50, 125, 150, 150, 50);
@@ -79,7 +80,7 @@ public class DrawingShape extends Application {
                 Color.grayRgb(50, .588));
 		donut.setEffect(dropShadow);
 
-		donut.setTranslateY(quad.getBoundsInParent().getMinY() + 30);
+        donut.setTranslateY(quad.getBoundsInParent().getMinY() + minY);
 		root.getChildren().add(donut);
 		primaryStage.setScene(scene);
 		primaryStage.show();

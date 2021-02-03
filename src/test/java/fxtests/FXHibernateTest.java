@@ -70,9 +70,16 @@ public class FXHibernateTest extends AbstractTestExecution {
     @Test
     public void verifyCrawlerCompleteCandidateTask() {
         show(new ElectionCrawlerApp(new CrawlerCompleteCandidateTask()));
-        clickButtonsWait(WAIT_TIME * 3);
+        clickButtonsWait(WAIT_TIME);
     }
 
+    @Test
+    public void verifyCrawlerTask() {
+        measureTime("CrawlerCompleteCandidateTask", () -> {
+            CrawlerCompleteCandidateTask crawlerTask = new CrawlerCompleteCandidateTask();
+            crawlerTask.performTask(0);
+        });
+    }
 
     @Test
     public void verifyTaskProgressApp() {

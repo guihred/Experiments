@@ -162,7 +162,7 @@ public class WhoIsScanner {
 
     private static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String name) {
         String ip = !name.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+/*\\d*$")
-                ? SupplierEx.get(() -> CIDRUtils.toIPByName(name).getHostAddress(), name)
+                ? SupplierEx.getIgnore(() -> CIDRUtils.toIPByName(name).getHostAddress(), name)
                 : name;
         if (CIDRUtils.isPrivateNetwork(ip) || ip.matches("^200\\.152\\..+")) {
             return lookupInternalInfo(whoIsScanner, ip);

@@ -27,10 +27,11 @@ public class MadTopology {
         float sqrt2 = (float) Math.sqrt(3);
         int m = (int) (maxHeight / radius / sqrt2 * 2) + 1;
         int size = 10 * m;
+        final int minX = 30;
         for (int i = 0; i < size; i++) {
             MadCell cell = new MadCell(i);
             int n = i / sqrt;
-            float x = i % sqrt * radius + (n % 2 == 0 ? 0F : -radius / 2) + 30;
+            float x = i % sqrt * radius + (n % 2 == 0 ? 0F : -radius / 2) + minX;
             int j = i / sqrt;
             float k = j * radius;
             float y = k * sqrt2 / 2;
@@ -49,7 +50,7 @@ public class MadTopology {
         for (MadPonto vector : pointSet) {
             maxOfAnyCoordinate = Math.max(Math.max(vector.getX(), vector.getY()), maxOfAnyCoordinate);
         }
-        maxOfAnyCoordinate *= 16.0D;
+        maxOfAnyCoordinate *= 16.;
         MadPonto p1 = new MadPonto(0.0F, 3.0F * maxOfAnyCoordinate, null);
         MadPonto p2 = new MadPonto(3.0F * maxOfAnyCoordinate, 0.0F, null);
         MadPonto p3 = new MadPonto(-3.0F * maxOfAnyCoordinate, -3.0F * maxOfAnyCoordinate, null);

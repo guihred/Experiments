@@ -48,6 +48,7 @@ public class KibanaInvestigator extends Application {
 
     public void onActionKibanaScan() {
         items.clear();
+        resultsFilter.setText("");
         CommonsFX.update(progressIndicator.progressProperty(), 0);
         ObservableList<String> items2 = filterList.getItems();
         List<SimpleDoubleProperty> progresses = IntStream.range(0, items2.size())

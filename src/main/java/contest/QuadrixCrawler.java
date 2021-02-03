@@ -29,6 +29,7 @@ import simplebuilder.SimpleTreeViewBuilder;
 import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.HibernateUtil;
+import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class QuadrixCrawler extends Application {
@@ -60,13 +61,11 @@ public class QuadrixCrawler extends Application {
         SimpleListViewBuilder.onSelect(vagasList,
             (old, value) -> runNewThread(() -> QuadrixHelper.saveConcurso(concurso, vagasList, value)));
         concursosTable.setItems(concursos);
-        SimpleTableViewBuilder.onSelect(concursosTable, (old, value) -> {
-            if (value != null) {
-                concurso.setValue(value);
-                value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
-                vagasList.setItems(value.getVagas());
-            }
-        });
+        SimpleTableViewBuilder.onSelect(concursosTable, (old, v) -> RunnableEx.runIf(v, value -> {
+            concurso.setValue(value);
+            value.getVagas().sort(String.CASE_INSENSITIVE_ORDER);
+            vagasList.setItems(value.getVagas());
+        }));
     }
 
     @Override

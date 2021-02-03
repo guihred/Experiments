@@ -25,11 +25,11 @@ import utils.ex.RunnableEx;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class CoverageJavaTest {
     private static final Logger LOG = HasLogging.log();
-    private static final int NUMBER_TESTS = 4;
+    private static final int NUMBER_TESTS = 10;
 
     @Test
     public void testTestUncoveredApps() {
-        measureTime("JavaFileDependency.testUncoveredApps", () -> {
+        measureTime("CoverageJavaTest.testUncoveredApps", () -> {
             HibernateUtil.setShutdownEnabled(false);
             List<Class<? extends Application>> uncoveredApplications = CoverageUtils.getUncoveredApplications();
             int b = uncoveredApplications.size();
@@ -41,7 +41,7 @@ public class CoverageJavaTest {
     @Test
     public void testTestUncoveredTests() {
         List<String> failedTests = new ArrayList<>();
-        measureTime("JavaFileDependency.testUncovered", () -> {
+        measureTime("CoverageJavaTest.testUncovered", () -> {
             List<String> paths = new ArrayList<>();
             List<String> tests = CoverageUtils.getUncoveredTests(paths);
             List<String> allPaths =
@@ -61,7 +61,7 @@ public class CoverageJavaTest {
 
             for (int i = 0; i < Math.min(uncoveredTests.size(), NUMBER_TESTS); i++) {
                 String className = uncoveredTests.get(i);
-                if (className.equals("JavaDependencyTest")) {
+                if (className.equals(CoverageJavaTest.class.getSimpleName())) {
                     continue;
                 }
                 LOG.info("RUN TESTS {}", uncoveredTests.subList(i, uncoveredTests.size()));

@@ -105,14 +105,16 @@ public class MirrorTool extends PaintTool {
 
     private Slider getLengthSlider() {
         if (lengthSlider == null) {
-            lengthSlider = new SimpleSliderBuilder(1, 30, 10).bindBidirectional(length).prefWidth(50).build();
+            final int max = 50;
+            lengthSlider = new SimpleSliderBuilder(1, max, 10).bindBidirectional(length).prefWidth(max).build();
         }
         return lengthSlider;
     }
 
     private Slider getOpacitySlider() {
         if (opacitySlider == null) {
-            opacitySlider = new SimpleSliderBuilder(0, 1, 1).bindBidirectional(opacity).prefWidth(50).build();
+            final int prefWidth = 50;
+            opacitySlider = new SimpleSliderBuilder(0, 1, 1).bindBidirectional(opacity).prefWidth(prefWidth).build();
         }
         return opacitySlider;
     }

@@ -10,10 +10,10 @@
 		</layout>
 	</appender>
 
-
+    
 	<!-- Root Logger -->
 	<root>
-		<priority value="info" />
+		<priority value="error" />
 		<appender-ref ref="console" />
 	</root>
 	

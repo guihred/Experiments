@@ -1,10 +1,8 @@
 
 package ml.data;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
+import java.io.File;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class Question implements Predicate<Object> {
@@ -93,6 +91,17 @@ public class Question implements Predicate<Object> {
         String string = not ? "%s not %s %s" : "%s %s %s";
         return String.format(string, getColName(), getType().getSign(),
                 ob instanceof String ? "\"" + ob + "\"" : Objects.toString(ob, ""));
+    }
+
+    public static DataframeBuilder builderWithQuestions(File file, List<Question> questions) {
+        DataframeBuilder builder = DataframeBuilder.builder(file);
+        for (Question question : questions) {
+            if (question.getType() == QuestionType.DISTINCT) {
+                ((Set<?>) question.getOb()).clear();
+            }
+            builder.filterOut(question.getColName(), question);
+        }
+        return builder;
     }
 
     public static Object getQueryObject(DataframeML dataframe2, QuestionType type, String colName, String text2) {

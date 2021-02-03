@@ -74,6 +74,7 @@ public interface RunnableEx {
         }
     }
 
+
     static Thread runNewThread(RunnableEx run) {
         Thread thread = new Thread(make(run));
         thread.start();

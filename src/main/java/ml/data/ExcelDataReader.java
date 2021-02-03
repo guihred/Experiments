@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import utils.ExcelService;
+import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
@@ -87,7 +88,6 @@ public class ExcelDataReader extends DataframeUtils {
 
     private static void fixMapSize(List<String> header, Map<String, Object> map) {
         if (header.size() != map.size()) {
-            LOG.error("ERROR FIELDS COUNT");
             createNullRow(header, map);
         }
     }
@@ -149,7 +149,7 @@ public class ExcelDataReader extends DataframeUtils {
             fixMapSize(header, map);
             for (int i = 0; i < header.size(); i++) {
                 String key = header.get(i);
-                String field = Objects.toString(map.get(key));
+                String field = StringSigaUtils.toStringSpecial(map.get(key));
                 Object tryNumber = tryNumber(dataframe, key, field);
                 if (dataframe.filters.containsKey(key) && !dataframe.filters.get(key).test(tryNumber)) {
                     removeRow(dataframe, header, i);

@@ -28,15 +28,12 @@ public final class VirusTotalApi {
     private VirusTotalApi() {
     }
 
-    public static File[] getFilesInformation(Path path) throws IOException {
-        return getFilesInformation(path, HashVerifier.getSha256Hash(path));
-    }
 
-    public static File[] getFilesInformation(Path path, String hash) throws IOException {
+    public static File getFilesInformation(Path path) throws IOException {
         String filename = path.getName(path.getNameCount() - 1).toString();
         File outFile = newJsonFile(filename);
         if (!outFile.exists()) {
-            getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
+            getFromURL("https://www.virustotal.com/api/v3/files/" + HashVerifier.getSha256Hash(path), outFile);
         }
         String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES, LAST_ANALYSIS_STATS,
                 MALICIOUS_ATTR, "type_description", "tags", "type", "trid", "magic", "meaningful_name", "file_type",
@@ -46,7 +43,7 @@ public final class VirusTotalApi {
             String group = matcher.group(1);
             LOG.info("Malicious FILE {} {}", path, group);
         }
-        return new File[] { outFile };
+        return outFile;
     }
 
     public static Entry<File, List<String>> getIpInformation(String ip) throws IOException {
@@ -89,7 +86,7 @@ public final class VirusTotalApi {
     public static Map<String, Object> getUrlInfo(String url) {
 
         return SupplierEx.getHandle(() -> {
-            File outFile = getUrlInformation(url)[0];
+            File outFile = getUrlInformation(url);
             Map<String, Object> jsonFile = JsonExtractor.accessMap(JsonExtractor.toFullObject(outFile));
             if (Objects.nonNull(jsonFile.get(ERROR_TAG))) {
                 Files.deleteIfExists(outFile.toPath());
@@ -98,7 +95,8 @@ public final class VirusTotalApi {
         }, null, e -> LOG.info("ERROR SEARCHING {} {}", url, e.getMessage()));
 
     }
-    public static File[] getUrlInformation(String url) throws IOException {
+
+    public static File getUrlInformation(String url) throws IOException {
 
         String fullUrl = SupplierEx.getFirst(() -> tryToCreateUrl(url),
                 () -> url.contains("/") ? "https://" + url : "http://" + url + "/");
@@ -117,7 +115,7 @@ public final class VirusTotalApi {
         if (!malicious.isEmpty()) {
             LOG.info("Malicious URL {} {}", url, malicious);
         }
-        return new File[] { outFile };
+        return outFile;
     }
 
     private static void getFromURL(String url, File outFile) throws IOException {

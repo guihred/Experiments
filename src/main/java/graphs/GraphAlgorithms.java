@@ -120,7 +120,8 @@ public final class GraphAlgorithms {
     }
 
     public static List<Vertex> createGraph7() {
-        final List<Vertex> graph = IntStream.range(1, 11).mapToObj(Vertex::new).collect(Collectors.toList());
+        final int eleventh = 11;
+        final List<Vertex> graph = IntStream.range(1, eleventh).mapToObj(Vertex::new).collect(Collectors.toList());
         Vertex a = graph.get(0);
         Vertex b = graph.get(1);
         Vertex c = graph.get(2);
@@ -135,8 +136,8 @@ public final class GraphAlgorithms {
         b.biput(e, 2).biput(f, 3).biput(c, 10);// B
         c.biput(f, 6).biput(g, 1);// C
         d.biput(e, 5).biput(h, 6);// D
-        e.biput(f, 11).biput(i, 1).biput(h, 2);// E
-        f.biput(g, 2).biput(i, 3).biput(j, 11);// F
+        e.biput(f, eleventh).biput(i, 1).biput(h, 2);// E
+        f.biput(g, 2).biput(i, 3).biput(j, eleventh);// F
         g.biput(j, 8);// G
         h.biput(i, 4);// H
         i.biput(j, 7);// I

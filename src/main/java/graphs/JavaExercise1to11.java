@@ -28,13 +28,14 @@ public final class JavaExercise1to11 {
     public static void accumulatingRoundingErrors() {
         float sum = 0;
 
-        for (int i = 1; i <= 16; i++) {
+        final int roundingErrorLimit = 16;
+        for (int i = 1; i <= roundingErrorLimit; i++) {
             sum += (2 << i) / 100.0;
         }
         LOG.info("{}", sum);
         sum = 0;
 
-        for (int i = 1; i <= 16; i++) {
+        for (int i = 1; i <= roundingErrorLimit; i++) {
             for (int j = 0; j < 2 << i; j++) {
                 sum += 1.0 / 100.0;
             }
@@ -183,7 +184,8 @@ public final class JavaExercise1to11 {
      */
     public static void greenflyProblem() {
         List<Greenfly> of = Arrays.asList(new Greenfly(-7));
-        for (int i = 0; i < 30; i++) {
+        final int monthLong = 30;
+        for (int i = 0; i < monthLong; i++) {
             int j = i;
             of = of.parallelStream().flatMap(g -> g.reproduce(j)).collect(Collectors.toList());
         }

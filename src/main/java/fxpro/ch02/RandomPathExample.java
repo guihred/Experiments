@@ -22,7 +22,7 @@ public class RandomPathExample extends Application {
 
     private static final int MAX_RANDOMNESS = 200;
 
-    private Ellipse ellipse =
+    private final Ellipse ellipse =
             new SimpleEllipseBuilder().centerX(100).centerY(50).radiusX(4).radiusY(4).fill(Color.BLUE).build();
 
     private PathTransition anim = new SimplePathTransitionBuilder()
@@ -37,7 +37,7 @@ public class RandomPathExample extends Application {
         Button resumeButton = SimpleButtonBuilder.newButton("Resume", e -> anim.play());
         Button pauseButton = SimpleButtonBuilder.newButton("Pause", e -> anim.pause());
         Button startButton = SimpleButtonBuilder.newButton("Start", e -> anim.playFromStart());
-        SimplePathBuilder moveTo = new SimplePathBuilder().moveTo(200, 200);
+        final SimplePathBuilder moveTo = new SimplePathBuilder().moveTo(200, 200);
         final HBox hbox = new SimpleHBoxBuilder().layoutX(60).layoutY(420).spacing(10)
                 .children(startButton, pauseButton, resumeButton, stopButton).build();
         final Scene scene = new Scene(new Group(ellipse, moveTo.build(), hbox), 400, 500);

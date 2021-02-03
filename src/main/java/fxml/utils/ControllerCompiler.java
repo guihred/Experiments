@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.Locale;
 import javax.tools.*;
 import org.slf4j.Logger;
 import sun.misc.Unsafe;
+import utils.BaseEntity;
 import utils.ex.HasLogging;
 import utils.ex.PredicateEx;
 import utils.ex.SupplierEx;
@@ -85,9 +85,7 @@ public final class ControllerCompiler {
 
             // use the unsafe class to load in the
             // class bytes
-            final Field f = Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            final Unsafe unsafe = (Unsafe) f.get(null);
+            final Unsafe unsafe = BaseEntity.getFieldValue(null, Unsafe.class.getDeclaredField("theUnsafe"));
             Class<?> aClass = unsafe.defineClass(fullClassName, bytes, 0, bytes.length,
                 ClassLoader.getSystemClassLoader(), class1.getProtectionDomain());
             Class.forName(fullClassName);

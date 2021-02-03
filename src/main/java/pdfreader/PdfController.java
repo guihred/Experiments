@@ -249,7 +249,7 @@ public class PdfController extends Application {
         imageBox.getChildren().setAll(createImages);
         imageBox.setVisible(!createImages.isEmpty());
 
-        splitPane.setDividerPosition(1, createImages.isEmpty() ? 1 : 0.66);
+        splitPane.setDividerPosition(1, createImages.isEmpty() ? 1 : 2. / 3);
 
     }
 

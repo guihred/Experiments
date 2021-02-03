@@ -67,8 +67,8 @@ public class AcessosVolumetricos {
 
     public static void main(String[] args) {
         ExtractUtils.insertProxyConfig();
-        getVolumetria("destinationQuery.json", "destination");
         getVolumetria("sourceQuery.json", "source");
+        getVolumetria("destinationQuery.json", "destination");
     }
 
     private static String getTipoTrafego(DataframeML build, Object[] ip) {

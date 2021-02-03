@@ -19,6 +19,7 @@ import javafx.util.Duration;
 import simplebuilder.SimpleSliderBuilder;
 import utils.ConsoleUtils;
 import utils.DateFormatUtils;
+import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
 import utils.ex.RunnableEx;
 
@@ -26,8 +27,9 @@ public final class SongUtils {
 
     private static final int SECONDS_IN_A_MINUTE = 60;
 
-    private static final String FFMPEG = ResourceFXUtils.getUserFolder("Downloads").getAbsolutePath()
-            + "\\ffmpeg-20180813-551a029-win64-static\\bin\\ffmpeg.exe";
+    private static final String FFMPEG =
+            FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "ffmpeg.exe").toFile()
+                    .getAbsolutePath();
 
     private SongUtils() {
     }

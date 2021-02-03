@@ -3,10 +3,10 @@
     "params":{
         "ip":"",
         "hour":["-24h","-12h","-36h","-48h","-60h","-72h","-84h"],
-        "sistemaDtp":["vip-pmeuinssprxr.inss.gov.br","servicos.mte.gov.br","mteempregabr","postos","geridmte","meuinss","www2","psabiwebapl01","refisprod.dataprev.gov.br","www2sp.dataprev.gov.br","agendamento.inss.gov.br","papimgateway.prevnet","esisrec.inss.gov.br","tarefas.pmf.economia.gov.br"]
+        "sistemaDtp":["vip-pmeuinssprxr.inss.gov.br","servicos.mte.gov.br","mteempregabr","postos","geridmte","meuinss","www2","psabiwebapl01","refisprod.dataprev.gov.br","www2sp.dataprev.gov.br","agendamento.inss.gov.br","papimgateway.prevnet","esisrec.inss.gov.br","tarefas.pmf.economia.gov.br",""]
     },
     
-    "name": "Reporte_Eventos_MeuINSS_$ip.docx",
+    "name": "Reporte_Eventos_$sistemaDtp_$ip.docx",
 	"Figuras da Evidência / Contexto": [
 		
 		"Padrão de acesso automatizado",
@@ -61,8 +61,7 @@
 	"Informar os indicadores de ameaça": [
 		"– Volumetria de acessos acima da média dos demais usuários",
 		"– Volumetria de dados alta",
-		"– Padrão de acesso automatizado",
-		"– Diversos CPFs acessados, considerando que o Meu INSS é para uso individual do cidadão."
+		"– Padrão de acesso automatizado"
 	],
 	"enderecoOrigem": [
         "Informações endereço de origem ($Provedor – $Geolocation)",	
@@ -86,7 +85,7 @@
 			"y": 0.15
 		}
 	],
-	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados ao $sistemaDtp",
+	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados a $sistemaDtp",
     "Informar data de início/fim": "$Acesso",
 	"ips": "$ip",
 	"Credenciais": "URLs Acessadas",

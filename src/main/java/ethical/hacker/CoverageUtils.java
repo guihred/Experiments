@@ -201,13 +201,13 @@ public final class CoverageUtils {
                     () -> Files.lines(file.toPath()).filter(l -> l.matches(LAST_EXECUTION_REGEX))
                             .map(s -> s.replaceAll(LAST_EXECUTION_REGEX, "$1")).collect(Collectors.toList()),
                     Collections.<String>emptyList());
-            int lastIndexOf = uncovered.lastIndexOf("");
+            long lastIndexOf = uncovered.lastIndexOf("");
             List<String> lastExecution = uncovered.stream().skip(lastIndexOf + 1).filter(StringUtils::isNotBlank)
                     .distinct().collect(Collectors.toList());
             if (!lastExecution.isEmpty()) {
                 List<T> uncoveredApplications = func.apply(lastExecution);
                 if (!uncoveredApplications.isEmpty()) {
-                    LOG.info("NOT COVERED = {}% APPS = {}", uncovered, uncoveredApplications);
+                    LOG.info("NOT COVERED = {}% APPS = {}", lastExecution, uncoveredApplications);
                     return uncoveredApplications;
                 }
             }

@@ -20,7 +20,8 @@ public class TicTacToeSquare extends StackPane {
         setPadding(new Insets(10));
         setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
         setEffect(new InnerShadow());
-        setPrefSize(50, 50);
+        final int prefHeight = 50;
+        setPrefSize(prefHeight, prefHeight);
         for (TicTacToePlayer o : Arrays.asList(TicTacToePlayer.O, TicTacToePlayer.X)) {
             Shape shape = o.getShape();
             shape.visibleProperty().bind(state.isEqualTo(o));

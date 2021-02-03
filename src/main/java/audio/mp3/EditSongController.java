@@ -95,7 +95,8 @@ public class EditSongController extends Application {
     }
 
     public void onActionPlayPause() {
-        RunnableEx.runIf(mediaPlayer.get(), m -> {
+        RunnableEx.ignore(() -> {
+            MediaPlayer m = mediaPlayer.get();
             if (m.getStatus() == MediaPlayer.Status.PLAYING) {
                 m.pause();
             } else {

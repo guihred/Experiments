@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -189,7 +190,10 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
             resetStage();
             logger.info("SHOWING {}", c.getSimpleName());
             T newInstance = c.newInstance();
-            interactNoWait(RunnableEx.make(() -> newInstance.start(currentStage)));
+            interactNoWait(RunnableEx.make(() -> {
+                newInstance.start(currentStage);
+                currentStage.toFront();
+            }));
             return newInstance;
         }, String.format("ERRO IN %s", c));
     }
@@ -276,6 +280,12 @@ public abstract class AbstractTestExecution extends ApplicationTest implements H
         for (int i = list.size() - 1; i >= 0; i--) {
             T t = list.get(i);
             consu.accept(t);
+        }
+    }
+
+    protected static void waitProgress(ProgressIndicator lookup) {
+        while (lookup.getProgress() > 0 && lookup.getProgress() < 1) {
+            // DOES NOTHING
         }
     }
 

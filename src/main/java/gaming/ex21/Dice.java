@@ -47,7 +47,8 @@ public class Dice extends Group {
     }
 
     private Rectangle createSquare(final int y) {
-        Rectangle rectangle = new Rectangle(0, y, 50, 50);
+        final int size = 50;
+        Rectangle rectangle = new Rectangle(0, y, size, size);
         rectangle.setArcHeight(20);
         rectangle.setArcWidth(20);
         rectangle.setFill(Color.WHITE);

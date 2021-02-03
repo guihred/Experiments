@@ -33,7 +33,7 @@ public class Edge extends Group implements Comparable<Edge> {
     }
 
     public Edge(@NamedArg("source") Cell source, @NamedArg("target") Cell target, @NamedArg("valor") Integer valor,
-        @NamedArg("directed") boolean directed) {
+            @NamedArg("directed") boolean directed) {
 
         this.source = source;
         this.target = target;
@@ -52,34 +52,36 @@ public class Edge extends Group implements Comparable<Edge> {
         line.endYProperty().bind(target.layoutYProperty().add(target.getBoundsInParent().getHeight() / 2.0));
 
         getChildren().add(line);
-        DoubleBinding halfWayX = Bindings.createDoubleBinding(
-            () -> line.getEndX() + Math.cos(getAngulo()) * getModulo() * 5 / 11, line.endYProperty(),
-            line.startYProperty(), line.endXProperty(), line.startXProperty());
+        final double halfway = 5. / 11;
+        DoubleBinding halfWayX =
+                Bindings.createDoubleBinding(() -> line.getEndX() + Math.cos(getAngulo()) * getModulo() * halfway,
+                        line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
         DoubleBinding halfWayY = Bindings.createDoubleBinding(
-            () -> line.getEndX() == line.getStartX() ? line.getStartY() + (line.getEndY() - line.getStartY()) * 5 / 11
-                : line.getEndY() + Math.sin(getAngulo()) * getModulo() * 5 / 11,
-            line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
+                () -> line.getEndX() == line.getStartX()
+                        ? line.getStartY() + (line.getEndY() - line.getStartY()) * halfway
+                        : line.getEndY() + Math.sin(getAngulo()) * getModulo() * halfway,
+                line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
         if (directed) {
             Polygon view1 = new Polygon(-Math.sqrt(3) * ARROW_SIZE / 2, 0, Math.sqrt(3) * ARROW_SIZE / 2, ARROW_SIZE,
-                Math.sqrt(3) * ARROW_SIZE / 2, -ARROW_SIZE);
+                    Math.sqrt(3) * ARROW_SIZE / 2, -ARROW_SIZE);
             view1.strokeProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
             view1.fillProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
             view1.layoutXProperty().bind(halfWayX);
             view1.layoutYProperty().bind(halfWayY);
             view1.rotateProperty().bind(Bindings.createDoubleBinding(() -> Math.toDegrees(getAngulo()),
-                line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
+                    line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
             getChildren().addAll(view1);
         }
 
         DoubleBinding yCoord = Bindings.createDoubleBinding(() -> Math.sin(getAngulo() + Math.PI / 2) * 10,
-            line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
+                line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
         DoubleBinding xCoord = Bindings.createDoubleBinding(() -> Math.cos(getAngulo() + Math.PI / 2) * 10,
-            line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
+                line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty());
 
         Text text = new Text(Integer.toString(valor));
         text.fillProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
         text.rotateProperty().bind(Bindings.createDoubleBinding(() -> Math.toDegrees(getAngulo() + Math.PI / 2),
-            line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
+                line.endYProperty(), line.startYProperty(), line.endXProperty(), line.startXProperty()));
         text.visibleProperty().bind(Edge.SHOW_WEIGHT);
         text.layoutXProperty().bind(halfWayX.add(xCoord));
         text.layoutYProperty().bind(halfWayY.add(yCoord));

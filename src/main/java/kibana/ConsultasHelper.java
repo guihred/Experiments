@@ -15,14 +15,16 @@ import ml.graph.ExplorerHelper;
 import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public final class ConsultasHelper {
     private static final double THRESHOLD_PARAMS = .45;
     private static final double THRESHOLD_NETWORK = .40;
     private static final Logger LOG = HasLogging.log();
-    public static final String IGNORE_IPS_REGEX = "10\\..+|::1|127.0.0.1";
+    public static final String IGNORE_IPS_REGEX = "::1|127.0.0.1";
     private static final List<String> EXCLUDE_OWNERS =
             Arrays.asList("CAIXA ECONOMICA FEDERAL", "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO",
+                    "Tribunal Regional Federal da Terceira Regiao",
                     "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC", "BANCO MERCANTIL DO BRASIL S/A");
 
     private ConsultasHelper() {
@@ -52,6 +54,17 @@ public final class ConsultasHelper {
             }
         }
         CommonsFX.update(progressp, 1);
+    }
+
+    public static String fixParam(String fieldQuery, String first) {
+        if (QueryObjects.CLIENT_IP_QUERY.equals(fieldQuery) && first.endsWith(".prevnet")) {
+            return SupplierEx.get(()->CIDRUtils.toIPByName(first).getHostAddress(),first);
+        }
+        if (QueryObjects.URL_QUERY.equals(fieldQuery) && first.startsWith("/")) {
+            String url = KibanaApi.getURL(first);
+            return url.replaceAll("([/\\?])", "\\\\$1");
+        }
+        return first;
     }
 
     public static String merge(String a, String b) {
@@ -168,7 +181,8 @@ public final class ConsultasHelper {
             List<Map<String, String>> aboveAvgInfo) {
         CommonsFX.runInPlatform(() -> {
             for (Map<String, String> map : aboveAvgInfo) {
-                filter.merge(fieldQuery, getFirst(params, map), ConsultasHelper::merge);
+                String first = fixParam(fieldQuery, getFirst(params, map));
+                filter.merge(fieldQuery, first, ConsultasHelper::merge);
             }
         });
     }

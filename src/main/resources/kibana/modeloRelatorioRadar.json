@@ -52,6 +52,7 @@
             "name": "source$gatheredDate",
             "columns":"IP|Hostname|Tráfego|Tipo de Tráfego|Tráfego esperado|motivação",
             "questions":[]
+            
         }
 	],
 	"Acessos volumétricos por destino - Firewall": [
@@ -105,8 +106,20 @@
             "csv": "",
             "name": "ConexoesForaBrasil$dateInverted",
             "columns":"event.time|country.src|ip.src|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host",
+            "mappings":{
+                "Source User":"user.dst",
+                "public_ip":"ip.src",
+                "client_os_ver":"OS",
+                "Generate Time":"event.time",
+                "srcregion":"country.src",
+                "machinename":"domain.src",
+                "status":"ec.outcome",
+                "action":"ec.activity",
+                "error":"event.cat.name"
+            },
             "questions":[
                 "user.dst not empty",
+                "country.src != BR",
                 "user.dst distinct"
             ]
         }
@@ -116,8 +129,20 @@
             "csv": "",
             "name": "ConexoesClientLinux$dateInverted",
             "columns":"ip.src|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
+            "mappings":{
+                "Source User":"user.dst",
+                "public_ip":"ip.src",
+                "client_os_ver":"OS",
+                "Generate Time":"event.time",
+                "srcregion":"country.src",
+                "machinename":"domain.src",
+                "status":"ec.outcome",
+                "action":"ec.activity",
+                "error":"event.cat.name"
+            },
             "questions":[
                 "ip.src not empty",
+                "OS contains linux",
                 "user.dst not empty",
                 "user.dst distinct",
                 "user.dst not contains dataprev"
@@ -129,8 +154,20 @@
             "csv": "",
             "name": "VPN-via-OS-Server$dateInverted",
             "columns":"ip.src|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
+            "mappings":{
+                "Source User":"user.dst",
+                "public_ip":"ip.src",
+                "client_os_ver":"OS",
+                "Generate Time":"event.time",
+                "srcregion":"country.src",
+                "machinename":"domain.src",
+                "status":"ec.outcome",
+                "action":"ec.activity",
+                "error":"event.cat.name"
+            },
             "questions":[
                 "ip.src not empty",
+                "OS contains server",
                 "user.dst not empty",
                 "user.dst distinct"
             ]

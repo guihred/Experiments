@@ -224,7 +224,9 @@ public final class PhantomJSUtils {
                 .usingGhostDriverCommandLineArguments(new String[] { "examples/responsive-screenshot.js" })
 
                 .build();
-        return new PhantomJSDriver(createDefaultService, DesiredCapabilities.firefox());
+        DesiredCapabilities firefox = DesiredCapabilities.firefox();
+        firefox.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, new String[] { "--webdriver-loglevel=NONE" });
+        return new PhantomJSDriver(createDefaultService, firefox);
     }
 
 }

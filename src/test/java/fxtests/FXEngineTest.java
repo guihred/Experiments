@@ -99,22 +99,28 @@ public class FXEngineTest extends AbstractTestExecution {
 
     @Test
     public void verifyJsonViewer() {
+        // SimpleTableViewBuilder
         List<Path> pathByExtension = FileTreeWalker.getPathByExtension(ResourceFXUtils.getOutFile(), ".json").stream()
                 .limit(10).collect(Collectors.toList());
 
         JsonViewer show = show(JsonViewer.class);
         interactNoWait(() -> show.addFile(pathByExtension.stream().map(Path::toFile).toArray(File[]::new)));
         sleep(500);
-
-        selectComboItems(lookupFirst(ComboBox.class), 10);
         targetPos(Pos.TOP_CENTER);
         clickOn(lookupFirst(TreeView.class));
         targetPos(Pos.CENTER);
         type(KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.DOWN);
+
+        selectComboItems(lookupFirst(ComboBox.class), 10);
         ImageFXUtils.setShowImage(false);
         List<Button> lookupList = lookupList(Button.class);
         runReversed(lookupList, this::tryClickOn);
         type(KeyCode.ESCAPE);
+        clickOn(lookupFirst(TableView.class));
+        holding(KeyCode.CONTROL, () -> type(KeyCode.C));
+        holding(KeyCode.CONTROL, () -> type(KeyCode.S));
+        type(KeyCode.ENTER);
+        holding(KeyCode.ALT, () -> type(KeyCode.S));
     }
 
     @Test

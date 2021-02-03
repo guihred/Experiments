@@ -29,14 +29,14 @@ public class ChangingTextFonts extends Application {
 		// Serif with drop shadow
         final int layout = 50;
         Text text2 = new Text(layout, layout, INTRO_TEXT);
-        int layout2 = 30;
+        final int layout2 = 30;
         Font serif = Font.font("Serif", layout2);
 		text2.setFont(serif);
 		text2.setFill(Color.RED);
 		DropShadow dropShadow = new DropShadow();
         dropShadow.setOffsetX(2);
         dropShadow.setOffsetY(2);
-        dropShadow.setColor(Color.rgb(layout, layout, layout, .5));
+        dropShadow.setColor(Color.rgb(layout, layout, layout, 1. / 2));
 		text2.setEffect(dropShadow);
 		root.getChildren().add(text2);
 		// SanSerif
@@ -49,7 +49,7 @@ public class ChangingTextFonts extends Application {
         final Text text4 = new Text(layout, 150, INTRO_TEXT);
         Font dialogFont = Font.font("Dialog", layout2);
 		text4.setFont(dialogFont);
-		text4.setFill(Color.rgb(0, 255, 0));
+        text4.setFill(Color.GREEN);
 		root.getChildren().add(text4);
 		// Monospaced
         final Text text5 = new Text(layout, 200, INTRO_TEXT);

@@ -29,7 +29,6 @@ import utils.ExtractUtils;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
-import utils.ex.SupplierEx;
 
 public class SanarCrawler extends Application {
 
@@ -50,20 +49,13 @@ public class SanarCrawler extends Application {
 
     private Set<String> links = new HashSet<>();
 
-    private Map<String, String> cookies = new HashMap<>();
+    private Map<String, String> cookies = SanarHelper.getCookies();
 
     private SimpleStringProperty domain = new SimpleStringProperty(E_SANAR_DOMAIN);
 
     private PhantomJSUtils phantomJSUtils;
 
     public void initialize() {
-        cookies.put("ESANARSESSID", "m5otcssorltp87a8s62fmoqtc5");
-        cookies.put("intercom-id-sju7o7kl", "1d4fda3e-8f5f-4a98-b129-1f73eb81f9e5");
-        cookies.put("intercom-session-sju7o7kl",
-                "WlFGTXRkc1NlSWZxdGxXL0NmTlk5RmV1ZWVDOVVaWUE5aDNlbWYxNDU5eFl"
-                        + "QQmg1QWl6VTk1SGxsNngvdXRlRi0tS1pNNDlhVWtiMndZRFFWazdKWkRBQT09"
-                        + "--60174817d9b3174e8d0eccfa9f2b797787d1c209");
-        cookies.put("muxData", "mux_viewer_id=e3480ca3-e1f1-44ee-b6b5-d8d7655e92c7&msn=0.12306064932172656");
 
         Map.Entry<String, String> simpleEntry =
                 new SimpleEntry<>("Area do aluno", PREFIX + ",preparatorio-para-farmacia.html");
@@ -89,7 +81,7 @@ public class SanarCrawler extends Application {
     }
 
     private synchronized Document getDocument(String url) {
-        URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
+        URL url2 = getIgnore(() -> new URL(url));
         domain.set(url2.getProtocol() + "://" + url2.getHost());
         LOG.info("Loading {}", url);
         return phantomJSUtils.render(url, cookies);
@@ -132,13 +124,6 @@ public class SanarCrawler extends Application {
             return;
         }
         Entry<String, String> entry = newValue.getValue();
-        String key = entry.getKey();
-        String url = entry.getValue();
-        if (IadesHelper.hasFileExtension(key)) {
-            String url1 = QuadrixHelper.addQuadrixDomain(url);
-            SupplierEx.get(() -> ExtractUtils.getFile(key, url1));
-            return;
-        }
         if (!newValue.getChildren().isEmpty()) {
             return;
         }
@@ -148,11 +133,12 @@ public class SanarCrawler extends Application {
                 getFilesFromPage(entry);
                 return Collections.<Entry<String, String>>emptyList();
             }
+            String url = entry.getValue();
             URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
             domain.set(url2.getProtocol() + "://" + url2.getHost());
             String url1 = url2.toExternalForm();
             LOG.info("Loading {}", url1);
-            Document doc = phantomJSUtils.render(url1, cookies, 10);
+            Document doc = SanarHelper.downloadMainPage(url1);
             return getLinks(entry, level, doc);
         }, l -> CommonsFX.runInPlatform(() -> {
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));

@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.concurrent.Worker;
@@ -36,6 +37,7 @@ import simplebuilder.SimpleVBoxBuilder;
 import utils.*;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
+import utils.fx.AutocompleteField;
 import utils.fx.RotateUtils;
 
 public class ReportApplication extends Application {
@@ -78,13 +80,9 @@ public class ReportApplication extends Application {
         File modelFile = model.getSelectionModel().getSelectedItem().toFile();
         LOG.info("MAKING REPORT {} {}", params, modelFile.getName());
         RunnableEx.runNewThread(() -> {
-            Map<String, Object> mapaSubstituicao = JsonExtractor.accessMap(JsonExtractor.toObject(modelFile));
-            addCommonParams();
-            String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
-            String extension = ReportHelper.getExtension(replaceString);
-            File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
+            Map<String, Object> mapaSubstituicao = getReplacementMap(modelFile);
+            File reportFile = reportName(mapaSubstituicao);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
-            addGeridInfo(mapaSubstituicao);
             ReportHelper.addParameters(mapaSubstituicao, params, browser, progressBar.progressProperty());
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
             ReportHelper.finalizeReport(mapaSubstituicao, reportFile);
@@ -95,13 +93,9 @@ public class ReportApplication extends Application {
         File modelFile = model.getSelectionModel().getSelectedItem().toFile();
         LOG.info("MAKING REPORT {} {}", params, modelFile.getName());
         RunnableEx.runNewThread(() -> {
-            Map<String, Object> mapaSubstituicao = JsonExtractor.accessMap(JsonExtractor.toObject(modelFile));
-            addCommonParams();
-            String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
-            String extension = ReportHelper.getExtension(replaceString);
-            File reportFile = ResourceFXUtils.getOutFile(extension + "/" + replaceString);
+            Map<String, Object> mapaSubstituicao = getReplacementMap(modelFile);
+            File reportFile = reportName(mapaSubstituicao);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
-            addGeridInfo(mapaSubstituicao);
             ReportHelper.addParametersNotCrop(mapaSubstituicao, params, browser, progressBar.progressProperty());
             displayEditDialog(mapaSubstituicao, reportFile);
         });
@@ -190,6 +184,14 @@ public class ReportApplication extends Application {
         return paramsNode.computeIfAbsent(k, key -> {
             if (v instanceof List) {
                 List<?> v2 = (List<?>) v;
+                if (v2.contains("")) {
+                    AutocompleteField textField = new AutocompleteField();
+                    textField.setEntries(v2.stream().map(Objects::toString).collect(Collectors.toList()));
+                    textField.textProperty().addListener((ob, old, val) -> params.put("\\$" + k, val));
+                    textField.setText(v2.stream().findFirst().map(Objects::toString).orElse(""));
+                    return textField;
+                }
+
                 return new SimpleComboBoxBuilder<>().items(v2.toArray())
                         .onSelect(s -> params.put("\\$" + k, s.toString())).select(0).build();
             }
@@ -199,6 +201,13 @@ public class ReportApplication extends Application {
         });
     }
 
+    private Map<String, Object> getReplacementMap(File modelFile) throws IOException {
+        Map<String, Object> mapaSubstituicao = JsonExtractor.accessMap(JsonExtractor.toObject(modelFile));
+        addCommonParams();
+        addGeridInfo(mapaSubstituicao);
+        return mapaSubstituicao;
+    }
+
     private void onModelChange(Path path) throws IOException {
         paramsPane.getChildren().clear();
         Map<Object, Object> accessMap = JsonExtractor.accessMap(JsonExtractor.toObject(path.toFile()), "params");
@@ -206,6 +215,12 @@ public class ReportApplication extends Application {
             Node node = getNode(k.toString(), v);
             paramsPane.getChildren().add(SimpleVBoxBuilder.newVBox(StringSigaUtils.changeCase(k + ""), node));
         });
+    }
+
+    private File reportName(Map<String, Object> mapaSubstituicao) {
+        String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
+        String extension = ReportHelper.getExtension(replaceString);
+        return ResourceFXUtils.getOutFile(extension + "/" + replaceString);
     }
 
     public static void main(String[] args) {

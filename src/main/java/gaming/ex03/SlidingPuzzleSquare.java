@@ -24,7 +24,8 @@ public class SlidingPuzzleSquare extends Region {
             setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
             text.textProperty().bind(this.number.asString());
         }
-        setPrefSize(50, 50);
+        final int prefHeight = 50;
+        setPrefSize(prefHeight, prefHeight);
         text.onMouseClickedProperty().bind(onMouseClickedProperty());
 
     }

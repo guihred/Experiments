@@ -54,10 +54,11 @@ public class TimelineExample extends Application {
         canvas.prefWidth(500);
         canvas.setTitle(x.list(indicatorName).get(0).toString());
         left.getChildren().add(newSlider("Radius", 1, 500, canvas.radiusProperty()));
-        left.getChildren().add(newSlider("Line", 1, 50, canvas.lineSizeProperty()));
+        final int max = 50;
+        left.getChildren().add(newSlider("Line", 1, max, canvas.lineSizeProperty()));
         left.getChildren().add(newSlider("Padding", 10, 100, canvas.layoutProperty()));
-        left.getChildren().add(newSlider("X Bins", 1, 30, canvas.binsProperty()));
-        left.getChildren().add(newSlider("Y Bins", 1, 30, canvas.ybinsProperty()));
+        left.getChildren().add(newSlider("X Bins", 1, max, canvas.binsProperty()));
+        left.getChildren().add(newSlider("Y Bins", 1, max, canvas.ybinsProperty()));
         ProgressIndicator progress = new ProgressIndicator(0);
         left.getChildren().add(progress);
         CheckBox e = new CheckBox("Show Labels");

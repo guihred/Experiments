@@ -22,6 +22,7 @@ import utils.fx.RotateUtils;
 
 public class Chart3dDemo extends Application {
 
+    private static final int STRAIGHT_ANGLE = 90;
     // size of graph
     private static final int SIZE = 400;
     // variables for mouse interaction
@@ -105,7 +106,7 @@ public class Chart3dDemo extends Application {
         ImageView iv = new ImageView(diffuseMap);
         iv.setTranslateX(-SIZE / 2.0);
         iv.setTranslateY(-SIZE / 10.0);
-        iv.setRotate(90);
+        iv.setRotate(STRAIGHT_ANGLE);
         iv.setRotationAxis(new Point3D(1, 0, 0));
         cube.getChildren().add(iv);
 
@@ -158,7 +159,7 @@ public class Chart3dDemo extends Application {
         r.setTranslateX(-size1 / 2.0);
         r.setTranslateY(0);
         r.setRotationAxis(Rotate.X_AXIS);
-        r.setRotate(90);
+        r.setRotate(STRAIGHT_ANGLE);
 
         cubeFaces.add(r);
 
@@ -168,7 +169,7 @@ public class Chart3dDemo extends Application {
         r.setTranslateX(0);
         r.setTranslateY(-size1 / 2.0);
         r.setRotationAxis(Rotate.Y_AXIS);
-        r.setRotate(90);
+        r.setRotate(STRAIGHT_ANGLE);
 
         cubeFaces.add(r);
 

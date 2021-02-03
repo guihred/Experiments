@@ -1,2 +1,115 @@
 {"index":"*apache-prod*","ignore_unavailable":true,"preference":1600856234369}
-{"aggs":{"2":{"filters":{"filters":{"Origem Internet":{"query_string":{"query":"NOT clientip.keyword:/10\\..*/ AND NOT clientip.keyword:/127\\..*/ AND NOT clientip.keyword:\"::1\" AND NOT clientip.keyword:/192.168.*/ AND NOT clientip.keyword:/v.*/","analyze_wildcard":true,"default_field":"*"}}}},"aggs":{"6":{"terms":{"field":"clientip.keyword","size":50,"order":{"1":"desc"}},"aggs":{"1":{"cardinality":{"field":"request.keyword"}},"5":{"terms":{"field":"dtpsistema.keyword","size":100,"order":{"1":"desc"}},"aggs":{"1":{"cardinality":{"field":"request.keyword"}}}}}}}}},"size":0,"version":true,"_source":{"excludes":[]},"stored_fields":["*"],"script_fields":{},"docvalue_fields":[{"field":"@timestamp","format":"date_time"}],"query":{"bool":{"must":[{"match_all":{}},{"match_all":{}},%s{"range":{"@timestamp":{"gte":%s,"lte":%s,"format":"epoch_millis"}}},{"bool":{"should":[],"minimum_should_match":1}},{"match_phrase":{"dtpcategoria":{"query":"access"}}}],"filter":[{"match_all":{}}],"should":[],"must_not":[]}},"highlight":{"pre_tags":["@kibana-highlighted-field@"],"post_tags":["@/kibana-highlighted-field@"],"fields":{"*":{}},"fragment_size":2147483647},"timeout":"100000ms"}
+{
+	"aggs": {
+		"2": {
+			"filters": {
+				"filters": {
+					"Origem Internet": {
+						"query_string": {
+							"query": "NOT clientip.keyword:/10\\..*/ AND NOT clientip.keyword:/127\\..*/ AND NOT clientip.keyword:\"::1\" AND NOT clientip.keyword:/192.168.*/ AND NOT clientip.keyword:/v.*/",
+							"analyze_wildcard": true,
+							"default_field": "*"
+						}
+					}
+				}
+			},
+			"aggs": {
+				"6": {
+					"terms": {
+						"field": "clientip.keyword",
+						"size": 50,
+						"order": {
+							"1": "desc"
+						}
+					},
+					"aggs": {
+						"1": {
+							"cardinality": {
+								"field": "request.keyword"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"size": 0,
+	"version": true,
+	"_source": {
+		"excludes": []
+	},
+	"stored_fields": [
+		"*"
+	],
+	"script_fields": {
+		
+	},
+	"docvalue_fields": [
+		{
+			"field": "@timestamp",
+			"format": "date_time"
+		}
+	],
+	"query": {
+		"bool": {
+			"must": [
+				{
+					"match_all": {
+						
+					}
+				},
+				{
+					"match_all": {
+						
+					}
+				},%s
+				{
+					"range": {
+						"@timestamp": {
+							"gte": %s,
+							"lte": %s,
+							"format": "epoch_millis"
+						}
+					}
+				},
+				{
+					"bool": {
+						"should": [],
+						"minimum_should_match": 1
+					}
+				},
+				{
+					"match_phrase": {
+						"dtpcategoria": {
+							"query": "access"
+						}
+					}
+				}
+			],
+			"filter": [
+				{
+					"match_all": {
+						
+					}
+				}
+			],
+			"should": [],
+			"must_not": []
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"@kibana-highlighted-field@"
+		],
+		"post_tags": [
+			"@/kibana-highlighted-field@"
+		],
+		"fields": {
+			"*": {
+				
+			}
+		},
+		"fragment_size": 2147483647
+	},
+	"timeout": "100000ms"
+}

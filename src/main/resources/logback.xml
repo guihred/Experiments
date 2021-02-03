@@ -31,6 +31,8 @@
 	<logger name="extract.web.ImageLoader" level="ERROR" />
  	<logger name="rosario.LeitorArquivos" level="ERROR" /> 
 	<logger name="fxml.utils.FXMLCreator" level="ERROR" />
+	<logger name="ethical.hacker.WebsiteScanner" level="ERROR" />
+	<logger name="javafx.css" level="ERROR" />
 
 	<logger name="org.openqa.selenium.phantomjs.PhantomJSDriverService" level="ERROR" />
 	<logger name="org.openqa.selenium.remote" level="OFF" />

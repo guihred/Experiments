@@ -18,7 +18,8 @@ import javafx.scene.shape.Circle;
  */
 public class QuartoModel {
 
-	private final Circle[][] map = new Circle[4][4];
+    private static final int STRAIGHT_ANGLE = 90;
+    private final Circle[][] map = new Circle[4][4];
 	private final QuartoPiece[][] mapQuarto = new QuartoPiece[4][4];
 	private final List<QuartoPiece> pieces = new ArrayList<>();
 
@@ -112,9 +113,9 @@ public class QuartoModel {
 			case 0:
 				return -border;
 			case 1:
-				return -90;
+                return -STRAIGHT_ANGLE;
 			case 2:
-				return 90;
+                return STRAIGHT_ANGLE;
 			case 3:
 			default:
 				return border;
