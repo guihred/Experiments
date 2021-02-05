@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
-import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
@@ -33,7 +32,8 @@ public final class TimelionApi extends KibanaApi {
     private TimelionApi() {
     }
 
-    public static Object maketimelionSearch(File file, String timelionQuery, Map<String, String> search, String time) {
+    public static Map<String, Object> maketimelionSearch(File file, String timelionQuery, Map<String, String> search,
+            String time) {
         return SupplierEx.get(() -> {
             String values = search.values().stream().collect(Collectors.joining());
             String replaceAll = timelionQuery.replaceAll(".+split=(.+?):.+", "$1");
@@ -44,7 +44,7 @@ public final class TimelionApi extends KibanaApi {
                 String content = getContent(file, timelionQuery, keywords, time);
                 getFromURLJson(TIMELION_URL, content, outFile);
             }
-            return JsonExtractor.toFullObject(outFile);
+            return JsonExtractor.accessMap(JsonExtractor.toFullObject(outFile));
         });
     }
 
@@ -59,14 +59,13 @@ public final class TimelionApi extends KibanaApi {
     public static ObservableList<Series<Number, Number>> timelionScan(ObservableList<Series<Number, Number>> series,
             String timelineUsers, Map<String, String> filterMap, String time) {
         return SupplierEx.getHandle(() -> {
-            Object policiesSearch = maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
+            Map<String, Object> policiesSearch =
+                    maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
                     timelineUsers, filterMap, time);
-            Object access = JsonExtractor.access(policiesSearch, Object.class, "statusCode");
-            if (StringSigaUtils.toInteger(access) == 500) {
-                return series;
+            if (policiesSearch.containsKey("sheet")) {
+                List<Object> accessList = JsonExtractor.accessList(policiesSearch, "sheet");
+                CommonsFX.runInPlatform(() -> convertToSeries(series, accessList));
             }
-
-            CommonsFX.runInPlatform(() -> convertToSeries(series, JsonExtractor.accessList(policiesSearch, "sheet")));
             return series;
         }, FXCollections.observableArrayList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
     }

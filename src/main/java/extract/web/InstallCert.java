@@ -75,7 +75,7 @@ public final class InstallCert {
 
         X509Certificate[] chain = tm.getAcceptedIssuers();
         if (chain == null || chain.length == 0) {
-            LOG.info("Could not obtain server certificate chain");
+            LOG.error("Could not obtain server certificate chain {}", host);
             return;
         }
 

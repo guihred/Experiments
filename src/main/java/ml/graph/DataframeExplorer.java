@@ -88,7 +88,10 @@ public class DataframeExplorer extends ExplorerVariables implements HasLogging {
                             headersCombo.getSelectionModel().selectedItemProperty()));
         }).converter(QuestionType::getSign);
         SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove)
-                .onKey(KeyCode.MINUS, this::toggleQuestion).onKey(KeyCode.SUBTRACT, this::toggleQuestion).copiable();
+                .onKey(KeyCode.MINUS, this::toggleQuestion).onKey(KeyCode.SUBTRACT, this::toggleQuestion).copiable()
+                .pasteable(s -> {
+                    return Question.parseQuestion(getDataframe(), s);
+                });
         RunnableEx.runNewThread(Mapping::getMethods);
     }
 

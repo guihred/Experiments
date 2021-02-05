@@ -216,14 +216,11 @@ public class DataframeUtils extends DataframeML {
         try (Scanner scanner = new Scanner(csvFile, "UTF-8")) {
             dataframeML.file = csvFile;
             dataframeML.size = 0;
-
             List<String> header = getHeaders(scanner);
             for (String column : header) {
                 dataframeML.getDataframe().put(column, new ArrayList<>());
                 dataframeML.putFormat(column, String.class);
-
             }
-
             readRows(dataframeML, scanner, header, progress, totalSize);
         } catch (Exception e) {
             LOG.error("ERROR IN FILE {} - {}", csvFile, e.getMessage());

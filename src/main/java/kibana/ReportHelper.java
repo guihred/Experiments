@@ -187,9 +187,8 @@ public final class ReportHelper {
 
     private static Object getCSV(Map<String, Object> imageObj, Map<String, String> params) {
         String extension = "xlsx";
-        File outFile = ResourceFXUtils
-                .getOutFile(extension + "/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + "."
-                        + extension);
+        File outFile = ResourceFXUtils.getOutFile(
+                extension + "/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + "." + extension);
         if (outFile.exists()) {
             return outFile;
         }
@@ -216,8 +215,8 @@ public final class ReportHelper {
         String finalURL = replaceString(params, kibanaURL);
         CommonsFX.runInPlatform(() -> {
             if (imageObj.containsKey("zoom")) {
-                Integer zoom = StringSigaUtils.toInteger(imageObj.getOrDefault("zoom", 1));
-                browser.setZoom(zoom);
+                Double zoom = StringSigaUtils.toDouble(imageObj.getOrDefault("zoom", 1));
+                browser.zoomProperty().set(zoom);
             }
             loadSite(engine, finalURL);
         });
@@ -293,8 +292,8 @@ public final class ReportHelper {
 
     private static void saveCSV(File srcFile, Map<String, Object> params, File outFile) {
         DataframeML dataframe = DataframeBuilder.build(srcFile);
-        Map<String, String> mapping = JsonExtractor.accessMap(params, "mappings");
-        if (mapping != null) {
+        if (params.containsKey("mappings")) {
+            Map<String, String> mapping = JsonExtractor.accessMap(params, "mappings");
             List<String> cols2 = dataframe.cols();
             mapping.forEach((k, v) -> {
                 if (cols2.contains(k)) {
@@ -306,9 +305,8 @@ public final class ReportHelper {
         String columns = params.getOrDefault("columns", "").toString();
         cols.removeIf(s -> s.matches(columns));
         dataframe.removeCol(cols.toArray(new String[0]));
-        List<Object> o = JsonExtractor.accessList(params, "questions");
-        List<Question> a = o.stream().map(Objects::toString).map(t -> Question.parseQuestion(dataframe, t))
-                .collect(Collectors.toList());
+        List<String> o = JsonExtractor.accessList(params, "questions");
+        List<Question> a = o.stream().map(t -> Question.parseQuestion(dataframe, t)).collect(Collectors.toList());
 
         for (Question question : a) {
             dataframe.filter(question.getColName(), question);

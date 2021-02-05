@@ -63,7 +63,7 @@ public class CIDRUtils {
 
             mas -= 8;
         }
-        return pattern.toString().replaceAll("\\.0+", ".");
+        return pattern.toString().replaceAll("\\.0+", ".").replaceAll("\\.\\.", ".0.");
     }
 
     public static String convertToString(InetAddress o) {

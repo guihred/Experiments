@@ -119,7 +119,7 @@ public class Question implements Predicate<Object> {
     }
 
     public static Question parseQuestion(DataframeML build, String question) {
-        String[] tokens = question.split(" +");
+        String[] tokens = question.replaceAll("[\",]", "").split(" +");
         if (tokens.length < 2) {
             return null;
         }
@@ -129,6 +129,10 @@ public class Question implements Predicate<Object> {
         QuestionType type = QuestionType.getBySign(not ? tokens[2] : tokens[1]);
         String string2 = type == QuestionType.EMPTY ? null : tokens[tokens.length - 1];
         String colName2 = tokens[0];
+        if (!build.cols().contains(colName2)) {
+            return null;
+        }
+
         Object queryObject = Question.getQueryObject(build, type, colName2, string2);
         return new Question(colName2, queryObject, type, not);
     }

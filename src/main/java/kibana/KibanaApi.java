@@ -66,9 +66,11 @@ public class KibanaApi {
         Map<String, String> makeKibanaSearch2 = KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", days,
                 new String[] { index, finalIP }, "message");
         String message = makeKibanaSearch2.getOrDefault("message", "");
-        String regex = "WHO:\\s+(\\d+)|WHAT: supplied credentials: \\[(\\d+)+password\\]";
+        String suppliedCredential = "WHAT: supplied credentials: \\[(\\d+)+password\\]";
+        String regex = "WHO:\\s+(\\d+)|" + suppliedCredential;
         List<String> linesThatMatch = Stream.of(message.split("\n")).filter(l -> l.matches(regex))
-                .map(s -> s.replaceAll(regex, "$1$2")).distinct()
+                .sorted(Comparator.comparing(s -> !s.matches(suppliedCredential))).map(s -> s.replaceAll(regex, "$1$2"))
+                .distinct()
                 // .filter(StringUtils::isNumeric)
                 .collect(Collectors.toList());
         String[] messages = message.split("Audit trail record BEGIN");

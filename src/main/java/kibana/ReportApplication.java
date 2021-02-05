@@ -218,7 +218,9 @@ public class ReportApplication extends Application {
     }
 
     private File reportName(Map<String, Object> mapaSubstituicao) {
-        String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"));
+        String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"))
+                .replaceAll("\\.(inss|gov|br|prevnet|dataprev)|vip-p?", "");
+
         String extension = ReportHelper.getExtension(replaceString);
         return ResourceFXUtils.getOutFile(extension + "/" + replaceString);
     }

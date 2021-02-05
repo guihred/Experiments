@@ -90,8 +90,7 @@ public final class ConsultasHelper {
                 Map<String,
                         Double> netHistogram = whoIsInfo.stream()
                                 .collect(Collectors.groupingBy(
-                                        m -> ExplorerHelper.getKey(m, "as_owner", "asname") + "\t"
-                                                + ExplorerHelper.getKey(m, "network", "id"),
+                                        m -> getNameAndNetwork(m),
                                         Collectors.summingDouble(m -> getNumber(numberCol, m))));
                 DoubleSummaryStatistics summaryStatistics =
                         netHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
@@ -153,6 +152,11 @@ public final class ConsultasHelper {
 
     private static String getFirst(String[] params, Map<String, String> m) {
         return m.getOrDefault(params[0], m.values().iterator().next());
+    }
+
+    private static String getNameAndNetwork(Map<String, String> m) {
+        return ExplorerHelper.getKey(m, "Descrição", "as_owner", "asname") + "\t"
+                + ExplorerHelper.getKey(m, "network", "id");
     }
 
     private static Double getNumber(String numberCol, Map<String, String> m) {

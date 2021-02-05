@@ -4,7 +4,7 @@
 	<appender name="STDOUT"
 		class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>${pattern}</pattern>
+			<pattern>%highlight(%5p): %c:%L - %m %n</pattern>
 		</encoder>
 	</appender>
 
@@ -29,6 +29,7 @@
 	<logger name="extract.web.PhantomJSUtils" level="ERROR" />
  	<logger name="extract.web.WhoIsScanner" level="ERROR" /> 
 	<logger name="extract.web.ImageLoader" level="ERROR" />
+	<logger name="extract.web.InstallCert" level="ERROR" />
  	<logger name="rosario.LeitorArquivos" level="ERROR" /> 
 	<logger name="fxml.utils.FXMLCreator" level="ERROR" />
 	<logger name="ethical.hacker.WebsiteScanner" level="ERROR" />

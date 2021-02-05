@@ -188,7 +188,7 @@ public class WhoIsScanner {
                     return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "network", ip));
                 }, LinkedHashMap::new);
         internalScan.put("Descrição", internalScan.values().stream().map(Objects::toString)
-                .filter(StringUtils::isNotBlank).distinct().collect(Collectors.joining(" - ")));
+                .filter(StringUtils::isNotBlank).map(String::trim).distinct().collect(Collectors.joining(" - ")));
 
         internalScan.put(REVERSE_DNS, reverseDNS);
         return internalScan;
