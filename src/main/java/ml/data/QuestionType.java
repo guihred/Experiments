@@ -3,6 +3,7 @@ package ml.data;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
@@ -68,15 +69,23 @@ public enum QuestionType {
         return sign;
     }
 
+    public Boolean isTypeDisabled(Entry<String, DataframeStatisticAccumulator> it) {
+        return isTypeDisabled(this,it);
+    }
+
     public boolean matchesClass(Class<?> a) {
         return ClassReflectionUtils.hasClass(Arrays.asList(classes), a);
     }
-
     public static QuestionType getBySign(String a) {
         return Stream.of(values()).filter(v -> v.sign.equals(a)).findFirst().orElse(null);
     }
+
     public static List<QuestionType> getMatches(Class<?> a) {
         return Stream.of(values()).filter(v -> v.matchesClass(a)).collect(Collectors.toList());
+    }
+
+    public static Boolean isTypeDisabled(QuestionType q, Entry<String, DataframeStatisticAccumulator> it) {
+        return it == null || q == null || !q.matchesClass(it.getValue().getFormat());
     }
 
 }

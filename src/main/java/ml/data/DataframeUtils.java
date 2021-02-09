@@ -299,11 +299,10 @@ public class DataframeUtils extends DataframeML {
             maxFormatMap.put(s, s.length());
             Class<? extends Comparable<?>> format2 = dataframe.getFormat(s);
             l.stream().limit(max)
-                    .forEach(
-                            e -> maxFormatMap.merge(s,
-                                    format2 == Double.class ? Objects.toString(e).replaceAll("\\.\\d+$", "").length()
-                                            : Objects.toString(e).length(),
-                                    (t, u) -> Integer.min(Integer.max(t, u), MAX_COLUMN_SIZE)));
+                    .forEach(e -> maxFormatMap.merge(s,
+                            format2 == Double.class ? Objects.toString(e).replaceAll("\\.\\d+$", "").length()
+                                    : Objects.toString(e).length(),
+                            (t, u) -> Integer.min(Integer.max(t, u), MAX_COLUMN_SIZE)));
         });
 
         dataframe.forEach((s, l) -> str.append(StringSigaUtils.format(maxFormatMap.get(s), s)));
@@ -473,11 +472,10 @@ public class DataframeUtils extends DataframeML {
             int i1 = j;
             List<Object> crossFeature =
                     m.stream().map(c -> c != null ? c.stream().skip(i1).findFirst().orElse(null) : null)
-                    .collect(Collectors.toList());
+                            .collect(Collectors.toList());
             dataframe.getDataframe().put(header + j, crossFeature);
             dataframe.putFormat(header + j, (Class<? extends Comparable<?>>) crossFeature.stream()
-                    .filter(Objects::nonNull)
-                    .findFirst().map(Object::getClass).orElse(null));
+                    .filter(Objects::nonNull).findFirst().map(Object::getClass).orElse(null));
         }
     }
 
@@ -527,8 +525,7 @@ public class DataframeUtils extends DataframeML {
             List<Object> crossFeature = m.stream().map(c -> c != null ? c.get(i1) : null).collect(Collectors.toList());
             dataframe.getDataframe().put(header + i1, crossFeature);
             dataframe.putFormat(header + i1, (Class<? extends Comparable<?>>) crossFeature.stream()
-                    .filter(Objects::nonNull)
-                    .findFirst().map(Object::getClass).orElse(null));
+                    .filter(Objects::nonNull).findFirst().map(Object::getClass).orElse(null));
         }
     }
 
@@ -680,6 +677,5 @@ public class DataframeUtils extends DataframeML {
         }
         return d;
     }
-
 
 }

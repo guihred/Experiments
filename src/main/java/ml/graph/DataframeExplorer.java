@@ -84,14 +84,12 @@ public class DataframeExplorer extends ExplorerVariables implements HasLogging {
             cell.setText(FunctionEx.mapIf(q, QuestionType::getSign));
             cell.disableProperty()
                     .bind(Bindings.createBooleanBinding(
-                            () -> isTypeDisabled(q, headersCombo.getSelectionModel().getSelectedItem()),
+                            () -> QuestionType.isTypeDisabled(q, headersCombo.getSelectionModel().getSelectedItem()),
                             headersCombo.getSelectionModel().selectedItemProperty()));
         }).converter(QuestionType::getSign);
         SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove)
                 .onKey(KeyCode.MINUS, this::toggleQuestion).onKey(KeyCode.SUBTRACT, this::toggleQuestion).copiable()
-                .pasteable(s -> {
-                    return Question.parseQuestion(getDataframe(), s);
-                });
+                .pasteable(s -> Question.parseQuestion(getDataframe(), s));
         RunnableEx.runNewThread(Mapping::getMethods);
     }
 
@@ -130,8 +128,9 @@ public class DataframeExplorer extends ExplorerVariables implements HasLogging {
             String ipColumn = selectedItem.getKey();
             DataframeBuilder builder = Question.builderWithQuestions(getDataframe().getFile(), questions);
             setDataframe(ExplorerHelper.fillIPInformation(builder, ipColumn, progress.progressProperty()));
-            File outFile = ResourceFXUtils.getOutFile("csv/" + getDataframe().getFile().getName());
-            getLogger().info("File {} SAVING IN", outFile);
+            String out = "csv/" + getDataframe().getFile().getName();
+            File outFile = ResourceFXUtils.getOutFile(out);
+            getLogger().info("SAVING File {}", out);
             DataframeUtils.save(getDataframe(), outFile);
             readDataframe(outFile, ExplorerHelper.MAX_ELEMENTS);
             getLogger().info("File {} IPS FILLED", getDataframe().getFile().getName());
@@ -233,11 +232,6 @@ public class DataframeExplorer extends ExplorerVariables implements HasLogging {
         t.toggleNot();
         questions.set(questions.indexOf(t), t);
     }
-
-    public static Boolean isTypeDisabled(QuestionType q, Entry<String, DataframeStatisticAccumulator> it) {
-        return it == null || q == null || !q.matchesClass(it.getValue().getFormat());
-    }
-
 
 
     public static void main(String[] args) {

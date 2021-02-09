@@ -69,13 +69,28 @@ public class KibanaApi {
         String suppliedCredential = "WHAT: supplied credentials: \\[(\\d+)+password\\]";
         String regex = "WHO:\\s+(\\d+)|" + suppliedCredential;
         List<String> linesThatMatch = Stream.of(message.split("\n")).filter(l -> l.matches(regex))
-                .sorted(Comparator.comparing(s -> !s.matches(suppliedCredential))).map(s -> s.replaceAll(regex, "$1$2"))
+                .map(s -> s.replaceAll(regex, "$1$2"))
                 .distinct()
                 // .filter(StringUtils::isNumeric)
                 .collect(Collectors.toList());
         String[] messages = message.split("Audit trail record BEGIN");
-        return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(regex, l))).distinct()
+        return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(regex, l)))
+                .sorted(Comparator.comparing(s -> !s.matches(suppliedCredential))).distinct()
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s, SupplierEx::nonNull));
+    }
+
+    public static Map<String, String> getIPsByCredencial(String credencial, String index, int days) {
+        Map<String, String> makeKibanaSearch2 = KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", days,
+                new String[] { index, credencial }, "message");
+        String message = makeKibanaSearch2.getOrDefault("message", "");
+        String ipAddress = "CLIENT IP ADDRESS: (.+)";
+        List<String> linesThatMatch = Stream.of(message.split("\n")).filter(l -> l.matches(ipAddress))
+                .map(s -> s.replaceAll(ipAddress, "$1")).distinct()
+                .collect(Collectors.toList());
+        String[] messages = message.split("Audit trail record BEGIN");
+        return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(ipAddress, l, "$1")))
+                .sorted(Comparator.comparing(s -> !s.matches(ipAddress))).distinct()
+                .collect(Collectors.toMap(s -> getWhoField(ipAddress, s, "$1"), s -> s, SupplierEx::nonNull));
     }
 
     public static String getURL(String string) {
@@ -320,7 +335,12 @@ public class KibanaApi {
     }
 
     private static String getWhoField(String regex, String s) {
-        return Stream.of(s.split("\n")).filter(l -> l.matches(regex)).findFirst().orElse("").replaceAll(regex, "$1$2");
+        return getWhoField(regex, s, "$1$2");
+    }
+
+    private static String getWhoField(String regex, String s, String replacement) {
+        return Stream.of(s.split("\n")).filter(l -> l.matches(regex)).findFirst().orElse("").replaceAll(regex,
+                replacement);
     }
 
     private static String removeExtension(File file) {

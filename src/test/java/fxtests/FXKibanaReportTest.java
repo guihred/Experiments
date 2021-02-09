@@ -110,6 +110,17 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     }
 
     @Test
+    public void testWordIPbyGeridCredenciais() {
+        String credencial = "\\\"19906307153\\\" AND \\\"supplied credentials\\\"";
+        measureTime("KibanaApi.getGeridCredencial", () -> {
+            Map<String, String> geridCredencial = KibanaApi.getIPsByCredencial(credencial, "inss-*-prod-*", 1);
+            geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
+            getLogger().info("{}", geridCredencial.keySet());
+            return geridCredencial;
+        });
+    }
+
+    @Test
     public void testWordReport() {
         ImageFXUtils.setShowImage(false);
         ReportApplication show2 = show(ReportApplication.class);
@@ -119,9 +130,9 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordReportGeridCredenciais() {
-        String finalIP = "177.95.43.29";
+        String finalIP = "09560718720";
         measureTime("KibanaApi.getGeridCredencial", () -> {
-            Map<String, String> geridCredencial = KibanaApi.getGeridCredencial(finalIP, "inss-*-prod-*");
+            Map<String, String> geridCredencial = KibanaApi.getGeridCredencial(finalIP, "inss-*-prod-*", 6);
             geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
             getLogger().info("{}", geridCredencial.keySet());
             return geridCredencial;

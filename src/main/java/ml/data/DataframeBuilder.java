@@ -1,6 +1,9 @@
 package ml.data;
 
+import extract.web.JsoupUtils;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
@@ -10,6 +13,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import utils.ExcelService;
 import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class DataframeBuilder extends DataframeML {
@@ -27,7 +31,7 @@ public class DataframeBuilder extends DataframeML {
         return this;
     }
 
-    public DataframeBuilder addCrossFeature(String d,  FunctionEx<Object[], ?> mapper,String... dependencies) {
+    public DataframeBuilder addCrossFeature(String d, FunctionEx<Object[], ?> mapper, String... dependencies) {
         crossFeature.put(d, new AbstractMap.SimpleEntry<>(dependencies, mapper));
         return this;
     }
@@ -56,13 +60,26 @@ public class DataframeBuilder extends DataframeML {
 
     public Set<Entry<String, DataframeStatisticAccumulator>> columns() {
         return SupplierEx.get(() -> {
+            List<String> addHeaders;
             try (Scanner scanner = new Scanner(file, "UTF-8")) {
-                DataframeUtils.addHeaders(this, scanner);
+                addHeaders = DataframeUtils.addHeaders(this, scanner);
+            }
+            if (addHeaders.equals(Arrays.asList("<html>"))) {
+                RunnableEx.run(() -> {
+                    String extractBodyFromHTML = JsoupUtils.extractBodyFromHTML(file);
+                    List<String> asList = Arrays.asList(extractBodyFromHTML.split("(?<=\") (?=\")"));
+                    asList.forEach(System.out::println);
+                    file = ResourceFXUtils.getOutFile("csv/" + file.getName());
+                    Files.write(file.toPath(), asList, StandardOpenOption.CREATE);
+                    stats = null;
+                    try (Scanner scanner2 = new Scanner(file, "UTF-8")) {
+                        DataframeUtils.addHeaders(this, scanner2);
+                    }
+                });
             }
             return getStats().entrySet();
         }, Collections.emptySet());
     }
-
 
     public DataframeBuilder filterOut(String d, Predicate<Object> fil) {
         filters.put(d, fil);

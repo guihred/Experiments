@@ -44,7 +44,7 @@
 			"must": [
 				{
 					"query_string": {
-						"query": "\"%s\"",
+						"query": "%s",
 						"analyze_wildcard": true,
 						"default_field": "*"
 					}
