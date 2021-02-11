@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -24,10 +23,7 @@ import utils.CSVUtils;
 import utils.QuickSortML;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
-import utils.ex.FunctionEx;
-import utils.ex.HasLogging;
-import utils.ex.RunnableEx;
-import utils.ex.SupplierEx;
+import utils.ex.*;
 
 public class DataframeUtils extends DataframeML {
 
@@ -561,8 +557,7 @@ public class DataframeUtils extends DataframeML {
             String key = header.get(i);
             String field = getFromList(i, line2);
             Object tryNumber = tryNumber(dataframeML, key, field);
-            Map<String, Predicate<Object>> filters2 = dataframeML.filters;
-            return filters2.containsKey(key) && !filters2.get(key).test(tryNumber);
+            return dataframeML.filters.containsKey(key) && !PredicateEx.test(dataframeML.filters.get(key), tryNumber);
         });
     }
 

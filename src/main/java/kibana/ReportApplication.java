@@ -127,7 +127,11 @@ public class ReportApplication extends Application {
         if (mapaSubstituicao.containsKey("gerid")) {
             LOG.info("GETTING GERID CREDENTIALS ");
             String index = params.get("\\$index");
-            Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip"), index, days);
+            String s = " AND \\\"supplied credentials\\\"";
+            Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip") + s, index, days);
+            if (makeKibanaSearch.isEmpty()) {
+                makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip"), index, days);
+            }
             params.put("\\$creds", makeKibanaSearch.keySet().stream().collect(Collectors.joining("\n")));
             List<Object> textAsImage =
                     makeKibanaSearch.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());

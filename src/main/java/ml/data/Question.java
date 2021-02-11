@@ -3,9 +3,9 @@ package ml.data;
 
 import java.io.File;
 import java.util.*;
-import java.util.function.Predicate;
+import utils.ex.PredicateEx;
 
-public class Question implements Predicate<Object> {
+public class Question implements PredicateEx<Object> {
     private final String colName;
     private final Object ob;
     private final QuestionType type;

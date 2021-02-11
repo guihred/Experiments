@@ -6,13 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import utils.ExcelService;
 import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
+import utils.ex.PredicateEx;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
@@ -81,7 +81,7 @@ public class DataframeBuilder extends DataframeML {
         }, Collections.emptySet());
     }
 
-    public DataframeBuilder filterOut(String d, Predicate<Object> fil) {
+    public DataframeBuilder filterOut(String d, PredicateEx<Object> fil) {
         filters.put(d, fil);
         return this;
     }

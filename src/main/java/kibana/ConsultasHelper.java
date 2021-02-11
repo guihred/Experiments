@@ -61,8 +61,7 @@ public final class ConsultasHelper {
             return SupplierEx.get(()->CIDRUtils.toIPByName(first).getHostAddress(),first);
         }
         if (QueryObjects.URL_QUERY.equals(fieldQuery) && first.startsWith("/")) {
-            String url = KibanaApi.getURL(first);
-            return url.replaceAll("([/\\?])", "\\\\$1");
+            return KibanaApi.getURL(first);
         }
         return first;
     }

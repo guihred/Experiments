@@ -1,4 +1,3 @@
-
 package kibana;
 
 import static utils.ex.RunnableEx.measureTime;
@@ -66,17 +65,17 @@ public class KibanaApi {
         Map<String, String> makeKibanaSearch2 = KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", days,
                 new String[] { index, finalIP }, "message");
         String message = makeKibanaSearch2.getOrDefault("message", "");
-        String suppliedCredential = "WHAT: supplied credentials: \\[(\\d+)+password\\]";
+        String suppliedCredential = "WHAT: supplied credentials: \\[(\\d+)\\+password\\]";
         String regex = "WHO:\\s+(\\d+)|" + suppliedCredential;
         List<String> linesThatMatch = Stream.of(message.split("\n")).filter(l -> l.matches(regex))
-                .map(s -> s.replaceAll(regex, "$1$2"))
-                .distinct()
+                .map(s -> s.replaceAll(regex, "$1$2")).distinct()
                 // .filter(StringUtils::isNumeric)
                 .collect(Collectors.toList());
         String[] messages = message.split("Audit trail record BEGIN");
         return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(regex, l)))
-                .sorted(Comparator.comparing(s -> !s.matches(suppliedCredential))).distinct()
-                .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s, SupplierEx::nonNull));
+                .distinct()
+                .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s,
+                        (t, u) -> getFirstMatch(suppliedCredential, t, u)));
     }
 
     public static Map<String, String> getIPsByCredencial(String credencial, String index, int days) {
@@ -85,8 +84,7 @@ public class KibanaApi {
         String message = makeKibanaSearch2.getOrDefault("message", "");
         String ipAddress = "CLIENT IP ADDRESS: (.+)";
         List<String> linesThatMatch = Stream.of(message.split("\n")).filter(l -> l.matches(ipAddress))
-                .map(s -> s.replaceAll(ipAddress, "$1")).distinct()
-                .collect(Collectors.toList());
+                .map(s -> s.replaceAll(ipAddress, "$1")).distinct().collect(Collectors.toList());
         String[] messages = message.split("Audit trail record BEGIN");
         return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(ipAddress, l, "$1")))
                 .sorted(Comparator.comparing(s -> !s.matches(ipAddress))).distinct()
@@ -97,7 +95,6 @@ public class KibanaApi {
         return string.replaceAll("(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+"
                 + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|svg|ico|eot))|.+(?=\\.(js)$)", "*");
     }
-
 
     public static String isInBlacklist(String query) {
         File file = ResourceFXUtils.toFile("kibana/ip_filter.txt");
@@ -173,7 +170,6 @@ public class KibanaApi {
         return makeKibanaSearch(ResourceFXUtils.toFile(KIBANA_FOLDER + file), days, query, params);
     }
 
-
     public static Map<String, String> makeNewKibanaSearch(File file, int days, Map<String, String> search,
             String... params) {
         return SupplierEx.get(() -> {
@@ -203,7 +199,18 @@ public class KibanaApi {
         String pattern = CIDRUtils.addressToPattern(ip);
         fullScan.put("WAF_Policy", () -> displayDistinct(
                 makeKibanaSearch("wafQuery.json", pattern, days, "action", "policy-name", "alert.description")));
-        fullScan.put("PaloAlto_Threat", () -> displayDistinct(makeKibanaSearch("threatQuery.json", ip, days, key)));
+        fullScan.put("PaloAlto_Threat", () -> {
+            if (CIDRUtils.isVPNNetwork(ip)) {
+                Map<String, String> userQuery = makeKibanaSearch("userQuery.json", ip, days, valueCol, "key");
+                userQuery.computeIfPresent(valueCol,
+                        (k, v) -> Stream.of(v.split("\n"))
+                                .map(s -> DateFormatUtils.format("dd/MM/yy HH:mm", StringSigaUtils.toLong(s)))
+                                .collect(Collectors.joining("\n")));
+                return displayDistinct(userQuery);
+            }
+
+            return displayDistinct(makeKibanaSearch("threatQuery.json", ip, days, key));
+        });
         fullScan.put("TOP_FW", () -> {
             Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", ip, days, key, valueCol);
             convertToBytes(valueCol, destinationSearch);
@@ -238,14 +245,11 @@ public class KibanaApi {
             return displayDistinct(totalBytesQuery);
         });
         fullScan.put("Bytes_Sent", () -> {
-            Map<String, String> totalBytesSent =
-                    makeKibanaSearch("paloAltoQuery.json", ip, days, valueCol);
+            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", ip, days, valueCol);
             convertToStats(valueCol, totalBytesSent);
             return display(totalBytesSent);
         });
         fullScan.put("URLs", () -> urls(days, pattern));
-        // fullScan.put("WAF", () -> display(makeKibanaSearch("wafQuery.json", pattern,
-        // days, "Name", "Value")))
         return fullScan;
     }
 
@@ -334,6 +338,14 @@ public class KibanaApi {
                 .collect(Collectors.toList());
     }
 
+    private static String getFirstMatch(String suppliedCredential, String t, String u) {
+        String orElse = Stream.of(t, u).filter(Objects::nonNull)
+                .min(Comparator
+                        .comparing(s -> StringSigaUtils.matches(s, suppliedCredential).isEmpty()))
+                .orElse(null);
+        return orElse;
+    }
+
     private static String getWhoField(String regex, String s) {
         return getWhoField(regex, s, "$1$2");
     }
@@ -358,11 +370,12 @@ public class KibanaApi {
                 remap.stream().collect(Collectors.groupingBy(e -> e.get("key1"),
                         LinkedHashMap<String, List<Map<String, String>>>::new, Collectors.toList()));
         return collect2.entrySet().stream().map(entry -> {
-            Map<String, Long> collect = entry.getValue().stream()
-                    .map(e -> new AbstractMap.SimpleEntry<>(getURL(e.get("key0")),
-                            StringSigaUtils.toLong(e.get(docCount + "0"))))
-                    .collect(Collectors.groupingBy(SimpleEntry<String, Long>::getKey,
-                            Collectors.summingLong(SimpleEntry<String, Long>::getValue)));
+            Map<String,
+                    Long> collect = entry.getValue().stream()
+                            .map(e -> new AbstractMap.SimpleEntry<>(getURL(e.get("key0")),
+                                    StringSigaUtils.toLong(e.get(docCount + "0"))))
+                            .collect(Collectors.groupingBy(SimpleEntry<String, Long>::getKey,
+                                    Collectors.summingLong(SimpleEntry<String, Long>::getValue)));
             String collect3 = collect.entrySet().stream()
                     .sorted(Comparator.comparingLong(Entry<String, Long>::getValue).reversed())
                     .map(e -> e.getKey() + "\t" + e.getValue()).filter(s -> !s.startsWith("*"))

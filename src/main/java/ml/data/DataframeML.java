@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import utils.ex.HasLogging;
+import utils.ex.PredicateEx;
 
 public class DataframeML extends BaseDataframe {
     public DataframeML() {
@@ -63,13 +64,13 @@ public class DataframeML extends BaseDataframe {
         return checkedSet;
     }
 
-    public DataframeML filter(String header, Predicate<Object> v) {
+    public DataframeML filter(String header, PredicateEx<Object> v) {
         List<Object> list = dataframe.get(header);
         int off = 0;
         for (int i = 0; i - off < list.size(); i++) {
             int j = i - off;
             Object t = list.get(j);
-            if (t == null || !v.test(t)) {
+            if (!PredicateEx.test(v, t)) {
                 dataframe.forEach((c, l) -> l.remove(j));
                 off++;
             }
@@ -78,13 +79,13 @@ public class DataframeML extends BaseDataframe {
         return this;
     }
 
-    public DataframeML filterString(String header, Predicate<String> v) {
+    public DataframeML filterString(String header, PredicateEx<String> v) {
         List<Object> list = dataframe.get(header);
         if (list != null) {
             int off = 0;
             for (int i = 0; i - off < list.size(); i++) {
                 int j = i - off;
-                if (!v.test(Objects.toString(list.get(j)))) {
+                if (!PredicateEx.test(v, Objects.toString(list.get(j)))) {
                     dataframe.forEach((c, l) -> l.remove(j));
                     off++;
                 }

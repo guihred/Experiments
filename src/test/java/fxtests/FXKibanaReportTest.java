@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableRow;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import kibana.*;
 import org.junit.FixMethodOrder;
@@ -111,7 +112,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordIPbyGeridCredenciais() {
-        String credencial = "\\\"19906307153\\\" AND \\\"supplied credentials\\\"";
+        String credencial = "\\\"179.98.197.200\\\" AND \\\"supplied credentials\\\"";
         measureTime("KibanaApi.getGeridCredencial", () -> {
             Map<String, String> geridCredencial = KibanaApi.getIPsByCredencial(credencial, "inss-*-prod-*", 1);
             geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
@@ -124,17 +125,19 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     public void testWordReport() {
         ImageFXUtils.setShowImage(false);
         ReportApplication show2 = show(ReportApplication.class);
-        // show2.setIp("177.9.205.246");
+        TextField lookupFirst = lookupFirst(TextField.class);
+        interact(() -> lookupFirst.setText("177.9.205.246"));
         show2.makeReportConsultas();
     }
 
     @Test
     public void testWordReportGeridCredenciais() {
-        String finalIP = "09560718720";
+        String finalIP = "179.98.197.200 AND \\\"supplied credentials\\\"";
+
         measureTime("KibanaApi.getGeridCredencial", () -> {
-            Map<String, String> geridCredencial = KibanaApi.getGeridCredencial(finalIP, "inss-*-prod-*", 6);
-            geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
+            Map<String, String> geridCredencial = KibanaApi.getGeridCredencial(finalIP, "inss-*-prod-*", 1);
             getLogger().info("{}", geridCredencial.keySet());
+            geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
             return geridCredencial;
         });
     }

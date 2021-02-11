@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import utils.ExcelService;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
+import utils.ex.PredicateEx;
 import utils.ex.RunnableEx;
 
 public class ExcelDataReader extends DataframeUtils {
@@ -151,7 +152,7 @@ public class ExcelDataReader extends DataframeUtils {
                 String key = header.get(i);
                 String field = StringSigaUtils.toStringSpecial(map.get(key));
                 Object tryNumber = tryNumber(dataframe, key, field);
-                if (dataframe.filters.containsKey(key) && !dataframe.filters.get(key).test(tryNumber)) {
+                if (dataframe.filters.containsKey(key) && !PredicateEx.test(dataframe.filters.get(key), tryNumber)) {
                     removeRow(dataframe, header, i);
                     break;
                 }

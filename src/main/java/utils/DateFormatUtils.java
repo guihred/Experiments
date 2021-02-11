@@ -45,6 +45,11 @@ public final class DateFormatUtils {
         return SupplierEx.get(() -> LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     }
 
+    public static String format(Long now, String fmt) {
+        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt)
+                .format(Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault()).toLocalDateTime()));
+    }
+
     public static String format(String fmt, long now) {
         return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt)
                 .format(Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault()).toLocalDateTime()));

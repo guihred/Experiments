@@ -262,7 +262,8 @@ public class DataframeStatisticAccumulator {
 
     private <T> Object getByProportion(double d, Map<T, Integer> countMap2) {
         List<Entry<T, Integer>> array = SupplierEx.getIgnore(
-                () -> countMap2.entrySet().stream().sorted(comparator()).collect(Collectors.toList()),
+                () -> countMap2.entrySet().stream().sorted(comparator().thenComparing(e -> e.getKey()))
+                        .collect(Collectors.toList()),
                 Collections.emptyList());
         if (array.isEmpty()) {
             return null;

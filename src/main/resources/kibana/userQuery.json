@@ -1,0 +1,76 @@
+{"index":"dtp-proxy-prod-*","ignore_unavailable":true,"preference":1612948798739}
+{
+	"aggs": {
+		"3": {
+			"terms": {
+				"field": "user.keyword",
+				"size": 5,
+				"order": {
+					"1": "desc"
+				}
+			},
+			"aggs": {
+				"1": {
+					"min": {
+						"field": "@timestamp"
+					}
+				},
+				"4": {
+					"max": {
+						"field": "@timestamp"
+					}
+				}
+			}
+		}
+	},
+	"size": 0,
+	"_source": {
+		"excludes": []
+	},
+	"stored_fields": [
+		"*"
+	],
+	"script_fields": {
+		
+	},
+	"docvalue_fields": [
+		{
+			"field": "@timestamp",
+			"format": "date_time"
+		}
+	],
+	"query": {
+		"bool": {
+			"must": [
+				{
+					"query_string": {
+						"query": "src_ip:%s",
+						"analyze_wildcard": true,
+						"default_field": "*"
+					}
+				},
+				{
+					"range": {
+						"@timestamp": {
+							"gte": %s,
+							"lte": %s,
+							"format": "epoch_millis"
+						}
+					}
+				}
+			],
+			"filter": [],
+			"should": [],
+			"must_not": [
+				{
+					"match_phrase": {
+						"user.keyword": {
+							"query": "-"
+						}
+					}
+				}
+			]
+		}
+	},
+	"timeout": "30000ms"
+}

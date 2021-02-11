@@ -28,9 +28,12 @@ public class CIDRUtils {
     private static DataframeML networkFile;
 
     private static final List<String> PRIVATE_NETWORKS = Arrays.asList("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16");
+    private static final List<String> VPN_NETWORKS =
+            Arrays.asList("10.0.164.0/22", "10.0.168.0/24", "10.122.186.0/24", "10.122.188.0/22", "10.253.0.0/17");
 
     private static final String CIDR_REGEX = "\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+";
     private static final String IP_REGEX = "\\d+\\.\\d+\\.\\d+\\.\\d+";
+
     public static String addressToPattern(String cidr) {
         if (StringUtils.isBlank(cidr) || !cidr.matches(CIDR_REGEX)) {
             return cidr;
@@ -86,9 +89,7 @@ public class CIDRUtils {
     }
 
     public static boolean isPrivateNetwork(String ip) {
-        return ip.endsWith(".prevnet") ||
-
-                PRIVATE_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
+        return ip.endsWith(".prevnet") || PRIVATE_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
     }
 
     public static boolean isSameNetworkAddress(String cidr, String ip) {
@@ -110,6 +111,10 @@ public class CIDRUtils {
         int fullAddress =
                 Stream.of(ip.split("\\.")).mapToInt(StringSigaUtils::toInteger).reduce(0, (a, i) -> (a << 8) + i);
         return (fullAddress & fullMask) == net;
+    }
+
+    public static boolean isVPNNetwork(String ip) {
+        return VPN_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
     }
 
     public static void main(String[] args) {

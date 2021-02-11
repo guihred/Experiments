@@ -162,7 +162,7 @@ public final class ReportHelper {
 
     public static Image textToImage(String s) {
         String collect2 = Stream.of(s.split("\n")).filter(StringUtils::isNotBlank)
-                .map(str -> "<p>" + str.replaceAll("(\\d+\\.\\d+\\.\\d+\\.\\d+)", "<font>$1</font>") + "</p>")
+                .map(str -> "<p>" + str.replaceAll("(\\d+\\.\\d+\\.\\d+\\.\\d+|\\d{11})", "<font>$1</font>") + "</p>")
                 .collect(Collectors.joining("\n"));
         String format =
                 String.format("<!DOCTYPE html>\n<html>\n<head>\n<style>\nfont {background-color: yellow;}</style>\n"

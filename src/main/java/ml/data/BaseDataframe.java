@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
+import utils.ex.PredicateEx;
 
 public class BaseDataframe {
 
@@ -24,7 +24,7 @@ public class BaseDataframe {
 
     protected Map<String, DataframeStatisticAccumulator> stats;
 
-    protected Map<String, Predicate<Object>> filters = new LinkedHashMap<>();
+    protected Map<String, PredicateEx<Object>> filters = new LinkedHashMap<>();
 
     public BaseDataframe() {
     }

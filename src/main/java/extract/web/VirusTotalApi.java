@@ -28,7 +28,6 @@ public final class VirusTotalApi {
     private VirusTotalApi() {
     }
 
-
     public static File getFilesInformation(Path path) throws IOException {
         String filename = path.getName(path.getNameCount() - 1).toString();
         File outFile = newJsonFile(filename);
@@ -44,6 +43,34 @@ public final class VirusTotalApi {
             LOG.info("Malicious FILE {} {}", path, group);
         }
         return outFile;
+    }
+
+    public static Map<String, Object> getFilesInformation(String filename, String hash) throws IOException {
+        File outFile = newJsonFile(filename);
+        if (!outFile.exists()) {
+            getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
+        }
+        String trid = "trid";
+        String data = "data";
+        String idkey = "id";
+        String[] params = { data, ATTRIBUTES, LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "type_description", "tags", trid,
+                "magic", "meaningful_name", "file_type", "probability", "file_type", idkey };
+        Map<String, Object> object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
+        String string = Objects.toString(object.get(idkey), "");
+        if (StringUtils.isNotBlank(string) && !string.equals(hash)) {
+            outFile = newJsonFile(filename + "_" + hash);
+            if (!outFile.exists()) {
+                getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
+            }
+            object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
+        }
+        object.remove(idkey);
+        object.remove(data);
+        object.remove(ATTRIBUTES);
+        object.remove(trid);
+        LOG.info("{}", object);
+
+        return object;
     }
 
     public static Entry<File, List<String>> getIpInformation(String ip) throws IOException {
@@ -116,6 +143,10 @@ public final class VirusTotalApi {
             LOG.info("Malicious URL {} {}", url, malicious);
         }
         return outFile;
+    }
+
+    public static void main(String[] args) throws IOException {
+        getFilesInformation("killall", "00264284405acad804177a20f0f9730ed17a90766c6430e6df58af024776b61c");
     }
 
     private static void getFromURL(String url, File outFile) throws IOException {
