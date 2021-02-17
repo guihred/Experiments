@@ -163,6 +163,8 @@
 												fx:id="networkTopology" />
 											<PackageTopology graph="$graph"
 												fx:id="packageTopology" />
+											<ProcessTopology graph="$graph"
+												fx:id="processTopology" />
 											<ProjectTopology graph="$graph"
 												fx:id="projectTopology" />
 											<RandomTopology graph="$graph"

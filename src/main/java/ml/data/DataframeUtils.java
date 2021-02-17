@@ -244,6 +244,10 @@ public class DataframeUtils extends DataframeML {
     }
 
     public static void sort(DataframeML dataframe, String header) {
+        sort(dataframe, header, true);
+    }
+
+    public static void sort(DataframeML dataframe, String header, boolean ascending) {
         List<Object> list = dataframe.list(header);
         List<List<Object>> trimmedColumns =
                 dataframe.getDataframe().entrySet().stream().filter(e -> !e.getKey().equals(header))
@@ -251,17 +255,18 @@ public class DataframeUtils extends DataframeML {
 
         Class<?> class1 = dataframe.getFormat(header);
         if (class1 == String.class) {
+            Comparator<String> compa = revertComparator(String::compareTo, ascending);
             QuickSortML.sort(typedList(list), (i, j) -> {
                 for (List<Object> list2 : trimmedColumns) {
                     Object object = list2.get(i);
                     list2.set(i, list2.get(j));
                     list2.set(j, object);
                 }
-            }, String::compareTo);
+            }, compa);
         }
 
         if (class1 == Double.class) {
-            Comparator<Double> compa = Double::compareTo;
+            Comparator<Double> compa = revertComparator(Double::compareTo, ascending);
             QuickSortML.sort(typedList(list), (i, j) -> {
                 for (List<Object> list2 : trimmedColumns) {
                     Object object = list2.get(i);
@@ -271,7 +276,7 @@ public class DataframeUtils extends DataframeML {
             }, compa.reversed());
         }
         if (class1 == Integer.class) {
-            Comparator<Integer> compa = Integer::compareTo;
+            Comparator<Integer> compa = revertComparator(Integer::compareTo, ascending);
             QuickSortML.sort(typedList(list), (i, j) -> {
                 for (List<Object> list2 : trimmedColumns) {
                     Object object = list2.get(i);
@@ -631,6 +636,10 @@ public class DataframeUtils extends DataframeML {
                 return;
             }
         }
+    }
+
+    private static <T> Comparator<T> revertComparator(Comparator<T> compa, boolean ascending) {
+        return ascending ? compa : compa.reversed();
     }
 
     private static long runLine(DataframeML dataframeML, List<String> header, Scanner scanner,

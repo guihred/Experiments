@@ -33,12 +33,11 @@ public class GraphModel {
         clear();
     }
 
-	public void addBiEdge(String sourceId, String targetId, Integer valor) {
+    public void addBiEdge(String sourceId, String targetId, Integer valor) {
         if (sourceId.equals(targetId)) {
             return;
         }
-        if (addedEdges.stream()
-            .anyMatch(e -> isEdgeExistent(sourceId, targetId, e))) {
+        if (addedEdges.stream().anyMatch(e -> isEdgeExistent(sourceId, targetId, e))) {
             return;
         }
 
@@ -62,6 +61,7 @@ public class GraphModel {
                 throw new UnsupportedOperationException("Unsupported type: " + type);
         }
     }
+
     public Integer addedCost(String v, String w) {
         return GraphModelAlgorithms.addedCost(v, w, addedEdges, cellMap);
     }
@@ -76,7 +76,7 @@ public class GraphModel {
         }
         Cell sourceCell = cellMap.get(sourceId);
         Cell targetCell = cellMap.get(targetId);
-        if(sourceCell!=null&&targetCell!=null) {
+        if (sourceCell != null && targetCell != null) {
             Edge edge = new Edge(sourceCell, targetCell, valor);
             addedEdges.add(edge);
         }
@@ -98,7 +98,7 @@ public class GraphModel {
 
     public List<Edge> chainEdges(String s, String t) {
         if (paths == null) {
-            paths=new HashMap<>();
+            paths = new HashMap<>();
         }
         return GraphModelAlgorithms.chainEdges(s, t, cellMap, allCells, allEdges, paths);
     }
@@ -119,9 +119,8 @@ public class GraphModel {
     }
 
     public List<Edge> edges(Cell c) {
-		return GraphModelAlgorithms.edges(c, allEdges);
+        return GraphModelAlgorithms.edges(c, allEdges);
     }
-
 
     public void findArticulations() {
         GraphModelAlgorithms.findArticulations(allCells, allEdges);
@@ -144,14 +143,12 @@ public class GraphModel {
     }
 
     public Cell getCell(String key) {
-		return cellMap.get(key);
-	}
+        return cellMap.get(key);
+    }
 
     public ObservableList<String> getCellIds() {
         return cellIds;
     }
-
-
 
     public ObservableMap<String, Cell> getCellMap() {
         return cellMap;
@@ -233,7 +230,7 @@ public class GraphModel {
     private void bindCellsId() {
         allCells.addListener((Change<? extends Cell> c) -> {
             while (c.next()) {
-				cellIds.setAll(c.getList().stream().map(Cell::getCellId).collect(Collectors.toList()));
+                cellIds.setAll(c.getList().stream().map(Cell::getCellId).collect(Collectors.toList()));
             }
         });
     }
@@ -250,6 +247,7 @@ public class GraphModel {
         cellMap = FXCollections.observableHashMap();
         bindCellsId();
     }
+
     private static boolean isEdgeExistent(String sourceId, String targetId, Edge e) {
         return e.source.getCellId().equals(sourceId) && e.target.getCellId().equals(targetId)
                 || e.target.getCellId().equals(sourceId) && e.source.getCellId().equals(targetId);

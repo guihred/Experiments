@@ -24,6 +24,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
+import ml.data.DataframeUtils;
 import ml.data.Question;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -305,9 +306,12 @@ public final class ReportHelper {
         String columns = params.getOrDefault("columns", "").toString();
         cols.removeIf(s -> s.matches(columns));
         dataframe.removeCol(cols.toArray(new String[0]));
+        if (params.containsKey("sort")) {
+            Object object = params.get("sort");
+            DataframeUtils.sort(dataframe, Objects.toString(object));
+        }
         List<String> o = JsonExtractor.accessList(params, "questions");
         List<Question> a = o.stream().map(t -> Question.parseQuestion(dataframe, t)).collect(Collectors.toList());
-
         for (Question question : a) {
             dataframe.filter(question.getColName(), question);
         }
@@ -317,7 +321,7 @@ public final class ReportHelper {
         dataframe.forEachRow(items2::add);
         if (items2.isEmpty()) {
             Map<String, Object> e = new LinkedHashMap<>();
-            finalHeaders.forEach(c -> e.put(c, "" + ""));
+            finalHeaders.forEach(c -> e.put(c, ""));
             items2.add(e);
         }
         ExcelService.getExcel(items2, outFile);

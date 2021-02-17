@@ -62,7 +62,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testKibanaApi() {
-        measureTime("KibanaApi.kibanaFullScan", () -> KibanaApi.kibanaFullScan("187.22.201.244"));
+        measureTime("KibanaApi.kibanaFullScan", () -> KibanaApi.kibanaFullScan("187.22.201.244", 1));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
                     }
                     String string = convert(l.get(0));
                     if (string.matches("\\d+\\.\\d+\\.\\d+\\.\\d+")) {
-                        Map<String, String> kibanaFullScan = KibanaApi.kibanaFullScan(string);
+                        Map<String, String> kibanaFullScan = KibanaApi.kibanaFullScan(string, 1);
                         List<String> kibanaScanned = kibanaFullScan.values().stream().collect(Collectors.toList());
                         kibanaScanned.add(1, "Guilherme");
                         return kibanaScanned;

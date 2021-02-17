@@ -170,7 +170,7 @@ public final class ConsultasHelper {
 
     private static boolean isNotBlocked(Integer days, String ip) {
         if (ip.matches(WhoIsScanner.IP_REGEX)) {
-            Map<String, String> blocked = KibanaApi.makeKibanaSearch("policiesQuery.json", ip, days, "key");
+            Map<String, String> blocked = KibanaApi.makeKibanaSearch("policiesQuery.json", days, ip, "key");
             return blocked.values().stream().noneMatch(s -> s.contains("block"));
         }
         return true;

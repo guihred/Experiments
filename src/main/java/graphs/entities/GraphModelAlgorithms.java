@@ -1,5 +1,7 @@
 package graphs.entities;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -7,9 +9,11 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import ml.graph.ColorPattern;
 import org.slf4j.Logger;
 import utils.DisjSets;
 import utils.ImageFXUtils;
+import utils.SimpleSummary;
 import utils.ex.HasLogging;
 
 public final class GraphModelAlgorithms {
@@ -139,41 +143,43 @@ public final class GraphModelAlgorithms {
         return mst;
     }
 
-    public static double[] pageRank(List<Cell> allCells, List<Edge> allEdges) {
-        double[] pageRank = new double[allCells.size()];
-        double[] pageRank2 = new double[allCells.size()];
-        Arrays.fill(pageRank, 1. / allCells.size());
+    public static BigDecimal[] pageRank(List<Cell> allCells, List<Edge> allEdges) {
+        BigDecimal[] pageRank = new BigDecimal[allCells.size()];
+        BigDecimal[] pageRank2 = new BigDecimal[allCells.size()];
+        BigDecimal full = BigDecimal.ONE.divide(BigDecimal.valueOf(allCells.size()), MathContext.DECIMAL32);
+        Arrays.fill(pageRank, full);
         for (int k = 0; k < 2; k++) {
             for (int i = 0; i < pageRank.length; i++) {
                 Cell cell = allCells.get(i);
                 List<Edge> incomingEdges = incomingEdges(cell, allEdges);
-                pageRank2[i] = 0;
+                pageRank2[i] = BigDecimal.ZERO;
                 if (incomingEdges.isEmpty()) {
                     pageRank2[i] = pageRank[i];
                 }
                 for (int j = 0; j < incomingEdges.size(); j++) {
                     Edge edge = incomingEdges.get(j);
                     int indexOf = allCells.indexOf(edge.source);
-                    double e = pageRank[indexOf];
+                    BigDecimal e = pageRank[indexOf];
                     long edgesNumber = edgesNumber(edge.source, allEdges);
-                    pageRank2[i] += e / edgesNumber;
+                    pageRank2[i] = pageRank2[i].add(e.divide(BigDecimal.valueOf(edgesNumber), MathContext.DECIMAL32));
                 }
 
             }
             pageRank = pageRank2;
         }
-        Map<String, Double> cellMap = new HashMap<>();
+
+        SimpleSummary<BigDecimal> summary = Stream.of(pageRank).collect(new SimpleSummary<>());
+        Map<String, BigDecimal> cellMap = new HashMap<>();
         for (int i = 0; i < pageRank.length; i++) {
             Cell cell = allCells.get(i);
             cellMap.put(cell.getCellId(), pageRank[i]);
-
-            cell.addText(String.format(Locale.US, "%.9f", pageRank[i]));
+            BigDecimal value = pageRank[i];
+            cell.setColor(ColorPattern.HUE.getColorForValue(value, summary.getMin(), summary.getMax()));
+            cell.addText("" + value);
         }
-        double[] rank = pageRank;
-        String orderedPageRank = IntStream.range(0, pageRank.length)
-                .boxed().sorted(Comparator.comparing(e -> -rank[e]))
-                .map(allCells::get).map(Cell::getCellId)
-                .collect(Collectors.joining("\n\t", "\n\t", ""));
+        BigDecimal[] rank = pageRank;
+        String orderedPageRank = IntStream.range(0, pageRank.length).boxed().sorted(Comparator.comparing(e -> rank[e]))
+                .map(allCells::get).map(Cell::getCellId).collect(Collectors.joining("\n\t", "\n\t", ""));
 
         LOG.info("ORDERED PAGE RANK = {}", orderedPageRank);
 

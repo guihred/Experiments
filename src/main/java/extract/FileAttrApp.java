@@ -18,6 +18,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
@@ -61,6 +62,7 @@ public class FileAttrApp extends Application {
 
         PieChart pieChart = new PieChart();
         SplitPane splitPane = new SplitPane(root.build(), pieChart);
+        VBox.setVgrow(splitPane, Priority.ALWAYS);
         splitPane.setDividerPositions(1. / 5);
         pieChart.setData(pieData);
         pieChart.setTitle("Directory Files");

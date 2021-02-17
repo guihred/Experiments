@@ -1,11 +1,14 @@
 package graphs.entities;
 
 import java.util.Objects;
+import java.util.function.ToDoubleFunction;
 import javafx.beans.NamedArg;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -46,10 +49,13 @@ public class Edge extends Group implements Comparable<Edge> {
         line = new Line();
         line.fillProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
         line.strokeProperty().bind(Bindings.when(selected).then(Color.RED).otherwise(Color.BLACK));
-        line.startXProperty().bind(source.layoutXProperty().add(source.getBoundsInParent().getWidth() / 2.0));
-        line.startYProperty().bind(source.layoutYProperty().add(source.getBoundsInParent().getHeight() / 2.0));
-        line.endXProperty().bind(target.layoutXProperty().add(target.getBoundsInParent().getWidth() / 2.0));
-        line.endYProperty().bind(target.layoutYProperty().add(target.getBoundsInParent().getHeight() / 2.0));
+        line.startXProperty()
+                .bind(source.layoutXProperty().add(half(source.boundsInParentProperty(), Bounds::getWidth)));
+        line.startYProperty()
+                .bind(source.layoutYProperty().add(half(source.boundsInParentProperty(), Bounds::getHeight)));
+        line.endXProperty().bind(target.layoutXProperty().add(half(target.boundsInParentProperty(), Bounds::getWidth)));
+        line.endYProperty()
+                .bind(target.layoutYProperty().add(half(target.boundsInParentProperty(), Bounds::getHeight)));
 
         getChildren().add(line);
         final double halfway = 5. / 11;
@@ -141,6 +147,10 @@ public class Edge extends Group implements Comparable<Edge> {
     @Override
     public String toString() {
         return source + "->" + target + "(" + valor + ")";
+    }
+
+    private static DoubleBinding half(ReadOnlyObjectProperty<Bounds> bounds, ToDoubleFunction<Bounds> b) {
+        return Bindings.createDoubleBinding(() -> b.applyAsDouble(bounds.get()) / 2.0, bounds);
     }
 
 }

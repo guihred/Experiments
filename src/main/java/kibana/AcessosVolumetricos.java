@@ -27,7 +27,7 @@ public class AcessosVolumetricos {
 
     public static void getVolumetria(String queryFile, String result) {
         List<Map<String, String>> destinationSearch =
-                JsonExtractor.remap(KibanaApi.makeKibanaSearch(queryFile, "*", 1, "key", "value"));
+                JsonExtractor.remap(KibanaApi.makeKibanaSearch(queryFile, 1, "*", "key", "value"));
         DataframeML dataframeML = new DataframeML();
         destinationSearch.forEach(dataframeML::add);
 

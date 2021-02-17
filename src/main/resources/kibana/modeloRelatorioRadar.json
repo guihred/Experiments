@@ -117,6 +117,7 @@
                 "action":"ec.activity",
                 "error":"event.cat.name"
             },
+            "sort":"OS",
             "questions":[
                 "user.dst not empty",
                 "country.src != BR",

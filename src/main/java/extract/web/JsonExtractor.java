@@ -41,12 +41,30 @@ public final class JsonExtractor {
                 return ob;
             }, o, o);
         }
+
         return cl.cast(o);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> List<T> accessList(Object root, Object... param) {
-        return access(root, List.class, param);
+        Object o = root;
+        for (Object object : param) {
+            o = FunctionEx.apply(ob -> {
+                if (object instanceof String) {
+                    return ((Map<?, ?>) ob).get(object);
+                }
+                if (object instanceof Integer) {
+                    return ((List<?>) ob).get(((Integer) object).intValue());
+                }
+                return ob;
+            }, o, o);
+        }
+        if (List.class.isInstance(o)) {
+            return List.class.cast(o);
+        }
+        List<T> arrayList = new ArrayList<>();
+        arrayList.add((T) o);
+        return arrayList;
     }
 
     @SuppressWarnings("unchecked")

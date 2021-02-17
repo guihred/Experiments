@@ -22,11 +22,24 @@ public class ProcessScan {
     public static List<Map<String, String>> scanCurrentTasks() {
         List<String> processes = ConsoleUtils
                 .executeInConsoleInfo(
-                        "wmic process get Name,ProcessId,ParentProcessId,SessionId,CommandLine /FORMAT:csv");
+                        "wmic process get Name,ProcessId,ParentProcessId,SessionId,CommandLine,Caption"
+                                + ",CreationClassName,CreationDate,CSCreationClassName,CSName"
+                                + ",Description,ExecutablePath,ExecutionState,Handle,HandleCount"
+                                + ",InstallDate,KernelModeTime,MaximumWorkingSetSize"
+                                + ",MinimumWorkingSetSize,OSCreationClassName,OSName,OtherOperationCount"
+                                + ",OtherTransferCount,PageFaults,PageFileUsage,ParentProcessId"
+                                + ",PeakPageFileUsage,PeakVirtualSize,PeakWorkingSetSize,Priority"
+                                + ",PrivatePageCount,ProcessId,QuotaNonPagedPoolUsage"
+                                + ",QuotaPagedPoolUsage,QuotaPeakNonPagedPoolUsage,QuotaPeakPagedPoolUsage"
+                                + ",ReadOperationCount,ReadTransferCount,SessionId,Status"
+                                + ",TerminationDate,ThreadCount,UserModeTime,VirtualSize"
+                                + ",WindowsVersion,WorkingSetSize,WriteOperationCount,WriteTransferCount"
+                                + " /FORMAT:csv");
 //        Node,Name,ParentProcessId,ProcessId,SessionId
         List<String> title = new ArrayList<>();
         return processes.stream().map(e -> Stream.of(e.trim().split(",")).collect(Collectors.toList()))
-            .map(key -> createMap(title, key)).filter(e -> !e.isEmpty()).collect(Collectors.toList());
+                .map(key -> createMap(title, key)).filter(e -> !e.isEmpty()).peek(s -> LOG.info("{}", s.values()))
+                .collect(Collectors.toList());
     }
 
     public static List<Map<String, String>> scanNetstats() {

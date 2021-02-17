@@ -67,7 +67,11 @@ public class DataframeExplorer extends ExplorerVariables implements HasLogging {
                 .onKey(KeyCode.DELETE, col -> {
                     columns.remove(col);
                     getDataframe().removeCol(col.getKey());
-                }).addContextMenu("_Split", e -> splitByColumn()).addContextMenu("Add Mapping",
+                }).addContextMenu("Spli_t", e -> splitByColumn())
+                .addContextMenu("_Sort By",
+                        e -> RunnableEx.runIf(columnsList.getSelectionModel().getSelectedItem(),
+                                item -> DataframeUtils.sort(getDataframe(), item.getKey())))
+                .addContextMenu("Add _Mapping",
                         e0 -> Mapping.showDialog(barChart, columnsList.getSelectionModel().getSelectedItems().stream()
                                 .map(Entry<String, DataframeStatisticAccumulator>::getKey).toArray(String[]::new),
                                 getDataframe(), this::addStats));
@@ -223,9 +227,8 @@ public class DataframeExplorer extends ExplorerVariables implements HasLogging {
     }
 
     private void splitByColumn() {
-        Entry<String, DataframeStatisticAccumulator> selectedItem = columnsList.getSelectionModel().getSelectedItem();
-        int indexOf = getDataframe().cols().indexOf(selectedItem.getKey());
-        CSVUtils.splitFile(getDataframe().getFile(), indexOf);
+        RunnableEx.runIf(columnsList.getSelectionModel().getSelectedItem(),
+                s -> CSVUtils.splitFile(getDataframe().getFile(), getDataframe().cols().indexOf(s.getKey())));
     }
 
     private void toggleQuestion(Question t) {

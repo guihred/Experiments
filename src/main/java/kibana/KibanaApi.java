@@ -72,8 +72,7 @@ public class KibanaApi {
                 // .filter(StringUtils::isNumeric)
                 .collect(Collectors.toList());
         String[] messages = message.split("Audit trail record BEGIN");
-        return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(regex, l)))
-                .distinct()
+        return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(regex, l))).distinct()
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s,
                         (t, u) -> getFirstMatch(suppliedCredential, t, u)));
     }
@@ -102,9 +101,6 @@ public class KibanaApi {
                 "não");
     }
 
-    public static Map<String, String> kibanaFullScan(String query) {
-        return kibanaFullScan(query, 1, null);
-    }
 
     public static Map<String, String> kibanaFullScan(String query, int days) {
         return kibanaFullScan(query, days, null);
@@ -142,47 +138,44 @@ public class KibanaApi {
 
     public static Map<String, String> makeKibanaSearch(File file, int days, String[] query, String... params) {
         return SupplierEx.getHandle(() -> {
-            File outFile = newJsonFile(removeExtension(file) + Stream.of(query).collect(Collectors.joining()) + days);
-            if (JsonExtractor.isNotRecentFile(outFile)) {
-                String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
-                String lte = Objects.toString(Instant.now().toEpochMilli());
-                RunnableEx
-                        .make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL,
-                                getContent(file, Stream.concat(Stream.of(query), Stream.of(gte, lte)).toArray()),
-                                outFile), e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage()))
-                        .run();
-            }
+            File outFile = searchIfDoesNotExist(file, days, query);
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
     }
 
     public static Map<String, String> makeKibanaSearch(String file, int days, Map<String, String> search,
             String... params) {
-        return makeNewKibanaSearch(ResourceFXUtils.toFile(KIBANA_FOLDER + file), days, search, params);
+        return makeNewKibanaSearch(kibanaFile(file), days, search, params);
+    }
+
+    public static Map<String, String> makeKibanaSearch(String file, int days, String query, String... params) {
+        return makeKibanaSearch(kibanaFile(file), days, query, params);
     }
 
     public static Map<String, String> makeKibanaSearch(String file, int days, String[] query, String... params) {
 
-        return makeKibanaSearch(ResourceFXUtils.toFile(KIBANA_FOLDER + file), days, query, params);
+        return makeKibanaSearch(kibanaFile(file), days, query, params);
     }
 
-    public static Map<String, String> makeKibanaSearch(String file, String query, int days, String... params) {
-        return makeKibanaSearch(ResourceFXUtils.toFile(KIBANA_FOLDER + file), days, query, params);
+    public static Map<String, Object> makeKibanaSearchObj(File file, int days, String[] query, String... params) {
+        return SupplierEx.getHandle(() -> {
+            File outFile = searchIfDoesNotExist(file, days, query);
+            return JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
+        }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
+    }
+
+    public static Map<String, Object> makeKibanaSearchObj(String file, int days, String query, String... params) {
+        return makeKibanaSearchObj(kibanaFile(file), days, new String[] { query }, params);
+    }
+
+    public static Map<String, Object> makeKibanaSearchObj(String file, int days, String[] query, String... params) {
+        return makeKibanaSearchObj(kibanaFile(file), days, query, params);
     }
 
     public static Map<String, String> makeNewKibanaSearch(File file, int days, Map<String, String> search,
             String... params) {
         return SupplierEx.get(() -> {
-            String values = search.values().stream().collect(Collectors.joining());
-            File outFile = newJsonFile(removeExtension(file) + values + days);
-            if (JsonExtractor.isNotRecentFile(outFile)) {
-                String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
-                String lte = Objects.toString(Instant.now().toEpochMilli());
-                String keywords = convertSearchKeywords(search);
-                String content = getContent(file, keywords, gte, lte);
-                RunnableEx.make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, content, outFile),
-                        e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
-            }
+            File outFile = newSearch(file, days, search);
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
         }, new HashMap<>());
     }
@@ -198,54 +191,58 @@ public class KibanaApi {
                 () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry", "Descrição"));
         String pattern = CIDRUtils.addressToPattern(ip);
         fullScan.put("WAF_Policy", () -> displayDistinct(
-                makeKibanaSearch("wafQuery.json", pattern, days, "action", "policy-name", "alert.description")));
+                makeKibanaSearch("wafQuery.json", days, pattern, "action", "policy-name", "alert.description")));
         fullScan.put("PaloAlto_Threat", () -> {
             if (CIDRUtils.isVPNNetwork(ip)) {
-                Map<String, String> userQuery = makeKibanaSearch("userQuery.json", ip, days, valueCol, "key");
-                userQuery.computeIfPresent(valueCol,
-                        (k, v) -> Stream.of(v.split("\n"))
-                                .map(s -> DateFormatUtils.format("dd/MM/yy HH:mm", StringSigaUtils.toLong(s)))
-                                .collect(Collectors.joining("\n")));
+                Map<String, Object> userQuery =
+                        makeKibanaSearchObj("userQuery.json", days, new String[] { ip }, key, valueCol);
+                userQuery.computeIfPresent(valueCol, (k, v) -> {
+                    List<String> collect = JsonExtractor.<Number>accessList(v).stream()
+                            .map(s -> DateFormatUtils.format("dd/MM/yy HH:mm", s.longValue()))
+                            .collect(Collectors.toList());
+                    return group(collect, 2);
+
+                });
                 return displayDistinct(userQuery);
             }
-
-            return displayDistinct(makeKibanaSearch("threatQuery.json", ip, days, key));
+            return displayDistinct(makeKibanaSearch("threatQuery.json", days, ip, key));
         });
         fullScan.put("TOP_FW", () -> {
-            Map<String, String> destinationSearch = makeKibanaSearch("destinationQuery.json", ip, days, key, valueCol);
-            convertToBytes(valueCol, destinationSearch);
-            destinationSearch.computeIfPresent(key, (k, v) -> Stream.of(v.split("\n")).map(WHOIS_SCANNER::reverseDNS)
-                    .collect(Collectors.joining("\n")));
-            return displayDistinct(destinationSearch).replaceAll("^.+\t\n", "");
+            Map<String, Object> destinationSearch =
+                    makeKibanaSearchObj("destinationQuery.json", days, ip, key, valueCol);
+            destinationSearch.computeIfPresent(key, (k, v) -> JsonExtractor.<String>accessList(v).stream()
+                    .map(WHOIS_SCANNER::reverseDNS).collect(Collectors.joining("\n")));
+            convertToBytes(destinationSearch, valueCol);
+            return displayDistinct(destinationSearch);
         });
         fullScan.put("TOP_WEB",
-                () -> displayDistinct(makeKibanaSearch("acessosQuery.json", pattern, days, key, "doc_count")));
+                () -> displayDistinct(makeKibanaSearch("acessosQuery.json", days, pattern, key, "doc_count")));
         fullScan.put("Ports", () -> {
-            Map<String, String> destinationPort =
-                    makeKibanaSearch("destinationPortQuery.json", days, new String[] { ip, ip }, key, valueCol);
+            Map<String, Object> destinationPort =
+                    makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { ip, ip }, key, valueCol);
             destinationPort.computeIfPresent(key,
-                    (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::toInteger).filter(i -> i != 0)
+                    (k, v) -> JsonExtractor.<Integer>accessList(v).stream().filter(i -> i != 0)
                             .map(PortServices::getServiceByPort)
                             .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription())
                             .collect(Collectors.joining("\n")));
-            convertToBytes(valueCol, destinationPort);
+            convertToBytes(destinationPort, valueCol);
             return displayDistinct(destinationPort);
         });
         fullScan.put("Acesso", () -> {
-            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", ip, days, valueCol);
+            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", days, ip, valueCol);
             trafficSearch.computeIfPresent(valueCol,
                     (k, v) -> Stream.of(v.split("\n"))
                             .map(i -> DateFormatUtils.format("dd/MM/yyyy", StringSigaUtils.toLong(i))).distinct()
-                            .collect(Collectors.joining("–")));
+                            .collect(Collectors.joining(" – ")));
             return displayDistinct(trafficSearch);
         });
         fullScan.put("Bytes_Received", () -> {
-            Map<String, String> totalBytesQuery = makeKibanaSearch("totalBytesQuery.json", ip, days, valueCol);
+            Map<String, Object> totalBytesQuery = makeKibanaSearchObj("totalBytesQuery.json", days, ip, valueCol);
             convertToStats(valueCol, totalBytesQuery);
             return displayDistinct(totalBytesQuery);
         });
         fullScan.put("Bytes_Sent", () -> {
-            Map<String, String> totalBytesSent = makeKibanaSearch("paloAltoQuery.json", ip, days, valueCol);
+            Map<String, Object> totalBytesSent = makeKibanaSearchObj("paloAltoQuery.json", days, ip, valueCol);
             convertToStats(valueCol, totalBytesSent);
             return display(totalBytesSent);
         });
@@ -292,22 +289,21 @@ public class KibanaApi {
         });
     }
 
-    private static void convertToBytes(String valueCol, Map<String, String> destinationSearch) {
-        destinationSearch.computeIfPresent(valueCol,
-                (k, v) -> Stream.of(v.split("\n")).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
+    private static void convertToBytes(Map<String, Object> destinationSearch, String valueCol) {
+        destinationSearch.computeIfPresent(valueCol, (k, v) -> JsonExtractor.accessList(v).stream()
+                .map(StringSigaUtils::toLong).map(StringSigaUtils::getFileSize).collect(Collectors.joining("\n")));
     }
 
-    private static void convertToStats(String valueCol, Map<String, String> destinationSearch) {
+    private static void convertToStats(String valueCol, Map<String, Object> destinationSearch) {
         destinationSearch.computeIfPresent(valueCol, (k, v) -> {
-            String[] lines = v.split("\n");
-            DoubleSummaryStatistics summaryStatistics =
-                    Stream.of(lines).skip(1).mapToDouble(StringSigaUtils::toDouble).summaryStatistics();
-            if (summaryStatistics.getCount() == 0) {
+            DoubleSummaryStatistics stats = JsonExtractor.<Integer>accessList(v).stream().skip(1)
+                    .mapToDouble(StringSigaUtils::toDouble).summaryStatistics();
+            if (stats.getCount() == 0) {
                 return "";
             }
-            String min = StringSigaUtils.getFileSize(summaryStatistics.getAverage());
-            String max = StringSigaUtils.getFileSize(summaryStatistics.getMax());
-            String last = StringSigaUtils.getFileSize(summaryStatistics.getSum());
+            String min = StringSigaUtils.getFileSize(stats.getAverage());
+            String max = StringSigaUtils.getFileSize(stats.getMax());
+            String last = StringSigaUtils.getFileSize(stats.getSum());
             return String.format("%s (%s a %s)", last, min, max);
         });
 
@@ -333,17 +329,18 @@ public class KibanaApi {
     }
 
     private static <T> List<List<String>> getFieldList(Map<String, T> ob) {
-        return ob.values().stream().map(StringSigaUtils::toStringSpecial).map(
-                s -> Stream.of(s.split("\n")).map(m -> StringUtils.abbreviate(m, 100)).collect(Collectors.toList()))
+        return ob.values().stream().map(t -> {
+            if (t instanceof List) {
+                return ((List<?>) t).stream().map(StringSigaUtils::toStringSpecial).collect(Collectors.joining("\n"));
+            }
+            return StringSigaUtils.toStringSpecial(t);
+        }).map(s -> Stream.of(s.split("\n")).map(m -> StringUtils.abbreviate(m, 100)).collect(Collectors.toList()))
                 .collect(Collectors.toList());
     }
 
     private static String getFirstMatch(String suppliedCredential, String t, String u) {
-        String orElse = Stream.of(t, u).filter(Objects::nonNull)
-                .min(Comparator
-                        .comparing(s -> StringSigaUtils.matches(s, suppliedCredential).isEmpty()))
-                .orElse(null);
-        return orElse;
+        return Stream.of(t, u).filter(Objects::nonNull)
+                .min(Comparator.comparing(s -> StringSigaUtils.matches(s, suppliedCredential).isEmpty())).orElse(null);
     }
 
     private static String getWhoField(String regex, String s) {
@@ -355,8 +352,46 @@ public class KibanaApi {
                 replacement);
     }
 
+    private static String group(List<String> collect, final int d) {
+        return IntStream
+                .range(0, collect.size() / d).mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size())
+                        .mapToObj(j -> collect.get(j)).collect(Collectors.joining("\t")))
+                .collect(Collectors.joining("\n"));
+    }
+
+    private static File kibanaFile(String file) {
+        return ResourceFXUtils.toFile(KIBANA_FOLDER + file);
+    }
+
+    private static File newSearch(File file, int days, Map<String, String> search) {
+        String values = search.values().stream().collect(Collectors.joining());
+        File outFile = newJsonFile(removeExtension(file) + values + days);
+        if (JsonExtractor.isNotRecentFile(outFile)) {
+            String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
+            String lte = Objects.toString(Instant.now().toEpochMilli());
+            String keywords = convertSearchKeywords(search);
+            String content = getContent(file, keywords, gte, lte);
+            RunnableEx.make(() -> getFromURL(ELASTICSEARCH_MSEARCH_URL, content, outFile),
+                    e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
+        }
+        return outFile;
+    }
+
     private static String removeExtension(File file) {
         return file.getName().replaceAll("\\.json", "");
+    }
+
+    private static File searchIfDoesNotExist(File file, int days, String[] query) {
+        File outFile = newJsonFile(removeExtension(file) + Stream.of(query).collect(Collectors.joining()) + days);
+        if (JsonExtractor.isNotRecentFile(outFile)) {
+            String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
+            String lte = Objects.toString(Instant.now().toEpochMilli());
+            RunnableEx.make(
+                    () -> getFromURL(ELASTICSEARCH_MSEARCH_URL,
+                            getContent(file, Stream.concat(Stream.of(query), Stream.of(gte, lte)).toArray()), outFile),
+                    e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
+        }
+        return outFile;
     }
 
     private static String urls(int days, String pattern) {

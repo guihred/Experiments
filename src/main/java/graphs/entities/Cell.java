@@ -11,6 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 
 public class Cell extends Pane {
@@ -37,8 +38,14 @@ public class Cell extends Pane {
 		parents.add(cell);
 	}
 
-	public void addText(String s) {
-		text.setText(cellId + "\n" + s);
+    public Cell addText(String s) {
+        if (StringUtils.isNotBlank(s)) {
+            if (text.getText().endsWith(s)) {
+                text.setText(text.getText().replace("\n" + s, ""));
+            }
+            text.setText(text.getText() + "\n" + s);
+        }
+        return this;
 	}
 
 	public ObjectProperty<Color> colorProperty() {
