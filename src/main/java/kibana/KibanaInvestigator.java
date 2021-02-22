@@ -59,11 +59,9 @@ public class KibanaInvestigator extends Application {
         Iterator<SimpleDoubleProperty> iterator = progresses.iterator();
         for (String ip : items2) {
             SimpleDoubleProperty progress = iterator.next();
-            progress.addListener(
-                    ob -> totalProgress.set(progresses.stream().mapToDouble(DoubleProperty::get).sum()));
+            progress.addListener(ob -> totalProgress.set(progresses.stream().mapToDouble(DoubleProperty::get).sum()));
             List<String> cols =
-                    commonTable.getColumns().stream().map(TableColumn::getText)
-                    .collect(Collectors.toList());
+                    commonTable.getColumns().stream().map(TableColumn::getText).collect(Collectors.toList());
             RunnableEx.runNewThread(
                     () -> KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem(), progress, cols),
                     ns -> CommonsFX.runInPlatform(() -> addToTable(items2, ns)));

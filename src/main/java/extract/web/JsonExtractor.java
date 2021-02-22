@@ -22,6 +22,7 @@ import utils.SimpleMap;
 import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
+import utils.ex.SupplierEx;
 
 public final class JsonExtractor {
 
@@ -293,7 +294,10 @@ public final class JsonExtractor {
         JsonNode rootNode = objectMapper.readTree(Files.newInputStream(file.toPath()));
         Map<String, Object> linkedHashMap = new LinkedHashMap<>();
         toObject(rootNode, 0, linkedHashMap, f);
-        return linkedHashMap;
+        List<String> fields = Arrays.asList(f);
+        return linkedHashMap.entrySet().stream().sorted(Comparator.comparing(fi -> fields.indexOf(fi.getKey())))
+                .collect(Collectors.toMap(Entry<String, Object>::getKey, Entry<String, Object>::getValue,
+                        SupplierEx::nonNull, LinkedHashMap::new));
     }
 
     public static Object toObjectFromJsonContent(String fileContent, String... a) throws IOException {

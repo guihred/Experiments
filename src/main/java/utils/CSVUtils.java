@@ -169,7 +169,7 @@ public class CSVUtils {
 
     public static void fixEmptyLine(List<String> header, List<String> line2, int size) {
         if (header.size() != line2.size()) {
-            LOGGER.error("ERROR FIELDS COUNT line {}", size);
+            LOGGER.error("ERROR FIELDS COUNT line {}", size + 1);
             createNullRow(header, line2);
         }
     }

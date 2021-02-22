@@ -101,7 +101,6 @@ public class KibanaApi {
                 "não");
     }
 
-
     public static Map<String, String> kibanaFullScan(String query, int days) {
         return kibanaFullScan(query, days, null);
 
@@ -201,7 +200,6 @@ public class KibanaApi {
                             .map(s -> DateFormatUtils.format("dd/MM/yy HH:mm", s.longValue()))
                             .collect(Collectors.toList());
                     return group(collect, 2);
-
                 });
                 return displayDistinct(userQuery);
             }
@@ -296,7 +294,7 @@ public class KibanaApi {
 
     private static void convertToStats(String valueCol, Map<String, Object> destinationSearch) {
         destinationSearch.computeIfPresent(valueCol, (k, v) -> {
-            DoubleSummaryStatistics stats = JsonExtractor.<Integer>accessList(v).stream().skip(1)
+            DoubleSummaryStatistics stats = JsonExtractor.<Number>accessList(v).stream().skip(1)
                     .mapToDouble(StringSigaUtils::toDouble).summaryStatistics();
             if (stats.getCount() == 0) {
                 return "";
@@ -355,7 +353,8 @@ public class KibanaApi {
     private static String group(List<String> collect, final int d) {
         return IntStream
                 .range(0, collect.size() / d).mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size())
-                        .mapToObj(j -> collect.get(j)).collect(Collectors.joining("\t")))
+                        .mapToObj(j -> collect.get(j)).flatMap(s -> Stream.of(s.split(" "))).distinct()
+                        .collect(Collectors.joining(" ")))
                 .collect(Collectors.joining("\n"));
     }
 

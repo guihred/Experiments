@@ -27,6 +27,10 @@ public final class HashVerifier {
         }
     }
 
+    public static String getMD5Hash(String path) {
+        return DigestUtils.md5Hex(path);
+    }
+
     public static String getSha1Hash(Path path) throws IOException {
         try (InputStream is = Files.newInputStream(path)) {
             return DigestUtils.sha1Hex(is);
@@ -43,18 +47,16 @@ public final class HashVerifier {
         return DigestUtils.sha256Hex(data);
     }
 
-
-    public static List<Entry<Path, Path>> listNotRepeatedFiles(File file,File file2) {
+    public static List<Entry<Path, Path>> listNotRepeatedFiles(File file, File file2) {
         ObservableList<Entry<Path, Path>> notRepeatedEntries = FXCollections.observableArrayList();
         Map<String, Path> fileMap = new ConcurrentHashMap<>();
-        
+
         FileTreeWalker.getPathByExtensionAsync(file, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
                 ".mp3");
         FileTreeWalker.getPathByExtensionAsync(file2, path -> addToNotRepeated(notRepeatedEntries, fileMap, path),
                 ".mp3");
         return notRepeatedEntries;
     }
-
 
     public static List<Entry<Path, Path>> listRepeatedFiles(File file) {
         List<Entry<Path, Path>> repeatedEntries = new ArrayList<>();
@@ -74,23 +76,22 @@ public final class HashVerifier {
     }
 
     private static void addToNotRepeated(List<Entry<Path, Path>> notRepeatedEntries, Map<String, Path> fileMap,
-            Path path)
-            throws IOException {
+            Path path) throws IOException {
         String sha256Hash = getSha256Hash(path);
         Path put = fileMap.put(sha256Hash, path);
         if (put == null) {
             String name = name(path);
             fileMap.values().stream().filter(e -> name.equals(name(e)) && !path.equals(e)).findFirst()
                     .ifPresent(orElse -> {
-                Entry<Path, Path> e = new AbstractMap.SimpleEntry<>(orElse, path);
-                LOG.info("{}", e);
-                notRepeatedEntries.add(e);
-            });
+                        Entry<Path, Path> e = new AbstractMap.SimpleEntry<>(orElse, path);
+                        LOG.info("{}", e);
+                        notRepeatedEntries.add(e);
+                    });
         }
     }
 
     private static String name(Path path) {
-        return path.getName(path.getNameCount()-1).toString();
+        return path.getName(path.getNameCount() - 1).toString();
     }
 
 }

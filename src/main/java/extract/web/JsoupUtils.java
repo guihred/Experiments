@@ -32,6 +32,10 @@ public final class JsoupUtils {
     private JsoupUtils() {
     }
 
+    public static Document asDocument(String html) {
+        return Jsoup.parse(html);
+    }
+
     public static String displayAllElements(File file) throws IOException {
         String html = Files.toString(file, StandardCharsets.UTF_8);
         Document doc = Jsoup.parse(html);

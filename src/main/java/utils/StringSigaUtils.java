@@ -39,6 +39,7 @@ public class StringSigaUtils extends StringUtils {
     public static boolean anyMatches(String line, String classRegex) {
         return Pattern.compile(classRegex).matcher(line).find();
     }
+
     public static Map<String, String> asMap(String line) {
         return asMap(line, ":");
     }
@@ -48,6 +49,7 @@ public class StringSigaUtils extends StringUtils {
                         s -> Stream.of(s.split(separator)).skip(1).collect(Collectors.joining(separator)),
                         (u, v) -> u + "\n" + v));
     }
+
     public static String changeCase(String str) {
         if (isBlank(str)) {
             return "";
@@ -57,6 +59,7 @@ public class StringSigaUtils extends StringUtils {
         }
         return str.substring(0, 1).toLowerCase() + str.substring(1);
     }
+
     public static String codificar(String nome) {
         return getIgnore(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
@@ -86,7 +89,6 @@ public class StringSigaUtils extends StringUtils {
         }
         return new String(bytes, StandardCharsets.UTF_8);
     }
-
     public static String fixEncoding(String latin1, Charset initial, Charset finalCharset) {
         if (latin1 == null) {
             return null;
@@ -173,7 +175,7 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String getFileSize(Number sizeInBytes) {
-        return SupplierEx.getIgnore(() -> getFileSize(sizeInBytes.longValue()), sizeInBytes+"");
+        return SupplierEx.getIgnore(() -> getFileSize(sizeInBytes.longValue()), sizeInBytes + "");
     }
 
     public static String getFileSize(String sizeInBytes) {
@@ -218,6 +220,7 @@ public class StringSigaUtils extends StringUtils {
         return split(Objects.toString(nome, ""), "[\n\r]+");
     }
 
+
     public static List<String> matches(String line, String classRegex) {
         Matcher matcher = Pattern.compile(classRegex).matcher(line);
         List<String> linkedList = new LinkedList<>();
@@ -226,7 +229,6 @@ public class StringSigaUtils extends StringUtils {
         }
         return linkedList;
     }
-
 
     public static String putNumbers(List<String> map) {
         int orElse = map.stream().map(v -> Objects.toString(v, "")).mapToInt(String::length).max().orElse(0);
@@ -267,7 +269,7 @@ public class StringSigaUtils extends StringUtils {
         Pattern compile = Pattern.compile("</?[\\w\\-]+");
         Matcher matcher = compile.matcher(str);
         StringBuffer sb = new StringBuffer();
-        while(matcher.find()) {
+        while (matcher.find()) {
             String group = matcher.group(0);
             matcher.appendReplacement(sb, group.toLowerCase());
         }

@@ -45,6 +45,22 @@ public final class VirusTotalApi {
         return outFile;
     }
 
+    public static File getFilesInformation(String hash) throws IOException {
+        File outFile = newJsonFile(hash);
+        if (!outFile.exists()) {
+            getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
+        }
+        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES, LAST_ANALYSIS_STATS,
+                MALICIOUS_ATTR, "type_description", "tags", "type", "trid", "magic", "meaningful_name", "file_type",
+                "probability");
+        Matcher matcher = Pattern.compile(MALICIOUS_POSITIVE_REGEX).matcher(displayJsonFromFile);
+        if (matcher.find()) {
+            String group = matcher.group(1);
+            LOG.info("Malicious FILE {} {}", hash, group);
+        }
+        return outFile;
+    }
+
     public static Map<String, Object> getFilesInformation(String filename, String hash) throws IOException {
         File outFile = newJsonFile(filename);
         if (!outFile.exists()) {
