@@ -194,8 +194,8 @@ public abstract class AreaTool extends PaintTool {
 
     protected final void copyImage(PaintModel model, Image srcImage, WritableImage destImage) {
         Color backColor = model.getBackColor();
-        double width = srcImage.getWidth();
-        double height = srcImage.getHeight();
+        double width = Math.max(srcImage.getWidth(), 1);
+        double height = Math.max(srcImage.getHeight(), 1);
         if (destImage == null) {
             imageSelected = new WritableImage((int) width, (int) height);
         }

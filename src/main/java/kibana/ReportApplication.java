@@ -7,11 +7,9 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
@@ -120,22 +118,41 @@ public class ReportApplication extends Application {
 
         final double hoursInADay = 24.;
         int days = (int) Math.max(1., Math.ceil(StringSigaUtils.toInteger(params.get("\\$hour")) / hoursInADay));
+        String ipParam = params.get("\\$ip");
         if (JsonExtractor.accessMap(mapaSubstituicao, "params").containsKey("ip")) {
-            KibanaApi.kibanaFullScan(params.get("\\$ip"), days, progressIndicator.progressProperty())
-                    .forEach((k, v) -> params.put("\\$" + k, v));
+            for (String ip : ipParam.split("[, ]+")) {
+                KibanaApi.kibanaFullScan(ip, days, progressIndicator.progressProperty())
+                        .forEach((k, v) -> params.merge("\\$" + k, v, ReportApplication::mergeStrings));
+            }
         }
         if (mapaSubstituicao.containsKey("gerid")) {
-            LOG.info("GETTING GERID CREDENTIALS ");
-            String index = params.get("\\$index");
-            String s = " AND \\\"supplied credentials\\\"";
-            Map<String, String> makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip") + s, index, days);
-            if (makeKibanaSearch.isEmpty()) {
-                makeKibanaSearch = KibanaApi.getGeridCredencial(params.get("\\$ip"), index, days);
+            Set<String> credentialText = new LinkedHashSet<>();
+            for (String ipValue : ipParam.split("[, ]+")) {
+                LOG.info("GETTING GERID CREDENTIALS {}", ipValue);
+                String index = params.get("\\$index");
+                String s = " AND \\\"supplied credentials\\\"";
+                Map<String, String> credentialMap = KibanaApi.getGeridCredencial(ipValue + s, index, days);
+                if (credentialMap.isEmpty()) {
+                    credentialMap = KibanaApi.getGeridCredencial(ipValue, index, days);
+                }
+                List<String> collect = credentialMap.keySet().stream().collect(Collectors.toList());
+                params.merge("\\$orIps", ipValue, (o, n) -> mergeStrings(o, n, " OR "));
+                for (String credencial : collect) {
+                    Map<String, String> iPsByCredencial = KibanaApi.getIPsByCredencial(
+                            "\\\"" + credencial + "\\\" AND \\\"supplied credentials\\\"", index, days);
+                    credentialText.addAll(iPsByCredencial.values());
+                    String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
+                    params.merge("\\$otherIps", collect2, ReportApplication::mergeStrings);
+                    iPsByCredencial.keySet()
+                            .forEach(i -> params.merge("\\$orIps", i, (o, n) -> mergeStrings(o, n, " OR ")));
+
+                }
+
+                params.merge("\\$creds", credentialMap.keySet().stream().collect(Collectors.joining("\n")),
+                        ReportApplication::mergeStrings);
             }
-            params.put("\\$creds", makeKibanaSearch.keySet().stream().collect(Collectors.joining("\n")));
-            List<Object> textAsImage =
-                    makeKibanaSearch.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
-            ReportHelper.mergeImage(mapaSubstituicao, textAsImage);
+            ReportHelper.mergeImage(mapaSubstituicao,
+                    credentialText.stream().distinct().map(ReportHelper::textToImage).collect(Collectors.toList()));
         }
 
     }
@@ -145,7 +162,8 @@ public class ReportApplication extends Application {
         imageView.setFitWidth(500);
         imageView.setPreserveRatio(true);
         List<String> imageUrls = mapaSubstituicao.values().stream().flatMap(ReportHelper::objectList)
-                .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).collect(Collectors.toList());
+                .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).distinct()
+                .collect(Collectors.toList());
 
         SimpleListViewBuilder<String> urlsListView = new SimpleListViewBuilder<>();
         urlsListView.onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(v))))
@@ -155,8 +173,8 @@ public class ReportApplication extends Application {
                         Files.deleteIfExists(Paths.get(new URI(s)));
                     }
                     makeReportConsultasEditImages();
-                }).onKey(KeyCode.ENTER, t -> {
-                    imageUrls.remove(t);
+                }).onKey(KeyCode.SUBTRACT, t -> {
+                    removeImage(mapaSubstituicao, imageUrls, t);
                     if (imageUrls.isEmpty()) {
                         SimpleDialogBuilder.closeStage(imageView);
                         LOG.info("APPLYING MAP {}", mapaSubstituicao);
@@ -231,6 +249,31 @@ public class ReportApplication extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static String mergeStrings(String o, String n) {
+        return mergeStrings(o, n, "\n");
+    }
+
+    private static String mergeStrings(String o, String n, String delimiter) {
+        return Stream.of(o, n).flatMap(m -> Stream.of(m.split(delimiter))).distinct()
+                .collect(Collectors.joining(delimiter));
+    }
+
+    private static void removeImage(Map<String, Object> mapaSubstituicao, List<String> imageUrls, String t) {
+        Collection<Object> values = mapaSubstituicao.values();
+        for (Object e : values) {
+            if (e instanceof List) {
+                JsonExtractor
+                        .<Object>accessList(e).stream().filter(o -> o instanceof Image && Objects
+                                .equals(t, ClassReflectionUtils.invoke(o, "impl_getUrl")))
+                        .findFirst().ifPresent(o -> {
+                            int indexOf = JsonExtractor.<Object>accessList(e).indexOf(o);
+                            JsonExtractor.<Object>accessList(e).remove(indexOf);
+                            imageUrls.remove(t);
+                        });
+            }
+        }
     }
 
 }

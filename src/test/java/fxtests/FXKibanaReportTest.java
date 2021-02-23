@@ -112,9 +112,9 @@ public class FXKibanaReportTest extends AbstractTestExecution {
 
     @Test
     public void testWordIPbyGeridCredenciais() {
-        String credencial = "\\\"179.98.197.200\\\" AND \\\"supplied credentials\\\"";
+        String credencial = "\\\"22454126800\\\" AND \\\"supplied credentials\\\"";
         measureTime("KibanaApi.getGeridCredencial", () -> {
-            Map<String, String> geridCredencial = KibanaApi.getIPsByCredencial(credencial, "inss-*-prod-*", 1);
+            Map<String, String> geridCredencial = KibanaApi.getIPsByCredencial(credencial, "inss-*-prod-*", 4);
             geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
             getLogger().info("{}", geridCredencial.keySet());
             return geridCredencial;

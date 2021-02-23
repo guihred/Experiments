@@ -69,7 +69,17 @@ public final class ReportHelper {
             mapaSubstituicao.compute(key, (k, v) -> {
                 if (v instanceof List) {
                     List<?> list = (List<?>) v;
-                    return list.stream().map(e -> remapUncroppred(params, browser, e)).filter(Objects::nonNull)
+                    return list.stream().flatMap(e -> {
+                        if (StringUtils.isNotBlank(params.get("\\$ip"))) {
+                            return Stream.of(params.get("\\$ip").split("[, ]+")).filter(StringUtils::isNotBlank)
+                                    .map(s -> {
+                                        Map<String, String> linkedHashMap = new LinkedHashMap<>(params);
+                                        linkedHashMap.put("\\$ip", s);
+                                        return linkedHashMap;
+                                    }).map(pa -> remapUncroppred(pa, browser, e)).distinct();
+                        }
+                        return Stream.of(remapUncroppred(params, browser, e));
+                    }).filter(Objects::nonNull)
                             .peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
                             .collect(Collectors.toList());
                 }
@@ -146,6 +156,11 @@ public final class ReportHelper {
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
             RunnableEx.runNewThread(() -> finalizeReport(mapaSubstituicao, reportFile));
         }
+    }
+
+    public static List<String> presentParams(Map<String, String> params, Object v) {
+        String string = v.toString();
+        return params.keySet().stream().filter(k -> StringSigaUtils.anyMatches(string, k)).collect(Collectors.toList());
     }
 
     public static String replaceString(Map<String, String> params, Object v) {
