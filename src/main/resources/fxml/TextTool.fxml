@@ -24,12 +24,46 @@
 		<FXCollections fx:factory="observableHashMap" fx:id="maxMap" />
 	</fx:define>
 	<children>
-		<VBox>
+		<VBox fx:id="opts">
 			<children>
 				<VBox>
 					<children>
 						<Text fx:id="text0" text="Font" />
-						<ComboBox fx:id="fontFamily" id="fontFamily" value="Times New Roman">
+						<ComboBox fx:id="fontFamily" id="fontFamily" value="Times New Roman"/>
+						<Text text="Effect" />
+						<ComboBox fx:id="effects" promptText="None">
+							<converter>
+								<SimpleConverter name="class.simpleName" />
+							</converter>
+							<placeholder>
+								<Text text="None" />
+							</placeholder>
+							<items>
+								<FXCollections fx:factory="observableArrayList">
+									<Blend />
+									<Bloom threshold="1" />
+									<BoxBlur width="15" height="15" iterations="2" />
+									<ColorAdjust hue="1" saturation="360" brightness="1"
+										contrast="1" />
+									<ColorInput x="10" y="10" />
+									<DisplacementMap />
+									<DropShadow offsetX="10" offsetY="10" spread="1"
+										radius="10" width="10" height="10" />
+									<GaussianBlur />
+									<Glow level="1" />
+									<InnerShadow choke="1" width="10" height="10"
+										offsetX="10" offsetY="10" />
+									<Lighting specularConstant="1" surfaceScale="1" />
+									<MotionBlur angle="180" radius="5" />
+									<PerspectiveTransform ulx="400.0" uly="400.0"
+										urx="400.0" ury="400.0" lrx="400.0" lry="400.0" llx="400.0"
+										lly="400.0" />
+									<Reflection topOffset="5" bottomOpacity="1"
+										topOpacity="1" fraction="1" />
+									<SepiaTone />
+									<Shadow />
+								</FXCollections>
+							</items>
 						</ComboBox>
 					</children>
 				</VBox>
@@ -171,54 +205,16 @@
 		<VBox>
 			<children>
 				<Text text="Text" />
-				<TextArea fx:id="textArea" minWidth="200" prefHeight="150" />
+				<TextArea fx:id="textArea" minWidth="200" VBox.vgrow="ALWAYS" />
 			</children>
 		</VBox>
-		<VBox>
-			<children>
-				<Text text="Effect" />
-				<ComboBox fx:id="effects" promptText="None">
-					<converter>
-						<SimpleConverter name="class.simpleName" />
-					</converter>
-					<placeholder>
-						<Text text="None" />
-					</placeholder>
-					<items>
-						<FXCollections fx:factory="observableArrayList">
-							<Blend />
-							<Bloom threshold="1" />
-							<BoxBlur width="15" height="15" iterations="2" />
-							<ColorAdjust hue="1" saturation="360" brightness="1"
-								contrast="1" />
-							<ColorInput x="10" y="10" />
-							<DisplacementMap />
-							<DropShadow offsetX="10" offsetY="10" spread="1"
-								radius="10" width="10" height="10" />
-							<GaussianBlur />
-							<Glow level="1" />
-							<InnerShadow choke="1" width="10" height="10"
-								offsetX="10" offsetY="10" />
-							<Lighting specularConstant="1" surfaceScale="1" />
-							<MotionBlur angle="180" radius="5" />
-							<PerspectiveTransform ulx="400.0" uly="400.0"
-								urx="400.0" ury="400.0" lrx="400.0" lry="400.0" llx="400.0" lly="400.0" />
-							<Reflection topOffset="5" bottomOpacity="1"
-								topOpacity="1" fraction="1" />
-							<SepiaTone />
-							<Shadow />
-						</FXCollections>
-					</items>
-				</ComboBox>
-				<ScrollPane hbarPolicy="NEVER" minWidth="400">
-					<FlowPane fx:id="effectsOptions" minWidth="300" hgap="10">
-						<padding>
-							<Insets topRightBottomLeft="10" />
-						</padding>
-					</FlowPane>
-				</ScrollPane>
-			</children>
-		</VBox>
+
+		<FlowPane fx:id="effectsOptions" maxHeight="${opts.height}" HBox.hgrow="ALWAYS" orientation="VERTICAL"
+			minWidth="300" hgap="10">
+			<padding>
+				<Insets topRightBottomLeft="10" />
+			</padding>
+		</FlowPane>
 
 
 		<fx:define>

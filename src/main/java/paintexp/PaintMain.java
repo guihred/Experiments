@@ -63,9 +63,7 @@ public class PaintMain extends Application {
         root.setLeft(PaintHelper.buildToolBar(controller));
         root.setRight(PaintHelper.displayImageVersions(paintModel));
         CommonsFX.bind(paintModel.filenameProperty(), stage.titleProperty());
-        stage.setX(0);
         final int width = 900;
-
         Scene scene = new Scene(root, width, width);
         scene.addEventHandler(KeyEvent.ANY, controller::handleKeyBoard);
         stage.setScene(scene);

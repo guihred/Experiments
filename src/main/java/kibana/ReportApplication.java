@@ -126,26 +126,31 @@ public class ReportApplication extends Application {
             }
         }
         if (mapaSubstituicao.containsKey("gerid")) {
+            params.remove("\\$orIps");
+            params.remove("\\$otherIps");
+            params.remove("\\$creds");
             Set<String> credentialText = new LinkedHashSet<>();
             for (String ipValue : ipParam.split("[, ]+")) {
-                LOG.info("GETTING GERID CREDENTIALS {}", ipValue);
                 String index = params.get("\\$index");
-                String s = " AND \\\"supplied credentials\\\"";
-                Map<String, String> credentialMap = KibanaApi.getGeridCredencial(ipValue + s, index, days);
+                String authenticationSuccess = " AND \\\"AUTHENTICATION_SUCCESS\\\"";
+                Map<String, String> credentialMap =
+                        KibanaApi.getGeridCredencial(ipValue + authenticationSuccess, index, days);
                 if (credentialMap.isEmpty()) {
                     credentialMap = KibanaApi.getGeridCredencial(ipValue, index, days);
                 }
+                LOG.info("GETTING GERID CREDENTIALS {} {}", ipValue, credentialMap.keySet());
+                credentialText.addAll(credentialMap.values());
                 List<String> collect = credentialMap.keySet().stream().collect(Collectors.toList());
                 params.merge("\\$orIps", ipValue, (o, n) -> mergeStrings(o, n, " OR "));
                 for (String credencial : collect) {
                     Map<String, String> iPsByCredencial = KibanaApi.getIPsByCredencial(
-                            "\\\"" + credencial + "\\\" AND \\\"supplied credentials\\\"", index, days);
+                            "\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
                     credentialText.addAll(iPsByCredencial.values());
                     String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
                     params.merge("\\$otherIps", collect2, ReportApplication::mergeStrings);
                     iPsByCredencial.keySet()
                             .forEach(i -> params.merge("\\$orIps", i, (o, n) -> mergeStrings(o, n, " OR ")));
-
+                    LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
                 }
 
                 params.merge("\\$creds", credentialMap.keySet().stream().collect(Collectors.joining("\n")),
@@ -261,8 +266,8 @@ public class ReportApplication extends Application {
     }
 
     private static void removeImage(Map<String, Object> mapaSubstituicao, List<String> imageUrls, String t) {
-        Collection<Object> values = mapaSubstituicao.values();
-        for (Object e : values) {
+        imageUrls.remove(t);
+        for (Object e : mapaSubstituicao.values()) {
             if (e instanceof List) {
                 JsonExtractor
                         .<Object>accessList(e).stream().filter(o -> o instanceof Image && Objects
@@ -270,7 +275,6 @@ public class ReportApplication extends Application {
                         .findFirst().ifPresent(o -> {
                             int indexOf = JsonExtractor.<Object>accessList(e).indexOf(o);
                             JsonExtractor.<Object>accessList(e).remove(indexOf);
-                            imageUrls.remove(t);
                         });
             }
         }

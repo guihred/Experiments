@@ -12,7 +12,7 @@
         {
             "zoom":1.05,
             "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/b40d9100-d0a5-11e9-bffd-37ab21b02682?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'15e82d20-b915-11e9-bffd-37ab21b02682',key:dtpsistema,negate:!f,params:(query:portalatendimento,type:phrase),type:phrase,value:portalatendimento),query:(match:(dtpsistema:(query:portalatendimento,type:phrase))))),linked:!f,query:(language:lucene,query:'mdc.ip:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:3,direction:desc)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'4',params:(customLabel:'CPF%20Usu%C3%A1rio',field:mdc.cpf.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms),(enabled:!t,id:'5',params:(customLabel:Username,field:mdc.uid.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:5),schema:bucket,type:terms),(enabled:!t,id:'3',params:(customLabel:'IP%20de%20Origem',field:mdc.ip,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:3,direction:desc),totalFunc:sum),title:'%5BSistemas%5D%20%5BSatCentralVisaoInterne%5D%20Usu%C3%A1rios%20x%20N%C3%BAmero%20consultas',type:table))",
-            "name": "credenciais$ip",
+            "name": "credenciais$orIps",
             "width": 0.90,
             "height": 0.4,
             "x": 0,
@@ -22,7 +22,7 @@
         {
             "zoom":1.05,
             "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/a22f3940-4cef-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:lucene,query:''),uiState:(),vis:(aggs:!(),params:(expression:'.es(index%3Dinss-*-prod*,q%3D%22dtpsistema:portalatendimento%20AND%20mdc.ip:($orIps)%22,split%3Dmdc.ip:10).label(!'$1!',!'.*%3E.*:(.*)%3E.*!')',interval:auto),title:'%5BSistemas%5D%20%5BSatCentral%5D%20Timeline%20Endere%C3%A7o%20de%20Origem',type:timelion))",
-            "name": "timelineSatCentral$ip",
+            "name": "timelineSatCentral$orIps",
             "width": 1,
             "height": 1,
             "x": 0,
@@ -35,7 +35,7 @@
 		"Número de acessos concentrado em certas páginas",
 		{
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/feecd360-fa19-11e8-a078-93662b30045b?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:dtpcategoria,negate:!f,params:(query:access,type:phrase),type:phrase,value:access),query:(match:(dtpcategoria:(query:access,type:phrase))))),linked:!f,query:(language:lucene,query:'clientip:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:request.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:500),schema:bucket,type:terms),(enabled:!t,id:'3',params:(field:dtpsistema.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20WEB%5D%20TOP%20Request%20PATH',type:table))",
-			"name": "urls$ip",
+			"name": "urls$orIps",
 			"width": 1,
             "height": 0.4,
             "x": 0,
@@ -44,7 +44,7 @@
         "Padrão de acesso automatizado",
         {
             "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/09fbe670-fa19-11e8-a078-93662b30045b?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:kuery,query:''),uiState:(),vis:(aggs:!(),params:(expression:'.es(index%3D*apache-prod*,q%3D%22clientip:($orIps)%20AND%20(%20dtptype:nginx%20OR%20dtptype:apache%20OR%20dtptype:varnish)%22,split%3Ddtpsistema.keyword:5).label(!'$1!',!'.*%3E.*:(.*)%3E.*!')',interval:auto),title:'%5BAcesso%20Web%5D%20Top%20Aplica%C3%A7%C3%B5es%20por%20n%C3%BAmero%20de%20requisi%C3%A7%C3%B5es%20-%20Timeline',type:timelion))",
-            "name": "timeline$ip",
+            "name": "timeline$orIps",
             "width": 1,
             "height": 1,
             "x": 0,
@@ -53,7 +53,7 @@
         "Acessos a outros sistemas",
 		{
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/191e1a10-9e56-11e9-bffd-37ab21b02682?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:lucene,query:'clientip:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:dtpsistema.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:200),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20Web%5D%20Quantidade%20de%20Acessos%20por%20Sistema',type:table))",
-			"name": "sistemas$ip",
+			"name": "sistemas$orIps",
 			"width": 0.85,
             "height": 0.3,
             "x": 0,
@@ -78,8 +78,8 @@
 	],
 	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados ao $sistema",
     "Informar data de início/fim": "$Acesso",
-	"ips": "$ip $otherIps",
+	"ips": "$otherIps",
 	"Foi realizado o bloqueio temporário dos endereços no WAF.": "Foi realizado o bloqueio temporário dos endereços e de credenciais no WAF.",
 	"cred": "$creds",
-	"gerid": ["Uso de Credenciais pelo IP $ip"]
+	"gerid": ["Uso de Credenciais pelo IP $otherIps"]
 }

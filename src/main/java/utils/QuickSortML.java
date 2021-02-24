@@ -1,6 +1,9 @@
 package utils;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import javafx.scene.control.TableColumn;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,7 +55,14 @@ public class QuickSortML {
     public static <T> void sortMapList(List<Map<String, T>> ipItems2, String col, Boolean ascending) {
         Comparator<Map<String, T>> comparing = Comparator.comparing(m -> {
             String string = Objects.toString(m.get(col), "");
-            return StringUtils.isNumeric(string) ? String.format("%09d", Long.valueOf(string)) : string;
+            if (StringUtils.isNumeric(string)) {
+                return String.format("%09d", Long.valueOf(string));
+            }
+            List<String> fileSizes;
+            if (!(fileSizes = StringSigaUtils.matches(string, "([\\d\\.]+ ?[MKGT]?B)")).isEmpty()) {
+                return String.format("%09d", StringSigaUtils.strToFileSize(fileSizes.get(0)));
+            }
+            return string;
         });
         ipItems2.sort(ascending ? comparing : comparing.reversed());
     }
