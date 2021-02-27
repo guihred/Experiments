@@ -9,13 +9,16 @@ import java.time.format.SignStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQuery;
+import java.util.Locale;
+import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class DateFormatUtils {
     public static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
-        .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-        .appendLiteral(':').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
-        .appendValue(ChronoField.MILLI_OF_SECOND, 2, 3, SignStyle.NEVER).toFormatter();
+            .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+            .appendLiteral(':').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
+            .appendValue(ChronoField.MILLI_OF_SECOND, 2, 3, SignStyle.NEVER).toFormatter();
 
     private DateFormatUtils() {
     }
@@ -55,34 +58,45 @@ public final class DateFormatUtils {
                 .format(Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault()).toLocalDateTime()));
     }
 
+    public static String format(String fmt, TemporalAccessor now) {
+        return SupplierEx.getIgnore(() -> DateTimeFormatter.ofPattern(fmt).format(now));
+    }
+
     public static String format(TemporalAccessor text) {
         return TIME_OF_SECONDS_FORMAT.format(text);
     }
 
     public static String formatDate(TemporalAccessor temporal) {
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-        return dateFormat.format(temporal);
+        return DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(temporal);
     }
 
     public static ZonedDateTime getCreationDate(Path path) {
-        return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime()
-                .toInstant().atZone(ZoneId.systemDefault()), ZonedDateTime::now);
+        return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime().toInstant()
+                .atZone(ZoneId.systemDefault()), ZonedDateTime::now);
     }
 
     public static int getYearCreation(Path path) {
-        return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime()
-                .toInstant().atZone(ZoneId.systemDefault()).getYear(), () -> ZonedDateTime.now().getYear());
+        return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime().toInstant()
+                .atZone(ZoneId.systemDefault()).getYear(), () -> ZonedDateTime.now().getYear());
     }
 
     public static TemporalAccessor parse(CharSequence text) {
         return TIME_OF_SECONDS_FORMAT.parse(text);
     }
 
-    public static long toNumber(String fmt, String now) {
-        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).parse(now).get(ChronoField.INSTANT_SECONDS));
+    public static TemporalAccessor parse(String now, String fmt) {
+        return SupplierEx.getHandle(() -> DateTimeFormatter.ofPattern(fmt, Locale.US).parse(now), null,
+                e -> HasLogging.log(1).error("\"{}\" could be parsed fmt=\"{}\" now = \"{}\"", now, fmt,
+                        format(fmt, ZonedDateTime.now())));
     }
 
-    private static String format(String fmt, LocalDateTime now) {
-        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).format(now));
+    public static <T> T parse(String now, String fmt, TemporalQuery<T> query) {
+        return SupplierEx.getHandle(() -> DateTimeFormatter.ofPattern(fmt, Locale.US).parse(now).query(query), null,
+                e -> HasLogging.log(1).error("\"{}\" could be parsed fmt=\"{}\" now = \"{}\"", now, fmt,
+                        format(fmt, ZonedDateTime.now())));
+    }
+
+    public static long toNumber(String fmt, String now) {
+        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).parse(now).get(ChronoField.INSTANT_SECONDS));
     }
 }

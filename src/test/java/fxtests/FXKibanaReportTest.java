@@ -61,6 +61,23 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     }
 
     @Test
+    public void testgetIPbyGeridCredenciais() {
+        List<String> asList =
+                Arrays.asList("01901856194", "35286520120", "41697057187", "50512595615", "05786439798", "93110308134");
+        for (String cred : asList) {
+            String credencial = "\\\"" + cred + "\\\""
+            // + " AND \\\"supplied credentials\\\""
+            ;
+            measureTime("KibanaApi.getGeridCredencial(" + cred + ")", () -> {
+                Map<String, String> geridCredencial = KibanaApi.getIPsByCredencial(credencial, "inss-*-prod-*", 2);
+                geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
+                getLogger().info("{} -> {}", cred, geridCredencial.keySet());
+                return geridCredencial;
+            });
+        }
+    }
+
+    @Test
     public void testKibanaApi() {
         measureTime("KibanaApi.kibanaFullScan", () -> KibanaApi.kibanaFullScan("187.22.201.244", 1));
     }
@@ -108,17 +125,6 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     public void testTimelionScan() {
         measureTime("TimelionApi.timelionScan", () -> TimelionApi.timelionScan(FXCollections.observableArrayList(),
                 TimelionApi.TIMELINE_USERS, new HashMap<>(), "now-1d"));
-    }
-
-    @Test
-    public void testWordIPbyGeridCredenciais() {
-        String credencial = "\\\"22454126800\\\" AND \\\"supplied credentials\\\"";
-        measureTime("KibanaApi.getGeridCredencial", () -> {
-            Map<String, String> geridCredencial = KibanaApi.getIPsByCredencial(credencial, "inss-*-prod-*", 4);
-            geridCredencial.values().stream().map(ReportHelper::textToImage).collect(Collectors.toList());
-            getLogger().info("{}", geridCredencial.keySet());
-            return geridCredencial;
-        });
     }
 
     @Test

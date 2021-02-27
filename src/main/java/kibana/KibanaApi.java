@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
@@ -57,37 +58,44 @@ public class KibanaApi {
                 "ERROR IN FILE " + file).replaceAll("[\n\t]", "");
     }
 
-    public static Map<String, String> getGeridCredencial(String finalIP, String index) {
-        return getGeridCredencial(finalIP, index, 3);
-    }
-
     public static Map<String, String> getGeridCredencial(String finalIP, String index, int days) {
-        Map<String, String> makeKibanaSearch2 = KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", days,
-                new String[] { index, finalIP }, "message");
-        String message = makeKibanaSearch2.getOrDefault("message", "");
-        String suppliedCredential = "WHAT: supplied credentials: \\[(\\d+)\\+password\\]";
+        List<String> message = getMessageList(finalIP, index, days);
+        String suppliedCredential = "WHAT: supplied credentials: .+?(\\d{11}).+";
         String regex = "WHO:\\s+(\\d+)|" + suppliedCredential;
-        List<String> linesThatMatch = Stream.of(message.split("\n")).filter(l -> l.matches(regex))
-                .map(s -> s.replaceAll(regex, "$1$2")).distinct()
+        List<String> linesThatMatch = message.stream().flatMap(m -> Stream.of(m.split("\n")))
+                .filter(l -> l.matches(regex)).map(s -> s.replaceAll(regex, "$1$2")).distinct()
                 // .filter(StringUtils::isNumeric)
                 .collect(Collectors.toList());
-        String[] messages = message.split("Audit trail record BEGIN");
-        return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(regex, l))).distinct()
+        return message.stream().filter(l -> linesThatMatch.contains(getWhoField(regex, l))).distinct()
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s,
                         (t, u) -> getFirstMatch(suppliedCredential, t, u)));
     }
 
     public static Map<String, String> getIPsByCredencial(String credencial, String index, int days) {
-        Map<String, String> makeKibanaSearch2 = KibanaApi.makeKibanaSearch("geridCredenciaisQuery.json", days,
-                new String[] { index, credencial }, "message");
-        String message = makeKibanaSearch2.getOrDefault("message", "");
+        List<String> message = getMessageList(credencial, index, days);
         String ipAddress = "CLIENT IP ADDRESS: (.+)";
-        List<String> linesThatMatch = Stream.of(message.split("\n")).filter(l -> l.matches(ipAddress))
-                .map(s -> s.replaceAll(ipAddress, "$1")).distinct().collect(Collectors.toList());
-        String[] messages = message.split("Audit trail record BEGIN");
-        return Stream.of(messages).filter(l -> linesThatMatch.contains(getWhoField(ipAddress, l, "$1")))
+        List<String> linesThatMatch =
+                message.stream().flatMap(m -> Stream.of(m.split("\n"))).filter(l -> l.matches(ipAddress))
+                        .map(s -> s.replaceAll(ipAddress, "$1")).distinct().collect(Collectors.toList());
+        return message.stream().filter(l -> linesThatMatch.contains(getWhoField(ipAddress, l, "$1")))
                 .sorted(Comparator.comparing(s -> !s.matches(ipAddress))).distinct()
                 .collect(Collectors.toMap(s -> getWhoField(ipAddress, s, "$1"), s -> s, SupplierEx::nonNull));
+    }
+
+    public static String getLoginTimeCredencial(String query, String index, int days) {
+        List<String> message = getMessageList(query, index, days);
+        String whenRegex = "WHEN: (.+)";
+        return message.stream().flatMap(m -> Stream.of(m.split("\n"))).filter(s -> s.matches(whenRegex))
+                .map(s -> s.replaceAll(whenRegex, "$1"))
+                .map(s -> DateFormatUtils.parse(s, "E MMM dd HH:mm:ss z yyyy", ZonedDateTime::from))
+                .collect(new SimpleSummary<>()).format(t -> DateFormatUtils.format("dd/MM/yyyy HH:mm:ss", t));
+    }
+
+    public static List<String> getMessageList(String finalIP, String index, int days) {
+        Map<String, Object> makeKibanaSearch2 = KibanaApi.makeKibanaSearchObj("geridCredenciaisQuery.json", days,
+                new String[] { index, finalIP }, "message");
+        return JsonExtractor.accessList(makeKibanaSearch2, "message").stream().map(Objects::toString)
+                .collect(Collectors.toList());
     }
 
     public static String getURL(String string) {
@@ -186,8 +194,8 @@ public class KibanaApi {
         fullScan.put("IP", () -> ip);
         fullScan.put("Provedor", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "Nome",
                 "HostName", "asname"));
-        fullScan.put("Geolocation",
-                () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "country", "ascountry", "Descrição"));
+        fullScan.put("Geolocation", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getGeoIpInformation(ip), "country",
+                "ascountry", "Descrição"));
         String pattern = CIDRUtils.addressToPattern(ip);
         fullScan.put("WAF_Policy", () -> displayDistinct(
                 makeKibanaSearch("wafQuery.json", days, pattern, "action", "policy-name", "alert.description")));
@@ -351,10 +359,9 @@ public class KibanaApi {
     }
 
     private static String group(List<String> collect, final int d) {
-        return IntStream
-                .range(0, collect.size() / d).mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size())
-                        .mapToObj(j -> collect.get(j)).flatMap(s -> Stream.of(s.split(" "))).distinct()
-                        .collect(Collectors.joining(" ")))
+        return IntStream.range(0, collect.size() / d)
+                .mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size()).mapToObj(j -> collect.get(j))
+                        .flatMap(s -> Stream.of(s.split(" "))).distinct().collect(Collectors.joining(" ")))
                 .collect(Collectors.joining("\n"));
     }
 

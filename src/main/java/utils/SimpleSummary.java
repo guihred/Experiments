@@ -7,9 +7,9 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import utils.ex.FunctionEx;
 
-public class SimpleSummary<T extends Comparable<T>>
-        implements Collector<T, SimpleSummary<T>, SimpleSummary<T>> {
+public class SimpleSummary<T extends Comparable<T>> implements Collector<T, SimpleSummary<T>, SimpleSummary<T>> {
     int count;
     T max = null;
     T min = null;
@@ -39,6 +39,11 @@ public class SimpleSummary<T extends Comparable<T>>
         return s -> s;
     }
 
+    public String format(FunctionEx<T, String> f) {
+
+        return String.format("%s - %s", FunctionEx.apply(f, min, ""), FunctionEx.apply(f, max, ""));
+    }
+
     public int getCount() {
         return count;
     }
@@ -56,6 +61,11 @@ public class SimpleSummary<T extends Comparable<T>>
         return () -> new SimpleSummary<>();
     }
 
+    @Override
+    public String toString() {
+        return String.format("[%s, %s, %s]", count, min, max);
+    }
+
     private void accept(T a) {
         max = max(a);
         min = min(a);
@@ -69,4 +79,5 @@ public class SimpleSummary<T extends Comparable<T>>
     private T min(T a) {
         return min == null ? a : min.compareTo(a) > 0 ? a : min;
     }
+
 }

@@ -73,10 +73,10 @@
 	},
 	"highlight": {
 		"pre_tags": [
-			"@kibana-highlighted-field@"
+			""
 		],
 		"post_tags": [
-			"@/kibana-highlighted-field@"
+			""
 		],
 		"fields": {
 			"*": {

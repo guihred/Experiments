@@ -2,7 +2,7 @@
     "model":"ModeloGeralReporteConsultas.docx",
     "params":{
         "ip":"",
-        "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h"],
+        "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h","-96h","-108h","-120h","-132h","-144h","-156h"],
         "index":["inss-*-prod-*","mte-log4j-prod-*"],
         "sistema":["consultas.inss.gov.br","tarefas.inss.gov.br","mteempregabr","postos"]
     },

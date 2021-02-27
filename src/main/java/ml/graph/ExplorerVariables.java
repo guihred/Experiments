@@ -70,7 +70,7 @@ public abstract class ExplorerVariables extends Application {
 
     protected ObservableList<Question> questions = FXCollections.observableArrayList();
 
-    protected ObservableList<Data<String, Number>> barList = FXCollections.observableArrayList();
+    protected final ObservableList<Data<String, Number>> barList = FXCollections.observableArrayList();
 
     public ExplorerVariables() {
         dataframe.addListener((ob, old, val) -> CommonsFX.runInPlatform(() -> {

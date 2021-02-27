@@ -405,6 +405,15 @@ public final class JsonExtractor {
             ((List) a).add(b);
             return a;
         }
+        if (b instanceof List && ((List) b).stream().findFirst().map(Object::getClass).orElse(null) == a.getClass()) {
+            ((List) b).add(a);
+            return b;
+        }
+        if (b instanceof List && a instanceof List && ((List) b).stream().findFirst().map(Object::getClass)
+                .orElse(null) == ((List) a).stream().findFirst().map(Object::getClass).orElse(null)) {
+            ((List) b).addAll((List) a);
+            return b;
+        }
         if (a.getClass() == b.getClass()) {
             return new ArrayList<>(Arrays.asList(a, b));
         }

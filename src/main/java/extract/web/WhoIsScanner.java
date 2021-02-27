@@ -74,6 +74,13 @@ public class WhoIsScanner {
         return renderPage;
     }
 
+    public Map<String, String> getGeoIpInformation(String ip) {
+        Map<String, String> ipInformation = WhoIsScanner.getGeoIpInformation(this, ip);
+        ipInformation.putIfAbsent("id", ip);
+        LOG.info("{}", ipInformation);
+        return ipInformation;
+    }
+
     public Map<String, String> getIpInformation(String ip) {
         Map<String, String> ipInformation = WhoIsScanner.getIpInformation(this, ip);
         ipInformation.putIfAbsent("id", ip);
@@ -160,6 +167,25 @@ public class WhoIsScanner {
         }, (path, ex) -> LOG.error("ERROR COPYING {}", path, ex)));
     }
 
+    private static Map<String, String> addDescricao(Map<String, String> internalScan) {
+        internalScan.put("Descrição", internalScan.values().stream().map(Objects::toString)
+                .filter(StringUtils::isNotBlank).map(String::trim).distinct().collect(Collectors.joining(" - ")));
+        return internalScan;
+    }
+
+    private static Map<String, String> getGeoIpInformation(WhoIsScanner whoIsScanner, String name) {
+        String ip = !name.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+/*\\d*$")
+                ? SupplierEx.getIgnore(() -> CIDRUtils.toIPByName(name).getHostAddress(), name)
+                        : name;
+                if (CIDRUtils.isPrivateNetwork(ip) || ip.matches("^200\\.152\\..+")) {
+                    return lookupInternalInfo(whoIsScanner, ip);
+                }
+                return SupplierEx.getFirst(
+                () -> addDescricao(IpStackApi.getIPGeoInformation(ip)),
+                        () -> CIDRUtils.findNetwork(ip),
+                        () -> whoIsScanner.whoIsScan(ip), () -> VirusTotalApi.getIpTotalInfo(ip));
+    }
+
     private static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String name) {
         String ip = !name.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+/*\\d*$")
                 ? SupplierEx.getIgnore(() -> CIDRUtils.toIPByName(name).getHostAddress(), name)
@@ -187,8 +213,7 @@ public class WhoIsScanner {
                             DataframeBuilder::build);
                     return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "network", ip));
                 }, LinkedHashMap::new);
-        internalScan.put("Descrição", internalScan.values().stream().map(Objects::toString)
-                .filter(StringUtils::isNotBlank).map(String::trim).distinct().collect(Collectors.joining(" - ")));
+        addDescricao(internalScan);
 
         internalScan.put(REVERSE_DNS, reverseDNS);
         return internalScan;

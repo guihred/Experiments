@@ -25,17 +25,17 @@ import utils.ex.RunnableEx;
 
 public class KibanaInvestigator extends Application {
     @FXML
-    private TextField resultsFilter;
+    protected TextField resultsFilter;
     @FXML
-    private ListView<String> filterList;
+    protected ListView<String> filterList;
     @FXML
-    private ProgressIndicator progressIndicator;
+    protected ProgressIndicator progressIndicator;
     @FXML
-    private ComboBox<Integer> days;
+    protected ComboBox<Integer> days;
 
     @FXML
-    private TableView<Map<String, String>> commonTable;
-    private ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
+    protected TableView<Map<String, String>> commonTable;
+    protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
 
     public void initialize() {
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
@@ -63,7 +63,7 @@ public class KibanaInvestigator extends Application {
             List<String> cols =
                     commonTable.getColumns().stream().map(TableColumn::getText).collect(Collectors.toList());
             RunnableEx.runNewThread(
-                    () -> KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem(), progress, cols),
+                    () -> executeCall(ip, progress, cols),
                     ns -> CommonsFX.runInPlatform(() -> addToTable(items2, ns)));
         }
     }
@@ -80,6 +80,10 @@ public class KibanaInvestigator extends Application {
     public void start(final Stage primaryStage) {
         final int width = 600;
         CommonsFX.loadFXML("Kibana Investigator", "KibanaInvestigator.fxml", this, primaryStage, width, width);
+    }
+
+    protected Map<String, String> executeCall(String ip, DoubleProperty progress, List<String> cols) {
+        return KibanaApi.kibanaFullScan(ip, days.getSelectionModel().getSelectedItem(), progress, cols);
     }
 
     private void addToTable(ObservableList<String> items2, Map<String, String> ns) {

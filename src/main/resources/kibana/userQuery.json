@@ -4,7 +4,7 @@
 		"3": {
 			"terms": {
 				"field": "user.keyword",
-				"size": 5,
+				"size": 20,
 				"order": {
 					"1": "desc"
 				}
