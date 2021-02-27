@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import simplebuilder.SimpleComboBoxBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
@@ -35,6 +36,12 @@ public class CredentialInvestigator extends KibanaInvestigator {
         pane.getChildren().add(2, indexCombo);
         SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
                 .pasteable(s -> StringSigaUtils.getMatches(s, "(" + IP_REGEX + "|\\d{11})"));
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        super.start(primaryStage);
+        primaryStage.setTitle("Credential Investigator");
     }
 
     @Override
@@ -68,7 +75,6 @@ public class CredentialInvestigator extends KibanaInvestigator {
 
         return result;
     }
-
     public static void main(String[] args) {
         launch(args);
     }
