@@ -154,7 +154,7 @@
 	    {
             "csv": "",
             "name": "VPN-via-OS-Server$dateInverted",
-            "columns":"ip.src|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
+            "columns":"ip.src|user.dst|country.src|OS|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme",
             "mappings":{
                 "Source User":"user.dst",
                 "public_ip":"ip.src",
@@ -168,7 +168,7 @@
             },
             "questions":[
                 "ip.src not empty",
-                "OS contains server",
+                "OS like (?i).+server.+|.+other.+",
                 "user.dst not empty",
                 "user.dst distinct"
             ]

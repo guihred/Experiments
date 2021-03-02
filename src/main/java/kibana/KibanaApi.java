@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javafx.beans.property.Property;
-import ml.graph.ExplorerHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.*;
@@ -53,6 +52,36 @@ public class KibanaApi {
     protected KibanaApi() {
     }
 
+    public static <T> String display(Map<String, T> ob) {
+        List<List<String>> listOfFields = getFieldList(ob);
+        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
+        adjustToMax(listOfFields, maxNumFields);
+        return IntStream.range(0, maxNumFields).mapToObj(
+                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining(" ")))
+                // .distinct()
+                .collect(Collectors.joining("\n"));
+    }
+
+    public static <T> String displayDistinct(Map<String, T> ob) {
+        List<List<String>> listOfFields = getFieldList(ob);
+        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
+        adjustToMax(listOfFields, maxNumFields);
+        return IntStream.range(0, maxNumFields).mapToObj(
+                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
+                .distinct().collect(Collectors.joining("\n"));
+    }
+
+    public static String geoLocation(String ip) {
+        if (StringUtils.isBlank(ip)) {
+            return "";
+        }
+
+        return Stream.of(ip.split("\n")).map(s -> WHOIS_SCANNER.getGeoIpInformation(s))
+                .map(s -> StringSigaUtils.getKey(s, "Descrição", "country", "ascountry"))
+                .collect(Collectors.joining("\n"));
+
+    }
+
     public static String getContent(File file, Object... params) {
         return SupplierEx.remap(() -> String.format(Files.toString(file, StandardCharsets.UTF_8), params),
                 "ERROR IN FILE " + file).replaceAll("[\n\t]", "");
@@ -70,7 +99,6 @@ public class KibanaApi {
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s,
                         (t, u) -> getFirstMatch(suppliedCredential, t, u)));
     }
-
     public static Map<String, String> getIPsByCredencial(String credencial, String index, int days) {
         List<String> message = getMessageList(credencial, index, days);
         String ipAddress = "CLIENT IP ADDRESS: (.+)";
@@ -192,9 +220,9 @@ public class KibanaApi {
         String valueCol = "value";
         Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", () -> ip);
-        fullScan.put("Provedor", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "Nome",
+        fullScan.put("Provedor", () -> StringSigaUtils.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "Nome",
                 "HostName", "asname"));
-        fullScan.put("Geolocation", () -> ExplorerHelper.getKey(WHOIS_SCANNER.getGeoIpInformation(ip), "country",
+        fullScan.put("Geolocation", () -> StringSigaUtils.getKey(WHOIS_SCANNER.getGeoIpInformation(ip), "country",
                 "ascountry", "Descrição"));
         String pattern = CIDRUtils.addressToPattern(ip);
         fullScan.put("WAF_Policy", () -> displayDistinct(
@@ -313,25 +341,6 @@ public class KibanaApi {
             return String.format("%s (%s a %s)", last, min, max);
         });
 
-    }
-
-    private static <T> String display(Map<String, T> ob) {
-        List<List<String>> listOfFields = getFieldList(ob);
-        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
-        adjustToMax(listOfFields, maxNumFields);
-        return IntStream.range(0, maxNumFields).mapToObj(
-                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining(" ")))
-                // .distinct()
-                .collect(Collectors.joining("\n"));
-    }
-
-    private static <T> String displayDistinct(Map<String, T> ob) {
-        List<List<String>> listOfFields = getFieldList(ob);
-        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
-        adjustToMax(listOfFields, maxNumFields);
-        return IntStream.range(0, maxNumFields).mapToObj(
-                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
-                .distinct().collect(Collectors.joining("\n"));
     }
 
     private static <T> List<List<String>> getFieldList(Map<String, T> ob) {

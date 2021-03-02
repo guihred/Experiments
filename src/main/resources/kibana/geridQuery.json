@@ -111,5 +111,5 @@
 		},
 		"fragment_size": 2147483647
 	},
-	"timeout": "100000ms"
+	"timeout": "200000ms"
 }

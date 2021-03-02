@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.swing.text.MaskFormatter;
 import org.apache.commons.lang3.StringUtils;
+import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
@@ -35,6 +36,11 @@ public class StringSigaUtils extends StringUtils {
     public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
     public static final ImmutableMap<Class<? extends Comparable<?>>, Function<String, ?>> FORMAT_HIERARCHY_MAP =
             ImmutableMap.copyOf(formatHierarchy());
+
+    public static <T> T getKey(Map<String, T> first, String... keys) {
+        return Stream.of(keys).map(FunctionEx.ignore(first::get)).filter(Objects::nonNull).findFirst().orElse(null);
+    
+    }
 
     public static boolean anyMatches(String line, String classRegex) {
         return Pattern.compile(classRegex).matcher(line).find();

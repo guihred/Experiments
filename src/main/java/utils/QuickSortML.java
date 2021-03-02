@@ -60,7 +60,7 @@ public class QuickSortML {
             }
             List<String> fileSizes;
             if (!(fileSizes = StringSigaUtils.matches(string, "([\\d\\.]+ ?[MKGT]?B)")).isEmpty()) {
-                return String.format("%09d", StringSigaUtils.strToFileSize(fileSizes.get(0)));
+                return String.format("%12d", StringSigaUtils.strToFileSize(fileSizes.get(0)));
             }
             return string;
         });

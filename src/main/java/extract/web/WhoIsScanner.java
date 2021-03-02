@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ml.data.DataframeBuilder;
@@ -16,12 +14,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
-import utils.FileTreeWalker;
 import utils.ResourceFXUtils;
-import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
@@ -34,45 +28,10 @@ public class WhoIsScanner {
     public static final String IP_REGEX = "^\\d+\\.\\d+\\.\\d+\\.\\d+$";
 
     private static final Logger LOG = HasLogging.log();
-    private String name = "";
-    private String waitStr = "";
     private final Map<String, String> cookies = new HashMap<>();
     private final Map<String, String> cache = new HashMap<>();
-    private String[] subFolder = new String[] {};
-
-    private File print;
 
     private Map<String, DataframeML> dataframeLookup = new HashMap<>();
-
-    public boolean containsWait(File htmlFile) throws IOException {
-        String fileContent = com.google.common.io.Files.toString(htmlFile, StandardCharsets.UTF_8);
-        return Stream.of(subFolder).allMatch(t -> !fileContent.contains(t)) || fileContent.contains(waitStr);
-    }
-
-    public WhoIsScanner cookie(String string, String string2) {
-        cookies.put(string, string2);
-        return this;
-    }
-
-    public Document evaluateURL(String url) throws IOException {
-        String screenshotsFolder = "screenshots/";
-        File htmlFile = FileTreeWalker
-                .getFirstFileMatch(ResourceFXUtils.getOutFile("screenshots"),
-                        p -> p.getName(p.getNameCount() - 1).toString().startsWith(name + ".html"))
-                .stream().max(Comparator.comparing(p -> ResourceFXUtils.computeAttributes(p.toFile()).size()))
-                .map(Path::toFile).orElse(ResourceFXUtils.getOutFile(screenshotsFolder + name + ".html"));
-        Document renderPage;
-        if (!htmlFile.exists() || containsWait(htmlFile)) {
-            print = ResourceFXUtils.getOutFile(screenshotsFolder + name + ".png");
-            renderPage = PhantomJSUtils.renderPage(url, cookies, waitStr, print);
-            Files.write(htmlFile.toPath(), renderPage.outerHtml().getBytes(StandardCharsets.UTF_8));
-        } else {
-            renderPage = Jsoup.parse(htmlFile, StandardCharsets.UTF_8.name());
-        }
-
-        repositionFiles(screenshotsFolder, renderPage);
-        return renderPage;
-    }
 
     public Map<String, String> getGeoIpInformation(String ip) {
         Map<String, String> ipInformation = WhoIsScanner.getGeoIpInformation(this, ip);
@@ -88,15 +47,6 @@ public class WhoIsScanner {
         return ipInformation;
     }
 
-    public File getPrint() {
-        return print;
-    }
-
-    public WhoIsScanner name(String url1) {
-        name = url1;
-        return this;
-    }
-
     public String reverseDNS(String ip) {
         return cache.computeIfAbsent(ip, CIDRUtils::getReverseDNS);
     }
@@ -110,16 +60,6 @@ public class WhoIsScanner {
             }
         });
         return observableArrayList;
-    }
-
-    public WhoIsScanner subFolder(String... subFolder1) {
-        subFolder = subFolder1;
-        return this;
-    }
-
-    public WhoIsScanner waitStr(String waitStr1) {
-        waitStr = waitStr1;
-        return this;
     }
 
     public Map<String, String> whoIsScan(String ip) throws IOException {
@@ -142,31 +82,6 @@ public class WhoIsScanner {
         return document;
     }
 
-    private void repositionFiles(String screenshotsFolder, Document renderPage) throws IOException {
-        List<String> tables = JsoupUtils.getTables(renderPage);
-        File outFile = ResourceFXUtils.getOutFile(screenshotsFolder + name + ".txt");
-        Files.write(outFile.toPath(), tables, StandardCharsets.UTF_8);
-        List<Path> firstFileMatch = FileTreeWalker.getFirstFileMatch(ResourceFXUtils.getOutFile("screenshots"),
-                p -> p.getName(p.getNameCount() - 1).toString().startsWith(name));
-        String text = Stream.of(subFolder).map(renderPage::select).map(Elements::text).filter(StringUtils::isNotBlank)
-                .findFirst().orElse("");
-        firstFileMatch.forEach(ConsumerEx.make(p -> {
-            if (StringUtils.isBlank(text)) {
-                Files.delete(p);
-                return;
-            }
-            File out1File = ResourceFXUtils.getOutFile(
-                    screenshotsFolder + text.replaceAll("[\\| :\\\\]+", "_").trim() + "/" + p.toFile().getName());
-            if (out1File.getName().endsWith(".png")) {
-                print = out1File;
-            }
-            if (!out1File.equals(p.toFile())) {
-                ExtractUtils.copy(p.toFile(), out1File);
-                Files.delete(p);
-            }
-        }, (path, ex) -> LOG.error("ERROR COPYING {}", path, ex)));
-    }
-
     private static Map<String, String> addDescricao(Map<String, String> internalScan) {
         internalScan.put("Descrição", internalScan.values().stream().map(Objects::toString)
                 .filter(StringUtils::isNotBlank).map(String::trim).distinct().collect(Collectors.joining(" - ")));
@@ -176,14 +91,13 @@ public class WhoIsScanner {
     private static Map<String, String> getGeoIpInformation(WhoIsScanner whoIsScanner, String name) {
         String ip = !name.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+/*\\d*$")
                 ? SupplierEx.getIgnore(() -> CIDRUtils.toIPByName(name).getHostAddress(), name)
-                        : name;
-                if (CIDRUtils.isPrivateNetwork(ip) || ip.matches("^200\\.152\\..+")) {
-                    return lookupInternalInfo(whoIsScanner, ip);
-                }
-                return SupplierEx.getFirst(
-                () -> addDescricao(IpStackApi.getIPGeoInformation(ip)),
-                        () -> CIDRUtils.findNetwork(ip),
-                        () -> whoIsScanner.whoIsScan(ip), () -> VirusTotalApi.getIpTotalInfo(ip));
+                : name;
+        if (CIDRUtils.isPrivateNetwork(ip) || ip.matches("^200\\.152\\..+")) {
+            return lookupInternalInfo(whoIsScanner, ip);
+        }
+        return SupplierEx.getFirst(() -> addDescricao(IpStackApi.getIPGeoInformation(ip)),
+                () -> CIDRUtils.findNetwork(ip), () -> whoIsScanner.whoIsScan(ip),
+                () -> VirusTotalApi.getIpTotalInfo(ip));
     }
 
     private static Map<String, String> getIpInformation(WhoIsScanner whoIsScanner, String name) {
@@ -193,26 +107,25 @@ public class WhoIsScanner {
         if (CIDRUtils.isPrivateNetwork(ip) || ip.matches("^200\\.152\\..+")) {
             return lookupInternalInfo(whoIsScanner, ip);
         }
-        return SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip),
-                () -> whoIsScanner.whoIsScan(ip), () -> VirusTotalApi.getIpTotalInfo(ip));
+        return SupplierEx.getFirst(() -> CIDRUtils.findNetwork(ip), () -> whoIsScanner.whoIsScan(ip),
+                () -> VirusTotalApi.getIpTotalInfo(ip));
     }
 
     private static Map<String, String> lookupInternalInfo(WhoIsScanner whoIsScanner, String ip) {
         String reverseDNS = whoIsScanner.reverseDNS(ip);
-        Map<String, String> internalScan =
-                SupplierEx.getFirst(() -> lookupSDM(whoIsScanner, ip, reverseDNS), () -> {
-                    DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes3.csv",
-                            DataframeBuilder::build);
-                    return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "Sub-Rede", ip));
-                }, () -> {
-                    DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes2.csv",
-                            DataframeBuilder::build);
-                    return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "network", ip));
-                }, () -> {
-                    DataframeML networksFile = whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes1.csv",
-                            DataframeBuilder::build);
-                    return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "network", ip));
-                }, LinkedHashMap::new);
+        Map<String, String> internalScan = SupplierEx.getFirst(() -> lookupSDM(whoIsScanner, ip, reverseDNS), () -> {
+            DataframeML networksFile =
+                    whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes3.csv", DataframeBuilder::build);
+            return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "Sub-Rede", ip));
+        }, () -> {
+            DataframeML networksFile =
+                    whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes2.csv", DataframeBuilder::build);
+            return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "network", ip));
+        }, () -> {
+            DataframeML networksFile =
+                    whoIsScanner.dataframeLookup.computeIfAbsent("networks/redes1.csv", DataframeBuilder::build);
+            return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "network", ip));
+        }, LinkedHashMap::new);
         addDescricao(internalScan);
 
         internalScan.put(REVERSE_DNS, reverseDNS);
@@ -222,17 +135,17 @@ public class WhoIsScanner {
     private static Map<String, String> lookupSDM(WhoIsScanner whoIsScanner, String ip, String reverseDNS) {
         DataframeML networksFile =
                 whoIsScanner.dataframeLookup.computeIfAbsent("networks/SDMResources.csv", DataframeBuilder::build);
-        Map<String, Object> first = SupplierEx.getFirst(
-                () -> networksFile.findFirst("IP0",
-                        v -> Objects.equals(v, ip)
-                                || StringUtils.equalsIgnoreCase(Objects.toString(v), ip)),
-                () -> networksFile.findFirst("ID do IC alternativo",
-                        v -> Objects.equals(v, ip) || Objects.equals(v, reverseDNS)),
-                () -> networksFile.findFirst("IP1", v -> Objects.equals(v, ip)),
-                () -> networksFile.findFirst("IP2", v -> Objects.equals(v, ip)));
+        Map<String,
+                Object> first =
+                        SupplierEx.getFirst(
+                                () -> networksFile.findFirst("IP0",
+                                        v -> Objects.equals(v, ip)
+                                                || StringUtils.equalsIgnoreCase(Objects.toString(v), ip)),
+                                () -> networksFile.findFirst("ID do IC alternativo",
+                                        v -> Objects.equals(v, ip) || Objects.equals(v, reverseDNS)),
+                                () -> networksFile.findFirst("IP1", v -> Objects.equals(v, ip)),
+                                () -> networksFile.findFirst("IP2", v -> Objects.equals(v, ip)));
         return CIDRUtils.strMap(first);
     }
-
-
 
 }

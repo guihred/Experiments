@@ -14,7 +14,7 @@ import ml.data.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ClassReflectionUtils;
-import utils.ex.FunctionEx;
+import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.fx.PaginatedTableView;
 
@@ -80,11 +80,6 @@ public final class ExplorerHelper {
                 .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
     }
 
-    public static <T> T getKey(Map<String, T> first, String... keys) {
-        return Stream.of(keys).map(FunctionEx.ignore(first::get)).filter(Objects::nonNull).findFirst().orElse(null);
-
-    }
-
     public static String getLastNumberField(BaseDataframe dataframe) {
         List<String> numberCols = dataframe.getFormatMap().entrySet().stream().filter(e -> e.getValue() != null)
                 .filter(e -> Number.class.isAssignableFrom(e.getValue()))
@@ -118,7 +113,7 @@ public final class ExplorerHelper {
 
     private static String getFromCache(ObservableMap<String, Map<String, String>> ipInfo,
             Object[] e, String... string) {
-        return getKey(ipInfo.computeIfAbsent(e[0].toString(), whoIsScanner::getIpInformation),
+        return StringSigaUtils.getKey(ipInfo.computeIfAbsent(e[0].toString(), whoIsScanner::getIpInformation),
                 string);
     }
 

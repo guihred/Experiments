@@ -11,9 +11,9 @@ import extract.web.WhoIsScanner;
 import java.util.*;
 import java.util.stream.Collectors;
 import javafx.beans.property.DoubleProperty;
-import ml.graph.ExplorerHelper;
 import org.slf4j.Logger;
 import utils.CommonsFX;
+import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
@@ -145,7 +145,7 @@ public final class ConsultasHelper {
         return makeKibanaQuery.parallelStream().filter(m -> !getFirst(params, m).matches(IGNORE_IPS_REGEX))
                 .filter(m -> getNumber(numberCol, m) > avg + range)
                 .map(e -> completeInformation(params, whoIsScanner, e))
-                .filter(m -> !EXCLUDE_OWNERS.contains(ExplorerHelper.getKey(m, "as_owner", "asname")))
+                .filter(m -> !EXCLUDE_OWNERS.contains(StringSigaUtils.getKey(m, "as_owner", "asname")))
                 .filter(m -> isNotBlocked(day, getFirst(params, m))).collect(toList());
     }
 
@@ -154,8 +154,8 @@ public final class ConsultasHelper {
     }
 
     private static String getNameAndNetwork(Map<String, String> m) {
-        return ExplorerHelper.getKey(m, "Descrição", "as_owner", "asname") + "\t"
-                + ExplorerHelper.getKey(m, "network", "id");
+        return StringSigaUtils.getKey(m, "Descrição", "as_owner", "asname") + "\t"
+                + StringSigaUtils.getKey(m, "network", "id");
     }
 
     private static Double getNumber(String numberCol, Map<String, String> m) {

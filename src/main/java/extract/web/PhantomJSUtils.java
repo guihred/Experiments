@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.scene.image.Image;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -84,7 +85,10 @@ public final class PhantomJSUtils {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet post = new HttpGet(url);
         headers.forEach(post::addHeader);
-        HttpResponse response = client.execute(post);
+        HttpResponse response = SupplierEx.getFirst(() -> client.execute(post), () -> {
+            InstallCert.installCertificate(url);
+            return client.execute(post);
+        });
         HttpEntity entity = response.getEntity();
         BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
         return rd.lines().collect(Collectors.toList());
@@ -113,7 +117,8 @@ public final class PhantomJSUtils {
         } while (read != -1);
     }
 
-    public static void postContent(String url, String content, ContentType applicationJson, Map<String, String> headers,
+    public static Map<String, String> postContent(String url, String content, ContentType applicationJson,
+            Map<String, String> headers,
             File outFile) throws IOException {
         ExtractUtils.insertProxyConfig();
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
@@ -126,9 +131,12 @@ public final class PhantomJSUtils {
             InstallCert.installCertificate(url);
             return client.execute(get);
         });
+        Map<String, String> d = Stream.of(response.getAllHeaders()).collect(Collectors
+                .groupingBy(h -> h.getName(), Collectors.mapping(e -> e.getValue(), Collectors.joining("; "))));
         HttpEntity entity = response.getEntity();
         BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
         ExtractUtils.copy(rd, outFile);
+        return d;
     }
 
     public static void postJson(String url, String content, Map<String, String> headers, File outFile)

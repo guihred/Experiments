@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
 import utils.ConsoleUtils;
-import utils.ResourceFXUtils;
 
 public class CurlUtils {
 
@@ -65,14 +64,6 @@ public class CurlUtils {
     public CurlUtils userAgent(String url1) {
         params.add(String.format("-A \"%s\"", url1));
         return this;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new CurlUtils()
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0")
-                .cookies(ResourceFXUtils.getOutFile("html/cookies.txt"))
-                .saveToFile(ResourceFXUtils.getOutFile("html/test.html")).url("https://www.google.com/").run()
-                .asDocument());
     }
 
 }

@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import ml.data.DataframeBuilder;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
-import ml.graph.ExplorerHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.DateFormatUtils;
@@ -36,11 +35,11 @@ public class AcessosVolumetricos {
         dataframeML.map("Hostname", "key", e -> {
             String ip = Objects.toString(e, "");
             Map<String, String> ipInformation = whoIsScanner.getIpInformation(ip);
-            String key = ExplorerHelper.getKey(ipInformation, "as_owner", "Nome", "HostName", "Descrição", "asname");
+            String key = StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "HostName", "Descrição", "asname");
             if (!key.equals(ip)) {
                 return key;
             }
-            return ExplorerHelper.getKey(ipInformation, "as_owner", "Nome", "Descrição", "asname");
+            return StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "Descrição", "asname");
         });
 
         dataframeML.map(TRAFEGO, "value", e -> StringSigaUtils.getFileSize(StringSigaUtils.toLong(e)));
@@ -52,7 +51,7 @@ public class AcessosVolumetricos {
                 TRAFEGO);
         DataframeUtils.crossFeatureObject(dataframeML, TRAFEGO_ESPERADO, ip -> {
             Map<String, Object> findFirst = build.findFirst("IP", e -> Objects.equals(e, ip[0]));
-            return ExplorerHelper.getKey(findFirst, TRAFEGO_ESPERADO);
+            return StringSigaUtils.getKey(findFirst, TRAFEGO_ESPERADO);
         }, "key", TRAFEGO);
         DataframeUtils.crossFeatureObject(dataframeML, "motivação",
                 ip -> !StringUtils.equalsIgnoreCase("Acima", Objects.toString(ip[1])) ? ""

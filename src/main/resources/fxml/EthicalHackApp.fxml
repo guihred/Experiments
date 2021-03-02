@@ -6,17 +6,18 @@
 <?import javafx.scene.text.*?>
 <?import javafx.event.*?>
 <?import javafx.scene.input.*?>
-<HBox xmlns:fx="http://javafx.com/fxml" 
-	stylesheets="@/css/filesComparator.css" fx:id="parent">
+<?import javafx.geometry.*?>
+<HBox xmlns:fx="http://javafx.com/fxml" fx:id="parent">
 	<children>
 		<VBox>
+			<padding>
+				<Insets topRightBottomLeft="10" />
+			</padding>
 			<children>
-				<Button  onAction="#onExportExcel"
-					text="Export Excel" />
+				<Button onAction="#onExportExcel" text="Export Excel" />
 				<Text text="Filter Results" />
 				<TextField fx:id="resultsFilter" />
-				<Button onAction="#onActionReadPCap"
-					text="Read _PCap" />
+				<Button onAction="#onActionReadPCap" text="Read _PCap" />
 				<Button id="_Network Information" onAction="#onActionNetworkInformation"
 					text="_Network Information" />
 				<Button id="NetStats" onAction="#onActionNetstats" text="Net _Stats" />
@@ -25,13 +26,13 @@
 				<Text text="DNS" />
 				<TextField fx:id="dns" text="google.com" />
 				<Button id="DNS _Lookup" onAction="#onActionDNSLookup" text="DNS _Lookup" />
-				<Button onAction="#onActionWebsiteScan"
-					text="Website _Scan" />
+				<Button onAction="#onActionWebsiteScan" text="Website _Scan" />
 				<Text text="Ping Adress" />
 				<TextField fx:id="address" text="10.69.64.31" />
 				<Button id="Ping _Trace" onAction="#onActionPingTrace" text="Ping _Trace" />
 				<Button id="_Who is" onAction="#onActionWhoIs" text="_Who is" />
-				<Button id="_Reverse DNS" onAction="#onActionReverseDNS" text="_Reverse DNS" />
+				<Button id="_Reverse DNS" onAction="#onActionReverseDNS"
+					text="_Reverse DNS" />
 				<Text text="Network Adress" />
 				<HBox>
 					<children>

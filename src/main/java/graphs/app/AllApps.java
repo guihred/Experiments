@@ -10,7 +10,6 @@ import fxml.utils.FXMLCreatorHelper;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -26,30 +25,31 @@ import simplebuilder.SimpleListViewBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
 import utils.ExtractUtils;
-import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class AllApps extends Application {
 
     @FXML
-    private ListView<Class<?>> stackParts;
+    private ListView<String> stackParts;
     @FXML
     private TextField textField0;
     @FXML
     private TextArea textArea5;
     private PrintStream out;
 
-    private ObservableList<Class<?>> applications = FXCollections.observableArrayList();
-    public ObservableList<Class<?>> getApplications() {
+    private ObservableList<String> applications = FXCollections.observableArrayList();
+
+    public ObservableList<String> getApplications() {
         return applications;
     }
 
     public void initialize() {
         ExtractUtils.insertProxyConfig();
-        RunnableEx.runNewThread(() -> getAllFileDependencies().stream().map(JavaFileDependency::getFullName)
-                .map(FunctionEx.ignore(Class::forName)).filter(Objects::nonNull)
-                .filter(makeTest(e -> e.getMethod("main", String[].class) != null)).collect(Collectors.toList()),
+        RunnableEx.runNewThread(
+                () -> getAllFileDependencies().stream().filter(makeTest(d -> d.getPublicMethods().contains("main")))
+                        .map(JavaFileDependency::getFullName)
+                        .collect(Collectors.toList()),
                 items -> CommonsFX.runInPlatform(() -> getApplications().setAll(items)));
         System.setOut(SupplierEx.remap(() -> new PrintTextStream(out, true, "UTF-8", textArea5.textProperty()),
                 "ERROR CREATING STREAM"));
@@ -59,10 +59,12 @@ public class AllApps extends Application {
 
     public void onActionToFXML() {
         RunnableEx.runNewThread(() -> {
-            List<Class<?>> selectedItems = stackParts.getSelectionModel().getSelectedItems();
-            for (Class<?> appClass : selectedItems) {
-                if (Application.class.isAssignableFrom(appClass)) {
-                    FXMLCreatorHelper.testApplications(Arrays.asList(asAppClass(appClass)), false);
+            List<String> selectedItems = stackParts.getSelectionModel().getSelectedItems();
+            for (String appClass : selectedItems) {
+                Class<?> forName = Class.forName(appClass);
+
+                if (Application.class.isAssignableFrom(forName)) {
+                    FXMLCreatorHelper.testApplications(Arrays.asList(asAppClass(forName)), false);
                 }
             }
         });
@@ -92,12 +94,13 @@ public class AllApps extends Application {
         return (Class<? extends Application>) appClass;
     }
 
-    private static void invoke(Class<?> appClass) {
-        if (Application.class.isAssignableFrom(appClass)) {
-            new SimpleDialogBuilder().show(asAppClass(appClass));
-            return;
-        }
+    private static void invoke(String className) {
         RunnableEx.run(() -> {
+            Class<?> appClass = Class.forName(className);
+            if (Application.class.isAssignableFrom(appClass)) {
+                new SimpleDialogBuilder().show(asAppClass(appClass));
+                return;
+            }
             Object[] args = new Object[] { new String[0] };
             ClassReflectionUtils.invoke(null, appClass.getMethod("main", String[].class), args);
         });

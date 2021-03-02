@@ -1,7 +1,7 @@
 package ethical.hacker;
 
 import extract.web.HashVerifier;
-import extract.web.WhoIsScanner;
+import extract.web.WebScanner;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -39,7 +39,7 @@ public class WebScannerApplication extends Application {
     private ImageView image;
     @FXML
     private TreeView<SitePage> treeView3;
-    private WhoIsScanner whoIsScanner = new WhoIsScanner();
+    private WebScanner whoIsScanner = new WebScanner();
 
     private ObservableSet<String> links = FXCollections.observableSet();
 

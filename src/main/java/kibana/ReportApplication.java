@@ -153,7 +153,8 @@ public class ReportApplication extends Application {
                     LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
                 }
 
-                params.merge("\\$creds", credentialMap.keySet().stream().collect(Collectors.joining("\n")),
+                params.merge("\\$creds", credentialMap.keySet().stream().map(CredentialInvestigator::credentialInfo)
+                        .collect(Collectors.joining("\n")),
                         ReportApplication::mergeStrings);
             }
             ReportHelper.mergeImage(mapaSubstituicao,

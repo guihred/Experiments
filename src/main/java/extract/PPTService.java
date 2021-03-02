@@ -67,9 +67,9 @@ public final class PPTService {
         byte[] pictureData = SupplierEx.get(() -> ImageFXUtils.toByteArray(image));
         XSLFPictureData pd = ppt.addPicture(pictureData, PictureData.PictureType.PNG);
         XSLFPictureShape picture = slide.createPicture(pd);
-        final int width = 600;
+        final int width = 660;
         int height = (int) (image.getHeight() * width / image.getWidth());
-        final int offsetX = 60;
+        final int offsetX = 30;
         final int offsetY = 120;
         final int maxHeight = 300;
         picture.setAnchor(new Rectangle(offsetX, offsetY, width, Math.min(maxHeight, height)));
@@ -80,9 +80,10 @@ public final class PPTService {
         String dataframeStr = DataframeUtils.toString(dataframe);
         LOG.info(dataframeStr);
         XSLFTable table = getShapeStream(slide, XSLFTable.class).findFirst().orElseGet(() -> {
-            XSLFTable createTable = slide.createTable(1, 2);
+            int numCols = 4;
+            XSLFTable createTable = slide.createTable(1, numCols);
             List<String> cols = dataframe.cols();
-            for (int i = 0; i < 2 && i < cols.size(); i++) {
+            for (int i = 0; i < numCols && i < cols.size(); i++) {
                 XSLFTableCell cell = createTable.getCell(0, i);
                 cell.setText(cols.get(i));
             }

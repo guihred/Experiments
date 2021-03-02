@@ -227,16 +227,8 @@ public final class JsoupUtils {
 
     // Parsing JavaScript Generated Page with Jsoup and HtmUnit About.html - source
     // code
-    public static void normalParse(File in) throws IOException {
-        Document doc = Jsoup.parse(in, "UTF-8");
-        // iterate over row and col
-        for (Element row : doc.select("table#data > tbody > tr")) {
-            for (Element col : row.select("td")) {
-                // print results
-                String ownText = col.ownText();
-                LOG.info("{}", ownText);
-            }
-        }
+    public static Document normalParse(File in) throws IOException {
+        return Jsoup.parse(in, "UTF-8");
     }
 
     // How to parse my page as rendered in the browser?

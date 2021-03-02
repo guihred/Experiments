@@ -1,10 +1,15 @@
 package fxtests;
 
 import ethical.hacker.*;
-import extract.web.*;
+import extract.web.HashVerifier;
+import extract.web.InstallCert;
+import extract.web.VirusTotalApi;
+import extract.web.WebScanner;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.scene.control.Button;
@@ -12,10 +17,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import kibana.CredentialInvestigator;
 import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import ml.graph.ExplorerHelper;
-import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import utils.*;
 import utils.ex.RunnableEx;
@@ -68,7 +73,7 @@ public class FXHackTest extends AbstractTestExecution {
         // "pportalmaisemprego.dataprev.gov.br", "vip-psineaberto.dataprev.gov.br",
         // "mte-auto-atendimento.dataprev.gov.br",
         // "mte-posto-atendimento.dataprev.gov.br");
-        WhoIsScanner whoIsScanner = new WhoIsScanner();
+        WebScanner whoIsScanner = new WebScanner();
         String url = randomItem(asList);
         measureTime("HashVerifier.renderPage", () -> {
             RunnableEx.run(() -> whoIsScanner.name(url).waitStr("Please wait...")
@@ -80,34 +85,22 @@ public class FXHackTest extends AbstractTestExecution {
     @Test
     public void testAcesso() {
 
-        ExtractUtils.insertProxyConfig();
         measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate("www-acesso"));
         measureTime("Acesso", () -> {
-            HashMap<String, String> headers = new LinkedHashMap<>();
-            HashMap<String, String> cookies = new HashMap<>();
-            JsoupUtils.getDocument("https://www-acesso/gwdc/", cookies);
-            String collect = cookies.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
-            headers.put("Host", "www-acesso");
-            headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0");
-            headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-            headers.put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3");
-            headers.put("Accept-Encoding", "gzip, deflate, br");
-            headers.put("Content-Type", "application/x-www-form-urlencoded");
-            headers.put("Content-Length", "41");
-            headers.put("Origin", "https://www-acesso");
-            headers.put("DNT", "1");
-            headers.put("Connection", "keep-alive");
-            headers.put("Referer", "https://www-acesso/gwdc/");
-            headers.put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization());
-            headers.put("Cookie", collect);
-            headers.put("Upgrade-Insecure-Requests", "1");
-            ContentType contnet = ContentType.APPLICATION_FORM_URLENCODED;
-            PhantomJSUtils.postContent("https://www-acesso/gwdc/?action=search&object=personUser&filter=70812788176",
-                    "uid=guilherme.hmedeiros&password=30-sanJU", contnet, headers,
-                    ResourceFXUtils.getOutFile("test.html"));
-            return JsoupUtils.getDocument("https://www-acesso/gwdc/?action=search&object=personUser&filter=70812788176",
-                    cookies);
+            String credencial = "70812788176";
+            return CredentialInvestigator.getCredentialInfo(credencial);
 
+        });
+    }
+
+    @Test
+    public void testCurl() {
+        measureTime("CurlUtils", () -> {
+            new CurlUtils().userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0")
+                    .cookies(ResourceFXUtils.getOutFile("html/cookies.txt"))
+                    .saveToFile(ResourceFXUtils.getOutFile("html/test.html"))
+                    .url("https://www.google.com/").run()
+                    .asDocument();
         });
     }
 
@@ -117,7 +110,8 @@ public class FXHackTest extends AbstractTestExecution {
                 "C:\\Users\\guigu\\Documents\\Dev\\Dataprev\\Downs\\[Acesso Web] Top Origens x URL Únicas acessadas.csv");
         measureTime("WhoIsScanner.fillIPInformation", () -> {
             DataframeML dataframe = ExplorerHelper.fillIPInformation(csvFile);
-            String reorderAndLog = ExplorerHelper.reorderAndLog(dataframe, ExplorerHelper.getLastNumberField(dataframe));
+            String reorderAndLog =
+                    ExplorerHelper.reorderAndLog(dataframe, ExplorerHelper.getLastNumberField(dataframe));
             getLogger().info("{}", reorderAndLog);
             DataframeUtils.save(dataframe, ResourceFXUtils.getOutFile("csv/" + csvFile.getName()));
         });
@@ -135,7 +129,6 @@ public class FXHackTest extends AbstractTestExecution {
         measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash(firstMp3));
         measureTime("HashVerifier.getSha256Hash", () -> HashVerifier.getSha256Hash("whatever"));
     }
-
 
     @Test
     public void testImageCracker() {
@@ -167,7 +160,6 @@ public class FXHackTest extends AbstractTestExecution {
             type(KeyCode.ESCAPE);
         });
     }
-
 
     @Test
     public void testPCapReader() {
@@ -206,7 +198,6 @@ public class FXHackTest extends AbstractTestExecution {
         clickButtonsWait();
     }
 
-
     @Test
     public void testWebBrowserApplication() {
         show(WebBrowserApplication.class);
@@ -234,12 +225,11 @@ public class FXHackTest extends AbstractTestExecution {
         // EthicalHackController
         ImageFXUtils.setShowImage(false);
         show(EthicalHackController.class);
-        lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText()))
-                .forEach(t -> {
-                    SupplierEx.getIgnore(() -> super.clickOn(t));
-                    sleep(WAIT_TIME);
-                    type(KeyCode.ESCAPE);
-                });
+        lookup(".button").queryAllAs(Button.class).stream().filter(e -> !"Ips".equals(e.getText())).forEach(t -> {
+            SupplierEx.getIgnore(() -> super.clickOn(t));
+            sleep(WAIT_TIME);
+            type(KeyCode.ESCAPE);
+        });
         ConsoleUtils.waitAllProcesses();
         tryClickOn(lookupFirst(CheckBox.class));
     }
@@ -290,6 +280,5 @@ public class FXHackTest extends AbstractTestExecution {
                 "mail.google.com", "play.google.com", "http://wwwcztapwlwk.net/plafgxc80333067532");
         measureTime("VirusTotalApi.getUrlInformation", () -> VirusTotalApi.getUrlInformation(randomItem));
     }
-
 
 }
