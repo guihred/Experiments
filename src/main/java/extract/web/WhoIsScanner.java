@@ -47,6 +47,12 @@ public class WhoIsScanner {
         return ipInformation;
     }
 
+    public Map<String, String> lookupPolicy(String policy) {
+        DataframeML networksFile =
+                dataframeLookup.computeIfAbsent("networks/Policies.csv", DataframeBuilder::build);
+        return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "Policy Name", policy));
+    }
+
     public String reverseDNS(String ip) {
         return cache.computeIfAbsent(ip, CIDRUtils::getReverseDNS);
     }

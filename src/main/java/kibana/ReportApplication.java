@@ -7,9 +7,11 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
@@ -40,7 +42,7 @@ import utils.fx.RotateUtils;
 
 public class ReportApplication extends Application {
 
-    private static final Logger LOG = HasLogging.log();
+    static final Logger LOG = HasLogging.log();
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -120,45 +122,12 @@ public class ReportApplication extends Application {
         int days = (int) Math.max(1., Math.ceil(StringSigaUtils.toInteger(params.get("\\$hour")) / hoursInADay));
         String ipParam = params.get("\\$ip");
         if (JsonExtractor.accessMap(mapaSubstituicao, "params").containsKey("ip")) {
-            for (String ip : ipParam.split("[, ]+")) {
-                KibanaApi.kibanaFullScan(ip, days, progressIndicator.progressProperty())
-                        .forEach((k, v) -> params.merge("\\$" + k, v, ReportApplication::mergeStrings));
-            }
+            params.putAll(ReportHelper.adjustParams(ipParam, days, progressIndicator.progressProperty()));
+
         }
         if (mapaSubstituicao.containsKey("gerid")) {
-            params.remove("\\$orIps");
-            params.remove("\\$otherIps");
-            params.remove("\\$creds");
-            Set<String> credentialText = new LinkedHashSet<>();
-            for (String ipValue : ipParam.split("[, ]+")) {
-                String index = params.get("\\$index");
-                String authenticationSuccess = " AND \\\"AUTHENTICATION_SUCCESS\\\"";
-                Map<String, String> credentialMap =
-                        KibanaApi.getGeridCredencial(ipValue + authenticationSuccess, index, days);
-                if (credentialMap.isEmpty()) {
-                    credentialMap = KibanaApi.getGeridCredencial(ipValue, index, days);
-                }
-                LOG.info("GETTING GERID CREDENTIALS {} {}", ipValue, credentialMap.keySet());
-                credentialText.addAll(credentialMap.values());
-                List<String> collect = credentialMap.keySet().stream().collect(Collectors.toList());
-                params.merge("\\$orIps", ipValue, (o, n) -> mergeStrings(o, n, " OR "));
-                for (String credencial : collect) {
-                    Map<String, String> iPsByCredencial = KibanaApi.getIPsByCredencial(
-                            "\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
-                    credentialText.addAll(iPsByCredencial.values());
-                    String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
-                    params.merge("\\$otherIps", collect2, ReportApplication::mergeStrings);
-                    iPsByCredencial.keySet()
-                            .forEach(i -> params.merge("\\$orIps", i, (o, n) -> mergeStrings(o, n, " OR ")));
-                    LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
-                }
-
-                params.merge("\\$creds", credentialMap.keySet().stream().map(CredentialInvestigator::credentialInfo)
-                        .collect(Collectors.joining("\n")),
-                        ReportApplication::mergeStrings);
-            }
-            ReportHelper.mergeImage(mapaSubstituicao,
-                    credentialText.stream().distinct().map(ReportHelper::textToImage).collect(Collectors.toList()));
+            String index = params.get("\\$index");
+            params.putAll(ReportHelper.adjustParams(mapaSubstituicao, days, ipParam, index));
         }
 
     }
@@ -257,14 +226,7 @@ public class ReportApplication extends Application {
         launch(args);
     }
 
-    private static String mergeStrings(String o, String n) {
-        return mergeStrings(o, n, "\n");
-    }
 
-    private static String mergeStrings(String o, String n, String delimiter) {
-        return Stream.of(o, n).flatMap(m -> Stream.of(m.split(delimiter))).distinct()
-                .collect(Collectors.joining(delimiter));
-    }
 
     private static void removeImage(Map<String, Object> mapaSubstituicao, List<String> imageUrls, String t) {
         imageUrls.remove(t);

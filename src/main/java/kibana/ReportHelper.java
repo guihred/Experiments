@@ -90,6 +90,51 @@ public final class ReportHelper {
         CommonsFX.update(progress, 1);
     }
 
+    public static Map<String, String> adjustParams(Map<String, Object> mapaSubstituicao, int days, String ipParam,String index ) {
+        Map<String,String> paramText = new LinkedHashMap<>();
+        Set<String> credentialText = new LinkedHashSet<>();
+        for (String ipValue : ipParam.split("[, ]+")) {
+            String authenticationSuccess = " AND \\\"AUTHENTICATION_SUCCESS\\\"";
+            Map<String, String> credentialMap =
+                    KibanaApi.getGeridCredencial(ipValue + authenticationSuccess, index, days);
+            if (credentialMap.isEmpty()) {
+                credentialMap = KibanaApi.getGeridCredencial(ipValue, index, days);
+            }
+            LOG.info("GETTING GERID CREDENTIALS {} {}", ipValue, credentialMap.keySet());
+            credentialText.addAll(credentialMap.values());
+            List<String> collect = credentialMap.keySet().stream().collect(Collectors.toList());
+            paramText.merge("\\$orIps", ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
+            for (String credencial : collect) {
+                Map<String, String> iPsByCredencial = KibanaApi.getIPsByCredencial(
+                        "\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
+                credentialText.addAll(iPsByCredencial.values());
+                String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
+                paramText.merge("\\$otherIps", collect2, ReportHelper::mergeStrings);
+                iPsByCredencial.keySet()
+                        .forEach(i -> paramText.merge("\\$orIps", i, (o, n) -> ReportHelper.mergeStrings(o, n, " OR ")));
+                LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
+            }
+    
+            paramText.merge("\\$creds", credentialMap.keySet().stream().map(CredentialInvestigator::credentialInfo)
+                    .collect(Collectors.joining("\n")),
+                    ReportHelper::mergeStrings);
+        }
+        mergeImage(mapaSubstituicao,
+                credentialText.stream().distinct().map(ReportHelper::textToImage).collect(Collectors.toList()));
+        return paramText;
+    }
+
+    public static Map<String, String> adjustParams(String ipParam, int days, Property<Number> progress) {
+        Map<String,String> paramText = new LinkedHashMap<>();
+        for (String ipValue : ipParam.split("[, ]+")) {
+            KibanaApi.kibanaFullScan(ipValue, days, progress)
+                    .forEach((k, v) -> paramText.merge("\\$" + k, v, ReportHelper::mergeStrings));
+            paramText.merge("\\$orIps", ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
+            paramText.merge("\\$otherIps", ipValue, ReportHelper::mergeStrings);
+        }
+        return paramText;
+    }
+
     public static void finalizeReport(Map<String, Object> mapaSubstituicao, File reportFile) {
         String modelUsed = mapaSubstituicao.get("model").toString();
         String extension = ReportHelper.getExtension(reportFile.getName());
@@ -124,6 +169,10 @@ public final class ReportHelper {
             ((List<?>) o).addAll((List) n);
             return o;
         });
+    }
+
+    public static String mergeStrings(String o, String n) {
+        return mergeStrings(o, n, "\n");
     }
 
     public static Stream<Image> objectList(Object e) {
@@ -273,6 +322,11 @@ public final class ReportHelper {
             image.setValue(new Image(externalForm));
         });
         return image.getValue();
+    }
+
+    private static String mergeStrings(String o, String n, String delimiter) {
+        return Stream.of(o, n).flatMap(m -> Stream.of(m.split(delimiter))).distinct()
+                .collect(Collectors.joining(delimiter));
     }
 
     @SuppressWarnings("unchecked")

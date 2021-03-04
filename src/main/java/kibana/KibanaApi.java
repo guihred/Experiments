@@ -63,6 +63,9 @@ public class KibanaApi {
     }
 
     public static <T> String displayDistinct(Map<String, T> ob) {
+        if (ob == null) {
+            return "";
+        }
         List<List<String>> listOfFields = getFieldList(ob);
         int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
         adjustToMax(listOfFields, maxNumFields);
@@ -99,6 +102,7 @@ public class KibanaApi {
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s,
                         (t, u) -> getFirstMatch(suppliedCredential, t, u)));
     }
+
     public static Map<String, String> getIPsByCredencial(String credencial, String index, int days) {
         List<String> message = getMessageList(credencial, index, days);
         String ipAddress = "CLIENT IP ADDRESS: (.+)";
@@ -225,8 +229,13 @@ public class KibanaApi {
         fullScan.put("Geolocation", () -> StringSigaUtils.getKey(WHOIS_SCANNER.getGeoIpInformation(ip), "country",
                 "ascountry", "Descrição"));
         String pattern = CIDRUtils.addressToPattern(ip);
-        fullScan.put("WAF_Policy", () -> displayDistinct(
-                makeKibanaSearch("wafQuery.json", days, pattern, "action", "policy-name", "alert.description")));
+        fullScan.put("WAF_Policy", () -> {
+            String policy = "policy-name";
+            Map<String, Object> makeKibanaSearch = makeKibanaSearchObj("wafQuery.json", days, pattern, policy);
+            makeKibanaSearch.computeIfPresent(policy, (k, v) -> JsonExtractor.<String>accessList(v).stream()
+                    .map(WHOIS_SCANNER::lookupPolicy).map(KibanaApi::displayDistinct).collect(Collectors.toList()));
+            return displayDistinct(makeKibanaSearch);
+        });
         fullScan.put("PaloAlto_Threat", () -> {
             if (CIDRUtils.isVPNNetwork(ip)) {
                 Map<String, Object> userQuery =
@@ -420,16 +429,14 @@ public class KibanaApi {
                 remap.stream().collect(Collectors.groupingBy(e -> e.get("key1"),
                         LinkedHashMap<String, List<Map<String, String>>>::new, Collectors.toList()));
         return collect2.entrySet().stream().map(entry -> {
-            Map<String,
-                    Long> collect = entry.getValue().stream()
+            Map<String, Long> collect = entry.getValue().stream()
                             .map(e -> new AbstractMap.SimpleEntry<>(getURL(e.get("key0")),
                                     StringSigaUtils.toLong(e.get(docCount + "0"))))
                             .collect(Collectors.groupingBy(SimpleEntry<String, Long>::getKey,
                                     Collectors.summingLong(SimpleEntry<String, Long>::getValue)));
             String collect3 = collect.entrySet().stream()
                     .sorted(Comparator.comparingLong(Entry<String, Long>::getValue).reversed())
-                    .map(e -> e.getKey() + "\t" + e.getValue()).filter(s -> !s.startsWith("*"))
-                    .collect(Collectors.joining("\n"));
+                    .map(Entry<String, Long>::getKey).filter(s -> !s.startsWith("*")).collect(Collectors.joining("\n"));
             return entry.getKey() + "\n" + collect3;
         }).collect(Collectors.joining("\r\n"));
     }

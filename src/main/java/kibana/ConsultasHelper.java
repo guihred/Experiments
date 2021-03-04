@@ -22,10 +22,12 @@ public final class ConsultasHelper {
     private static final double THRESHOLD_NETWORK = .40;
     private static final Logger LOG = HasLogging.log();
     public static final String IGNORE_IPS_REGEX = "::1|127.0.0.1";
-    private static final List<String> EXCLUDE_OWNERS =
-            Arrays.asList("CAIXA ECONOMICA FEDERAL", "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO",
-                    "Tribunal Regional Federal da Terceira Regiao",
-                    "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC", "BANCO MERCANTIL DO BRASIL S/A");
+    private static final List<String> BLOCK =
+            Arrays.asList("Block_48h", "Block_7_dias", "Block_6horas", "Block_12h", "Block_24h_SIEM",
+                    "Dataprev_SOM_BlackList_Customizada_APP");
+    private static final List<String> EXCLUDE_OWNERS = Arrays.asList("CAIXA ECONOMICA FEDERAL",
+            "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO", "Tribunal Regional Federal da Terceira Regiao",
+            "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC", "BANCO MERCANTIL DO BRASIL S/A");
 
     private ConsultasHelper() {
     }
@@ -58,7 +60,7 @@ public final class ConsultasHelper {
 
     public static String fixParam(String fieldQuery, String first) {
         if (QueryObjects.CLIENT_IP_QUERY.equals(fieldQuery) && first.endsWith(".prevnet")) {
-            return SupplierEx.get(()->CIDRUtils.toIPByName(first).getHostAddress(),first);
+            return SupplierEx.get(() -> CIDRUtils.toIPByName(first).getHostAddress(), first);
         }
         if (QueryObjects.URL_QUERY.equals(fieldQuery) && first.startsWith("/")) {
             return KibanaApi.getURL(first);
@@ -86,11 +88,8 @@ public final class ConsultasHelper {
                             return e;
                         }).collect(Collectors.toList());
                 String numberCol = params[queryObjects.getParams().length - 1];
-                Map<String,
-                        Double> netHistogram = whoIsInfo.stream()
-                                .collect(Collectors.groupingBy(
-                                        m -> getNameAndNetwork(m),
-                                        Collectors.summingDouble(m -> getNumber(numberCol, m))));
+                Map<String, Double> netHistogram = whoIsInfo.stream().collect(Collectors
+                        .groupingBy(m -> getNameAndNetwork(m), Collectors.summingDouble(m -> getNumber(numberCol, m))));
                 DoubleSummaryStatistics summaryStatistics =
                         netHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
                 double avg = summaryStatistics.getAverage();
@@ -170,8 +169,8 @@ public final class ConsultasHelper {
 
     private static boolean isNotBlocked(Integer days, String ip) {
         if (ip.matches(WhoIsScanner.IP_REGEX)) {
-            Map<String, String> blocked = KibanaApi.makeKibanaSearch("policiesQuery.json", days, ip, "key");
-            return blocked.values().stream().noneMatch(s -> s.contains("block"));
+            String blocked = SupplierEx.get(KibanaApi.scanByIp(ip, days).get("WAF_Policy"), "");
+            return BLOCK.stream().noneMatch(s -> blocked.contains(s));
         }
         return true;
     }

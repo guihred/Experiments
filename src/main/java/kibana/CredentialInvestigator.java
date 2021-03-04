@@ -70,34 +70,14 @@ public class CredentialInvestigator extends KibanaInvestigator {
 
     @Override
     protected Map<String, String> executeCall(String query, DoubleProperty progress, List<String> cols) {
-        Map<String, String> result = new LinkedHashMap<>();
         Integer d = days.getSelectionModel().getSelectedItem();
         String index = indexCombo.getSelectionModel().getSelectedItem();
         CommonsFX.update(progress, 0);
-        RunnableEx.run(() -> {
-
-            if (query.matches(IP_REGEX)) {
-                Map<String, String> geridCredencial = KibanaApi.getGeridCredencial(query, index, d);
-                result.put("IP", query);
-                geridCredencial.forEach((k, v) -> {
-                    result.merge("Credencial", k, (u, m) -> u + "\n" + m);
-                    result.merge("Message", v.trim(), (u, m) -> u + "\n" + m);
-                });
-            } else {
-                Map<String, String> iPsByCredencial = KibanaApi.getIPsByCredencial(query, index, d);
-                result.put("Credencial", query);
-                iPsByCredencial.forEach((k, v) -> {
-                    result.merge("IP", k, (u, m) -> u + "\n" + m);
-                    result.merge("Message", v.trim(), (u, m) -> u + "\n" + m);
-                });
-            }
-            String credencial = result.putIfAbsent("Credencial", "");
-            String ip = result.putIfAbsent("IP", "");
-            result.compute("Credencial Info", (k, v) -> credentialInfo(credencial));
-            result.put("Login", KibanaApi.getLoginTimeCredencial(query, index, d));
-            result.computeIfAbsent("GeoIP", s -> KibanaApi.geoLocation(ip));
-            result.computeIfAbsent("Message",
-                    s -> KibanaApi.getMessageList(query, index, d).stream().findFirst().orElse(""));
+        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, SupplierEx<String>> scanByIp = scanCredentials(query, d, index, result);
+        scanByIp.forEach((k, v) -> {
+            result.put(k, SupplierEx.get(v, ""));
+            CommonsFX.addProgress(progress, 1. / scanByIp.size());
         });
         CommonsFX.update(progress, 1);
 
@@ -172,6 +152,37 @@ public class CredentialInvestigator extends KibanaInvestigator {
         headers.put("Referer", "https://www-acesso/gwdc/");
         headers.put("Upgrade-Insecure-Requests", "1");
         return headers;
+    }
+
+    private static Map<String, SupplierEx<String>> scanCredentials(String query, Integer days, String index,
+            Map<String, String> result) {
+        Map<String, SupplierEx<String>> scanByIp = new LinkedHashMap<>();
+        scanByIp.put("IP", () -> {
+            if (query.matches(IP_REGEX)) {
+                return query;
+            }
+            Map<String, String> iPsByCredencial = KibanaApi.getIPsByCredencial(query, index, days);
+            return iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
+        });
+        scanByIp.put("GeoIP", () -> KibanaApi.geoLocation(result.getOrDefault("IP", "")));
+        scanByIp.put("Credencial", () -> {
+            if (query.matches(IP_REGEX)) {
+                Map<String, String> iPsByCredencial = KibanaApi.getGeridCredencial(query, index, days);
+                return iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
+            }
+            return query;
+        });
+        scanByIp.put("Credencial Info", () -> credentialInfo(result.getOrDefault("Credencial", "")));
+        scanByIp.put("Login", () -> KibanaApi.getLoginTimeCredencial(query, index, days));
+        scanByIp.put("Message", () -> {
+            if (query.matches(IP_REGEX)) {
+                Map<String, String> iPsByCredencial = KibanaApi.getGeridCredencial(query, index, days);
+                return iPsByCredencial.values().stream().map(s -> s.trim()).collect(Collectors.joining("\n"));
+            }
+            Map<String, String> iPsByCredencial = KibanaApi.getIPsByCredencial(query, index, days);
+            return iPsByCredencial.values().stream().map(s -> s.trim()).collect(Collectors.joining("\n"));
+        });
+        return scanByIp;
     }
 
 }

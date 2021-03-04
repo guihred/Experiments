@@ -26,7 +26,7 @@ public final class ExtractUtils {
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
     private static final String PROXY_CONFIG2 = Stream.of("10", "31", "220", "23").collect(Collectors.joining("."));
-    private static final String PASS = "30-sanJU";
+    private static final String PASS = "31-sanJUichi";
     public static final String PROXY_ADDRESS = getProxyAddress();
     private static final boolean IS_PROXIED = PROXY_ADDRESS != null;
 
