@@ -55,7 +55,7 @@ public class AcessosVolumetricos {
         }, "key", TRAFEGO);
         DataframeUtils.crossFeatureObject(dataframeML, "motivação",
                 ip -> !StringUtils.equalsIgnoreCase("Acima", Objects.toString(ip[1])) ? ""
-                        : KibanaApi.scanByIp(ip[0].toString(), 1).get("Ports").get(),
+                        : getPorts(Objects.toString(ip[0])),
                 "IP", "Tipo de Tráfego");
 
         DataframeUtils.save(dataframeML,
@@ -68,6 +68,10 @@ public class AcessosVolumetricos {
         ExtractUtils.insertProxyConfig();
         getVolumetria("sourceQuery.json", "source");
         getVolumetria("destinationQuery.json", "destination");
+    }
+
+    private static String getPorts(String ip) throws Exception {
+        return KibanaApi.scanByIp(ip, 1).get("Ports").get();
     }
 
     private static String getTipoTrafego(DataframeML build, Object[] ip) {

@@ -1,10 +1,10 @@
 {"index": "dtp-pl*","ignore_unavailable": true,"preference": 1609255103121}
 {
 	"aggs": {
-		"2": {
+		"3": {
 			"terms": {
-				"field": "DestinationPort",
-				"size": 5,
+				"field": "DestinationIP",
+				"size": 2,
 				"order": {
 					"1": "desc"
 				}
@@ -14,11 +14,28 @@
 					"sum": {
 						"field": "Bytes"
 					}
+				},
+				"4": {
+					"terms": {
+						"field": "DestinationPort",
+						"size": 2,
+						"order": {
+							"1": "desc"
+						}
+					},
+					"aggs": {
+						"1": {
+							"sum": {
+								"field": "Bytes"
+							}
+						}
+					}
 				}
 			}
 		}
 	},
 	"size": 0,
+	"version": true,
 	"_source": {
 		"excludes": []
 	},
@@ -50,26 +67,59 @@
 		"bool": {
 			"must": [
 				{
-                    "query_string": {
-                        "query": "SourceIP:\"%s\" OR DestinationIP:\"%s\"",
-                        "analyze_wildcard": true,
-                        "default_field": "*"
-                    }
-                },
-                {
-                    "range": {
-                        "@timestamp": {
-                            "gte": %s,
-                            "lte": %s,
-                            "format": "epoch_millis"
-                        }
-                    }
-                }
+					"match_all": {
+						
+					}
+				},
+				{
+					"range": {
+						"@timestamp": {
+							"gte": 1614866132937,
+							"lte": 1614952532937,
+							"format": "epoch_millis"
+						}
+					}
+				},
+				{
+					"match_phrase": {
+						"SourceIP": {
+							"query": "10.146.17.164"
+						}
+					}
+				}
 			],
-            "filter": [],
+			"filter": [
+				{
+					"match_all": {
+						
+					}
+				}
+			],
 			"should": [],
-			"must_not": []
+			"must_not": [
+				{
+					"match_phrase": {
+						"dtpcategoria": {
+							"query": "threat"
+						}
+					}
+				}
+			]
 		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"@kibana-highlighted-field@"
+		],
+		"post_tags": [
+			"@/kibana-highlighted-field@"
+		],
+		"fields": {
+			"*": {
+				
+			}
+		},
+		"fragment_size": 2147483647
 	},
 	"timeout": "30000ms"
 }

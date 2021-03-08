@@ -16,6 +16,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import utils.ResourceFXUtils;
+import utils.SimpleMap;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
@@ -50,7 +51,11 @@ public class WhoIsScanner {
     public Map<String, String> lookupPolicy(String policy) {
         DataframeML networksFile =
                 dataframeLookup.computeIfAbsent("networks/Policies.csv", DataframeBuilder::build);
-        return CIDRUtils.strMap(CIDRUtils.searchInFile(networksFile, "Policy Name", policy));
+        Map<String, Object> searchInFile = CIDRUtils.searchInFile(networksFile, "Policy Name", policy);
+        if (searchInFile == null) {
+            return new SimpleMap("Policy Name", policy);
+        }
+        return CIDRUtils.strMap(searchInFile);
     }
 
     public String reverseDNS(String ip) {

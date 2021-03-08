@@ -147,8 +147,8 @@ public class CIDRUtils {
 
     public static Map<String, String> strMap(Map<String, Object> first) {
         if (first != null) {
-            return first.entrySet().stream()
-                    .collect(Collectors.toMap(Entry<String, Object>::getKey, e -> Objects.toString(e.getValue(), "")));
+            return first.entrySet().stream().collect(Collectors.toMap(Entry<String, Object>::getKey,
+                    e -> Objects.toString(e.getValue(), ""), SupplierEx::nonNull, LinkedHashMap::new));
         }
 
         return null;

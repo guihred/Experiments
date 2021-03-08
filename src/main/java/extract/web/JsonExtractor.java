@@ -414,10 +414,7 @@ public final class JsonExtractor {
             ((List) b).addAll((List) a);
             return b;
         }
-        if (a.getClass() == b.getClass()) {
             return new ArrayList<>(Arrays.asList(a, b));
-        }
-        return a;
     }
 
     private static Map<String, String> newMap(Entry<String, JsonNode> item) {

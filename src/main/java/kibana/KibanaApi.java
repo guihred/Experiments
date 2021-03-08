@@ -199,7 +199,8 @@ public class KibanaApi {
     public static Map<String, Object> makeKibanaSearchObj(File file, int days, String[] query, String... params) {
         return SupplierEx.getHandle(() -> {
             File outFile = searchIfDoesNotExist(file, days, query);
-            return JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
+            Object object = JsonExtractor.toObject(outFile, params);
+            return JsonExtractor.accessMap(object);
         }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
     }
 
@@ -263,11 +264,13 @@ public class KibanaApi {
         fullScan.put("Ports", () -> {
             Map<String, Object> destinationPort =
                     makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { ip, ip }, key, valueCol);
+            destinationPort.computeIfPresent(valueCol, (k, v) -> groupStreamT(JsonExtractor.<Object>accessList(v), 2)
+                    .map(e -> e.get(0)).map(Objects::toString).collect(Collectors.toList()));
             destinationPort.computeIfPresent(key,
-                    (k, v) -> JsonExtractor.<Integer>accessList(v).stream().filter(i -> i != 0)
-                            .map(PortServices::getServiceByPort)
-                            .map(le -> Arrays.toString(le.getPorts()) + " " + le.getDescription())
-                            .collect(Collectors.joining("\n")));
+                    (k, v) -> groupStreamT(JsonExtractor.<Object>accessList(v), 2).map(s -> {
+                        PortServices serviceByPort = PortServices.getServiceByPort(StringSigaUtils.toInteger(s.get(0)));
+                        return WHOIS_SCANNER.reverseDNS(Objects.toString(s.get(1), "")) + " " + serviceByPort;
+                    }).collect(Collectors.joining("\n")));
             convertToBytes(destinationPort, valueCol);
             return displayDistinct(destinationPort);
         });
@@ -344,9 +347,12 @@ public class KibanaApi {
             if (stats.getCount() == 0) {
                 return "";
             }
+            String last = StringSigaUtils.getFileSize(stats.getSum());
+            if (stats.getCount() == 1) {
+                return String.format("%s", last);
+            }
             String min = StringSigaUtils.getFileSize(stats.getAverage());
             String max = StringSigaUtils.getFileSize(stats.getMax());
-            String last = StringSigaUtils.getFileSize(stats.getSum());
             return String.format("%s (%s a %s)", last, min, max);
         });
 
@@ -377,10 +383,18 @@ public class KibanaApi {
     }
 
     private static String group(List<String> collect, final int d) {
+        return groupStream(collect, d).collect(Collectors.joining("\n"));
+    }
+
+    private static Stream<String> groupStream(List<String> collect, final int d) {
         return IntStream.range(0, collect.size() / d)
                 .mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size()).mapToObj(j -> collect.get(j))
-                        .flatMap(s -> Stream.of(s.split(" "))).distinct().collect(Collectors.joining(" ")))
-                .collect(Collectors.joining("\n"));
+                        .flatMap(s -> Stream.of(s.split(" "))).distinct().collect(Collectors.joining(" ")));
+    }
+
+    private static <T> Stream<List<T>> groupStreamT(List<T> collect, final int d) {
+        return IntStream.range(0, collect.size() / d).boxed().map(i -> IntStream.range(i * d, i * d + d)
+                .filter(j -> j < collect.size()).mapToObj(collect::get).collect(Collectors.toList()));
     }
 
     private static File kibanaFile(String file) {
@@ -406,14 +420,15 @@ public class KibanaApi {
     }
 
     private static File searchIfDoesNotExist(File file, int days, String[] query) {
-        File outFile = newJsonFile(removeExtension(file) + Stream.of(query).collect(Collectors.joining()) + days);
+        File outFile =
+                newJsonFile(removeExtension(file) + Stream.of(query).distinct().collect(Collectors.joining()) + days);
         if (JsonExtractor.isNotRecentFile(outFile)) {
             String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
             String lte = Objects.toString(Instant.now().toEpochMilli());
             RunnableEx.make(
                     () -> getFromURL(ELASTICSEARCH_MSEARCH_URL,
                             getContent(file, Stream.concat(Stream.of(query), Stream.of(gte, lte)).toArray()), outFile),
-                    e -> LOG.error("ERROR MAKING SEARCH {} {} ", file.getName(), e.getMessage())).run();
+                    e -> LOG.error("ERROR MAKING  SEARCH {} {} ", file.getName(), e.getMessage())).run();
         }
         return outFile;
     }
@@ -429,7 +444,8 @@ public class KibanaApi {
                 remap.stream().collect(Collectors.groupingBy(e -> e.get("key1"),
                         LinkedHashMap<String, List<Map<String, String>>>::new, Collectors.toList()));
         return collect2.entrySet().stream().map(entry -> {
-            Map<String, Long> collect = entry.getValue().stream()
+            Map<String,
+                    Long> collect = entry.getValue().stream()
                             .map(e -> new AbstractMap.SimpleEntry<>(getURL(e.get("key0")),
                                     StringSigaUtils.toLong(e.get(docCount + "0"))))
                             .collect(Collectors.groupingBy(SimpleEntry<String, Long>::getKey,
