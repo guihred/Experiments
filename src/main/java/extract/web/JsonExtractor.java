@@ -21,6 +21,7 @@ import utils.ResourceFXUtils;
 import utils.SimpleMap;
 import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
+import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
@@ -392,6 +393,15 @@ public final class JsonExtractor {
         }
     }
 
+    private static boolean getListClass(List<?> a) {
+        Class<? extends Object> orElse = a.stream().findFirst().map(Object::getClass).orElse(null);
+        return isAggregatable(orElse);
+    }
+
+    private static boolean isAggregatable(Class<? extends Object> orElse) {
+        return Arrays.asList(Integer.class, Long.class, String.class).contains(orElse) || orElse.isPrimitive();
+    }
+
     private static void merge(TreeItem<Map<String, String>> e, String nodeName, JsonNode item2) {
         if (item2.isValueNode()) {
             e.getValue().merge(nodeName, convertObj(item2),
@@ -401,20 +411,24 @@ public final class JsonExtractor {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Object mergeObjs(Object a, Object b) {
-        if (a instanceof List && ((List) a).stream().findFirst().map(Object::getClass).orElse(null) == b.getClass()) {
+        if (a instanceof List && getListClass((List) a) == isAggregatable(b.getClass())) {
             ((List) a).add(b);
             return a;
         }
-        if (b instanceof List && ((List) b).stream().findFirst().map(Object::getClass).orElse(null) == a.getClass()) {
+        if (b instanceof List && getListClass((List) b) == isAggregatable(a.getClass())) {
             ((List) b).add(a);
             return b;
         }
-        if (b instanceof List && a instanceof List && ((List) b).stream().findFirst().map(Object::getClass)
-                .orElse(null) == ((List) a).stream().findFirst().map(Object::getClass).orElse(null)) {
+        if (b instanceof List && a instanceof List 
+                && getListClass((List)b) == getListClass((List)a)) {
             ((List) b).addAll((List) a);
             return b;
         }
+        if (isAggregatable(a.getClass()) == isAggregatable(b.getClass())) {
             return new ArrayList<>(Arrays.asList(a, b));
+        }
+        HasLogging.log().error("FIX MERGE {} {}", a, b);
+        return a;
     }
 
     private static Map<String, String> newMap(Entry<String, JsonNode> item) {

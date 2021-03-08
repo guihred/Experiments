@@ -2,8 +2,11 @@ package ethical.hacker;
 
 import java.io.BufferedReader;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ml.data.DataframeBuilder;
@@ -46,7 +49,7 @@ public final class PortServices {
 
     @Override
     public String toString() {
-        return String.format("%s %s %s", description, type, Arrays.toString(ports));
+        return String.format("[%s %s]", description, StringUtils.join(ports, ','));
     }
 
     public static PortServices getServiceByPort(Integer port) {
@@ -100,9 +103,9 @@ public final class PortServices {
 
     public static void main(String[] args) {
         loadServiceNames();
-        String udpServices = UDP_SERVICES.entrySet().stream()
-                .sorted(Comparator.comparing(Entry<Integer, String>::getKey)).map(Entry<Integer, String>::toString)
-                .collect(Collectors.joining("\n\t", "\n", ""));
+        String udpServices =
+                UDP_SERVICES.entrySet().stream().sorted(Comparator.comparing(Entry<Integer, String>::getKey))
+                        .map(Entry<Integer, String>::toString).collect(Collectors.joining("\n\t", "\n", ""));
         LOG.info("UDP = {}", udpServices);
         String tcpServices =
                 TCP_SERVICES.entrySet().stream().sorted(Comparator.comparing(Entry<Integer, String>::getKey))

@@ -81,15 +81,18 @@ public final class ConsultasHelper {
             for (QueryObjects queryObjects : queries) {
                 filter1.put(QueryObjects.ACESSOS_SISTEMA_QUERY, application);
                 String[] params = queryObjects.getParams();
-                List<Map<String, String>> kibanaQuery = queryObjects.searchRemap(filter1, day);
+                List<Map<String, String>> kibanaQuery = queryObjects.searchRemap(filter1, day).stream()
+                        .filter(m -> !getFirst(params, m).matches(ConsultasHelper.IGNORE_IPS_REGEX))
+                        .collect(Collectors.toList());
                 List<Map<String, String>> whoIsInfo = kibanaQuery.parallelStream()
-                        .filter(m -> !getFirst(params, m).matches(ConsultasHelper.IGNORE_IPS_REGEX)).map(e -> {
+                        .map(e -> {
                             e.putAll(whoIsScanner.getIpInformation(getFirst(params, e)));
                             return e;
                         }).collect(Collectors.toList());
                 String numberCol = params[queryObjects.getParams().length - 1];
                 Map<String, Double> netHistogram = whoIsInfo.stream().collect(Collectors
-                        .groupingBy(m -> getNameAndNetwork(m), Collectors.summingDouble(m -> getNumber(numberCol, m))));
+                        .groupingBy(ConsultasHelper::getNameAndNetwork,
+                                Collectors.summingDouble(m -> getNumber(numberCol, m))));
                 DoubleSummaryStatistics summaryStatistics =
                         netHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
                 double avg = summaryStatistics.getAverage();
@@ -106,7 +109,7 @@ public final class ConsultasHelper {
                     String topNets = networks.stream().collect(Collectors.joining("\t\n"));
                     LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, topNets);
                     List<Map<String, String>> aboveAvgInfo = kibanaQuery.parallelStream()
-                            .filter(m -> !getFirst(params, m).matches(ConsultasHelper.IGNORE_IPS_REGEX)).filter(e -> {
+                            .filter(e -> {
                                 String first = getFirst(params, e);
                                 return nets.stream().anyMatch(net -> CIDRUtils.isSameNetworkAddress(net, first));
                             }).collect(Collectors.toList());

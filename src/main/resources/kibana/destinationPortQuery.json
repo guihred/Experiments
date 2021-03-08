@@ -4,7 +4,7 @@
 		"3": {
 			"terms": {
 				"field": "DestinationIP",
-				"size": 2,
+				"size": 3,
 				"order": {
 					"1": "desc"
 				}
@@ -18,7 +18,7 @@
 				"4": {
 					"terms": {
 						"field": "DestinationPort",
-						"size": 2,
+						"size": 3,
 						"order": {
 							"1": "desc"
 						}
@@ -71,19 +71,19 @@
 						
 					}
 				},
+                {
+                    "match_phrase": {
+                        "SourceIP": {
+                            "query": "%s"
+                        }
+                    }
+                },
 				{
 					"range": {
 						"@timestamp": {
-							"gte": 1614866132937,
-							"lte": 1614952532937,
+							"gte": %s,
+							"lte": %s,
 							"format": "epoch_millis"
-						}
-					}
-				},
-				{
-					"match_phrase": {
-						"SourceIP": {
-							"query": "10.146.17.164"
 						}
 					}
 				}
@@ -109,14 +109,13 @@
 	},
 	"highlight": {
 		"pre_tags": [
-			"@kibana-highlighted-field@"
+			""
 		],
 		"post_tags": [
-			"@/kibana-highlighted-field@"
+			""
 		],
 		"fields": {
 			"*": {
-				
 			}
 		},
 		"fragment_size": 2147483647
