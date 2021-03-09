@@ -399,7 +399,8 @@ public final class JsonExtractor {
     }
 
     private static boolean isAggregatable(Class<? extends Object> orElse) {
-        return Arrays.asList(Integer.class, Long.class, String.class).contains(orElse) || orElse.isPrimitive();
+        return Arrays.asList(Integer.class, Boolean.class, Double.class, Long.class, String.class).contains(orElse)
+                || orElse.isPrimitive();
     }
 
     private static void merge(TreeItem<Map<String, String>> e, String nodeName, JsonNode item2) {
