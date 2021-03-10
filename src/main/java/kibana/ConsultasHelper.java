@@ -22,12 +22,12 @@ public final class ConsultasHelper {
     private static final double THRESHOLD_NETWORK = .40;
     private static final Logger LOG = HasLogging.log();
     public static final String IGNORE_IPS_REGEX = "::1|127.0.0.1";
-    private static final List<String> BLOCK =
-            Arrays.asList("Block_48h", "Block_7_dias", "Block_6horas", "Block_12h", "Block_24h_SIEM",
-                    "Dataprev_SOM_BlackList_Customizada_APP");
-    private static final List<String> EXCLUDE_OWNERS = Arrays.asList("CAIXA ECONOMICA FEDERAL",
-            "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO", "Tribunal Regional Federal da Terceira Regiao",
-            "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC", "BANCO MERCANTIL DO BRASIL S/A");
+    private static final List<String> BLOCK = Arrays.asList("Block_48h", "Block_7_dias", "Block_6horas", "Block_12h",
+            "Block_24h_SIEM", "Dataprev_SOM_BlackList_Customizada_APP");
+    private static final List<String> EXCLUDE_OWNERS =
+            Arrays.asList("CAIXA ECONOMICA FEDERAL", "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO",
+                    "CIA. DE TECNOL. DA INFOR. E COMUNICAÇÃO DO PARANÁ", "Tribunal Regional Federal da Terceira Regiao",
+                    "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC", "BANCO MERCANTIL DO BRASIL S/A");
 
     private ConsultasHelper() {
     }
@@ -84,14 +84,13 @@ public final class ConsultasHelper {
                 List<Map<String, String>> kibanaQuery = queryObjects.searchRemap(filter1, day).stream()
                         .filter(m -> !getFirst(params, m).matches(ConsultasHelper.IGNORE_IPS_REGEX))
                         .collect(Collectors.toList());
-                List<Map<String, String>> whoIsInfo = kibanaQuery.parallelStream()
-                        .map(e -> {
-                            e.putAll(whoIsScanner.getIpInformation(getFirst(params, e)));
-                            return e;
-                        }).collect(Collectors.toList());
+                List<Map<String, String>> whoIsInfo = kibanaQuery.parallelStream().map(e -> {
+                    e.putAll(whoIsScanner.getIpInformation(getFirst(params, e)));
+                    return e;
+                }).collect(Collectors.toList());
                 String numberCol = params[queryObjects.getParams().length - 1];
-                Map<String, Double> netHistogram = whoIsInfo.stream().collect(Collectors
-                        .groupingBy(ConsultasHelper::getNameAndNetwork,
+                Map<String, Double> netHistogram =
+                        whoIsInfo.stream().collect(Collectors.groupingBy(ConsultasHelper::getNameAndNetwork,
                                 Collectors.summingDouble(m -> getNumber(numberCol, m))));
                 DoubleSummaryStatistics summaryStatistics =
                         netHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
@@ -108,11 +107,10 @@ public final class ConsultasHelper {
                     String queryField = queryObjects.getQuery();
                     String topNets = networks.stream().collect(Collectors.joining("\t\n"));
                     LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, topNets);
-                    List<Map<String, String>> aboveAvgInfo = kibanaQuery.parallelStream()
-                            .filter(e -> {
-                                String first = getFirst(params, e);
-                                return nets.stream().anyMatch(net -> CIDRUtils.isSameNetworkAddress(net, first));
-                            }).collect(Collectors.toList());
+                    List<Map<String, String>> aboveAvgInfo = kibanaQuery.parallelStream().filter(e -> {
+                        String first = getFirst(params, e);
+                        return nets.stream().anyMatch(net -> CIDRUtils.isSameNetworkAddress(net, first));
+                    }).collect(Collectors.toList());
                     mergeFilter(filter, params, queryField, aboveAvgInfo);
                 }
 

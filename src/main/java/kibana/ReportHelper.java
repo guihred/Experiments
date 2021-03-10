@@ -105,13 +105,13 @@ public final class ReportHelper {
             List<String> collect = credentialMap.keySet().stream().collect(Collectors.toList());
             paramText.merge("\\$orIps", ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
             for (String credencial : collect) {
-                Map<String, String> iPsByCredencial = KibanaApi.getIPsByCredencial(
-                        "\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
+                Map<String, String> iPsByCredencial =
+                        KibanaApi.getIPsByCredencial("\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
                 credentialText.addAll(iPsByCredencial.values());
                 String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
                 paramText.merge("\\$otherIps", collect2, ReportHelper::mergeStrings);
-                iPsByCredencial.keySet()
-                        .forEach(i -> paramText.merge("\\$orIps", i, (o, n) -> ReportHelper.mergeStrings(o, n, " OR ")));
+                iPsByCredencial.keySet().forEach(
+                        i -> paramText.merge("\\$orIps", i, (o, n) -> ReportHelper.mergeStrings(o, n, " OR ")));
                 LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
             }
     
@@ -196,10 +196,10 @@ public final class ReportHelper {
                         .findFirst().ifPresent(o -> {
                             int indexOf = collection.indexOf(o);
                             collection.set(indexOf, img);
-                            build.getItems().remove(selectedItem);
                         });
             }
         }
+        build.getItems().remove(selectedItem);
         if (build.getItems().isEmpty()) {
             SimpleDialogBuilder.closeStage(build);
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
@@ -309,7 +309,13 @@ public final class ReportHelper {
         Property<Image> image = new SimpleObjectProperty<>();
         String kibanaURL = Objects.toString(imageObj.get("url"), "");
         String finalURL = replaceString(params, kibanaURL);
-        CommonsFX.runInPlatform(() -> loadSite(engine, finalURL));
+        CommonsFX.runInPlatform(() -> {
+            if (imageObj.containsKey("zoom")) {
+                Double zoom = StringSigaUtils.toDouble(imageObj.getOrDefault("zoom", 1));
+                browser.zoomProperty().set(zoom);
+            }
+            loadSite(engine, finalURL);
+        });
         RunnableEx.measureTime("Load Site " + imageObj.get("name"), () -> {
             AtomicBoolean atomicBoolean = new AtomicBoolean(true);
             while (atomicBoolean.get()) {

@@ -68,7 +68,6 @@ public class DataframeBuilder extends DataframeML {
                 RunnableEx.run(() -> {
                     String extractBodyFromHTML = JsoupUtils.extractBodyFromHTML(file);
                     List<String> asList = Arrays.asList(extractBodyFromHTML.split("(?<=\") (?=\")"));
-                    asList.forEach(System.out::println);
                     file = ResourceFXUtils.getOutFile("csv/" + file.getName());
                     Files.write(file.toPath(), asList, StandardOpenOption.CREATE);
                     stats = null;

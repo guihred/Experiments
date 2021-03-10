@@ -121,7 +121,7 @@
             "questions":[
                 "user.dst not empty",
                 "country.src != BR",
-                "user.dst distinct"
+                "ip.src distinct"
             ]
         }
 	],
@@ -145,7 +145,7 @@
                 "ip.src not empty",
                 "OS contains linux",
                 "user.dst not empty",
-                "user.dst distinct",
+                "ip.src distinct",
                 "user.dst not contains dataprev"
             ]
         }
@@ -170,7 +170,7 @@
                 "ip.src not empty",
                 "OS like (?i).+server.+|.+other.+",
                 "user.dst not empty",
-                "user.dst distinct"
+                "ip.src distinct"
             ]
         }
 	],

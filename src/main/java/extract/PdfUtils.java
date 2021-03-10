@@ -102,8 +102,9 @@ public final class PdfUtils {
     }
 
     public static PdfInfo readText(PdfInfo fileInfo, File outFile) throws IOException {
-        PrintStream out = new PrintStream(outFile, StandardCharsets.UTF_8.displayName());
-        return readFile(fileInfo, fileInfo.getFile(), out);
+        try (PrintStream out = new PrintStream(outFile, StandardCharsets.UTF_8.displayName())) {
+            return readFile(fileInfo, fileInfo.getFile(), out);
+        }
     }
 
     public static void runOnFile(int init, File file, BiConsumer<String, List<TextPosition>> onTextPosition,

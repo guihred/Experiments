@@ -12,6 +12,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.stream.Stream;
 import javafx.scene.shape.Mesh;
 import javax.swing.filechooser.FileSystemView;
+import org.apache.commons.lang3.StringUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
@@ -43,7 +44,10 @@ public final class ResourceFXUtils {
 
     public static File getOutFile(String out) {
         File file = getOutFile();
-        File file2 = new File(file, out.replaceAll("[:\\{\\}\"\n]+", "_"));
+        String replaceAll = out.replaceAll("[:\\{\\}\"\n]+", "_");
+        String extension = replaceAll.replaceAll(".+(\\.\\w+)$", "$1");
+        String abbreviate = StringUtils.abbreviate(replaceAll.replace(extension, ""), 90);
+        File file2 = new File(file, abbreviate + extension);
         if (out.contains("/") && !file2.getParentFile().exists()) {
             file2.getParentFile().mkdir();
         }

@@ -58,20 +58,11 @@ public class KibanaApi {
         adjustToMax(listOfFields, maxNumFields);
         return IntStream.range(0, maxNumFields).mapToObj(
                 j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining(" ")))
-                // .distinct()
                 .collect(Collectors.joining("\n"));
     }
 
     public static <T> String displayDistinct(Map<String, T> ob) {
-        if (ob == null) {
-            return "";
-        }
-        List<List<String>> listOfFields = getFieldList(ob);
-        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
-        adjustToMax(listOfFields, maxNumFields);
-        return IntStream.range(0, maxNumFields).mapToObj(
-                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining("    ")))
-                .distinct().collect(Collectors.joining("\n"));
+        return Stream.of(display(ob).split("\n")).distinct().collect(Collectors.joining("\n"));
     }
 
     public static String geoLocation(String ip) {
@@ -94,10 +85,9 @@ public class KibanaApi {
         List<String> message = getMessageList(finalIP, index, days);
         String suppliedCredential = "WHAT: supplied credentials: .+?(\\d{11}).+";
         String regex = "WHO:\\s+(\\d+)|" + suppliedCredential;
-        List<String> linesThatMatch = message.stream().flatMap(m -> Stream.of(m.split("\n")))
-                .filter(l -> l.matches(regex)).map(s -> s.replaceAll(regex, "$1$2")).distinct()
-                // .filter(StringUtils::isNumeric)
-                .collect(Collectors.toList());
+        List<String> linesThatMatch =
+                message.stream().flatMap(m -> Stream.of(m.split("\n"))).filter(l -> l.matches(regex))
+                        .map(s -> s.replaceAll(regex, "$1$2")).distinct().collect(Collectors.toList());
         return message.stream().filter(l -> linesThatMatch.contains(getWhoField(regex, l))).distinct()
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s,
                         (t, u) -> getFirstMatch(suppliedCredential, t, u)));

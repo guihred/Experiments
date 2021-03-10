@@ -41,7 +41,7 @@ public class SimpleSummary<T extends Comparable<T>> implements Collector<T, Simp
 
     public String format(FunctionEx<T, String> f) {
 
-        return String.format("%s - %s", FunctionEx.apply(f, min, ""), FunctionEx.apply(f, max, ""));
+        return String.format("(%s - %s) %d", FunctionEx.apply(f, min, ""), FunctionEx.apply(f, max, ""), count);
     }
 
     public int getCount() {

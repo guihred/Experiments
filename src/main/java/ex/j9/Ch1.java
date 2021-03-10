@@ -61,14 +61,6 @@ public class Ch1 {
 		return IntStream.generate(() -> RANDOM.nextInt(50)).distinct().limit(6).sorted().boxed().collect(toList());
 	}
 
-	public static void main(String[] args) {
-		extremeDoubles();
-		// System.out.println(factorial(1000))
-		// System.out.println(lotteryCombination())
-		// System.out.println(pascalTriangle(10))
-		// System.out.println(average(1,2,3,4,5,6,7,8))
-	}
-
 	/**
 	 * 15. Write a program that stores Pascal's triangle up to a given n in an
 	 * List<List<Integer>> .

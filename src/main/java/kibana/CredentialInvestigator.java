@@ -134,7 +134,6 @@ public class CredentialInvestigator extends KibanaInvestigator {
                             "uid=" + ExtractUtils.getHTTPUsername() + "&password=" + ExtractUtils.getHTTPPassword(),
                             ContentType.APPLICATION_FORM_URLENCODED, headers, outFile);
             String string = postContent.get("Location");
-            System.out.println(postContent);
             JsoupUtils.getDocument("https://www-acesso/gwdc/" + string, cookies);
         }
     }
