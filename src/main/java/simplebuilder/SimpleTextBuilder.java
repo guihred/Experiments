@@ -74,16 +74,16 @@ public class SimpleTextBuilder extends SimpleShapeBuilder<Text, SimpleTextBuilde
 
         return this;
     }
+
     public SimpleTextBuilder y(final double x) {
         node.setY(x);
         return this;
     }
 
     public static Text newBoldText(String item) {
-        Text text = new Text(item);
         Font font = Font.getDefault();
-        text.setFont(Font.font(font.getFamily(), FontWeight.BOLD, font.getSize()));
-        return text;
+        return new SimpleTextBuilder().text(item).font(Font.font(font.getFamily(), FontWeight.BOLD, font.getSize()))
+                .build();
     }
 
 }
