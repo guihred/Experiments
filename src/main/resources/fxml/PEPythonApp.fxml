@@ -18,7 +18,7 @@
 				<Text text="Filter Results" />
 				<TextField fx:id="resultsFilter" />
 
-				<Text text="IPs" />
+				<Text text="Files" />
                 <ListView fx:id="filterList" prefWidth="175.0" prefHeight="175" VBox.vgrow="NEVER" />
 				<Button onAction="#onActionPeScan" text="_PE Scan" />
 				<Button onAction="#onActionPeScanMultiple" text="_PE Scan Directory" />

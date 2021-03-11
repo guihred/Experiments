@@ -142,7 +142,7 @@ public class FXHackTest extends AbstractTestExecution {
 
     @Test
     public void testInstallCert() {
-        String string = "correiov3.dataprev.gov.br";
+        String string = "www-acesso";
         measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate(string));
     }
 

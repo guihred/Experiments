@@ -89,7 +89,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
             return "";
         }
         return SupplierEx.get(() -> Stream.of(credencial.split("\n")).filter(StringUtils::isNotBlank)
-                .map(FunctionEx.makeFunction(CredentialInvestigator::getCredentialInfo)).filter(Objects::nonNull)
+                .map(c -> FunctionEx.apply(CredentialInvestigator::getCredentialInfo, c, new SimpleMap("search", c)))
                 .map(m -> m.values().stream().distinct().map(StringUtils::trim).collect(Collectors.joining(" - ")))
                 .map(Objects::toString).distinct().collect(Collectors.joining("\n")), "");
     }
