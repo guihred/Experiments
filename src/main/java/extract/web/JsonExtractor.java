@@ -38,6 +38,9 @@ public final class JsonExtractor {
                     return ((Map<?, ?>) ob).get(object);
                 }
                 if (object instanceof Integer) {
+                    if (ob instanceof Map) {
+                        return ((Map<?, ?>) ob).get(object);
+                    }
                     return ((List<?>) ob).get(((Integer) object).intValue());
                 }
                 return ob;
@@ -160,6 +163,28 @@ public final class JsonExtractor {
         linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static Object mergeObjs(Object a, Object b) {
+        if (a instanceof List && getListClass((List) a) == isAggregatable(b.getClass())) {
+            ((List) a).add(b);
+            return a;
+        }
+        if (b instanceof List && getListClass((List) b) == isAggregatable(a.getClass())) {
+            ((List) b).add(a);
+            return b;
+        }
+        if (b instanceof List && a instanceof List 
+                && getListClass((List)b) == getListClass((List)a)) {
+            ((List) b).addAll((List) a);
+            return b;
+        }
+        if (isAggregatable(a.getClass()) == isAggregatable(b.getClass())) {
+            return new ArrayList<>(Arrays.asList(a, b));
+        }
+        HasLogging.log().error("FIX MERGE {} {}", a, b);
+        return a;
+    }
+
     public static boolean moreThanXHoursModified(File outFile,int hours) {
         FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
         Instant instant = lastModifiedTime.toInstant();
@@ -197,7 +222,7 @@ public final class JsonExtractor {
     }
 
     public static void readJsonFile(TreeView<Map<String, String>> build, File file) {
-        Map<JsonNode, TreeItem<Map<String, String>>> allItems = new HashMap<>();
+        Map<JsonNode, TreeItem<Map<String, String>>> allItems = new LinkedHashMap<>();
         RunnableEx.remap(() -> tryToRead(build, allItems, file), "ERROR READING");
     }
 
@@ -289,7 +314,7 @@ public final class JsonExtractor {
         return toObject(rootNode, 0);
     }
 
-    public static Object toObject(File file, String... f) throws IOException {
+    public static Map<String, Object> toObject(File file, String... f) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         // read JSON like DOM Parser
         JsonNode rootNode = objectMapper.readTree(Files.newInputStream(file.toPath()));
@@ -410,28 +435,6 @@ public final class JsonExtractor {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static Object mergeObjs(Object a, Object b) {
-        if (a instanceof List && getListClass((List) a) == isAggregatable(b.getClass())) {
-            ((List) a).add(b);
-            return a;
-        }
-        if (b instanceof List && getListClass((List) b) == isAggregatable(a.getClass())) {
-            ((List) b).add(a);
-            return b;
-        }
-        if (b instanceof List && a instanceof List 
-                && getListClass((List)b) == getListClass((List)a)) {
-            ((List) b).addAll((List) a);
-            return b;
-        }
-        if (isAggregatable(a.getClass()) == isAggregatable(b.getClass())) {
-            return new ArrayList<>(Arrays.asList(a, b));
-        }
-        HasLogging.log().error("FIX MERGE {} {}", a, b);
-        return a;
-    }
-
     private static Map<String, String> newMap(Entry<String, JsonNode> item) {
         if (!item.getValue().isObject()) {
             return newMap(item.getKey(), convertObj(item.getValue()));
@@ -549,7 +552,7 @@ public final class JsonExtractor {
             return arrayObject;
         }
         if (jsonNode.isObject()) {
-            Map<String, Object> mapObject = new HashMap<>();
+            Map<String, Object> mapObject = new LinkedHashMap<>();
             for (Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields(); iterator.hasNext();) {
                 Entry<String, JsonNode> next = iterator.next();
                 Object merge = mapObject.merge(next.getKey(), toObject(next.getValue(), depth + 1, finalMap, f),

@@ -1,13 +1,15 @@
 import yara
 import sys
 import os
+import pathlib
+from pathlib import Path
 
-
-
-def mycallback(data):
-  print(data)
-  yara.CALLBACK_CONTINUE
+filename = Path('../rules').resolve()
 
 fil=sys.argv[1]
-rules = yara.load_rules(rules_rootpath='..\rules')
-matches = rules.match(fil, callback=mycallback)
+
+rules = yara.load_rules(rules_rootpath=filename)
+
+matches = rules.match(fil)
+for match in matches:
+        print ("%s\t" % match)

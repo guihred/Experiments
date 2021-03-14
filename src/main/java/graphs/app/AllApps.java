@@ -48,12 +48,11 @@ public class AllApps extends Application {
         ExtractUtils.insertProxyConfig();
         RunnableEx.runNewThread(
                 () -> getAllFileDependencies().stream().filter(makeTest(d -> d.getPublicMethods().contains("main")))
-                        .map(JavaFileDependency::getFullName)
-                        .collect(Collectors.toList()),
+                        .map(JavaFileDependency::getFullName).collect(Collectors.toList()),
                 items -> CommonsFX.runInPlatform(() -> getApplications().setAll(items)));
         System.setOut(SupplierEx.remap(() -> new PrintTextStream(out, true, "UTF-8", textArea5.textProperty()),
                 "ERROR CREATING STREAM"));
-        SimpleListViewBuilder.of(stackParts).onDoubleClick(AllApps::invoke)
+        SimpleListViewBuilder.of(stackParts).onDoubleClick(AllApps::invoke).multipleSelection()
                 .items(newFastFilter(textField0, getApplications().filtered(e -> true)));
     }
 
@@ -98,7 +97,7 @@ public class AllApps extends Application {
         RunnableEx.run(() -> {
             Class<?> appClass = Class.forName(className);
             if (Application.class.isAssignableFrom(appClass)) {
-                new SimpleDialogBuilder().show(asAppClass(appClass));
+                new SimpleDialogBuilder(true).show(asAppClass(appClass));
                 return;
             }
             Object[] args = new Object[] { new String[0] };

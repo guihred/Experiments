@@ -37,11 +37,6 @@ public class StringSigaUtils extends StringUtils {
     public static final ImmutableMap<Class<? extends Comparable<?>>, Function<String, ?>> FORMAT_HIERARCHY_MAP =
             ImmutableMap.copyOf(formatHierarchy());
 
-    public static <T> T getKey(Map<String, T> first, String... keys) {
-        return Stream.of(keys).map(FunctionEx.ignore(first::get)).filter(Objects::nonNull).findFirst().orElse(null);
-    
-    }
-
     public static boolean anyMatches(String line, String classRegex) {
         return Pattern.compile(classRegex).matcher(line).find();
     }
@@ -49,13 +44,13 @@ public class StringSigaUtils extends StringUtils {
     public static Map<String, String> asMap(String line) {
         return asMap(line, ":");
     }
+
     public static Map<String, String> asMap(String line, String separator) {
         return Stream.of(lines(line)).filter(s -> s.contains(separator))
                 .collect(Collectors.toMap(s -> s.split(separator)[0],
                         s -> Stream.of(s.split(separator)).skip(1).collect(Collectors.joining(separator)),
                         (u, v) -> u + "\n" + v));
     }
-
     public static String changeCase(String str) {
         if (isBlank(str)) {
             return "";
@@ -80,6 +75,10 @@ public class StringSigaUtils extends StringUtils {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
+    public static byte[] decode64Bytes(String line) {
+        return Base64.getDecoder().decode(line);
+    }
+
     public static String decodificar(String nome) {
         return getIgnore(() -> URLDecoder.decode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
@@ -95,6 +94,7 @@ public class StringSigaUtils extends StringUtils {
         }
         return new String(bytes, StandardCharsets.UTF_8);
     }
+
     public static String fixEncoding(String latin1, Charset initial, Charset finalCharset) {
         if (latin1 == null) {
             return null;
@@ -102,7 +102,6 @@ public class StringSigaUtils extends StringUtils {
         byte[] bytes = latin1.getBytes(initial);
         return new String(bytes, finalCharset);
     }
-
     public static String floatFormating(int length) {
         return "\t%" + Math.max(length, 1) + ".1f";
     }
@@ -186,6 +185,11 @@ public class StringSigaUtils extends StringUtils {
 
     public static String getFileSize(String sizeInBytes) {
         return SupplierEx.getIgnore(() -> getFileSize(Double.valueOf(sizeInBytes).longValue()), sizeInBytes);
+    }
+
+    public static <T> T getKey(Map<String, T> first, String... keys) {
+        return Stream.of(keys).map(FunctionEx.ignore(first::get)).filter(Objects::nonNull).findFirst().orElse(null);
+    
     }
 
     public static List<String> getLinks(String content) {

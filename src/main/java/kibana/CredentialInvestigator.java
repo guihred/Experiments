@@ -1,6 +1,7 @@
 package kibana;
 
 import com.google.common.io.Files;
+import extract.web.InstallCert;
 import extract.web.JsoupUtils;
 import extract.web.PhantomJSUtils;
 import java.io.File;
@@ -125,7 +126,11 @@ public class CredentialInvestigator extends KibanaInvestigator {
     private static void getCookies() throws IOException {
         File outFile = ResourceFXUtils.getOutFile("html/test.html");
         if (cookies.isEmpty()) {
-            JsoupUtils.getDocument("https://www-acesso/gwdc/", cookies);
+            RunnableEx.make(() -> JsoupUtils.getDocument("https://www-acesso/gwdc/", cookies), e -> {
+                InstallCert.installCertificate("https://www-acesso/");
+                JsoupUtils.getDocument("https://www-acesso/gwdc/", cookies);
+            }).run();
+
             String collect = cookies.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
             Map<String, String> headers = getHeaders();
             headers.put("Cookie", collect);

@@ -1,7 +1,6 @@
 package kibana;
 
 import extract.web.JsonExtractor;
-import extract.web.WhoIsScanner;
 import java.io.File;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
@@ -25,34 +24,26 @@ public class AcessosVolumetricos {
     private static final String TRAFEGO_ESPERADO = "Tráfego esperado";
 
     public static void getVolumetria(String queryFile, String result) {
+        String keyHeader = "key";
         List<Map<String, String>> destinationSearch =
-                JsonExtractor.remap(KibanaApi.makeKibanaSearch(queryFile, 1, "*", "key", "value"));
+                JsonExtractor.remap(KibanaApi.makeKibanaSearch(queryFile, 1, "*", keyHeader, "value"));
         DataframeML dataframeML = new DataframeML();
         destinationSearch.forEach(dataframeML::add);
 
-        WhoIsScanner whoIsScanner = new WhoIsScanner();
-        dataframeML.map("IP", "key", e -> e);
-        dataframeML.map("Hostname", "key", e -> {
-            String ip = Objects.toString(e, "");
-            Map<String, String> ipInformation = whoIsScanner.getIpInformation(ip);
-            String key = StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "HostName", "Descrição", "asname");
-            if (!key.equals(ip)) {
-                return key;
-            }
-            return StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "Descrição", "asname");
-        });
+        dataframeML.map("IP", keyHeader, e -> e);
+        dataframeML.map("Hostname", keyHeader, e -> KibanaApi.getHostname(e));
 
         dataframeML.map(TRAFEGO, "value", e -> StringSigaUtils.getFileSize(StringSigaUtils.toLong(e)));
         DataframeML build = DataframeBuilder.build(new File(
                 "C:" + "\\Users\\guigu" + "\\OneDrive - Dataprev"
                         + "\\Acessos volumétricos - Firewall - IPs recorrentes.xlsx"));
         build.map("IP", StringSigaUtils::formatIP);
-        DataframeUtils.crossFeatureObject(dataframeML, "Tipo de Tráfego", ip -> getTipoTrafego(build, ip), "key",
+        DataframeUtils.crossFeatureObject(dataframeML, "Tipo de Tráfego", ip -> getTipoTrafego(build, ip), keyHeader,
                 TRAFEGO);
         DataframeUtils.crossFeatureObject(dataframeML, TRAFEGO_ESPERADO, ip -> {
             Map<String, Object> findFirst = build.findFirst("IP", e -> Objects.equals(e, ip[0]));
             return StringSigaUtils.getKey(findFirst, TRAFEGO_ESPERADO);
-        }, "key", TRAFEGO);
+        }, keyHeader, TRAFEGO);
         DataframeUtils.crossFeatureObject(dataframeML, "motivação",
                 ip -> !StringUtils.equalsIgnoreCase("Acima", Objects.toString(ip[1])) ? ""
                         : getPorts(Objects.toString(ip[0])),
@@ -64,6 +55,7 @@ public class AcessosVolumetricos {
         LOG.info("{}", string);
     }
 
+
     public static void main(String[] args) {
         ExtractUtils.insertProxyConfig();
         getVolumetria("sourceQuery.json", "source");
@@ -71,7 +63,7 @@ public class AcessosVolumetricos {
     }
 
     private static String getPorts(String ip) throws Exception {
-        return KibanaApi.scanByIp(ip, 1).get("Ports").get();
+        return KibanaApi.destinationPorts(ip, 1);
     }
 
     private static String getTipoTrafego(DataframeML build, Object[] ip) {

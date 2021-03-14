@@ -20,9 +20,10 @@ public final class IpStackApi {
         if (!outFile.exists()) {
             getFromURL("http://api.ipstack.com/" + ip, outFile);
         }
-        Object displayJsonFromFile = JsonExtractor.toObject(outFile, "city", "region_code", "country_code");
-        LOG.info("{} {}", ip, displayJsonFromFile);
-        return JsonExtractor.accessMap(displayJsonFromFile);
+        Map<String, Object> geoInfo =
+                JsonExtractor.toObject(outFile, "city", "region_code", "country_code");
+        LOG.info("{} {}", ip, geoInfo);
+        return JsonExtractor.accessMap(geoInfo);
     }
 
     public static void main(String[] args) throws IOException {

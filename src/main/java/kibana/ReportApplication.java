@@ -7,12 +7,10 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -54,6 +52,8 @@ public class ReportApplication extends Application {
     @FXML
     private Text loc;
     @FXML
+    private Text zoomText;
+    @FXML
     private Slider zoom;
     @FXML
     private ComboBox<Path> model;
@@ -64,6 +64,9 @@ public class ReportApplication extends Application {
     public void initialize() {
         ExtractUtils.insertProxyConfig();
         CommonsFX.bindBidirectional(browser.zoomProperty(), zoom.valueProperty());
+        zoomText.textProperty().bind(Bindings.createStringBinding(
+                () -> String.format(Locale.ENGLISH, "%s (%.2f)", "Zoom", browser.getZoom()), browser.zoomProperty()));
+
         WebEngine engine = browser.getEngine();
         Worker<Void> loadWorker = engine.getLoadWorker();
         engine.locationProperty().addListener((ob, old, val) -> loc.setText(StringUtils.abbreviate(val, 100)));
@@ -226,15 +229,12 @@ public class ReportApplication extends Application {
         launch(args);
     }
 
-
-
     private static void removeImage(Map<String, Object> mapaSubstituicao, List<String> imageUrls, String t) {
         imageUrls.remove(t);
         for (Object e : mapaSubstituicao.values()) {
             if (e instanceof List) {
-                JsonExtractor
-                        .<Object>accessList(e).stream().filter(o -> o instanceof Image && Objects
-                                .equals(t, ClassReflectionUtils.invoke(o, "impl_getUrl")))
+                JsonExtractor.<Object>accessList(e).stream().filter(
+                        o -> o instanceof Image && Objects.equals(t, ClassReflectionUtils.invoke(o, "impl_getUrl")))
                         .findFirst().ifPresent(o -> {
                             int indexOf = JsonExtractor.<Object>accessList(e).indexOf(o);
                             JsonExtractor.<Object>accessList(e).remove(indexOf);

@@ -38,8 +38,11 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     private Node node;
 
     public SimpleDialogBuilder() {
-        stage = MAPPED_STAGES.computeIfAbsent(HasLogging.getCurrentLine(1), s -> new Stage());
-        group.setAlignment(Pos.CENTER);
+        this(false);
+    }
+
+    public SimpleDialogBuilder(boolean newStage) {
+        stage = newStage ? new Stage() : getStage();
     }
 
     public SimpleDialogBuilder bindWindow(Node node1) {
@@ -154,6 +157,11 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
     public SimpleDialogBuilder title(String title) {
         stage.setTitle(title);
         return this;
+    }
+
+    private final Stage getStage() {
+        group.setAlignment(Pos.CENTER);
+        return MAPPED_STAGES.computeIfAbsent(HasLogging.getCurrentLine(1), s -> new Stage());
     }
 
     public static Stage bindWindow(Stage stage, Node node1) {

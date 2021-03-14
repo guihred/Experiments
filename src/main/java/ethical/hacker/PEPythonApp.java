@@ -16,6 +16,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.apache.commons.lang.StringUtils;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
@@ -24,39 +25,42 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class PEPythonApp extends Application {
+    private static final String YARA_64=FileTreeWalker.getFirstPathByExtension(new File("C:\\cygwin64\\usr\\local\\bin"), "yara64.exe")
+    .toFile().getAbsolutePath();
     @FXML
     protected TextField resultsFilter;
     @FXML
-    protected ListView<String> filterList;
+    protected ListView<File> filterList;
     @FXML
     protected ProgressIndicator progressIndicator;
     @FXML
     protected TableView<Map<String, String>> commonTable;
-    protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
-
+protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
     public void initialize() {
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         SimpleTableViewBuilder.of(commonTable).copiable().savable()
                 .onSortClicked((c, a) -> QuickSortML.sortMapList(items, c, a));
-        SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable();
+        SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable().cellFactory(File::getName);
     }
 
     public void onActionPeScan(ActionEvent e) {
 
-        items.clear();
-        resultsFilter.setText("");
         CommonsFX.update(progressIndicator.progressProperty(), 0);
         new FileChooserBuilder().extensions("All Files", "*.*").title("Scan PE").name("Scan PE")
-                .openFileMultipleAction(s -> scanFiles(s), e);
+                .openFileMultipleAction(s -> {
+                    items.clear();
+                    resultsFilter.setText("");
+                    scanFiles(s);
+                }, e);
     }
 
     public void onActionPeScanMultiple(ActionEvent e) {
 
-        items.clear();
-        resultsFilter.setText("");
         CommonsFX.update(progressIndicator.progressProperty(), 0);
         new FileChooserBuilder().extensions("All Files", "*.*").name("Scan PE").onSelect(f -> {
+            items.clear();
+            resultsFilter.setText("");
             List<File> collect = FileTreeWalker.getFirstFileMatch(f, p -> p.toFile().isFile()).stream()
                     .map(Path::toFile).collect(Collectors.toList());
             scanFiles(collect);
@@ -70,14 +74,16 @@ public class PEPythonApp extends Application {
     }
 
     private void scanFiles(List<File> asList) {
-        ObservableList<String> items2 = filterList.getItems();
+        ObservableList<File> items2 = filterList.getItems();
         for (File file : asList) {
-            items2.add(file.getName());
+            if (!items2.contains(file)) {
+                items2.add(file);
+            }
         }
         List<String> cols = commonTable.getColumns().stream().map(TableColumn::getText).collect(Collectors.toList());
 
         RunnableEx.runNewThread(() -> {
-            for (File file : asList) {
+            for (File file : items2) {
                 Map<String, SupplierEx<String>> linkedHashMap = getAnalysis(file);
                 Map<String, String> ns = new LinkedHashMap<>();
                 for (Entry<String, SupplierEx<String>> ip : linkedHashMap.entrySet()) {
@@ -126,7 +132,7 @@ public class PEPythonApp extends Application {
         linkedHashMap.put("Sections", () -> join(getSections(s)));
         linkedHashMap.put("Exports", () -> join(getExports(s)));
         linkedHashMap.put("Imports", () -> join(getImports(s)));
-        linkedHashMap.put("YaraRules", () -> join(getYaraRules(s)));
+        linkedHashMap.put("Rules", () -> join(getYara64(s)));
         return linkedHashMap;
     }
 
@@ -142,8 +148,16 @@ public class PEPythonApp extends Application {
         return simpleExecution("python/peDisplayTimestamp.py", s);
     }
 
-    private static List<String> getYaraRules(File s) {
-        return simpleExecution("python/yaraRules.py", s);
+    private static List<String> getYara64(File sourceFile) {
+        File file = ResourceFXUtils.toFile("rules/all_index.yar");
+        String fullPath = fullPath(sourceFile);
+        String format = String.format("%s -f -m %s  %s", YARA_64, file, fullPath);
+        return ConsoleUtils.executeInConsoleInfo(format).stream()
+                .map(f -> f.replaceAll(",?(version|author)=\".+?\",?", "")).map(f -> f.replaceAll("\\w+=", ""))
+                .map(f -> f.replace(fullPath, ""))
+                .collect(Collectors.toList())
+
+        ;
     }
 
     private static String join(List<String> sections2) {
@@ -151,9 +165,9 @@ public class PEPythonApp extends Application {
     }
 
 
-    private static List<String> simpleExecution(String magicPath, File file) {
+    private static List<String> simpleExecution(String magicPath, File file, String... s) {
         String file2 = fullPath(ResourceFXUtils.toFile(magicPath));
-        String format = String.format("python %s %s", file2, fullPath(file));
+        String format = String.format("python %s %s %s", file2, fullPath(file), StringUtils.join(s, " "));
         return ConsoleUtils.executeInConsoleInfo(format);
     }
 }

@@ -52,6 +52,31 @@ public class KibanaApi {
     protected KibanaApi() {
     }
 
+    public static String destinationPorts(String ip, int days) {
+        String key = "key";
+        String valueCol = "value";
+        String buckets = "buckets";
+        List<Map<Object, Object>> accessList = JsonExtractor.accessList(
+                makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { "DestinationIP", ip },
+                        "aggregations"),
+                "aggregations", "3", buckets);
+        List<Map<Object, Object>> accessList2 = JsonExtractor.accessList(
+                makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { "SourceIP", ip }, "aggregations"),
+                "aggregations", "3", buckets);
+        accessList.addAll(accessList2);
+        return accessList.stream().map((Map<Object, Object> map) -> {
+            String ipd = JsonExtractor.access(map, String.class, key);
+            String reverseDNS = getHostname(ipd);
+            String ongValue = JsonExtractor.<Map<Object, Object>>accessList(map, "4", buckets).stream().map(s -> {
+                Integer port = JsonExtractor.access(s, Integer.class, key);
+                PortServices serviceByPort = PortServices.getServiceByPort(port);
+                Number size = JsonExtractor.access(s, Number.class, "1", valueCol);
+                return reverseDNS + " " + serviceByPort + " " + StringSigaUtils.getFileSize(size.longValue());
+            }).collect(Collectors.joining("\n"));
+            return ongValue;
+        }).collect(Collectors.joining("\n"));
+    }
+
     public static <T> String display(Map<String, T> ob) {
         List<List<String>> listOfFields = getFieldList(ob);
         int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
@@ -91,6 +116,16 @@ public class KibanaApi {
         return message.stream().filter(l -> linesThatMatch.contains(getWhoField(regex, l))).distinct()
                 .collect(Collectors.toMap(s -> getWhoField(regex, s), s -> s,
                         (t, u) -> getFirstMatch(suppliedCredential, t, u)));
+    }
+
+    public static String getHostname(Object e) {
+        String ip = Objects.toString(e, "");
+        Map<String, String> ipInformation = WHOIS_SCANNER.getIpInformation(ip);
+        String key = StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "HostName", "Descrição", "asname");
+        if (!key.equals(ip)) {
+            return key;
+        }
+        return StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "Descrição", "asname");
     }
 
     public static Map<String, String> getIPsByCredencial(String credencial, String index, int days) {
@@ -252,17 +287,7 @@ public class KibanaApi {
         fullScan.put("TOP_WEB",
                 () -> displayDistinct(makeKibanaSearch("acessosQuery.json", days, pattern, key, "doc_count")));
         fullScan.put("Ports", () -> {
-            Map<String, Object> destinationPort =
-                    makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { ip, ip }, key, valueCol);
-            destinationPort.computeIfPresent(valueCol, (k, v) -> groupStreamT(JsonExtractor.<Object>accessList(v), 2)
-                    .map(e -> e.get(0)).map(Objects::toString).collect(Collectors.toList()));
-            destinationPort.computeIfPresent(key,
-                    (k, v) -> groupStreamT(JsonExtractor.<Object>accessList(v), 2).map(s -> {
-                        PortServices serviceByPort = PortServices.getServiceByPort(StringSigaUtils.toInteger(s.get(0)));
-                        return WHOIS_SCANNER.reverseDNS(Objects.toString(s.get(1), "")) + " " + serviceByPort;
-                    }).collect(Collectors.joining("\n")));
-            convertToBytes(destinationPort, valueCol);
-            return displayDistinct(destinationPort);
+            return destinationPorts(ip, days);
         });
         fullScan.put("Acesso", () -> {
             Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", days, ip, valueCol);
@@ -382,18 +407,13 @@ public class KibanaApi {
                         .flatMap(s -> Stream.of(s.split(" "))).distinct().collect(Collectors.joining(" ")));
     }
 
-    private static <T> Stream<List<T>> groupStreamT(List<T> collect, final int d) {
-        return IntStream.range(0, collect.size() / d).boxed().map(i -> IntStream.range(i * d, i * d + d)
-                .filter(j -> j < collect.size()).mapToObj(collect::get).collect(Collectors.toList()));
-    }
-
     private static File kibanaFile(String file) {
         return ResourceFXUtils.toFile(KIBANA_FOLDER + file);
     }
 
     private static File newSearch(File file, int days, Map<String, String> search) {
         String values = search.values().stream().collect(Collectors.joining());
-        File outFile = newJsonFile(removeExtension(file) + values + days);
+        File outFile = newJsonFile(removeExtension(file) + values + "_" + days);
         if (JsonExtractor.isNotRecentFile(outFile)) {
             String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
             String lte = Objects.toString(Instant.now().toEpochMilli());
@@ -411,7 +431,8 @@ public class KibanaApi {
 
     private static File searchIfDoesNotExist(File file, int days, String[] query) {
         File outFile =
-                newJsonFile(removeExtension(file) + Stream.of(query).distinct().collect(Collectors.joining()) + days);
+                newJsonFile(
+                        removeExtension(file) + Stream.of(query).distinct().collect(Collectors.joining()) + "_" + days);
         if (JsonExtractor.isNotRecentFile(outFile)) {
             String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
             String lte = Objects.toString(Instant.now().toEpochMilli());
@@ -427,8 +448,9 @@ public class KibanaApi {
         Map<String, String> filter1 = new LinkedHashMap<>();
         filter1.put("clientip", pattern);
         String docCount = "doc_count";
+        String key = "key";
         Map<String, String> nsInformation =
-                KibanaApi.makeKibanaSearch("requestedPath.json", days, filter1, "key", docCount);
+                KibanaApi.makeKibanaSearch("requestedPath.json", days, filter1, key, docCount);
         List<Map<String, String>> remap = JsonExtractor.remap(nsInformation, "^/.*");
         Map<String, List<Map<String, String>>> collect2 =
                 remap.stream().collect(Collectors.groupingBy(e -> e.get("key1"),

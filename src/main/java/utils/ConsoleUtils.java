@@ -33,9 +33,8 @@ public final class ConsoleUtils {
     }
 
     public static long countActiveProcesses() {
-        return PROCESSES.entrySet().stream().filter(e -> !e.getValue())
-        .count();
-        
+        return PROCESSES.entrySet().stream().filter(e -> !e.getValue()).count();
+
     }
 
     public static DoubleProperty defineProgress(final double n) {
@@ -120,7 +119,10 @@ public final class ConsoleUtils {
         Process p = newProcess(cmd);
 
         try (BufferedReader in2 =
-                new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.ISO_8859_1))) {
+                new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.ISO_8859_1));
+                BufferedReader error =
+                        new BufferedReader(new InputStreamReader(p.getErrorStream(), StandardCharsets.ISO_8859_1))) {
+
             String line;
             while ((line = in2.readLine()) != null) {
                 String fixEncoding =
@@ -128,6 +130,7 @@ public final class ConsoleUtils {
                 LOGGER.debug("{}", fixEncoding);
                 execution.add(fixEncoding);
             }
+            error.lines().forEach(e -> LOGGER.error("{}", e));
 
             p.waitFor();
             PROCESSES.put(cmd, true);
@@ -144,12 +147,16 @@ public final class ConsoleUtils {
         PROCESSES.put(cmd, false);
         return SupplierEx.get(() -> {
             Process p = newProcess(cmd);
-            IOUtils.copy(inputStream, p.getOutputStream());
-            LOGGER.info("INPUT WRITTEN");
-            p.getOutputStream().close();
+            try (BufferedReader error =
+                    new BufferedReader(new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8))) {
+                IOUtils.copy(inputStream, p.getOutputStream());
+                p.getOutputStream().close();
+                error.lines().forEach(e -> LOGGER.error("{}", e));
+            }
             int waitFor = p.waitFor();
             PROCESSES.put(cmd, true);
             logProcesses();
+            LOGGER.info("{}", waitFor);
             return waitFor;
         });
     }
@@ -185,6 +192,7 @@ public final class ConsoleUtils {
     public static Process startProcessAndWait(final String cmd, String regex) {
         return SupplierEx.remap(() -> makeProcessAndWait(cmd, regex), "ERROR CREATING PROCESS");
     }
+
     public static void waitAllProcesses() {
         long currentTimeMillis = System.currentTimeMillis();
         while (PROCESSES.values().stream().anyMatch(e -> !e)) {

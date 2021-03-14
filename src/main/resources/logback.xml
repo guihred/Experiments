@@ -25,7 +25,7 @@
 	</root>
 	<logger name="contest.ContestReader" level="ERROR" />
 	<logger name="utils.ExtractUtils" level="INFO" />
-	<logger name="utils.ConsoleUtils" level="INFO" />
+	<logger name="utils.ConsoleUtils" level="DEBUG" />
 	<logger name="extract.web.PhantomJSUtils" level="ERROR" />
  	<logger name="extract.web.WhoIsScanner" level="ERROR" /> 
 	<logger name="extract.web.ImageLoader" level="ERROR" />

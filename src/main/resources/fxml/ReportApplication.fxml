@@ -30,7 +30,7 @@
 					GridPane.rowIndex="1" onAction="#makeReportConsultasEditImages" />
 				<ProgressBar fx:id="progressBar" prefWidth="500" GridPane.columnIndex="5" 
 					GridPane.rowIndex="1" GridPane.rowSpan="3" />
-				<Text text="Zoom" GridPane.columnIndex="6" GridPane.rowIndex="0" />
+				<Text text="Zoom" fx:id="zoomText" GridPane.columnIndex="6" GridPane.rowIndex="0" />
 				<Slider fx:id="zoom" GridPane.columnIndex="6" max="3" min="0.6" majorTickUnit="0.01" value="1" 
                     GridPane.rowIndex="1" />
 			</children>

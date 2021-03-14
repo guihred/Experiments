@@ -139,14 +139,14 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     public static <C> void onDoubleClick(ListView<C> table2, final ConsumerEx<C> object) {
         table2.setOnMouseClicked(e -> {
             if (e.getClickCount() > 1) {
-                C selectedItem = table2.getSelectionModel().getSelectedItem();
-                ConsumerEx.accept(object, selectedItem);
+                ObservableList<C> selectedItem = table2.getSelectionModel().getSelectedItems();
+                ConsumerEx.foreach(selectedItem, object);
             }
         });
         SimpleNodeBuilder.onKeyReleased(table2, e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                C selectedItem = table2.getSelectionModel().getSelectedItem();
-                ConsumerEx.accept(object, selectedItem);
+                ObservableList<C> selectedItem = table2.getSelectionModel().getSelectedItems();
+                ConsumerEx.foreach(selectedItem, object);
             }
         });
     }
