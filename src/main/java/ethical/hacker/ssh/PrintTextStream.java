@@ -20,7 +20,8 @@ public final class PrintTextStream extends PrintStream {
     public void write(byte[] b, int off, int len) {
         super.write(b, off, len);
         if (Platform.isFxApplicationThread()) {
-            text2.setValue(text2.getValue() + new String(b, off, len, StandardCharsets.UTF_8));
+            text2.setValue(text2.getValue()
+                    + new String(b, off, len, StandardCharsets.UTF_8).replaceAll("[\\dm (\\w+)[0;\\d+m:", "$1"));
         }
     }
 }

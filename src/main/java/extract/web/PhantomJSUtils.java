@@ -43,7 +43,7 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public final class PhantomJSUtils {
-    public static final Path PHANTOM_JS =
+    private static final Path PHANTOM_JS =
             FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "phantomjs.exe");
 
     private static final Logger LOG = HasLogging.log();
@@ -81,6 +81,16 @@ public final class PhantomJSUtils {
         return Jsoup.parse(ghostDriver.getPageSource());
     }
 
+    public static Image textToImage(String s, String highlight) {
+        String collect2 = Stream.of(s.split("\n")).filter(StringUtils::isNotBlank)
+                .map(str -> "<p>" + str.replaceAll(highlight, "<font>$1</font>") + "</p>")
+                .collect(Collectors.joining("\n"));
+        String format =
+                String.format("<!DOCTYPE html>\n<html>\n<head>\n<style>\nfont {background-color: yellow;}</style>\n"
+                        + "</head><body>%s</body>\n</html>", collect2);
+        return saveHtmlImage(format);
+    }
+
     public static List<String> makeGet(String url, Map<String, String> headers) throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet post = new HttpGet(url);
@@ -90,8 +100,10 @@ public final class PhantomJSUtils {
             return client.execute(post);
         });
         HttpEntity entity = response.getEntity();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
-        return rd.lines().collect(Collectors.toList());
+        try (BufferedReader rd =
+                new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8))) {
+            return rd.lines().collect(Collectors.toList());
+        }
     }
 
     public static List<String> makeGet(String url, Map<String, String> headers, File outFile) throws IOException {
@@ -106,20 +118,21 @@ public final class PhantomJSUtils {
         headers.forEach(post::addHeader);
         HttpResponse response = client.execute(post);
         HttpEntity entity = response.getEntity();
-        InputStream in = entity.getContent();
-        Path path = outFile.toPath();
-        final int bufferSize = 256;
-        byte[] b = new byte[bufferSize];
-        int read;
-        do {
-            read = in.read(b);
-            Files.write(path, b, StandardOpenOption.APPEND);
-        } while (read != -1);
+        try (InputStream in = entity.getContent()) {
+
+            Path path = outFile.toPath();
+            final int bufferSize = 256;
+            byte[] b = new byte[bufferSize];
+            int read;
+            do {
+                read = in.read(b);
+                Files.write(path, b, StandardOpenOption.APPEND);
+            } while (read != -1);
+        }
     }
 
     public static Map<String, String> postContent(String url, String content, ContentType applicationJson,
-            Map<String, String> headers,
-            File outFile) throws IOException {
+            Map<String, String> headers, File outFile) throws IOException {
         ExtractUtils.insertProxyConfig();
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
@@ -131,12 +144,14 @@ public final class PhantomJSUtils {
             InstallCert.installCertificate(url);
             return client.execute(get);
         });
-        Map<String, String> d = Stream.of(response.getAllHeaders()).collect(Collectors
-                .groupingBy(h -> h.getName(), Collectors.mapping(e -> e.getValue(), Collectors.joining("; "))));
+        Map<String, String> d = Stream.of(response.getAllHeaders()).collect(Collectors.groupingBy(h -> h.getName(),
+                Collectors.mapping(e -> e.getValue(), Collectors.joining("; "))));
         HttpEntity entity = response.getEntity();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
-        ExtractUtils.copy(rd, outFile);
-        return d;
+        try (BufferedReader rd =
+                new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8))) {
+            ExtractUtils.copy(rd, outFile);
+            return d;
+        }
     }
 
     public static void postJson(String url, String content, Map<String, String> headers, File outFile)
@@ -168,14 +183,41 @@ public final class PhantomJSUtils {
         ExtractUtils.copy(rd, outFile);
     }
 
-    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr) {
-        return renderPage(url, cookies, loadingStr, driver -> {
-            // DOES NOTHING
-        });
+    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr, File outFile) {
+        return renderPage(url, cookies, loadingStr,
+                driver -> ExtractUtils.copy(driver.getScreenshotAs(OutputType.FILE), outFile));
+    }
+
+    public static Image saveHtmlImage(String html) {
+        return SupplierEx.get(() -> saveHtmlImage(html,
+                ResourceFXUtils.getOutFile("print/oi" + HashVerifier.getSha256Hash(html) + ".png")));
+    }
+
+    public static Image saveHtmlImage(String html, File file) {
+        HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
+        Dimension dim = imageGenerator.getDefaultSize();
+        final int preferredWidth = 800;
+        dim.setSize(Math.min(preferredWidth, dim.getWidth()), dim.getHeight());
+        imageGenerator.setSize(dim);
+        imageGenerator.loadHtml(html);
+        imageGenerator.saveAsImage(file);
+        return new Image(ResourceFXUtils.convertToURL(file).toExternalForm());
+    }
+
+    private static PhantomJSDriver getGhostDriver() {
+        PhantomJSDriverService createDefaultService =
+                new PhantomJSDriverService.Builder().usingPhantomJSExecutable(PHANTOM_JS.toFile()).usingAnyFreePort()
+                        .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log"))
+                        .usingGhostDriverCommandLineArguments(new String[] { "examples/responsive-screenshot.js" })
+
+                        .build();
+        DesiredCapabilities firefox = DesiredCapabilities.firefox();
+        firefox.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, new String[] { "--webdriver-loglevel=NONE" });
+        return new PhantomJSDriver(createDefaultService, firefox);
     }
 
     @SafeVarargs
-    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr,
+    private static Document renderPage(String url, Map<String, String> cookies, String loadingStr,
             ConsumerEx<PhantomJSDriver>... onload) {
         PhantomJSDriver ghostDriver = getGhostDriver();
         try {
@@ -202,39 +244,6 @@ public final class PhantomJSUtils {
         } finally {
             ghostDriver.quit();
         }
-    }
-
-    public static Document renderPage(String url, Map<String, String> cookies, String loadingStr, File outFile) {
-        return renderPage(url, cookies, loadingStr,
-                driver -> ExtractUtils.copy(driver.getScreenshotAs(OutputType.FILE), outFile));
-    }
-
-    public static Image saveHtmlImage(String html) {
-        return SupplierEx.get(() -> saveHtmlImage(html,
-                ResourceFXUtils.getOutFile("print/oi" + HashVerifier.getSha256Hash(html) + ".png")));
-    }
-
-    public static Image saveHtmlImage(String html, File file) {
-        HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
-        Dimension dim = imageGenerator.getDefaultSize();
-        final int preferredWidth = 800;
-        dim.setSize(Math.min(preferredWidth, dim.getWidth()), dim.getHeight());
-        imageGenerator.setSize(dim);
-        imageGenerator.loadHtml(html);
-        imageGenerator.saveAsImage(file);
-        return new Image(ResourceFXUtils.convertToURL(file).toExternalForm());
-    }
-
-    private static PhantomJSDriver getGhostDriver() {
-        PhantomJSDriverService createDefaultService = new PhantomJSDriverService.Builder()
-                .usingPhantomJSExecutable(PHANTOM_JS.toFile()).usingAnyFreePort()
-                .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log"))
-                .usingGhostDriverCommandLineArguments(new String[] { "examples/responsive-screenshot.js" })
-
-                .build();
-        DesiredCapabilities firefox = DesiredCapabilities.firefox();
-        firefox.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, new String[] { "--webdriver-loglevel=NONE" });
-        return new PhantomJSDriver(createDefaultService, firefox);
     }
 
 }

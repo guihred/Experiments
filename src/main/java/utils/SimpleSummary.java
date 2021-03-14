@@ -10,9 +10,9 @@ import java.util.stream.Collector;
 import utils.ex.FunctionEx;
 
 public class SimpleSummary<T extends Comparable<T>> implements Collector<T, SimpleSummary<T>, SimpleSummary<T>> {
-    int count;
-    T max = null;
-    T min = null;
+    private int count;
+    private T max = null;
+    private T min = null;
 
     @Override
     public BiConsumer<SimpleSummary<T>, T> accumulator() {

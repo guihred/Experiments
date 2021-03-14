@@ -29,7 +29,7 @@ public class Maze3DLauncher extends Application {
         camera.getTransforms().addAll(translate, rotate);
 
         Scene scene = new Scene(root, 500, 500, true, SceneAntialiasing.BALANCED);
-		Maze3DModel.create(root);
+        createModel(root);
         root.getTransforms().addAll(new Rotate(90, 0, 0, 0, Rotate.X_AXIS));
 
         handleKeyboard(scene, translate, rotate, camera);
@@ -52,6 +52,10 @@ public class Maze3DLauncher extends Application {
 		if (keycode == KeyCode.BACK_SPACE) {
 		    camera.setFieldOfView(camera.getFieldOfView() - change);
 		}
+    }
+
+    private static Maze3DModel createModel(GridPane root) {
+       return new Maze3DModel(root);
     }
 
     private static void handleKeyboard(Scene scene, Translate translate, Rotate rotate, PerspectiveCamera camera) {

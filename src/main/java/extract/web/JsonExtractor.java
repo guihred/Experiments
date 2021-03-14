@@ -77,27 +77,6 @@ public final class JsonExtractor {
         return access(root, Map.class, param);
     }
 
-    public static void addValue(JsonNode item, TreeItem<Map<String, String>> e) {
-        if (item.isValueNode()) {
-            Set<String> keySet = e.getValue().keySet();
-            for (String string : keySet) {
-                merge(e, string, item);
-            }
-            return;
-        }
-        Iterator<String> attributes = item.fieldNames();
-        while (attributes.hasNext()) {
-            String nodeName = attributes.next();
-            JsonNode item2 = item.get(nodeName);
-            merge(e, nodeName, item2);
-            if (item2.isArray()) {
-                for (JsonNode string : item2) {
-                    merge(e, nodeName, string);
-                }
-            }
-        }
-    }
-
     public static String convertObj(JsonNode jsonNode) {
         return jsonNode.asText();
     }
@@ -331,6 +310,27 @@ public final class JsonExtractor {
         // read JSON like DOM Parser
         JsonNode rootNode = objectMapper.readTree(fileContent);
         return toObject(rootNode, 0, new LinkedHashMap<>(), a);
+    }
+
+    private static void addValue(JsonNode item, TreeItem<Map<String, String>> e) {
+        if (item.isValueNode()) {
+            Set<String> keySet = e.getValue().keySet();
+            for (String string : keySet) {
+                merge(e, string, item);
+            }
+            return;
+        }
+        Iterator<String> attributes = item.fieldNames();
+        while (attributes.hasNext()) {
+            String nodeName = attributes.next();
+            JsonNode item2 = item.get(nodeName);
+            merge(e, nodeName, item2);
+            if (item2.isArray()) {
+                for (JsonNode string : item2) {
+                    merge(e, nodeName, string);
+                }
+            }
+        }
     }
 
     private static String appendJsonArray(JsonNode jsonNode, Map<String, String> yaml, int depth, String... filters) {

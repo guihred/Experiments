@@ -22,7 +22,7 @@ public class Edge extends Group implements Comparable<Edge> {
     public static final BooleanProperty SHOW_WEIGHT = new SimpleBooleanProperty(true);
     protected Cell source;
     protected Cell target;
-    protected BooleanProperty selected = new SimpleBooleanProperty(false);
+    private BooleanProperty selected = new SimpleBooleanProperty(false);
     private Line line;
     private Integer valor;
     private boolean directed;

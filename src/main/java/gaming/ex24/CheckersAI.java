@@ -12,19 +12,6 @@ public final class CheckersAI {
     private CheckersAI() {
     }
 
-    public static void displayDialog(AtomicInteger currentPlayer, List<CheckersSquare> squares) {
-        CheckersPlayer winner = CheckersHelper.getWinner(squares);
-        String txt = winner != CheckersPlayer.NONE ? winner + " Won!" : "It's a draw!";
-        new SimpleDialogBuilder().text(txt).button("Reset", () -> {
-            CheckersHelper.reset(squares);
-            runIfAI(squares, currentPlayer);
-        }).bindWindow(squares.get(0)).displayDialog();
-    }
-
-    public static boolean isGameOver(Collection<CheckersSquare> squares) {
-        return squares.stream().map(CheckersSquare::getState).distinct().count() < 3;
-    }
-
     public static boolean onClick(AtomicInteger currentPlayer, List<CheckersSquare> squares, CheckersSquare target) {
         CheckersPlayer player = CheckersHelper.getPlayer(currentPlayer.get());
         if (target.getState() == player) {
@@ -49,7 +36,38 @@ public final class CheckersAI {
         return true;
     }
 
-    public static void runAI(List<CheckersSquare> squares, AtomicInteger currentPlayer) {
+    public static void runIfAI(List<CheckersSquare> squares, AtomicInteger currentPlayer) {
+        CheckersPlayer player = CheckersHelper.getPlayer(currentPlayer.get());
+        if (player == CheckersPlayer.BLACK) {
+            if (CheckersAI.isGameOver(squares)) {
+                return;
+            }
+            CommonsFX.runInPlatform(() -> runAI(squares, currentPlayer));
+        }
+    }
+
+    private static void displayDialog(AtomicInteger currentPlayer, List<CheckersSquare> squares) {
+        CheckersPlayer winner = CheckersHelper.getWinner(squares);
+        String txt = winner != CheckersPlayer.NONE ? winner + " Won!" : "It's a draw!";
+        new SimpleDialogBuilder().text(txt).button("Reset", () -> {
+            CheckersHelper.reset(squares);
+            runIfAI(squares, currentPlayer);
+        }).bindWindow(squares.get(0)).displayDialog();
+    }
+
+    private static boolean isGameOver(Collection<CheckersSquare> squares) {
+        return squares.stream().map(CheckersSquare::getState).distinct().count() < 3;
+    }
+
+    private static void resetSquares(List<CheckersSquare> squares) {
+        squares.forEach(e -> {
+            e.setSelected(false);
+            e.setHighlight(false);
+            e.setMarked(false);
+        });
+    }
+
+    private static void runAI(List<CheckersSquare> squares, AtomicInteger currentPlayer) {
         CheckersPlayer player = CheckersHelper.getPlayer(currentPlayer.get());
         CheckersTree checkersTree = new CheckersTree(squares, currentPlayer.get(), null);
         CheckersTree makeDecision = checkersTree.makeDecision(player);
@@ -61,24 +79,6 @@ public final class CheckersAI {
         Entry<CheckersSquare, CheckersSquare> j = makeDecision.getAction();
         CheckersHelper.replaceStates(squares, j.getValue(), j.getKey(), player);
         currentPlayer.incrementAndGet();
-    }
-
-    public static void runIfAI(List<CheckersSquare> squares, AtomicInteger currentPlayer) {
-        CheckersPlayer player = CheckersHelper.getPlayer(currentPlayer.get());
-        if (player == CheckersPlayer.BLACK) {
-            if (CheckersAI.isGameOver(squares)) {
-                return;
-            }
-            CommonsFX.runInPlatform(() -> runAI(squares, currentPlayer));
-        }
-    }
-
-    private static void resetSquares(List<CheckersSquare> squares) {
-        squares.forEach(e -> {
-            e.setSelected(false);
-            e.setHighlight(false);
-            e.setMarked(false);
-        });
     }
 
 }

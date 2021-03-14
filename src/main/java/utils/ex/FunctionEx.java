@@ -1,11 +1,12 @@
 package utils.ex;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 
 @FunctionalInterface
-public interface FunctionEx<T, R> {
+public interface FunctionEx<T, R> extends Serializable {
     R apply(T t) throws Exception;
 
     static <A, B> B apply(FunctionEx<A, B> run, A a) {

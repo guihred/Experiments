@@ -59,7 +59,7 @@ public class Dice extends Group {
     }
 
     @FunctionalInterface
-    interface TriBooleanFunction {
+    private interface TriBooleanFunction {
         boolean apply(boolean a, boolean b, boolean c);
     }
 }

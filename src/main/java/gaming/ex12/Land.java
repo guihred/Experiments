@@ -3,8 +3,8 @@ package gaming.ex12;
 import javafx.scene.canvas.GraphicsContext;
 
 public class Land extends Player {
-    public static final int INITIAL_Y = 350;
-    public static final int INITIAL_X = 100;
+    private static final int INITIAL_Y = 350;
+    private static final int INITIAL_X = 100;
     private static final int[][] SHAPE = new int[][] { { 34, 111, 98 }, { 21, 111, 98 } };
 
     public Land() {

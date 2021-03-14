@@ -16,7 +16,7 @@ import javafx.scene.transform.Scale;
 import utils.DrawOnPoint;
 
 public class ZoomableScrollPane extends ScrollPane {
-    protected static final double DELTA_ZOOM = 0.1;
+    private static final double DELTA_ZOOM = 0.1;
     private Group zoomGroup;
     private Scale scaleTransform;
     private DoubleProperty scaleValue = new SimpleDoubleProperty(1);

@@ -1,12 +1,10 @@
 package ml;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.DoubleUnaryOperator;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,43 +28,9 @@ public class RegressionModel {
 
     private Series<Number, Number> polinominalSeries;
 
-    /**
-     * Returns the {@code j}th regression coefficient.
-     * 
-     * @param j
-     *            the index
-     * @return the {@code j}th regression coefficient
-     */
+    private Series<Number, Number> series = new Series<>();
 
-    @SuppressWarnings("unchecked")
-    public ObservableList<Series<Number, Number>> createRandomSeries() {
-        Series<Number, Number> series = new Series<>();
-        series.setName("Numbers");
-        i = 0;
-        features = IntStream.range(0, MAX_SIZE).mapToDouble(e -> e).boxed().collect(Collectors.toList());
-        i = 0;
-        target = doubleStream().boxed().collect(Collectors.toList());
-        target.sort(Comparator.comparing(e -> Math.signum(bestSlope) * e));
-        i = 0;
-        List<Data<Number, Number>> dataPoints = target.stream().map(this::mapToData).collect(Collectors.toList());
-        series.setData(FXCollections.observableArrayList(dataPoints));
-        return FXCollections.observableArrayList(series);
-    }
-
-    public Series<Number, Number> createSeries(String name, Collection<?> features1, Collection<?> target1) {
-        features = features1.stream().map(Number.class::cast).filter(Objects::nonNull).map(Number::doubleValue)
-                .limit(MAX_SIZE).collect(Collectors.toList());
-        target = target1.stream().map(Number.class::cast).filter(Objects::nonNull).map(Number::doubleValue)
-                .limit(MAX_SIZE).collect(Collectors.toList());
-        i = 0;
-        Series<Number, Number> series = new Series<>();
-        series.setName(name);
-
-        ObservableList<Data<Number, Number>> observableList = target.stream().map(this::mapToData)
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
-        series.setData(observableList);
-        linearRegression();
-        return series;
+    private RegressionModel() {
     }
 
     public double getBestInitial() {
@@ -79,22 +43,22 @@ public class RegressionModel {
 
     public Series<Number, Number> getExpectedSeries() {
         return SupplierEx.orElse(linearSeries, () -> linearSeries = SupplierEx.get(() -> {
-            Series<Number, Number> series = new Series<>();
+            Series<Number, Number> serie = new Series<>();
             i = 0;
-            series.setName("Linear");
+            serie.setName("Linear");
             List<Data<Number, Number>> expectedPoints = IntStream.range(0, features.size())
                     .mapToObj(j -> toData(features.get(j), bestInitial + bestSlope * features.get(j)))
                     .collect(Collectors.toList());
-            series.setData(FXCollections.observableArrayList(expectedPoints));
-            return series;
+            serie.setData(FXCollections.observableArrayList(expectedPoints));
+            return serie;
         }));
     }
 
     public Series<Number, Number> getPolinominalSeries() {
         return SupplierEx.orElse(polinominalSeries, () -> polinominalSeries = SupplierEx.getIgnore(() -> {
-            Series<Number, Number> series = new Series<>();
+            Series<Number, Number> series1 = new Series<>();
             i = 0;
-            series.setName("Polinominal");
+            series1.setName("Polinominal");
             double[] x = features.stream().mapToDouble(e -> e).toArray();
             double[] y = target.stream().mapToDouble(e -> e).toArray();
 
@@ -103,12 +67,46 @@ public class RegressionModel {
             List<Data<Number, Number>> expectedPoints = IntStream.range(0, features.size())
                     .mapToObj(j -> toData(features.get(j), polynomialRegression.applyAsDouble(features.get(j))))
                     .collect(Collectors.toList());
-            series.setData(FXCollections.observableArrayList(expectedPoints));
-            return series;
+            series1.setData(FXCollections.observableArrayList(expectedPoints));
+            return series1;
         }, new Series<>("Polinominal", FXCollections.emptyObservableList())));
     }
 
-    public void linearRegression() {
+    public Series<Number, Number> getSeries() {
+        return series;
+    }
+
+    public RegressionModel initialize(String name, Collection<?> features1, Collection<?> target1) {
+        features = features1.stream().map(Number.class::cast).filter(Objects::nonNull).map(Number::doubleValue)
+                .limit(MAX_SIZE).collect(Collectors.toList());
+        target = target1.stream().map(Number.class::cast).filter(Objects::nonNull).map(Number::doubleValue)
+                .limit(MAX_SIZE).collect(Collectors.toList());
+        i = 0;
+        series.setName(name);
+
+        ObservableList<Data<Number, Number>> observableList = target.stream().map(this::mapToData)
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+        series.setData(observableList);
+        linearRegression();
+        return this;
+    }
+
+    /**
+     * Returns the coefficient of determination <em>R</em><sup>2</sup>.
+     *
+     * @return the coefficient of determination <em>R</em><sup>2</sup>, which is a
+     *         real number between 0 and 1
+     */
+
+    public void setBestInitial(double bestInitial) {
+        this.bestInitial = bestInitial;
+    }
+
+    public void setBestSlope(double bestSlope) {
+        this.bestSlope = bestSlope;
+    }
+
+    private void linearRegression() {
         double[] x = features.stream().mapToDouble(e -> e).toArray();
         double[] y = target.stream().mapToDouble(e -> e).toArray();
         if (x.length != y.length) {
@@ -137,39 +135,34 @@ public class RegressionModel {
         bestInitial = ybar - bestSlope * xbar;
     }
 
-    /**
-     * Returns the coefficient of determination <em>R</em><sup>2</sup>.
-     *
-     * @return the coefficient of determination <em>R</em><sup>2</sup>, which is a
-     *         real number between 0 and 1
-     */
-
-    public void setBestInitial(double bestInitial) {
-        this.bestInitial = bestInitial;
-    }
-
-    public void setBestSlope(double bestSlope) {
-        this.bestSlope = bestSlope;
-    }
-
-    private DoubleStream doubleStream() {
-        bestSlope = (Math.random() - 1. / 2) * 10;
-        bestInitial = (Math.random() - 1. / 2) * 10;
-        i = 0;
-        return DoubleStream.generate(this::random).limit(MAX_SIZE);
-    }
-
     private Data<Number, Number> mapToData(double e) {
         Double xValue = features.get(i++);
         return new Data<>(xValue, e, 1);
     }
 
-    private double random() {
-        double e = (Math.random() - 1. / 2) * 5;
-        return bestInitial + e + bestSlope * i++;
+    public static RegressionModel createModel(String name, Collection<?> features1, Collection<?> target1) {
+        RegressionModel regressionModel = new RegressionModel();
+        return regressionModel.initialize(name, features1, target1);
+    }
+    /**
+     * Returns the expected response {@code y} given the value of the predictor
+     * variable {@code x}.
+     *
+     * @param x
+     *            the value of the predictor variable
+     * @return the expected response {@code y} given the value of the predictor
+     *         variable {@code x}
+     */
+    public static double predict(RealMatrix beta, double x, int degree) {
+        // horner's method
+        double y = 0.0;
+        for (int j = degree; j >= 0; j--) {
+            y = beta(beta, j) + x * y;
+        }
+        return y;
     }
 
-    public static double beta(RealMatrix beta, int j) {
+    private static double beta(RealMatrix beta, int j) {
         // to make -0.0 print as 0.0
         if (Math.abs(beta.getEntry(j, 0)) < MIN_DIFFERENCE) {
             return 0.0;
@@ -177,7 +170,7 @@ public class RegressionModel {
         return beta.getEntry(j, 0);
     }
 
-    public static DoubleUnaryOperator polynomialRegression(double[] x, double[] y, int d) {
+    private static DoubleUnaryOperator polynomialRegression(double[] x, double[] y, int d) {
 
         int n = x.length;
         QRDecomposition qr;
@@ -216,24 +209,6 @@ public class RegressionModel {
         final int degreeFinal = degree;
         return x0 -> predict(beta, x0, degreeFinal);
 
-    }
-
-    /**
-     * Returns the expected response {@code y} given the value of the predictor
-     * variable {@code x}.
-     *
-     * @param x
-     *            the value of the predictor variable
-     * @return the expected response {@code y} given the value of the predictor
-     *         variable {@code x}
-     */
-    public static double predict(RealMatrix beta, double x, int degree) {
-        // horner's method
-        double y = 0.0;
-        for (int j = degree; j >= 0; j--) {
-            y = beta(beta, j) + x * y;
-        }
-        return y;
     }
 
     private static Data<Number, Number> toData(double e1, double e2) {

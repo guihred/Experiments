@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class MadEdgeDistance implements Comparable<MadEdgeDistance> {
 
-    protected float distance;
+    private float distance;
 
     protected MadLinha edge;
 

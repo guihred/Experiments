@@ -33,7 +33,7 @@ public class StringSigaUtils extends StringUtils {
     private static final int TAMANHO_CNPJ = 14;
     private static final List<Class<?>> FORMAT_HIERARCHY =
             Arrays.asList(String.class, Integer.class, Long.class, Double.class);
-    public static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
+    private static final String REGEX_CAMEL_CASE = "(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(\\W+)";
     public static final ImmutableMap<Class<? extends Comparable<?>>, Function<String, ?>> FORMAT_HIERARCHY_MAP =
             ImmutableMap.copyOf(formatHierarchy());
 
@@ -45,12 +45,6 @@ public class StringSigaUtils extends StringUtils {
         return asMap(line, ":");
     }
 
-    public static Map<String, String> asMap(String line, String separator) {
-        return Stream.of(lines(line)).filter(s -> s.contains(separator))
-                .collect(Collectors.toMap(s -> s.split(separator)[0],
-                        s -> Stream.of(s.split(separator)).skip(1).collect(Collectors.joining(separator)),
-                        (u, v) -> u + "\n" + v));
-    }
     public static String changeCase(String str) {
         if (isBlank(str)) {
             return "";
@@ -60,7 +54,6 @@ public class StringSigaUtils extends StringUtils {
         }
         return str.substring(0, 1).toLowerCase() + str.substring(1);
     }
-
     public static String codificar(String nome) {
         return getIgnore(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
@@ -102,10 +95,10 @@ public class StringSigaUtils extends StringUtils {
         byte[] bytes = latin1.getBytes(initial);
         return new String(bytes, finalCharset);
     }
+
     public static String floatFormating(int length) {
         return "\t%" + Math.max(length, 1) + ".1f";
     }
-
     public static String format(int length, Object mean) {
         int max = Math.max(length, 1);
 
@@ -230,7 +223,6 @@ public class StringSigaUtils extends StringUtils {
         return split(Objects.toString(nome, ""), "[\n\r]+");
     }
 
-
     public static List<String> matches(String line, String classRegex) {
         Matcher matcher = Pattern.compile(classRegex).matcher(line);
         List<String> linkedList = new LinkedList<>();
@@ -239,6 +231,7 @@ public class StringSigaUtils extends StringUtils {
         }
         return linkedList;
     }
+
 
     public static String putNumbers(List<String> map) {
         int orElse = map.stream().map(v -> Objects.toString(v, "")).mapToInt(String::length).max().orElse(0);
@@ -375,20 +368,6 @@ public class StringSigaUtils extends StringUtils {
         return null;
     }
 
-    public static Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,
-            Class<? extends Comparable<?>> class1, Class<?> currentFormat, String number, String header,
-            Function<String, ?> func) {
-        if (FORMAT_HIERARCHY.indexOf(currentFormat) <= FORMAT_HIERARCHY.indexOf(class1)) {
-            Object valueOf = func.apply(number);
-            if (currentFormat != class1) {
-                formatMap.put(header, class1);
-            }
-            return valueOf;
-        }
-        throw new NumberFormatException("Not");
-
-    }
-
     private static String addSpaces(String str, int diff) {
 
         Pattern compile = Pattern.compile(" +");
@@ -411,6 +390,13 @@ public class StringSigaUtils extends StringUtils {
         }
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    private static Map<String, String> asMap(String line, String separator) {
+        return Stream.of(lines(line)).filter(s -> s.contains(separator))
+                .collect(Collectors.toMap(s -> s.split(separator)[0],
+                        s -> Stream.of(s.split(separator)).skip(1).collect(Collectors.joining(separator)),
+                        (u, v) -> u + "\n" + v));
     }
 
     private static String formatar(String pattern, String valor) {
@@ -457,6 +443,20 @@ public class StringSigaUtils extends StringUtils {
 
     private static boolean paragraphEnd(String str) {
         return str.endsWith(".") || str.endsWith(".”") || str.matches("Texto \\d+");
+    }
+
+    private static Object tryNumber(Map<String, Class<? extends Comparable<?>>> formatMap,
+            Class<? extends Comparable<?>> class1, Class<?> currentFormat, String number, String header,
+            Function<String, ?> func) {
+        if (FORMAT_HIERARCHY.indexOf(currentFormat) <= FORMAT_HIERARCHY.indexOf(class1)) {
+            Object valueOf = func.apply(number);
+            if (currentFormat != class1) {
+                formatMap.put(header, class1);
+            }
+            return valueOf;
+        }
+        throw new NumberFormatException("Not");
+
     }
 
     private static int utf8LeadingByte(int octet) {

@@ -25,8 +25,6 @@ public class WorldMapGraph extends Canvas {
     public static final int HEIGHT = 1200;
     public static final int WIDTH = 2000;
     protected static final String NO_INFO = "No info";
-    public static final double BLUE_HUE = Color.BLUE.getHue();
-    protected static final double RED_HUE = Color.RED.getHue();
     private final ObjectProperty<ColorPattern> pattern = new SimpleObjectProperty<>(ColorPattern.HUE);
     protected StringProperty valueHeader = new SimpleStringProperty("Value");
     protected IntegerProperty bins = new SimpleIntegerProperty(7);
@@ -119,28 +117,6 @@ public class WorldMapGraph extends Canvas {
         return valueHeader;
     }
 
-	protected void createCategoryLabels(double x, double y0, double step) {
-		double y = y0;
-        gc.setFill(Color.GRAY);
-        gc.setStroke(Color.BLACK);
-        int size = fontSize.get();
-        List<Entry<String, Color>> colorsByCategory = categoryMap.entrySet().stream()
-            .sorted(Comparator.comparing(Entry<String, Color>::getKey)).collect(Collectors.toList());
-        gc.setTextAlign(TextAlignment.LEFT);
-        gc.setTextBaseline(VPos.CENTER);
-
-        double a = y + step * colorsByCategory.size() + size / 2.;
-        double s = Math.max(0, a - getHeight());
-        y -= s;
-        for (int i = 0; i < colorsByCategory.size(); i++) {
-            Entry<String, Color> entry = colorsByCategory.get(i);
-            gc.setFill(entry.getValue());
-            gc.fillRect(x, y + step * i, size, size);
-            gc.setFill(Color.BLACK);
-            gc.fillText(entry.getKey(), x + size + 5, y + step * i + size / 2.);
-        }
-    }
-
     protected void createCategoryMap() {
 
         if (dataframeML == null) {
@@ -161,46 +137,6 @@ public class WorldMapGraph extends Canvas {
             k++;
         }
         categoryMap.put(NO_INFO, generateColors.get(k));
-    }
-
-    protected void createNumberLabels(double x, double y, double step) {
-        int millin = 1;
-        min = Math.floor(summary.getMin() / millin) * millin;
-        max = Math.ceil(summary.getMax() / millin) * millin;
-        double h = (max - min) / bins.get();
-        int maxLength = 0;
-        for (int i = 0; i <= bins.get(); i++) {
-            double s = Math.floor((min + i * h) / millin) * millin;
-            if (h < 2) {
-                maxLength = Math.max(maxLength, String.format("%.2f", s).length());
-            } else {
-                maxLength = Math.max(maxLength, String.format("%.0f", s).length());
-            }
-        }
-        double w = step * (maxLength + 2);
-        gc.fillRect(x - 5, y - step / 3, w, step * (bins.get() + 3. / 2));
-        gc.setFill(Color.GRAY);
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setTextBaseline(VPos.CENTER);
-        gc.setStroke(Color.BLACK);
-        for (int i = 0; i <= bins.get(); i++) {
-            double s = Math.floor((min + i * h) / millin) * millin;
-            int size = fontSize.get();
-            if (h < 2) {
-                s = min + i * h;
-                gc.setFill(Color.BLACK);
-                gc.fillText(String.format("%11.2f", s), x + w / 2, y + step * i + size / 2.);
-                gc.setFill(pattern.get().getColorForValue(s, min, max));
-                gc.fillRect(x, y + step * i, size, size);
-            } else {
-                gc.setFill(pattern.get().getColorForValue(s, min, max));
-                gc.fillRect(x, y + step * i, size, size);
-                gc.setFill(Color.BLACK);
-                gc.fillText(String.format("%11.0f", s), x + w / 2, y + step * i + size / 2.);
-            }
-        }
-
-        categoryMap.put(NO_INFO, Color.GRAY);
     }
 
     protected void drawCountry(Country countries) {
@@ -238,6 +174,68 @@ public class WorldMapGraph extends Canvas {
         } else {
             createCategoryLabels(x, y, step);
         }
+    }
+
+    private void createCategoryLabels(double x, double y0, double step) {
+		double y = y0;
+        gc.setFill(Color.GRAY);
+        gc.setStroke(Color.BLACK);
+        int size = fontSize.get();
+        List<Entry<String, Color>> colorsByCategory = categoryMap.entrySet().stream()
+            .sorted(Comparator.comparing(Entry<String, Color>::getKey)).collect(Collectors.toList());
+        gc.setTextAlign(TextAlignment.LEFT);
+        gc.setTextBaseline(VPos.CENTER);
+
+        double a = y + step * colorsByCategory.size() + size / 2.;
+        double s = Math.max(0, a - getHeight());
+        y -= s;
+        for (int i = 0; i < colorsByCategory.size(); i++) {
+            Entry<String, Color> entry = colorsByCategory.get(i);
+            gc.setFill(entry.getValue());
+            gc.fillRect(x, y + step * i, size, size);
+            gc.setFill(Color.BLACK);
+            gc.fillText(entry.getKey(), x + size + 5, y + step * i + size / 2.);
+        }
+    }
+
+    private void createNumberLabels(double x, double y, double step) {
+        int millin = 1;
+        min = Math.floor(summary.getMin() / millin) * millin;
+        max = Math.ceil(summary.getMax() / millin) * millin;
+        double h = (max - min) / bins.get();
+        int maxLength = 0;
+        for (int i = 0; i <= bins.get(); i++) {
+            double s = Math.floor((min + i * h) / millin) * millin;
+            if (h < 2) {
+                maxLength = Math.max(maxLength, String.format("%.2f", s).length());
+            } else {
+                maxLength = Math.max(maxLength, String.format("%.0f", s).length());
+            }
+        }
+        double w = step * (maxLength + 2);
+        gc.fillRect(x - 5, y - step / 3, w, step * (bins.get() + 3. / 2));
+        gc.setFill(Color.GRAY);
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setTextBaseline(VPos.CENTER);
+        gc.setStroke(Color.BLACK);
+        for (int i = 0; i <= bins.get(); i++) {
+            double s = Math.floor((min + i * h) / millin) * millin;
+            int size = fontSize.get();
+            if (h < 2) {
+                s = min + i * h;
+                gc.setFill(Color.BLACK);
+                gc.fillText(String.format("%11.2f", s), x + w / 2, y + step * i + size / 2.);
+                gc.setFill(pattern.get().getColorForValue(s, min, max));
+                gc.fillRect(x, y + step * i, size, size);
+            } else {
+                gc.setFill(pattern.get().getColorForValue(s, min, max));
+                gc.fillRect(x, y + step * i, size, size);
+                gc.setFill(Color.BLACK);
+                gc.fillText(String.format("%11.0f", s), x + w / 2, y + step * i + size / 2.);
+            }
+        }
+
+        categoryMap.put(NO_INFO, Color.GRAY);
     }
 
     private void drawLinks(Country[] values) {

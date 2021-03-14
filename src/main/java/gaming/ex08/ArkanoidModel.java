@@ -27,7 +27,7 @@ public class ArkanoidModel {
     private final Rectangle rectangle = new Rectangle(50, 10);
     private Scene scene;
 
-    public ArkanoidModel(Group group, Scene scene) {
+    private ArkanoidModel(Group group, Scene scene) {
         this.group = group;
         this.scene = scene;
 

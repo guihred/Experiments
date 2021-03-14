@@ -21,7 +21,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import utils.*;
+import utils.ExtractUtils;
+import utils.ResourceFXUtils;
+import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
@@ -243,7 +245,12 @@ public final class Chapter6 {
         }
     }
 
-    public static String readPage(String urlString) {
+    private static Stream<String> getWords(URI txtFile) throws IOException {
+        return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).parallel()
+            .flatMap((String m) -> Stream.of(m.split("[\\P{L}]+"))).filter(s -> !s.isEmpty());
+    }
+
+    private static String readPage(String urlString) {
         return SupplierEx.remap(() -> {
             URL url = new URL(urlString);
             URLConnection conn = url.openConnection();
@@ -251,22 +258,22 @@ public final class Chapter6 {
         }, "ERROR Reading Page");
     }
 
-    private static Stream<String> getWords(URI txtFile) throws IOException {
-        return Files.lines(Paths.get(txtFile), StandardCharsets.UTF_8).parallel()
-            .flatMap((String m) -> Stream.of(m.split("[\\P{L}]+"))).filter(s -> !s.isEmpty());
-    }
-
-    static class Matrix {
-        protected int[][] mat = { { 1, 1 }, { 1, 0 } };
+    private static class Matrix {
+        private int[][] mat = { { 1, 1 }, { 1, 0 } };
 
         public Matrix() {
         }
 
-        public Matrix(int[][] mat) {
+        private Matrix(int[][] mat) {
             this.mat = mat;
         }
 
-        public Matrix multiply(Matrix other) {
+        @Override
+        public String toString() {
+            return Arrays.toString(mat[0]) + "\n" + Arrays.toString(mat[1]) + "\n";
+        }
+
+        private Matrix multiply(Matrix other) {
             Matrix matrix = new Matrix(new int[][] { { 0, 0 }, { 0, 0 } });
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 2; j++) {
@@ -276,11 +283,6 @@ public final class Chapter6 {
                 }
             }
             return matrix;
-        }
-
-        @Override
-        public String toString() {
-            return Arrays.toString(mat[0]) + "\n" + Arrays.toString(mat[1]) + "\n";
         }
     }
 

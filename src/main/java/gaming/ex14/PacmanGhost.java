@@ -111,9 +111,7 @@ public class PacmanGhost extends Group {
         this.status.set(status);
     }
 
-    public final ObjectProperty<GhostStatus> statusProperty() {
-        return status;
-    }
+
 
     private void addTranslate(final int step) {
         if (direction != null) {
@@ -309,7 +307,13 @@ public class PacmanGhost extends Group {
         return null;
     }
 
-    public enum GhostDirection {
+    public enum GhostStatus {
+        ALIVE,
+        AFRAID,
+        DEAD;
+    }
+
+    private enum GhostDirection {
         EAST(1, 0),
         NORTH(0, 1),
         SOUTH(0, -1),
@@ -325,12 +329,6 @@ public class PacmanGhost extends Group {
             this.x = x;
             this.y = y;
         }
-    }
-
-    public enum GhostStatus {
-        ALIVE,
-        AFRAID,
-        DEAD;
     }
 
 }

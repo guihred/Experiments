@@ -74,21 +74,6 @@ public final class MatrixSolver {
         return vectorNorm(v, 2);
     }
 
-    public static void printMatrix(double[][] matr, double[] coef) {
-        if (debug) {
-            StringBuilder desc = new StringBuilder();
-            for (int i = 0; i < matr.length; i++) {
-                desc.append("\n\t");
-                desc.append(DoubleStream.of(matr[i]).mapToObj(e -> String.format(Locale.US, "[%.3f]", e))
-                    .collect(Collectors.joining(", ")));
-                if (coef != null && coef.length > 0) {
-                    desc.append(String.format(Locale.US, "[%.1f]", coef[i % coef.length]));
-                }
-            }
-            LOGGER.info("{}", desc);
-        }
-    }
-
     public static double[] solve(double[][] matr, double[] coef2) {
 
         double[] coef = Arrays.copyOf(coef2, coef2.length);
@@ -169,6 +154,21 @@ public final class MatrixSolver {
             }
         }
         return 0;
+    }
+
+    private static void printMatrix(double[][] matr, double[] coef) {
+        if (debug) {
+            StringBuilder desc = new StringBuilder();
+            for (int i = 0; i < matr.length; i++) {
+                desc.append("\n\t");
+                desc.append(DoubleStream.of(matr[i]).mapToObj(e -> String.format(Locale.US, "[%.3f]", e))
+                    .collect(Collectors.joining(", ")));
+                if (coef != null && coef.length > 0) {
+                    desc.append(String.format(Locale.US, "[%.1f]", coef[i % coef.length]));
+                }
+            }
+            LOGGER.info("{}", desc);
+        }
     }
 
     private static void swap(double[][] temp, int i) {

@@ -29,7 +29,7 @@ public class KibanaInvestigator extends Application {
     @FXML
     protected ListView<String> filterList;
     @FXML
-    protected ProgressIndicator progressIndicator;
+    private ProgressIndicator progressIndicator;
     @FXML
     protected ComboBox<Integer> days;
 

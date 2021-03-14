@@ -14,10 +14,6 @@ public class DecisionTree {
     private static final double MIN_GAIN = 0.000;
     private static final Logger LOG = HasLogging.log();
 
-    public static DecisionNode buildTree(DataframeML frame, String label) {
-        return buildTree(frame, label, MIN_GAIN);
-    }
-
     public static DecisionNode buildTree(DataframeML frame, String label, double minGain) {
         Question question = findBestSplit(frame, label);
         if (question == null || question.getInfoGain() <= minGain) {
@@ -158,6 +154,10 @@ public class DecisionTree {
             LOG.trace("\n{}", buildTree.shuffle());
             LOG.trace("\n{}", buildTree.shuffle());
         }
+    }
+
+    private static DecisionNode buildTree(DataframeML frame, String label) {
+        return buildTree(frame, label, MIN_GAIN);
     }
 
     private static boolean isRedundantNode(DecisionNode trueTree, DecisionNode falseTree) {

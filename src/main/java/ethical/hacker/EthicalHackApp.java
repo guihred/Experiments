@@ -4,8 +4,11 @@ import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.observableHashMap;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javafx.application.Application;
@@ -18,7 +21,6 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
 public abstract class EthicalHackApp extends Application {
@@ -46,13 +48,26 @@ public abstract class EthicalHackApp extends Application {
     protected ObservableList<Integer> portsSelected = observableArrayList();
     protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
     protected ObservableMap<String, Set<String>> count = observableHashMap();
-    @FXML
-    protected HBox parent;
+
 
     protected EthicalHackApp() {
     }
 
-    public static synchronized void updateItem(ObservableList<Map<String, String>> items,
+    public static MapChangeListener<String, List<String>> updateItemOnChange(String primaryKey, String targetKey,
+        ObservableMap<String, Set<String>> count1, ObservableList<Map<String, String>> items) {
+        count1.clear();
+        return change -> updateItem(items, count1, primaryKey, targetKey, change);
+    }
+
+    protected static void addIfChecked(List<Integer> list, Entry<Integer, String> e, Boolean val) {
+        if (!val) {
+            list.remove(e.getKey());
+        } else if (!list.contains(e.getKey())) {
+            list.add(e.getKey());
+        }
+    }
+
+    private static synchronized void updateItem(ObservableList<Map<String, String>> items,
         ObservableMap<String, Set<String>> count1, String primaryKey, String targetKey,
         Change<? extends String, ? extends List<String>> change) {
         if (!change.wasAdded()) {
@@ -71,20 +86,6 @@ public abstract class EthicalHackApp extends Application {
         Set<String> orDefault = count1.getOrDefault(primaryKey, new HashSet<>());
         orDefault.add(key);
         count1.put(targetKey, orDefault);
-    }
-
-    public static MapChangeListener<String, List<String>> updateItemOnChange(String primaryKey, String targetKey,
-        ObservableMap<String, Set<String>> count1, ObservableList<Map<String, String>> items) {
-        count1.clear();
-        return change -> updateItem(items, count1, primaryKey, targetKey, change);
-    }
-
-    protected static void addIfChecked(List<Integer> list, Entry<Integer, String> e, Boolean val) {
-        if (!val) {
-            list.remove(e.getKey());
-        } else if (!list.contains(e.getKey())) {
-            list.add(e.getKey());
-        }
     }
 
 }

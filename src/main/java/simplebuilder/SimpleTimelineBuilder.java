@@ -15,7 +15,7 @@ public class SimpleTimelineBuilder extends SimpleAnimationBuilder<Timeline, Simp
         super(new Timeline());
     }
 
-    public SimpleTimelineBuilder(Timeline timeline) {
+    private SimpleTimelineBuilder(Timeline timeline) {
         super(timeline);
     }
 

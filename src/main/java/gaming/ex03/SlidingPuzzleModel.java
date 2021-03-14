@@ -26,7 +26,7 @@ public class SlidingPuzzleModel {
 
     private final Random random = new Random();
 
-    public SlidingPuzzleModel(GridPane gridPane) {
+    private SlidingPuzzleModel(GridPane gridPane) {
         this.gridPane = gridPane;
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {

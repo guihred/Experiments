@@ -58,28 +58,6 @@ public final class TermFrequency {
         });
     }
 
-    public static Map<String, Long> getFrequencyMap(File f, String suffix) {
-        Map<String, Long> map = new ConcurrentHashMap<>();
-        if (!f.getName().endsWith(suffix)) {
-            return map;
-        }
-        RunnableEx.run(() -> {
-            try (BufferedReader buff = Files.newBufferedReader(f.toPath())) {
-                String readLine;
-                do {
-                    readLine = buff.readLine();
-                    if (readLine != null) {
-                        Stream.of(StringSigaUtils.splitCamelCase(readLine)).parallel().map(String::toLowerCase)
-                                .filter(e -> !StringUtils.isNumeric(e))
-                                .filter(t -> !TermFrequency.getJavaKeywords().contains(t))
-                                .reduce(map, TermFrequency::reduceToMap, (m1, m2) -> m1);
-                    }
-                } while (readLine != null);
-            }
-        });
-        return map;
-    }
-
     public static double getInvertDocumentFrequency(String t) {
         Double idf = 1D;
         for (Entry<File, Map<String, Long>> entry : MAPA_DOCUMENTOS.entrySet()) {
@@ -116,6 +94,28 @@ public final class TermFrequency {
             return 0;
         }
         return 1 + Math.log(freq);
+    }
+
+    private static Map<String, Long> getFrequencyMap(File f, String suffix) {
+        Map<String, Long> map = new ConcurrentHashMap<>();
+        if (!f.getName().endsWith(suffix)) {
+            return map;
+        }
+        RunnableEx.run(() -> {
+            try (BufferedReader buff = Files.newBufferedReader(f.toPath())) {
+                String readLine;
+                do {
+                    readLine = buff.readLine();
+                    if (readLine != null) {
+                        Stream.of(StringSigaUtils.splitCamelCase(readLine)).parallel().map(String::toLowerCase)
+                                .filter(e -> !StringUtils.isNumeric(e))
+                                .filter(t -> !TermFrequency.getJavaKeywords().contains(t))
+                                .reduce(map, TermFrequency::reduceToMap, (m1, m2) -> m1);
+                    }
+                } while (readLine != null);
+            }
+        });
+        return map;
     }
 
     private static Map<String, Long> reduceToMap(Map<String, Long> mapa, String str) {

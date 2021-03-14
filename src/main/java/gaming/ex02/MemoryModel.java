@@ -21,8 +21,8 @@ import simplebuilder.SimpleTimelineBuilder;
  */
 public class MemoryModel {
 
-    public static final int MAP_WIDTH = 8;
-    public static final int MAP_HEIGHT = 5;
+    private static final int MAP_WIDTH = 8;
+    private static final int MAP_HEIGHT = 5;
 
     private final MemorySquare[][] map = new MemorySquare[MAP_WIDTH][MAP_HEIGHT];
     private final IntegerProperty nPlayed = new SimpleIntegerProperty(0);
@@ -52,16 +52,16 @@ public class MemoryModel {
         return map;
     }
 
-    final void createMouseClickedEvento(MemorySquare mem) {
-        mem.getFinalShape().setOnMouseClicked(event -> displayIfHidden(mem));
-        mem.setOnMouseClicked(event -> displayIfHidden(mem));
-    }
-
     private void addMemoryImage(final MemoryImage value, Color color, List<MemorySquare> emptySquares) {
         final MemorySquare mem = emptySquares.remove(0);
         mem.setMemoryImage(value);
         mem.setColor(color);
         createMouseClickedEvento(mem);
+    }
+
+    private final void createMouseClickedEvento(MemorySquare mem) {
+        mem.getFinalShape().setOnMouseClicked(event -> displayIfHidden(mem));
+        mem.setOnMouseClicked(event -> displayIfHidden(mem));
     }
 
     private void displayIfHidden(MemorySquare mem) {

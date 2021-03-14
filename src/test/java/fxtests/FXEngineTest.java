@@ -45,6 +45,17 @@ public class FXEngineTest extends AbstractTestExecution {
         measureTime("Chapter8.ex1", Chapter8::ex1);
         measureTimeExpectException("Chapter8.ex2", Chapter8::ex2);
         measureTime("Chapter8.ex3", Chapter8::ex3);
+        measureTime("Chapter8.ex3", () -> {
+            final int b = 40;
+            final int a = 20;
+            for (Integer i : Arrays.asList(a, b)) {
+                for (int j = -1; j <= 1; j++) {
+                    getLogger().trace("gcd1 {}", Chapter8.gcd1(i, j * b));
+                    getLogger().trace("gcd2 {}", Chapter8.gcd2(i, j * b));
+                    getLogger().trace("gcd3 {}", Chapter8.gcd3(i, j * b));
+                }
+            }
+        });
         measureTime("Chapter8.ex4", Chapter8::ex4);
         measureTime("Chapter8.ex5", Chapter8::ex5);
         measureTime("Chapter8.ex6", Chapter8::ex6);

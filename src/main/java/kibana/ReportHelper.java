@@ -150,19 +150,6 @@ public final class ReportHelper {
         return replaceString.replaceAll(".+\\.(\\w+)$", "$1");
     }
 
-    public static boolean isLoading(WebEngine engine) {
-        return engine.getLoadWorker().getState() == State.RUNNING;
-    }
-
-    public static void loadSite(WebEngine engine2, String url) {
-        RunnableEx.ignore(() -> {
-            if (!Objects.equals(engine2.getLocation(), url)) {
-                engine2.load(url);
-            }
-            LOG.info("LOADED {}", url);
-        });
-    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void mergeImage(Map<String, Object> mapaSubstituicao, List<Object> collect) {
         mapaSubstituicao.merge("gerid", collect, (o, n) -> {
@@ -207,10 +194,7 @@ public final class ReportHelper {
         }
     }
 
-    public static List<String> presentParams(Map<String, String> params, Object v) {
-        String string = v.toString();
-        return params.keySet().stream().filter(k -> StringSigaUtils.anyMatches(string, k)).collect(Collectors.toList());
-    }
+
 
     public static String replaceString(Map<String, String> params, Object v) {
         String string = v.toString();
@@ -220,19 +204,9 @@ public final class ReportHelper {
         return string;
     }
 
-    public static File saveHtmlImage(WebView browser2, File out) {
-        LOG.info("SAVING to {}", out.getName());
-        return SupplierEx.get(() -> ImageFXUtils.take(browser2, out));
-    }
-
     public static Image textToImage(String s) {
-        String collect2 = Stream.of(s.split("\n")).filter(StringUtils::isNotBlank)
-                .map(str -> "<p>" + str.replaceAll("(\\d+\\.\\d+\\.\\d+\\.\\d+|\\d{11})", "<font>$1</font>") + "</p>")
-                .collect(Collectors.joining("\n"));
-        String format =
-                String.format("<!DOCTYPE html>\n<html>\n<head>\n<style>\nfont {background-color: yellow;}</style>\n"
-                        + "</head><body>%s</body>\n</html>", collect2);
-        return PhantomJSUtils.saveHtmlImage(format);
+        String highlight = "(\\d+\\.\\d+\\.\\d+\\.\\d+|\\d{11})";
+        return PhantomJSUtils.textToImage(s, highlight);
     }
 
     private static WritableImage crop(Map<String, Object> info, File outFile) {
@@ -330,6 +304,19 @@ public final class ReportHelper {
         return image.getValue();
     }
 
+    private static boolean isLoading(WebEngine engine) {
+        return engine.getLoadWorker().getState() == State.RUNNING;
+    }
+
+    private static void loadSite(WebEngine engine2, String url) {
+        RunnableEx.ignore(() -> {
+            if (!Objects.equals(engine2.getLocation(), url)) {
+                engine2.load(url);
+            }
+            LOG.info("LOADED {}", url);
+        });
+    }
+
     private static String mergeStrings(String o, String n, String delimiter) {
         return Stream.of(o, n).flatMap(m -> Stream.of(m.split(delimiter))).distinct()
                 .collect(Collectors.joining(delimiter));
@@ -401,6 +388,11 @@ public final class ReportHelper {
         }
         ExcelService.getExcel(items2, outFile);
 
+    }
+
+    private static File saveHtmlImage(WebView browser2, File out) {
+        LOG.info("SAVING to {}", out.getName());
+        return SupplierEx.get(() -> ImageFXUtils.take(browser2, out));
     }
 
     private static WritableImage saveImage(Map<String, Object> info, File outFile, WebView browser2) {

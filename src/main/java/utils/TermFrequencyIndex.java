@@ -76,21 +76,6 @@ public final class TermFrequencyIndex {
     private TermFrequencyIndex() {
     }
 
-    public static int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
-        double da = 0D;
-        for (Entry<File, Double> entry : a.getValue().entrySet()) {
-            double value = entry.getValue().doubleValue();
-            da = da < value ? value : da;
-        }
-        double db = 0D;
-        for (Entry<File, Double> entry : b.getValue().entrySet()) {
-            double value = entry.getValue().doubleValue();
-            db = db < value ? value : db;
-        }
-        
-        return Double.compare(db, da);
-    }
-
     public static Map<File, Map<String, Long>> getDocumentMap(File f) {
 
         if (!f.isDirectory()) {
@@ -168,6 +153,21 @@ public final class TermFrequencyIndex {
         } catch (Exception e2) {
             LOGGER.error("", e2);
         }
+    }
+
+    private static int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
+        double da = 0D;
+        for (Entry<File, Double> entry : a.getValue().entrySet()) {
+            double value = entry.getValue().doubleValue();
+            da = da < value ? value : da;
+        }
+        double db = 0D;
+        for (Entry<File, Double> entry : b.getValue().entrySet()) {
+            double value = entry.getValue().doubleValue();
+            db = db < value ? value : db;
+        }
+        
+        return Double.compare(db, da);
     }
 
     private static double getInverseDocumentFrequency(String p) {

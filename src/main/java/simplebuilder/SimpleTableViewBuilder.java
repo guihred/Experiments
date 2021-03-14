@@ -34,11 +34,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         super(node);
     }
 
-    public <V> SimpleTableViewBuilder<T> addClosableColumn(String name, FunctionEx<T, V> func) {
-        addClosableColumn(node, name, func);
-        return this;
-    }
-
     public SimpleTableViewBuilder<T> addColumn(final String columnName,
             final BiConsumer<T, TableCell<T, Object>> value) {
         final TableColumn<T, Object> column = new TableColumn<>(columnName);
@@ -180,17 +175,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         prefWidthColumns(node, array);
     }
 
-    public static <T> void copyContent(TableView<T> table, KeyEvent ev) {
-        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
-            List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
-            String content = selectedItems.stream()
-                    .map(l -> table.getColumns().stream().filter(c -> !"Nº".equals(c.getText()))
-                            .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
-                    .collect(Collectors.joining("\n"));
-            ImageFXUtils.setClipboardContent(content);
-        }
-    }
-
     public static <S> void equalColumns(TableView<S> table) {
         List<TableColumn<S, ?>> columns = table.getColumns();
         prefWidthColumns(table, columns.stream().mapToDouble(e -> 1).toArray());
@@ -272,7 +256,18 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         column.setGraphic(value);
     }
 
-    public abstract static class CustomableTableCell<M, X> extends TableCell<M, X> {
+    private static <T> void copyContent(TableView<T> table, KeyEvent ev) {
+        if (ev.isControlDown() && ev.getCode() == KeyCode.C) {
+            List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
+            String content = selectedItems.stream()
+                    .map(l -> table.getColumns().stream().filter(c -> !"Nº".equals(c.getText()))
+                            .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
+                    .collect(Collectors.joining("\n"));
+            ImageFXUtils.setClipboardContent(content);
+        }
+    }
+
+    private abstract static class CustomableTableCell<M, X> extends TableCell<M, X> {
 
         protected abstract void setStyleable(M auxMed);
 

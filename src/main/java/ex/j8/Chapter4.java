@@ -35,13 +35,6 @@ public final class Chapter4 {
     private Chapter4() {
     }
 
-    public static Circle buildSun(Scene scene) {
-        final Circle theSun = new SimpleCircleBuilder().radius(50).fill(Color.YELLOW).build();
-        theSun.centerXProperty().bind(divide(scene.widthProperty(), 2));
-        theSun.centerYProperty().bind(divide(scene.heightProperty(), 2));
-        return theSun;
-    }
-
     public static void createOrbitAnimation(Scene scene, Circle planet, Slider rotationSlider, Slider radiusSlider) {
         new SimplePathTransitionBuilder().duration(Duration.millis(1000)).interpolator(Interpolator.LINEAR).node(planet)
                 .cycleCount(Animation.INDEFINITE).path(buildArc(scene, rotationSlider, radiusSlider)).build().play();
@@ -122,6 +115,13 @@ public final class Chapter4 {
         planet.centerXProperty().bind(divide(scene.widthProperty(), 2).add(100));
         planet.centerYProperty().bind(divide(scene.heightProperty(), 2));
         return planet;
+    }
+
+    private static Circle buildSun(Scene scene) {
+        final Circle theSun = new SimpleCircleBuilder().radius(50).fill(Color.YELLOW).build();
+        theSun.centerXProperty().bind(divide(scene.widthProperty(), 2));
+        theSun.centerYProperty().bind(divide(scene.heightProperty(), 2));
+        return theSun;
     }
 
     /**

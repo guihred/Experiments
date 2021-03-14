@@ -17,9 +17,7 @@ public class PixelHelper {
     public PixelHelper() {
     }
 
-    public PixelHelper(Color argb) {
-        this(toArgb(argb));
-    }
+
 
     public PixelHelper(int argb) {
         reset(argb);
@@ -82,13 +80,7 @@ public class PixelHelper {
     }
 
 
-    public double trans(final int argb) {
-        int trans = a - getByte(argb, 3);
-        int red = r - getByte(argb, 2);
-        int green = g - getByte(argb, 1);
-        int blue = b - getByte(argb, 0);
-        return (Math.abs(red) + Math.abs(green) + Math.abs(blue) + Math.abs(trans))/4.;
-    }
+
 
     public static Color asColor(final int argb) {
         int a = getByte(argb, 3);

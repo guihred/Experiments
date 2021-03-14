@@ -61,34 +61,6 @@ public final class VirusTotalApi {
         return outFile;
     }
 
-    public static Map<String, Object> getFilesInformation(String filename, String hash) throws IOException {
-        File outFile = newJsonFile(filename);
-        if (!outFile.exists()) {
-            getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
-        }
-        String trid = "trid";
-        String data = "data";
-        String idkey = "id";
-        String[] params = { data, ATTRIBUTES, LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "type_description", "tags", trid,
-                "magic", "meaningful_name", "file_type", "probability", "file_type", idkey };
-        Map<String, Object> object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
-        String string = Objects.toString(object.get(idkey), "");
-        if (StringUtils.isNotBlank(string) && !string.equals(hash)) {
-            outFile = newJsonFile(filename + "_" + hash);
-            if (!outFile.exists()) {
-                getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
-            }
-            object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
-        }
-        object.remove(idkey);
-        object.remove(data);
-        object.remove(ATTRIBUTES);
-        object.remove(trid);
-        LOG.info("{}", object);
-
-        return object;
-    }
-
     public static Entry<File, List<String>> getIpInformation(String ip) throws IOException {
         File outFile = newJsonFile(ip);
         if (!outFile.exists()) {
@@ -126,19 +98,6 @@ public final class VirusTotalApi {
         }, null, e -> LOG.info("ERROR SEARCHING {} {}", ip, e.getMessage()));
     }
 
-    public static Map<String, Object> getUrlInfo(String url) {
-
-        return SupplierEx.getHandle(() -> {
-            File outFile = getUrlInformation(url);
-            Map<String, Object> jsonFile = JsonExtractor.accessMap(JsonExtractor.toFullObject(outFile));
-            if (Objects.nonNull(jsonFile.get(ERROR_TAG))) {
-                Files.deleteIfExists(outFile.toPath());
-            }
-            return jsonFile;
-        }, null, e -> LOG.info("ERROR SEARCHING {} {}", url, e.getMessage()));
-
-    }
-
     public static File getUrlInformation(String url) throws IOException {
 
         String fullUrl = SupplierEx.getFirst(() -> tryToCreateUrl(url),
@@ -161,8 +120,38 @@ public final class VirusTotalApi {
         return outFile;
     }
 
+
+
     public static void main(String[] args) throws IOException {
         getFilesInformation("killall", "00264284405acad804177a20f0f9730ed17a90766c6430e6df58af024776b61c");
+    }
+
+    private static Map<String, Object> getFilesInformation(String filename, String hash) throws IOException {
+        File outFile = newJsonFile(filename);
+        if (!outFile.exists()) {
+            getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
+        }
+        String trid = "trid";
+        String data = "data";
+        String idkey = "id";
+        String[] params = { data, ATTRIBUTES, LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "type_description", "tags", trid,
+                "magic", "meaningful_name", "file_type", "probability", "file_type", idkey };
+        Map<String, Object> object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
+        String string = Objects.toString(object.get(idkey), "");
+        if (StringUtils.isNotBlank(string) && !string.equals(hash)) {
+            outFile = newJsonFile(filename + "_" + hash);
+            if (!outFile.exists()) {
+                getFromURL("https://www.virustotal.com/api/v3/files/" + hash, outFile);
+            }
+            object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
+        }
+        object.remove(idkey);
+        object.remove(data);
+        object.remove(ATTRIBUTES);
+        object.remove(trid);
+        LOG.info("{}", object);
+
+        return object;
     }
 
     private static void getFromURL(String url, File outFile) throws IOException {

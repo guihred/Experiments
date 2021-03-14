@@ -54,9 +54,7 @@ public interface SupplierEx<T> {
         return getHandle(run, orElse, e -> HasLogging.log(1).trace("", e));
     }
 
-    static <A> Supplier<A> makeSupplier(SupplierEx<A> run) {
-        return makeSupplier(run::get, e -> HasLogging.log(1).error("", e));
-    }
+
 
     static <A> Supplier<A> makeSupplier(SupplierEx<A> run, Consumer<Throwable> onError) {
         return () -> getHandle(run, null, onError);

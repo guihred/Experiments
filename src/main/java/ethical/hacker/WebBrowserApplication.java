@@ -88,10 +88,6 @@ public class WebBrowserApplication extends Application {
         return engine.getLoadWorker().getState() == State.RUNNING;
     }
 
-    public void loadSite(String url) {
-        RunnableEx.ignore(() -> engine.load(url));
-    }
-
     public void onActionButton6() {
         RunnableEx.ignore(() -> engine.getHistory().go(engine.getHistory().getCurrentIndex() - 1));
     }
@@ -119,6 +115,10 @@ public class WebBrowserApplication extends Application {
 
     private String getUrl() {
         return siteField.getText();
+    }
+
+    private void loadSite(String url) {
+        RunnableEx.ignore(() -> engine.load(url));
     }
 
     private void onException(Throwable newException) {

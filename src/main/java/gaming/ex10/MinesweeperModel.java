@@ -26,8 +26,8 @@ import simplebuilder.SimpleDialogBuilder;
 public class MinesweeperModel {
 
     private static final int NUMBER_OF_BOMBS = 30;
-    public static final int MAP_HEIGHT = 16;
-    public static final int MAP_WIDTH = 16;
+    private static final int MAP_HEIGHT = 16;
+    private static final int MAP_WIDTH = 16;
 
     private GridPane gridPane;
     private final MinesweeperSquare[][] map = new MinesweeperSquare[MAP_WIDTH][MAP_HEIGHT];
@@ -51,14 +51,6 @@ public class MinesweeperModel {
         return map;
     }
 
-    final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
-        EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(event, mem);
-        mem.getFinalShape().setOnMouseClicked(mouseClicked);
-        mem.getFlag().setOnMouseClicked(mouseClicked);
-        mem.setOnMouseClicked(mouseClicked);
-        return mouseClicked;
-    }
-
     private int countBombsAround(int i, int j) {
         int num = 0;
         for (int k = -1; k <= 1; k++) {
@@ -73,6 +65,14 @@ public class MinesweeperModel {
             }
         }
         return num;
+    }
+
+    private final EventHandler<MouseEvent> createMouseClickedEvent(MinesweeperSquare mem) {
+        EventHandler<MouseEvent> mouseClicked = (MouseEvent event) -> handleClick(event, mem);
+        mem.getFinalShape().setOnMouseClicked(mouseClicked);
+        mem.getFlag().setOnMouseClicked(mouseClicked);
+        mem.setOnMouseClicked(mouseClicked);
+        return mouseClicked;
     }
 
     private void handleClick(MouseEvent event, MinesweeperSquare mem) {

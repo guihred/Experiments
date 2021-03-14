@@ -30,7 +30,8 @@ public class MazeModel {
     private int x;
     private int y;
 	private Circle circle;
-	public MazeModel(GridPane gridPane, Scene scene) {
+
+    private MazeModel(GridPane gridPane, Scene scene) {
 		initializeMaze(gridPane);
 		maze[0][0].setCenter(new Circle(5));
 		Timeline timeline = new Timeline();

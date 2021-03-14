@@ -22,7 +22,7 @@ import simplebuilder.SimpleDialogBuilder;
 public class RoundMazeModel {
 
     private static final double FULL_CIRCLE = 360.;
-    public static final double CANVAS_WIDTH = 500;
+    private static final double CANVAS_WIDTH = 500;
     private RoundMazeSquare[][] maze = new RoundMazeSquare[RoundMazeHandler.MAZE_WIDTH][RoundMazeHandler.MAZE_HEIGHT];
     private int x = RoundMazeHandler.MAZE_WIDTH - 1;
     private int y = RoundMazeHandler.MAZE_HEIGHT - 1;
@@ -30,7 +30,7 @@ public class RoundMazeModel {
     private Canvas canvas;
     private final Rotate angle = new Rotate(90);
 
-    public RoundMazeModel(Scene scene, Canvas canvas) {
+    private RoundMazeModel(Scene scene, Canvas canvas) {
         this.canvas = canvas;
         initializeMaze();
         gc = canvas.getGraphicsContext2D();
@@ -144,7 +144,7 @@ public class RoundMazeModel {
         return new RoundMazeModel(scene, canvas);
     }
 
-    public static void draw(RoundMazeSquare sq, GraphicsContext gc) {
+    private static void draw(RoundMazeSquare sq, GraphicsContext gc) {
         double length = -FULL_CIRCLE / RoundMazeHandler.MAZE_HEIGHT;
         double center = CANVAS_WIDTH / 2 + CANVAS_WIDTH / RoundMazeHandler.MAZE_WIDTH / 2;
         double angle = length * (sq.j + 1);

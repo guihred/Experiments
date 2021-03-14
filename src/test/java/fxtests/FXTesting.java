@@ -20,6 +20,7 @@ public class FXTesting implements HasLogging {
 
     private static final String TIME_FORMAT = "HHH:mm:ss.SSS";
 
+    private static final int MAX_MILLI_SECONDS = 10 * 60 * 1000;// 10 minutes
     private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
 
     protected void testApplications(List<Class<? extends Application>> applicationClasses) {
@@ -45,7 +46,7 @@ public class FXTesting implements HasLogging {
                 getLogger().info("{}/{} done", testedApps.size() + exceptionMap.size(), applicationClasses.size());
                 size = testedApps.size();
             }
-            if (System.currentTimeMillis() - currentTimeMillis > 5 * 60 * 1000) {// 2 minutes
+            if (System.currentTimeMillis() - currentTimeMillis > MAX_MILLI_SECONDS) {
                 List<Class<? extends Application>> notExecutedApps =
                         applicationClasses.stream().collect(Collectors.toList());
                 notExecutedApps.removeAll(testedApps);

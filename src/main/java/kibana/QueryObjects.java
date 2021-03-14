@@ -29,12 +29,12 @@ import utils.QuickSortML;
 import utils.ex.ConsumerEx;
 
 public class QueryObjects {
-    public static final String MDC_UID_KEYWORD = "mdc.uid";
+    private static final String MDC_UID_KEYWORD = "mdc.uid";
     public static final String URL_QUERY = "request";
 
     public static final String CLIENT_IP_QUERY = "clientip";
     public static final String ACESSOS_SISTEMA_QUERY = "dtpsistema";
-    public static final String USER_NAME_QUERY = "http.user-name";
+    private static final String USER_NAME_QUERY = "http.user-name";
     private static final ImmutableMap<String, String> REPLACEMENT_MAP = ImmutableMap.<String, String>builder()
             .put(USER_NAME_QUERY, MDC_UID_KEYWORD).build();
 

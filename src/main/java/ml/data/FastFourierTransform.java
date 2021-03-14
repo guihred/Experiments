@@ -11,19 +11,6 @@ import utils.ex.HasLogging;
 public class FastFourierTransform {
 	private static final Logger LOGGER = HasLogging.log();
 
-	public static int bitReverse(int num, int bits) {
-		int n = num;
-        int reversedN = n;
-        int count = bits - 1;
-        n >>= 1;
-        while (n > 0) {
-            reversedN = reversedN << 1 | n & 1;
-            count--;
-            n >>= 1;
-        }
-        return reversedN << count & (1 << bits) - 1;
-    }
-
     public static void fft(Complex[] buffer) {
 
         int bits = (int) (log(buffer.length) / log(2));
@@ -76,6 +63,19 @@ public class FastFourierTransform {
         for (Complex c : cinput) {
             LOGGER.info("{}", c);
         }
+    }
+
+    private static int bitReverse(int num, int bits) {
+		int n = num;
+        int reversedN = n;
+        int count = bits - 1;
+        n >>= 1;
+        while (n > 0) {
+            reversedN = reversedN << 1 | n & 1;
+            count--;
+            n >>= 1;
+        }
+        return reversedN << count & (1 << bits) - 1;
     }
 
     private static int highestExponentOf2(double x) {

@@ -2,24 +2,20 @@ package ml.graph;
 
 public class MercatorMap {
 
-	public static final double DEFAULT_TOP_LATITUDE = 80;
-	public static final double DEFAULT_BOTTOM_LATITUDE = -80;
-	public static final double DEFAULT_LEFT_LONGITUDE = -180;
-	public static final double DEFAULT_RIGHT_LONGITUDE = 180;
+    private static final double DEFAULT_TOP_LATITUDE = 80;
+    private static final double DEFAULT_BOTTOM_LATITUDE = -80;
+    private static final double DEFAULT_LEFT_LONGITUDE = -180;
+    private static final double DEFAULT_RIGHT_LONGITUDE = 180;
 
 	/** Horizontal dimension of this map, in pixels. */
-	protected double mapScreenWidth;
+    private double mapScreenWidth;
 	/** Vertical dimension of this map, in pixels. */
-	protected double mapScreenHeight;
+    private double mapScreenHeight;
 
-	/** Northern border of this map, in degrees. */
-	protected double topLatitude;
-	/** Southern border of this map, in degrees. */
-	protected double bottomLatitude;
-	/** Western border of this map, in degrees. */
-	protected double leftLongitude;
-	/** Eastern border of this map, in degrees. */
-	protected double rightLongitude;
+
+
+
+
 
 	private double topLatitudeRelative;
 	private double bottomLatitudeRelative;
@@ -48,14 +44,10 @@ public class MercatorMap {
 	 * @param rightLongitude
 	 *            Eastern border of this map, in degrees.
 	 */
-	public MercatorMap(double mapScreenWidth, double mapScreenHeight, double topLatitude, double bottomLatitude,
+    private MercatorMap(double mapScreenWidth, double mapScreenHeight, double topLatitude, double bottomLatitude,
 			double leftLongitude, double rightLongitude) {
 		this.mapScreenWidth = mapScreenWidth;
 		this.mapScreenHeight = mapScreenHeight;
-		this.topLatitude = topLatitude;
-		this.bottomLatitude = bottomLatitude;
-		this.leftLongitude = leftLongitude;
-		this.rightLongitude = rightLongitude;
 
 		topLatitudeRelative = getScreenYRelative(topLatitude);
 		bottomLatitudeRelative = getScreenYRelative(bottomLatitude);
@@ -76,13 +68,13 @@ public class MercatorMap {
 		return new double[] { getScreenX(latitudeInDegrees), getScreenY(longitudeInDegrees) };
 	}
 
-    protected double getScreenX(double longitudeInDegrees) {
+    private double getScreenX(double longitudeInDegrees) {
 		double longitudeInRadians = getRadians(longitudeInDegrees);
 		return mapScreenWidth * (longitudeInRadians - leftLongitudeRadians)
 				/ (rightLongitudeRadians - leftLongitudeRadians);
 	}
 
-	protected double getScreenY(double latitudeInDegrees) {
+    private double getScreenY(double latitudeInDegrees) {
 		return mapScreenHeight * (getScreenYRelative(latitudeInDegrees) - topLatitudeRelative)
 				/ (bottomLatitudeRelative - topLatitudeRelative);
 	}

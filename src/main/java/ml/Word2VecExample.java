@@ -16,7 +16,7 @@ import utils.ex.HasLogging;
 public final class Word2VecExample {
 
     private static final String RAW_SENTENCES_TXT = "raw_sentences.txt";
-    public static final String PATH_TO_SAVE_MODEL_TXT = "zip/pathToSaveModel.zip";
+    private static final String PATH_TO_SAVE_MODEL_TXT = "zip/pathToSaveModel.zip";
     private static final Logger LOG = HasLogging.log();
 
     private Word2VecExample() {

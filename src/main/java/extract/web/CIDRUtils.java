@@ -154,16 +154,6 @@ public class CIDRUtils {
         return null;
     }
 
-    public static InetAddress toInetAddress(String ip) throws UnknownHostException {
-        if (!ip.matches(IP_REGEX)) {
-            return null;
-        }
-        List<Byte> bytes =
-                Stream.of(ip.split("\\.")).map(t -> Integer.valueOf(t).byteValue()).collect(Collectors.toList());
-        byte[] addr = new byte[] { bytes.get(0), bytes.get(1), bytes.get(2), bytes.get(3) };
-        return InetAddress.getByAddress(addr);
-    }
-
     public static InetAddress toIPByName(String name) throws UnknownHostException {
         return InetAddress.getByName(name);
     }
@@ -192,6 +182,16 @@ public class CIDRUtils {
         final int bitsInAnAddress = 32;
         fullMask <<= bitsInAnAddress - mask;
         return fullMask;
+    }
+
+    private static InetAddress toInetAddress(String ip) throws UnknownHostException {
+        if (!ip.matches(IP_REGEX)) {
+            return null;
+        }
+        List<Byte> bytes =
+                Stream.of(ip.split("\\.")).map(t -> Integer.valueOf(t).byteValue()).collect(Collectors.toList());
+        byte[] addr = new byte[] { bytes.get(0), bytes.get(1), bytes.get(2), bytes.get(3) };
+        return InetAddress.getByAddress(addr);
     }
 
     private static int toPartialMask(final int mask) {

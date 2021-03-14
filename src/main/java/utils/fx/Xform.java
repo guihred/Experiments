@@ -19,6 +19,7 @@ public class Xform extends Group {
     public Xform() {
         getTransforms().addAll(t, rz, ry, rx, s);
     }
+
     public Xform(Node... nodes) {
         getTransforms().addAll(t, rz, ry, rx, s);
         getChildren().addAll(nodes);
@@ -41,7 +42,7 @@ public class Xform extends Group {
     }
 
     public double getRy() {
-        return  ry.getAngle();
+        return ry.getAngle();
     }
 
     public double getRz() {
@@ -102,12 +103,6 @@ public class Xform extends Group {
         s.setZ(scaleFactor);
     }
 
-    public void setScale(double x, double y, double z) {
-        s.setX(x);
-        s.setY(y);
-        s.setZ(z);
-    }
-
     public void setSx(double x) {
         s.setX(x);
     }
@@ -118,17 +113,6 @@ public class Xform extends Group {
 
     public void setSz(double z) {
         s.setZ(z);
-    }
-
-    public void setTranslate(double x, double y) {
-        t.setX(x);
-        t.setY(y);
-    }
-
-    public void setTranslate(double x, double y, double z) {
-        t.setX(x);
-        t.setY(y);
-        t.setZ(z);
     }
 
     public void setTx(double x) {
@@ -146,9 +130,9 @@ public class Xform extends Group {
     @Override
     public String toString() {
         return String.format(
-            "Xform[t = (%.1f, %.1f, %.1f)  r = (%.1f, %.1f, %.1f)  s = (%.1f, %.1f, %.1f) "
-                + " p = (%.1f, %.1f, %.1f)  ip = (%.1f, %.1f, %.1f)]",
-            t.getX(), t.getY(), t.getZ(), rx.getAngle(), ry.getAngle(), rz.getAngle(), s.getX(), s.getY(), s.getZ(),
-            p.getX(), p.getY(), p.getZ(), ip.getX(), ip.getY(), ip.getZ());
+                "Xform[t = (%.1f, %.1f, %.1f)  r = (%.1f, %.1f, %.1f)  s = (%.1f, %.1f, %.1f) "
+                        + " p = (%.1f, %.1f, %.1f)  ip = (%.1f, %.1f, %.1f)]",
+                t.getX(), t.getY(), t.getZ(), rx.getAngle(), ry.getAngle(), rz.getAngle(), s.getX(), s.getY(), s.getZ(),
+                p.getX(), p.getY(), p.getZ(), ip.getX(), ip.getY(), ip.getZ());
     }
 }

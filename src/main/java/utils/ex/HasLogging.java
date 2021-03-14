@@ -54,9 +54,7 @@ public interface HasLogging {
 		return log(0);
 	}
 
-    static Logger log(Class<?> cls) {
-        return LoggerFactory.getLogger(cls);
-    }
+
 
 	static Logger log(int i) {
 		String className = getCurrentClass(i);

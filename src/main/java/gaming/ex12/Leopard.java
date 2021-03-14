@@ -3,7 +3,7 @@ package gaming.ex12;
 import javafx.scene.canvas.GraphicsContext;
 
 public class Leopard extends Player {
-	public static final int INITIAL_Y = 238;
+    private static final int INITIAL_Y = 238;
 
 	private RunAnimation stoppedAnimation = new RunAnimation(ImageResource.LEOPARD, 10, 1);
 	private RunAnimation runAnimation = new RunAnimation(ImageResource.LEOPARD);
@@ -81,7 +81,7 @@ public class Leopard extends Player {
 		accelerationX = 1;
 	}
 
-	enum LeopardStatus {
+    private enum LeopardStatus {
 		STOPPED,
 		RUNNING,
 		JUMPING;

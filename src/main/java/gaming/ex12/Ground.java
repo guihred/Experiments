@@ -5,8 +5,8 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Ground extends Player {
     private static final int GROUND_HEIGHT = 25;
-    public static final int INITIAL_Y = 350;
-	public static final int INITIAL_X = 0;
+    private static final int INITIAL_Y = 350;
+    private static final int INITIAL_X = 0;
 	private int width = 1;
 	private int height = 1;
 

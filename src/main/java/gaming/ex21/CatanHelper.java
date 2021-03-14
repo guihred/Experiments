@@ -52,20 +52,6 @@ public final class CatanHelper {
 
     }
 
-    public static void createSettlePoints(Terrain terrain, final double x, final double y,
-        Collection<SettlePoint> points) {
-        for (SettlePoint p : CatanHelper.getSettlePoints(x, y)) {
-            if (points.stream().noneMatch(e -> CatanHelper.intersects(p, e))) {
-                points.add(p);
-                p.addTerrain(terrain);
-            } else {
-                p.removeNeighbors();
-            }
-            points.stream().filter(e -> CatanHelper.intersects(p, e)).findFirst()
-                .ifPresent(e -> e.addTerrain(terrain).addAllNeighbors(p));
-        }
-    }
-
     public static int getDirection(int turnCount2) {
         if (turnCount2 == 4) {
             return 0;
@@ -74,26 +60,6 @@ public final class CatanHelper {
         } else {
             return 1;
         }
-    }
-
-    public static List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
-        List<SettlePoint> points = new ArrayList<>();
-        double off = Math.PI / 6;
-        for (int i = 0; i < 6; i++) {
-            double d = Math.PI / 3;
-            double x = Math.cos(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
-            double y = Math.sin(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
-            final double centerX = xOff + x - CatanResource.RADIUS / 2.5;
-            final double centerY = yOff + y - CatanResource.RADIUS / 4;
-            SettlePoint e = new SettlePoint();
-            e.relocate(centerX, centerY);
-            points.add(e);
-        }
-        for (int i = 0; i < points.size(); i++) {
-            SettlePoint e = points.get(i);
-            e.addNeighbor(points.get((i + 1) % points.size()));
-        }
-        return points;
     }
 
     public static boolean inArea(double x, double y, Node e) {
@@ -116,5 +82,39 @@ public final class CatanHelper {
 
     public static ImageView newResource(final ResourceType type) {
         return CatanResource.newImage(type.getPure(), Port.SIZE / 4.);
+    }
+
+    private static void createSettlePoints(Terrain terrain, final double x, final double y,
+        Collection<SettlePoint> points) {
+        for (SettlePoint p : CatanHelper.getSettlePoints(x, y)) {
+            if (points.stream().noneMatch(e -> CatanHelper.intersects(p, e))) {
+                points.add(p);
+                p.addTerrain(terrain);
+            } else {
+                p.removeNeighbors();
+            }
+            points.stream().filter(e -> CatanHelper.intersects(p, e)).findFirst()
+                .ifPresent(e -> e.addTerrain(terrain).addAllNeighbors(p));
+        }
+    }
+
+    private static List<SettlePoint> getSettlePoints(final double xOff, final double yOff) {
+        List<SettlePoint> points = new ArrayList<>();
+        double off = Math.PI / 6;
+        for (int i = 0; i < 6; i++) {
+            double d = Math.PI / 3;
+            double x = Math.cos(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
+            double y = Math.sin(off + d * i) * CatanResource.RADIUS + CatanResource.RADIUS;
+            final double centerX = xOff + x - CatanResource.RADIUS / 2.5;
+            final double centerY = yOff + y - CatanResource.RADIUS / 4;
+            SettlePoint e = new SettlePoint();
+            e.relocate(centerX, centerY);
+            points.add(e);
+        }
+        for (int i = 0; i < points.size(); i++) {
+            SettlePoint e = points.get(i);
+            e.addNeighbor(points.get((i + 1) % points.size()));
+        }
+        return points;
     }
 }

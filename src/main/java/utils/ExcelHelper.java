@@ -15,70 +15,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import utils.ex.FunctionEx;
 import utils.ex.SupplierEx;
 
-public class ExcelHelper {
+class ExcelHelper {
 
-    protected static final int DEFAULT_ROW_SIZE = 500;
+    private static final int DEFAULT_ROW_SIZE = 500;
 
     protected ExcelHelper() {
-    }
-
-
-
-    protected static void alterarValorCell(Map<Object, Object> map, Sheet sheet, Row row, Cell c) {
-        if (c.getCellType() == CellType.NUMERIC) {
-            alterNumeric(map, sheet, c);
-        }
-        if (c.getCellType() == CellType.STRING) {
-            alterString(map, sheet, row, c);
-        }
-    }
-
-    @SuppressWarnings("rawtypes")
-    protected static void alterNumeric(Map<Object, Object> map, Sheet sheet, Cell cell) {
-        double numericCellValue = cell.getNumericCellValue();
-        if (map.containsKey(numericCellValue)) {
-            Object object = map.get(numericCellValue);
-            if (object instanceof Map) {
-                object = ((Map) object).get(sheet.getSheetName());
-            }
-            if (object instanceof Number) {
-                cell.setCellValue(((Number) object).doubleValue());
-            }
-            if (object instanceof String) {
-                cell.setCellValue((String) object);
-            }
-        }
-    }
-
-    @SuppressWarnings("rawtypes")
-    protected static void alterString(Map<Object, Object> map, Sheet sheet, Row row, Cell c) {
-        Cell cell = c;
-        String stringCellValue = cell.getStringCellValue();
-        if (map.containsKey(cell.getStringCellValue())) {
-            Object cellValue = map.get(stringCellValue);
-            if (cellValue instanceof Map) {
-                cellValue = ((Map) cellValue).get(sheet.getSheetName());
-            }
-            if (cellValue instanceof String) {
-                cell.setCellValue((String) cellValue);
-            }
-            if (cellValue instanceof List) {
-                int rowNum = row.getRowNum();
-                int columnIndex = cell.getColumnIndex();
-                List listValue = (List) cellValue;
-                if (listValue.isEmpty()) {
-                    cell.setCellValue("");
-                }
-                for (Object object : listValue) {
-                    cell.setCellValue(Objects.toString(object, ""));
-                    ++rowNum;
-                    Row next = sheet.getRow(rowNum);
-                    cell = next.getCell(columnIndex);
-                }
-                map.remove(stringCellValue);
-            }
-
-        }
     }
 
     protected static boolean createHeader(Row row2, Set<String> keySet) {
@@ -291,8 +232,79 @@ public class ExcelHelper {
         }
     }
 
+    protected static Map<Class<?>, CellStyle> styleMap(Workbook workbook) {
+        CreationHelper createHelper = workbook.getCreationHelper();
+        CellStyle formatoData = workbook.createCellStyle();
+        formatoData.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
+        CellStyle defaultStyle = workbook.createCellStyle();
+        defaultStyle.setAlignment(HorizontalAlignment.LEFT);
+        defaultStyle.setVerticalAlignment(VerticalAlignment.TOP);
+        defaultStyle.setWrapText(true);
+        Map<Class<?>, CellStyle> formatMap = new HashMap<>();
+        formatMap.put(Date.class, formatoData);
+        formatMap.put(String.class, defaultStyle);
+        return formatMap;
+    }
 
-    protected static void setValorPorClasse(Map<Class<?>, CellStyle> formatMap, Row row, int colIndex, Object content) {
+    private static void alterarValorCell(Map<Object, Object> map, Sheet sheet, Row row, Cell c) {
+        if (c.getCellType() == CellType.NUMERIC) {
+            alterNumeric(map, sheet, c);
+        }
+        if (c.getCellType() == CellType.STRING) {
+            alterString(map, sheet, row, c);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static void alterNumeric(Map<Object, Object> map, Sheet sheet, Cell cell) {
+        double numericCellValue = cell.getNumericCellValue();
+        if (map.containsKey(numericCellValue)) {
+            Object object = map.get(numericCellValue);
+            if (object instanceof Map) {
+                object = ((Map) object).get(sheet.getSheetName());
+            }
+            if (object instanceof Number) {
+                cell.setCellValue(((Number) object).doubleValue());
+            }
+            if (object instanceof String) {
+                cell.setCellValue((String) object);
+            }
+        }
+    }
+
+
+    @SuppressWarnings("rawtypes")
+    private static void alterString(Map<Object, Object> map, Sheet sheet, Row row, Cell c) {
+        Cell cell = c;
+        String stringCellValue = cell.getStringCellValue();
+        if (map.containsKey(cell.getStringCellValue())) {
+            Object cellValue = map.get(stringCellValue);
+            if (cellValue instanceof Map) {
+                cellValue = ((Map) cellValue).get(sheet.getSheetName());
+            }
+            if (cellValue instanceof String) {
+                cell.setCellValue((String) cellValue);
+            }
+            if (cellValue instanceof List) {
+                int rowNum = row.getRowNum();
+                int columnIndex = cell.getColumnIndex();
+                List listValue = (List) cellValue;
+                if (listValue.isEmpty()) {
+                    cell.setCellValue("");
+                }
+                for (Object object : listValue) {
+                    cell.setCellValue(Objects.toString(object, ""));
+                    ++rowNum;
+                    Row next = sheet.getRow(rowNum);
+                    cell = next.getCell(columnIndex);
+                }
+                map.remove(stringCellValue);
+            }
+
+        }
+    }
+
+    private static void setValorPorClasse(Map<Class<?>, CellStyle> formatMap, Row row, int colIndex, Object content) {
         if (content instanceof Number) {
             Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
             createCell.setCellValue(((Number) content).doubleValue());
@@ -314,20 +326,6 @@ public class ExcelHelper {
             return;
         }
         row.createCell(colIndex, CellType.BLANK);
-    }
-
-    protected static Map<Class<?>, CellStyle> styleMap(Workbook workbook) {
-        CreationHelper createHelper = workbook.getCreationHelper();
-        CellStyle formatoData = workbook.createCellStyle();
-        formatoData.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
-        CellStyle defaultStyle = workbook.createCellStyle();
-        defaultStyle.setAlignment(HorizontalAlignment.LEFT);
-        defaultStyle.setVerticalAlignment(VerticalAlignment.TOP);
-        defaultStyle.setWrapText(true);
-        Map<Class<?>, CellStyle> formatMap = new HashMap<>();
-        formatMap.put(Date.class, formatoData);
-        formatMap.put(String.class, defaultStyle);
-        return formatMap;
     }
 
 }

@@ -43,54 +43,11 @@ import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
-public final class EditSongHelper {
+final class EditSongHelper {
     private static final long MAX_SIZE = 1_000_000L;
     private static final Logger LOG = HasLogging.log();
 
     private EditSongHelper() {
-    }
-
-    public static void findImage(Music selectedItem, Stage stage, ObjectProperty<MediaPlayer> mediaPlayer) {
-        String value = MusicReader.getDescription(selectedItem);
-        ObservableList<Node> children = FXCollections.observableArrayList();
-
-        final int prefWidth = 300;
-        SimpleListViewBuilder<Node> listBuilder = new SimpleListViewBuilder<>();
-        ListView<Node> builder = listBuilder.items(children).prefWidth(prefWidth).build();
-        listBuilder.onDoubleClick(n -> {
-            StageHelper.closeStage(builder);
-            stage.close();
-            ImageView view = (ImageView) n;
-            Image image = view.getImage();
-            selectedItem.setImage(image);
-            SongUtils.stopAndDispose(mediaPlayer.get());
-            MusicReader.saveMetadata(selectedItem);
-        });
-        File parentFile = selectedItem.getArquivo().getParentFile();
-        VBox.setVgrow(builder, Priority.ALWAYS);
-        new SimpleDialogBuilder().title("Searching Image").text(value).node(builder).bindWindow(stage).displayDialog();
-        ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
-                selectedItem.getTitulo());
-        RunnableEx.runNewThread(() -> {
-            RunnableEx.sleepSeconds(5);
-            List<Path> pathByExtension = FileTreeWalker.getPathByExtension(parentFile, ".jpg", ".png");
-            return
-            pathByExtension.stream().filter(e -> {
-                BasicFileAttributes computeAttributes = ResourceFXUtils.computeAttributes(e.toFile());
-                return computeAttributes.size() < MAX_SIZE;// LESS than a MB
-            }).limit(10)
-                    .collect(Collectors.toList());
-        }, pathByExtension -> {
-            if (!pathByExtension.isEmpty()) {
-                CommonsFX.runInPlatform(() -> {
-                    LOG.info("ADDING FOLDER IMAGES");
-                    List<ImageView> collect = pathByExtension.stream().map(
-                            e -> ImageLoader.convertToImage(ResourceFXUtils.convertToURL(e.toFile()).toExternalForm()))
-                            .collect(Collectors.toList());
-                    children.addAll(0, collect);
-                });
-            }
-        });
     }
 
     public static void splitAndSave(Music selectedItem, Slider initialSlider, Slider finalSlider, File outFile,
@@ -192,6 +149,49 @@ public final class EditSongHelper {
             Duration seekTo = mediaPlayer2.getTotalDuration().multiply(pos);
             SongUtils.seekAndUpdatePosition(seekTo, currentSlider, mediaPlayer2);
         }
+    }
+
+    static void findImage(Music selectedItem, Stage stage, ObjectProperty<MediaPlayer> mediaPlayer) {
+        String value = MusicReader.getDescription(selectedItem);
+        ObservableList<Node> children = FXCollections.observableArrayList();
+
+        final int prefWidth = 300;
+        SimpleListViewBuilder<Node> listBuilder = new SimpleListViewBuilder<>();
+        ListView<Node> builder = listBuilder.items(children).prefWidth(prefWidth).build();
+        listBuilder.onDoubleClick(n -> {
+            StageHelper.closeStage(builder);
+            stage.close();
+            ImageView view = (ImageView) n;
+            Image image = view.getImage();
+            selectedItem.setImage(image);
+            SongUtils.stopAndDispose(mediaPlayer.get());
+            MusicReader.saveMetadata(selectedItem);
+        });
+        File parentFile = selectedItem.getArquivo().getParentFile();
+        VBox.setVgrow(builder, Priority.ALWAYS);
+        new SimpleDialogBuilder().title("Searching Image").text(value).node(builder).bindWindow(stage).displayDialog();
+        ImageLoader.loadImages(children, selectedItem.getAlbum(), selectedItem.getArtista(), selectedItem.getPasta(),
+                selectedItem.getTitulo());
+        RunnableEx.runNewThread(() -> {
+            RunnableEx.sleepSeconds(5);
+            List<Path> pathByExtension = FileTreeWalker.getPathByExtension(parentFile, ".jpg", ".png");
+            return
+            pathByExtension.stream().filter(e -> {
+                BasicFileAttributes computeAttributes = ResourceFXUtils.computeAttributes(e.toFile());
+                return computeAttributes.size() < MAX_SIZE;// LESS than a MB
+            }).limit(10)
+                    .collect(Collectors.toList());
+        }, pathByExtension -> {
+            if (!pathByExtension.isEmpty()) {
+                CommonsFX.runInPlatform(() -> {
+                    LOG.info("ADDING FOLDER IMAGES");
+                    List<ImageView> collect = pathByExtension.stream().map(
+                            e -> ImageLoader.convertToImage(ResourceFXUtils.convertToURL(e.toFile()).toExternalForm()))
+                            .collect(Collectors.toList());
+                    children.addAll(0, collect);
+                });
+            }
+        });
     }
 
     private static boolean isAbleToChange(MediaPlayer mediaPlayer2) {

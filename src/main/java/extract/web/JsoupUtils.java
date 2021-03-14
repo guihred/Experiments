@@ -13,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.jsoup.Connection;
-import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.HttpConnection;
@@ -24,6 +23,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.ex.HasLogging;
+
 public final class JsoupUtils {
     private static final String USER_AGENT =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0";
@@ -198,33 +198,6 @@ public final class JsoupUtils {
         return tablesFound;
     }
 
-    // Below is an example request that will log you into the GitHub website
-    // # Constants used in this example
-    public static void loginGitHub(String username, String pass) throws IOException {
-        final String LOGIN_FORM_URL = "https://github.com/login";
-        final String LOGIN_ACTION_URL = "https://github.com/session";
-        // # Go to login page and grab cookies sent by server
-        Connection.Response loginForm =
-                Jsoup.connect(LOGIN_FORM_URL).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
-        Document loginDoc = loginForm.parse(); // this is the document containing response html
-        HashMap<String, String> cookies = new HashMap<>(loginForm.cookies()); // save the cookies to be passed on to
-                                                                              // next request
-        // # Prepare login credentials
-        String authToken = loginDoc.select("#login > form > div:nth-child(1) > input[type=\"hidden\"]:nth-child(2)")
-                .first().attr("value");
-        HashMap<String, String> formData = new HashMap<>();
-        formData.put("commit", "Sign in");
-        formData.put("utf8", "e2 9c 93");
-        formData.put("login", username);
-        formData.put("pass" + "word", pass);
-        formData.put("authenticity_token", authToken);
-        // # Now send the form for login
-        Response homePage = Jsoup.connect(LOGIN_ACTION_URL).cookies(cookies).data(formData)
-                .method(Connection.Method.POST).userAgent(USER_AGENT).execute();
-        String html = homePage.parse().html();
-        LOG.info("{}", html);
-    }
-
     // Parsing JavaScript Generated Page with Jsoup and HtmUnit About.html - source
     // code
     public static Document normalParse(File in) throws IOException {
@@ -276,12 +249,6 @@ public final class JsoupUtils {
         Element headline = doc.select("body").first().select("h1").first();
         LOG.info("headline {}", headline);
     }
-
-    public static Response simpleAuthentication(String url, String value, String value2) throws IOException {
-        return Jsoup.connect(url).userAgent(USER_AGENT).data("username", value).data("pass" + "word", value2)
-                .method(Method.POST).execute();
-    }
-
 
     private static void addProxyAuthorization(Connection connect) {
         connect.header("Proxy-Authorization", "Basic " + ExtractUtils.getEncodedAuthorization());

@@ -11,8 +11,8 @@ import utils.ResourceFXUtils;
 
 public class PuzzleModel extends Group {
 
-    public static final int PUZZLE_WIDTH = 8;
-    public static final int PUZZLE_HEIGHT = 4;
+    private static final int PUZZLE_WIDTH = 8;
+    private static final int PUZZLE_HEIGHT = 4;
 
     private PuzzlePiece[][] puzzle = initializePieces();
     private int width;

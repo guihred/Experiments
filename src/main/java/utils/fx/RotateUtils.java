@@ -102,16 +102,6 @@ public final class RotateUtils {
         return getAngle(line.getEndX(), line.getEndY(), line.getStartX(), line.getStartY());
     }
 
-    public static List<String> getUrl(Dragboard db) {
-        if (db.hasFiles()) {
-            return db.getFiles().stream().map(e -> e.toURI().toString()).collect(Collectors.toList());
-        }
-        if (db.hasUrl()) {
-            return Arrays.asList(db.getUrl());
-        }
-        return Collections.emptyList();
-    }
-
     public static void initSceneDragAndDrop(Scene scene, ConsumerEx<String> onUrl) {
         scene.setOnDragOver(event -> {
             Dragboard db = event.getDragboard();
@@ -313,6 +303,16 @@ public final class RotateUtils {
         area.setStroke(Color.TRANSPARENT);
     }
 
+    private static List<String> getUrl(Dragboard db) {
+        if (db.hasFiles()) {
+            return db.getFiles().stream().map(e -> e.toURI().toString()).collect(Collectors.toList());
+        }
+        if (db.hasUrl()) {
+            return Arrays.asList(db.getUrl());
+        }
+        return Collections.emptyList();
+    }
+
     private static void onMoveHandleDrag(final Rectangle rect, final double handleRadius,
             Wrapper<Point2D> mouseLocation, MouseEvent event) {
         if (mouseLocation.value != null) {
@@ -383,7 +383,7 @@ public final class RotateUtils {
         });
     }
 
-    static class Wrapper<T> {
+    private static class Wrapper<T> {
         private T value;
     }
 

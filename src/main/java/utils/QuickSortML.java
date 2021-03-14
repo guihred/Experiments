@@ -34,9 +34,7 @@ public class QuickSortML {
         }, T::compareTo);
     }
 
-    public static <T extends Comparable<T>> void sort(List<T> inputArr, BiIntConsumer onSwap) {
-        sort(inputArr, onSwap, T::compareTo);
-    }
+
 
     public static <T> void sort(List<T> inputArr, BiIntConsumer onSwap, Comparator<T> compa) {
 
@@ -112,7 +110,7 @@ public class QuickSortML {
     }
 
     @FunctionalInterface
-    public interface BiIntConsumer {
+    public static interface BiIntConsumer {
         void consume(int i, int j);
     }
 }

@@ -44,14 +44,7 @@ public abstract class AreaTool extends PaintTool {
         return createSelectedImage(model, srcImage);
     }
 
-    public void cutImage(PaintModel model) {
-        copyToClipboard(model.getImage());
-        if (model.getImageStack().getChildren().contains(getArea())) {
-            model.getImageStack().getChildren().remove(getArea());
-        }
-        imageSelected = null;
-        model.createImageVersion();
-    }
+
 
     public void deleteImage(PaintModel model, Bounds bounds) {
         if (imageSelected == null) {
@@ -192,27 +185,6 @@ public abstract class AreaTool extends PaintTool {
         getArea().setHeight(1);
     }
 
-    protected final void copyImage(PaintModel model, Image srcImage, WritableImage destImage) {
-        Color backColor = model.getBackColor();
-        double width = Math.max(srcImage.getWidth(), 1);
-        double height = Math.max(srcImage.getHeight(), 1);
-        if (destImage == null) {
-            imageSelected = new WritableImage((int) width, (int) height);
-        }
-        WritableImage writableImage = destImage != null ? destImage : imageSelected;
-        RectBuilder.build().width(width).height(height).copyImagePart(srcImage, writableImage, backColor);
-        if (option == SelectOption.TRANSPARENT) {
-            replaceColor(writableImage, backColor, Color.TRANSPARENT);
-        }
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
-        double hv = Math.max(hvalue * model.getCurrentImage().getWidth() - srcImage.getWidth(), 0);
-        double vv = Math.max(vvalue * model.getCurrentImage().getHeight() - srcImage.getHeight(), 0);
-        int x = (int) hv;
-        int y = (int) vv;
-        selectArea(x, y, x + (int) srcImage.getWidth(), y + (int) srcImage.getHeight(), model);
-    }
-
     protected void dragTo(double x, double y) {
         getArea().setLayoutX(Math.min(x, initialX));
         getArea().setLayoutY(Math.min(y, initialY));
@@ -251,6 +223,27 @@ public abstract class AreaTool extends PaintTool {
         imageSelected = null;
         model.getImageStack().getChildren().remove(getArea());
         model.createImageVersion();
+    }
+
+    private final void copyImage(PaintModel model, Image srcImage, WritableImage destImage) {
+        Color backColor = model.getBackColor();
+        double width = Math.max(srcImage.getWidth(), 1);
+        double height = Math.max(srcImage.getHeight(), 1);
+        if (destImage == null) {
+            imageSelected = new WritableImage((int) width, (int) height);
+        }
+        WritableImage writableImage = destImage != null ? destImage : imageSelected;
+        RectBuilder.build().width(width).height(height).copyImagePart(srcImage, writableImage, backColor);
+        if (option == SelectOption.TRANSPARENT) {
+            replaceColor(writableImage, backColor, Color.TRANSPARENT);
+        }
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        double hv = Math.max(hvalue * model.getCurrentImage().getWidth() - srcImage.getWidth(), 0);
+        double vv = Math.max(vvalue * model.getCurrentImage().getHeight() - srcImage.getHeight(), 0);
+        int x = (int) hv;
+        int y = (int) vv;
+        selectArea(x, y, x + (int) srcImage.getWidth(), y + (int) srcImage.getHeight(), model);
     }
 
     private WritableImage createSelectedImage(PaintModel model, WritableImage srcImage) {

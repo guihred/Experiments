@@ -22,7 +22,7 @@ public final class ExtractUtils {
     public static final int HUNDRED_SECONDS = 100_000;
     private static final Logger LOG = HasLogging.log();
 
-    public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
+    private static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
     private static final String LOGIN = "guilherme.hmedeiros";
     private static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
     private static final String PROXY_CONFIG2 = Stream.of("10", "31", "220", "23").collect(Collectors.joining("."));
@@ -184,10 +184,7 @@ public final class ExtractUtils {
         URL url2 = SupplierEx.get(() -> new URL(url));
         return isPortOpen(url2.getHost(), url2.getPort());
     }
-    public static boolean isPortOpen(String ip0, int porta) {
-        final int timeout = 5000;
-        return isPortOpen(ip0, porta, timeout);
-    }
+
     public static boolean isPortOpen(String ip0, int porta, int timeout) {
         return PredicateEx.test(ip -> {
             try (Socket socket = new Socket()) {
@@ -197,7 +194,6 @@ public final class ExtractUtils {
         }, ip0);
 
     }
-
     private static void addBasicAuthorization(HttpURLConnection con) {
         con.addRequestProperty("Proxy-Authorization", "Basic " + getEncodedAuthorization());
     }
@@ -207,6 +203,11 @@ public final class ExtractUtils {
         return Stream.of(PROXY_CONFIG2, PROXY_CONFIG).filter(PredicateEx.makeTest(s -> isPortOpen(s, 3128, timeout)))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private static boolean isPortOpen(String ip0, int porta) {
+        final int timeout = 5000;
+        return isPortOpen(ip0, porta, timeout);
     }
 
 }

@@ -21,7 +21,7 @@ public final class ConsultasHelper {
     private static final double THRESHOLD_PARAMS = .45;
     private static final double THRESHOLD_NETWORK = .40;
     private static final Logger LOG = HasLogging.log();
-    public static final String IGNORE_IPS_REGEX = "::1|127.0.0.1";
+    private static final String IGNORE_IPS_REGEX = "::1|127.0.0.1";
     private static final List<String> BLOCK = Arrays.asList("Block_48h", "Block_7_dias", "Block_6horas", "Block_12h",
             "Block_24h_SIEM", "Dataprev_SOM_BlackList_Customizada_APP");
     private static final List<String> EXCLUDE_OWNERS =

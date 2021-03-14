@@ -21,7 +21,7 @@ public class TicTacToeTree {
         action = -1;
     }
 
-    public TicTacToeTree(List<TicTacToePlayer> squares, int action) {
+    private TicTacToeTree(List<TicTacToePlayer> squares, int action) {
         this.squares = squares;
         this.action = action;
     }
@@ -47,14 +47,6 @@ public class TicTacToeTree {
     public String toString() {
         return String.format("%s>%s %d", squares, getWinner(), action);
 
-    }
-
-    public double utility(TicTacToePlayer player) {
-        TicTacToePlayer cur = getWinner();
-        if (cur == null || cur == TicTacToePlayer.NONE) {
-            return 0;
-        }
-        return player != cur ? -1 : 1;
     }
 
     private int[] actions() {
@@ -110,6 +102,14 @@ public class TicTacToeTree {
         List<TicTacToePlayer> squares2 = new ArrayList<>(squares);
         squares2.set(j, player);
         return new TicTacToeTree(squares2, j);
+    }
+
+    private double utility(TicTacToePlayer player) {
+        TicTacToePlayer cur = getWinner();
+        if (cur == null || cur == TicTacToePlayer.NONE) {
+            return 0;
+        }
+        return player != cur ? -1 : 1;
     }
 
     public static void main(String[] args) {

@@ -22,21 +22,6 @@ public final class Chapter1 {
     private Chapter1() {
     }
 
-    /***
-     * Write a static method andThen that takes as parameters two Runnable instances
-     * and returns a Runnable that runs the first, then the second. In the main
-     * method, pass two lambda expressions into a call to andThen, and run the
-     * returned instance.
-     */
-    public static Runnable andThen(Runnable a, Runnable b) {
-
-        return () -> {
-            a.run();
-            b.run();
-        };
-
-    }
-
     /**
      * Is the comparator code in the Arrays.sort method called in the same thread as
      * the call to sort or a different thread?
@@ -183,7 +168,22 @@ public final class Chapter1 {
         ex9();
     }
 
-    interface Collection2<T> extends Collection<T> {
+    /***
+     * Write a static method andThen that takes as parameters two Runnable instances
+     * and returns a Runnable that runs the first, then the second. In the main
+     * method, pass two lambda expressions into a call to andThen, and run the
+     * returned instance.
+     */
+    private static Runnable andThen(Runnable a, Runnable b) {
+
+        return () -> {
+            a.run();
+            b.run();
+        };
+
+    }
+
+    private interface Collection2<T> extends Collection<T> {
 
         default void forEachIf(Consumer<? super T> action, Predicate<? super T> p) {
             forEach(t -> {
@@ -195,7 +195,7 @@ public final class Chapter1 {
 
     }
 
-    static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
+    private static class Collection2Impl<E> extends ArrayList<E> implements Collection2<E> {
         private static final long serialVersionUID = 1L;
     }
 

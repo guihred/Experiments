@@ -10,7 +10,7 @@ import utils.fx.TaskProgressView;
 
 public class ElectionCrawlerApp extends Application {
 
-    public final Task<String> worker;
+    private final Task<String> worker;
 
     public ElectionCrawlerApp() {
         worker = new CrawlerCandidates2018Task();

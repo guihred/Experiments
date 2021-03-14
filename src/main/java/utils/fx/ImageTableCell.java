@@ -68,18 +68,6 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    public static ImageView newImage(String image, ReadOnlyDoubleProperty widthProperty) {
-        String imageUrl = getImageLink(image);
-        if (imageUrl == null) {
-            LOG.info("Image not found {}", image);
-            return null;
-        }
-        ImageView imageView = new ImageView(imageUrl);
-        imageView.fitWidthProperty().bind(widthProperty);
-        imageView.setPreserveRatio(true);
-        return imageView;
-    }
-
     private static String getImageLink(String image) {
         if (image.startsWith("http")) {
             return image;
@@ -95,5 +83,17 @@ public final class ImageTableCell<T> extends TableCell<T, String> {
 
         return SupplierEx.getIgnore(
                 () -> ResourceFXUtils.convertToURL(ResourceFXUtils.getOutFile("pdf/" + image)).toExternalForm());
+    }
+
+    private static ImageView newImage(String image, ReadOnlyDoubleProperty widthProperty) {
+        String imageUrl = getImageLink(image);
+        if (imageUrl == null) {
+            LOG.info("Image not found {}", image);
+            return null;
+        }
+        ImageView imageView = new ImageView(imageUrl);
+        imageView.fitWidthProperty().bind(widthProperty);
+        imageView.setPreserveRatio(true);
+        return imageView;
     }
 }

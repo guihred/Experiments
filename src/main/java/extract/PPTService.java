@@ -127,8 +127,7 @@ public final class PPTService {
     private static void recordPicture(XSLFPictureData data) {
         RunnableEx.run(() -> {
             File outFile = ResourceFXUtils.getOutFile("ppt/" + data.getFileName());
-            InputStream inputStream = data.getInputStream();
-            ExtractUtils.copy(inputStream, outFile);
+            ExtractUtils.copy(data.getInputStream(), outFile);
         });
     }
 

@@ -53,13 +53,11 @@ public class JapaneseLessonEditingDisplay extends Application {
     private TextField end;
     protected ObservableList<JapaneseLesson> lessons = JapaneseLessonReader.getLessonsWait();
     protected SimpleIntegerProperty current = new SimpleIntegerProperty(1);
-    protected Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
+    private Media sound = new Media(JapaneseAudio.AUDIO_1.getURL().toString());
     protected SimpleObjectProperty<MediaPlayer> mediaPlayer = new SimpleObjectProperty<>();
     private Stage stage;
 
-    public SimpleIntegerProperty currentProperty() {
-        return current;
-    }
+
 
     public void initialize() {
         current.addListener((observable, oldValue, newValue) -> updateCurrentLesson(english, japanese, romaji, start,
@@ -134,26 +132,6 @@ public class JapaneseLessonEditingDisplay extends Application {
             }
         });
         onCloseWindow(primaryStage, HibernateUtil::shutdown);
-    }
-
-    protected void playLesson() {
-        JapaneseLesson japaneseLesson = lessons.get(current.get());
-        JapaneseAudio audio = JapaneseAudio.getAudio(japaneseLesson.getLesson());
-        if (audio != null) {
-            if (!sound.getSource().equals(audio.getURL().toString())) {
-                sound = new Media(audio.getURL().toString());
-                mediaPlayer.set(new MediaPlayer(sound));
-            }
-            setStartEnd(japaneseLesson);
-            LocalTime start1 = japaneseLesson.getStart();
-            Duration totalDuration = mediaPlayer.get().getTotalDuration();
-            Duration startDuration = totalDuration.multiply(toMilli(start1) / totalDuration.toMillis());
-            mediaPlayer.get().seek(startDuration);
-            if (mediaPlayer.get().getStatus() != MediaPlayer.Status.PLAYING) {
-                mediaPlayer.get().play();
-            }
-        }
-
     }
 
     protected void previousLesson() {
@@ -233,12 +211,28 @@ public class JapaneseLessonEditingDisplay extends Application {
         }
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private void playLesson() {
+        JapaneseLesson japaneseLesson = lessons.get(current.get());
+        JapaneseAudio audio = JapaneseAudio.getAudio(japaneseLesson.getLesson());
+        if (audio != null) {
+            if (!sound.getSource().equals(audio.getURL().toString())) {
+                sound = new Media(audio.getURL().toString());
+                mediaPlayer.set(new MediaPlayer(sound));
+            }
+            setStartEnd(japaneseLesson);
+            LocalTime start1 = japaneseLesson.getStart();
+            Duration totalDuration = mediaPlayer.get().getTotalDuration();
+            Duration startDuration = totalDuration.multiply(toMilli(start1) / totalDuration.toMillis());
+            mediaPlayer.get().seek(startDuration);
+            if (mediaPlayer.get().getStatus() != MediaPlayer.Status.PLAYING) {
+                mediaPlayer.get().play();
+            }
+        }
+
     }
 
-    protected static Duration convertDuration(LocalTime start) {
-        return Duration.valueOf(toMilli(start) + "ms");
+    public static void main(String[] args) {
+        launch(args);
     }
 
     protected static LocalTime milliToLocalTime(long offset) {
@@ -247,5 +241,9 @@ public class JapaneseLessonEditingDisplay extends Application {
 
     protected static long toMilli(LocalTime maxTime) {
         return ChronoUnit.MILLIS.between(LocalTime.MIDNIGHT, maxTime);
+    }
+
+    private static Duration convertDuration(LocalTime start) {
+        return Duration.valueOf(toMilli(start) + "ms");
     }
 }

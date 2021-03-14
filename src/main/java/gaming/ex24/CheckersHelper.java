@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 
 public final class CheckersHelper {
 
-    public static final int SIZE = 8;
+    private static final int SIZE = 8;
     private static final List<CheckersPlayer> PLAYERS = Arrays.asList(CheckersPlayer.WHITE, CheckersPlayer.BLACK);
 
     private CheckersHelper() {
@@ -19,10 +19,6 @@ public final class CheckersHelper {
 
     public static CheckersPlayer getWinner(Collection<CheckersSquare> squares) {
         return getWinner2(squares.stream().map(CheckersSquare::getState).collect(toList()));
-    }
-
-    public static CheckersPlayer getWinner2(Collection<CheckersPlayer> squares) {
-        return squares.stream().filter(e -> e != CheckersPlayer.NONE).findFirst().orElse(CheckersPlayer.NONE);
     }
 
     public static List<CheckersSquare> highlightPossibleMovements(List<CheckersSquare> squares, CheckersPlayer player,
@@ -110,6 +106,10 @@ public final class CheckersHelper {
                 }
             }
         }
+    }
+
+    private static CheckersPlayer getWinner2(Collection<CheckersPlayer> squares) {
+        return squares.stream().filter(e -> e != CheckersPlayer.NONE).findFirst().orElse(CheckersPlayer.NONE);
     }
 
     private static void highlight(List<CheckersSquare> squares, CheckersPlayer player, final int i, final int j,

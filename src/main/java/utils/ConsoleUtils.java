@@ -2,7 +2,6 @@ package utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -16,14 +15,13 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public final class ConsoleUtils {
-    public static final int PROCESS_MAX_TIME_LIMIT = 120_000; // 2 MINUTES
+    private static final int PROCESS_MAX_TIME_LIMIT = 120_000; // 2 MINUTES
     private static final String ACTIVE_FLAG = "active";
     private static final Logger LOGGER = HasLogging.log();
     private static final String EXECUTING = "Executing \"{}\"";
@@ -142,24 +140,7 @@ public final class ConsoleUtils {
         return execution;
     }
 
-    public static Integer executeInConsoleInfo(final String cmd, InputStream inputStream) {
-        LOGGER.info(EXECUTING, cmd);
-        PROCESSES.put(cmd, false);
-        return SupplierEx.get(() -> {
-            Process p = newProcess(cmd);
-            try (BufferedReader error =
-                    new BufferedReader(new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8))) {
-                IOUtils.copy(inputStream, p.getOutputStream());
-                p.getOutputStream().close();
-                error.lines().forEach(e -> LOGGER.error("{}", e));
-            }
-            int waitFor = p.waitFor();
-            PROCESSES.put(cmd, true);
-            logProcesses();
-            LOGGER.info("{}", waitFor);
-            return waitFor;
-        });
-    }
+
 
     public static ObservableList<String> executeInConsoleInfoAsync(final String cmd, final Runnable... onFinish) {
         ObservableList<String> execution = FXCollections.observableArrayList();

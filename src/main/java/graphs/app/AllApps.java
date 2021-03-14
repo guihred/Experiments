@@ -28,6 +28,14 @@ import utils.ExtractUtils;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
+/**
+ * Application for displaying all Java files present in the project, and
+ * creating a way to run code
+ * 
+ * 
+ * @author guigu
+ * 
+ */
 public class AllApps extends Application {
 
     @FXML
@@ -40,6 +48,9 @@ public class AllApps extends Application {
 
     private ObservableList<String> applications = FXCollections.observableArrayList();
 
+    /**
+     * @return all applications developed
+     */
     public ObservableList<String> getApplications() {
         return applications;
     }
@@ -84,6 +95,9 @@ public class AllApps extends Application {
         });
     }
 
+    /**
+     * @param args
+     */
     public static void main(String[] args) {
         launch(args);
     }

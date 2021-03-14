@@ -35,35 +35,6 @@ public final class XMLExtractor {
     private XMLExtractor() {
     }
 
-    public static void addValue(Node item, TreeItem<Map<String, String>> e) {
-        NamedNodeMap attributes = item.getAttributes();
-        for (int i = 0; attributes != null && i < attributes.getLength(); i++) {
-            Node item2 = attributes.item(i);
-            e.getValue().put(item2.getNodeName(), item2.getNodeValue());
-        }
-        if (!item.hasChildNodes()) {
-            return;
-        }
-        NodeList childNodes = item.getChildNodes();
-        List<Node> allChildren =
-                IntStream.range(0, childNodes.getLength()).mapToObj(childNodes::item).collect(Collectors.toList());
-        if (allChildren.stream().allMatch(n -> n.getNodeType() == Node.TEXT_NODE)) {
-            if (allChildren.size() == 1) {
-                String nodeValue = allChildren.get(0).getNodeValue();
-                String nodeName = item.getNodeName();
-                e.setValue(newMap(nodeName, nodeValue));
-                return;
-            }
-            for (Node item2 : allChildren) {
-                if (item2.getNodeType() == Node.TEXT_NODE) {
-                    String nodeValue = item2.getNodeValue();
-                    String nodeName = item.getNodeName();
-                    e.getValue().put(nodeName, nodeValue);
-                }
-            }
-        }
-    }
-
     public static void exportToExcel(TreeView<Map<String, String>> tree, File file) {
         TreeItem<Map<String, String>> selectedItem = tree.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
@@ -152,6 +123,35 @@ public final class XMLExtractor {
             Map<String, String> collect3 = collect.keySet().stream().collect(toLinkedHashMap2());
             if (!finalList.contains(collect3)) {
                 finalList.add(collect3);
+            }
+        }
+    }
+
+    private static void addValue(Node item, TreeItem<Map<String, String>> e) {
+        NamedNodeMap attributes = item.getAttributes();
+        for (int i = 0; attributes != null && i < attributes.getLength(); i++) {
+            Node item2 = attributes.item(i);
+            e.getValue().put(item2.getNodeName(), item2.getNodeValue());
+        }
+        if (!item.hasChildNodes()) {
+            return;
+        }
+        NodeList childNodes = item.getChildNodes();
+        List<Node> allChildren =
+                IntStream.range(0, childNodes.getLength()).mapToObj(childNodes::item).collect(Collectors.toList());
+        if (allChildren.stream().allMatch(n -> n.getNodeType() == Node.TEXT_NODE)) {
+            if (allChildren.size() == 1) {
+                String nodeValue = allChildren.get(0).getNodeValue();
+                String nodeName = item.getNodeName();
+                e.setValue(newMap(nodeName, nodeValue));
+                return;
+            }
+            for (Node item2 : allChildren) {
+                if (item2.getNodeType() == Node.TEXT_NODE) {
+                    String nodeValue = item2.getNodeValue();
+                    String nodeName = item.getNodeName();
+                    e.getValue().put(nodeName, nodeValue);
+                }
             }
         }
     }

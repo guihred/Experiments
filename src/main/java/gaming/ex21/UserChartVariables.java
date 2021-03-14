@@ -12,15 +12,15 @@ import utils.CommonsFX;
 
 public class UserChartVariables extends VBox {
     @FXML
-    protected ImageView userImage;
+    private ImageView userImage;
     @FXML
-    protected ImageView greenImage;
+    private ImageView greenImage;
     @FXML
-    protected ImageView redImage;
+    private ImageView redImage;
     @FXML
-    protected ImageView blueImage;
+    private ImageView blueImage;
     @FXML
-    protected ImageView yellowImage;
+    private ImageView yellowImage;
     @FXML
     protected Text userPoints;
     @FXML
@@ -28,7 +28,7 @@ public class UserChartVariables extends VBox {
     @FXML
     protected Dice dice2;
     @FXML
-    protected ObjectProperty<PlayerColor> color;
+    private ObjectProperty<PlayerColor> color;
 
     @FXML
     protected VBox availablePorts;
@@ -37,13 +37,13 @@ public class UserChartVariables extends VBox {
     @FXML
     protected ExtraPoint longestRoad;
     @FXML
-    protected Text greenPoints;
+    private Text greenPoints;
     @FXML
-    protected Text redPoints;
+    private Text redPoints;
     @FXML
-    protected Text bluePoints;
+    private Text bluePoints;
     @FXML
-    protected Text yellowPoints;
+    private Text yellowPoints;
     @FXML
     protected Group cardGroup;
     protected final EnumMap<PlayerColor, SimpleLongProperty> playersPoints = new EnumMap<>(PlayerColor.class);
@@ -70,7 +70,7 @@ public class UserChartVariables extends VBox {
         this.onWin = onWin;
     }
 
-    protected void bindText(PlayerColor player, Text points, ImageView image) {
+    private void bindText(PlayerColor player, Text points, ImageView image) {
         points.textProperty().bind(playersPoints.get(player).asString());
         points.visibleProperty().bind(color.isEqualTo(player).not());
         image.setImage(CatanResource.newImage(CatanResource.USER_PNG, player));

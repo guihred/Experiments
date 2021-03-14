@@ -9,7 +9,7 @@ import utils.StringSigaUtils;
 
 public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSliderBuilder> {
 
-    protected Slider slider;
+    private Slider slider;
     private int blocks = 100;
 
     public SimpleSliderBuilder() {

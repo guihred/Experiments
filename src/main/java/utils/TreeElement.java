@@ -20,7 +20,7 @@ public class TreeElement<T> {
 
     private T element;
 
-    public TreeElement(T e, FunctionEx<T, Collection<T>> func) {
+    private TreeElement(T e, FunctionEx<T, Collection<T>> func) {
         element = e;
         Collection<T> apply = FunctionEx.makeFunction(func).apply(e);
         if (apply != null) {
@@ -49,10 +49,6 @@ public class TreeElement<T> {
             return false;
         }
         return Objects.equals(element.getClass(), other.element.getClass());
-    }
-
-    public List<String> getMissingItem(TreeElement<T> otherElement) {
-        return getMissingItem("", otherElement);
     }
 
     @Override
@@ -85,14 +81,14 @@ public class TreeElement<T> {
 
     }
 
+    private List<String> getMissingItem(TreeElement<T> otherElement) {
+        return getMissingItem("", otherElement);
+    }
+
     private List<TreeElement<T>> notContained(Collection<TreeElement<T>> children1,
         Collection<TreeElement<T>> children2) {
         return children1.stream().filter(e -> children2 == null || !children2.contains(e))
             .sorted(Comparator.comparing(TreeElement<T>::hashCode)).collect(Collectors.toList());
-    }
-
-    public static <E> TreeElement<E> buildTree(E first, FunctionEx<E, Collection<E>> func) {
-        return new TreeElement<>(first, func);
     }
 
     public static boolean compareTree(Parent root, Parent root2) {
@@ -140,6 +136,10 @@ public class TreeElement<T> {
         }
 
         return diffFields;
+    }
+
+    private static <E> TreeElement<E> buildTree(E first, FunctionEx<E, Collection<E>> func) {
+        return new TreeElement<>(first, func);
     }
 
     private static void displayStyleClass(String left, Node node, StringBuilder str) {

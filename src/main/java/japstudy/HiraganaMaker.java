@@ -69,37 +69,13 @@ public class HiraganaMaker {
             .put("''", "")
             .put("‘", "").put("’", "")
             .build();
-    public static final String LESSON_REGEX = "INSERT INTO JAPANESE_LESSON"
+    private static final String LESSON_REGEX =
+            "INSERT INTO JAPANESE_LESSON"
         + "\\(english,japanese,romaji,exercise,lesson\\) VALUES"
         + "\\('([^\n]+)','([^\n]+)','([^\n]+)',(\\d+),(\\d+)\\);";
-	public static final String TXT_FILE = ResourceFXUtils.toFullPath("create_database.sql");
+    private static final String TXT_FILE = ResourceFXUtils.toFullPath("create_database.sql");
     private static final Logger LOG = HasLogging.log();
     private static final List<String> SPECIAL_LETTERS = Arrays.asList("n", "m", "h");
-
-    public static String convertHiragana(String romaji) {
-        if (romaji == null || romaji.isEmpty()) {
-            return null;
-        }
-        StringBuilder c = new StringBuilder();
-        StringBuilder result = new StringBuilder();
-        String[] s = romaji.split("");
-        for (int i = 0; i < s.length; i++) {
-            c.append(s[i].toLowerCase());
-            if (SPECIAL_LETTERS.contains(c.toString()) && i < s.length - 1 && HIRAGANA_MAP.containsKey(c + s[i + 1])) {
-                continue;
-            }
-
-            if (HIRAGANA_MAP.containsKey(c.toString())) {
-                result.append(HIRAGANA_MAP.get(c.toString()));
-                c.delete(0, c.length());
-            }
-        }
-        if (c.length() != 0) {
-            LOG.trace("NOT JAPANESE----{}", romaji);
-        }
-
-        return result.toString();
-    }
 
     public static void displayInHiragana() {
         try (Stream<String> lines = Files.lines(new File(TXT_FILE).toPath(), StandardCharsets.UTF_8)) {
@@ -122,6 +98,31 @@ public class HiraganaMaker {
     public static void main(String[] args) {
         displayInHiragana();
 
+    }
+
+    private static String convertHiragana(String romaji) {
+        if (romaji == null || romaji.isEmpty()) {
+            return null;
+        }
+        StringBuilder c = new StringBuilder();
+        StringBuilder result = new StringBuilder();
+        String[] s = romaji.split("");
+        for (int i = 0; i < s.length; i++) {
+            c.append(s[i].toLowerCase());
+            if (SPECIAL_LETTERS.contains(c.toString()) && i < s.length - 1 && HIRAGANA_MAP.containsKey(c + s[i + 1])) {
+                continue;
+            }
+
+            if (HIRAGANA_MAP.containsKey(c.toString())) {
+                result.append(HIRAGANA_MAP.get(c.toString()));
+                c.delete(0, c.length());
+            }
+        }
+        if (c.length() != 0) {
+            LOG.trace("NOT JAPANESE----{}", romaji);
+        }
+
+        return result.toString();
     }
 
 }

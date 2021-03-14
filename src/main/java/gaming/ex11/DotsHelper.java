@@ -20,7 +20,7 @@ import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
 
 public final class DotsHelper {
-    public static final int MAZE_SIZE = 6;
+    static final int MAZE_SIZE = 6;
 
     private DotsHelper() {
     }
@@ -41,23 +41,10 @@ public final class DotsHelper {
         addPolygonOnFinished(gridPane, polygon, onFinished, f);
     }
 
-    public static void addPolygonOnFinished(Group gridPane, Polygon polygon, EventHandler<ActionEvent> onFinished,
-        ActionEvent f) {
-        if (onFinished != null) {
-            onFinished.handle(f);
-        }
-        gridPane.getChildren().add(polygon);
-
-    }
-
     public static void bindText(String key, Text textEu2,
         ObservableMap<String, ObservableSet<Set<DotsSquare>>> points2) {
         textEu2.textProperty().bind(Bindings.createStringBinding(
             () -> String.format("%s:%d", key, points2.get(key).size()), points2.get(key), points2));
-    }
-
-    public static boolean bNotContainsD(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
-        return a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a);
     }
 
     public static boolean cNotContainsA(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
@@ -211,6 +198,19 @@ public final class DotsHelper {
         tuPoints.textProperty().bind(Bindings
             .createStringBinding(() -> String.format("%s:%d", key, points.get(key).size()), points.get(key), points));
         return tuPoints;
+    }
+
+    private static void addPolygonOnFinished(Group gridPane, Polygon polygon, EventHandler<ActionEvent> onFinished,
+        ActionEvent f) {
+        if (onFinished != null) {
+            onFinished.handle(f);
+        }
+        gridPane.getChildren().add(polygon);
+
+    }
+
+    private static boolean bNotContainsD(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+        return a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a);
     }
 
 }

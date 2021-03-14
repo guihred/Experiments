@@ -39,7 +39,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     private static final int NUMBER_THREADS = 20;
 
-    protected static final List<UnicodeBlock> KANJI_BLOCK = Arrays.asList(UnicodeBlock.CJK_COMPATIBILITY,
+    private static final List<UnicodeBlock> KANJI_BLOCK = Arrays.asList(UnicodeBlock.CJK_COMPATIBILITY,
             UnicodeBlock.CJK_COMPATIBILITY_FORMS, UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
             UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS,
             UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A, UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
@@ -60,12 +60,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
 
     public CrawlerFuriganaTask() {
         readHiraganaFiles();
-    }
-
-    public String getReading(String currentWord, char currentLetter) {
-        String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
-        String reading = getReading(currentWord, currentLetter, 0);
-        return FunctionEx.mapIf(reading, s -> s, key);
     }
 
     public String getReading(String currentWord, char currentLetter, int recursive) {
@@ -187,6 +181,12 @@ public class CrawlerFuriganaTask extends CrawlerTask {
                     URL_BASE + StringSigaUtils.codificar(currentWord + currentWord.charAt(currentWord.length() - 1)));
         }
         return JsoupUtils.getDocument(URL_BASE + StringSigaUtils.codificar(currentWord));
+    }
+
+    private String getReading(String currentWord, char currentLetter) {
+        String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
+        String reading = getReading(currentWord, currentLetter, 0);
+        return FunctionEx.mapIf(reading, s -> s, key);
     }
 
     private void log(String a, String b) {

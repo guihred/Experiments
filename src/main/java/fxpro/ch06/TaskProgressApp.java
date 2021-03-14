@@ -13,9 +13,9 @@ import utils.fx.TaskProgressView;
 
 public class TaskProgressApp extends Application {
 
-	public final AtomicBoolean shouldThrow = new AtomicBoolean(false);
+    private final AtomicBoolean shouldThrow = new AtomicBoolean(false);
 
-    public final Task<String> worker = new SimpleTask(shouldThrow);
+    private final Task<String> worker = new SimpleTask(shouldThrow);
 	private TaskProgressView view = new TaskProgressView(worker, shouldThrow);
 
 	@Override

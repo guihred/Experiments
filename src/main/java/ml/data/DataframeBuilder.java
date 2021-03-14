@@ -18,11 +18,11 @@ import utils.ex.SupplierEx;
 
 public class DataframeBuilder extends DataframeML {
 
-    protected DataframeBuilder(File csvFile) {
+    private DataframeBuilder(File csvFile) {
         file = csvFile;
     }
 
-    protected DataframeBuilder(String csvFile) {
+    private DataframeBuilder(String csvFile) {
         this(ResourceFXUtils.toFile(csvFile));
     }
 

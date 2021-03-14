@@ -78,10 +78,10 @@ public class RegressionChartExample extends Application {
         List<Entry<String, Object>> numericKeys =
                 rowMap.entrySet().stream().filter(e -> StringUtils.isNumeric(e.getKey()))
             .collect(Collectors.toList());
-        RegressionModel regressionModel = new RegressionModel();
-        Series<Number, Number> series = regressionModel.createSeries(rowMap.get(column).toString(),
+        RegressionModel regressionModel = RegressionModel.createModel(rowMap.get(column).toString(),
                 numericKeys.stream().map(e -> StringSigaUtils.toInteger(e.getKey())).collect(Collectors.toList()),
                 numericKeys.stream().map(Entry<String, Object>::getValue).collect(Collectors.toList()));
+        Series<Number, Number> series = regressionModel.getSeries();
         Series<Number, Number> expected = regressionModel.getExpectedSeries();
         Series<Number, Number> polinominalSeries = regressionModel.getPolinominalSeries();
 

@@ -63,7 +63,7 @@ public class BaseDAO implements HasLogging {
         return e;
     }
 
-    @SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })
+    @SuppressWarnings({ "deprecation", "unchecked" })
     protected static <T> Map<String, T> toMap(Query<?> createQuery) {
         createQuery.setResultTransformer(new ResultTransformer() {
             @Override

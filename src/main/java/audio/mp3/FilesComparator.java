@@ -60,28 +60,6 @@ public class FilesComparator extends Application {
         return progress.getProgress();
     }
 
-    public ObservableList<File> getSongs(File file, ObservableList<File> musicas, TableView<File> table1) {
-        musicas.clear();
-        updateProgress(0);
-        RunnableEx.runNewThread(() -> {
-            LOG.info("Scanning {}", file);
-            List<Path> find = FileTreeWalker.getPathByExtension(file, ".mp3");
-            find.stream().map(Path::toFile).forEach(musicas::add);
-
-            double d = 1.0 / find.size();
-            for (int i = 0; i < musicas.size(); i++) {
-                File t = musicas.get(i);
-                updateProgress(progress.getProgress() + d);
-                getFromMap(t, fileMap);
-            }
-            table1.sort();
-            updateProgress(1);
-            updateCells(table1);
-            LOG.info("{} Songs from {}", musicas.size(), file);
-        });
-        return musicas;
-    }
-
     @Override
     public void start(Stage primaryStage) {
         HBox root = new HBox();
@@ -165,6 +143,28 @@ public class FilesComparator extends Application {
             });
         }
         updateProgress(1);
+    }
+
+    private ObservableList<File> getSongs(File file, ObservableList<File> musicas, TableView<File> table1) {
+        musicas.clear();
+        updateProgress(0);
+        RunnableEx.runNewThread(() -> {
+            LOG.info("Scanning {}", file);
+            List<Path> find = FileTreeWalker.getPathByExtension(file, ".mp3");
+            find.stream().map(Path::toFile).forEach(musicas::add);
+
+            double d = 1.0 / find.size();
+            for (int i = 0; i < musicas.size(); i++) {
+                File t = musicas.get(i);
+                updateProgress(progress.getProgress() + d);
+                getFromMap(t, fileMap);
+            }
+            table1.sort();
+            updateProgress(1);
+            updateCells(table1);
+            LOG.info("{} Songs from {}", musicas.size(), file);
+        });
+        return musicas;
     }
 
     private void updateProgress(double a) {

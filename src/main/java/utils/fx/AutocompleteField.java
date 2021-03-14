@@ -25,7 +25,7 @@ public class AutocompleteField extends TextField {
     private boolean popupHidden;
     private String textOccurenceStyle = "-fx-font-weight: bold; -fx-fill: red;";
     protected int maxEntries = 10;
-    protected FunctionEx<String, String> textSelected = s -> s;
+    private FunctionEx<String, String> textSelected = s -> s;
 
     private String wordSeparator = " ";
 
@@ -91,15 +91,11 @@ public class AutocompleteField extends TextField {
         this.wordSeparator = wordSeparator;
     }
 
-    protected void onTextSelected(String result) {
-        setText(FunctionEx.apply(textSelected, result));
-    }
-
-
     protected Collection<String> searchResult(String s) {
         return entries.stream().filter(m -> StringUtils.contains(m, s)).limit(maxEntries + 1L)
                 .collect(Collectors.toList());
     }
+
 
     private void addSearches(LinkedList<String> searchResult, String text) {
         Pattern pattern = getPattern(text);
@@ -158,6 +154,10 @@ public class AutocompleteField extends TextField {
                 addSearchResults(searchResult, s);
             }
         }
+    }
+
+    private void onTextSelected(String result) {
+        setText(FunctionEx.apply(textSelected, result));
     }
 
     private void populatePopup(List<String> searchResult, String text) {

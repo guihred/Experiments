@@ -30,20 +30,9 @@ public class SolitaireModel {
     private Pane gridPane;
     private CardStack[] simpleStacks = new CardStack[7];
 
-    public SolitaireModel(Pane gridPane, Scene scene) {
+    private SolitaireModel(Pane gridPane, Scene scene) {
         this.gridPane = gridPane;
         initialize(scene);
-    }
-
-    public void makeDraggable(final Node node) {
-        node.setOnMousePressed(this::handleMousePressed);
-        node.setOnMouseDragged(this::handleMouseDragged);
-        node.setOnMouseReleased(this::handleMouseReleased);
-    }
-
-    public void reset() {
-        gridPane.getChildren().clear();
-        initialize(gridPane.getScene());
     }
 
     private boolean checkAscendingCards(MouseEvent event) {
@@ -235,6 +224,17 @@ public class SolitaireModel {
             makeDraggable(simpleStacks[i]);
             gridPane.getChildren().add(simpleStacks[i]);
         }
+    }
+
+    private void makeDraggable(final Node node) {
+        node.setOnMousePressed(this::handleMousePressed);
+        node.setOnMouseDragged(this::handleMouseDragged);
+        node.setOnMouseReleased(this::handleMouseReleased);
+    }
+
+    private void reset() {
+        gridPane.getChildren().clear();
+        initialize(gridPane.getScene());
     }
 
     private void verifyEnd() {

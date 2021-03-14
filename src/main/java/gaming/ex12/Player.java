@@ -5,7 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 public class Player {
 
-    public static final double MAX_VELOCITY_X = 15;
+    private static final double MAX_VELOCITY_X = 15;
     private double positionX;
     private double positionY;
     protected int velocityX;
@@ -16,7 +16,7 @@ public class Player {
     protected double colisionHeight;
     protected double accelerationX;
     protected double accelerationY;
-    protected boolean debug;
+    private boolean debug;
     protected ImageResource picture;
     protected Direction direction = Direction.RIGHT;
 

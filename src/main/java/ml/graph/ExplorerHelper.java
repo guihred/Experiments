@@ -44,10 +44,6 @@ public final class ExplorerHelper {
         dataTable2.setColumnsWidth(array);
     }
 
-    public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn) {
-        return ExplorerHelper.fillIPInformation(builder, ipColumn, new SimpleDoubleProperty(0));
-    }
-
     public static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn, DoubleProperty count) {
         builder.filterOut(ipColumn,
                 s -> s.toString().matches(WhoIsScanner.IP_REGEX));
@@ -92,8 +88,6 @@ public final class ExplorerHelper {
         return Stream.of(string.split("\n")).mapToInt(String::length).max().orElse(string.length());
     }
 
-
-
     public static String reorderAndLog(DataframeML dataframe, String numberField) {
         DataframeUtils.sort(dataframe, numberField);
         List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, "Network", numberField);
@@ -105,10 +99,16 @@ public final class ExplorerHelper {
 
     }
 
+
+
     public static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {
         List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, title, key);
         return createSeries.stream().map(e -> new AbstractMap.SimpleEntry<>((String) e.getKey(), (Number) e.getValue()))
                 .collect(Collectors.toList());
+    }
+
+    private static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn) {
+        return ExplorerHelper.fillIPInformation(builder, ipColumn, new SimpleDoubleProperty(0));
     }
 
     private static String getFromCache(ObservableMap<String, Map<String, String>> ipInfo,

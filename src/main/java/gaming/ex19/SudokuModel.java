@@ -22,7 +22,7 @@ import utils.CommonsFX;
  */
 public class SudokuModel {
 
-    public static final int MAP_N_SQUARED = SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER;
+    private static final int MAP_N_SQUARED = SudokuSquare.MAP_NUMBER * SudokuSquare.MAP_NUMBER;
     private GridPane numberBoard = new GridPane();
     private List<NumberButton> numberOptions = new ArrayList<>();
     private List<SudokuSquare> sudokuSquares = new ArrayList<>();
@@ -42,10 +42,6 @@ public class SudokuModel {
             e.setPermanent(false);
             e.getPossibilities().clear();
         });
-    }
-
-    public SudokuSquare getMapAt(int i, int j) {
-        return sudokuSquares.get(i * MAP_N_SQUARED + j);
     }
 
     public Region getNumberBoard() {
@@ -98,7 +94,7 @@ public class SudokuModel {
         }
     }
 
-	public final void initialize() {
+    public final void initialize() {
         numberBoard.setVisible(false);
         for (int i1 = 0; i1 < MAP_N_SQUARED; i1++) {
             for (int j1 = 0; j1 < MAP_N_SQUARED; j1++) {
@@ -120,7 +116,7 @@ public class SudokuModel {
         reset();
     }
 
-    public void reset() {
+	public void reset() {
         createRandomNumbers();
         List<SudokuSquare> all = sudokuSquares.stream().collect(Collectors.toList());
         Collections.shuffle(all);
@@ -139,7 +135,6 @@ public class SudokuModel {
         updatePossibilities();
     }
 
-
     public void solve() {
         updatePossibilities();
         sudokuSquares.stream().filter(SudokuSquare::isNotEmpty).forEach(e -> e.setPermanent(true));
@@ -155,6 +150,7 @@ public class SudokuModel {
             setSquareWithOnePossibility();
         }
     }
+
 
     private void clearPossibilities(List<SudokuSquare> squares) {
         for (int l = 0; l < squares.size(); l++) {
@@ -218,6 +214,10 @@ public class SudokuModel {
     private List<SudokuSquare> getCol(int i, int number) {
         return sudokuSquares.stream().filter(e1 -> e1.isEmpty() && e1.isInCol(i))
             .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+    }
+
+    private SudokuSquare getMapAt(int i, int j) {
+        return sudokuSquares.get(i * MAP_N_SQUARED + j);
     }
 
     private List<SudokuSquare> getRow(int row) {

@@ -4,7 +4,7 @@ import javafx.scene.effect.PerspectiveTransform;
 
 public class SimplePerspectiveTransformBuilder implements SimpleBuilder<PerspectiveTransform> {
 
-	protected PerspectiveTransform perspectiveTransform = new PerspectiveTransform();
+    private PerspectiveTransform perspectiveTransform = new PerspectiveTransform();
 
 	@Override
 	public PerspectiveTransform build() {

@@ -79,16 +79,8 @@ public final class CoverageUtils {
                 .max(Comparator.comparing(e -> ResourceFXUtils.computeAttributes(e).size())).orElse(null);
     }
 
-    public static double getPercentage(double[] arr) {
-        return arr[0] + arr[1] == 0 ? 100 : arr[1] / (arr[0] + arr[1]) * 100;
-    }
-
     public static List<String> getUncovered() {
         return getUncovered(LINES_MIN_COVERAGE);
-    }
-
-    public static List<String> getUncovered(int min) {
-        return getUncoveredAttribute(min, "LINE_MISSED", "LINE_COVERED", PERCENTAGE);
     }
 
     public static List<Class<? extends Application>> getUncoveredApplications() {
@@ -244,6 +236,14 @@ public final class CoverageUtils {
             }
         }
         return Collections.emptyList();
+    }
+
+    private static double getPercentage(double[] arr) {
+        return arr[0] + arr[1] == 0 ? 100 : arr[1] / (arr[0] + arr[1]) * 100;
+    }
+
+    private static List<String> getUncovered(int min) {
+        return getUncoveredAttribute(min, "LINE_MISSED", "LINE_COVERED", PERCENTAGE);
     }
 
     private static List<String> getUncoveredAttribute(int min, String string, String string2, String percentage2) {

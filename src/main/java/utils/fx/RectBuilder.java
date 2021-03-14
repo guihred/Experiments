@@ -17,7 +17,7 @@ import utils.DrawOnPoint;
 import utils.PixelHelper;
 
 public final class RectBuilder {
-    public static final int N_POINTS_MULTIPLIER = 16;
+    private static final int N_POINTS_MULTIPLIER = 16;
     private double startX;
     private double endX;
     private double startY;
@@ -26,32 +26,12 @@ public final class RectBuilder {
     private double width;
 
     private double arc;
-    private double radiusX = Math.min(arc, width / 2);
-    private double radiusY = Math.min(arc, height / 2);
-    private double centerY1 = Math.min(startY + radiusY, startY + height / 2);
-    private double centerY2 = Math.max(endY - radiusY, startY - height / 2);
-    private double centerX1 = Math.min(startX + radiusX, startX + width / 2);
-    private double centerX2 = Math.max(endX - radiusX, endX - width / 2);
-
     private RectBuilder() {
     }
 
-    public RectBuilder arc(double value) {
-        arc = value;
-        update();
-        return this;
-    }
 
-    public RectBuilder bound(Bounds boundsInLocal) {
-        startX = boundsInLocal.getMinX();
-        endX = boundsInLocal.getMaxX();
-        startY = boundsInLocal.getMinY();
-        endY = boundsInLocal.getMaxY();
-        height = boundsInLocal.getHeight();
-        width = boundsInLocal.getWidth();
-        update();
-        return this;
-    }
+
+
 
     public void copyImagePart(final Image srcImage, final WritableImage destImage, final Color ignoreColor) {
         int argb = PixelHelper.toArgb(ignoreColor);
@@ -103,17 +83,7 @@ public final class RectBuilder {
         }
     }
 
-    public void drawCircleFill(WritableImage image, WritableImage currentImage, Color color, double opacity) {
-        for (int width2 = 0; width2 < width; width2++) {
-            double nPoints = Math.max(width2, height) * RectBuilder.N_POINTS_MULTIPLIER;
-            for (double t = 0; nPoints > 0 && t < 2 * Math.PI; t += 2 * Math.PI / nPoints) {
-                int x = (int) Math.round(width2 * Math.cos(t));
-                int y = (int) Math.round(height * Math.sin(t));
-                RectBuilder.drawPointTransparency(x + (int) startX, y + (int) startY, color, opacity, image,
-                        currentImage);
-            }
-        }
-    }
+
 
     public void drawCirclePattern(WritableImage image, WritableImage currentImage, Color backcolor, double opacity) {
         for (double w = 0; w <= width; w++) {
@@ -136,18 +106,6 @@ public final class RectBuilder {
         }
     }
 
-    public void drawFill(WritableImage image, Color backColor) {
-        RectBuilder.build().startX(centerX1).startY(startY).width(centerX2 - centerX1).height(endY - startY)
-                .drawRect(image, backColor);
-        RectBuilder.build().startX(startX).startY(centerY1).width(endX - startX).height(centerY2 - centerY1)
-                .drawRect(image, backColor);
-        for (int i = 0; i < radiusX; i++) {
-            RectBuilder.drawCirclePart(image, centerX1, centerY1, i, radiusY, Math.PI, backColor);
-            RectBuilder.drawCirclePart(image, centerX2, centerY1, i, radiusY, Math.PI * 3 / 2, backColor);
-            RectBuilder.drawCirclePart(image, centerX1, centerY2, i, radiusY, Math.PI / 2, backColor);
-            RectBuilder.drawCirclePart(image, centerX2, centerY2, i, radiusY, 0, backColor);
-        }
-    }
 
     public void drawLine(WritableImage image, Color frontColor) {
         drawLine(image, (x, y) -> image.getPixelWriter().setColor(x, y, frontColor));
@@ -220,24 +178,6 @@ public final class RectBuilder {
         }
     }
 
-    public void drawStroke(WritableImage image, Color frontColor) {
-        // LEFT
-        RectBuilder.build().startX(startX).startY(centerY1).endX(startX).endY(centerY2).drawLine(image, frontColor);
-        // RIGHT
-        RectBuilder.build().startX(endX).startY(centerY1).endX(endX).endY(centerY2).drawLine(image, frontColor);
-        // TOP
-        RectBuilder.build().startX(centerX1).startY(startY).endX(centerX2).endY(startY).drawLine(image, frontColor);
-        // BOTTOM
-        RectBuilder.build().startX(centerX1).startY(endY).endX(centerX2).endY(endY).drawLine(image, frontColor);
-        // TOP-LEFT
-        RectBuilder.drawCirclePart(image, centerX1, centerY1, radiusX, radiusY, Math.PI, frontColor);
-        // BOTTOM-LEFT
-        RectBuilder.drawCirclePart(image, centerX2, centerY1, radiusX, radiusY, Math.PI * 3 / 2, frontColor);
-        // BOTTOM-RIGHT
-        RectBuilder.drawCirclePart(image, centerX1, centerY2, radiusX, radiusY, Math.PI / 2, frontColor);
-        // TOP-RIGHT
-        RectBuilder.drawCirclePart(image, centerX2, centerY2, radiusX, radiusY, 0, frontColor);
-    }
 
     public RectBuilder endX(double value) {
         endX = Math.round(value);
@@ -336,25 +276,12 @@ public final class RectBuilder {
     }
 
     private void update() {
-        radiusX = Math.round(Math.min(arc, width / 2));
-        radiusY = Math.round(Math.min(arc, height / 2));
-        centerY1 = Math.round(Math.min(startY + radiusY, startY + height / 2));
-        centerY2 = Math.round(Math.max(endY - radiusY, startY - height / 2));
-        centerX1 = Math.round(Math.min(startX + radiusX, startX + width / 2));
-        centerX2 = Math.round(Math.max(endX - radiusX, endX - width / 2));
+        Math.round(Math.min(arc, width / 2));
+        Math.round(Math.min(arc, height / 2));
     }
 
     public static RectBuilder build() {
         return new RectBuilder();
-    }
-
-    public static void copyImagePart(Image srcImage, WritableImage destImage, Color transparent, Rectangle bounds) {
-        int x = (int) bounds.getLayoutX();
-        int y = (int) bounds.getLayoutY();
-        double width = bounds.getWidth();
-        double height = bounds.getHeight();
-        RectBuilder.build().startX(x).startY(y).width(width).height(height).copyImagePart(srcImage, destImage,
-                transparent);
     }
 
     public static void copyImagePart(Image srcImage, WritableImage destImage, Rectangle bounds) {
@@ -486,15 +413,13 @@ public final class RectBuilder {
         imageStack.getChildren().add(imageView);
     }
 
-    private static void drawCirclePart(WritableImage image, double centerX, double centerY, double radiusX,
-            double radiusY, double startAngle, Color frontColor) {
-        double nPoints2 = Math.max(radiusX, radiusY) * RectBuilder.N_POINTS_MULTIPLIER;
-        double angle = Math.PI / 2;
-        for (double t = 0; t < angle; t += 2 * Math.PI / nPoints2) {
-            int x = (int) Math.round(radiusX * Math.cos(t + startAngle));
-            int y = (int) Math.round(radiusY * Math.sin(t + startAngle));
-            RectBuilder.drawPoint(image, x + (int) centerX, y + (int) centerY, frontColor);
-        }
+    private static void copyImagePart(Image srcImage, WritableImage destImage, Color transparent, Rectangle bounds) {
+        int x = (int) bounds.getLayoutX();
+        int y = (int) bounds.getLayoutY();
+        double width = bounds.getWidth();
+        double height = bounds.getHeight();
+        RectBuilder.build().startX(x).startY(y).width(width).height(height).copyImagePart(srcImage, destImage,
+                transparent);
     }
 
     private static void drawPointIf(WritableImage image, int x2, int y2, int color, Color backColor) {

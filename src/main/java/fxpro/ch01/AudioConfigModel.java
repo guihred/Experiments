@@ -43,16 +43,7 @@ public class AudioConfigModel {
      */
 	private SingleSelectionModel<String> genreSelectionModel;
 
-    /**
-     * Adds a change listener to the selection model of the ChoiceBox, and
-     * contains code that executes when the selection in the ChoiceBox changes.
-     */
-    public void addListenerToGenreSelectionModel() {
-        genreSelectionModel.selectedItemProperty().addListener((ov, oldValue, newValue) -> selectedDBs
-                .setValue(GENRES_MAP.getOrDefault(newValue, selectedDBs.getValue())));
-    }
-
-	public SingleSelectionModel<String> getGenreSelectionModel() {
+    public SingleSelectionModel<String> getGenreSelectionModel() {
 		return genreSelectionModel;
 	}
 
@@ -60,4 +51,13 @@ public class AudioConfigModel {
 		this.genreSelectionModel = genreSelectionModel;
 		addListenerToGenreSelectionModel();
 	}
+
+	/**
+     * Adds a change listener to the selection model of the ChoiceBox, and
+     * contains code that executes when the selection in the ChoiceBox changes.
+     */
+    private void addListenerToGenreSelectionModel() {
+        genreSelectionModel.selectedItemProperty().addListener((ov, oldValue, newValue) -> selectedDBs
+                .setValue(GENRES_MAP.getOrDefault(newValue, selectedDBs.getValue())));
+    }
 }

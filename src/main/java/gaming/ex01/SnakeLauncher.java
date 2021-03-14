@@ -16,7 +16,7 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleTimelineBuilder;
 
 public class SnakeLauncher extends Application {
-    public static final int UPDATE_MILLIS = 200;
+    private static final int UPDATE_MILLIS = 200;
 
     private final SnakeModel newGameModel = new SnakeModel();
 

@@ -19,7 +19,7 @@ import utils.ex.RunnableEx;
 
 public class TableVisualizationExample extends TableVisualizationVar {
 
-    protected ContextMenu contextMenu;
+    private ContextMenu contextMenu;
 
     public void initialize() {
         ExtractUtils.insertProxyConfig();

@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 import ml.data.DecisionTree;
 import ml.data.FastFourierTransform;
 import neuro.BrazilianVerbsConjugator;
@@ -47,6 +48,9 @@ public class IndependentTest {
         double[][] matr = { { 4, 5, 3 }, { 2, -5, -2 }, { 4, 5, 6 } };
         double[] coef2 = new double[] { 3.1, -4.3, 4.9 };
         double[] solve = measureTime("MatrixSolver.solve", () -> MatrixSolver.solve(matr, coef2));
+        measureTime("MatrixSolver.div", () -> MatrixSolver.div(coef2, 2));
+        measureTime("MatrixSolver.matmul", () -> MatrixSolver.matmul(matr, coef2));
+        measureTime("MatrixSolver.norm", () -> MatrixSolver.norm(coef2));
         double[] correctAnswear = new double[] { -0.3, 0.5, 0.6 };
         Assert.assertArrayEquals("The solved Matrix should match the solution", solve, correctAnswear, 0.01);
         measureTime("MatrixSolver.determinant", () -> MatrixSolver.determinant(matr));
@@ -71,13 +75,29 @@ public class IndependentTest {
         measureTime("Ch3.IntSequence.of", () -> Ch3.IntSequence.of(1, 2, 3).foreach(e -> LOGGER.trace("{}", e)));
         measureTime("new Ch3.SquareSequence",
                 () -> new Ch3.SquareSequence().limit(10).foreach(e -> LOGGER.trace("{}", e)));
+        measureTime("Ch3.isSorted", () -> QuickSortML.sort(Arrays.asList(1, 2, 2, 3)));
         measureTime("Ch3.isSorted", () -> QuickSortML.isSorted(Arrays.asList(1, 2, 2, 3), Integer::compareTo));
         measureTime("Ch3.luckySort",
                 () -> Ch3.luckySort(Arrays.asList("f", "f", "f", "f", "f", "g", "d", "e", "e"), String::compareTo));
         measureTime("Ch3.subdirectories", () -> Ch3.subdirectories(new File(".")));
         measureTime("Ch3.sortFiles", () -> Ch3.sortFiles(new File(".").listFiles()));
         measureTime("Ch3.listByExtension", () -> Ch3.listByExtension(ResourceFXUtils.getOutFile(), "png"));
-        measureTime("Ch3.tasks", () -> Ch3.tasks());
+        measureTime("Ch3.runInOrder", () -> {
+            StringBuilder s = new StringBuilder();
+            final int exampleTasks = 12;
+            Runnable[] array = IntStream.range(1, exampleTasks).mapToObj(r -> (Runnable) () -> s.append(r + " "))
+                    .toArray(Runnable[]::new);
+            Ch3.runInOrder(array);
+            return s;
+        });
+        measureTime("Ch3.runTogether", () -> {
+            StringBuilder s = new StringBuilder();
+            final int exampleTasks = 12;
+            Runnable[] array = IntStream.range(1, exampleTasks).mapToObj(r -> (Runnable) () -> s.append(r + " "))
+                    .toArray(Runnable[]::new);
+            Ch3.runTogether(array);
+            return s;
+        });
         measureTime("Ch3.IntSequence.constant", () -> Ch3.IntSequence.constant(3));
         runInTime("Ch3.IntSequence.constant", () -> Ch3.IntSequence.constant(3).foreach(e -> LOGGER.trace("{}", e)),
                 500);
@@ -283,6 +303,8 @@ public class IndependentTest {
             measureTime("StringSigaUtils.getCnpjFormatado", () -> StringSigaUtils.getCnpjFormatado(nome));
             measureTime("StringSigaUtils.getCpfDesformatado", () -> StringSigaUtils.getCpfDesformatado(nome));
             measureTime("StringSigaUtils.getCpfFormatado", () -> StringSigaUtils.getCpfFormatado(nome));
+            measureTime("StringSigaUtils.decode64", () -> StringSigaUtils.decode64(nome));
+            measureTime("StringSigaUtils.splitDistinct", () -> StringSigaUtils.splitDistinct(nome, ".*"));
             measureTime("StringSigaUtils.getCpfFormatado", () -> StringSigaUtils.getCpfFormatado(nome));
             measureTime("StringSigaUtils.removerDiacritico", () -> StringSigaUtils.removerDiacritico(nome));
             measureTime("StringSigaUtils.retirarMascara", () -> StringSigaUtils.retirarMascara(nome));

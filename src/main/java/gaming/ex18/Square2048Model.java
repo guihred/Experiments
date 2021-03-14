@@ -21,8 +21,8 @@ import simplebuilder.SimpleDialogBuilder;
  */
 public class Square2048Model {
     private static final int MAIN_GOAL = 2048;
-    public static final int MAP_HEIGHT = 4;
-    public static final int MAP_WIDTH = 4;
+    private static final int MAP_HEIGHT = 4;
+    private static final int MAP_WIDTH = 4;
 
     private final Square2048[][] map = new Square2048[MAP_WIDTH][MAP_HEIGHT];
     private List<Square2048> mapAsList = new ArrayList<>();

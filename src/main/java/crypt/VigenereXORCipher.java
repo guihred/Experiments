@@ -31,43 +31,13 @@ public class VigenereXORCipher {
     // 0, 0, 140, 181, 87, 0, 53
     private int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 
-    @SuppressWarnings({ "unchecked" })
     private List<Integer>[] keysList = Stream.generate(ArrayList::new).limit(keys.length).toArray(List[]::new);
-
-    public void bruteForce(int i, List<Integer> numbers) {
-        List<Integer> d = keysList[i];
-        for (int j = 0; j < d.size(); j++) {
-            keys[i] = d.get(j);
-            if (i < keys.length - 1) {
-                bruteForce(i + 1, numbers);
-                continue;
-            }
-            String keysString = Arrays.toString(keys);
-            LOGGER.trace(keysString);
-            String encrypt = encrypt(keys, numbers);
-            LOGGER.trace(encrypt);
-        }
-    }
 
     public String decrypt(String k, String s) {
         current = 0;
         int length = k.length();
         return s.chars().map(i -> (i ^ k.charAt(current++ % length)) % MAX_BYTE)
                 .mapToObj(i -> Character.valueOf((char) i)).map(Object::toString).collect(Collectors.joining());
-    }
-
-    public String encrypt(int[] k, List<Integer> s) {
-        current = 0;
-        int length = k.length;
-        return s.stream().map(i -> i ^ k[current++ % length]).map(i -> Character.valueOf((char) i.intValue()))
-                .map(Object::toString).collect(Collectors.joining());
-    }
-
-    public String encrypt(String k, List<Integer> s) {
-        current = 0;
-        int length = k.length();
-        return s.stream().map(i -> i ^ k.charAt(current++ % length)).map(i -> Character.valueOf((char) i.intValue()))
-                .map(Object::toString).collect(Collectors.joining());
     }
 
     public String encrypt(String k, String s) {
@@ -151,6 +121,35 @@ public class VigenereXORCipher {
         } catch (Exception e) {
             throw new RuntimeIOException("ERROR IN ACCESS FILE", e);
         }
+    }
+
+    private void bruteForce(int i, List<Integer> numbers) {
+        List<Integer> d = keysList[i];
+        for (int j = 0; j < d.size(); j++) {
+            keys[i] = d.get(j);
+            if (i < keys.length - 1) {
+                bruteForce(i + 1, numbers);
+                continue;
+            }
+            String keysString = Arrays.toString(keys);
+            LOGGER.trace(keysString);
+            String encrypt = encrypt(keys, numbers);
+            LOGGER.trace(encrypt);
+        }
+    }
+
+    private String encrypt(int[] k, List<Integer> s) {
+        current = 0;
+        int length = k.length;
+        return s.stream().map(i -> i ^ k[current++ % length]).map(i -> Character.valueOf((char) i.intValue()))
+                .map(Object::toString).collect(Collectors.joining());
+    }
+
+    private String encrypt(String k, List<Integer> s) {
+        current = 0;
+        int length = k.length();
+        return s.stream().map(i -> i ^ k.charAt(current++ % length)).map(i -> Character.valueOf((char) i.intValue()))
+                .map(Object::toString).collect(Collectors.joining());
     }
 
     public static void main(String[] args) {

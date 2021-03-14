@@ -18,7 +18,7 @@ import simplebuilder.SimpleTimelineBuilder;
 import utils.ex.HasLogging;
 
 public class RubiksModel {
-	public static final int CUBE_COMPLEXITY = 3;
+    private static final int CUBE_COMPLEXITY = 3;
 	private static final Logger LOGGER = HasLogging.log();
 
 	private RubiksPiece[][][] pieces = new RubiksPiece[CUBE_COMPLEXITY][CUBE_COMPLEXITY][CUBE_COMPLEXITY];
@@ -89,13 +89,11 @@ public class RubiksModel {
 			LOGGER.info(s.toString());
 		}
 	}
-	public static int rotateAntiClockWise(int i) {
-		return 6 - i % 3 * 3 + i / 3;
-	}
 
-	public static int rotateClockWise(int j) {
+    public static int rotateClockWise(int j) {
 		return j % 3 * 3 + 2 - j / 3;
 	}
+
 	public static void setPivot(RubiksPiece pivot0, RubiksPiece pivot1) {
 		if (pivot0.getRotations().isEmpty()) {
 			RubiksCubeFaces[] values = RubiksCubeFaces.values();
@@ -109,6 +107,9 @@ public class RubiksModel {
 			}
 		}
 		pivot0.getTransforms().add(new Rotate(0));
+	}
+	private static int rotateAntiClockWise(int i) {
+		return 6 - i % 3 * 3 + i / 3;
 	}
 
 }

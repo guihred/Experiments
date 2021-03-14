@@ -22,7 +22,7 @@ import simplebuilder.SimpleTimelineBuilder;
  */
 public class Maze3DModel {
 
-    public static final int MAZE_SIZE = 24;
+    private static final int MAZE_SIZE = 24;
 	private final Circle circle;
 	private Maze3DSquare[][] maze = new Maze3DSquare[MAZE_SIZE][MAZE_SIZE];
     private final Random random = new Random();
@@ -31,7 +31,7 @@ public class Maze3DModel {
     private int column;
     private Timeline timeline;
 
-	public Maze3DModel(GridPane gridPane) {
+    public Maze3DModel(GridPane gridPane) {
 		initializeMaze(gridPane);
         maze[0][0].setCenter(new Circle(5));
         history.add(maze[0][0]);
@@ -135,8 +135,5 @@ public class Maze3DModel {
         	maze[row][column].setNorth(true);
         }
     }
-    public static Maze3DModel create(GridPane gridPane) {
-		return new Maze3DModel(gridPane);
-	}
 
 }

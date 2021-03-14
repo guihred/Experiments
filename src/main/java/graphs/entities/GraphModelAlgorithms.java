@@ -36,15 +36,6 @@ public final class GraphModelAlgorithms {
         return cells.stream().anyMatch(e -> e != cell2 && e.getBoundsInParent().intersects(cell2.getBoundsInParent()));
     }
 
-    public static boolean anyIntersection(List<? extends Node> cells, List<? extends Node> cell2) {
-
-        return cells.stream().anyMatch(e -> anyIntersection(cell2, e));
-    }
-
-    public static long biedgesNumber(Cell c, Collection<Edge> allEdges) {
-        return allEdges.stream().filter(e -> e.source.equals(c) || e.target.equals(c)).count();
-    }
-
     public static List<Edge> chainEdges(String s, String t, Map<String, Cell> cellMap, List<Cell> allCells,
             List<Edge> allEdges, Map<Cell, Map<Cell, Cell>> paths) {
         Cell v1 = cellMap.get(s);
@@ -352,6 +343,10 @@ public final class GraphModelAlgorithms {
                 assignNum(num, parent, counter, w, allEdges);
             }
         }
+    }
+
+    private static long biedgesNumber(Cell c, Collection<Edge> allEdges) {
+        return allEdges.stream().filter(e -> e.source.equals(c) || e.target.equals(c)).count();
     }
 
     private static Integer cost(Cell v, Cell w, List<Edge> allEdges) {

@@ -15,7 +15,7 @@ import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class DateFormatUtils {
-    public static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
+    private static final DateTimeFormatter TIME_OF_SECONDS_FORMAT = new DateTimeFormatterBuilder()
             .appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral(':').appendValue(ChronoField.MINUTE_OF_HOUR, 2)
             .appendLiteral(':').appendValue(ChronoField.SECOND_OF_MINUTE, 2).appendLiteral('.')
             .appendValue(ChronoField.MILLI_OF_SECOND, 2, 3, SignStyle.NEVER).toFormatter();
@@ -39,19 +39,13 @@ public final class DateFormatUtils {
         return format(fmt, LocalDateTime.now());
     }
 
-    public static LocalDate epochSecondToLocalDate(String asText) {
-        long epochSecond = Long.parseLong(asText);
-        return Instant.ofEpochSecond(epochSecond).atZone(ZoneId.systemDefault()).toLocalDate();
-    }
+
 
     public static LocalDate extractDate(final String children) {
         return SupplierEx.get(() -> LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     }
 
-    public static String format(Long now, String fmt) {
-        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt)
-                .format(Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault()).toLocalDateTime()));
-    }
+
 
     public static String format(String fmt, long now) {
         return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt)
@@ -70,10 +64,7 @@ public final class DateFormatUtils {
         return DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(temporal);
     }
 
-    public static ZonedDateTime getCreationDate(Path path) {
-        return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime().toInstant()
-                .atZone(ZoneId.systemDefault()), ZonedDateTime::now);
-    }
+
 
     public static int getYearCreation(Path path) {
         return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime().toInstant()
@@ -84,11 +75,7 @@ public final class DateFormatUtils {
         return TIME_OF_SECONDS_FORMAT.parse(text);
     }
 
-    public static TemporalAccessor parse(String now, String fmt) {
-        return SupplierEx.getHandle(() -> DateTimeFormatter.ofPattern(fmt, Locale.US).parse(now), null,
-                e -> HasLogging.log(1).error("\"{}\" could be parsed fmt=\"{}\" now = \"{}\"", now, fmt,
-                        format(fmt, ZonedDateTime.now())));
-    }
+
 
     public static <T> T parse(String now, String fmt, TemporalQuery<T> query) {
         return SupplierEx.getHandle(() -> DateTimeFormatter.ofPattern(fmt, Locale.US).parse(now).query(query), null,

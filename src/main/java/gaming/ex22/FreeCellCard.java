@@ -10,7 +10,7 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
 public class FreeCellCard extends Group {
-    protected static DoubleProperty cardWidth = new SimpleDoubleProperty(0);
+    private static DoubleProperty cardWidth = new SimpleDoubleProperty(0);
     private final FreeCellNumber number;
     private final FreeCellSuit suit;
     private boolean autoMoved;

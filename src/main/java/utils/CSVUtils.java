@@ -34,7 +34,7 @@ public class CSVUtils {
     private boolean startCollectChar;
     private boolean doubleQuotesInColumn;
 
-    public CSVUtils(char separators, char customQuote) {
+    private CSVUtils(char separators, char customQuote) {
         this.separators = separators;
         this.customQuote = customQuote;
     }

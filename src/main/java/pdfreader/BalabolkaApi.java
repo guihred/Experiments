@@ -25,16 +25,17 @@ public final class BalabolkaApi {
         // You should take the
         // subway.[sound:sapi5js-6e93fdd5-e02ac668-a24726b9-2fb6956d-720b8c84.mp3] Você
         // deveria pegar o metrô.
-        BufferedReader newBufferedReader = Files.newBufferedReader(
-                new File("C:\\Users\\guigu\\Downloads\\Padrão.txt").toPath(), StandardCharsets.UTF_8);
         CommonsFX.initializeFX();
-        List<String> lines = newBufferedReader.lines().map(s -> {
-            String[] split = s.split("\t");
-            File audio = toAudio(split[0]);
-            return Stream.of(split[0] + "[sound:" + audio.getName() + "]", split[1], "")
-                    .collect(Collectors.joining("\t"));
-        }).collect(Collectors.toList());
-        Files.write(ResourceFXUtils.getOutFile("wav/Baralho.txt").toPath(), lines);
+        try (BufferedReader newBufferedReader = Files.newBufferedReader(
+                new File("C:\\Users\\guigu\\Downloads\\Padrão.txt").toPath(), StandardCharsets.UTF_8)) {
+            List<String> lines = newBufferedReader.lines().map(s -> {
+                String[] split = s.split("\t");
+                File audio = toAudio(split[0]);
+                return Stream.of(split[0] + "[sound:" + audio.getName() + "]", split[1], "")
+                        .collect(Collectors.joining("\t"));
+            }).collect(Collectors.toList());
+            Files.write(ResourceFXUtils.getOutFile("wav/Baralho.txt").toPath(), lines);
+        }
 
     }
 
@@ -47,7 +48,13 @@ public final class BalabolkaApi {
         });
     }
 
-    public static File speak(String s, ConsumerEx<File> run) {
+    public static File toAudio(String s) {
+        return speak(s, out -> {
+            // DOES NOTHING
+        });
+    }
+
+    private static File speak(String s, ConsumerEx<File> run) {
         String text = s.replaceAll("<.+>", "");
         /*
          * cat readme.eng.txt | ./bal4web.exe -i -g f -l en-US -s Google -w hi.wav &&
@@ -64,11 +71,5 @@ public final class BalabolkaApi {
             ConsumerEx.accept(run, outFile);
         }
         return outFile;
-    }
-
-    public static File toAudio(String s) {
-        return speak(s, out -> {
-            // DOES NOTHING
-        });
     }
 }

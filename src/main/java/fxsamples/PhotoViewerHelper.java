@@ -86,11 +86,6 @@ public class PhotoViewerHelper {
         return currentIndex.get();
     }
 
-    static boolean isValidImageFile(String url) {
-        List<String> imgTypes = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".bmp");
-        return imgTypes.stream().anyMatch(url::endsWith);
-    }
-
     static void loadImage(String url, AtomicBoolean loading1, ProgressIndicator progressIndicator1, Text news1,
         ImageView currentImageView2) {
         if (!loading1.getAndSet(true)) {
@@ -103,7 +98,24 @@ public class PhotoViewerHelper {
         }
     }
 
-    static Task<Boolean> newWorker(String url, ProgressIndicator progressIndicator2, ImageView currentImageView2,
+    static void transitionByFading(Image nextImage, ImageView imageView) {
+        new SimpleSequentialTransitionBuilder()
+            // fade out image view node
+            .addFadeTransition(DURATION_MILLIS, imageView, 1, 0, e -> imageView.setImage(nextImage))
+            // fade out image view, swap image and fade in image view
+            .addFadeTransition(DURATION_MILLIS, imageView, 0, 1).build().play();
+    }
+
+    static void tryAddImage(File file, List<String> imageFiles, AtomicInteger currentIndex) {
+        RunnableEx.run(() -> addImage(convertToURL(file).toString(), imageFiles, currentIndex));
+    }
+
+    private static boolean isValidImageFile(String url) {
+        List<String> imgTypes = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".bmp");
+        return imgTypes.stream().anyMatch(url::endsWith);
+    }
+
+    private static Task<Boolean> newWorker(String url, ProgressIndicator progressIndicator2, ImageView currentImageView2,
         AtomicBoolean loading2, Text news2) {
         return new Task<Boolean>() {
             @Override
@@ -121,19 +133,7 @@ public class PhotoViewerHelper {
         };
     }
 
-    static void transitionByFading(Image nextImage, ImageView imageView) {
-        new SimpleSequentialTransitionBuilder()
-            // fade out image view node
-            .addFadeTransition(DURATION_MILLIS, imageView, 1, 0, e -> imageView.setImage(nextImage))
-            // fade out image view, swap image and fade in image view
-            .addFadeTransition(DURATION_MILLIS, imageView, 0, 1).build().play();
-    }
-
-    static void tryAddImage(File file, List<String> imageFiles, AtomicInteger currentIndex) {
-        RunnableEx.run(() -> addImage(convertToURL(file).toString(), imageFiles, currentIndex));
-    }
-
-    public enum ButtonMove {
+    enum ButtonMove {
         NEXT,
         PREV
     }

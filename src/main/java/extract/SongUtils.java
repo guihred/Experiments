@@ -12,11 +12,9 @@ import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.util.Duration;
-import simplebuilder.SimpleSliderBuilder;
 import utils.ConsoleUtils;
 import utils.DateFormatUtils;
 import utils.FileTreeWalker;
@@ -32,17 +30,6 @@ public final class SongUtils {
                     .getAbsolutePath();
 
     private SongUtils() {
-    }
-
-    public static Slider addSlider(VBox flow, MediaPlayer mediaPlayer2) {
-        Slider slider = new SimpleSliderBuilder(0, 1, 0).blocks(100_000).build();
-        Label label = new Label("00:00");
-
-        bindSlider(mediaPlayer2, slider, label);
-
-        flow.getChildren().add(label);
-        flow.getChildren().add(slider);
-        return slider;
     }
 
     public static void bindSlider(MediaPlayer mediaPlayer2, Slider slider, Label label) {
@@ -105,14 +92,6 @@ public final class SongUtils {
         int seconds = (int) (millis / 1000) % SECONDS_IN_A_MINUTE;
         int minutes = (int) (millis / (1000 * SECONDS_IN_A_MINUTE));
         return String.format("%02d:%02d", minutes, seconds);
-    }
-
-    public static String formatFullDuration(Duration duration) {
-        long millis = (long) duration.toMillis();
-        long seconds = millis / 1000 % SECONDS_IN_A_MINUTE;
-        long minutes = millis / (1000 * SECONDS_IN_A_MINUTE) % SECONDS_IN_A_MINUTE;
-        long hours = millis / (1000 * SECONDS_IN_A_MINUTE) / SECONDS_IN_A_MINUTE;
-        return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis % 1000);
     }
 
     public static void seekAndUpdatePosition(Duration duration, Slider slider, MediaPlayer mediaPlayer) {
@@ -178,6 +157,14 @@ public final class SongUtils {
         } else {
             positionSlider.setValue(currentTime.toMillis() / total.toMillis());
         }
+    }
+
+    private static String formatFullDuration(Duration duration) {
+        long millis = (long) duration.toMillis();
+        long seconds = millis / 1000 % SECONDS_IN_A_MINUTE;
+        long minutes = millis / (1000 * SECONDS_IN_A_MINUTE) % SECONDS_IN_A_MINUTE;
+        long hours = millis / (1000 * SECONDS_IN_A_MINUTE) / SECONDS_IN_A_MINUTE;
+        return String.format("%02d:%02d:%02d.%03d", hours, minutes, seconds, millis % 1000);
     }
 
 }

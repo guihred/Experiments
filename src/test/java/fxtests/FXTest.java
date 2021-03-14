@@ -7,13 +7,14 @@ import org.junit.Test;
 
 @SuppressWarnings("static-method")
 public final class FXTest extends AbstractTestExecution {
+    @Test
     public void test() throws Throwable {
         AbstractTestExecution.testApps(CoverageUtils.getClasses(Application.class));
     }
 
 
 
-    @Test
+    // @Test
     public void testPageImage() {
         measureTime("PageImage.testApps", () -> AbstractTestExecution.testApps(PageImage.class));
     }

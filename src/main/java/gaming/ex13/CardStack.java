@@ -50,24 +50,7 @@ public class CardStack extends Region {
 		addCardsVertically(cards1.toArray(new SolitaireCard[0]));
 	}
 
-	public void addCardsVertically(SolitaireCard... cards1) {
-		for (SolitaireCard solitaireCard : cards1) {
-			if (!cards.contains(solitaireCard)) {
-				cards.add(solitaireCard);
-				solitaireCard.setLayoutX(0);
-				getChildren().add(solitaireCard);
-			}
-		}
-		double layout = 0;
-		for (int i = 0; i < cards.size(); i++) {
-			SolitaireCard solitaireCard = cards.get(i);
-			solitaireCard.setLayoutY(layout);
-			layout += solitaireCard.isShown() ? 30 : 15;
-		}
-
-	}
-
-	public ObservableList<SolitaireCard> getCards() {
+    public ObservableList<SolitaireCard> getCards() {
 		return cards;
 	}
 
@@ -89,16 +72,7 @@ public class CardStack extends Region {
 		removeCards(cards1.toArray(new SolitaireCard[0]));
 	}
 
-	public void removeCards(SolitaireCard... cards1) {
-		for (SolitaireCard solitaireCard : cards1) {
-			if (cards.contains(solitaireCard)) {
-				cards.remove(solitaireCard);
-				getChildren().remove(solitaireCard);
-			}
-		}
-	}
-
-	public SolitaireCard removeLastCards() {
+    public SolitaireCard removeLastCards() {
 		if (cards.isEmpty()) {
 			return null;
 		}
@@ -122,6 +96,32 @@ public class CardStack extends Region {
 
 	public void setCards(ObservableList<SolitaireCard> value) {
 		addCards(value);
+	}
+
+	private void addCardsVertically(SolitaireCard... cards1) {
+		for (SolitaireCard solitaireCard : cards1) {
+			if (!cards.contains(solitaireCard)) {
+				cards.add(solitaireCard);
+				solitaireCard.setLayoutX(0);
+				getChildren().add(solitaireCard);
+			}
+		}
+		double layout = 0;
+		for (int i = 0; i < cards.size(); i++) {
+			SolitaireCard solitaireCard = cards.get(i);
+			solitaireCard.setLayoutY(layout);
+			layout += solitaireCard.isShown() ? 30 : 15;
+		}
+
+	}
+
+	private void removeCards(SolitaireCard... cards1) {
+		for (SolitaireCard solitaireCard : cards1) {
+			if (cards.contains(solitaireCard)) {
+				cards.remove(solitaireCard);
+				getChildren().remove(solitaireCard);
+			}
+		}
 	}
 
 	private static Rectangle addRegion() {

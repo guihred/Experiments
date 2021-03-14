@@ -17,7 +17,7 @@ import utils.ex.HasLogging;
 public final class UnRar {
     private static final String UNRAR_FILE = "\"C:\\Program Files (x86)\\WinRAR\\UnRAR.exe\"";
     private static final Logger LOGGER = HasLogging.log();
-    public static final String SRC_DIRECTORY = new File("").getAbsolutePath();
+    private static final String SRC_DIRECTORY = new File("").getAbsolutePath();
 
     private List<String> successfulFiles = new ArrayList<>();
     private List<String> unsupportedFiles = new ArrayList<>();
@@ -136,9 +136,7 @@ public final class UnRar {
         new UnRar().extractRar(file);
     }
 
-    public static void extractRarFiles(String file) {
-        extractRarFiles(new File(file));
-    }
+
 
     public static void main(String[] args) {
         File file = new File(SRC_DIRECTORY);

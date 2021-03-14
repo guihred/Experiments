@@ -14,9 +14,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class CatanCard extends Rectangle {
-    public static final int PREF_HEIGHT = 75;
+    private static final int PREF_HEIGHT = 75;
 
-    public static final int PREF_WIDTH = 50;
+    private static final int PREF_WIDTH = 50;
 
     private ResourceType resource;
     private DevelopmentType development;

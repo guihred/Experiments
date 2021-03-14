@@ -77,15 +77,6 @@ public class KibanaApi {
         }).collect(Collectors.joining("\n"));
     }
 
-    public static <T> String display(Map<String, T> ob) {
-        List<List<String>> listOfFields = getFieldList(ob);
-        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
-        adjustToMax(listOfFields, maxNumFields);
-        return IntStream.range(0, maxNumFields).mapToObj(
-                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining(" ")))
-                .collect(Collectors.joining("\n"));
-    }
-
     public static <T> String displayDistinct(Map<String, T> ob) {
         return Stream.of(display(ob).split("\n")).distinct().collect(Collectors.joining("\n"));
     }
@@ -371,6 +362,15 @@ public class KibanaApi {
             return String.format("%s (%s a %s)", last, min, max);
         });
 
+    }
+
+    private static <T> String display(Map<String, T> ob) {
+        List<List<String>> listOfFields = getFieldList(ob);
+        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
+        adjustToMax(listOfFields, maxNumFields);
+        return IntStream.range(0, maxNumFields).mapToObj(
+                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining(" ")))
+                .collect(Collectors.joining("\n"));
     }
 
     private static <T> List<List<String>> getFieldList(Map<String, T> ob) {

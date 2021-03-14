@@ -37,7 +37,6 @@ public class PixelChanger implements PixelReader {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public PixelFormat getPixelFormat() {
         return reader.getPixelFormat();
     }

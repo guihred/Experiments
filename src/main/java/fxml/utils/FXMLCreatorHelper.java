@@ -25,14 +25,17 @@ import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
+/**
+ * Helper Methods for creating fxml files automatically
+ * 
+ * 
+ * @author guigu
+ *
+ */
 public final class FXMLCreatorHelper {
     private static final Logger LOG = HasLogging.log();
 
     private FXMLCreatorHelper() {
-    }
-
-    public static void createXMLFile(Parent node, File file) {
-        new FXMLCreator().createFXMLFile(node, file);
     }
 
     public static void createXMLFile(Parent node, File file, List<String> persistentFields) {
@@ -40,19 +43,9 @@ public final class FXMLCreatorHelper {
         fxmlCreator.createFXMLFile(node, file);
     }
 
-    public static Stage duplicateStage(File file, String title, double... size) {
-        Stage primaryStage = new Stage();
-        CommonsFX.loadFXML(title, file, primaryStage, size);
-        return primaryStage;
-    }
-
     public static void main(String[] argv) {
         List<Class<? extends Application>> classes = Arrays.asList(XmlViewer.class);
         testApplications(classes, false);
-    }
-
-    public static List<Class<?>> testApplications(List<Class<? extends Application>> asList) {
-        return testApplications(asList, true);
     }
 
     public static List<Class<?>> testApplications(List<Class<? extends Application>> asList, boolean close) {
@@ -79,6 +72,7 @@ public final class FXMLCreatorHelper {
         return errorClasses;
     }
 
+
     private static void compareElements(Class<? extends Application> appClass,
         Collection<Class<? extends Application>> differentTree, Parent root, Parent root2) {
         if (!compareTree(root, root2)) {
@@ -88,6 +82,16 @@ public final class FXMLCreatorHelper {
             LOG.info("MISSING {}", displayMissingElement2);
             differentTree.add(appClass);
         }
+    }
+
+    private static void createXMLFile(Parent node, File file) {
+        new FXMLCreator().createFXMLFile(node, file);
+    }
+
+    private static Stage duplicateStage(File file, String title, double... size) {
+        Stage primaryStage = new Stage();
+        CommonsFX.loadFXML(title, file, primaryStage, size);
+        return primaryStage;
     }
 
     private static void testSingleApp(Class<? extends Application> appClass, List<Stage> stages, boolean close,

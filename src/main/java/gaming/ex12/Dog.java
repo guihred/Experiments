@@ -3,9 +3,9 @@ package gaming.ex12;
 import javafx.scene.canvas.GraphicsContext;
 
 public class Dog extends Player implements Enemy {
-	public static final int INITIAL_Y = 236;
-	public static final int INITIAL_X = 550;
-	public static final int WANDER_WIDTH = 150;
+    private static final int INITIAL_Y = 236;
+    private static final int INITIAL_X = 550;
+    private static final int WANDER_WIDTH = 150;
 
 	private static final double SPEED = 4. / 5;
 	private RunAnimation walkingAnimation = new RunAnimation(ImageResource.DOG);
@@ -38,15 +38,7 @@ public class Dog extends Player implements Enemy {
 		}
 	}
 
-	public void jump() {
-		if (status == DogStatus.WALKING || status == DogStatus.STOPPED) {
-			velocityY = -15;
-			accelerationY = 1;
-			status = DogStatus.ATTACKING;
-		}
-	}
-
-	@Override
+    @Override
 	public void render(GraphicsContext gc) {
 		if (status == DogStatus.STOPPED) {
 			stoppedAnimation.render(gc, this);
@@ -57,13 +49,14 @@ public class Dog extends Player implements Enemy {
 		}
 	}
 
-    public void stop() {
+	public void stop() {
 		velocityX = 0;
 		if (status == DogStatus.WALKING) {
 			status = DogStatus.STOPPED;
 		}
 	}
-	@Override
+
+    @Override
 	public void update(double time) {
 		super.update(time);
 		if (status == DogStatus.STOPPED) {
@@ -83,7 +76,6 @@ public class Dog extends Player implements Enemy {
 		}
 
 	}
-
 	@Override
 	public void verticalCollision(Player player) {
 		super.verticalCollision(player);
@@ -102,7 +94,15 @@ public class Dog extends Player implements Enemy {
 		velocityX = 5;
 	}
 
-	enum DogStatus {
+	private void jump() {
+		if (status == DogStatus.WALKING || status == DogStatus.STOPPED) {
+			velocityY = -15;
+			accelerationY = 1;
+			status = DogStatus.ATTACKING;
+		}
+	}
+
+    private enum DogStatus {
 		ATTACKING,
 		STOPPED,
 		WALKING;

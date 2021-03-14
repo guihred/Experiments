@@ -9,12 +9,7 @@ import javafx.collections.ObservableList;
 public final class TableVisualizationModel {
     private static final int LIST_SIZE = 10000;
 
-    public static final ObservableList<String> CHOICE_BOX_ITEMS = FXCollections.observableArrayList(
-            "Choice A",
-            "Choice B",
-            "Choice C",
-            "Choice D"
-    );
+
 
 	public static final DoubleProperty KPH = new SimpleDoubleProperty(0);
 
@@ -24,7 +19,7 @@ public final class TableVisualizationModel {
 	public static final double MAX_RPM = 8000.0;
 	public static final DoubleProperty RPM = new SimpleDoubleProperty(0);
 
-    public static final Random secureRandom = new Random();
+    private static final Random secureRandom = new Random();
 
     private TableVisualizationModel() {
 	}

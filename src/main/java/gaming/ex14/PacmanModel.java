@@ -47,7 +47,7 @@ public class PacmanModel {
 
     private long time;
 
-    public PacmanModel(Group group, Scene scene) {
+    private PacmanModel(Group group, Scene scene) {
         Timeline timeline = new Timeline();
         MazeSquare[][] maze = initializeMaze();
         final EventHandler<ActionEvent> eventHandler = new CreateMazeHandler(timeline, maze);

@@ -282,7 +282,7 @@ public final class JavaExercise1to11 {
         }
     }
 
-    public static class Greenfly {
+    private static class Greenfly {
         private static int count;
         protected static final Map<Integer, Integer> MAPA = new LinkedHashMap<>();
         private final int birthday;
@@ -310,12 +310,12 @@ public final class JavaExercise1to11 {
         }
     }
 
-    static class Person {
+    private static class Person {
         private String name;
         protected int age;
         private float height;
 
-        public Person(String n, int a, float h) {
+        private Person(String n, int a, float h) {
             name = n;
             age = a;
             height = h;

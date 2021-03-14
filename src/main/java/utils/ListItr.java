@@ -9,9 +9,9 @@ import utils.ex.SupplierEx;
 
 public class ListItr<T> implements ListIterator<T> {
     private final List<T> customList;
-    protected int cursor;
-    protected int lastRet = -1;
-    protected int expectedModCount;
+    private int cursor;
+    private int lastRet = -1;
+    private int expectedModCount;
 
     ListItr(List<T> customList, int index) {
         this.customList = customList;
@@ -103,7 +103,7 @@ public class ListItr<T> implements ListIterator<T> {
         });
     }
 
-    protected final void checkForComodification() {
+    private final void checkForComodification() {
         if (0 != expectedModCount) {
             throw new ConcurrentModificationException();
         }

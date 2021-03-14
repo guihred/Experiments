@@ -16,7 +16,7 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         super(new TreeView<>());
     }
 
-    protected SimpleTreeViewBuilder(TreeView<T> tree) {
+    private SimpleTreeViewBuilder(TreeView<T> tree) {
         super(tree);
     }
 

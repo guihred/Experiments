@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
-import utils.ex.RunnableEx;
 
 @SuppressWarnings("static-method")
 public final class ShiftCipherTest {
@@ -58,14 +57,11 @@ public final class ShiftCipherTest {
 
     @Test
     public void testVigenereXORFindKey() {
-        RunnableEx runnable = () -> new VigenereXORCipher().findKey(7);
-        FXTesting.runInTime("VigenereXORCipher.findKey(7)", runnable, 5_000);
-    }
-
-    @Test
-    public void testVigenereXORFindKeySize() {
+        FXTesting.runInTime("VigenereXORCipher.findKey(7)", () -> new VigenereXORCipher().findKey(7), 5_000);
+        FXTesting.runInTime("VigenereXORCipher.encrypt", () -> new VigenereXORCipher().encrypt("plainText", "cipher"),
+                5_000);
         FXTesting.runInTime("VigenereXORCipher.findKeySize",
-            () -> LOG.error(" key size found {}", new VigenereXORCipher().findKeySize()), 5_000);
+                () -> LOG.error(" key size found {}", new VigenereXORCipher().findKeySize()), 5_000);
     }
 
 }

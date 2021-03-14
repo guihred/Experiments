@@ -70,11 +70,7 @@ public final class ResourceFXUtils {
         return importStlMesh(file);
     }
 
-    public static Mesh importStlMesh(URL file) {
-        StlMeshImporter importer = new StlMeshImporter();
-        importer.read(file);
-        return importer.getImport();
-    }
+
 
     public static void runOnFiles(File userFolder, ConsumerEx<File> run) {
         RunnableEx.run(() -> {

@@ -5,7 +5,7 @@ import java.util.Objects;
 public class EdgeDistancePack implements Comparable<EdgeDistancePack> {
 
 	private Linha edge;
-	protected double distance;
+    private double distance;
 
 	public EdgeDistancePack(Linha edge, double distance) {
 		this.edge = edge;

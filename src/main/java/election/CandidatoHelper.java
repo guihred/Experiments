@@ -33,19 +33,6 @@ public final class CandidatoHelper {
     private CandidatoHelper() {
     }
 
-    public static void addIfChecked(String parent, Map<String, Set<String>> fieldMap, String value, Boolean val) {
-        Set<String> set = fieldMap.remove(parent);
-        if (set == null) {
-            set = FXCollections.observableSet();
-        }
-        if (!val) {
-            set.remove(value);
-        } else {
-            set.add(value);
-        }
-        fieldMap.put(parent, set);
-    }
-
     public static void bindTextToMap(Text text18, ObservableMap<String, Set<String>> fieldMap) {
         text18.textProperty()
                 .bind(Bindings.createStringBinding(() -> fieldMap.entrySet().stream()
@@ -97,5 +84,18 @@ public final class CandidatoHelper {
         Map<String, Long> histogram = candidatoDAO.histogram(column, fieldMap);
         pieGraph.setHistogram(histogram);
         pagination.setPageCount((int) histogram.values().stream().mapToLong(s -> s).sum() / max);
+    }
+
+    private static void addIfChecked(String parent, Map<String, Set<String>> fieldMap, String value, Boolean val) {
+        Set<String> set = fieldMap.remove(parent);
+        if (set == null) {
+            set = FXCollections.observableSet();
+        }
+        if (!val) {
+            set.remove(value);
+        } else {
+            set.add(value);
+        }
+        fieldMap.put(parent, set);
     }
 }

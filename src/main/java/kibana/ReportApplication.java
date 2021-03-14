@@ -40,7 +40,7 @@ import utils.fx.RotateUtils;
 
 public class ReportApplication extends Application {
 
-    static final Logger LOG = HasLogging.log();
+    private static final Logger LOG = HasLogging.log();
     @FXML
     private ProgressBar progressBar;
     @FXML

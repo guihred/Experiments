@@ -71,9 +71,6 @@ public final class PortServices {
         return new PortServices("", "", port);
     }
 
-    public static String getServiceDescriptionByPort(Integer port) {
-        return getServiceByPort(port) + "";
-    }
 
     public static Map<Integer, String> getTcpServices() {
         if (TCP_SERVICES.isEmpty()) {

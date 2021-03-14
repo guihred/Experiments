@@ -75,7 +75,7 @@ public class EffectsController {
                 .node(CommonsFX.loadParent("Effects.fxml", this)).displayDialog();
     }
 
-    public static ObservableList<Effect> getEffects(ObservableList<Effect> observableList) {
+    private static ObservableList<Effect> getEffects(ObservableList<Effect> observableList) {
         return observableList.stream().map(FunctionEx.makeFunction(e -> e.getClass().newInstance()))
                 .filter(Objects::nonNull).collect(Collectors.toCollection(FXCollections::observableArrayList));
     }

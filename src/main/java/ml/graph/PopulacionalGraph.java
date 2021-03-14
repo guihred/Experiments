@@ -15,7 +15,7 @@ import ml.data.DataframeML;
 public class PopulacionalGraph extends Canvas {
     private static final double BORDER_LEFT = 0.45;
     private static final double BORDER_RIGHT = 0.55;
-    public static final int CANVAS_SIZE = 550;
+    private static final int CANVAS_SIZE = 550;
     private final DoubleProperty layout = new SimpleDoubleProperty(30);
     private final DoubleProperty maxLayout = new SimpleDoubleProperty(CANVAS_SIZE);
     private final DoubleProperty lineSize = new SimpleDoubleProperty(1);
@@ -55,50 +55,6 @@ public class PopulacionalGraph extends Canvas {
 
     public StringProperty countryProperty() {
         return country;
-    }
-
-    public void drawAxis() {
-        double layout1 = layout.get();
-        gc.scale(1, lineSize.doubleValue());
-        double xbins = bins.get();
-
-        gc.setLineWidth(1);
-        double maxLayout1 = maxLayout.get();
-        double lineSize1 = 5;
-        gc.strokeLine(layout1, maxLayout1, maxLayout1, maxLayout1);
-        double xMid = prop(layout1, maxLayout1, 1. / 2);
-        double xMA = prop(layout1, maxLayout1, BORDER_LEFT);
-        double xFE = prop(layout1, maxLayout1, BORDER_RIGHT);
-        gc.strokeLine(xMA, layout1, xMA, maxLayout1);
-        gc.strokeLine(xFE, layout1, xFE, maxLayout1);
-        prop(layout1, maxLayout1, 1. / 2);
-        gc.setTextAlign(TextAlignment.CENTER);
-        double j = (xMA - layout1) / xbins;
-        for (int i = 0; i <= xbins; i++) {
-            double x1 = -i * j + xMA;
-            gc.strokeLine(x1, maxLayout1, x1, maxLayout1 + lineSize1);
-            String xLabel = String.format("%.0f", i * xProportion);
-            gc.strokeText(xLabel, x1, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
-
-        }
-        j = (maxLayout1 - xFE) / xbins;
-        for (int i = 0; i <= xbins; i++) {
-            double x1 = i * j + xFE;
-            gc.strokeLine(x1, maxLayout1, x1, maxLayout1 + lineSize1);
-            String xLabel = String.format("%.0f", i * xProportion);
-            gc.strokeText(xLabel, x1, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
-
-        }
-        double h = (maxLayout1 - layout1) / agesSteps.size() - 2;
-        j = (maxLayout1 - layout1) / agesSteps.size();
-        for (int i = 0; i < agesSteps.size(); i++) {
-            double y1 = maxLayout1 - i * j;
-            gc.strokeLine(xFE, y1, xFE - lineSize1, y1);
-            gc.strokeLine(xMA, y1, xMA + lineSize1, y1);
-            String yLabel = agesSteps.get(i);
-            gc.strokeText(yLabel, xMid, y1 - h / 2);
-        }
-        gc.scale(1, 1 / lineSize.doubleValue());
     }
 
     public final void drawGraph() {
@@ -179,6 +135,50 @@ public class PopulacionalGraph extends Canvas {
 
     public ObservableList<Integer> yearsOptionsProperty() {
         return yearsOptions;
+    }
+
+    private void drawAxis() {
+        double layout1 = layout.get();
+        gc.scale(1, lineSize.doubleValue());
+        double xbins = bins.get();
+
+        gc.setLineWidth(1);
+        double maxLayout1 = maxLayout.get();
+        double lineSize1 = 5;
+        gc.strokeLine(layout1, maxLayout1, maxLayout1, maxLayout1);
+        double xMid = prop(layout1, maxLayout1, 1. / 2);
+        double xMA = prop(layout1, maxLayout1, BORDER_LEFT);
+        double xFE = prop(layout1, maxLayout1, BORDER_RIGHT);
+        gc.strokeLine(xMA, layout1, xMA, maxLayout1);
+        gc.strokeLine(xFE, layout1, xFE, maxLayout1);
+        prop(layout1, maxLayout1, 1. / 2);
+        gc.setTextAlign(TextAlignment.CENTER);
+        double j = (xMA - layout1) / xbins;
+        for (int i = 0; i <= xbins; i++) {
+            double x1 = -i * j + xMA;
+            gc.strokeLine(x1, maxLayout1, x1, maxLayout1 + lineSize1);
+            String xLabel = String.format("%.0f", i * xProportion);
+            gc.strokeText(xLabel, x1, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
+
+        }
+        j = (maxLayout1 - xFE) / xbins;
+        for (int i = 0; i <= xbins; i++) {
+            double x1 = i * j + xFE;
+            gc.strokeLine(x1, maxLayout1, x1, maxLayout1 + lineSize1);
+            String xLabel = String.format("%.0f", i * xProportion);
+            gc.strokeText(xLabel, x1, maxLayout1 + lineSize1 * (4 + 3 * (i % 2)));
+
+        }
+        double h = (maxLayout1 - layout1) / agesSteps.size() - 2;
+        j = (maxLayout1 - layout1) / agesSteps.size();
+        for (int i = 0; i < agesSteps.size(); i++) {
+            double y1 = maxLayout1 - i * j;
+            gc.strokeLine(xFE, y1, xFE - lineSize1, y1);
+            gc.strokeLine(xMA, y1, xMA + lineSize1, y1);
+            String yLabel = agesSteps.get(i);
+            gc.strokeText(yLabel, xMid, y1 - h / 2);
+        }
+        gc.scale(1, 1 / lineSize.doubleValue());
     }
 
     private void drawRectangle(Number value, Color color, double maxLayout1, double xFE, double y1, double h,

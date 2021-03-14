@@ -33,7 +33,7 @@ import utils.ex.SupplierEx;
  * @author Ben Litchfield
  */
 public class PrintImageLocations extends PDFStreamEngine {
-    public static final String OUT_FOLDER = "pdf";
+    private static final String OUT_FOLDER = "pdf";
     private static final Logger LOG = HasLogging.log();
     private List<PdfImage> images = new ArrayList<>();
 
@@ -60,26 +60,6 @@ public class PrintImageLocations extends PDFStreamEngine {
             return images.subList(size, images.size());
         }
         return Collections.emptyList();
-    }
-
-    public File save(Object number, BufferedImage image, String ext) {
-        File outFile = ResourceFXUtils.getOutFile(OUT_FOLDER);
-        if (!outFile.exists()) {
-            outFile.mkdir();
-        }
-        String extension = "jpx".equals(ext) || "tiff".equals(ext) ? "jpg" : Objects.toString(ext, "png");
-        File file = new File(outFile,
-            pdfFile.getName().replace(".pdf", "") + pageNumber + "-" + number + "." + extension);
-        return SupplierEx.get(() -> {
-            ImageIO.write(image, extension, file); // ignore returned boolean
-            Optional<File> findFirst = Stream.of(outFile.listFiles()).filter(e -> e.getName().endsWith(extension))
-                .filter(e -> !e.equals(file)).filter(makeTest(f -> contentEquals(file, f))).findFirst();
-            if (findFirst.isPresent()) {
-                RunnableEx.ignore(() -> Files.deleteIfExists(file.toPath()));
-                return findFirst.get();
-            }
-            return null;
-        }, file);
     }
 
     @Override
@@ -123,6 +103,26 @@ public class PrintImageLocations extends PDFStreamEngine {
             LOG.trace("{} at ({},{}) page {}", pdfImage.getFile(), pdfImage.getX(), pdfImage.getY(), pageNumber);
 
         }
+    }
+
+    private File save(Object number, BufferedImage image, String ext) {
+        File outFile = ResourceFXUtils.getOutFile(OUT_FOLDER);
+        if (!outFile.exists()) {
+            outFile.mkdir();
+        }
+        String extension = "jpx".equals(ext) || "tiff".equals(ext) ? "jpg" : Objects.toString(ext, "png");
+        File file = new File(outFile,
+            pdfFile.getName().replace(".pdf", "") + pageNumber + "-" + number + "." + extension);
+        return SupplierEx.get(() -> {
+            ImageIO.write(image, extension, file); // ignore returned boolean
+            Optional<File> findFirst = Stream.of(outFile.listFiles()).filter(e -> e.getName().endsWith(extension))
+                .filter(e -> !e.equals(file)).filter(makeTest(f -> contentEquals(file, f))).findFirst();
+            if (findFirst.isPresent()) {
+                RunnableEx.ignore(() -> Files.deleteIfExists(file.toPath()));
+                return findFirst.get();
+            }
+            return null;
+        }, file);
     }
 
 }

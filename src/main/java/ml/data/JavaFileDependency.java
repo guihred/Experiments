@@ -38,7 +38,7 @@ public class JavaFileDependency {
     private List<String> invocations;
     private Map<String, List<String>> methodsMap;
 
-    public JavaFileDependency(Path javaPath) {
+    private JavaFileDependency(Path javaPath) {
         this.javaPath = javaPath;
     }
 
@@ -70,15 +70,6 @@ public class JavaFileDependency {
 
     public String getFullName() {
         return getPackage() + "." + getName();
-    }
-
-    public List<String> getInvocations(Stream<String> lines, Collection<JavaFileDependency> dependsOn2) {
-        return lines.map(JavaFileDependency::removeStrings).filter(t -> !t.matches(PUBLIC_METHOD_REGEX))
-                .map(t -> StringSigaUtils.matches(t, INVOKE_METHOD_REGEX)).flatMap(List<String>::stream)
-                .flatMap(invoke -> Stream.concat(dependsOn2.stream(), Stream.of(this))
-                        .flatMap(e -> e.getPublicMethods().stream().filter(invoke::equals)
-                                .map(publicMethod -> e.getName() + "." + publicMethod)))
-                .collect(Collectors.toList());
     }
 
     public List<String> getInvocationsMethods() {
@@ -154,10 +145,6 @@ public class JavaFileDependency {
         return test.test(this) || anyMatch;
     }
 
-    public boolean search(String name1, List<JavaFileDependency> visited, List<JavaFileDependency> path) {
-        return search(d -> d.getFullName().contains(name1), visited, path);
-    }
-
     public void setDependents(Collection<JavaFileDependency> dependents) {
         this.dependents =
                 dependents.stream().filter(d -> d.getClasses().contains(getName())).collect(Collectors.toList());
@@ -170,6 +157,19 @@ public class JavaFileDependency {
     @Override
     public String toString() {
         return getPackage() + "." + getName() + " " + getClasses();
+    }
+
+    private List<String> getInvocations(Stream<String> lines, Collection<JavaFileDependency> dependsOn2) {
+        return lines.map(JavaFileDependency::removeStrings).filter(t -> !t.matches(PUBLIC_METHOD_REGEX))
+                .map(t -> StringSigaUtils.matches(t, INVOKE_METHOD_REGEX)).flatMap(List<String>::stream)
+                .flatMap(invoke -> Stream.concat(dependsOn2.stream(), Stream.of(this))
+                        .flatMap(e -> e.getPublicMethods().stream().filter(invoke::equals)
+                                .map(publicMethod -> e.getName() + "." + publicMethod)))
+                .collect(Collectors.toList());
+    }
+
+    private boolean search(String name1, List<JavaFileDependency> visited, List<JavaFileDependency> path) {
+        return search(d -> d.getFullName().contains(name1), visited, path);
     }
 
     public static List<String> displayTestsToBeRun(Collection<String> dependecyList,
@@ -219,13 +219,6 @@ public class JavaFileDependency {
 
     }
 
-    public static List<JavaFileDependency> getJavaFileDependencies(List<JavaFileDependency> allFileDependencies,
-            String packName) {
-        return allFileDependencies.stream()
-                .filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
-                .collect(Collectors.toList());
-    }
-
     public static List<JavaFileDependency> getJavaFileDependencies(String packName) {
         List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
         return getJavaFileDependencies(allFileDependencies, packName);
@@ -249,6 +242,13 @@ public class JavaFileDependency {
         if (stackSize.get() == 1) {
             method.set(null);
         }
+    }
+
+    private static List<JavaFileDependency> getJavaFileDependencies(List<JavaFileDependency> allFileDependencies,
+            String packName) {
+        return allFileDependencies.stream()
+                .filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
+                .collect(Collectors.toList());
     }
 
     private static List<String> linesMatches(String line) {

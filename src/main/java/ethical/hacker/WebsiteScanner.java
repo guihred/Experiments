@@ -54,18 +54,6 @@ public class WebsiteScanner {
         return websiteRoutes.entrySet().stream().collect(Collectors.toList());
     }
 
-    public ObservableMap<String, List<String>> getLinkNetwork(String url, BiConsumer<String, List<String>> run) {
-        if (websiteRoutes.isEmpty()) {
-            websiteRoutes.addListener(
-                    (Change<? extends String, ? extends List<String>> change) -> scanWebSites(change, run));
-        }
-        websiteRoutes.clear();
-        depth.clear();
-        cookies.clear();
-        websiteRoutes.put(url, new ArrayList<String>());
-        return websiteRoutes;
-    }
-
     public ObservableMap<String, List<String>> getLinkNetwork(String url, ConsumerEx<String> run) {
         return getLinkNetwork(url, (page, links) -> ConsumerEx.accept(run, page));
     }
@@ -82,6 +70,18 @@ public class WebsiteScanner {
         if (allHosts().size() < getSize()) {
             websiteRoutes.putIfAbsent(ip2, new ArrayList<>());
         }
+    }
+
+    private ObservableMap<String, List<String>> getLinkNetwork(String url, BiConsumer<String, List<String>> run) {
+        if (websiteRoutes.isEmpty()) {
+            websiteRoutes.addListener(
+                    (Change<? extends String, ? extends List<String>> change) -> scanWebSites(change, run));
+        }
+        websiteRoutes.clear();
+        depth.clear();
+        cookies.clear();
+        websiteRoutes.put(url, new ArrayList<String>());
+        return websiteRoutes;
     }
 
     private List<String> getLinks(String url) throws IOException {

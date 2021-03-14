@@ -10,7 +10,7 @@ import utils.ex.HasLogging;
 public class Vertex {
     private static final Logger LOG = HasLogging.log();
 
-    public static final boolean NAMED = true;
+    private static final boolean NAMED = true;
 
     private Map<Vertex, Integer> edges = new HashMap<>();
 
@@ -35,10 +35,6 @@ public class Vertex {
         this.name = name;
     }
 
-    public Set<Vertex> adjacents() {
-        return edges.keySet();
-    }
-
     public void assignLow(Map<Vertex, Integer> num, Map<Vertex, Integer> low) {
         Vertex v = this;
         low.put(v, num.get(v));
@@ -57,6 +53,7 @@ public class Vertex {
 
         }
     }
+
     public void assignNum(Map<Vertex, Integer> num, int c) {
         int counter = c;
 
@@ -71,7 +68,6 @@ public class Vertex {
 
         }
     }
-
     public void biput(Vertex... vertices) {
         for (int i = 0; i < vertices.length; i++) {
             edges.put(vertices[i], 1);
@@ -83,30 +79,6 @@ public class Vertex {
         edges.put(v, weight);
         v.edges.put(this, weight);
         return this;
-    }
-
-    public Map<Vertex, Integer> dijkstra(Iterable<Vertex> graph) {
-        Map<Vertex, Integer> distance = new HashMap<>();
-        Map<Vertex, Boolean> known = new HashMap<>();
-        for (Vertex v : graph) {
-            distance.put(v, Integer.MAX_VALUE);
-            known.put(v, false);
-        }
-        distance.put(this, 0);
-        while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
-            Vertex v = getMinDistanceVertex(distance, known);
-            known.put(v, true);
-            for (Vertex w : v.adjacents()) {
-                if (!known.get(w)) {
-                    Integer cvw = v.edges.get(w);
-                    if (distance.get(v) + cvw < distance.get(w)) {
-                        distance.put(w, distance.get(v) + cvw);
-                        w.path.put(getId(), v);
-                    }
-                }
-            }
-        }
-        return distance;
     }
 
     @Override
@@ -180,6 +152,34 @@ public class Vertex {
         return edges.get(v);
     }
 
+    private Set<Vertex> adjacents() {
+        return edges.keySet();
+    }
+
+    private Map<Vertex, Integer> dijkstra(Iterable<Vertex> graph) {
+        Map<Vertex, Integer> distance = new HashMap<>();
+        Map<Vertex, Boolean> known = new HashMap<>();
+        for (Vertex v : graph) {
+            distance.put(v, Integer.MAX_VALUE);
+            known.put(v, false);
+        }
+        distance.put(this, 0);
+        while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
+            Vertex v = getMinDistanceVertex(distance, known);
+            known.put(v, true);
+            for (Vertex w : v.adjacents()) {
+                if (!known.get(w)) {
+                    Integer cvw = v.edges.get(w);
+                    if (distance.get(v) + cvw < distance.get(w)) {
+                        distance.put(w, distance.get(v) + cvw);
+                        w.path.put(getId(), v);
+                    }
+                }
+            }
+        }
+        return distance;
+    }
+
     public static void chain(String nome1, String nome2, List<Vertex> vertices) {
         Vertex v1 = vertices.stream().filter(v -> v.name.equals(nome1)).findFirst()
             .orElseThrow(() -> new Exception("There should be some vertex called " + nome1));
@@ -240,7 +240,17 @@ public class Vertex {
         return unweighted(graph, graph.get(0));
     }
 
-    public static Map<Vertex, Integer> unweighted(List<Vertex> graph, Vertex vertex) {
+    public static Map<Vertex, Integer> weightedNegative(List<Vertex> graph) {
+        return weightedNegative(graph, graph.get(0));
+    }
+
+    private static Vertex getMinDistanceVertex(Map<Vertex, Integer> distance, Map<Vertex, Boolean> known) {
+        return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
+            .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
+            .orElseThrow(() -> new Exception("There should be something")).getKey();
+    }
+
+	private static Map<Vertex, Integer> unweighted(List<Vertex> graph, Vertex vertex) {
         Map<Vertex, Integer> distance = new HashMap<>();
         Map<Vertex, Boolean> known = new HashMap<>();
         for (Vertex v : graph) {
@@ -265,11 +275,7 @@ public class Vertex {
         return distance;
     }
 
-	public static Map<Vertex, Integer> weightedNegative(List<Vertex> graph) {
-        return weightedNegative(graph, graph.get(0));
-    }
-
-	public static Map<Vertex, Integer> weightedNegative(List<Vertex> graph, Vertex vertex) {
+	private static Map<Vertex, Integer> weightedNegative(List<Vertex> graph, Vertex vertex) {
         Map<Vertex, Integer> distance = new HashMap<>();
         Queue<Vertex> q = new LinkedList<>();
         for (Vertex v : graph) {
@@ -293,11 +299,5 @@ public class Vertex {
             }
         }
         return distance;
-    }
-
-	private static Vertex getMinDistanceVertex(Map<Vertex, Integer> distance, Map<Vertex, Boolean> known) {
-        return distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
-            .min(Comparator.comparing(Entry<Vertex, Integer>::getValue))
-            .orElseThrow(() -> new Exception("There should be something")).getKey();
     }
 }

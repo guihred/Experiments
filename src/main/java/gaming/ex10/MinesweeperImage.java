@@ -5,8 +5,6 @@
  */
 package gaming.ex10;
 
-import java.io.Serializable;
-import java.util.function.Function;
 import java.util.stream.DoubleStream;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -15,6 +13,8 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import utils.ex.FunctionEx;
+import utils.ex.SupplierEx;
 
 public enum MinesweeperImage {
 
@@ -44,20 +44,17 @@ public enum MinesweeperImage {
     })
 
     ;
-	private F<Integer, Shape> shape;
+    private FunctionEx<Integer, Shape> shape;
 
-    MinesweeperImage(F<Integer, Shape> shape) {
+    MinesweeperImage(FunctionEx<Integer, Shape> shape) {
         this.shape = shape;
 
     }
 
     public Shape getShape(Integer i) {
-        return shape.apply(i);
+        return SupplierEx.remap(() -> shape.apply(i), "ERROR IN SHAPE " + this);
     }
 
-	public static interface F<T, R> extends Function<T, R>, Serializable {
-		// DOES NOTHING
-	}
 
 }
 

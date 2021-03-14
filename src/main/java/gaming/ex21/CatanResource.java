@@ -16,7 +16,7 @@ import utils.StringSigaUtils;
 
 public abstract class CatanResource extends Group {
 
-    public static final String CATAN = "catan/";
+    private static final String CATAN = "catan/";
     public static final double RADIUS = 70;
     public static final String USER_PNG = "user.png";
 
@@ -50,17 +50,6 @@ public abstract class CatanResource extends Group {
         player.set(color);
     }
 
-    public static WritableImage convertImage(final Image image, final Color color) {
-        int w = (int) image.getWidth();
-        int h = (int) image.getHeight();
-        WritableImage writableImage = new WritableImage(w, h);
-        PixelChanger reader = new PixelChanger(image.getPixelReader());
-        reader.put(Color.BLACK, color);
-        reader.put(Color.GRAY, color.darker());
-        writableImage.getPixelWriter().setPixels(0, 0, w, h, reader, 0, 0);
-        return writableImage;
-    }
-
     public static ImageView newImage(String url, double width) {
         ImageView newImage = new ImageView(ResourceFXUtils.toExternalForm(CATAN + url));
         newImage.setPreserveRatio(true);
@@ -90,5 +79,16 @@ public abstract class CatanResource extends Group {
 
     public static ImagePattern newPattern(String terrain) {
         return new ImagePattern(new Image(ResourceFXUtils.toExternalForm(CATAN + terrain)));
+    }
+
+    private static WritableImage convertImage(final Image image, final Color color) {
+        int w = (int) image.getWidth();
+        int h = (int) image.getHeight();
+        WritableImage writableImage = new WritableImage(w, h);
+        PixelChanger reader = new PixelChanger(image.getPixelReader());
+        reader.put(Color.BLACK, color);
+        reader.put(Color.GRAY, color.darker());
+        writableImage.getPixelWriter().setPixels(0, 0, w, h, reader, 0, 0);
+        return writableImage;
     }
 }

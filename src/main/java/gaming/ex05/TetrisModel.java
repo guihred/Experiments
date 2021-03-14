@@ -15,8 +15,8 @@ import simplebuilder.SimpleDialogBuilder;
 
 public class TetrisModel {
 
-    public static final int MAP_HEIGHT = 20;
-    public static final int MAP_WIDTH = 10;
+    private static final int MAP_HEIGHT = 20;
+    private static final int MAP_WIDTH = 10;
     private int currentI;
     private int currentJ;
     private TetrisDirection direction = TetrisDirection.UP;

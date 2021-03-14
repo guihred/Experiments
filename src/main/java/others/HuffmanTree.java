@@ -14,11 +14,11 @@ public class HuffmanTree {
     private Entry<Integer, Long> entry;
     private String code;
 
-    public HuffmanTree(Entry<Integer, Long> entry) {
+    private HuffmanTree(Entry<Integer, Long> entry) {
         this.entry = entry;
     }
 
-    public HuffmanTree(HuffmanTree zerod, HuffmanTree oned) {
+    private HuffmanTree(HuffmanTree zerod, HuffmanTree oned) {
         this.zerod = zerod;
         this.oned = oned;
     }

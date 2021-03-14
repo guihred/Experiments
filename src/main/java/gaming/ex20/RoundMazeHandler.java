@@ -14,12 +14,29 @@ public class RoundMazeHandler {
     private final List<String> check = new ArrayList<>();
     private final RoundMazeSquare[][] createdMaze;
 
-    public RoundMazeHandler(RoundMazeSquare[][] maze) {
+    private RoundMazeHandler(RoundMazeSquare[][] maze) {
 		createdMaze = maze;
 		history.add(maze[0][0]);
 	}
 
-    public void create() {
+    private void addPossibleSides() {
+        if (!createdMaze[r][w(c - 1)].isVisited()) {
+        	check.add("L");
+            check.add("L");
+        }
+        if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
+        	check.add("U");
+        }
+        if (!createdMaze[r][w(c + 1)].isVisited()) {
+        	check.add("R");
+            check.add("R");
+        }
+        if (r < createdMaze.length - 1 && !createdMaze[r + 1][c].isVisited()) {
+        	check.add("D");
+        }
+    }
+
+    private void create() {
 		while (!history.isEmpty()) {
 			createdMaze[r][c].setVisited(true);
 			check.clear();
@@ -38,23 +55,6 @@ public class RoundMazeHandler {
 		for (int i = 0; i < RoundMazeHandler.MAZE_HEIGHT / 8; i++) {
 			createdMaze[0][(cell + i) % RoundMazeHandler.MAZE_HEIGHT].setNorth(true);
 		}
-    }
-
-    private void addPossibleSides() {
-        if (!createdMaze[r][w(c - 1)].isVisited()) {
-        	check.add("L");
-            check.add("L");
-        }
-        if (r > 0 && !createdMaze[r - 1][c].isVisited()) {
-        	check.add("U");
-        }
-        if (!createdMaze[r][w(c + 1)].isVisited()) {
-        	check.add("R");
-            check.add("R");
-        }
-        if (r < createdMaze.length - 1 && !createdMaze[r + 1][c].isVisited()) {
-        	check.add("D");
-        }
     }
 
     private boolean goBackIn(List<RoundMazeSquare> history1) {

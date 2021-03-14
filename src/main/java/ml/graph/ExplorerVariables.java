@@ -42,12 +42,12 @@ public abstract class ExplorerVariables extends Application {
     @FXML
     protected AutocompleteField text;
     @FXML
-    protected Button fillIP;
+    private Button fillIP;
     @FXML
     protected ListView<Question> questionsList;
     @FXML
     protected ComboBox<QuestionType> questType;
-    protected final SimpleObjectProperty<DataframeML> dataframe = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<DataframeML> dataframe = new SimpleObjectProperty<>();
     @FXML
     protected PaginatedTableView statistics;
     @FXML

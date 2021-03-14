@@ -17,7 +17,7 @@ public class FernFractal extends Canvas {
 
     private static final double STEM_LIMIT = 0.01;
 
-    public static final double SIZE = 100;
+    private static final double SIZE = 100;
 
     protected static final double[][] MATRIX_X = {
             { 0, 0 },
