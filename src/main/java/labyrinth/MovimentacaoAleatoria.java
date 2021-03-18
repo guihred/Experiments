@@ -10,10 +10,10 @@ import simplebuilder.SimpleDialogBuilder;
 
 class MovimentacaoAleatoria extends AnimationTimer {
     private final CommomLabyrinth labyrinth3dWallTexture;
-    private MeshView[] animais;
+    private final MeshView[] animais;
     // EAST, WEST, NORTH, SOUTH
-    private int[] direction;
-    private Random random = new Random();
+    private final int[] direction;
+    private final Random random = new Random();
 
     public MovimentacaoAleatoria(CommomLabyrinth labyrinth3dWallTexture, MeshView... animais) {
         this.labyrinth3dWallTexture = labyrinth3dWallTexture;

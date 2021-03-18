@@ -20,22 +20,6 @@ class MyListenerMethodsExamples implements ListChangeListener<String> {
         LOG.trace(prettyPrint);
     }
 
-    public static String getChangeType(Change<? extends String> change) {
-        if (change.wasPermutated()) {
-            return "permutted";
-        }
-        if (change.wasReplaced()) {
-            return REPLACED;
-        }
-        if (change.wasRemoved()) {
-            return "removed";
-        }
-        if (change.wasAdded()) {
-            return "added";
-        }
-        return "none";
-    }
-
     public static String prettyPrint(Change<? extends String> change) {
         StringBuilder sb = new StringBuilder("\tChange event data:\n");
         int i = 0;
@@ -70,5 +54,21 @@ class MyListenerMethodsExamples implements ListChangeListener<String> {
             String permutation = permutationStringBuilder.toString();
             sb.append("\t\tPermutation: ").append(permutation).append("\n");
         }
+    }
+
+    private static String getChangeType(Change<? extends String> change) {
+        if (change.wasPermutated()) {
+            return "permutted";
+        }
+        if (change.wasReplaced()) {
+            return REPLACED;
+        }
+        if (change.wasRemoved()) {
+            return "removed";
+        }
+        if (change.wasAdded()) {
+            return "added";
+        }
+        return "none";
     }
 }

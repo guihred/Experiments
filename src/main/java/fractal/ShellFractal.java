@@ -26,23 +26,7 @@ public class ShellFractal extends Canvas {
 		return deltaAngle;
 	}
 
-	public final void drawSnowflake() {
-        final double fullCircle = 360.;
-		GraphicsContext gc = getGraphicsContext2D();
-		gc.clearRect(0, 0, SIZE, SIZE);
-		final double radius = 0.01;
-		gc.beginPath();
-		for (int i = 0; i < spirals.get(); i++) {
-			double dest = SIZE / 2;
-			gc.moveTo(dest, dest);
-            drawCircle(gc, dest, dest, radius, 0, i * fullCircle / spirals.get() + deltaAngle.get());
-		}
-
-		gc.stroke();
-		gc.closePath();
-	}
-
-	public DoubleProperty limitProperty() {
+    public DoubleProperty limitProperty() {
 		return limit;
 	}
 
@@ -58,6 +42,22 @@ public class ShellFractal extends Canvas {
 			double y = Math.cos(Math.toRadians(angle)) * r0;
             drawCircle(gc, x0 + x, y0 + y, r + r0, r, (angle + fullCircle / 4) % fullCircle);
 		}
+	}
+
+	private final void drawSnowflake() {
+        final double fullCircle = 360.;
+		GraphicsContext gc = getGraphicsContext2D();
+		gc.clearRect(0, 0, SIZE, SIZE);
+		final double radius = 0.01;
+		gc.beginPath();
+		for (int i = 0; i < spirals.get(); i++) {
+			double dest = SIZE / 2;
+			gc.moveTo(dest, dest);
+            drawCircle(gc, dest, dest, radius, 0, i * fullCircle / spirals.get() + deltaAngle.get());
+		}
+
+		gc.stroke();
+		gc.closePath();
 	}
 
 }

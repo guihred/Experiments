@@ -18,6 +18,7 @@ import utils.ex.PredicateEx;
 import utils.ex.SupplierEx;
 
 public final class ExtractUtils {
+    public static final String EXTRACT_FOLDER = "extract/";
     public static final String PROXY_PORT = "3128";
     public static final int HUNDRED_SECONDS = 100_000;
     private static final Logger LOG = HasLogging.log();
@@ -98,7 +99,7 @@ public final class ExtractUtils {
 
     public static File extractURL(String name, String url) {
         return SupplierEx.get(() -> {
-            File outFile = ResourceFXUtils.getOutFile(name);
+            File outFile = ResourceFXUtils.getOutFile(EXTRACT_FOLDER + name);
             ExtractUtils.copy(url, outFile);
             if (url.endsWith(".zip")) {
                 UnZip.extractZippedFiles(outFile);

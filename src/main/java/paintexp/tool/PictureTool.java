@@ -195,27 +195,6 @@ public class PictureTool extends PaintTool {
 
     }
 
-    public void showNewPicDialog() {
-        TextField pathText = new TextField();
-        SVGPath path = new SVGPath();
-        path.setContent("M0,0");
-        pathText.textProperty().addListener((ob, old, val) -> {
-            String value = "M0,0" + pathText.getText();
-            String content = path.getContent();
-            RunnableEx.make(() -> path.setContent(value), e -> path.setContent(content)).run();
-        });
-
-        VBox.setVgrow(path, Priority.ALWAYS);
-        SimpleDialogBuilder simpleDialogBuilder = new SimpleDialogBuilder();
-        SimpleNodeBuilder.onKeyReleased(pathText, KeyCode.ENTER, () -> {
-            addNewPic(pathText.getText());
-            SimpleDialogBuilder.closeStage(simpleDialogBuilder.build());
-        });
-        simpleDialogBuilder.node(path).node(pathText).button("New Pic", () -> addNewPic(pathText.getText()))
-                .bindWindow(picturePane)
-                .displayDialog();
-    }
-
     private void addNewPic(String path) {
         String value = "M0,0" + path;
         area.setContent(value);
@@ -235,6 +214,27 @@ public class PictureTool extends PaintTool {
             }
         });
         return createIcon;
+    }
+
+    private void showNewPicDialog() {
+        TextField pathText = new TextField();
+        SVGPath path = new SVGPath();
+        path.setContent("M0,0");
+        pathText.textProperty().addListener((ob, old, val) -> {
+            String value = "M0,0" + pathText.getText();
+            String content = path.getContent();
+            RunnableEx.make(() -> path.setContent(value), e -> path.setContent(content)).run();
+        });
+
+        VBox.setVgrow(path, Priority.ALWAYS);
+        SimpleDialogBuilder simpleDialogBuilder = new SimpleDialogBuilder();
+        SimpleNodeBuilder.onKeyReleased(pathText, KeyCode.ENTER, () -> {
+            addNewPic(pathText.getText());
+            SimpleDialogBuilder.closeStage(simpleDialogBuilder.build());
+        });
+        simpleDialogBuilder.node(path).node(pathText).button("New Pic", () -> addNewPic(pathText.getText()))
+                .bindWindow(picturePane)
+                .displayDialog();
     }
 
 }

@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import org.apache.commons.collections4.map.ReferenceMap;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 
@@ -23,20 +24,7 @@ public final class ListHelper {
     public static <T, D> ObservableList<D> mapping(ObservableList<T> center1, FunctionEx<T, D> map) {
         ObservableList<D> observableArrayList = center1.stream().map(FunctionEx.makeFunction(map))
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
-        center1.addListener((ListChangeListener<T>) c -> {
-            while (c.next()) {
-                if (c.wasPermutated()) {
-                    break;
-                }
-                if (c.wasAdded()) {
-                    c.getAddedSubList().forEach(e1 -> observableArrayList.add(FunctionEx.apply(map, e1)));
-                }
-                if (c.wasRemoved()) {
-                    c.getRemoved()
-                            .forEach(ConsumerEx.ignore(e2 -> observableArrayList.remove(FunctionEx.apply(map, e2))));
-                }
-            }
-        });
+        addMapping(center1, map, observableArrayList);
         return observableArrayList;
 
     }
@@ -75,6 +63,43 @@ public final class ListHelper {
                 }
             }
         };
+    }
+
+    public static <T, D> void referenceMapping(ObservableList<T> center1, FunctionEx<T, D> map,
+            ObservableList<D> observableArrayList) {
+        ReferenceMap<T,D> a = new ReferenceMap<>();
+        center1.addListener((ListChangeListener<T>) c -> {
+            while (c.next()) {
+                if (c.wasPermutated()) {
+                    break;
+                }
+                if (c.wasAdded()) {
+                    c.getAddedSubList().forEach(e1 -> observableArrayList.add(a.computeIfAbsent(e1, FunctionEx.makeFunction(map))));
+                }
+                if (c.wasRemoved()) {
+                    c.getRemoved()
+                    .forEach(ConsumerEx.ignore(e2 -> observableArrayList.remove(a.computeIfAbsent(e2, FunctionEx.makeFunction(map)))));
+                }
+            }
+        });
+    }
+
+    private static <T, D> void addMapping(ObservableList<T> center1, FunctionEx<T, D> map,
+            ObservableList<D> observableArrayList) {
+        center1.addListener((ListChangeListener<T>) c -> {
+            while (c.next()) {
+                if (c.wasPermutated()) {
+                    break;
+                }
+                if (c.wasAdded()) {
+                    c.getAddedSubList().forEach(e1 -> observableArrayList.add(FunctionEx.apply(map, e1)));
+                }
+                if (c.wasRemoved()) {
+                    c.getRemoved()
+                            .forEach(ConsumerEx.ignore(e2 -> observableArrayList.remove(FunctionEx.apply(map, e2))));
+                }
+            }
+        });
     }
 
 }

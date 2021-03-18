@@ -46,10 +46,6 @@ public class Terrain extends Group {
         return toggleFade(1);
     }
 
-    public Terrain fadeOut() {
-        return toggleFade(-1);
-    }
-
     public int getNumber() {
         return number.get();
     }
@@ -94,6 +90,10 @@ public class Terrain extends Group {
         highlightTransition.setRate(r);
         highlightTransition.play();
         return this;
+    }
+
+    private Terrain fadeOut() {
+        return toggleFade(-1);
     }
 
     private Circle getCircle() {

@@ -23,7 +23,7 @@
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>
-	<logger name="contest.ContestReader" level="ERROR" />
+	<logger name="contest.ContestReader" level="INFO" />
 	<logger name="utils.ExtractUtils" level="INFO" />
 	<logger name="utils.ConsoleUtils" level="DEBUG" />
 	<logger name="extract.web.PhantomJSUtils" level="ERROR" />

@@ -1,9 +1,6 @@
 package ml.data;
 
-import extract.web.JsoupUtils;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.UnaryOperator;
@@ -13,7 +10,6 @@ import utils.ExcelService;
 import utils.ResourceFXUtils;
 import utils.ex.FunctionEx;
 import utils.ex.PredicateEx;
-import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class DataframeBuilder extends DataframeML {
@@ -65,16 +61,7 @@ public class DataframeBuilder extends DataframeML {
                 addHeaders = DataframeUtils.addHeaders(this, scanner);
             }
             if (addHeaders.equals(Arrays.asList("<html>"))) {
-                RunnableEx.run(() -> {
-                    String extractBodyFromHTML = JsoupUtils.extractBodyFromHTML(file);
-                    List<String> asList = Arrays.asList(extractBodyFromHTML.split("(?<=\") (?=\")"));
-                    file = ResourceFXUtils.getOutFile("csv/" + file.getName());
-                    Files.write(file.toPath(), asList, StandardOpenOption.CREATE);
-                    stats = null;
-                    try (Scanner scanner2 = new Scanner(file, "UTF-8")) {
-                        DataframeUtils.addHeaders(this, scanner2);
-                    }
-                });
+                ExcelDataReader.extractHTML(this);
             }
             return getStats().entrySet();
         }, Collections.emptySet());
@@ -100,6 +87,8 @@ public class DataframeBuilder extends DataframeML {
         this.maxSize = maxSize;
         return this;
     }
+
+
 
     public static DataframeML build(File csvFile) {
         DataframeML dataframeML = new DataframeML();

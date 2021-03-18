@@ -62,20 +62,6 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         readHiraganaFiles();
     }
 
-    public String getReading(String currentWord, char currentLetter, int recursive) {
-        final String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
-        try {
-            return mapReading.computeIfAbsent(key,
-                    k -> SupplierEx.remap(() -> computeReading(currentWord, currentLetter), "ERRO " + currentWord));
-        } catch (Exception e) {
-            LOG.error("ERRO " + currentWord, e);
-            if (recursive < 2) {
-                return getReading(currentWord, currentLetter, recursive + 1);
-            }
-        }
-        return currentWord;
-    }
-
     @Override
     protected String task() {
         ExtractUtils.insertProxyConfig();
@@ -187,6 +173,20 @@ public class CrawlerFuriganaTask extends CrawlerTask {
         String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
         String reading = getReading(currentWord, currentLetter, 0);
         return FunctionEx.mapIf(reading, s -> s, key);
+    }
+
+    private String getReading(String currentWord, char currentLetter, int recursive) {
+        final String key = skipCharacters.contains(currentLetter) ? currentWord : currentWord + currentLetter;
+        try {
+            return mapReading.computeIfAbsent(key,
+                    k -> SupplierEx.remap(() -> computeReading(currentWord, currentLetter), "ERRO " + currentWord));
+        } catch (Exception e) {
+            LOG.error("ERRO " + currentWord, e);
+            if (recursive < 2) {
+                return getReading(currentWord, currentLetter, recursive + 1);
+            }
+        }
+        return currentWord;
     }
 
     private void log(String a, String b) {

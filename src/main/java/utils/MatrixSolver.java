@@ -28,7 +28,7 @@ import utils.ex.HasLogging;
 public final class MatrixSolver {
 
     private static final Logger LOGGER = HasLogging.log();
-    private static boolean debug = true;
+    private final static boolean debug = true;
 
     private MatrixSolver() {
     }
@@ -104,14 +104,6 @@ public final class MatrixSolver {
         return IntStream.range(0, v.length).mapToDouble(i -> v[i] - lastV[i]).toArray();
     }
 
-    public static double vectorNorm(double[] a, final double p) {
-        double n = 0;
-        for (int i = 0; i < a.length; i++) {
-            n += Math.abs(Math.pow(a[i], p));
-        }
-        return Math.pow(n, 1. / p);
-    }
-
     private static void correctOrder(double[] coef, double[][] temp) {
         for (int i = 0; i < coef.length; i++) {
             if (temp[i][0] == 0 && i < coef.length - 1) {
@@ -175,6 +167,14 @@ public final class MatrixSolver {
         double[] a = temp[i];
         temp[i] = temp[i + 1];
         temp[i + 1] = a;
+    }
+
+    private static double vectorNorm(double[] a, final double p) {
+        double n = 0;
+        for (int i = 0; i < a.length; i++) {
+            n += Math.abs(Math.pow(a[i], p));
+        }
+        return Math.pow(n, 1. / p);
     }
 
 }

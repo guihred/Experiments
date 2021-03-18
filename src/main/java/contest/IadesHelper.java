@@ -44,8 +44,7 @@ public final class IadesHelper {
         cell.getStyleClass().removeAll(AMARELO, VERMELHO);
         if (IadesHelper.hasTI(con.getVagas())) {
             cell.getStyleClass().add(AMARELO);
-        } else
-        if (con.getVagas().isEmpty()) {
+        } else if (con.getVagas().isEmpty()) {
             cell.getStyleClass().add(VERMELHO);
             con.getVagas().addListener((Observable c) -> {
                 List<?> vagasList = (List<?>) c;
@@ -88,7 +87,7 @@ public final class IadesHelper {
 
     @SafeVarargs
     public static ContestReader getContestQuestions(File file, Organization organization,
-        Consumer<ContestReader>... r) {
+            Consumer<ContestReader>... r) {
         ContestReader instance = new ContestReader();
         LOG.info("READING {}", file);
         instance.readFile(file, organization);
@@ -102,9 +101,8 @@ public final class IadesHelper {
             return ExtractUtils.getFile(text, url3);
         }
         String fileParameter = decodificar(JsoupUtils.executeRequest(url3, cookies).url().getQuery().split("=")[1]);
-        return SupplierEx
-            .makeSupplier(() -> ExtractUtils.getFile(text, fileParameter), e -> LOG.info("{} Failed", fileParameter))
-            .get();
+        return SupplierEx.makeSupplier(() -> ExtractUtils.getFile(text, fileParameter),
+                e -> LOG.info("{} Failed", fileParameter)).get();
     }
 
     public static File getPDF(String number, File file) {
@@ -121,8 +119,8 @@ public final class IadesHelper {
     }
 
     public static boolean hasItKeyword(String e) {
-        return IadesHelper.IT_KEYWORDS.stream()
-            .anyMatch(m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m)));
+        return IadesHelper.IT_KEYWORDS.stream().anyMatch(
+                m -> containsIgnoreCase(e, m) || containsIgnoreCase(removerDiacritico(e), removerDiacritico(m)));
     }
 
     public static boolean hasTI(Collection<?> observableList) {
@@ -132,7 +130,7 @@ public final class IadesHelper {
     public static boolean saveAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
         String answers = getAnswers(entities, linesRead, findFirst);
         if (answers.length() != entities.getListQuestions().size()) {
-            LOG.info("QUESTIONS DON'T MATCH {} {}", answers.length(), entities.getListQuestions().size());
+            LOG.error("QUESTIONS DON'T MATCH {} {} ", answers.length(), entities.getListQuestions().size());
             return false;
         }
         List<ContestQuestion> listQuestions = entities.getListQuestions();
@@ -152,14 +150,14 @@ public final class IadesHelper {
         List<Entry<String, String>> linksFound = value.getLinksFound();
         String number = Objects.toString(vaga).replaceAll("\\D", "");
         Entry<String, String> orElse = linksFound.stream().filter(e -> e.getKey().contains("Provas"))
-            .sorted(Comparator.comparing(e -> containsNumber(number, e))).findFirst().orElse(null);
+                .sorted(Comparator.comparing(e -> containsNumber(number, e))).findFirst().orElse(null);
         if (orElse == null) {
-            LOG.info("NO LINK FOR Provas found {} - {}", vaga, value);
+            LOG.error("NO LINK FOR Provas found {} - {}", vaga, value);
             return;
         }
         File file = ExtractUtils.extractURL(orElse.getValue());
         if (file == null) {
-            LOG.info("COULD NOT DOWNLOAD {}/{} - {}", orElse, value, vaga);
+            LOG.error("COULD NOT DOWNLOAD {}/{} - {}", orElse, value, vaga);
             return;
         }
         File file2 = getPDF(number, file);
@@ -173,7 +171,8 @@ public final class IadesHelper {
     private static String getAnswers(ContestReader entities, List<String> linesRead, String findFirst) {
         int indexOf = linesRead.indexOf(findFirst);
         List<String> subList = linesRead.subList(indexOf, linesRead.size() - 1);
-        List<String> answersList = subList.stream().filter(StringUtils::isNotBlank).filter(s -> s.matches("[\\sA-E#]+"))
+        List<String> answersList = subList.stream().filter(StringUtils::isNotBlank)
+                .filter(s -> s.matches("[\\sA-E#]+"))
             .collect(Collectors.toList());
         StringBuilder answers = new StringBuilder();
         for (String string : answersList) {
@@ -188,41 +187,42 @@ public final class IadesHelper {
 
     private static Path getFirstPDF(File file, String number) {
         return FileTreeWalker.getFirstFileMatch(file, path -> nameMatches(number, path)).stream().findFirst()
-            .orElseGet(() -> FileTreeWalker.getFirstPathByExtension(file, ".pdf"));
+                .orElseGet(() -> FileTreeWalker.getFirstPathByExtension(file, ".pdf"));
     }
 
     private static boolean nameMatches(String number, Path path) {
         String fileName = path.toFile().getName();
         return (containsIgnoreCase(fileName, number) || fileName.matches(".*" + number.replaceAll(" ", ".*") + ".*")
-            || of(number.split(" ")).filter(e -> e.length() > 2).anyMatch(m -> containsIgnoreCase(fileName, m))
-            || of(number.split(" ")).map(StringSigaUtils::removerDiacritico).filter(e -> e.length() > 2)
-                .anyMatch(m -> containsIgnoreCase(fileName, m)))
-            && fileName.endsWith(".pdf");
+                || of(number.split(" ")).filter(e -> e.length() > 2).anyMatch(m -> containsIgnoreCase(fileName, m))
+                || of(number.split(" ")).map(StringSigaUtils::removerDiacritico).filter(e -> e.length() > 2)
+                        .anyMatch(m -> containsIgnoreCase(fileName, m)))
+                && fileName.endsWith(".pdf");
     }
 
     private static void saveQuestions(Property<Concurso> concurso, String vaga, List<Entry<String, String>> linksFound,
-        String number, ContestReader entities) {
+            String number, ContestReader entities) {
         entities.getContest().setName(concurso.getValue().getNome());
         entities.getContest().setJob(vaga);
         entities.saveAll();
 
         List<Entry<String, String>> gabaritos = linksFound.stream().filter(e -> e.getKey().contains("Gabarito"))
-            .sorted(Comparator.comparing(e -> containsNumber(number, e))).collect(Collectors.toList());
+                .sorted(Comparator.comparing(e -> containsNumber(number, e))).collect(Collectors.toList());
         if (gabaritos.isEmpty()) {
-            LOG.info("SEM gabarito {}", linksFound);
+            LOG.error("SEM gabarito {}", linksFound);
             return;
         }
 
         for (Entry<String, String> gabarito : gabaritos) {
             File gabaritoFile = ExtractUtils.extractURL(gabarito.getValue());
             List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
-                .collect(Collectors.toList());
+                    .map(StringSigaUtils::removeNotPrintable)
+                    .collect(Collectors.toList());
             String[] parts = Objects.toString(vaga, "").split("\\s*-\\s*");
             String cargo = parts[parts.length - 1].trim();
             Optional<String> findFirst = linesRead.stream()
-                .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
+                    .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
             if (!findFirst.isPresent()) {
-                LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabarito.getKey(), linesRead);
+                LOG.error("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabarito.getKey(), linesRead);
                 continue;
             }
             if (saveAnswers(entities, linesRead, findFirst.get())) {

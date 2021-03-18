@@ -130,13 +130,6 @@ public class CubeNode extends Parent {
         });
     }
 
-    public void goHomePosition() {
-        Timeline homeTimeline = new Timeline(
-                new KeyFrame(new Duration(1000.0), new KeyValue(angleX, HOME_ANGLE_X, Interpolator.EASE_BOTH),
-                        new KeyValue(angleY, HOME_ANGLE_Y, Interpolator.EASE_BOTH)));
-        homeTimeline.play();
-    }
-
     public void playShowMap() {
         showMapTimeline.playFromStart();
     }
@@ -150,6 +143,13 @@ public class CubeNode extends Parent {
         topFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleX.getValue() + ninety)));
         frontFace.setZPos(CubeFace.RADIUS * Math.cos(Math.toRadians(angleY.getValue() + 2 * ninety)));
         FXCollections.sort(getChildren(), new CubeFaceComparator());
+    }
+
+    private void goHomePosition() {
+        Timeline homeTimeline = new Timeline(
+                new KeyFrame(new Duration(1000.0), new KeyValue(angleX, HOME_ANGLE_X, Interpolator.EASE_BOTH),
+                        new KeyValue(angleY, HOME_ANGLE_Y, Interpolator.EASE_BOTH)));
+        homeTimeline.play();
     }
 
     private void handleMouseDragged(MouseEvent me) {

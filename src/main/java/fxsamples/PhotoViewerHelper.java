@@ -98,14 +98,6 @@ public class PhotoViewerHelper {
         }
     }
 
-    static void transitionByFading(Image nextImage, ImageView imageView) {
-        new SimpleSequentialTransitionBuilder()
-            // fade out image view node
-            .addFadeTransition(DURATION_MILLIS, imageView, 1, 0, e -> imageView.setImage(nextImage))
-            // fade out image view, swap image and fade in image view
-            .addFadeTransition(DURATION_MILLIS, imageView, 0, 1).build().play();
-    }
-
     static void tryAddImage(File file, List<String> imageFiles, AtomicInteger currentIndex) {
         RunnableEx.run(() -> addImage(convertToURL(file).toString(), imageFiles, currentIndex));
     }
@@ -131,6 +123,14 @@ public class PhotoViewerHelper {
                 return true;
             }
         };
+    }
+
+    private static void transitionByFading(Image nextImage, ImageView imageView) {
+        new SimpleSequentialTransitionBuilder()
+            // fade out image view node
+            .addFadeTransition(DURATION_MILLIS, imageView, 1, 0, e -> imageView.setImage(nextImage))
+            // fade out image view, swap image and fade in image view
+            .addFadeTransition(DURATION_MILLIS, imageView, 0, 1).build().play();
     }
 
     enum ButtonMove {

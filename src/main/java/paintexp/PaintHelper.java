@@ -74,14 +74,14 @@ public final class PaintHelper {
         return tableView;
     }
 
-    public static ImageView imageView(final int tablePrefWidth, WritableImage p) {
+    private static ImageView imageView(final int tablePrefWidth, WritableImage p) {
         ImageView value = new ImageView(p);
         value.setPreserveRatio(true);
         value.setFitWidth(tablePrefWidth);
         return value;
     }
 
-    public static Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
+    private static Rectangle pickedColor(final ObjectProperty<Color> objectProperty, final int value) {
         return new SimpleRectangleBuilder().layoutX(value).layoutY(value).managed(false).width(20).height(20)
                 .stroke(Color.GRAY).fill(objectProperty).build();
     }

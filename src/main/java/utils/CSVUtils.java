@@ -28,8 +28,8 @@ public class CSVUtils {
     private static final char DEFAULT_SEPARATOR = ',';
     private static final char DEFAULT_QUOTE = '"';
     private static final char ESCAPE_CHARACTER = '\\';
-    private char separators;
-    private char customQuote;
+    private final char separators;
+    private final char customQuote;
     private boolean inQuotes;
     private boolean startCollectChar;
     private boolean doubleQuotesInColumn;
@@ -155,13 +155,6 @@ public class CSVUtils {
         }
     }
 
-    public static void createNullRow(Collection<String> header, Collection<String> line2) {
-        if (line2.size() < header.size()) {
-            long maxSize2 = header.size() - (long) line2.size();
-            line2.addAll(Stream.generate(() -> "").limit(maxSize2).collect(Collectors.toList()));
-        }
-    }
-
     public static CSVUtils defaultCSVUtils() {
         return new CSVUtils(DEFAULT_SEPARATOR, DEFAULT_QUOTE);
 
@@ -274,6 +267,13 @@ public class CSVUtils {
         File source = Paths.get(csvFile).toFile();
         splitFile(source, columnIndex);
 
+    }
+
+    private static void createNullRow(Collection<String> header, Collection<String> line2) {
+        if (line2.size() < header.size()) {
+            long maxSize2 = header.size() - (long) line2.size();
+            line2.addAll(Stream.generate(() -> "").limit(maxSize2).collect(Collectors.toList()));
+        }
     }
 
     private static Writer createWriter(String csvFile) {

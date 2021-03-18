@@ -65,12 +65,6 @@ public class SelectFreeTool extends AreaTool {
         }
     }
 
-    protected void onMouseDragged2(final MouseEvent e, final PaintModel model) {
-        double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
-        double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
-        getPolygon().getPoints().addAll(x, y);
-    }
-
     protected void onMousePressed2(final MouseEvent e, final PaintModel model) {
         ObservableList<Node> children = model.getImageStack().getChildren();
         if (!children.contains(getPolygon())) {
@@ -141,6 +135,12 @@ public class SelectFreeTool extends AreaTool {
             }
         }
         return selectedImage;
+    }
+
+    private void onMouseDragged2(final MouseEvent e, final PaintModel model) {
+        double x = getWithinRange(e.getX(), 0, model.getImage().getWidth());
+        double y = getWithinRange(e.getY(), 0, model.getImage().getHeight());
+        getPolygon().getPoints().addAll(x, y);
     }
 
 }

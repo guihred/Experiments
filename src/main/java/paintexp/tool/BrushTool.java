@@ -139,14 +139,6 @@ public class BrushTool extends PaintTool {
 
     }
 
-    protected void onMouseMoved(final MouseEvent e) {
-        getMouseCursorMap().get(option).setLayoutX(e.getX());
-        getMouseCursorMap().get(option).setLayoutY(e.getY());
-        if (option == BrushOption.LINE_SW_NE) {
-            getMouseCursorMap().get(option).setLayoutY(e.getY() - lengthSlider.valueProperty().get());
-        }
-    }
-
     private void drawCircleOption(final PaintModel model, final int x2, final int y2, final double r, final Color color,
         final boolean fill) {
         RectBuilder.build().startX(x2).startY(y2).width(r).height(r).drawCircle(model.getImage(),
@@ -200,6 +192,14 @@ public class BrushTool extends PaintTool {
         getMouseCursorMap().get(option).setFill(model.getFrontColor());
         getMouseCursorMap().get(option).setStroke(model.getFrontColor().invert());
         getMouseCursorMap().get(option).setOpacity(opacitySlider.valueProperty().get());
+    }
+
+    private void onMouseMoved(final MouseEvent e) {
+        getMouseCursorMap().get(option).setLayoutX(e.getX());
+        getMouseCursorMap().get(option).setLayoutY(e.getY());
+        if (option == BrushOption.LINE_SW_NE) {
+            getMouseCursorMap().get(option).setLayoutY(e.getY() - lengthSlider.valueProperty().get());
+        }
     }
 
     private static void drawSquare(final PaintModel model, final int x2, final int y2, final boolean fill, double r,

@@ -71,11 +71,6 @@ public final class ExplorerHelper {
         return fillIPInformation(builder, ipColumn);
     }
 
-    public static String getIPColumn(DataframeBuilder builder) {
-        return builder.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
-                .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
-    }
-
     public static String getLastNumberField(BaseDataframe dataframe) {
         List<String> numberCols = dataframe.getFormatMap().entrySet().stream().filter(e -> e.getValue() != null)
                 .filter(e -> Number.class.isAssignableFrom(e.getValue()))
@@ -99,13 +94,13 @@ public final class ExplorerHelper {
 
     }
 
-
-
     public static List<Entry<String, Number>> toPie(DataframeML dataframe, String title, String key) {
         List<Entry<Object, Double>> createSeries = DataframeUtils.createSeries(dataframe, title, key);
         return createSeries.stream().map(e -> new AbstractMap.SimpleEntry<>((String) e.getKey(), (Number) e.getValue()))
                 .collect(Collectors.toList());
     }
+
+
 
     private static DataframeML fillIPInformation(DataframeBuilder builder, String ipColumn) {
         return ExplorerHelper.fillIPInformation(builder, ipColumn, new SimpleDoubleProperty(0));
@@ -115,6 +110,11 @@ public final class ExplorerHelper {
             Object[] e, String... string) {
         return StringSigaUtils.getKey(ipInfo.computeIfAbsent(e[0].toString(), whoIsScanner::getIpInformation),
                 string);
+    }
+
+    private static String getIPColumn(DataframeBuilder builder) {
+        return builder.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
+                .filter(s -> StringUtils.containsIgnoreCase(s, "IP")).findFirst().orElse(null);
     }
 
     private static Object getStatAt(List<? extends Entry<String, DataframeStatisticAccumulator>> addedSubList,

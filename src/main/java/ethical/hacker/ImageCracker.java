@@ -50,7 +50,23 @@ public final class ImageCracker {
         return createSelectedImage(new WritableImage(pixelReader, (int) image.getWidth(), (int) image.getHeight()));
     }
 
-    public static WritableImage createSelectedImage(WritableImage image) {
+    private static int countDarkPoints(WritableImage image, PixelReader pixelReader, int x, int y) {
+        int blacks = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                int y2 = y + j - 1;
+                int x2 = x + i - 1;
+                if (DrawOnPoint.withinImage(x2, y2, image)) {
+                    Color color = pixelReader.getColor(x2, y2);
+                    double brightness = color.getBrightness();
+                    blacks += brightness < 1. / 2 ? 1 : -1;
+                }
+            }
+        }
+        return blacks;
+    }
+
+    private static WritableImage createSelectedImage(WritableImage image) {
         int height = (int) image.getHeight();
         int width = (int) image.getWidth();
         PixelReader pixelReader = image.getPixelReader();
@@ -67,22 +83,6 @@ public final class ImageCracker {
             }
         }
         return image;
-    }
-
-    private static int countDarkPoints(WritableImage image, PixelReader pixelReader, int x, int y) {
-        int blacks = 0;
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                int y2 = y + j - 1;
-                int x2 = x + i - 1;
-                if (DrawOnPoint.withinImage(x2, y2, image)) {
-                    Color color = pixelReader.getColor(x2, y2);
-                    double brightness = color.getBrightness();
-                    blacks += brightness < 1. / 2 ? 1 : -1;
-                }
-            }
-        }
-        return blacks;
     }
 
     private static int finalColor(int white, int black, int blacks, double brightness) {

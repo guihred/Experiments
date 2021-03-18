@@ -2,13 +2,17 @@ package ml.data;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import utils.ExcelService;
+import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.PredicateEx;
@@ -17,6 +21,19 @@ import utils.ex.RunnableEx;
 public class ExcelDataReader extends DataframeUtils {
     private static final String SHEET_COLUMN = "Sheet";
     private static final Logger LOG = HasLogging.log();
+
+    public static void extractHTML(DataframeML frame) {
+        RunnableEx.run(() -> {
+            String extractBodyFromHTML = Jsoup.parse(frame.file, "UTF-8").body().text();
+            List<String> asList = Arrays.asList(extractBodyFromHTML.split("(?<=\") (?=\")"));
+            frame.file = ResourceFXUtils.getOutFile("csv/" + frame.file.getName());
+            Files.write(frame.file.toPath(), asList, StandardOpenOption.CREATE);
+            frame.stats = null;
+            try (Scanner scanner2 = new Scanner(frame.file, "UTF-8")) {
+                DataframeUtils.addHeaders(frame, scanner2);
+            }
+        });
+    }
 
     public static DataframeML readExcel(DataframeML dataframeML2, File excelFile) {
         LOG.info("READING {}", excelFile);

@@ -185,13 +185,6 @@ public abstract class AreaTool extends PaintTool {
         getArea().setHeight(1);
     }
 
-    protected void dragTo(double x, double y) {
-        getArea().setLayoutX(Math.min(x, initialX));
-        getArea().setLayoutY(Math.min(y, initialY));
-        getArea().setWidth(Math.abs(x - initialX));
-        getArea().setHeight(Math.abs(y - initialY));
-    }
-
     protected void escapeArea(PaintModel model) {
         double hvalue = model.getScrollPane().getHvalue();
         double vvalue = model.getScrollPane().getVvalue();
@@ -263,6 +256,13 @@ public abstract class AreaTool extends PaintTool {
                 model.getBackColor());
         }
         return imageSelected;
+    }
+
+    private void dragTo(double x, double y) {
+        getArea().setLayoutX(Math.min(x, initialX));
+        getArea().setLayoutY(Math.min(y, initialY));
+        getArea().setWidth(Math.abs(x - initialX));
+        getArea().setHeight(Math.abs(y - initialY));
     }
 
 

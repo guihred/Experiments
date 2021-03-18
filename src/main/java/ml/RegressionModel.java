@@ -144,24 +144,6 @@ public class RegressionModel {
         RegressionModel regressionModel = new RegressionModel();
         return regressionModel.initialize(name, features1, target1);
     }
-    /**
-     * Returns the expected response {@code y} given the value of the predictor
-     * variable {@code x}.
-     *
-     * @param x
-     *            the value of the predictor variable
-     * @return the expected response {@code y} given the value of the predictor
-     *         variable {@code x}
-     */
-    public static double predict(RealMatrix beta, double x, int degree) {
-        // horner's method
-        double y = 0.0;
-        for (int j = degree; j >= 0; j--) {
-            y = beta(beta, j) + x * y;
-        }
-        return y;
-    }
-
     private static double beta(RealMatrix beta, int j) {
         // to make -0.0 print as 0.0
         if (Math.abs(beta.getEntry(j, 0)) < MIN_DIFFERENCE) {
@@ -209,6 +191,24 @@ public class RegressionModel {
         final int degreeFinal = degree;
         return x0 -> predict(beta, x0, degreeFinal);
 
+    }
+
+    /**
+     * Returns the expected response {@code y} given the value of the predictor
+     * variable {@code x}.
+     *
+     * @param x
+     *            the value of the predictor variable
+     * @return the expected response {@code y} given the value of the predictor
+     *         variable {@code x}
+     */
+    private static double predict(RealMatrix beta, double x, int degree) {
+        // horner's method
+        double y = 0.0;
+        for (int j = degree; j >= 0; j--) {
+            y = beta(beta, j) + x * y;
+        }
+        return y;
     }
 
     private static Data<Number, Number> toData(double e1, double e2) {

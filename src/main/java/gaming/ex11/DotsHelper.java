@@ -47,10 +47,6 @@ public final class DotsHelper {
             () -> String.format("%s:%d", key, points2.get(key).size()), points2.get(key), points2));
     }
 
-    public static boolean cNotContainsA(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
-        return a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a);
-    }
-
     public static Timeline createAnimation(int nplayed, double[] center, double[] center2, Line line2) {
         return new SimpleTimelineBuilder().addKeyFrame(Duration.seconds(nplayed / 2.), line2.endXProperty(), center[0])
                 .addKeyFrame(Duration.seconds(1. / 2 + nplayed / 2.), line2.endXProperty(), center2[0])
@@ -211,6 +207,10 @@ public final class DotsHelper {
 
     private static boolean bNotContainsD(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
         return a.contains(b) && !b.contains(d) && d.contains(c) && c.contains(a);
+    }
+
+    private static boolean cNotContainsA(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+        return a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a);
     }
 
 }

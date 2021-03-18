@@ -83,7 +83,9 @@ public final class QuadrixHelper {
             return Collections.emptyList();
         }
         return document.select("a").stream().filter(e -> IadesHelper.hasFileExtension(e.text()))
-                .map(FunctionEx.ignore(e -> getFileFromPage(e.text(), addQuadrixDomain(e.attr("abs:href")))))
+                .map(FunctionEx
+                        .ignore(e -> getFileFromPage(ExtractUtils.EXTRACT_FOLDER + e.text(),
+                                addQuadrixDomain(e.attr("abs:href")))))
             .filter(Objects::nonNull).collect(toList());
     }
 

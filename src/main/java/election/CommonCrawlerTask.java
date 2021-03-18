@@ -14,7 +14,8 @@ public abstract class CommonCrawlerTask<T> extends CrawlerTask {
     /**
      * @param lines  
      */
-    protected  void endTask(List<T> lines) {
+    @SuppressWarnings("unused")
+    protected void endTask(List<T> lines) {
         HibernateUtil.shutdown();
     }
 

@@ -134,6 +134,7 @@ public class PlayingAudio extends Application {
      * @param magnitudes
      * @param phases
      */
+    @SuppressWarnings("unused")
     protected void onAudioSpectrum(double timestamp, double duration, float[] magnitudes, float[] phases) {
         vizContainer.getChildren().clear();
         int i = 0;

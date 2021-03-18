@@ -62,29 +62,6 @@ public class DataframeStatisticAccumulator {
         return Objects.toString(min);
     }
 
-    public double getCorrelation(List<Object> otherVariable) {
-        if (getFormat() == String.class
-                || otherVariable.stream().findFirst().map(Object::getClass).orElse(null) == String.class) {
-            return 0;
-        }
-
-        double mean = sum / count;
-        List<Object> variable = getList();
-        double sum1 = variable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).map(e -> e - mean)
-                .map(e -> e * e).sum();
-        double st1 = Math.sqrt(sum1 / (count - 1));
-
-        double mean2 = otherVariable.stream().filter(Number.class::isInstance).map(Number.class::cast)
-                .mapToDouble(Number::doubleValue).average().getAsDouble();
-
-        double sum2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
-                .map(e -> e - mean2).map(e -> e * e).sum();
-        double st2 = Math.sqrt(sum2);
-        double covariance = IntStream.range(0, count).mapToDouble(i -> (((Number) variable.get(i)).doubleValue() - mean)
-                * (((Number) otherVariable.get(i)).doubleValue() - mean2)).sum();
-        return covariance / st1 / st2;
-    }
-
     public double getCorrelation(String other) {
         return getCorrelation(dataframe.get(other));
     }
@@ -278,6 +255,29 @@ public class DataframeStatisticAccumulator {
         return array.get((int) (array.size() * d)).getKey();
     }
 
+    private double getCorrelation(List<Object> otherVariable) {
+        if (getFormat() == String.class
+                || otherVariable.stream().findFirst().map(Object::getClass).orElse(null) == String.class) {
+            return 0;
+        }
+
+        double mean = sum / count;
+        List<Object> variable = getList();
+        double sum1 = variable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).map(e -> e - mean)
+                .map(e -> e * e).sum();
+        double st1 = Math.sqrt(sum1 / (count - 1));
+
+        double mean2 = otherVariable.stream().filter(Number.class::isInstance).map(Number.class::cast)
+                .mapToDouble(Number::doubleValue).average().getAsDouble();
+
+        double sum2 = otherVariable.stream().map(Number.class::cast).mapToDouble(Number::doubleValue)
+                .map(e -> e - mean2).map(e -> e * e).sum();
+        double st2 = Math.sqrt(sum2);
+        double covariance = IntStream.range(0, count).mapToDouble(i -> (((Number) variable.get(i)).doubleValue() - mean)
+                * (((Number) otherVariable.get(i)).doubleValue() - mean2)).sum();
+        return covariance / st1 / st2;
+    }
+
     private List<Object> getList() {
         return dataframe.get(header);
     }
@@ -313,14 +313,14 @@ public class DataframeStatisticAccumulator {
                         DataframeStatisticAccumulator.throwError(), LinkedHashMap<String, Object>::new));
     }
 
-    public static BinaryOperator<Object> throwError() {
+    private static Comparator<Entry<?, Integer>> comparator() {
+        return Comparator.comparing(Entry<?, Integer>::getValue);
+    }
+
+    private static BinaryOperator<Object> throwError() {
         return (u, v) -> {
             throw new IllegalStateException(String.format("Duplicate key %s", u));
         };
-    }
-
-    private static Comparator<Entry<?, Integer>> comparator() {
-        return Comparator.comparing(Entry<?, Integer>::getValue);
     }
 
 }

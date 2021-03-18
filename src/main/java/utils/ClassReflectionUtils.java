@@ -113,10 +113,6 @@ public final class ClassReflectionUtils {
                         e -> ClassReflectionUtils.invoke(ob, e)));
     }
 
-    public static String getFieldName(Member t) {
-        return t.getName().replaceAll(METHOD_REGEX_SETTER + "|" + METHOD_REGEX, "$1$2$3");
-    }
-
     public static String getFieldNameCase(Member t) {
         return changeCase(getFieldName(t));
     }
@@ -139,10 +135,10 @@ public final class ClassReflectionUtils {
                 .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue,
                         SupplierEx::nonNull));
     }
+
     public static List<Method> getGetterMethodsRecursive(Class<?> targetClass) {
         return getGetterMethodsRecursive(targetClass, 10);
     }
-
     public static List<Method> getGetterMethodsRecursive(Class<?> targetClass, int parent) {
         Class<?> a = targetClass;
         List<Method> getters = new ArrayList<>();
@@ -442,6 +438,10 @@ public final class ClassReflectionUtils {
         }
         descriptionBuilder.append("\t}");
         return descriptionBuilder.toString();
+    }
+
+    private static String getFieldName(Member t) {
+        return t.getName().replaceAll(METHOD_REGEX_SETTER + "|" + METHOD_REGEX, "$1$2$3");
     }
 
     private static List<Field> getFieldsRecursive(Class<?> class1) {

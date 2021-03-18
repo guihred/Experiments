@@ -22,33 +22,6 @@ class ExcelHelper {
     protected ExcelHelper() {
     }
 
-    protected static boolean createHeader(Row row2, Set<String> keySet) {
-        boolean addHeader = !keySet.stream().allMatch(StringUtils::isNumeric);
-        if (addHeader) {
-            int j = 0;
-            for (String titulo : keySet) {
-                row2.createCell(j, CellType.STRING).setCellValue(titulo);
-                j++;
-            }
-        }
-        return addHeader;
-    }
-
-    protected static Object getCellValue(Cell cell) {
-        switch (cell.getCellType()) {
-            case BOOLEAN:
-                return cell.getBooleanCellValue();
-            case FORMULA:
-                return cell.getCellFormula();
-            case NUMERIC:
-                return cell.getNumericCellValue();
-            case STRING:
-                return cell.getStringCellValue();
-            default:
-                return null;
-        }
-    }
-
     protected static Workbook getWorkbook(String selectedFile, InputStream fileInputStream) {
 
         return SupplierEx.remap(() -> selectedFile.endsWith(".xls") ? new HSSFWorkbook(fileInputStream)
@@ -232,20 +205,6 @@ class ExcelHelper {
         }
     }
 
-    protected static Map<Class<?>, CellStyle> styleMap(Workbook workbook) {
-        CreationHelper createHelper = workbook.getCreationHelper();
-        CellStyle formatoData = workbook.createCellStyle();
-        formatoData.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
-        CellStyle defaultStyle = workbook.createCellStyle();
-        defaultStyle.setAlignment(HorizontalAlignment.LEFT);
-        defaultStyle.setVerticalAlignment(VerticalAlignment.TOP);
-        defaultStyle.setWrapText(true);
-        Map<Class<?>, CellStyle> formatMap = new HashMap<>();
-        formatMap.put(Date.class, formatoData);
-        formatMap.put(String.class, defaultStyle);
-        return formatMap;
-    }
-
     private static void alterarValorCell(Map<Object, Object> map, Sheet sheet, Row row, Cell c) {
         if (c.getCellType() == CellType.NUMERIC) {
             alterNumeric(map, sheet, c);
@@ -271,7 +230,6 @@ class ExcelHelper {
             }
         }
     }
-
 
     @SuppressWarnings("rawtypes")
     private static void alterString(Map<Object, Object> map, Sheet sheet, Row row, Cell c) {
@@ -304,6 +262,34 @@ class ExcelHelper {
         }
     }
 
+    private static boolean createHeader(Row row2, Set<String> keySet) {
+        boolean addHeader = !keySet.stream().allMatch(StringUtils::isNumeric);
+        if (addHeader) {
+            int j = 0;
+            for (String titulo : keySet) {
+                row2.createCell(j, CellType.STRING).setCellValue(titulo);
+                j++;
+            }
+        }
+        return addHeader;
+    }
+
+    private static Object getCellValue(Cell cell) {
+        switch (cell.getCellType()) {
+            case BOOLEAN:
+                return cell.getBooleanCellValue();
+            case FORMULA:
+                return cell.getCellFormula();
+            case NUMERIC:
+                return cell.getNumericCellValue();
+            case STRING:
+                return cell.getStringCellValue();
+            default:
+                return null;
+        }
+    }
+
+
     private static void setValorPorClasse(Map<Class<?>, CellStyle> formatMap, Row row, int colIndex, Object content) {
         if (content instanceof Number) {
             Cell createCell = row.createCell(colIndex, CellType.NUMERIC);
@@ -326,6 +312,20 @@ class ExcelHelper {
             return;
         }
         row.createCell(colIndex, CellType.BLANK);
+    }
+
+    private static Map<Class<?>, CellStyle> styleMap(Workbook workbook) {
+        CreationHelper createHelper = workbook.getCreationHelper();
+        CellStyle formatoData = workbook.createCellStyle();
+        formatoData.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
+        CellStyle defaultStyle = workbook.createCellStyle();
+        defaultStyle.setAlignment(HorizontalAlignment.LEFT);
+        defaultStyle.setVerticalAlignment(VerticalAlignment.TOP);
+        defaultStyle.setWrapText(true);
+        Map<Class<?>, CellStyle> formatMap = new HashMap<>();
+        formatMap.put(Date.class, formatoData);
+        formatMap.put(String.class, defaultStyle);
+        return formatMap;
     }
 
 }

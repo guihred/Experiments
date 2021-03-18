@@ -17,8 +17,8 @@ import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
-public final class ConsultasHelper {
-    private static final double THRESHOLD_PARAMS = .45;
+final class ConsultasHelper {
+    private static final double THRESHOLD_PARAMS = .40;
     private static final double THRESHOLD_NETWORK = .40;
     private static final Logger LOG = HasLogging.log();
     private static final String IGNORE_IPS_REGEX = "::1|127.0.0.1";

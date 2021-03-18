@@ -61,82 +61,6 @@ public class HeatGraph extends Canvas {
         return colorPattern;
     }
 
-    public void drawAxis(DoubleSummaryStatistics xStats, DoubleSummaryStatistics yStats) {
-
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.setFill(Color.BLACK);
-        gc.setLineWidth(1);
-        gc.setStroke(Color.BLACK);
-        gc.fillText(title, layout.get() + (MAX_LAYOUT - layout.get()) / 2, layout.get() - 20);
-        double e = layout.get();
-        gc.strokeLine(e, e, e, MAX_LAYOUT);
-        gc.strokeLine(e, MAX_LAYOUT, MAX_LAYOUT, MAX_LAYOUT);
-        double j = (MAX_LAYOUT - e) / bins.get();
-        double d = lineSize.get();
-
-        double min = xStats.getMin();
-
-        for (int i = 1; i <= bins.get(); i++) {
-            double x1 = i * j + e;
-            gc.strokeLine(x1, MAX_LAYOUT, x1, MAX_LAYOUT + 5);
-            String xLabel = String.format("%.0f", i * xProportion + min);
-            gc.strokeText(xLabel, x1, MAX_LAYOUT + 5 * (4 + 3 * (i % 2)));
-
-        }
-        min = yStats.getMin();
-        j = (MAX_LAYOUT - e) / ybins.get();
-        for (int i = 0; i <= ybins.get(); i++) {
-            double y1 = MAX_LAYOUT - i * j;
-            gc.strokeLine(e, y1, e - 5, y1);
-            String yLabel = String.format("%.1f", i * yProportion + min);
-            gc.strokeText(yLabel, e - d * 2, y1);
-        }
-    }
-
-    public final void drawGraph() {
-        DoubleSummaryStatistics yStats = stats.get(yHeader.get());
-        DoubleSummaryStatistics xStats = stats.get(xHeader.get());
-        if (xStats == null || yStats == null) {
-            return;
-        }
-        gc.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-        double min = xStats.getMin();
-        double max = xStats.getMax();
-        xProportion = (max - min) / bins.intValue();
-        double min2 = yStats.getMin() - 1. / 10;
-        double max2 = yStats.getMax() + 1. / 10;
-        yProportion = (max2 - min2) / ybins.intValue();
-
-        gc.setLineWidth(5);
-        gc.setFill(Color.GREEN);
-        gc.setLineWidth(1. / 2);
-        List<Object> entrySetX = data.list(xHeader.get());
-        List<Object> entrySetY = data.list(yHeader.get());
-        List<Object> entrySetZ = data.list(zHeader.get());
-        Map<double[], Double> pointHistogram = new HashMap<>();
-        List<double[]> triangles = triangles();
-        for (int k = 0; k < data.getSize(); k++) {
-            double finalX = finalX(xStats, entrySetX.get(k));
-            double finalY = finalY(yStats, entrySetY.get(k));
-            double[] orElse = triangles.stream().min(Comparator.comparing(d -> {
-                double e = d[0] - finalX;
-                double f = d[1] - finalY;
-                return e * e + f * f;
-            })).orElse(triangles.get(0));
-            double finalZ = finalZ(entrySetZ != null ? entrySetZ.get(k) : 1);
-            pointHistogram.compute(orElse, (key, v) -> SupplierEx.nonNull(v, 0.) + finalZ);
-        }
-
-        DoubleSummaryStatistics stats1 = pointHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
-
-        for (double[] es : triangles) {
-            gc.setFill(getColorForValue(pointHistogram.getOrDefault(es, 0.), stats1.getMin(), stats1.getMax()));
-            gc.fillOval(es[0], es[1], radius.doubleValue(), radius.doubleValue());
-        }
-
-        drawAxis(xStats, yStats);
-    }
-
     public final DoubleProperty layoutProperty() {
         return layout;
     }
@@ -187,6 +111,82 @@ public class HeatGraph extends Canvas {
 
     public final StringProperty zHeaderProperty() {
         return zHeader;
+    }
+
+    private void drawAxis(DoubleSummaryStatistics xStats, DoubleSummaryStatistics yStats) {
+
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setFill(Color.BLACK);
+        gc.setLineWidth(1);
+        gc.setStroke(Color.BLACK);
+        gc.fillText(title, layout.get() + (MAX_LAYOUT - layout.get()) / 2, layout.get() - 20);
+        double e = layout.get();
+        gc.strokeLine(e, e, e, MAX_LAYOUT);
+        gc.strokeLine(e, MAX_LAYOUT, MAX_LAYOUT, MAX_LAYOUT);
+        double j = (MAX_LAYOUT - e) / bins.get();
+        double d = lineSize.get();
+
+        double min = xStats.getMin();
+
+        for (int i = 1; i <= bins.get(); i++) {
+            double x1 = i * j + e;
+            gc.strokeLine(x1, MAX_LAYOUT, x1, MAX_LAYOUT + 5);
+            String xLabel = String.format("%.0f", i * xProportion + min);
+            gc.strokeText(xLabel, x1, MAX_LAYOUT + 5 * (4 + 3 * (i % 2)));
+
+        }
+        min = yStats.getMin();
+        j = (MAX_LAYOUT - e) / ybins.get();
+        for (int i = 0; i <= ybins.get(); i++) {
+            double y1 = MAX_LAYOUT - i * j;
+            gc.strokeLine(e, y1, e - 5, y1);
+            String yLabel = String.format("%.1f", i * yProportion + min);
+            gc.strokeText(yLabel, e - d * 2, y1);
+        }
+    }
+
+    private final void drawGraph() {
+        DoubleSummaryStatistics yStats = stats.get(yHeader.get());
+        DoubleSummaryStatistics xStats = stats.get(xHeader.get());
+        if (xStats == null || yStats == null) {
+            return;
+        }
+        gc.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        double min = xStats.getMin();
+        double max = xStats.getMax();
+        xProportion = (max - min) / bins.intValue();
+        double min2 = yStats.getMin() - 1. / 10;
+        double max2 = yStats.getMax() + 1. / 10;
+        yProportion = (max2 - min2) / ybins.intValue();
+
+        gc.setLineWidth(5);
+        gc.setFill(Color.GREEN);
+        gc.setLineWidth(1. / 2);
+        List<Object> entrySetX = data.list(xHeader.get());
+        List<Object> entrySetY = data.list(yHeader.get());
+        List<Object> entrySetZ = data.list(zHeader.get());
+        Map<double[], Double> pointHistogram = new HashMap<>();
+        List<double[]> triangles = triangles();
+        for (int k = 0; k < data.getSize(); k++) {
+            double finalX = finalX(xStats, entrySetX.get(k));
+            double finalY = finalY(yStats, entrySetY.get(k));
+            double[] orElse = triangles.stream().min(Comparator.comparing(d -> {
+                double e = d[0] - finalX;
+                double f = d[1] - finalY;
+                return e * e + f * f;
+            })).orElse(triangles.get(0));
+            double finalZ = finalZ(entrySetZ != null ? entrySetZ.get(k) : 1);
+            pointHistogram.compute(orElse, (key, v) -> SupplierEx.nonNull(v, 0.) + finalZ);
+        }
+
+        DoubleSummaryStatistics stats1 = pointHistogram.values().stream().mapToDouble(e -> e).summaryStatistics();
+
+        for (double[] es : triangles) {
+            gc.setFill(getColorForValue(pointHistogram.getOrDefault(es, 0.), stats1.getMin(), stats1.getMax()));
+            gc.fillOval(es[0], es[1], radius.doubleValue(), radius.doubleValue());
+        }
+
+        drawAxis(xStats, yStats);
     }
 
     private double finalX(DoubleSummaryStatistics xStats, Object object) {

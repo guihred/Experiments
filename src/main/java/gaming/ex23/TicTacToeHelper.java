@@ -20,10 +20,6 @@ public final class TicTacToeHelper {
         return gameWin(squares) || allFilled(squares);
     }
 
-    public static TicTacToePlayer getSquare(List<TicTacToePlayer> squares, int i, int j) {
-        return squares.get(i * SIZE + j);
-    }
-
     public static TicTacToePlayer getWinner(List<TicTacToePlayer> squares) {
         List<BiFunction<Integer, Integer, TicTacToePlayer>> mappers = Arrays.asList(
             (i, j) -> getSquare(squares, j, j), (i, j) -> getSquare(squares, j, 2 - j),
@@ -39,12 +35,12 @@ public final class TicTacToeHelper {
         return TicTacToePlayer.NONE;
     }
 
-
     public static boolean verifyWin(List<TicTacToeSquare> squares, GridPane gridPane) {
         return verifyWin(squares, gridPane, () -> {
             // DOES NOTHING
         });
     }
+
 
     public static boolean verifyWin(List<TicTacToeSquare> squares, GridPane gridPane, Runnable run) {
 
@@ -87,6 +83,10 @@ public final class TicTacToeHelper {
         }
         return IntStream.range(0, SIZE).anyMatch(
             i -> anyWinner(j -> getSquare(squares, i, j), j -> getSquare(squares, j, i)));
+    }
+
+    private static TicTacToePlayer getSquare(List<TicTacToePlayer> squares, int i, int j) {
+        return squares.get(i * SIZE + j);
     }
 
     private static Optional<TicTacToePlayer> getWinner(IntFunction<TicTacToePlayer> mapper) {

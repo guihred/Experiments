@@ -2,6 +2,7 @@ package utils;
 
 import static utils.ex.SupplierEx.getIgnore;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
 import java.lang.Character.UnicodeBlock;
 import java.net.URLDecoder;
@@ -253,7 +254,8 @@ public class StringSigaUtils extends StringUtils {
         if (fixEncoding == null) {
             return null;
         }
-        return fixEncoding.replaceAll("[\u0000-\u0010]", "?").replaceAll("\u00A0", " ");
+        return CharMatcher.JAVA_ISO_CONTROL
+                .removeFrom(fixEncoding.replaceAll("[\u0000-\u0010]", "?").replaceAll("\u00A0", " "));
     }
 
     public static String removerDiacritico(String string) {

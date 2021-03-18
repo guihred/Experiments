@@ -2,7 +2,6 @@ package kibana;
 
 import extract.web.JsonExtractor;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
@@ -32,29 +30,7 @@ public final class TimelionApi extends KibanaApi {
     private TimelionApi() {
     }
 
-    public static Map<String, Object> maketimelionSearch(File file, String timelionQuery, Map<String, String> search,
-            String time) {
-        return SupplierEx.get(() -> {
-            String values = search.values().stream().collect(Collectors.joining());
-            String replaceAll = timelionQuery.replaceAll(".+split=(.+?):.+", "$1");
 
-            File outFile = newJsonFile(replaceAll + Stream.of(values, time).collect(Collectors.joining()));
-            if (JsonExtractor.isNotRecentFile(outFile)) {
-                String keywords = convertSearchKeywords(search);
-                String content = getContent(file, timelionQuery, keywords, time);
-                getFromURLJson(TIMELION_URL, content, outFile);
-            }
-            return JsonExtractor.accessMap(JsonExtractor.toFullObject(outFile));
-        });
-    }
-
-    public static ObservableList<XYChart.Series<Number, Number>> timelionFullScan(String user, String time) {
-        Map<String, String> map = new HashMap<>();
-        if (StringUtils.isNotBlank(user)) {
-            map.put("mdc.uid.keyword", user);
-        }
-        return timelionScan(FXCollections.observableArrayList(), TIMELINE_USERS, map, time);
-    }
 
     public static ObservableList<Series<Number, Number>> timelionScan(ObservableList<Series<Number, Number>> series,
             String timelineUsers, Map<String, String> filterMap, String time) {
@@ -86,6 +62,22 @@ public final class TimelionApi extends KibanaApi {
             ConsumerEx.foreach(accessList, f -> addToSeries(serie, f));
             return serie;
         }).collect(Collectors.toCollection(() -> series));
+    }
+
+    private static Map<String, Object> maketimelionSearch(File file, String timelionQuery, Map<String, String> search,
+            String time) {
+        return SupplierEx.get(() -> {
+            String values = search.values().stream().collect(Collectors.joining());
+            String replaceAll = timelionQuery.replaceAll(".+split=(.+?):.+", "$1");
+
+            File outFile = newJsonFile(replaceAll + Stream.of(values, time).collect(Collectors.joining()));
+            if (JsonExtractor.isNotRecentFile(outFile)) {
+                String keywords = convertSearchKeywords(search);
+                String content = getContent(file, timelionQuery, keywords, time);
+                getFromURLJson(TIMELION_URL, content, outFile);
+            }
+            return JsonExtractor.accessMap(JsonExtractor.toFullObject(outFile));
+        });
     }
 
 }

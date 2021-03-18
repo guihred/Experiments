@@ -22,15 +22,6 @@ public class PolygonFractal extends Canvas {
         drawPolygon();
     }
 
-	public final void drawPolygon() {
-        GraphicsContext gc = getGraphicsContext2D();
-        gc.clearRect(0, 0, SIZE, SIZE);
-        final double radius = SIZE / 2;
-        double off = 0;
-        drawPolygon(gc, radius, off);
-
-    }
-
     public DoubleProperty limitProperty() {
         return limit;
     }
@@ -41,6 +32,15 @@ public class PolygonFractal extends Canvas {
 
     public IntegerProperty spiralsProperty() {
         return spirals;
+    }
+
+    private final void drawPolygon() {
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.clearRect(0, 0, SIZE, SIZE);
+        final double radius = SIZE / 2;
+        double off = 0;
+        drawPolygon(gc, radius, off);
+
     }
 
     private void drawPolygon(GraphicsContext gc, final double radius, double off) {

@@ -47,7 +47,7 @@ public class MethodsTopology extends BaseTopology {
         return javaFiles;
     }
 
-    public static List<Entry<String, List<String>>> createFileDependencyMap(Collection<JavaFileDependency> javaFiles) {
+    private static List<Entry<String, List<String>>> createFileDependencyMap(Collection<JavaFileDependency> javaFiles) {
         return javaFiles.stream().peek(e -> e.setDependents(javaFiles))
                 .flatMap(e -> e.getPublicMethodsFullName().entrySet().stream()).collect(Collectors.toList());
     }

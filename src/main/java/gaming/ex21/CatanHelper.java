@@ -66,10 +66,6 @@ public final class CatanHelper {
         return e.getBoundsInParent().contains(x, y);
     }
 
-    public static boolean intersects(final SettlePoint p, final SettlePoint e) {
-        return e.getBoundsInParent().intersects(p.getBoundsInParent());
-    }
-
     public static boolean isPositioningPhase(int turnCount) {
         return turnCount <= 8;
     }
@@ -116,5 +112,9 @@ public final class CatanHelper {
             e.addNeighbor(points.get((i + 1) % points.size()));
         }
         return points;
+    }
+
+    private static boolean intersects(final SettlePoint p, final SettlePoint e) {
+        return e.getBoundsInParent().intersects(p.getBoundsInParent());
     }
 }

@@ -57,61 +57,6 @@ public class PopulacionalGraph extends Canvas {
         return country;
     }
 
-    public final void drawGraph() {
-        gc.clearRect(0, 0, getWidth(), getHeight());
-        if (dataframe == null) {
-            drawAxis();
-            return;
-
-        }
-        gc.setFill(Color.BLUE);
-        gc.scale(1, lineSize.doubleValue());
-        DoubleSummaryStatistics peopleStats = new DoubleSummaryStatistics();
-		List<Number> values = dataframe.list(valueHeader);
-		List<String> sexes = dataframe.list(sexHeader);
-		List<String> ages = dataframe.list(ageHeader);
-		List<Integer> years = dataframe.list(yearHeader);
-        Map<String, Number> possibleAgesMA = new HashMap<>();
-        Map<String, Number> possibleAgesFE = new HashMap<>();
-
-        dataframe.only(countryHeader, t -> t.equals(country.get()), j -> {
-            if (!yearsOptions.contains(years.get(j))) {
-                yearsOptions.add(years.get(j));
-                yearsOptions.sorted();
-            }
-            if (years.get(j) != year.get()) {
-                return;
-            }
-            Number number = values.get(j);
-            peopleStats.accept(number.doubleValue());
-            String sex = sexes.get(j);
-            if ("MA".equals(sex)) {
-                possibleAgesMA.put(ages.get(j), number);
-            } else {
-                possibleAgesFE.put(ages.get(j), number);
-            }
-        });
-        double layout1 = layout.get();
-        double maxLayout1 = maxLayout.get();
-        double xMA = prop(layout1, maxLayout1, BORDER_LEFT);
-        double xFE = prop(layout1, maxLayout1, BORDER_RIGHT);
-        agesSteps = possibleAgesFE.keySet().stream().distinct().sorted().collect(Collectors.toList());
-        double j = (maxLayout1 - layout1) / agesSteps.size();
-        double max = peopleStats.getMax();
-        xProportion = max / bins.doubleValue();
-        double h = (maxLayout1 - layout1) / agesSteps.size() - 2;
-
-        for (int i = 0; i < agesSteps.size(); i++) {
-            double y1 = maxLayout1 - (i + 1) * j;
-            String strip = agesSteps.get(i);
-            drawRectangle(possibleAgesFE.getOrDefault(strip, 0), Color.RED, maxLayout1, xFE, y1, h, max);
-            drawRectangle(possibleAgesMA.getOrDefault(strip, 0), Color.BLUE, xMA, layout1, y1, h, max);
-        }
-        gc.scale(1, 1 / lineSize.doubleValue());
-        drawAxis();
-
-    }
-
     public DoubleProperty layoutProperty() {
         return layout;
     }
@@ -179,6 +124,61 @@ public class PopulacionalGraph extends Canvas {
             gc.strokeText(yLabel, xMid, y1 - h / 2);
         }
         gc.scale(1, 1 / lineSize.doubleValue());
+    }
+
+    private final void drawGraph() {
+        gc.clearRect(0, 0, getWidth(), getHeight());
+        if (dataframe == null) {
+            drawAxis();
+            return;
+
+        }
+        gc.setFill(Color.BLUE);
+        gc.scale(1, lineSize.doubleValue());
+        DoubleSummaryStatistics peopleStats = new DoubleSummaryStatistics();
+		List<Number> values = dataframe.list(valueHeader);
+		List<String> sexes = dataframe.list(sexHeader);
+		List<String> ages = dataframe.list(ageHeader);
+		List<Integer> years = dataframe.list(yearHeader);
+        Map<String, Number> possibleAgesMA = new HashMap<>();
+        Map<String, Number> possibleAgesFE = new HashMap<>();
+
+        dataframe.only(countryHeader, t -> t.equals(country.get()), j -> {
+            if (!yearsOptions.contains(years.get(j))) {
+                yearsOptions.add(years.get(j));
+                yearsOptions.sorted();
+            }
+            if (years.get(j) != year.get()) {
+                return;
+            }
+            Number number = values.get(j);
+            peopleStats.accept(number.doubleValue());
+            String sex = sexes.get(j);
+            if ("MA".equals(sex)) {
+                possibleAgesMA.put(ages.get(j), number);
+            } else {
+                possibleAgesFE.put(ages.get(j), number);
+            }
+        });
+        double layout1 = layout.get();
+        double maxLayout1 = maxLayout.get();
+        double xMA = prop(layout1, maxLayout1, BORDER_LEFT);
+        double xFE = prop(layout1, maxLayout1, BORDER_RIGHT);
+        agesSteps = possibleAgesFE.keySet().stream().distinct().sorted().collect(Collectors.toList());
+        double j = (maxLayout1 - layout1) / agesSteps.size();
+        double max = peopleStats.getMax();
+        xProportion = max / bins.doubleValue();
+        double h = (maxLayout1 - layout1) / agesSteps.size() - 2;
+
+        for (int i = 0; i < agesSteps.size(); i++) {
+            double y1 = maxLayout1 - (i + 1) * j;
+            String strip = agesSteps.get(i);
+            drawRectangle(possibleAgesFE.getOrDefault(strip, 0), Color.RED, maxLayout1, xFE, y1, h, max);
+            drawRectangle(possibleAgesMA.getOrDefault(strip, 0), Color.BLUE, xMA, layout1, y1, h, max);
+        }
+        gc.scale(1, 1 / lineSize.doubleValue());
+        drawAxis();
+
     }
 
     private void drawRectangle(Number value, Color color, double maxLayout1, double xFE, double y1, double h,

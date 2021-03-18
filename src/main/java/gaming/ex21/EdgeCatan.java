@@ -85,10 +85,6 @@ public class EdgeCatan extends Group {
         return points.hashCode();
     }
 
-    public boolean matchColor(final PlayerColor player) {
-        return points.stream().anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == player);
-    }
-
     public void setElement(final Road element) {
         StackPane parent = (StackPane) element.getParent();
         parent.getChildren().remove(element);
@@ -105,6 +101,10 @@ public class EdgeCatan extends Group {
     @Override
     public String toString() {
         return "(" + points + ")";
+    }
+
+    private boolean matchColor(final PlayerColor player) {
+        return points.stream().anyMatch(e -> e.getElement() != null && e.getElement().getPlayer() == player);
     }
 
     private EdgeCatan toggleFade(final int r, final boolean enable) {

@@ -18,19 +18,10 @@ import utils.ex.HasLogging;
 public class JavaFXBeanController {
 
 	private static final Logger LOG = HasLogging.log();
-	private JavaFXBeanModelExample model;
+    private final JavaFXBeanModelExample model;
 
     private JavaFXBeanController(JavaFXBeanModelExample model) {
         this.model = model;
-    }
-
-    public void switchColorPropertyOnModel() {
-        Color color = model.getColor();
-        if (Color.BLACK.equals(color)) {
-            model.setColor(Color.WHITE);
-        } else {
-            model.setColor(Color.BLACK);
-        }
     }
 
     private void changeStrPropertyOnModel() {
@@ -41,8 +32,17 @@ public class JavaFXBeanController {
             model.setStr("Hello");
         }
     }
+
     private void incrementIPropertyOnModel() {
         model.setI(model.getI() + 1);
+    }
+    private void switchColorPropertyOnModel() {
+        Color color = model.getColor();
+        if (Color.BLACK.equals(color)) {
+            model.setColor(Color.WHITE);
+        } else {
+            model.setColor(Color.BLACK);
+        }
     }
 
     public static void main(String[] args) {

@@ -50,21 +50,6 @@ public class ChartHelper {
         lineChart.setData(value);
     }
 
-    public static void addToList(ObservableList<Data<String, Number>> dataList, List<Data<String, Number>> array,
-            Data<String, Number> others, ToDoubleFunction<Data<String, Number>> keyExtractor) {
-        CommonsFX.runInPlatformSync(() -> {
-            if (dataList.size() >= ExplorerHelper.MAX_ELEMENTS / 4) {
-                others.setYValue(keyExtractor.applyAsDouble(others) + array.stream().mapToDouble(keyExtractor).sum());
-                if (!dataList.contains(others)) {
-                    dataList.add(others);
-                }
-            } else {
-                array.sort(Comparator.comparingDouble(keyExtractor).reversed());
-                dataList.addAll(array);
-            }
-        });
-    }
-
     public static <T extends Number> void addToPieChart(ObservableList<Data<String, Number>> bar2List,
             Collection<Entry<String, T>> countMap) {
         RunnableEx.runNewThread(() -> {
@@ -91,5 +76,20 @@ public class ChartHelper {
     public static ObservableList<Series<String, Number>> singleSeries(String val,
             ObservableList<Data<String, Number>> barList2) {
         return FXCollections.singletonObservableList(new Series<>(val, barList2));
+    }
+
+    private static void addToList(ObservableList<Data<String, Number>> dataList, List<Data<String, Number>> array,
+            Data<String, Number> others, ToDoubleFunction<Data<String, Number>> keyExtractor) {
+        CommonsFX.runInPlatformSync(() -> {
+            if (dataList.size() >= ExplorerHelper.MAX_ELEMENTS / 4) {
+                others.setYValue(keyExtractor.applyAsDouble(others) + array.stream().mapToDouble(keyExtractor).sum());
+                if (!dataList.contains(others)) {
+                    dataList.add(others);
+                }
+            } else {
+                array.sort(Comparator.comparingDouble(keyExtractor).reversed());
+                dataList.addAll(array);
+            }
+        });
     }
 }

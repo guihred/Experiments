@@ -21,10 +21,11 @@ public class RubiksModel {
     private static final int CUBE_COMPLEXITY = 3;
 	private static final Logger LOGGER = HasLogging.log();
 
-	private RubiksPiece[][][] pieces = new RubiksPiece[CUBE_COMPLEXITY][CUBE_COMPLEXITY][CUBE_COMPLEXITY];
+    private final RubiksPiece[][][] pieces = new RubiksPiece[CUBE_COMPLEXITY][CUBE_COMPLEXITY][CUBE_COMPLEXITY];
 
-	private DoubleProperty angle = new SimpleDoubleProperty(0);
-	private Timeline timeline = new SimpleTimelineBuilder()
+    private final DoubleProperty angle = new SimpleDoubleProperty(0);
+    private final Timeline timeline =
+            new SimpleTimelineBuilder()
 			.keyFrames(new KeyFrame(Duration.ZERO, new KeyValue(angle, 0)),
 					new KeyFrame(Duration.seconds(1), new KeyValue(angle, 90)))
 			.onFinished(e -> unbindAll()).build();public void extracted(Group root) {
@@ -90,11 +91,14 @@ public class RubiksModel {
 		}
 	}
 
-    public static int rotateClockWise(int j) {
-		return j % 3 * 3 + 2 - j / 3;
+    private static int rotateAntiClockWise(int i) {
+		return 6 - i % 3 * 3 + i / 3;
 	}
 
-	public static void setPivot(RubiksPiece pivot0, RubiksPiece pivot1) {
+    private static int rotateClockWise(int j) {
+		return j % 3 * 3 + 2 - j / 3;
+	}
+	private static void setPivot(RubiksPiece pivot0, RubiksPiece pivot1) {
 		if (pivot0.getRotations().isEmpty()) {
 			RubiksCubeFaces[] values = RubiksCubeFaces.values();
 			for (RubiksCubeFaces face : values) {
@@ -107,9 +111,6 @@ public class RubiksModel {
 			}
 		}
 		pivot0.getTransforms().add(new Rotate(0));
-	}
-	private static int rotateAntiClockWise(int i) {
-		return 6 - i % 3 * 3 + i / 3;
 	}
 
 }

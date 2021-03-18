@@ -16,11 +16,6 @@ public class SimplePathBuilder extends SimpleShapeBuilder<Path, SimplePathBuilde
         return this;
     }
 
-    public SimplePathBuilder add(PathElement e) {
-        node.getElements().add(e);
-        return this;
-    }
-
     public SimplePathBuilder arcTo(double radiusX, double radiusY, double xAxisRotation, double x, double y,
         boolean largeArcFlag, boolean sweepFlag) {
         return add(new ArcTo(radiusX, radiusY, xAxisRotation, x, y, largeArcFlag, sweepFlag));
@@ -53,5 +48,10 @@ public class SimplePathBuilder extends SimpleShapeBuilder<Path, SimplePathBuilde
 
     public SimplePathBuilder vLineTo(double x) {
         return add(new VLineTo(x));
+    }
+
+    private SimplePathBuilder add(PathElement e) {
+        node.getElements().add(e);
+        return this;
     }
 }

@@ -32,7 +32,7 @@ public class WhoIsScanner {
     private final Map<String, String> cookies = new HashMap<>();
     private final Map<String, String> cache = new HashMap<>();
 
-    private Map<String, DataframeML> dataframeLookup = new HashMap<>();
+    private final Map<String, DataframeML> dataframeLookup = new HashMap<>();
 
     public Map<String, String> getGeoIpInformation(String ip) {
         Map<String, String> ipInformation = WhoIsScanner.getGeoIpInformation(this, ip);
@@ -73,15 +73,6 @@ public class WhoIsScanner {
         return observableArrayList;
     }
 
-    public Map<String, String> whoIsScan(String ip) throws IOException {
-        Map<String, String> map = new LinkedHashMap<>();
-        Document document = reloadIfExists(ip);
-        document.getElementsByTag("ip").forEach(
-                e -> e.children().forEach(m -> map.put(m.tagName(), StringEscapeUtils.unescapeHtml4(m.text()))));
-        LOG.info("{}", map);
-        return map;
-    }
-
     private Document reloadIfExists(String ip) throws IOException {
         File outFile = ResourceFXUtils.getOutFile("xml/" + ip + ".xml");
         if (outFile.exists()) {
@@ -91,6 +82,15 @@ public class WhoIsScanner {
         Document document = JsoupUtils.getDocument(scanIP, cookies);
         Files.write(outFile.toPath(), Arrays.asList(document.outerHtml()), StandardCharsets.UTF_8);
         return document;
+    }
+
+    private Map<String, String> whoIsScan(String ip) throws IOException {
+        Map<String, String> map = new LinkedHashMap<>();
+        Document document = reloadIfExists(ip);
+        document.getElementsByTag("ip").forEach(
+                e -> e.children().forEach(m -> map.put(m.tagName(), StringEscapeUtils.unescapeHtml4(m.text()))));
+        LOG.info("{}", map);
+        return map;
     }
 
     private static Map<String, String> addDescricao(Map<String, String> internalScan) {

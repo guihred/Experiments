@@ -48,31 +48,6 @@ public class MazeSquare extends BorderPane {
         setBottom(line4);
     }
 
-    public List<MazeSquare> adjacents(MazeSquare[][] map) {
-        if (adjacents == null) {
-            adjacents = new ArrayList<>();
-            MazeSquare el = map[i][j];
-            if (el.east.get() && j + 1 < map.length) {
-                adjacents.add(map[i][j + 1]);
-            }
-            if (el.west.get() && j > 0) {
-                MazeSquare e = map[i][j - 1];
-                adjacents.add(e);
-
-            }
-            if (el.north.get() && i > 0) {
-                adjacents.add(map[i - 1][j]);
-
-            }
-            if (el.south.get() && i + 1 < map.length) {
-                adjacents.add(map[i + 1][j]);
-            }
-            LOG.trace("{} -> {}", this, adjacents);
-        }
-
-        return adjacents;
-    }
-
     public Map<MazeSquare, Integer> dijkstra(final MazeSquare[][] map) {
         Map<MazeSquare, Integer> distance = new LinkedHashMap<>();
         Map<MazeSquare, Boolean> known = createDistanceMap(this, distance, map);
@@ -183,15 +158,33 @@ public class MazeSquare extends BorderPane {
         return west;
     }
 
-    public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> getPaths() {
-        return paths;
+    private List<MazeSquare> adjacents(MazeSquare[][] map) {
+        if (adjacents == null) {
+            adjacents = new ArrayList<>();
+            MazeSquare el = map[i][j];
+            if (el.east.get() && j + 1 < map.length) {
+                adjacents.add(map[i][j + 1]);
+            }
+            if (el.west.get() && j > 0) {
+                MazeSquare e = map[i][j - 1];
+                adjacents.add(e);
+
+            }
+            if (el.north.get() && i > 0) {
+                adjacents.add(map[i - 1][j]);
+
+            }
+            if (el.south.get() && i + 1 < map.length) {
+                adjacents.add(map[i + 1][j]);
+            }
+            LOG.trace("{} -> {}", this, adjacents);
+        }
+
+        return adjacents;
     }
 
-    public static void setPath(MazeSquare from, MazeSquare to, MazeSquare by) {
-        if (paths == null) {
-            paths = new LinkedHashMap<>();
-        }
-        paths.computeIfAbsent(from, f -> new LinkedHashMap<>()).put(to, by);
+    public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> getPaths() {
+        return paths;
     }
 
     private static Map<MazeSquare, Boolean> createDistanceMap(MazeSquare source, Map<MazeSquare, Integer> distance,
@@ -206,5 +199,12 @@ public class MazeSquare extends BorderPane {
         }
         distance.put(source, 0);
         return known;
+    }
+
+    private static void setPath(MazeSquare from, MazeSquare to, MazeSquare by) {
+        if (paths == null) {
+            paths = new LinkedHashMap<>();
+        }
+        paths.computeIfAbsent(from, f -> new LinkedHashMap<>()).put(to, by);
     }
 }

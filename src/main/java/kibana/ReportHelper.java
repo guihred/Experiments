@@ -107,6 +107,8 @@ public final class ReportHelper {
             for (String credencial : collect) {
                 Map<String, String> iPsByCredencial =
                         KibanaApi.getIPsByCredencial("\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
+                iPsByCredencial.remove("189.9.32.130");
+
                 credentialText.addAll(iPsByCredencial.values());
                 String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
                 paramText.merge("\\$otherIps", collect2, ReportHelper::mergeStrings);
@@ -150,18 +152,6 @@ public final class ReportHelper {
         return replaceString.replaceAll(".+\\.(\\w+)$", "$1");
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static void mergeImage(Map<String, Object> mapaSubstituicao, List<Object> collect) {
-        mapaSubstituicao.merge("gerid", collect, (o, n) -> {
-            ((List<?>) o).addAll((List) n);
-            return o;
-        });
-    }
-
-    public static String mergeStrings(String o, String n) {
-        return mergeStrings(o, n, "\n");
-    }
-
     public static Stream<Image> objectList(Object e) {
         if (!(e instanceof Collection)) {
             return Stream.empty();
@@ -194,8 +184,6 @@ public final class ReportHelper {
         }
     }
 
-
-
     public static String replaceString(Map<String, String> params, Object v) {
         String string = v.toString();
         for (Entry<String, String> entry : params.entrySet()) {
@@ -208,6 +196,8 @@ public final class ReportHelper {
         String highlight = "(\\d+\\.\\d+\\.\\d+\\.\\d+|\\d{11})";
         return PhantomJSUtils.textToImage(s, highlight);
     }
+
+
 
     private static WritableImage crop(Map<String, Object> info, File outFile) {
         String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
@@ -315,6 +305,18 @@ public final class ReportHelper {
             }
             LOG.info("LOADED {}", url);
         });
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static void mergeImage(Map<String, Object> mapaSubstituicao, List<Object> collect) {
+        mapaSubstituicao.merge("gerid", collect, (o, n) -> {
+            ((List<?>) o).addAll((List) n);
+            return o;
+        });
+    }
+
+    private static String mergeStrings(String o, String n) {
+        return mergeStrings(o, n, "\n");
     }
 
     private static String mergeStrings(String o, String n, String delimiter) {

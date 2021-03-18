@@ -111,7 +111,7 @@ public final class FileTreeWalker implements FileVisitor<Path> {
         return pathByExtension.get(new Random().nextInt(pathByExtension.size()));
     }
 
-    public static boolean hasExtension(Path e, String... other) {
+    private static boolean hasExtension(Path e, String... other) {
         return Stream.of(other).anyMatch(ex -> StringUtils.endsWithIgnoreCase(e.toString(), ex));
     }
 

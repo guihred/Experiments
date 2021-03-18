@@ -64,7 +64,7 @@ public class ZoomableScrollPane extends ScrollPane {
         this.scaleValue.set(scaleValue);
     }
 
-    public void zoomTo(double scaleValue1) {
+    private void zoomTo(double scaleValue1) {
 
         setScaleValue(scaleValue1);
         scaleTransform.setX(scaleValue1);

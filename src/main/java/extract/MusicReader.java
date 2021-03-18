@@ -65,18 +65,6 @@ public final class MusicReader {
         return new HashSet<>(Arrays.asList(ID3v1Genres.GENRES));
     }
 
-    public static ObservableList<Music> getMusicas(File file) {
-
-        ObservableList<Music> musicas = FXCollections.observableArrayList();
-        Path start = file.toPath();
-        try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
-            find.forEach(path -> musicas.add(readTags(path.toFile())));
-        } catch (Exception e) {
-            LOG.trace("", e);
-        }
-        return musicas;
-    }
-
     public static ObservableList<Music> getMusicas(File file, DoubleProperty progress) {
         ObservableList<Music> musicas = FXCollections.observableArrayList();
         RunnableEx.runNewThread(() -> {
@@ -206,6 +194,18 @@ public final class MusicReader {
             ExtractUtils.copy(file2.toPath(), file);
             Files.deleteIfExists(file2.toPath());
         });
+    }
+
+    private static ObservableList<Music> getMusicas(File file) {
+
+        ObservableList<Music> musicas = FXCollections.observableArrayList();
+        Path start = file.toPath();
+        try (Stream<Path> find = Files.find(start, 6, (dir, name) -> dir.toFile().getName().endsWith(".mp3"))) {
+            find.forEach(path -> musicas.add(readTags(path.toFile())));
+        } catch (Exception e) {
+            LOG.trace("", e);
+        }
+        return musicas;
     }
 
     @SuppressWarnings("unchecked")

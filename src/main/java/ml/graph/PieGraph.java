@@ -63,89 +63,6 @@ public class PieGraph extends Canvas {
         return bins;
     }
 
-    public final void drawGraph() {
-        long sum = histogram.values().stream().mapToLong(e -> e).sorted().sum();
-        gc.clearRect(0, 0, getWidth(), getHeight());
-
-        double centerX = getWidth() / 4 + xOffset.get();
-        double centerY = getHeight() / 4 + xOffset.get();
-        final int realStartAngle = start.get();
-        double startAngle = start.get();
-        gc.setLineWidth(1. / 2);
-        List<Entry<String, Long>> histogramLevels = histogram.entrySet().stream()
-                .sorted(Comparator.comparing(Entry<String, Long>::getValue)).collect(Collectors.toList());
-        int radius2 = radius.get();
-        for (int i = 0; i < histogramLevels.size(); i++) {
-            Entry<String, Long> entry = histogramLevels.get(i);
-            double arcExtent = entry.getValue() * TOTAL_CIRCLE / sum;
-            gc.setFill(availableColors.get(i));
-
-            gc.fillArc(centerX, centerY, radius2, radius2, startAngle, arcExtent, ArcType.ROUND);
-            gc.strokeArc(centerX, centerY, radius2, radius2, startAngle, arcExtent, ArcType.ROUND);
-
-            startAngle += arcExtent;
-        }
-        startAngle = realStartAngle;
-        gc.setTextAlign(TextAlignment.CENTER);
-        for (int i = 0; i < histogramLevels.size(); i++) {
-            Entry<String, Long> entry = histogramLevels.get(i);
-            double arcExtent = entry.getValue() * TOTAL_CIRCLE / sum;
-            int j = radius2 / 2;
-            double d = legendsRadius.get();
-            double angdeg = arcExtent / 2 + startAngle + TOTAL_CIRCLE / 4;
-            double x = Math.sin(Math.toRadians(angdeg)) * radius2 * d + centerX + j;
-            double y = Math.cos(Math.toRadians(angdeg)) * radius2 * d + centerY + j;
-
-            gc.setFill(Color.BLACK);
-            if (showLines.get()) {
-                double x2 = Math.sin(Math.toRadians(angdeg)) * radius2 / 3 + centerX + j;
-                double y2 = Math.cos(Math.toRadians(angdeg)) * radius2 / 3 + centerY + j;
-                gc.strokeLine(x, y, x2, y2);
-
-                double ang = (angdeg + TOTAL_CIRCLE * 2) % TOTAL_CIRCLE;
-                gc.setTextAlign(
-                        ang > TOTAL_CIRCLE / 2 && ang < TOTAL_CIRCLE ? TextAlignment.RIGHT : TextAlignment.LEFT);
-                gc.fillText(entry.getKey(), x, y);
-
-            } else {
-                gc.save();
-                gc.translate(x, y);
-                double degrees = TOTAL_CIRCLE - startAngle - arcExtent / 2;
-                double degrees2 = degrees > TOTAL_CIRCLE / 4 ? degrees + TOTAL_CIRCLE / 2 : degrees;
-                gc.rotate(degrees2);
-                gc.fillText(entry.getKey(), 0, 0);
-                gc.restore();
-            }
-
-            startAngle += arcExtent;
-        }
-        drawLegend(histogramLevels, availableColors);
-    }
-
-    public void drawLegend(List<Entry<String, Long>> histogramLevels, List<Color> availableColors1) {
-        double x = gc.getCanvas().getWidth() / 10;
-        double y = gc.getCanvas().getHeight() * 7 / 8;
-        int columns = (int) Math.sqrt(histogramLevels.size()) + 1;
-        int maxLetter =
-                histogramLevels.stream().map(Entry<String, Long>::getKey).mapToInt(String::length).max().orElse(0);
-        double a = gc.getCanvas().getWidth() / columns / 4 + maxLetter * 4;
-        double b = gc.getCanvas().getHeight() / columns / 8;
-
-        gc.setTextAlign(TextAlignment.LEFT);
-        for (int i = 0; i < histogramLevels.size(); i++) {
-            int index = histogramLevels.size() - i - 1;
-            Entry<String, Long> entry = histogramLevels.get(index);
-            int j = i / columns;
-            double x2 = x + a * (i % columns);
-            double y2 = y + b * j;
-            gc.setFill(Color.BLACK);
-            gc.fillText(entry.getKey(), x2, y2);
-            gc.setFill(availableColors1.get(index));
-            gc.fillRect(x2 - 10, y2 - 8, 8, 8);
-            gc.strokeRect(x2 - 10, y2 - 8, 8, 8);
-        }
-    }
-
     public boolean getShowLines() {
         return showLines.get();
     }
@@ -204,6 +121,89 @@ public class PieGraph extends Canvas {
                     .toMap(t -> String.format("%.0f", t.getKey()), Entry<Double, Long>::getValue, (a, b) -> a + b));
         }
         return dataframe.histogram(column);
+    }
+
+    private final void drawGraph() {
+        long sum = histogram.values().stream().mapToLong(e -> e).sorted().sum();
+        gc.clearRect(0, 0, getWidth(), getHeight());
+
+        double centerX = getWidth() / 4 + xOffset.get();
+        double centerY = getHeight() / 4 + xOffset.get();
+        final int realStartAngle = start.get();
+        double startAngle = start.get();
+        gc.setLineWidth(1. / 2);
+        List<Entry<String, Long>> histogramLevels = histogram.entrySet().stream()
+                .sorted(Comparator.comparing(Entry<String, Long>::getValue)).collect(Collectors.toList());
+        int radius2 = radius.get();
+        for (int i = 0; i < histogramLevels.size(); i++) {
+            Entry<String, Long> entry = histogramLevels.get(i);
+            double arcExtent = entry.getValue() * TOTAL_CIRCLE / sum;
+            gc.setFill(availableColors.get(i));
+
+            gc.fillArc(centerX, centerY, radius2, radius2, startAngle, arcExtent, ArcType.ROUND);
+            gc.strokeArc(centerX, centerY, radius2, radius2, startAngle, arcExtent, ArcType.ROUND);
+
+            startAngle += arcExtent;
+        }
+        startAngle = realStartAngle;
+        gc.setTextAlign(TextAlignment.CENTER);
+        for (int i = 0; i < histogramLevels.size(); i++) {
+            Entry<String, Long> entry = histogramLevels.get(i);
+            double arcExtent = entry.getValue() * TOTAL_CIRCLE / sum;
+            int j = radius2 / 2;
+            double d = legendsRadius.get();
+            double angdeg = arcExtent / 2 + startAngle + TOTAL_CIRCLE / 4;
+            double x = Math.sin(Math.toRadians(angdeg)) * radius2 * d + centerX + j;
+            double y = Math.cos(Math.toRadians(angdeg)) * radius2 * d + centerY + j;
+
+            gc.setFill(Color.BLACK);
+            if (showLines.get()) {
+                double x2 = Math.sin(Math.toRadians(angdeg)) * radius2 / 3 + centerX + j;
+                double y2 = Math.cos(Math.toRadians(angdeg)) * radius2 / 3 + centerY + j;
+                gc.strokeLine(x, y, x2, y2);
+
+                double ang = (angdeg + TOTAL_CIRCLE * 2) % TOTAL_CIRCLE;
+                gc.setTextAlign(
+                        ang > TOTAL_CIRCLE / 2 && ang < TOTAL_CIRCLE ? TextAlignment.RIGHT : TextAlignment.LEFT);
+                gc.fillText(entry.getKey(), x, y);
+
+            } else {
+                gc.save();
+                gc.translate(x, y);
+                double degrees = TOTAL_CIRCLE - startAngle - arcExtent / 2;
+                double degrees2 = degrees > TOTAL_CIRCLE / 4 ? degrees + TOTAL_CIRCLE / 2 : degrees;
+                gc.rotate(degrees2);
+                gc.fillText(entry.getKey(), 0, 0);
+                gc.restore();
+            }
+
+            startAngle += arcExtent;
+        }
+        drawLegend(histogramLevels, availableColors);
+    }
+
+    private void drawLegend(List<Entry<String, Long>> histogramLevels, List<Color> availableColors1) {
+        double x = gc.getCanvas().getWidth() / 10;
+        double y = gc.getCanvas().getHeight() * 7 / 8;
+        int columns = (int) Math.sqrt(histogramLevels.size()) + 1;
+        int maxLetter =
+                histogramLevels.stream().map(Entry<String, Long>::getKey).mapToInt(String::length).max().orElse(0);
+        double a = gc.getCanvas().getWidth() / columns / 4 + maxLetter * 4;
+        double b = gc.getCanvas().getHeight() / columns / 8;
+
+        gc.setTextAlign(TextAlignment.LEFT);
+        for (int i = 0; i < histogramLevels.size(); i++) {
+            int index = histogramLevels.size() - i - 1;
+            Entry<String, Long> entry = histogramLevels.get(index);
+            int j = i / columns;
+            double x2 = x + a * (i % columns);
+            double y2 = y + b * j;
+            gc.setFill(Color.BLACK);
+            gc.fillText(entry.getKey(), x2, y2);
+            gc.setFill(availableColors1.get(index));
+            gc.fillRect(x2 - 10, y2 - 8, 8, 8);
+            gc.strokeRect(x2 - 10, y2 - 8, 8, 8);
+        }
     }
 
 }

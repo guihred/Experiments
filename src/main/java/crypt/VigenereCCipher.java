@@ -31,32 +31,6 @@ public final class VigenereCCipher {
     private VigenereCCipher() {
     }
 
-    public static int bestMatch(final double[] a, final double[] b) {
-        double sum = 0;
-        for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
-            sum += a[i];
-        }
-        if (sum <= 0) {
-            return 0;
-        }
-        int bestRotate = 0;
-        double bestFit = 1e100;
-        for (int rotate = 0; rotate < NUMBER_OF_LETTERS; rotate++) {
-            double fit = 0;
-            for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
-                double d = a[(i + rotate) % NUMBER_OF_LETTERS] / sum - b[i];
-                fit += d * d / b[i];
-            }
-
-            if (fit < bestFit) {
-                bestFit = fit;
-                bestRotate = rotate;
-            }
-        }
-
-        return bestRotate;
-    }
-
     public static double freqEveryNth(final int[] msg, int len, int interval, char[] key) {
         double[] out = new double[NUMBER_OF_LETTERS];
         double[] accu = new double[NUMBER_OF_LETTERS];
@@ -113,6 +87,32 @@ public final class VigenereCCipher {
         }
 
         return 0;
+    }
+
+    private static int bestMatch(final double[] a, final double[] b) {
+        double sum = 0;
+        for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
+            sum += a[i];
+        }
+        if (sum <= 0) {
+            return 0;
+        }
+        int bestRotate = 0;
+        double bestFit = 1e100;
+        for (int rotate = 0; rotate < NUMBER_OF_LETTERS; rotate++) {
+            double fit = 0;
+            for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
+                double d = a[(i + rotate) % NUMBER_OF_LETTERS] / sum - b[i];
+                fit += d * d / b[i];
+            }
+
+            if (fit < bestFit) {
+                bestFit = fit;
+                bestRotate = rotate;
+            }
+        }
+
+        return bestRotate;
     }
 
 }

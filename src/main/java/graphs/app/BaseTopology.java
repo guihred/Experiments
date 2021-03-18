@@ -57,19 +57,6 @@ public abstract class BaseTopology implements EventTarget {
     public String toString() {
         return name;
     }
-    public static String cellIdentifier(int n) {
-		int i = -n;
-		/* Use the faster version */
-        final int maxBuf = 33;
-        char[] buf = new char[maxBuf];
-        int charPos = maxBuf - 1;
-        while (i <= -N_LETTERS) {
-            buf[charPos--] = DIGITS[-(i % N_LETTERS)];
-            i = i / N_LETTERS;
-		}
-        buf[charPos] = DIGITS[-i];
-        return new String(buf, charPos, maxBuf - charPos);
-	}
 
     public static String identifier(int i) {
         if (i >= N_LETTERS) {
@@ -91,4 +78,18 @@ public abstract class BaseTopology implements EventTarget {
         final int fullCircle = 360;
         return Math.random() * fullCircle - fullCircle / 2;
     }
+
+    private static String cellIdentifier(int n) {
+		int i = -n;
+		/* Use the faster version */
+        final int maxBuf = 33;
+        char[] buf = new char[maxBuf];
+        int charPos = maxBuf - 1;
+        while (i <= -N_LETTERS) {
+            buf[charPos--] = DIGITS[-(i % N_LETTERS)];
+            i = i / N_LETTERS;
+		}
+        buf[charPos] = DIGITS[-i];
+        return new String(buf, charPos, maxBuf - charPos);
+	}
 }

@@ -128,11 +128,11 @@ public class RubiksKeyboard implements EventHandler<KeyEvent> {
 		}
 	}
 
-    public static int rotateAntiClockWise(int j) {
+    private static int rotateAntiClockWise(int j) {
 		return j % 3 * 3 + 2 - j / 3;
 	}
 
-    public static int rotateClockWise(int i) {
+    private static int rotateClockWise(int i) {
 		return 6 - i % 3 * 3 + i / 3;
 	}
 }

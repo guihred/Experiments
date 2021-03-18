@@ -124,12 +124,6 @@ public class WandTool extends AreaTool {
         getArea().setFill(new ImagePattern(writableImage));
     }
 
-    protected void addIfNotIn(final List<Integer> toGo, final int e) {
-        if (!toGo.contains(e) && within(e, (double) width * height)) {
-            toGo.add(e);
-        }
-    }
-
     protected void addNeighbors(List<Integer> toGo, Integer next, int y) {
         if (y != 0 && y != height - 1) {
             addIfNotIn(toGo, next + 1);
@@ -213,6 +207,12 @@ public class WandTool extends AreaTool {
     protected int y(final int m) {
 
         return m % height;
+    }
+
+    private void addIfNotIn(final List<Integer> toGo, final int e) {
+        if (!toGo.contains(e) && within(e, (double) width * height)) {
+            toGo.add(e);
+        }
     }
 
     private Slider getThresholdSlider() {

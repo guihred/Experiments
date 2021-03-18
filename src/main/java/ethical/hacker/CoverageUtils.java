@@ -87,30 +87,6 @@ public final class CoverageUtils {
         return getByCoverage(CoverageUtils::getUncoveredApplications);
     }
 
-    public static List<Class<? extends Application>> getUncoveredApplications(List<String> uncovered) {
-        List<String> path = new ArrayList<>();
-        List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
-        for (JavaFileDependency dependecy : allFileDependencies) {
-            dependecy.setDependents(allFileDependencies);
-        }
-        List<Class<? extends Application>> classes = CoverageUtils.getClasses(Application.class);
-        List<String> displayTestsToBeRun =
-                JavaFileDependency.displayTestsToBeRun(uncovered, m -> contains(classes, m), path);
-
-        Map<String, Long> count =
-                displayTestsToBeRun.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-
-        List<Class<? extends Application>> applications =
-                displayTestsToBeRun.stream().distinct().sorted(Comparator.comparingLong(count::get).reversed())
-                        .flatMap(e -> classes.stream().filter(cl -> Objects.equals(cl.getSimpleName(), e)))
-                        .collect(Collectors.toList());
-        if (!applications.isEmpty()) {
-            String appsFound = applications.stream().map(Class::getName).collect(Collectors.joining(", ", "[", "]"));
-            LOG.error("{} APPS FOUND= {}", applications.size(), appsFound);
-        }
-        return applications;
-    }
-
     public static List<Class<? extends Application>> getUncoveredApplications2(Collection<String> uncovered) {
         List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
         for (JavaFileDependency dependecy : allFileDependencies) {
@@ -244,6 +220,30 @@ public final class CoverageUtils {
 
     private static List<String> getUncovered(int min) {
         return getUncoveredAttribute(min, "LINE_MISSED", "LINE_COVERED", PERCENTAGE);
+    }
+
+    private static List<Class<? extends Application>> getUncoveredApplications(List<String> uncovered) {
+        List<String> path = new ArrayList<>();
+        List<JavaFileDependency> allFileDependencies = JavaFileDependency.getAllFileDependencies();
+        for (JavaFileDependency dependecy : allFileDependencies) {
+            dependecy.setDependents(allFileDependencies);
+        }
+        List<Class<? extends Application>> classes = CoverageUtils.getClasses(Application.class);
+        List<String> displayTestsToBeRun =
+                JavaFileDependency.displayTestsToBeRun(uncovered, m -> contains(classes, m), path);
+
+        Map<String, Long> count =
+                displayTestsToBeRun.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+
+        List<Class<? extends Application>> applications =
+                displayTestsToBeRun.stream().distinct().sorted(Comparator.comparingLong(count::get).reversed())
+                        .flatMap(e -> classes.stream().filter(cl -> Objects.equals(cl.getSimpleName(), e)))
+                        .collect(Collectors.toList());
+        if (!applications.isEmpty()) {
+            String appsFound = applications.stream().map(Class::getName).collect(Collectors.joining(", ", "[", "]"));
+            LOG.error("{} APPS FOUND= {}", applications.size(), appsFound);
+        }
+        return applications;
     }
 
     private static List<String> getUncoveredAttribute(int min, String string, String string2, String percentage2) {

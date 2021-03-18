@@ -27,8 +27,8 @@ public class ContestDTO implements HasLogging {
     protected int pageNumber;
     protected final List<QuestionPosition> questionPosition = new ArrayList<>();
 
-    protected final SimpleObjectProperty<ContestDTO.ReaderState> state = new SimpleObjectProperty<>(
-        ContestDTO.ReaderState.IGNORE);
+    protected final SimpleObjectProperty<ContestDTO.ReaderState> state =
+            new SimpleObjectProperty<>(ContestDTO.ReaderState.IGNORE);
 
     private String subject;
     protected ContestText text = new ContestText();

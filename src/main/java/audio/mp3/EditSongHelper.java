@@ -102,38 +102,6 @@ final class EditSongHelper {
         new SimpleDialogBuilder().text("Split Multiple").node(root).bindWindow(currentSlider).displayDialog();
     }
 
-    public static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
-            Duration currentTime, Music music, ProgressIndicator progressIndicator,
-            ObjectProperty<Duration> startTime) {
-        SongUtils.stopAndDispose(mediaPlayer.get());
-        String format = FunctionEx.mapIf(music.getArtista(), a -> String.format("%s-%s.mp3", music.getTitulo(), a),
-                music.getTitulo().replaceAll("\\..+", ".mp3"));
-
-        File newFile = ResourceFXUtils.getOutFile("mp3/" + format);
-        DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime.get(), currentTime);
-        progressIndicator.progressProperty().bind(splitAudio);
-        progressIndicator.setVisible(true);
-        splitAudio.addListener((ob, old, n) -> {
-            progressIndicator.setVisible(true);
-            if (n.intValue() != 1) {
-                return;
-            }
-            CommonsFX.runInPlatform(() -> {
-                mediaPlayer.set(new MediaPlayer(new Media(file.toURI().toString())));
-                mediaPlayer.get().totalDurationProperty().addListener(b -> {
-                    SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer.get());
-                    currentSlider.valueChangingProperty().addListener(
-                            (o, oldValue, newValue) -> updateMediaPlayer(mediaPlayer.get(), currentSlider, newValue));
-                    mediaPlayer.get().currentTimeProperty()
-                            .addListener(c -> updateCurrentSlider(mediaPlayer.get(), currentSlider));
-                    mediaPlayer.get().play();
-                });
-                StageHelper.closeStage(progressIndicator);
-            });
-        });
-        startTime.set(currentTime);
-    }
-
     public static void updateCurrentSlider(MediaPlayer mediaPlayer2, Slider currentSlider) {
         if (!currentSlider.isValueChanging()) {
             Duration currentTime = mediaPlayer2.getCurrentTime();
@@ -196,5 +164,37 @@ final class EditSongHelper {
 
     private static boolean isAbleToChange(MediaPlayer mediaPlayer2) {
         return mediaPlayer2 != null && mediaPlayer2.getStatus() != Status.UNKNOWN;
+    }
+
+    private static void splitInFiles(ObjectProperty<MediaPlayer> mediaPlayer, File file, Slider currentSlider,
+            Duration currentTime, Music music, ProgressIndicator progressIndicator,
+            ObjectProperty<Duration> startTime) {
+        SongUtils.stopAndDispose(mediaPlayer.get());
+        String format = FunctionEx.mapIf(music.getArtista(), a -> String.format("%s-%s.mp3", music.getTitulo(), a),
+                music.getTitulo().replaceAll("\\..+", ".mp3"));
+
+        File newFile = ResourceFXUtils.getOutFile("mp3/" + format);
+        DoubleProperty splitAudio = SongUtils.splitAudio(file, newFile, startTime.get(), currentTime);
+        progressIndicator.progressProperty().bind(splitAudio);
+        progressIndicator.setVisible(true);
+        splitAudio.addListener((ob, old, n) -> {
+            progressIndicator.setVisible(true);
+            if (n.intValue() != 1) {
+                return;
+            }
+            CommonsFX.runInPlatform(() -> {
+                mediaPlayer.set(new MediaPlayer(new Media(file.toURI().toString())));
+                mediaPlayer.get().totalDurationProperty().addListener(b -> {
+                    SongUtils.seekAndUpdatePosition(currentTime, currentSlider, mediaPlayer.get());
+                    currentSlider.valueChangingProperty().addListener(
+                            (o, oldValue, newValue) -> updateMediaPlayer(mediaPlayer.get(), currentSlider, newValue));
+                    mediaPlayer.get().currentTimeProperty()
+                            .addListener(c -> updateCurrentSlider(mediaPlayer.get(), currentSlider));
+                    mediaPlayer.get().play();
+                });
+                StageHelper.closeStage(progressIndicator);
+            });
+        });
+        startTime.set(currentTime);
     }
 }

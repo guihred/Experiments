@@ -22,23 +22,6 @@ public final class LayerSplitter {
         this.edges = new LinkedList<>(edges);
     }
 
-    public List<List<Cell>> orderVertices(List<List<Cell>> layers) {
-        for (int i = 0; i < layers.size(); i++) {
-            List<Cell> list = layers.get(i);
-            if (list.size() > 1) {
-                int ceil = (int) Math.ceil(list.size() / 2.);
-                List<Cell> subList = new ArrayList<>(list.subList(0, ceil));
-                List<Cell> subList2 = new ArrayList<>(list.subList(ceil, list.size()));
-                subList.sort(Comparator.comparingLong(t -> edgesNumber(t, edges)));
-                subList2.sort(Comparator.comparingLong((Cell t) -> edgesNumber(t, edges)).reversed());
-                list.clear();
-                list.addAll(subList);
-                list.addAll(subList2);
-            }
-        }
-        return layers;
-    }
-
     private List<List<Cell>> assignLayers() {
         List<List<Cell>> sorted = new ArrayList<>();
         List<Edge> edges1 = new ArrayList<>(edges);
@@ -70,6 +53,23 @@ public final class LayerSplitter {
             }
         }
         stack.remove(vertex);
+    }
+
+    private List<List<Cell>> orderVertices(List<List<Cell>> layers) {
+        for (int i = 0; i < layers.size(); i++) {
+            List<Cell> list = layers.get(i);
+            if (list.size() > 1) {
+                int ceil = (int) Math.ceil(list.size() / 2.);
+                List<Cell> subList = new ArrayList<>(list.subList(0, ceil));
+                List<Cell> subList2 = new ArrayList<>(list.subList(ceil, list.size()));
+                subList.sort(Comparator.comparingLong(t -> edgesNumber(t, edges)));
+                subList2.sort(Comparator.comparingLong((Cell t) -> edgesNumber(t, edges)).reversed());
+                list.clear();
+                list.addAll(subList);
+                list.addAll(subList2);
+            }
+        }
+        return layers;
     }
 
     private List<Edge> removeCycles() {

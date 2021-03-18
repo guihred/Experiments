@@ -32,20 +32,6 @@ public class DecisionTree {
 
     }
 
-    public static double entropy(DataframeML dataframe, String header) {
-        List<Object> list = dataframe.list(header);
-        Map<Object, Long> valuesCount = list.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-        Set<Entry<Object, Long>> entrySet = valuesCount.entrySet();
-        double s = list.size();
-        double sum = 0;
-        for (Entry<Object, Long> entry : entrySet) {
-            double p = entry.getValue() / s;
-            sum -= p * Math.log(p);
-
-        }
-        return sum;
-    }
-
     public static void executeSimpleTest() {
         DataframeML dataframeML = new DataframeML();
         dataframeML.addCols("Color", String.class);
@@ -158,6 +144,20 @@ public class DecisionTree {
 
     private static DecisionNode buildTree(DataframeML frame, String label) {
         return buildTree(frame, label, MIN_GAIN);
+    }
+
+    private static double entropy(DataframeML dataframe, String header) {
+        List<Object> list = dataframe.list(header);
+        Map<Object, Long> valuesCount = list.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+        Set<Entry<Object, Long>> entrySet = valuesCount.entrySet();
+        double s = list.size();
+        double sum = 0;
+        for (Entry<Object, Long> entry : entrySet) {
+            double p = entry.getValue() / s;
+            sum -= p * Math.log(p);
+
+        }
+        return sum;
     }
 
     private static boolean isRedundantNode(DecisionNode trueTree, DecisionNode falseTree) {

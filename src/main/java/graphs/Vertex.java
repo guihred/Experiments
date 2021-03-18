@@ -115,14 +115,6 @@ public class Vertex {
         return Objects.hash(getId());
     }
 
-    public Vertex pathTo(Vertex v, List<Vertex> graph) {
-        if (path.isEmpty()) {
-            v.dijkstra(graph);
-            dijkstra(graph);
-        }
-        return path.get(v.getId());
-    }
-
     public void put(Vertex... vertices) {
         for (int i = 0; i < vertices.length; i++) {
             edges.put(vertices[i], 1);
@@ -178,6 +170,14 @@ public class Vertex {
             }
         }
         return distance;
+    }
+
+    private Vertex pathTo(Vertex v, List<Vertex> graph) {
+        if (path.isEmpty()) {
+            v.dijkstra(graph);
+            dijkstra(graph);
+        }
+        return path.get(v.getId());
     }
 
     public static void chain(String nome1, String nome2, List<Vertex> vertices) {

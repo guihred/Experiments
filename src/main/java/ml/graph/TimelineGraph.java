@@ -56,34 +56,6 @@ public class TimelineGraph extends Canvas {
         return colors;
     }
 
-    public void drawAxis() {
-
-        gc.setLineWidth(1);
-        gc.setStroke(Color.BLACK);
-        gc.setFill(Color.BLACK);
-        gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText(title, layout.get() + (MAX_LAYOUT - layout.get()) / 2, layout.get() - 20);
-        double e = layout.get();
-        gc.strokeLine(e, MAX_LAYOUT, MAX_LAYOUT, MAX_LAYOUT);
-        gc.strokeLine(e, e, e, MAX_LAYOUT);
-        double d = lineSize.get();
-        double j = (MAX_LAYOUT - e) / bins.get();
-        for (int i = 1; i <= bins.get(); i++) {
-            double x1 = i * j + e;
-            gc.strokeLine(x1, MAX_LAYOUT, x1, MAX_LAYOUT + 5);
-            String xLabel = String.format("%.0f", i * xProportion.get() + colStats.getMin());
-            gc.strokeText(xLabel, x1, MAX_LAYOUT + 5 * (4 + 3 * (i % 2)));
-
-        }
-        j = (MAX_LAYOUT - e) / ybins.get();
-        for (int i = 0; i <= ybins.get(); i++) {
-            double y1 = MAX_LAYOUT - i * j;
-            gc.strokeLine(e, y1, e - 5, y1);
-            String yLabel = String.format("%.1f", i * yProportion + stats.getMin());
-            gc.strokeText(yLabel, e - d * 2, y1);
-        }
-    }
-
     public final void drawGraph() {
         gc.clearRect(0, 0, SIZE, SIZE);
         if (dataframe == null) {
@@ -170,6 +142,34 @@ public class TimelineGraph extends Canvas {
 
     public final IntegerProperty ybinsProperty() {
         return ybins;
+    }
+
+    private void drawAxis() {
+
+        gc.setLineWidth(1);
+        gc.setStroke(Color.BLACK);
+        gc.setFill(Color.BLACK);
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText(title, layout.get() + (MAX_LAYOUT - layout.get()) / 2, layout.get() - 20);
+        double e = layout.get();
+        gc.strokeLine(e, MAX_LAYOUT, MAX_LAYOUT, MAX_LAYOUT);
+        gc.strokeLine(e, e, e, MAX_LAYOUT);
+        double d = lineSize.get();
+        double j = (MAX_LAYOUT - e) / bins.get();
+        for (int i = 1; i <= bins.get(); i++) {
+            double x1 = i * j + e;
+            gc.strokeLine(x1, MAX_LAYOUT, x1, MAX_LAYOUT + 5);
+            String xLabel = String.format("%.0f", i * xProportion.get() + colStats.getMin());
+            gc.strokeText(xLabel, x1, MAX_LAYOUT + 5 * (4 + 3 * (i % 2)));
+
+        }
+        j = (MAX_LAYOUT - e) / ybins.get();
+        for (int i = 0; i <= ybins.get(); i++) {
+            double y1 = MAX_LAYOUT - i * j;
+            gc.strokeLine(e, y1, e - 5, y1);
+            String yLabel = String.format("%.1f", i * yProportion + stats.getMin());
+            gc.strokeText(yLabel, e - d * 2, y1);
+        }
     }
 
     private void drawLines(int maxYear, int minYear, double d, double j, double j2, Map<String, Object> row) {

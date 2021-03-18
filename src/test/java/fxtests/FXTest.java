@@ -1,9 +1,11 @@
 package fxtests;
 
-import audio.mp3.PageImage;
 import ethical.hacker.CoverageUtils;
 import javafx.application.Application;
 import org.junit.Test;
+import paintexp.PaintMain;
+import physics.Physics;
+import rosario.RosarioComparadorArquivos;
 
 @SuppressWarnings("static-method")
 public final class FXTest extends AbstractTestExecution {
@@ -14,9 +16,10 @@ public final class FXTest extends AbstractTestExecution {
 
 
 
-    // @Test
+    @Test
     public void testPageImage() {
-        measureTime("PageImage.testApps", () -> AbstractTestExecution.testApps(PageImage.class));
+        measureTime("PageImage.testApps",
+                () -> AbstractTestExecution.testApps(PaintMain.class, Physics.class, RosarioComparadorArquivos.class));
     }
 
 

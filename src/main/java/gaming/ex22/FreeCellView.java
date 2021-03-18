@@ -74,42 +74,6 @@ public class FreeCellView extends Group {
         return true;
     }
 
-    public void reset() {
-        getChildren().clear();
-        youWin = false;
-        cardStackList.clear();
-        history.clear();
-        double yOffset = FreeCellCard.getCardWidth() / (getWidth() > getHeight() ? 10 : 2);
-        double xOffset = FreeCellCard.getCardWidth() / 10;
-        for (int i = 0; i < 4; i++) {
-            supportingStacks[i] = new FreeCellStack(SUPPORT, 0);
-            supportingStacks[i].setLayoutX(i * getWidth() / 9 + xOffset);
-            supportingStacks[i].setLayoutY(yOffset);
-            cardStackList.add(supportingStacks[i]);
-        }
-        for (int i = 0; i < 4; i++) {
-            ascendingStacks[i] = new FreeCellStack(ASCENDING, 0);
-            ascendingStacks[i].setLayoutX(getWidth() / 9 * (i + 5) + xOffset);
-            ascendingStacks[i].setLayoutY(yOffset);
-            cardStackList.add(ascendingStacks[i]);
-        }
-        for (int i = 0; i < 8; i++) {
-            simpleStacks[i] = new FreeCellStack(SIMPLE, i + 1);
-            simpleStacks[i].setLayoutX(getWidth() / 8 * i + xOffset);
-            simpleStacks[i].setLayoutY(FreeCellCard.getCardWidth() + xOffset + yOffset);
-            simpleStacks[i].setMaxHeight(getHeight());
-            cardStackList.add(simpleStacks[i]);
-        }
-        List<FreeCellCard> allCards = getAllCards();
-        for (int i = 0; i < allCards.size(); i++) {
-            FreeCellCard card = allCards.get(i);
-            card.setShown(true);
-            simpleStacks[i % 8].addCardsVertically(card);
-        }
-        getChildren().addAll(cardStackList);
-        LOG.info("SOLITAIRE {}", "RESET");
-    }
-
     private void automaticCard() {
 
         int solitaireNumber = Stream.of(ascendingStacks)
@@ -393,6 +357,42 @@ public class FreeCellView extends Group {
             return true;
         }
         return false;
+    }
+
+    private void reset() {
+        getChildren().clear();
+        youWin = false;
+        cardStackList.clear();
+        history.clear();
+        double yOffset = FreeCellCard.getCardWidth() / (getWidth() > getHeight() ? 10 : 2);
+        double xOffset = FreeCellCard.getCardWidth() / 10;
+        for (int i = 0; i < 4; i++) {
+            supportingStacks[i] = new FreeCellStack(SUPPORT, 0);
+            supportingStacks[i].setLayoutX(i * getWidth() / 9 + xOffset);
+            supportingStacks[i].setLayoutY(yOffset);
+            cardStackList.add(supportingStacks[i]);
+        }
+        for (int i = 0; i < 4; i++) {
+            ascendingStacks[i] = new FreeCellStack(ASCENDING, 0);
+            ascendingStacks[i].setLayoutX(getWidth() / 9 * (i + 5) + xOffset);
+            ascendingStacks[i].setLayoutY(yOffset);
+            cardStackList.add(ascendingStacks[i]);
+        }
+        for (int i = 0; i < 8; i++) {
+            simpleStacks[i] = new FreeCellStack(SIMPLE, i + 1);
+            simpleStacks[i].setLayoutX(getWidth() / 8 * i + xOffset);
+            simpleStacks[i].setLayoutY(FreeCellCard.getCardWidth() + xOffset + yOffset);
+            simpleStacks[i].setMaxHeight(getHeight());
+            cardStackList.add(simpleStacks[i]);
+        }
+        List<FreeCellCard> allCards = getAllCards();
+        for (int i = 0; i < allCards.size(); i++) {
+            FreeCellCard card = allCards.get(i);
+            card.setShown(true);
+            simpleStacks[i % 8].addCardsVertically(card);
+        }
+        getChildren().addAll(cardStackList);
+        LOG.info("SOLITAIRE {}", "RESET");
     }
 
     private boolean tryToPlaceCard(FreeCellCard first) {

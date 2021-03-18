@@ -111,7 +111,7 @@ public class RectangleTool extends PaintTool {
 
     }
 
-    protected void dragTo(final MouseEvent e, final double x, final double y) {
+    private void dragTo(final MouseEvent e, final double x, final double y) {
         double layoutX = initialX;
         double layoutY = initialY;
         double min = Math.min(x, layoutX);

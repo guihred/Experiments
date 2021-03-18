@@ -9,43 +9,34 @@ import utils.StringSigaUtils;
 
 public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSliderBuilder> {
 
-    private Slider slider;
     private int blocks = 100;
 
     public SimpleSliderBuilder() {
         super(new Slider());
-        slider = node;
     }
 
     public SimpleSliderBuilder(double min, double max, double value) {
         super(new Slider(min, max, value));
-        slider = node;
     }
 
     public SimpleSliderBuilder bindBidirectional(Property<Number> other) {
-        slider.valueProperty().bindBidirectional(other);
-        return this;
-    }
-
-    public SimpleSliderBuilder blocks(int nBlocks) {
-        blocks = nBlocks;
-        node.setBlockIncrement((slider.getMax() - slider.getMin()) / blocks);
+        node.valueProperty().bindBidirectional(other);
         return this;
     }
 
     @Override
     public Slider build() {
-        node.setBlockIncrement((slider.getMax() - slider.getMin()) / blocks);
+        node.setBlockIncrement((node.getMax() - node.getMin()) / blocks);
         return super.build();
     }
 
     public SimpleSliderBuilder max(double i) {
-        slider.setMax(i);
+        node.setMax(i);
         return this;
     }
 
     public SimpleSliderBuilder min(double i) {
-        slider.setMin(i);
+        node.setMin(i);
         return this;
     }
 
@@ -55,7 +46,13 @@ public class SimpleSliderBuilder extends SimpleRegionBuilder<Slider, SimpleSlide
     }
 
     public SimpleSliderBuilder value(double i) {
-        slider.setValue(i);
+        node.setValue(i);
+        return this;
+    }
+
+    private SimpleSliderBuilder blocks(int nBlocks) {
+        blocks = nBlocks;
+        node.setBlockIncrement((node.getMax() - node.getMin()) / blocks);
         return this;
     }
 

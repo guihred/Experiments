@@ -72,22 +72,6 @@ public final class TermFrequency {
         return JAVA_KEYWORDS;
     }
 
-    public static Map<File, Map<String, Long>> getMapaDocumentos(File file, String suffix) {
-        if (!file.isDirectory()) {
-            Map<String, Long> termFrequencyMap = getFrequencyMap(file, suffix);
-            MAPA_DOCUMENTOS.put(file, termFrequencyMap);
-        } else {
-            String[] list = file.list();
-            if (list != null) {
-                for (String f : list) {
-                    RunnableEx.run(() -> TermFrequency.getMapaDocumentos(new File(file, f), suffix));
-                }
-            }
-        }
-
-        return MAPA_DOCUMENTOS;
-    }
-
     public static double getTermFrequency(String t, File d) {
         long freq = MAPA_DOCUMENTOS.get(d).getOrDefault(t, 0L);
         if (freq == 0) {
@@ -116,6 +100,22 @@ public final class TermFrequency {
             }
         });
         return map;
+    }
+
+    private static Map<File, Map<String, Long>> getMapaDocumentos(File file, String suffix) {
+        if (!file.isDirectory()) {
+            Map<String, Long> termFrequencyMap = getFrequencyMap(file, suffix);
+            MAPA_DOCUMENTOS.put(file, termFrequencyMap);
+        } else {
+            String[] list = file.list();
+            if (list != null) {
+                for (String f : list) {
+                    RunnableEx.run(() -> TermFrequency.getMapaDocumentos(new File(file, f), suffix));
+                }
+            }
+        }
+
+        return MAPA_DOCUMENTOS;
     }
 
     private static Map<String, Long> reduceToMap(Map<String, Long> mapa, String str) {

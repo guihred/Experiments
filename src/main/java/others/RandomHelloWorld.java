@@ -19,7 +19,7 @@ public final class RandomHelloWorld {
         LOG.info("{} {}", randomString, randomString2);
 	}
 
-	public static String randomString(int i) {
+    private static String randomString(int i) {
         StringBuilder sb = new StringBuilder();
         Random ran = new Random(i);
 		while (true) {

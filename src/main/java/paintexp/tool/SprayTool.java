@@ -21,12 +21,12 @@ public class SprayTool extends PaintTool {
     private static final Logger LOG = HasLogging.log();
     private int centerX;
     private int centerY;
-    private IntegerProperty length = new SimpleIntegerProperty(10);
+    private final IntegerProperty length = new SimpleIntegerProperty(10);
     private boolean pressed;
     private int frontColor;
     private PixelReader pixelReader;
     private PaintModel paintModel;
-    private AnimationTimer animationTimer = new AnimationTimer() {
+    private final AnimationTimer animationTimer = new AnimationTimer() {
         @Override
         public void handle(final long currentNanoTime) {
             drawPoints();
@@ -72,7 +72,7 @@ public class SprayTool extends PaintTool {
         addSlider(model, "Length", getLengthSlider(), length);
     }
 
-    protected void drawPoints() {
+    private void drawPoints() {
         if (!pressed) {
             return;
         }
@@ -101,7 +101,7 @@ public class SprayTool extends PaintTool {
         return lengthSlider;
     }
 
-    protected static double rnd(double i) {
+    private static double rnd(double i) {
         return Math.random() * i;
     }
 

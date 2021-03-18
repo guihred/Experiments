@@ -175,11 +175,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         prefWidthColumns(node, array);
     }
 
-    public static <S> void equalColumns(TableView<S> table) {
-        List<TableColumn<S, ?>> columns = table.getColumns();
-        prefWidthColumns(table, columns.stream().mapToDouble(e -> 1).toArray());
-    }
-
     public static <C, M> Callback<TableColumn<C, M>, TableCell<C, M>>
             newCellFactory(final BiConsumer<C, TableCell<C, M>> value) {
         return p -> new CustomableTableCell<C, M>() {
@@ -195,16 +190,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return new SimpleTableViewBuilder<>(table);
     }
 
-    public static <T> void onDoubleClick(TableView<T> table2, ConsumerEx<T> object) {
-        table2.setOnMouseClicked(e -> {
-            if (e.getClickCount() > 1) {
-                ConsumerEx.foreach(table2.getSelectionModel().getSelectedItems(), object);
-            }
-        });
-        onKeyReleased(table2, KeyCode.ENTER,
-                () -> ConsumerEx.foreach(table2.getSelectionModel().getSelectedItems(), object));
-    }
-
     public static <T> void onSelect(TableView<T> table, final BiConsumer<T, T> value) {
         table.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
@@ -216,23 +201,6 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         for (int i = 0; i < prefs.length; i++) {
             double pref = prefs[i];
             columns.get(i).prefWidthProperty().bind(table1.widthProperty().multiply(pref / sum));
-        }
-    }
-
-    public static <T> void saveContent(TableView<T> table, KeyEvent ev) {
-        if (ev.isControlDown() && ev.getCode() == KeyCode.S) {
-            FileChooserBuilder fileChooserBuilder = new FileChooserBuilder();
-            fileChooserBuilder.initialFilename(Objects.toString(table.getId(), "table") + ".csv")
-                    .extensions("CSV", "*.csv").extensions("Excel", "*.xlsx")
-                    .onSelect(f -> {
-                        String extension = fileChooserBuilder.getExtension();
-                        if ("CSV".equals(extension)) {
-                            CSVUtils.saveToFile(table, f);
-                        } else {
-                            ExcelService.getExcel(table, f);
-                        }
-                    }).saveFileAction(ev);
-
         }
     }
 
@@ -264,6 +232,38 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
                             .map(e -> Objects.toString(e.getCellData(l), "")).collect(Collectors.joining("\t")))
                     .collect(Collectors.joining("\n"));
             ImageFXUtils.setClipboardContent(content);
+        }
+    }
+
+    private static <S> void equalColumns(TableView<S> table) {
+        List<TableColumn<S, ?>> columns = table.getColumns();
+        prefWidthColumns(table, columns.stream().mapToDouble(e -> 1).toArray());
+    }
+
+    private static <T> void onDoubleClick(TableView<T> table2, ConsumerEx<T> object) {
+        table2.setOnMouseClicked(e -> {
+            if (e.getClickCount() > 1) {
+                ConsumerEx.foreach(table2.getSelectionModel().getSelectedItems(), object);
+            }
+        });
+        onKeyReleased(table2, KeyCode.ENTER,
+                () -> ConsumerEx.foreach(table2.getSelectionModel().getSelectedItems(), object));
+    }
+
+    private static <T> void saveContent(TableView<T> table, KeyEvent ev) {
+        if (ev.isControlDown() && ev.getCode() == KeyCode.S) {
+            FileChooserBuilder fileChooserBuilder = new FileChooserBuilder();
+            fileChooserBuilder.initialFilename(Objects.toString(table.getId(), "table") + ".csv")
+                    .extensions("CSV", "*.csv").extensions("Excel", "*.xlsx")
+                    .onSelect(f -> {
+                        String extension = fileChooserBuilder.getExtension();
+                        if ("CSV".equals(extension)) {
+                            CSVUtils.saveToFile(table, f);
+                        } else {
+                            ExcelService.getExcel(table, f);
+                        }
+                    }).saveFileAction(ev);
+
         }
     }
 

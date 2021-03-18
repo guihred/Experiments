@@ -18,7 +18,7 @@ public class TreeElement<T> {
     private static final String CHILDREN_FIELD = "children";
     private Collection<TreeElement<T>> children;
 
-    private T element;
+    private final T element;
 
     private TreeElement(T e, FunctionEx<T, Collection<T>> func) {
         element = e;

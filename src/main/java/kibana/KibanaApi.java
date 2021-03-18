@@ -77,10 +77,6 @@ public class KibanaApi {
         }).collect(Collectors.joining("\n"));
     }
 
-    public static <T> String displayDistinct(Map<String, T> ob) {
-        return Stream.of(display(ob).split("\n")).distinct().collect(Collectors.joining("\n"));
-    }
-
     public static String geoLocation(String ip) {
         if (StringUtils.isBlank(ip)) {
             return "";
@@ -116,7 +112,11 @@ public class KibanaApi {
         if (!key.equals(ip)) {
             return key;
         }
-        return StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "Descrição", "asname");
+        String key2 = StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "Descrição", "asname", "id");
+        if (StringUtils.isNotBlank(key2)) {
+            return key2;
+        }
+        return ip;
     }
 
     public static Map<String, String> getIPsByCredencial(String credencial, String index, int days) {
@@ -185,10 +185,6 @@ public class KibanaApi {
         CommonsFX.update(progress, 1);
 
         return fullScan2;
-    }
-
-    public static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
-        return makeKibanaSearch(file, days, new String[] { query }, params);
     }
 
     public static Map<String, String> makeKibanaSearch(File file, int days, String[] query, String... params) {
@@ -373,6 +369,10 @@ public class KibanaApi {
                 .collect(Collectors.joining("\n"));
     }
 
+    private static <T> String displayDistinct(Map<String, T> ob) {
+        return Stream.of(display(ob).split("\n")).distinct().collect(Collectors.joining("\n"));
+    }
+
     private static <T> List<List<String>> getFieldList(Map<String, T> ob) {
         return ob.values().stream().map(t -> {
             if (t instanceof List) {
@@ -409,6 +409,10 @@ public class KibanaApi {
 
     private static File kibanaFile(String file) {
         return ResourceFXUtils.toFile(KIBANA_FOLDER + file);
+    }
+
+    private static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
+        return makeKibanaSearch(file, days, new String[] { query }, params);
     }
 
     private static File newSearch(File file, int days, Map<String, String> search) {

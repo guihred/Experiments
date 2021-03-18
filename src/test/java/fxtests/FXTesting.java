@@ -20,7 +20,7 @@ public class FXTesting implements HasLogging {
 
     private static final String TIME_FORMAT = "HHH:mm:ss.SSS";
 
-    private static final int MAX_MILLI_SECONDS = 10 * 60 * 1000;// 10 minutes
+    private static final int MAX_MILLI_SECONDS = 20 * 60 * 1000;// 20 minutes
     private Map<Class<?>, Throwable> exceptionMap = Collections.synchronizedMap(new HashMap<>());
 
     protected void testApplications(List<Class<? extends Application>> applicationClasses) {

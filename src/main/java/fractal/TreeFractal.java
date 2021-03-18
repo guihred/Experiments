@@ -24,12 +24,6 @@ public class TreeFractal extends Canvas {
         return deltaAngle;
     }
 
-	public final void drawTree() {
-        GraphicsContext gc = getGraphicsContext2D();
-        gc.clearRect(0, 0, SIZE, SIZE);
-        drawBranch(gc, SIZE / 2, SIZE, initialRadius.get(), Math.PI);
-    }
-
     public DoubleProperty initialRadiusProperty() {
         return initialRadius;
     }
@@ -47,6 +41,12 @@ public class TreeFractal extends Canvas {
             drawBranch(gc, x0 + x, y0 + y, radius * ratioProperty().get(), angle - deltaAngle.get());
         }
 
+    }
+
+    private final void drawTree() {
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.clearRect(0, 0, SIZE, SIZE);
+        drawBranch(gc, SIZE / 2, SIZE, initialRadius.get(), Math.PI);
     }
 
 }

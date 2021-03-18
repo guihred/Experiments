@@ -108,7 +108,19 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
 
     }
 
-    public static void handleMousePressed(List<Music> songs) {
+    public static void handleMousePressed(Music songs) {
+        handleMousePressed(Arrays.asList(songs));
+    }
+
+    public static ImageView view(Image music) {
+        ImageView imageView = new ImageView(music);
+        final int prefWidth = 50;
+        imageView.setFitWidth(prefWidth);
+        imageView.setPreserveRatio(true);
+        return imageView;
+    }
+
+    private static void handleMousePressed(List<Music> songs) {
         if (songs.isEmpty() || songs.stream().anyMatch(e -> !e.getArquivo().exists())) {
             return;
         }
@@ -132,18 +144,6 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
             return finalResult.divide(songs.size());
         }, () -> ConsumerEx.foreach(songs, s -> onConvertionEnded(s.getArquivo())));
         dialog.displayDialog();
-    }
-
-    public static void handleMousePressed(Music songs) {
-        handleMousePressed(Arrays.asList(songs));
-    }
-
-    public static ImageView view(Image music) {
-        ImageView imageView = new ImageView(music);
-        final int prefWidth = 50;
-        imageView.setFitWidth(prefWidth);
-        imageView.setPreserveRatio(true);
-        return imageView;
     }
 
 

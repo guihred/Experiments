@@ -42,13 +42,6 @@ public class CheckersTree {
 
     }
 
-    public double utility(CheckersPlayer player) {
-        Map<CheckersPlayer, Long> squaresCount = squares.stream()
-            .collect(Collectors.groupingBy(CheckersSquare::getState, Collectors.counting()));
-        double curPlayer = squaresCount.getOrDefault(player, 0L).doubleValue();
-        return curPlayer - squaresCount.getOrDefault(player.opposite(), 0L);
-    }
-
     private List<Map.Entry<CheckersSquare, CheckersSquare>> actions(CheckersPlayer player) {
 
         return squares.stream().filter(e -> e.getState() == player).flatMap(e -> {
@@ -118,6 +111,13 @@ public class CheckersTree {
         CheckersSquare target = squares2.get(squares.indexOf(j.getValue()));
         CheckersHelper.replaceStates(squares2, target, selected, player);
         return new CheckersTree(squares2, depth + 1, j);
+    }
+
+    private double utility(CheckersPlayer player) {
+        Map<CheckersPlayer, Long> squaresCount = squares.stream()
+            .collect(Collectors.groupingBy(CheckersSquare::getState, Collectors.counting()));
+        double curPlayer = squaresCount.getOrDefault(player, 0L).doubleValue();
+        return curPlayer - squaresCount.getOrDefault(player.opposite(), 0L);
     }
 
 }

@@ -20,22 +20,23 @@ import utils.ex.SupplierEx;
 @SuppressWarnings("static-method")
 public class BaseDAO implements HasLogging {
 
-    public void delete(BaseEntity jap) {
+    public final void delete(BaseEntity jap) {
         executeRun(session -> session.delete(jap));
     }
 
-    public void delete(List<? extends BaseEntity> jap) {
+    public final void delete(List<? extends BaseEntity> jap) {
         executeRun(session -> jap.forEach(session::delete));
     }
-    public void saveOrUpdate(BaseEntity jap) {
+
+    public final void saveOrUpdate(BaseEntity jap) {
         executeRun(session -> session.saveOrUpdate(jap));
     }
 
-    public void saveOrUpdate(List<? extends BaseEntity> jap) {
+    public final void saveOrUpdate(List<? extends BaseEntity> jap) {
         executeRun(session -> jap.forEach(session::saveOrUpdate));
     }
 
-    protected <T> T execute(Function<Session, T> run) {
+    protected final <T> T execute(Function<Session, T> run) {
         return SupplierEx.get(() -> {
             try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
                 Transaction transaction = getTransaction(session);
@@ -47,7 +48,7 @@ public class BaseDAO implements HasLogging {
         });
     }
 
-    protected void executeRun(Consumer<Session> run) {
+    protected final void executeRun(Consumer<Session> run) {
         RunnableEx.run(() -> {
             try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
                 Transaction transaction = getTransaction(session);

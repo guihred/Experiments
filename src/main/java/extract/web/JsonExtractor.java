@@ -77,10 +77,6 @@ public final class JsonExtractor {
         return access(root, Map.class, param);
     }
 
-    public static String convertObj(JsonNode jsonNode) {
-        return jsonNode.asText();
-    }
-
     public static String displayJsonFromFile(File outFile, String... a) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         // read JSON like DOM Parser
@@ -127,77 +123,12 @@ public final class JsonExtractor {
         return yaml2;
     }
 
-    public static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
-            int k) {
-        int l = 0;
-        for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
-            if (Objects.equals(linkedHashMap.get(keys.get(k) + l), collect2.get(k))) {
-                return;
-            }
-            if (!linkedHashMap.get(keys.get(k) + l).matches(regex)) {
-                break;
-            }
-        }
-    
-        linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static Object mergeObjs(Object a, Object b) {
-        if (a instanceof List && getListClass((List) a) == isAggregatable(b.getClass())) {
-            ((List) a).add(b);
-            return a;
-        }
-        if (b instanceof List && getListClass((List) b) == isAggregatable(a.getClass())) {
-            ((List) b).add(a);
-            return b;
-        }
-        if (b instanceof List && a instanceof List 
-                && getListClass((List)b) == getListClass((List)a)) {
-            ((List) b).addAll((List) a);
-            return b;
-        }
-        if (isAggregatable(a.getClass()) == isAggregatable(b.getClass())) {
-            return new ArrayList<>(Arrays.asList(a, b));
-        }
-        HasLogging.log().error("FIX MERGE {} {}", a, b);
-        return a;
-    }
-
-    public static boolean moreThanXHoursModified(File outFile,int hours) {
-        FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
-        Instant instant = lastModifiedTime.toInstant();
-        long between = ChronoUnit.HOURS.between(instant, Instant.now());
-        return between > hours;
-    }
-
     public static Map.Entry<String, String> newEntry(String key, String value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }
 
     public static Map<String, String> newMap(String key, String value) {
         return new SimpleMap(key, value);
-    }
-
-    public static boolean oneHourModified(File outFile) {
-        return moreThanXHoursModified(outFile,1);
-    }
-
-    public static Map<String, String> processPartialList(String regex, List<String> keys,
-            Collection<Map<String, String>> finalList, Collection<List<String>> partialList,
-            Map<String, String> reference) {
-        if (partialList.isEmpty()) {
-            return reference;
-        }
-        for (List<String> list : partialList) {
-            Map<String, String> newMap = new LinkedHashMap<>(reference);
-            newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
-                    .map(Entry<String, String>::getKey).orElse(null));
-            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, list, newMap, k));
-            finalList.add(newMap);
-        }
-        partialList.clear();
-        return null;
     }
 
     public static void readJsonFile(TreeView<Map<String, String>> build, File file) {
@@ -418,6 +349,10 @@ public final class JsonExtractor {
         }
     }
 
+    private static String convertObj(JsonNode jsonNode) {
+        return jsonNode.asText();
+    }
+
     private static boolean getListClass(List<?> a) {
         Class<? extends Object> orElse = a.stream().findFirst().map(Object::getClass).orElse(null);
         return isAggregatable(orElse);
@@ -428,6 +363,21 @@ public final class JsonExtractor {
                 || orElse.isPrimitive();
     }
 
+    private static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
+            int k) {
+        int l = 0;
+        for (; linkedHashMap.containsKey(keys.get(k) + l); l++) {
+            if (Objects.equals(linkedHashMap.get(keys.get(k) + l), collect2.get(k))) {
+                return;
+            }
+            if (!linkedHashMap.get(keys.get(k) + l).matches(regex)) {
+                break;
+            }
+        }
+    
+        linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
+    }
+
     private static void merge(TreeItem<Map<String, String>> e, String nodeName, JsonNode item2) {
         if (item2.isValueNode()) {
             e.getValue().merge(nodeName, convertObj(item2),
@@ -435,11 +385,44 @@ public final class JsonExtractor {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static Object mergeObjs(Object a, Object b) {
+        if (a instanceof List && getListClass((List) a) == isAggregatable(b.getClass())) {
+            ((List) a).add(b);
+            return a;
+        }
+        if (b instanceof List && getListClass((List) b) == isAggregatable(a.getClass())) {
+            ((List) b).add(a);
+            return b;
+        }
+        if (b instanceof List && a instanceof List 
+                && getListClass((List)b) == getListClass((List)a)) {
+            ((List) b).addAll((List) a);
+            return b;
+        }
+        if (isAggregatable(a.getClass()) == isAggregatable(b.getClass())) {
+            return new ArrayList<>(Arrays.asList(a, b));
+        }
+        HasLogging.log().error("FIX MERGE {} {}", a, b);
+        return a;
+    }
+
+    private static boolean moreThanXHoursModified(File outFile,int hours) {
+        FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
+        Instant instant = lastModifiedTime.toInstant();
+        long between = ChronoUnit.HOURS.between(instant, Instant.now());
+        return between > hours;
+    }
+
     private static Map<String, String> newMap(Entry<String, JsonNode> item) {
         if (!item.getValue().isObject()) {
             return newMap(item.getKey(), convertObj(item.getValue()));
         }
         return newMap(item.getKey(), "");
+    }
+
+    private static boolean oneHourModified(File outFile) {
+        return moreThanXHoursModified(outFile,1);
     }
 
     private static String processNode(JsonNode jsonNode, Map<String, String> yaml, int depth, String... filters) {
@@ -461,6 +444,23 @@ public final class JsonExtractor {
         } else if (jsonNode.isObject()) {
             appendJsonObject(jsonNode, yaml, depth, filters);
         }
+    }
+
+    private static Map<String, String> processPartialList(String regex, List<String> keys,
+            Collection<Map<String, String>> finalList, Collection<List<String>> partialList,
+            Map<String, String> reference) {
+        if (partialList.isEmpty()) {
+            return reference;
+        }
+        for (List<String> list : partialList) {
+            Map<String, String> newMap = new LinkedHashMap<>(reference);
+            newMap.remove(reference.entrySet().stream().filter(e -> !e.getValue().matches(regex)).findFirst()
+                    .map(Entry<String, String>::getKey).orElse(null));
+            IntStream.range(0, keys.size()).forEach(k -> merge(regex, keys, list, newMap, k));
+            finalList.add(newMap);
+        }
+        partialList.clear();
+        return null;
     }
 
     private static void readArray(Map<JsonNode, TreeItem<Map<String, String>>> allItems, List<JsonNode> currentNodes,

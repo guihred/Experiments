@@ -60,14 +60,6 @@ public class BucketTool extends PaintTool {
         model.getToolOptions().getChildren().add(new VBox(text, slider));
     }
 
-    public void setColor(final int initX, final int initY, final int originalColor, final int frontColor,
-            final PixelReader pixelReader, final PaintModel model) {
-        final List<Integer> toGo = new CustomList<>();
-        toGo.add(index(initX, initY));
-        PixelHelper pixel = new PixelHelper();
-        RunnableEx.ignore(() -> updateColor(originalColor, frontColor, pixelReader, model, toGo, pixel));
-    }
-
     private void addIfNotIn(final Collection<Integer> toGo, final int e) {
         if (!toGo.contains(e) && e < width * height && e >= 0) {
             toGo.add(e);
@@ -104,6 +96,14 @@ public class BucketTool extends PaintTool {
         if (originalColor != frontColor) {
             CommonsFX.runInPlatform(() -> setColor(initialX, initialY, originalColor, frontColor, pixelReader, model));
         }
+    }
+
+    private void setColor(final int initX, final int initY, final int originalColor, final int frontColor,
+            final PixelReader pixelReader, final PaintModel model) {
+        final List<Integer> toGo = new CustomList<>();
+        toGo.add(index(initX, initY));
+        PixelHelper pixel = new PixelHelper();
+        RunnableEx.ignore(() -> updateColor(originalColor, frontColor, pixelReader, model, toGo, pixel));
     }
 
     private void updateColor(final int originalColor, final int frontColor, final PixelReader pixelReader,

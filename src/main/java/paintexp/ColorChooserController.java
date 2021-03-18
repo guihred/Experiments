@@ -176,7 +176,7 @@ public class ColorChooserController {
         currentColor.set(color);
     }
 
-    public static void changeIfDifferent(Slider slider, double saturation) {
+    private static void changeIfDifferent(Slider slider, double saturation) {
         if (Math.abs(slider.getValue() - saturation) > 0) {
             slider.setValue(saturation);
         }

@@ -81,16 +81,6 @@ public final class PhantomJSUtils {
         return Jsoup.parse(ghostDriver.getPageSource());
     }
 
-    public static Image textToImage(String s, String highlight) {
-        String collect2 = Stream.of(s.split("\n")).filter(StringUtils::isNotBlank)
-                .map(str -> "<p>" + str.replaceAll(highlight, "<font>$1</font>") + "</p>")
-                .collect(Collectors.joining("\n"));
-        String format =
-                String.format("<!DOCTYPE html>\n<html>\n<head>\n<style>\nfont {background-color: yellow;}</style>\n"
-                        + "</head><body>%s</body>\n</html>", collect2);
-        return saveHtmlImage(format);
-    }
-
     public static List<String> makeGet(String url, Map<String, String> headers) throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet post = new HttpGet(url);
@@ -188,11 +178,6 @@ public final class PhantomJSUtils {
                 driver -> ExtractUtils.copy(driver.getScreenshotAs(OutputType.FILE), outFile));
     }
 
-    public static Image saveHtmlImage(String html) {
-        return SupplierEx.get(() -> saveHtmlImage(html,
-                ResourceFXUtils.getOutFile("print/oi" + HashVerifier.getSha256Hash(html) + ".png")));
-    }
-
     public static Image saveHtmlImage(String html, File file) {
         HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
         Dimension dim = imageGenerator.getDefaultSize();
@@ -202,6 +187,16 @@ public final class PhantomJSUtils {
         imageGenerator.loadHtml(html);
         imageGenerator.saveAsImage(file);
         return new Image(ResourceFXUtils.convertToURL(file).toExternalForm());
+    }
+
+    public static Image textToImage(String s, String highlight) {
+        String collect2 = Stream.of(s.split("\n")).filter(StringUtils::isNotBlank)
+                .map(str -> "<p>" + str.replaceAll(highlight, "<font>$1</font>") + "</p>")
+                .collect(Collectors.joining("\n"));
+        String format =
+                String.format("<!DOCTYPE html>\n<html>\n<head>\n<style>\nfont {background-color: yellow;}</style>\n"
+                        + "</head><body>%s</body>\n</html>", collect2);
+        return saveHtmlImage(format);
     }
 
     private static PhantomJSDriver getGhostDriver() {
@@ -244,6 +239,11 @@ public final class PhantomJSUtils {
         } finally {
             ghostDriver.quit();
         }
+    }
+
+    private static Image saveHtmlImage(String html) {
+        return SupplierEx.get(() -> saveHtmlImage(html,
+                ResourceFXUtils.getOutFile("print/oi" + HashVerifier.getSha256Hash(html) + ".png")));
     }
 
 }

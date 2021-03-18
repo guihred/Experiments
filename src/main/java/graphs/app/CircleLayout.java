@@ -50,7 +50,7 @@ public class CircleLayout extends Layout {
         generateCircle(allCells, centerX, centerY, 0, bound);
     }
 
-    public static int radius(int size2, int mul, double cellBound) {
+    private static int radius(int size2, int mul, double cellBound) {
         int i = size2 / 30 + 1;
         return (int) (cellBound * i * mul);
     }

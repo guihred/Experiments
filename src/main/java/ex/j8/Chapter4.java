@@ -35,18 +35,6 @@ public final class Chapter4 {
     private Chapter4() {
     }
 
-    public static void createOrbitAnimation(Scene scene, Circle planet, Slider rotationSlider, Slider radiusSlider) {
-        new SimplePathTransitionBuilder().duration(Duration.millis(1000)).interpolator(Interpolator.LINEAR).node(planet)
-                .cycleCount(Animation.INDEFINITE).path(buildArc(scene, rotationSlider, radiusSlider)).build().play();
-    }
-
-    public static void createPulseAnimation(Circle planet) {
-        final double maxScale = 1.5;
-        new SimpleScaleTransitionBuilder().byX(maxScale).byY(maxScale).cycleCount(Animation.INDEFINITE)
-                .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet).build()
-                .play();
-    }
-
     public static void main(String[] args) {
         Application.launch(Ex10.class, args);
     }
@@ -122,6 +110,18 @@ public final class Chapter4 {
         theSun.centerXProperty().bind(divide(scene.widthProperty(), 2));
         theSun.centerYProperty().bind(divide(scene.heightProperty(), 2));
         return theSun;
+    }
+
+    private static void createOrbitAnimation(Scene scene, Circle planet, Slider rotationSlider, Slider radiusSlider) {
+        new SimplePathTransitionBuilder().duration(Duration.millis(1000)).interpolator(Interpolator.LINEAR).node(planet)
+                .cycleCount(Animation.INDEFINITE).path(buildArc(scene, rotationSlider, radiusSlider)).build().play();
+    }
+
+    private static void createPulseAnimation(Circle planet) {
+        final double maxScale = 1.5;
+        new SimpleScaleTransitionBuilder().byX(maxScale).byY(maxScale).cycleCount(Animation.INDEFINITE)
+                .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet).build()
+                .play();
     }
 
     /**

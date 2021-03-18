@@ -341,9 +341,8 @@ public class ContestReader extends ContestDTO {
 
     private void processQuestion(String[] linhas, int i) {
         String s = removeNotPrintable(linhas[i]);
-        if (s.matches(SUBJECT_PATTERN) && i > 0) {
+        if (s.matches(SUBJECT_PATTERN) && i > 0 && StringUtils.isNotBlank(linhas[i - 1])) {
             setSubject(linhas[i - 1]);
-
             return;
         }
         if (isSubject(s)) {

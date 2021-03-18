@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?import javafx.scene.layout.*?><?import javafx.scene.control.*?><?import javafx.event.*?>
-<VBox xmlns:fx="http://javafx.com/fxml"
-	stylesheets="@/css/filesComparator.css">
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.TreeItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.ListView?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" stylesheets="@/css/filesComparator.css">
 	<children>
 		<SplitPane fx:id="splitPane0" VBox.vgrow="ALWAYS">
 			<items>
-				<TreeView fx:id="treeBuilder">
-					<root>
-						<TreeItem />
-					</root>
-				</TreeView>
+				<VBox>
+					<TextField fx:id="filter" />
+					<TreeView fx:id="treeBuilder">
+						<root>
+							<TreeItem />
+						</root>
+					</TreeView>
+				</VBox>
+
 				<TableView fx:id="concursosTable" minWidth="200.0">
 					<columns>
 						<TableColumn fx:id="tableColumn4" prefWidth="200.0"

@@ -24,20 +24,20 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         return cellFactory(newCellFactory(value));
     }
 
-    public SimpleTreeViewBuilder<T> cellFactory(Callback<TreeView<T>, TreeCell<T>> value) {
-        node.setCellFactory(value);
-        return this;
-    }
-
-
     public SimpleTreeViewBuilder<T> onSelect(ConsumerEx<TreeItem<T>> consume) {
         node.getSelectionModel().selectedItemProperty()
                 .addListener((ob, old, n) -> ConsumerEx.accept(consume, n));
         return this;
     }
 
+
     public SimpleTreeViewBuilder<T> root(T value) {
         node.setRoot(new TreeItem<>(value));
+        return this;
+    }
+
+    private SimpleTreeViewBuilder<T> cellFactory(Callback<TreeView<T>, TreeCell<T>> value) {
+        node.setCellFactory(value);
         return this;
     }
 
@@ -47,7 +47,15 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
         treeView.getRoot().getChildren().add(e);
     }
 
-    public static <C> Callback<TreeView<C>, TreeCell<C>> newCellFactory(BiConsumer<C, TreeCell<C>> value) {
+    public static <V>SimpleTreeViewBuilder<V> of(TreeView<V> treeView) {
+        return new SimpleTreeViewBuilder<>(treeView);
+    }
+
+    public static <T> void onSelect(TreeView<T> treeView, Consumer<TreeItem<T>> consume) {
+        treeView.getSelectionModel().selectedItemProperty().addListener((ob, old, n) -> consume.accept(n));
+    }
+
+    private static <C> Callback<TreeView<C>, TreeCell<C>> newCellFactory(BiConsumer<C, TreeCell<C>> value) {
         return p -> new TreeCell<C>() {
             @Override
             protected void updateItem(final C item, final boolean empty) {
@@ -55,14 +63,6 @@ public class SimpleTreeViewBuilder<T> extends SimpleRegionBuilder<TreeView<T>, S
                 value.accept(getItem(), this);
             }
         };
-    }
-
-    public static <V>SimpleTreeViewBuilder<V> of(TreeView<V> treeView) {
-        return new SimpleTreeViewBuilder<>(treeView);
-    }
-
-    public static <T> void onSelect(TreeView<T> treeView, Consumer<TreeItem<T>> consume) {
-        treeView.getSelectionModel().selectedItemProperty().addListener((ob, old, n) -> consume.accept(n));
     }
 
 }

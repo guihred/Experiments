@@ -210,24 +210,6 @@ public final class GraphAlgorithms {
 
     }
 
-    // Returns true if word1 and word2 are the same length
-    // and differ in only one character.
-    public static boolean oneCharOff(String word1, String word2) {
-        if (word1.length() != word2.length()) {
-            return false;
-        }
-
-        int diffs = 0;
-
-        for (int i = 0; i < word1.length(); i++) {
-            if (word1.charAt(i) != word2.charAt(i) && ++diffs > 1) {
-                return false;
-            }
-        }
-
-        return diffs == 1;
-    }
-
     public static List<EdgeElement> prim(Iterable<Vertex> vertices) {
         Map<Vertex, Integer> heap = new HashMap<>();
         Map<Vertex, Vertex> mstHolder = new HashMap<>();
@@ -253,6 +235,24 @@ public final class GraphAlgorithms {
             .map(e -> new EdgeElement(e.getValue(), e.getKey(), e.getValue().weight(e.getKey())))
             .collect(Collectors.toList());
 
+    }
+
+    // Returns true if word1 and word2 are the same length
+    // and differ in only one character.
+    private static boolean oneCharOff(String word1, String word2) {
+        if (word1.length() != word2.length()) {
+            return false;
+        }
+
+        int diffs = 0;
+
+        for (int i = 0; i < word1.length(); i++) {
+            if (word1.charAt(i) != word2.charAt(i) && ++diffs > 1) {
+                return false;
+            }
+        }
+
+        return diffs == 1;
     }
 
 }

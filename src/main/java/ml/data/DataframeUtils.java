@@ -256,34 +256,16 @@ public class DataframeUtils extends DataframeML {
         Class<?> class1 = dataframe.getFormat(header);
         if (class1 == String.class) {
             Comparator<String> compa = revertComparator(String::compareTo, ascending);
-            QuickSortML.sort(typedList(list), (i, j) -> {
-                for (List<Object> list2 : trimmedColumns) {
-                    Object object = list2.get(i);
-                    list2.set(i, list2.get(j));
-                    list2.set(j, object);
-                }
-            }, compa);
+            QuickSortML.sort(typedList(list), (i, j) -> exchange(trimmedColumns, i, j), compa);
         }
 
         if (class1 == Double.class) {
             Comparator<Double> compa = revertComparator(Double::compareTo, ascending);
-            QuickSortML.sort(typedList(list), (i, j) -> {
-                for (List<Object> list2 : trimmedColumns) {
-                    Object object = list2.get(i);
-                    list2.set(i, list2.get(j));
-                    list2.set(j, object);
-                }
-            }, compa.reversed());
+            QuickSortML.sort(typedList(list), (i, j) -> exchange(trimmedColumns, i, j), compa.reversed());
         }
         if (class1 == Integer.class) {
             Comparator<Integer> compa = revertComparator(Integer::compareTo, ascending);
-            QuickSortML.sort(typedList(list), (i, j) -> {
-                for (List<Object> list2 : trimmedColumns) {
-                    Object object = list2.get(i);
-                    list2.set(i, list2.get(j));
-                    list2.set(j, object);
-                }
-            }, compa.reversed());
+            QuickSortML.sort(typedList(list), (i, j) -> exchange(trimmedColumns, i, j), compa.reversed());
         }
 
     }
@@ -554,6 +536,14 @@ public class DataframeUtils extends DataframeML {
         for (Object j : max) {
             Object cross = m.get(j);
             dataframeML.stats.computeIfAbsent(header1 + j, h -> accumulator(dataframeML, h)).accept(cross);
+        }
+    }
+
+    private static void exchange(List<List<Object>> trimmedColumns, int i, int j) {
+        for (List<Object> list2 : trimmedColumns) {
+            Object object = list2.get(i);
+            list2.set(i, list2.get(j));
+            list2.set(j, object);
         }
     }
 

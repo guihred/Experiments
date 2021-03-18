@@ -27,7 +27,7 @@ public class JavaFileDependency {
     private static final String PUBLIC_METHOD_REGEX = "\\W+public .+ (\\w+)\\(.+";
     private static final String INVOKE_METHOD_REGEX = "\\W+(\\w+)\\(";
     private static final String PACKAGE_REGEX = "package ([\\w\\.]+);";
-    private Path javaPath;
+    private final Path javaPath;
     private List<String> dependencies;
     private List<JavaFileDependency> dependsOn;
     private List<String> publicMethods;
@@ -168,9 +168,6 @@ public class JavaFileDependency {
                 .collect(Collectors.toList());
     }
 
-    private boolean search(String name1, List<JavaFileDependency> visited, List<JavaFileDependency> path) {
-        return search(d -> d.getFullName().contains(name1), visited, path);
-    }
 
     public static List<String> displayTestsToBeRun(Collection<String> dependecyList,
             Predicate<JavaFileDependency> filter, List<String> allPaths) {

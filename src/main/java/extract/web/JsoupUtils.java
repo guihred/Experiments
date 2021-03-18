@@ -62,8 +62,7 @@ public final class JsoupUtils {
     }
 
     public static String extractBodyFromHTML(File inputFile) throws IOException {
-        Document doc = Jsoup.parse(inputFile, "UTF-8");
-        return doc.body().text();
+        return Jsoup.parse(inputFile, "UTF-8").body().text();
     }
 
     // A simple authentication POST request with Jsoup

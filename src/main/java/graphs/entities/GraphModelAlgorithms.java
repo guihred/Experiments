@@ -102,10 +102,6 @@ public final class GraphModelAlgorithms {
         assignLow(num, low, parent, s2, allEdges);
     }
 
-    public static List<Edge> incomingEdges(Cell c, Collection<Edge> allEdges) {
-        return allEdges.stream().filter(e -> e.target.equals(c)).collect(Collectors.toList());
-    }
-
     public static long intersection(Collection<? extends Node> cells, Node cell2) {
         return cells.stream().filter(e -> e != cell2 && e.getBoundsInParent().intersects(cell2.getBoundsInParent()))
                 .count();
@@ -393,6 +389,10 @@ public final class GraphModelAlgorithms {
     private static List<Ponto> getPointSet(List<Cell> all) {
 
         return all.stream().map(c -> new Ponto(c.getLayoutX(), c.getLayoutY(), c)).collect(Collectors.toList());
+    }
+
+    private static List<Edge> incomingEdges(Cell c, Collection<Edge> allEdges) {
+        return allEdges.stream().filter(e -> e.target.equals(c)).collect(Collectors.toList());
     }
 
     private static int indexOf(String s, List<Cell> allCells) {

@@ -2,13 +2,10 @@ package contest;
 
 import static utils.CommonsFX.onCloseWindow;
 import static utils.ex.RunnableEx.runNewThread;
-import static utils.ex.SupplierEx.getIgnore;
-import static utils.ex.SupplierEx.orElse;
 
 import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -19,10 +16,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.jsoup.nodes.Document;
+import simplebuilder.ListHelper;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
@@ -33,6 +32,7 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class QuadrixCrawler extends Application {
+
 
     @FXML
     private ListView<String> vagasList;
@@ -46,6 +46,8 @@ public class QuadrixCrawler extends Application {
     private ObservableList<Concurso> concursos = FXCollections.observableArrayList();
 
     private Set<String> links = new HashSet<>();
+    @FXML
+    private TextField filter;
 
     public void initialize() {
         Map.Entry<String, String> simpleEntry = new SimpleEntry<>("",
@@ -86,7 +88,7 @@ public class QuadrixCrawler extends Application {
 
         if (IadesHelper.hasFileExtension(key)) {
             String url1 = QuadrixHelper.addQuadrixDomain(url);
-            SupplierEx.get(() -> ExtractUtils.getFile(key, url1));
+            SupplierEx.get(() -> ExtractUtils.getFile(ExtractUtils.EXTRACT_FOLDER + key, url1));
             return;
         }
         if (!newValue.getChildren().isEmpty()) {
@@ -94,14 +96,22 @@ public class QuadrixCrawler extends Application {
         }
         int level = tree.getTreeItemLevel(newValue);
         SimpleStringProperty domain = new SimpleStringProperty(QuadrixHelper.QUADRIX_DOMAIN);
-        CommonsFX.runInPlatform(() -> {
-            URL url2 = orElse(getIgnore(() -> new URL(url)), () -> new URL(QuadrixHelper.addQuadrixDomain(url)));
+        RunnableEx.runNewThread(() -> {
+            URL url2 = new URL(url);
             domain.set(url2.getProtocol() + "://" + url2.getHost());
             Document doc = QuadrixHelper.getDocumentCookies(url2);
-            List<Entry<String, String>> l = QuadrixHelper.getLinks(doc, entry, domain, level, concursos, links);
+            return QuadrixHelper.getLinks(doc, entry, domain, level, concursos, links);
+        }, l -> CommonsFX.runInPlatform(() -> {
             links.addAll(l.stream().map(Entry<String, String>::getValue).collect(Collectors.toList()));
-            l.forEach(m -> newValue.getChildren().add(new TreeItem<>(m)));
-        });
+            ObservableList<Entry<String, String>> linkList = FXCollections.<Entry<String, String>>observableArrayList();
+            FilteredList<Entry<String, String>> filteredChildren = linkList.filtered(e -> true);
+            ListHelper.referenceMapping(filteredChildren, TreeItem::new, newValue.getChildren());
+            if (level == 0) {
+                CommonsFX.newFastFilter(filter, filteredChildren);
+            }
+            l.stream().collect(Collectors.toCollection(() -> linkList));
+
+        }));
 
     }
 

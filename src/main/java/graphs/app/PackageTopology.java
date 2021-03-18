@@ -68,12 +68,6 @@ public class PackageTopology extends BaseTopology {
                 k -> k.getClasses().stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()))));
     }
 
-    public static Map<String, Map<String, Long>> createFileDependencyMap(Collection<JavaFileDependency> allFiles,
-            String packName) {
-        return allFiles.stream().filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
-                .collect(Collectors.toMap(JavaFileDependency::getFullName, k -> convertToMap(allFiles, k)));
-    }
-
     public static void printDependencyMap(Map<String, Map<String, Long>> packageDependencyMap) {
         List<String> packNames = packageDependencyMap.keySet().stream()
                 .sorted(Comparator
@@ -100,6 +94,12 @@ public class PackageTopology extends BaseTopology {
     private static Map<String, Long> convertToMap(Collection<JavaFileDependency> allFiles, JavaFileDependency k) {
         return k.getClasses().stream().filter(e -> allFiles.stream().anyMatch(d -> Objects.equals(d.getName(), e)))
                 .collect(Collectors.groupingBy(e -> getFullName(allFiles, e), Collectors.counting()));
+    }
+
+    private static Map<String, Map<String, Long>> createFileDependencyMap(Collection<JavaFileDependency> allFiles,
+            String packName) {
+        return allFiles.stream().filter(e -> StringUtils.isBlank(packName) || e.getPackage().equals(packName))
+                .collect(Collectors.toMap(JavaFileDependency::getFullName, k -> convertToMap(allFiles, k)));
     }
 
     private static String getFullName(Collection<JavaFileDependency> allFiles, String e) {

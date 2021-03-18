@@ -1,6 +1,9 @@
 package japstudy;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.LocalTime;
 import java.util.List;
@@ -19,7 +22,7 @@ import utils.ex.RunnableEx;
 public final class JapaneseLessonReader {
     private static final String JAP_REGEX = ".*([\u2E80-\u6FFF]+.*)$";
     private static final Logger LOGGER = HasLogging.log();
-    private static LessonDAO lessonDAO = new LessonDAO();
+    private final static LessonDAO lessonDAO = new LessonDAO();
 
     private JapaneseLessonReader() {
     }
@@ -28,10 +31,10 @@ public final class JapaneseLessonReader {
         return lessonDAO.getCountExerciseByLesson(lesson);
     }
 
-    public static ObservableList<JapaneseLesson> getLessons(String arquivo) throws IOException {
-        InputStream resourceAsStream = new FileInputStream(ResourceFXUtils.toFile(arquivo));
+    public static ObservableList<JapaneseLesson> getLessons(String arquivo) {
         ObservableList<JapaneseLesson> listaExercises = FXCollections.observableArrayList();
-        try (XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
+        try (InputStream resourceAsStream = new FileInputStream(ResourceFXUtils.toFile(arquivo));
+                XWPFDocument document1 = new XWPFDocument(resourceAsStream)) {
             addJapaneseLessons(listaExercises, document1);
         } catch (Exception e) {
             LOGGER.error("", e);
@@ -50,20 +53,7 @@ public final class JapaneseLessonReader {
     }
 
     public static void main(String[] args) {
-        try (BufferedWriter newBufferedWriter =
-                Files.newBufferedWriter(ResourceFXUtils.getOutFile("mp3/japanese.txt").toPath());) {
-            List<JapaneseLesson> list = lessonDAO.list();
-            for (JapaneseLesson japaneseLesson : list) {
-                RunnableEx.run(() -> {
-                    String japanese = japaneseLesson.getJapanese();
-                    File synthesize = GoogleVoiceApi.synthesize(japanese, "ja-JP");
-                    newBufferedWriter.append(String.format("%s[source:%s]\t%s\t%s\t\n", japanese, synthesize.getName(),
-                            japaneseLesson.getEnglish(), japaneseLesson.getRomaji()));
-                });
-            }
-        } catch (Exception e) {
-            LOGGER.error("", e);
-        }
+        extractJapanese();
     }
 
     public static void update(JapaneseLesson japaneseLesson) {
@@ -103,6 +93,23 @@ public final class JapaneseLessonReader {
                     japaneseLesson.addRomaji(text.trim());
                 }
             }
+        }
+    }
+
+    private static void extractJapanese() {
+        try (BufferedWriter newBufferedWriter =
+                Files.newBufferedWriter(ResourceFXUtils.getOutFile("mp3/japanese.txt").toPath());) {
+            List<JapaneseLesson> list = lessonDAO.list();
+            for (JapaneseLesson japaneseLesson : list) {
+                RunnableEx.run(() -> {
+                    String japanese = japaneseLesson.getJapanese();
+                    File synthesize = GoogleVoiceApi.synthesize(japanese, "ja-JP");
+                    newBufferedWriter.append(String.format("%s[source:%s]\t%s\t%s\t\n", japanese, synthesize.getName(),
+                            japaneseLesson.getEnglish(), japaneseLesson.getRomaji()));
+                });
+            }
+        } catch (Exception e) {
+            LOGGER.error("", e);
         }
     }
 

@@ -89,17 +89,17 @@ public class Dog extends Player implements Enemy {
 		direction = Direction.LEFT;
 	}
 
-	public void walkRight() {
-		direction = Direction.RIGHT;
-		velocityX = 5;
-	}
-
-	private void jump() {
+    private void jump() {
 		if (status == DogStatus.WALKING || status == DogStatus.STOPPED) {
 			velocityY = -15;
 			accelerationY = 1;
 			status = DogStatus.ATTACKING;
 		}
+	}
+
+	private void walkRight() {
+		direction = Direction.RIGHT;
+		velocityX = 5;
 	}
 
     private enum DogStatus {

@@ -34,27 +34,14 @@ public class OrganicTreeFractal extends Canvas {
         return deltaAngle;
     }
 
-	public final void drawTree() {
-        GraphicsContext gc = getGraphicsContext2D();
-        gc.clearRect(0, 0, SIZE, SIZE);
-
-        List<double[]> leaves = new ArrayList<>();
-        gc.setStroke(Color.BLACK);
-        drawBranch(gc, SIZE / 2, SIZE, 2, Math.PI, 0, leaves);
-        gc.setFill(Color.GREEN);
-
-        gc.setLineWidth(1);
-        leaves.forEach(e -> drawLeaf(gc, e));
-    }
-
     public DoubleProperty initialRadiusProperty() {
         return initialRadius;
     }
 
-
     public DoubleProperty leafProperty() {
         return leaf;
     }
+
 
     public DoubleProperty ratioProperty() {
         return ratio;
@@ -86,7 +73,7 @@ public class OrganicTreeFractal extends Canvas {
 
     }
 
-	private void drawLeaf(GraphicsContext gc, double[] e) {
+    private void drawLeaf(GraphicsContext gc, double[] e) {
         gc.save();
         double h = leaf.get();
         double degrees = e[2];
@@ -95,6 +82,19 @@ public class OrganicTreeFractal extends Canvas {
         gc.fillOval(e[0] - h / 6, e[1] - h / 4, h, h / 2);
         gc.transform(affine);
         gc.restore();
+    }
+
+	private final void drawTree() {
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.clearRect(0, 0, SIZE, SIZE);
+
+        List<double[]> leaves = new ArrayList<>();
+        gc.setStroke(Color.BLACK);
+        drawBranch(gc, SIZE / 2, SIZE, 2, Math.PI, 0, leaves);
+        gc.setFill(Color.GREEN);
+
+        gc.setLineWidth(1);
+        leaves.forEach(e -> drawLeaf(gc, e));
     }
 
 }

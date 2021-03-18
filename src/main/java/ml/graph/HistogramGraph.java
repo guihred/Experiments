@@ -54,7 +54,47 @@ public class HistogramGraph extends Canvas {
         return colors;
     }
 
-    public void drawAxis() {
+    public DoubleProperty layoutProperty() {
+        return layout;
+    }
+
+    public DoubleProperty lineSizeProperty() {
+        return lineSize;
+    }
+
+    public void setHistogram(DataframeML dataframe) {
+        this.dataframe = dataframe;
+
+        dataframe.forEach((col, items) -> {
+            List<Color> generateColors = ImageFXUtils.generateRandomColors(stats.size());
+            Iterator<Color> iterator = generateColors.iterator();
+            colors.put(col, iterator.next());
+            Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, col, bins.get());
+
+            stats.put(col, histogram.values().stream().mapToLong(e -> e).summaryStatistics());
+            xstats.put(col, histogram.keySet().stream().mapToDouble(Number::doubleValue).summaryStatistics());
+            stats.forEach((col2, itens) -> {
+                if (iterator.hasNext()) {
+                    colors.put(col2, iterator.next());
+                }
+            });
+        });
+
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public ObservableMap<String, LongSummaryStatistics> statsProperty() {
+        return stats;
+    }
+
+    public LongProperty ybinsProperty() {
+        return ybins;
+    }
+
+    private void drawAxis() {
 
         gc.setFill(Color.BLACK);
         gc.setStroke(Color.BLACK);
@@ -86,7 +126,7 @@ public class HistogramGraph extends Canvas {
         }
     }
 
-    public final void drawGraph() {
+    private final void drawGraph() {
         if (dataframe == null) {
             drawAxis();
             return;
@@ -134,46 +174,6 @@ public class HistogramGraph extends Canvas {
         }
         drawAxis();
 
-    }
-
-    public DoubleProperty layoutProperty() {
-        return layout;
-    }
-
-    public DoubleProperty lineSizeProperty() {
-        return lineSize;
-    }
-
-    public void setHistogram(DataframeML dataframe) {
-        this.dataframe = dataframe;
-
-        dataframe.forEach((col, items) -> {
-            List<Color> generateColors = ImageFXUtils.generateRandomColors(stats.size());
-            Iterator<Color> iterator = generateColors.iterator();
-            colors.put(col, iterator.next());
-            Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, col, bins.get());
-
-            stats.put(col, histogram.values().stream().mapToLong(e -> e).summaryStatistics());
-            xstats.put(col, histogram.keySet().stream().mapToDouble(Number::doubleValue).summaryStatistics());
-            stats.forEach((col2, itens) -> {
-                if (iterator.hasNext()) {
-                    colors.put(col2, iterator.next());
-                }
-            });
-        });
-
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public ObservableMap<String, LongSummaryStatistics> statsProperty() {
-        return stats;
-    }
-
-    public LongProperty ybinsProperty() {
-        return ybins;
     }
 
 }

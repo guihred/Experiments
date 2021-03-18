@@ -10,14 +10,11 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import org.assertj.core.api.exception.RuntimeIOException;
-import org.slf4j.Logger;
-import utils.ex.HasLogging;
+import utils.ex.ConsumerEx;
+import utils.ex.RunnableEx;
 
 public final class TermFrequencyIndex {
-    private static final Logger LOGGER = HasLogging.log();
-
     private static final Map<String, Map<File, Double>> MAP_TF_IDF = new HashMap<>();
-
     /**
      * 
      * Tf, in its basic form, is just the frequency that we look up in appropriate
@@ -76,7 +73,41 @@ public final class TermFrequencyIndex {
     private TermFrequencyIndex() {
     }
 
-    public static Map<File, Map<String, Long>> getDocumentMap(File f) {
+    public static void identifyKeyWordsInSourceFiles() {
+        RunnableEx.run(() -> {
+            File arquivo = new File("src");
+            Map<File, Map<String, Long>> documentMap = getDocumentMap(arquivo);
+            documentMap.forEach((c, v) -> v.forEach((p, fre) -> {
+                double idf = getInverseDocumentFrequency(p);
+                double termFrequency = getTermFrequency(fre);
+                MAP_TF_IDF.computeIfAbsent(p, m -> new HashMap<>()).put(c, idf * termFrequency);
+            }));
+            // MAP_TF_IDF =
+            List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<>(MAP_TF_IDF.entrySet());
+
+            entrySet.sort(TermFrequencyIndex::compare);
+            // MAP
+            File file = ResourceFXUtils.getOutFile("txt/resultado.txt");
+            printWordFound(entrySet, file);
+        });
+    }
+
+    private static int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
+        double da = 0D;
+        for (Entry<File, Double> entry : a.getValue().entrySet()) {
+            double value = entry.getValue().doubleValue();
+            da = da < value ? value : da;
+        }
+        double db = 0D;
+        for (Entry<File, Double> entry : b.getValue().entrySet()) {
+            double value = entry.getValue().doubleValue();
+            db = db < value ? value : db;
+        }
+
+        return Double.compare(db, da);
+    }
+
+    private static Map<File, Map<String, Long>> getDocumentMap(File f) {
 
         if (!f.isDirectory()) {
             if (f.getName().endsWith(".java")) {
@@ -85,13 +116,7 @@ public final class TermFrequencyIndex {
             }
         } else {
             List<String> asList = Arrays.asList(f.list());
-            asList.forEach(a -> {
-                try {
-                    getDocumentMap(new File(f, a));
-                } catch (Exception e) {
-                    LOGGER.error("", e);
-                }
-            });
+            ConsumerEx.foreach(asList, a -> getDocumentMap(new File(f, a)));
         }
         return MAPA_DOCUMENTO;
     }
@@ -108,7 +133,7 @@ public final class TermFrequencyIndex {
      * \mathrm{tf}(t,d) = 0.5 + \frac{0.5 \times \mathrm{f}(t,
      * d)}{\max\{\mathrm{f}(w, d):w \in d\}}
      */
-    public static Map<String, Long> getFrequencyMap(File d) {
+    private static Map<String, Long> getFrequencyMap(File d) {
         try (BufferedReader bufferedReader = Files.newBufferedReader(d.toPath())) {
 
             String readLine;
@@ -133,43 +158,6 @@ public final class TermFrequencyIndex {
         }
     }
 
-    public static void identifyKeyWordsInSourceFiles() {
-        try {
-
-            File arquivo = new File("src");
-            Map<File, Map<String, Long>> documentMap = getDocumentMap(arquivo);
-            documentMap.forEach((c, v) -> v.forEach((p, fre) -> {
-                double idf = getInverseDocumentFrequency(p);
-                double termFrequency = getTermFrequency(fre);
-                MAP_TF_IDF.computeIfAbsent(p, m -> new HashMap<>()).put(c, idf * termFrequency);
-            }));
-            // MAP_TF_IDF =
-            List<Entry<String, Map<File, Double>>> entrySet = new ArrayList<>(MAP_TF_IDF.entrySet());
-
-            entrySet.sort(TermFrequencyIndex::compare);
-            // MAP
-            File file = ResourceFXUtils.getOutFile("txt/resultado.txt");
-            printWordFound(entrySet, file);
-        } catch (Exception e2) {
-            LOGGER.error("", e2);
-        }
-    }
-
-    private static int compare(Entry<String, Map<File, Double>> a, Entry<String, Map<File, Double>> b) {
-        double da = 0D;
-        for (Entry<File, Double> entry : a.getValue().entrySet()) {
-            double value = entry.getValue().doubleValue();
-            da = da < value ? value : da;
-        }
-        double db = 0D;
-        for (Entry<File, Double> entry : b.getValue().entrySet()) {
-            double value = entry.getValue().doubleValue();
-            db = db < value ? value : db;
-        }
-        
-        return Double.compare(db, da);
-    }
-
     private static double getInverseDocumentFrequency(String p) {
         Set<Entry<File, Map<String, Long>>> entrySet = MAPA_DOCUMENTO.entrySet();
         double idf = 1D;
@@ -187,16 +175,16 @@ public final class TermFrequencyIndex {
     }
 
     private static void printWordFound(List<Entry<String, Map<File, Double>>> entrySet, File file) {
-        try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
-            entrySet.forEach(e -> {
-                if (!TermFrequency.getJavaKeywords().contains(e.getKey())) {
-                    out.println(e.getKey() + "={");
-                    e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));
-                    out.println("}");
-                }
-            });
-        } catch (Exception e2) {
-            LOGGER.error("", e2);
-        }
+        RunnableEx.run(() -> {
+            try (final PrintStream out = new PrintStream(file, StandardCharsets.UTF_8.displayName())) {
+                entrySet.forEach(e -> {
+                    if (!TermFrequency.getJavaKeywords().contains(e.getKey())) {
+                        out.println(e.getKey() + "={");
+                        e.getValue().forEach((f, d) -> out.println("   " + f.getName() + "=" + d));
+                        out.println("}");
+                    }
+                });
+            }
+        });
     }
 }
