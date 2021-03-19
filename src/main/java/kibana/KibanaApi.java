@@ -57,11 +57,12 @@ public class KibanaApi {
         String valueCol = "value";
         String buckets = "buckets";
         List<Map<Object, Object>> accessList = JsonExtractor.accessList(
-                makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { "DestinationIP", ip },
+                makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { "DestinationIP", "SourceIP", ip },
                         "aggregations"),
                 "aggregations", "3", buckets);
         List<Map<Object, Object>> accessList2 = JsonExtractor.accessList(
-                makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { "SourceIP", ip }, "aggregations"),
+                makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { "SourceIP", "DestinationIP", ip },
+                        "aggregations"),
                 "aggregations", "3", buckets);
         accessList.addAll(accessList2);
         return accessList.stream().map((Map<Object, Object> map) -> {
@@ -75,6 +76,18 @@ public class KibanaApi {
             }).collect(Collectors.joining("\n"));
             return ongValue;
         }).collect(Collectors.joining("\n"));
+    }
+
+    public static <T> String display(Map<String, T> ob) {
+        if (ob == null) {
+            return "";
+        }
+        List<List<String>> listOfFields = getFieldList(ob);
+        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
+        adjustToMax(listOfFields, maxNumFields);
+        return IntStream.range(0, maxNumFields).mapToObj(
+                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining(" ")))
+                .collect(Collectors.joining("\n"));
     }
 
     public static String geoLocation(String ip) {
@@ -358,15 +371,6 @@ public class KibanaApi {
             return String.format("%s (%s a %s)", last, min, max);
         });
 
-    }
-
-    private static <T> String display(Map<String, T> ob) {
-        List<List<String>> listOfFields = getFieldList(ob);
-        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
-        adjustToMax(listOfFields, maxNumFields);
-        return IntStream.range(0, maxNumFields).mapToObj(
-                j -> listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.joining(" ")))
-                .collect(Collectors.joining("\n"));
     }
 
     private static <T> String displayDistinct(Map<String, T> ob) {

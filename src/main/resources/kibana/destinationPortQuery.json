@@ -73,7 +73,7 @@
 				},
                 {
                     "match_phrase": {
-                        "SourceIP": {
+                        "%s": {
                             "query": "%s"
                         }
                     }

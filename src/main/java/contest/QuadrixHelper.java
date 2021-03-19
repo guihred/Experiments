@@ -161,7 +161,7 @@ public final class QuadrixHelper {
             .sorted(Comparator.comparing(e -> IadesHelper.containsNumber(number, e)))
             .map(QuadrixHelper::getFilesFromPage).filter(l -> !l.isEmpty()).map(l -> l.get(0)).findFirst().orElse(null);
         if (gabaritoFile == null) {
-            LOG.info("SEM gabarito {}", linksFound);
+            LOG.error("SEM gabarito {}", linksFound);
             return;
         }
         List<String> linesRead = PdfUtils.readFile(gabaritoFile).getPages().stream().flatMap(List<String>::stream)
@@ -171,7 +171,7 @@ public final class QuadrixHelper {
         Optional<String> findFirst = linesRead.stream()
             .filter(e -> e.contains(vaga) || e.contains(number) || containsIgnoreCase(e, cargo)).findFirst();
         if (!findFirst.isPresent()) {
-            LOG.info("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabaritoFile, linesRead);
+            LOG.error("COULDN'T FIND \"{}\" \"{}\" - {}", vaga, gabaritoFile, linesRead);
             return;
         }
         IadesHelper.saveAnswers(entities, linesRead, findFirst.get());

@@ -95,6 +95,16 @@ public class DataframeML extends BaseDataframe {
         return this;
     }
 
+    public List<Map<String, Object>> findAll(String header, Predicate<Object> v) {
+        List<Object> list = dataframe.get(header);
+        if (list != null) {
+            return IntStream.range(0, list.size()).filter(i -> v.test(list.get(i)))
+                    .mapToObj(this::rowMap).collect(Collectors.toList());
+        }
+        HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> Map<String, T> findFirst(String header, Predicate<Object> v) {
         List<Object> list = dataframe.get(header);

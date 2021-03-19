@@ -10,7 +10,7 @@ import javax.net.ssl.X509TrustManager;
 class SavingTrustManager implements X509TrustManager {
 
     private final X509TrustManager tm;
-    private List<X509Certificate> chain = new ArrayList<>();
+    private final List<X509Certificate> chain = new ArrayList<>();
 
     public SavingTrustManager(X509TrustManager tm) {
         this.tm = tm;

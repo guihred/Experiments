@@ -25,6 +25,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import simplebuilder.SimpleListViewBuilder;
 import utils.fx.ImageTableCell;
 
 public class ContestApplicationController {
@@ -61,8 +62,13 @@ public class ContestApplicationController {
     public void initialize() {
         current.set(-1);
         ObservableList<ContestDTO> allContests2 = getAllContests();
-        allContests.setCellFactory(newCellFactory((t, u) -> u.setText(formatDTO(t))));
-        allContests.setItems(allContests2);
+        SimpleListViewBuilder.of(allContests).cellFactory(newCellFactory((ContestDTO t, ListCell<ContestDTO> u) -> {
+            u.setText(formatDTO(t));
+            u.getStyleClass().removeAll("", CERTO);
+            if (t != null && t.hasAnswers()) {
+                u.getStyleClass().addAll(CERTO);
+            }
+        })).items(allContests2).copiable();
         if (!allContests2.isEmpty()) {
             contestQuestions = allContests2.get(0);
             questions.setItems(contestQuestions.getListQuestions());
@@ -75,7 +81,8 @@ public class ContestApplicationController {
         questions.getSelectionModel().selectedIndexProperty().addListener((o, old, n) -> current.set(n.intValue()));
         answersCorrect.addListener(this::answerCorrectChange);
 
-        questions.setCellFactory(newCellFactory((ContestQuestion c, ListCell<ContestQuestion> v) -> {
+        SimpleListViewBuilder.of(questions)
+                .cellFactory(newCellFactory((ContestQuestion c, ListCell<ContestQuestion> v) -> {
             v.setText(mapIf(c, c0 -> format("%s nº%d", c0.getSubject(), c0.getNumber())));
             v.getStyleClass().removeAll("", CERTO, ERRADO, CERTO0, ERRADO0);
             if (c != null) {
@@ -85,8 +92,7 @@ public class ContestApplicationController {
                 cellMap.remove(v);
             }
         }));
-        options.getSelectionModel().selectedItemProperty()
-                .addListener((observable, old, value) -> onOptionSelected(value));
+        SimpleListViewBuilder.of(options).onDoubleClick(value -> onOptionSelected(value));
         questionNumber.textProperty().bind(current.add(1).asString("Questão %d"));
         updateCellFactory();
         current.addListener((ob, old, value) -> onCurrentChange(value));
@@ -95,6 +101,11 @@ public class ContestApplicationController {
 
     public void onActionNext() {
         current.set((current.get() + 1) % contestQuestions.getListQuestions().size());
+    }
+
+    public void onActionPrevious() {
+        current.set((current.get() - 1 + contestQuestions.getListQuestions().size())
+                % contestQuestions.getListQuestions().size());
     }
 
     public void onMouseClickedListView1(MouseEvent e) {
@@ -120,14 +131,13 @@ public class ContestApplicationController {
     }
 
     private void answerCorrectChange(Change<? extends Integer, ? extends String> change) {
-        cellMap.entrySet().stream()
-            .filter(e -> Objects.equals(e.getValue(), change.getKey())).findFirst()
-            .ifPresent(cel -> {
-                cel.getKey().getStyleClass().removeAll("", CERTO, ERRADO, CERTO0, ERRADO0);
-                if (change.wasAdded() && cel.getKey().getItem().getNumber() == cel.getValue()) {
-                    cel.getKey().getStyleClass().add(change.getValueAdded());
-                }
-            });
+        cellMap.entrySet().stream().filter(e -> Objects.equals(e.getValue(), change.getKey())).findFirst()
+                .ifPresent(cel -> {
+                    cel.getKey().getStyleClass().removeAll("", CERTO, ERRADO, CERTO0, ERRADO0);
+                    if (change.wasAdded() && cel.getKey().getItem().getNumber() == cel.getValue()) {
+                        cel.getKey().getStyleClass().add(change.getValueAdded());
+                    }
+                });
     }
 
     private void changeOptions(ContestQuestion contestQuestion) {
@@ -167,7 +177,7 @@ public class ContestApplicationController {
         changeOptions(contestQuestion);
         images.getChildren().clear();
         getContestTexts(contestQuestions.getContestTexts(), cur).map(ContestText::getImage).filter(Objects::nonNull)
-            .forEach(this::addImages);
+                .forEach(this::addImages);
         if (contestQuestion.getImage() != null) {
             addImages(contestQuestion.getImage());
         }
@@ -194,9 +204,9 @@ public class ContestApplicationController {
         String text2 = getText(contestQuestions, cur);
         text.setText(text2);
         double[] dividerPositions = splitPane.getDividerPositions();
-        dividerPositions[dividerPositions.length - 1] = text2.isEmpty() && images.getChildren().isEmpty()
-            ? dividerPositions[dividerPositions.length - 2]
-            : 4. / 6;
+        dividerPositions[dividerPositions.length - 1] =
+                text2.isEmpty() && images.getChildren().isEmpty() ? dividerPositions[dividerPositions.length - 2]
+                        : 4. / 6;
         splitPane.setDividerPositions(dividerPositions);
     }
 
@@ -210,7 +220,5 @@ public class ContestApplicationController {
             cell.getStyleClass().add(mapIf(el, e -> e.getCorrect() ? CERTO0 : ERRADO0, ""));
         }));
     }
-
-
 
 }

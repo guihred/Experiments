@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
 import utils.ResourceFXUtils;
-import utils.ex.HasLogging;
 
 public final class IpStackApi {
-    private static final Logger LOG = HasLogging.log();
     private static final String IP_STACK_APIKEY = "1f04d130a6544f0bc6687b5d19ca3981";
 
     private IpStackApi() {
@@ -22,7 +19,6 @@ public final class IpStackApi {
         }
         Map<String, Object> geoInfo =
                 JsonExtractor.toObject(outFile, "city", "region_code", "country_code");
-        LOG.info("{} {}", ip, geoInfo);
         return JsonExtractor.accessMap(geoInfo);
     }
 

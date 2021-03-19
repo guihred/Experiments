@@ -114,6 +114,10 @@ public class ContestQuestion extends BaseEntity implements HasImage {
         return type;
     }
 
+    public boolean hasAnswer() {
+        return options != null && options.stream().anyMatch(e -> e.getCorrect());
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(key);

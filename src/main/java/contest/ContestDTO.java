@@ -62,6 +62,10 @@ public class ContestDTO implements HasLogging {
         return texts;
     }
 
+    public boolean hasAnswers() {
+        return listQuestions.stream().anyMatch(q -> q.hasAnswer());
+    }
+
     public void setContest(Contest contest) {
         this.contest = contest;
     }

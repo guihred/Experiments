@@ -8,25 +8,21 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<SplitPane xmlns:fx="http://javafx.com/fxml"
-	fx:controller="contest.ContestApplicationController" fx:id="splitPane"
-	styleClass="root split-pane" stylesheets="@/css/filesComparator.css">
+<SplitPane xmlns:fx="http://javafx.com/fxml" fx:controller="contest.ContestApplicationController"
+	fx:id="splitPane" styleClass="root split-pane">
 	<fx:define>
 		<SimpleIntegerProperty fx:id="current" />
 	</fx:define>
 	<items>
-		<ListView fx:id="allContests"
-			onMouseClicked="#onMouseClickedListView1"
+		<ListView fx:id="allContests" onMouseClicked="#onMouseClickedListView1"
 			prefWidth="${splitPane.width*0.2}">
 		</ListView>
-		<ListView fx:id="questions"
-			prefWidth="${splitPane.width*0.2}" >
+		<ListView fx:id="questions" prefWidth="${splitPane.width*0.2}">
 		</ListView>
 		<ScrollPane fx:id="scrollPane2">
 			<content>
 				<VBox>
-					<Text fx:id="text" wrappingWidth="500.0"
-						prefWidth="${splitPane.width*0.3}" />
+					<Text fx:id="text" wrappingWidth="500.0" prefWidth="${splitPane.width*0.3}" />
 					<VBox fx:id="images" />
 				</VBox>
 			</content>
@@ -36,10 +32,12 @@
 				<VBox>
 					<children>
 						<Text fx:id="questionNumber" />
-						<Text fx:id="question" textAlignment="JUSTIFY"/>
-						<Button onAction="#onActionNext" text="Next" />
-						<ListView fx:id="options"
-							prefWidth="${splitPane.width*0.3}">
+						<Text fx:id="question" textAlignment="JUSTIFY" />
+						<HBox>
+							<Button onAction="#onActionPrevious" text="_Previous" />
+							<Button onAction="#onActionNext" text="_Next" />
+						</HBox>
+						<ListView fx:id="options" prefWidth="${splitPane.width*0.3}">
 						</ListView>
 					</children>
 				</VBox>

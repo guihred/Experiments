@@ -8,6 +8,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import utils.CommonsFX;
 import utils.HibernateUtil;
 import utils.ResourceFXUtils;
 
@@ -35,6 +36,7 @@ public class ContestApplication extends Application {
         }
         primaryStage.setTitle("Contest Questions");
         primaryStage.setScene(scene);
+        CommonsFX.addCSS(primaryStage.getScene(), "filesComparator.css");
         if (contestQuestions == null) {
             onCloseWindow(primaryStage, HibernateUtil::shutdown);
         }

@@ -41,9 +41,9 @@ public class QueryObjects {
     private final String query;
     private boolean allowEmpty = true;
 
-    private String queryFile;
+    private final String queryFile;
 
-    private String[] params;
+    private final String[] params;
 
     private String group = "";
 
@@ -58,6 +58,7 @@ public class QueryObjects {
         this.query = query;
         this.queryFile = queryFile;
         this.lineChart = lineChart;
+        params = new String[] {};
 
     }
 

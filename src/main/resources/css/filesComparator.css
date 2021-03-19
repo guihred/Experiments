@@ -20,7 +20,7 @@
 	-fx-text-fill: black;
 }
 
-.cell:selected>.vermelho {
+.cell:selected>.vermelho,.list-cell:selected>.vermelho {
 	-fx-background-color: red;
 	-fx-text-fill: black;
 }
