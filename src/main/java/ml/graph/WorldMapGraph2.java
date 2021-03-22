@@ -3,8 +3,6 @@ package ml.graph;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -21,9 +19,9 @@ import utils.fx.RotateUtils;
 
 public class WorldMapGraph2 extends WorldMapGraph {
     private static final Logger LOG = HasLogging.log();
-    private DoubleProperty radius = new SimpleDoubleProperty(1);
-    private DoubleProperty xScale = new SimpleDoubleProperty(0);
-    private DoubleProperty yScale = new SimpleDoubleProperty(0);
+    private final DoubleProperty radius = new SimpleDoubleProperty(1);
+    private final DoubleProperty xScale = new SimpleDoubleProperty(0);
+    private final DoubleProperty yScale = new SimpleDoubleProperty(0);
     private String cityHeader = "City";
     private String latHeader;
 
@@ -205,9 +203,5 @@ public class WorldMapGraph2 extends WorldMapGraph {
         return enumMap;
     }
 
-    public static List<Country> anyAdjacents(Country c) {
-        Country[] values = Country.values();
-        return Stream.of(values).filter(e -> e.neighbors().contains(c)).flatMap(e -> Stream.of(e, c))
-            .filter(e -> e != c).distinct().collect(Collectors.toList());
-    }
+
 }

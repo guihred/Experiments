@@ -2,7 +2,6 @@ package utils.ex;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.assertj.core.api.exception.RuntimeIOException;
@@ -35,13 +34,13 @@ public interface SupplierEx<T> {
         return null;
     }
 
-    static <A> A getHandle(SupplierEx<A> run, A orElse, Consumer<Throwable> onError) {
+    static <A> A getHandle(SupplierEx<A> run, A orElse, ConsumerEx<Throwable> onError) {
         try {
             A a = run.get();
             return a != null ? a : orElse;
         } catch (Throwable e) {
             HasLogging.log(1).trace("", e);
-            onError.accept(e);
+            ConsumerEx.accept(onError, e);
             return orElse;
         }
     }
@@ -56,7 +55,7 @@ public interface SupplierEx<T> {
 
 
 
-    static <A> Supplier<A> makeSupplier(SupplierEx<A> run, Consumer<Throwable> onError) {
+    static <A> Supplier<A> makeSupplier(SupplierEx<A> run, ConsumerEx<Throwable> onError) {
         return () -> getHandle(run, null, onError);
     }
 

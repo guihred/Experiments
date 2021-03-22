@@ -142,10 +142,6 @@ public final class SongUtils {
         });
     }
 
-    public static void updateMediaPlayer(MediaPlayer mediaPlayer2, Slider currentSlider, double pos) {
-        SongUtils.seekAndUpdatePosition(mediaPlayer2.getTotalDuration().multiply(pos), currentSlider, mediaPlayer2);
-    }
-
     public static void updatePositionSlider(Duration currentTime, Slider positionSlider,
             final MediaPlayer mediaPlayer) {
         if (positionSlider.isValueChanging()) {

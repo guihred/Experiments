@@ -16,10 +16,6 @@ public class SimpleVBoxBuilder extends SimplePaneBuilder<VBox, SimpleVBoxBuilder
         super(new VBox(gap, spacing));
     }
 
-    public SimpleVBoxBuilder(Node... spacing) {
-	    super(new VBox(spacing));
-	}
-
 	public SimpleVBoxBuilder alignment(Pos left) {
         node.setAlignment(left);
 		return this;

@@ -14,9 +14,6 @@ import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHyperlink;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 import org.slf4j.Logger;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
@@ -30,23 +27,6 @@ public final class WordService {
 
     private WordService() {
     }
-
-    public static void addLink(XWPFParagraph paragraph, Object object) {
-        substituirParagrafo(paragraph, "Email: ");
-        removerLinks(paragraph);
-        String id = paragraph.getDocument().getPackagePart()
-                .addExternalRelationship(object.toString(), XWPFRelation.HYPERLINK.getRelation()).getId();
-        // Append the link and bind it to the relationship
-        CTHyperlink cLink = paragraph.getCTP().addNewHyperlink();
-        cLink.setId(id);
-        CTText ctText = CTText.Factory.newInstance();
-        ctText.setStringValue(object.toString().split(":")[1]);
-        CTR ctr = CTR.Factory.newInstance();
-        ctr.setTArray(new CTText[] { ctText });
-        // Insert the linked text into the link
-        cLink.setRArray(new CTR[] { ctr });
-    }
-
 
     public static void getWord(Map<String, Object> mapaSubstituicao, String arquivo, File outStream) {
         getWord(mapaSubstituicao, ResourceFXUtils.toFile("models/" + arquivo), outStream);

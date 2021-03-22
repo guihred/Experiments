@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.net.ssl.SSLHandshakeException;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -23,6 +24,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.ex.HasLogging;
+import utils.ex.SupplierEx;
 
 public final class JsoupUtils {
     private static final String USER_AGENT =
@@ -58,7 +60,13 @@ public final class JsoupUtils {
         connect.cookies(cookies);
         connect.ignoreContentType(true);
         connect.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
-        return connect.execute();
+
+        return SupplierEx.makeSupplier(() -> connect.execute(), e -> {
+            if (e instanceof SSLHandshakeException) {
+                InstallCert.installCertificate(url);
+            }
+        }).get();
+
     }
 
     public static String extractBodyFromHTML(File inputFile) throws IOException {

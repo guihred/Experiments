@@ -58,11 +58,7 @@ public class Terrain extends Group {
         return type;
     }
 
-    public void removeThief() {
-        if (thief != null) {
-            stack.getChildren().remove(thief);
-        }
-    }
+
 
     public void setNumber(final int number) {
         this.number.set(number);

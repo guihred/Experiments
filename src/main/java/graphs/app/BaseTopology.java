@@ -26,10 +26,6 @@ public abstract class BaseTopology implements EventTarget {
 		this.size = size;
 	}
 
-    public BaseTopology(String name) {
-		this.name = name;
-	}
-
 	@Override
     public EventDispatchChain buildEventDispatchChain(EventDispatchChain tail) {
         return null;

@@ -5,6 +5,7 @@ import static fxtests.FXTesting.runInTime;
 import static java.util.stream.Collectors.toList;
 
 import cubesystem.ElementWiseOp;
+import cubesystem.ElementWiseOp.Operation;
 import ex.j9.Ch1;
 import ex.j9.Ch3;
 import ex.j9.Employee;
@@ -149,6 +150,14 @@ public class IndependentTest {
         measureTime("ElementWiseOp.scalarOp",
                 () -> ElementWiseOp.printMatrix(ElementWiseOp.scalarOp(ElementWiseOp.Operation.MUL,
                         new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } }, 3.0)));
+        List<Operation> asList = Arrays.asList(ElementWiseOp.Operation.NONE, ElementWiseOp.Operation.ADD,
+                ElementWiseOp.Operation.SUB, ElementWiseOp.Operation.MUL, ElementWiseOp.Operation.DIV,
+                ElementWiseOp.Operation.POW, ElementWiseOp.Operation.MOD);
+        for (Operation operation : asList) {
+            measureTime("ElementWiseOp.scalarOp", () -> ElementWiseOp.printMatrix(ElementWiseOp.scalarOp(operation,
+                    new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } }, 3.0)));
+
+        }
         measureTime("ElementWiseOp.matrOp",
                 () -> ElementWiseOp.printMatrix(ElementWiseOp.matrOp(ElementWiseOp.Operation.DIV,
                         new Double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } },

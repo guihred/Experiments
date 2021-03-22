@@ -9,7 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 
 public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
-    private ToggleGroup toggleGroup = new ToggleGroup();
+    private final ToggleGroup toggleGroup = new ToggleGroup();
 
     public SimpleToggleGroupBuilder addRadioToggle(final String text) {
         new RadioButton(text).setToggleGroup(toggleGroup);
@@ -27,12 +27,7 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
         return this;
     }
 
-    public SimpleToggleGroupBuilder addToggle(final Node node, final String id) {
-        ToggleButton e = new ToggleButton(null, node);
-        e.setId(id);
-        e.setToggleGroup(toggleGroup);
-        return this;
-    }
+
 
     public SimpleToggleGroupBuilder addToggle(final String node, final Object userData) {
 	    ToggleButton toggleButton = new ToggleButton(node);
@@ -42,9 +37,6 @@ public class SimpleToggleGroupBuilder implements SimpleBuilder<ToggleGroup> {
 	    e.setToggleGroup(toggleGroup);
 	    return this;
 	}
-
-
-
 
     public SimpleToggleGroupBuilder addToggleTooltip(final Node node, final String text) {
         ToggleButton toggleButton = new ToggleButton(null, node);

@@ -197,13 +197,8 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String getMatches(String content, String regex) {
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(Objects.toString(content, ""));
-        StringBuilder matches = new StringBuilder();
-        while (m.find()) {
-            matches.append(m.group(1));
-        }
-        return matches.toString();
+        List<String> matches2 = matches(content, regex);
+        return matches2.stream().collect(Collectors.joining("\n"));
     }
 
     public static String intFormating(int length) {

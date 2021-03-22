@@ -52,7 +52,8 @@ public class CredentialInvestigator extends KibanaInvestigator {
         indexCombo = new SimpleComboBoxBuilder<>(Arrays.asList("inss-*-prod-*", "mte-log4j-prod-*")).select(0).build();
         pane.getChildren().add(2, SimpleVBoxBuilder.newVBox("Index", indexCombo));
         SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
-                .pasteable(s -> StringSigaUtils.getMatches(s, "(" + IP_REGEX + "|\\d{11})"));
+                .pasteable(s -> StringSigaUtils.getMatches(s, "(" + IP_REGEX + "|\\d{11})"))
+                .onDoubleClick(resultsFilter::setText);
         RunnableEx.runNewThread(() -> getCookies());
     }
 

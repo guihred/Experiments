@@ -32,11 +32,6 @@ public class SettlePoint extends Group {
         id = pointsCount++;
     }
 
-    public SettlePoint(CatanResource element) {
-        this.element = element;
-        id = pointsCount++;
-    }
-
     public boolean acceptCity(final PlayerColor player) {
         return getElement() instanceof Village && getElement().getPlayer() == player;
     }
