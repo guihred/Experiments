@@ -53,36 +53,6 @@ public class DecisionTree {
         LOG.trace("{}", predict);
     }
 
-    public static Question findBestSplit(DataframeML dataframe, String label) {
-        Set<String> cols = new HashSet<>(dataframe.cols());
-        cols.remove(label);
-        double bestGain = 0.00;
-        Question bestQuestion = null;
-        final double currentUncertainty = entropy(dataframe, label);
-        for (String col : cols) {
-            Set<Object> values = dataframe.freeCategory(col);
-            List<QuestionType> values2 = QuestionType.getMatches(dataframe.getFormat(col));
-            Collections.shuffle(values2);
-            for (QuestionType questionType : values2) {
-                for (Object val : values) {
-                    Question question = new Question(col, val, questionType);
-                    DataframeML trueFrame = new DataframeML(dataframe).filter(col, question);
-                    DataframeML falseFrame = new DataframeML(dataframe).filter(col, c -> !question.answer(c));
-                    if (trueFrame.getSize() == 0 || falseFrame.getSize() == 0) {
-                        continue;
-                    }
-                    double infoGain = currentUncertainty - infoGain(trueFrame, falseFrame, label);
-                    if (infoGain >= bestGain) {
-                        bestGain = infoGain;
-                        bestQuestion = question;
-                        question.setInfoGain(infoGain);
-                    }
-                }
-            }
-        }
-        return bestQuestion;
-    }
-
     public static double gini(DataframeML dataframe, String header) {
         double size = dataframe.getSize();
         if (size <= 0) {
@@ -107,19 +77,6 @@ public class DecisionTree {
         }
         return impurity;
 
-    }
-
-    public static double infoGain(DataframeML left, DataframeML right, double uncertainty, String labelHeader) {
-        double size = left.getSize();
-        double p = size / (size + right.getSize());
-        return uncertainty - p * gini(left, labelHeader) - (1 - p) * gini(right, labelHeader);
-    }
-
-    public static double infoGain(DataframeML left, DataframeML right, String labelHeader) {
-
-        double sum = entropy(left, labelHeader);
-        sum += entropy(right, labelHeader);
-        return sum;
     }
 
     public static void main(String[] args) {
@@ -160,9 +117,46 @@ public class DecisionTree {
         return sum;
     }
 
+    private static Question findBestSplit(DataframeML dataframe, String label) {
+        Set<String> cols = new HashSet<>(dataframe.cols());
+        cols.remove(label);
+        double bestGain = 0.00;
+        Question bestQuestion = null;
+        final double currentUncertainty = entropy(dataframe, label);
+        for (String col : cols) {
+            Set<Object> values = dataframe.freeCategory(col);
+            List<QuestionType> values2 = QuestionType.getMatches(dataframe.getFormat(col));
+            Collections.shuffle(values2);
+            for (QuestionType questionType : values2) {
+                for (Object val : values) {
+                    Question question = new Question(col, val, questionType);
+                    DataframeML trueFrame = new DataframeML(dataframe).filter(col, question);
+                    DataframeML falseFrame = new DataframeML(dataframe).filter(col, c -> !question.answer(c));
+                    if (trueFrame.getSize() == 0 || falseFrame.getSize() == 0) {
+                        continue;
+                    }
+                    double infoGain = currentUncertainty - infoGain(trueFrame, falseFrame, label);
+                    if (infoGain >= bestGain) {
+                        bestGain = infoGain;
+                        bestQuestion = question;
+                        question.setInfoGain(infoGain);
+                    }
+                }
+            }
+        }
+        return bestQuestion;
+    }
+
+    private static double infoGain(DataframeML left, DataframeML right, String labelHeader) {
+
+        double sum = entropy(left, labelHeader);
+        sum += entropy(right, labelHeader);
+        return sum;
+    }
+
     private static boolean isRedundantNode(DecisionNode trueTree, DecisionNode falseTree) {
         return trueTree.isLeaf() && falseTree.isLeaf() && trueTree.getResult().containsAll(falseTree.getResult())
-            && falseTree.getResult().containsAll(trueTree.getResult());
+                && falseTree.getResult().containsAll(trueTree.getResult());
     }
 
 }

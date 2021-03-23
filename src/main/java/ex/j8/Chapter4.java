@@ -39,30 +39,6 @@ public final class Chapter4 {
         Application.launch(Ex10.class, args);
     }
 
-    public static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t,
-            ObservableValue<U> u) {
-        return new SimpleObjectProperty<R>() {
-            @Override
-            public void addListener(ChangeListener<? super R> listener) {
-                t.addListener((o, old, value) -> listener.changed(this, f.apply(old, u.getValue()),
-                        f.apply(value, u.getValue())));
-                u.addListener((o, old, value) -> listener.changed(this, f.apply(t.getValue(), old),
-                        f.apply(t.getValue(), value)));
-            }
-
-            @Override
-            public void addListener(InvalidationListener listener) {
-                t.addListener(listener);
-                u.addListener(listener);
-            }
-
-            @Override
-            public R getValue() {
-                return f.apply(t.getValue(), u.getValue());
-            }
-        };
-    }
-
     public static <T, R> ObservableValue<R> observe(Function<T, R> f, ObservableValue<T> t) {
         return new SimpleObjectProperty<R>() {
             @Override
@@ -122,6 +98,30 @@ public final class Chapter4 {
         new SimpleScaleTransitionBuilder().byX(maxScale).byY(maxScale).cycleCount(Animation.INDEFINITE)
                 .interpolator(Interpolator.LINEAR).duration(Duration.millis(500)).autoReverse(true).node(planet).build()
                 .play();
+    }
+
+    private static <T, U, R> ObservableValue<R> observe(BiFunction<T, U, R> f, ObservableValue<T> t,
+            ObservableValue<U> u) {
+        return new SimpleObjectProperty<R>() {
+            @Override
+            public void addListener(ChangeListener<? super R> listener) {
+                t.addListener((o, old, value) -> listener.changed(this, f.apply(old, u.getValue()),
+                        f.apply(value, u.getValue())));
+                u.addListener((o, old, value) -> listener.changed(this, f.apply(t.getValue(), old),
+                        f.apply(t.getValue(), value)));
+            }
+
+            @Override
+            public void addListener(InvalidationListener listener) {
+                t.addListener(listener);
+                u.addListener(listener);
+            }
+
+            @Override
+            public R getValue() {
+                return f.apply(t.getValue(), u.getValue());
+            }
+        };
     }
 
     /**

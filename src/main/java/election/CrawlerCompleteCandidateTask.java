@@ -14,7 +14,7 @@ public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Intege
 
     private static final int STEP = 50;
     private static final Logger LOG = HasLogging.log();
-    private CandidatoDAO candidatoDAO = new CandidatoDAO();
+    private final CandidatoDAO candidatoDAO = new CandidatoDAO();
 
     @Override
     public void performTask(Integer j) {

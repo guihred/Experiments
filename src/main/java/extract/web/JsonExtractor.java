@@ -86,23 +86,6 @@ public final class JsonExtractor {
         return yaml2.toString();
     }
 
-    public static Object fullObj(JsonNode jsonNode) {
-        if (jsonNode.isBoolean()) {
-            return jsonNode.asBoolean();
-        }
-
-        if (jsonNode.isDouble()) {
-            return jsonNode.asDouble();
-        }
-        if (jsonNode.isInt()) {
-            return jsonNode.asInt();
-        }
-        if (jsonNode.isLong()) {
-            return jsonNode.asLong();
-        }
-        return jsonNode.asText();
-    }
-
     public static boolean isNotRecentFile(File outFile) {
         return !outFile.exists() || oneHourModified(outFile);
     }
@@ -350,6 +333,23 @@ public final class JsonExtractor {
     }
 
     private static String convertObj(JsonNode jsonNode) {
+        return jsonNode.asText();
+    }
+
+    private static Object fullObj(JsonNode jsonNode) {
+        if (jsonNode.isBoolean()) {
+            return jsonNode.asBoolean();
+        }
+
+        if (jsonNode.isDouble()) {
+            return jsonNode.asDouble();
+        }
+        if (jsonNode.isInt()) {
+            return jsonNode.asInt();
+        }
+        if (jsonNode.isLong()) {
+            return jsonNode.asLong();
+        }
         return jsonNode.asText();
     }
 

@@ -11,8 +11,8 @@ import java.util.stream.Stream;
  * A class to check if a word is an anagram of other word.
  */
 public class Anagram {
-	private Map<String, Long> histogram;
-	private String original;
+    private final Map<String, Long> histogram;
+    private final String original;
 
 	public Anagram(String st) {
 		original = st;

@@ -13,7 +13,7 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
 
     private static final Logger LOG = HasLogging.log();
 
-    private CidadeDAO cidadeDAO = new CidadeDAO();
+    private final CidadeDAO cidadeDAO = new CidadeDAO();
 
     @Override
     protected List<Cidade> getList() {

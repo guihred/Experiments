@@ -247,29 +247,6 @@ public class DataframeUtils extends DataframeML {
         sort(dataframe, header, true);
     }
 
-    public static void sort(DataframeML dataframe, String header, boolean ascending) {
-        List<Object> list = dataframe.list(header);
-        List<List<Object>> trimmedColumns =
-                dataframe.getDataframe().entrySet().stream().filter(e -> !e.getKey().equals(header))
-                        .map(Entry<String, List<Object>>::getValue).collect(Collectors.toList());
-
-        Class<?> class1 = dataframe.getFormat(header);
-        if (class1 == String.class) {
-            Comparator<String> compa = revertComparator(String::compareTo, ascending);
-            QuickSortML.sort(typedList(list), (i, j) -> exchange(trimmedColumns, i, j), compa);
-        }
-
-        if (class1 == Double.class) {
-            Comparator<Double> compa = revertComparator(Double::compareTo, ascending);
-            QuickSortML.sort(typedList(list), (i, j) -> exchange(trimmedColumns, i, j), compa.reversed());
-        }
-        if (class1 == Integer.class) {
-            Comparator<Integer> compa = revertComparator(Integer::compareTo, ascending);
-            QuickSortML.sort(typedList(list), (i, j) -> exchange(trimmedColumns, i, j), compa.reversed());
-        }
-
-    }
-
     public static String toString(DataframeML dataframe) {
         return toString(dataframe, 10);
     }
@@ -345,11 +322,6 @@ public class DataframeUtils extends DataframeML {
             dataframeML.map(header, e -> Objects.toString(e, ""));
         }
         return number;
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    public static <T> List<T> typedList(List<Object> list) {
-        return (List<T>) list;
     }
 
     protected static void categorizeIfCategorizable(DataframeML dataframe, String key, Object tryNumber) {
@@ -656,6 +628,29 @@ public class DataframeUtils extends DataframeML {
         return co;
     }
 
+    private static void sort(DataframeML dataframe, String header, boolean ascending) {
+        List<Object> list = dataframe.list(header);
+        List<List<Object>> trimmedColumns =
+                dataframe.getDataframe().entrySet().stream().filter(e -> !e.getKey().equals(header))
+                        .map(Entry<String, List<Object>>::getValue).collect(Collectors.toList());
+
+        Class<?> class1 = dataframe.getFormat(header);
+        if (class1 == String.class) {
+            Comparator<String> compa = revertComparator(String::compareTo, ascending);
+            QuickSortML.sort(typedList(list), (i, j) -> exchange(trimmedColumns, i, j), compa);
+        }
+
+        if (class1 == Double.class) {
+            Comparator<Double> compa = revertComparator(Double::compareTo, ascending);
+            QuickSortML.sort(typedList(list), (i, j) -> exchange(trimmedColumns, i, j), compa.reversed());
+        }
+        if (class1 == Integer.class) {
+            Comparator<Integer> compa = revertComparator(Integer::compareTo, ascending);
+            QuickSortML.sort(typedList(list), (i, j) -> exchange(trimmedColumns, i, j), compa.reversed());
+        }
+
+    }
+
     private static Object[] toArray(DataframeML dataframe, int i, String... dependent) {
         Object[] d = new Object[dependent.length];
         for (int j = 0; j < dependent.length; j++) {
@@ -670,6 +665,11 @@ public class DataframeUtils extends DataframeML {
             d[j] = ((Number) dataframe.getDataframe().get(dependent[j]).get(i)).doubleValue();
         }
         return d;
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private static <T> List<T> typedList(List<Object> list) {
+        return (List<T>) list;
     }
 
 }

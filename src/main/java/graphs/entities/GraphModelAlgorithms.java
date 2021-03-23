@@ -102,10 +102,7 @@ public final class GraphModelAlgorithms {
         assignLow(num, low, parent, s2, allEdges);
     }
 
-    public static long intersection(Collection<? extends Node> cells, Node cell2) {
-        return cells.stream().filter(e -> e != cell2 && e.getBoundsInParent().intersects(cell2.getBoundsInParent()))
-                .count();
-    }
+
 
     public static List<Edge> kruskal(List<Cell> allCells, List<Edge> allEdges) {
         int numVertices = allCells.size();

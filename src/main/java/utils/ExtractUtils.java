@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javax.net.ssl.HttpsURLConnection;
@@ -18,16 +17,16 @@ import utils.ex.PredicateEx;
 import utils.ex.SupplierEx;
 
 public final class ExtractUtils {
-    public static final String EXTRACT_FOLDER = "extract/";
+    public static final String EXTRACT_FOLDER = ProjectProperties.getField();
     public static final String PROXY_PORT = "3128";
     public static final int HUNDRED_SECONDS = 100_000;
     private static final Logger LOG = HasLogging.log();
 
-    private static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath("cacerts");
-    private static final String LOGIN = "guilherme.hmedeiros";
-    private static final String PROXY_CONFIG = Stream.of("10", "70", "124", "16").collect(Collectors.joining("."));
-    private static final String PROXY_CONFIG2 = Stream.of("10", "31", "220", "23").collect(Collectors.joining("."));
-    private static final String PASS = "31-sanJUichi";
+    private static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath(ProjectProperties.getField());
+    private static final String LOGIN = ProjectProperties.getField();
+    private static final String PROXY_CONFIG = ProjectProperties.getField();
+    private static final String PROXY_CONFIG2 = ProjectProperties.getField();
+    private static final String PASS = ProjectProperties.getField();
     public static final String PROXY_ADDRESS = getProxyAddress();
     private static final boolean IS_PROXIED = PROXY_ADDRESS != null;
 

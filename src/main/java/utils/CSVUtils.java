@@ -212,20 +212,6 @@ public class CSVUtils {
         return parseLine(cvsLine, DEFAULT_SEPARATOR, DEFAULT_QUOTE);
     }
 
-    public static List<String> parseLine(String cvsLine, char separators) {
-        return parseLine(cvsLine, separators, DEFAULT_QUOTE);
-    }
-
-    public static List<String> parseLine(String cvsLine, char separator, char quote) {
-        List<String> result = new ArrayList<>();
-        // if empty, return!
-        if (cvsLine == null || cvsLine.isEmpty()) {
-            return result;
-        }
-        StringBuilder curVal = new CSVUtils(separator, quote).getField(cvsLine, result);
-        result.add(curVal.toString());
-        return result;
-    }
 
     public static <T> void saveToFile(TableView<T> table, File f) throws IOException {
         List<Integer> selectedItems = table.getSelectionModel().getSelectedIndices();
@@ -308,6 +294,17 @@ public class CSVUtils {
         Writer output = createWriter(file.getAbsolutePath());
         output.append(firstLine + "\n");
         return output;
+    }
+
+    private static List<String> parseLine(String cvsLine, char separator, char quote) {
+        List<String> result = new ArrayList<>();
+        // if empty, return!
+        if (cvsLine == null || cvsLine.isEmpty()) {
+            return result;
+        }
+        StringBuilder curVal = new CSVUtils(separator, quote).getField(cvsLine, result);
+        result.add(curVal.toString());
+        return result;
     }
 
 }

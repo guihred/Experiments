@@ -185,19 +185,6 @@ public abstract class AreaTool extends PaintTool {
         getArea().setHeight(1);
     }
 
-    protected void escapeArea(PaintModel model) {
-        double hvalue = model.getScrollPane().getHvalue();
-        double vvalue = model.getScrollPane().getVvalue();
-        if (imageSelected != null) {
-            setIntoImage(model);
-        }
-        if (model.getImageStack().getChildren().contains(getArea())) {
-            model.getImageStack().getChildren().remove(getArea());
-        }
-        model.getScrollPane().setHvalue(hvalue);
-        model.getScrollPane().setVvalue(vvalue);
-    }
-
     protected void setIntoImage(PaintModel model) {
         int x = (int) getArea().getLayoutX();
         int y = (int) getArea().getLayoutY();
@@ -263,6 +250,19 @@ public abstract class AreaTool extends PaintTool {
         getArea().setLayoutY(Math.min(y, initialY));
         getArea().setWidth(Math.abs(x - initialX));
         getArea().setHeight(Math.abs(y - initialY));
+    }
+
+    private void escapeArea(PaintModel model) {
+        double hvalue = model.getScrollPane().getHvalue();
+        double vvalue = model.getScrollPane().getVvalue();
+        if (imageSelected != null) {
+            setIntoImage(model);
+        }
+        if (model.getImageStack().getChildren().contains(getArea())) {
+            model.getImageStack().getChildren().remove(getArea());
+        }
+        model.getScrollPane().setHvalue(hvalue);
+        model.getScrollPane().setVvalue(vvalue);
     }
 
 

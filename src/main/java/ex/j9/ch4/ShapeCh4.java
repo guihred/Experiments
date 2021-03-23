@@ -13,7 +13,7 @@ package ex.j9.ch4;
  * 5. Define clone methods for the classes of the preceding exercise.
  */
 public abstract class ShapeCh4 {
-    protected PointCh4 center;
+    protected final PointCh4 center;
 
     public ShapeCh4(PointCh4 center) {
         this.center = center;
@@ -21,7 +21,7 @@ public abstract class ShapeCh4 {
 
     public abstract PointCh4 getCenter();
 
-    public void moveBy(double dx, double dy) {
+    public final void moveBy(double dx, double dy) {
         center.x += dx;
         center.y += dy;
     }

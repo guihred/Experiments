@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
@@ -25,6 +26,7 @@ import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.graph.DataframeExplorer;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +64,10 @@ public class ConsultasInvestigator extends Application {
     @FXML
     private ComboBox<String> ipCombo;
     @FXML
+    private Text thresholdText;
+    @FXML
+    private Slider threshold;
+    @FXML
     private ComboBox<String> uidCombo;
 
     @FXML
@@ -77,6 +83,10 @@ public class ConsultasInvestigator extends Application {
     }
 
     public void initialize() {
+        thresholdText.textProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> String.format(Locale.ENGLISH, "%s (%.2f)", "Threshold", threshold.getValue()),
+                        threshold.valueProperty()));
         String count = "doc_count";
         QueryObjects configureTable =
                 configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
@@ -127,7 +137,7 @@ public class ConsultasInvestigator extends Application {
                     queryList.stream().filter(q -> q.getLineChart() == null).collect(Collectors.toList());
             List<String> applicationList = getApplicationList();
             ConsultasHelper.automatedSearch(queries, applicationList, progress.progressProperty(), days.getValue(),
-                    filter);
+                    filter, threshold.getValue());
         });
     }
 

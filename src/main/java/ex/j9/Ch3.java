@@ -7,15 +7,10 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.slf4j.Logger;
 import utils.QuickSortML;
-import utils.ex.HasLogging;
 
 public class Ch3 {
-    private static final Logger LOG = HasLogging.log();
-
     public static double average(Collection<? extends Measurable> objects) {
         return objects.stream().mapToDouble(Measurable::getMeasure).average().orElse(0);
     }
@@ -113,22 +108,7 @@ public class Ch3 {
 
     }
 
-    public static void tasks() {
-		StringBuilder s = new StringBuilder();
-        final int exampleTasks = 12;
-        Runnable[] array = IntStream.range(1, exampleTasks).mapToObj(r -> (Runnable) () -> s.append(r + " "))
-            .toArray(Runnable[]::new);
 
-        runInOrder(array);
-        LOG.info("In Order {}", s);
-        s.replace(0, s.length(), "");
-        runTogether(array);
-        LOG.info("Together {}", s);
-    }
-
-
-
-    
 
 
     /*

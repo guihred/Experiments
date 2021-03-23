@@ -4,10 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import utils.ProjectProperties;
 import utils.ResourceFXUtils;
 
 public final class IpStackApi {
-    private static final String IP_STACK_APIKEY = "1f04d130a6544f0bc6687b5d19ca3981";
+    private static final String IP_STACK_APIKEY = ProjectProperties.getField();
 
     private IpStackApi() {
     }

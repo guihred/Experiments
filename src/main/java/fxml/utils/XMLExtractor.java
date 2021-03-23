@@ -54,10 +54,6 @@ public final class XMLExtractor {
         ImageFXUtils.openInDesktop(outFile);
     }
 
-    public static Map.Entry<String, String> newEntry(String key, String value) {
-        return new AbstractMap.SimpleEntry<>(key, value);
-    }
-
     public static Map<String, String> newMap(String key, String value) {
         return new SimpleMap(key, value);
     }
@@ -202,6 +198,10 @@ public final class XMLExtractor {
     private static boolean isArrayType(List<Set<Map.Entry<String, String>>> entryList) {
         return entryList.stream().flatMap(Set<Entry<String, String>>::stream).map(Entry<String, String>::getKey)
                 .distinct().count() < entryList.size();
+    }
+
+    private static Map.Entry<String, String> newEntry(String key, String value) {
+        return new AbstractMap.SimpleEntry<>(key, value);
     }
 
     private static Map<String, String> newMap(Node item) {

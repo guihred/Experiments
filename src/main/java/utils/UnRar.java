@@ -15,13 +15,13 @@ import org.slf4j.Logger;
 import utils.ex.HasLogging;
 
 public final class UnRar {
-    private static final String UNRAR_FILE = "\"C:\\Program Files (x86)\\WinRAR\\UnRAR.exe\"";
+    private static final String UNRAR_FILE = ProjectProperties.getField();
     private static final Logger LOGGER = HasLogging.log();
     private static final String SRC_DIRECTORY = new File("").getAbsolutePath();
 
-    private List<String> successfulFiles = new ArrayList<>();
-    private List<String> unsupportedFiles = new ArrayList<>();
-    private List<String> errorFiles = new ArrayList<>();
+    private final List<String> successfulFiles = new ArrayList<>();
+    private final List<String> unsupportedFiles = new ArrayList<>();
+    private final List<String> errorFiles = new ArrayList<>();
 
     private UnRar() {
     }

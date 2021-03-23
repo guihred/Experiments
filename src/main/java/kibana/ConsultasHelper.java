@@ -18,7 +18,6 @@ import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 final class ConsultasHelper {
-    private static final double THRESHOLD_PARAMS = .40;
     private static final double THRESHOLD_NETWORK = .40;
     private static final Logger LOG = HasLogging.log();
     private static final String IGNORE_IPS_REGEX = "::1|127.0.0.1";
@@ -33,7 +32,7 @@ final class ConsultasHelper {
     }
 
     public static void automatedSearch(Collection<QueryObjects> queries, Collection<String> applicationList,
-            DoubleProperty progressp, Integer days2, Map<String, String> filter2) {
+            DoubleProperty progressp, Integer days2, Map<String, String> filter2, double thresholdParams) {
 
         CommonsFX.update(progressp, 0);
         Map<String, String> filter1 = new HashMap<>();
@@ -46,7 +45,7 @@ final class ConsultasHelper {
                 String fieldQuery = queryObjects.getQuery();
                 DoubleSummaryStatistics summaryStatistics = getStatistics(params, numberCol, kibanaQuery);
                 List<Map<String, String>> aboveAvgInfo =
-                        getAboveAvgInfo(summaryStatistics, kibanaQuery, numberCol, params, days2);
+                        getAboveAvgInfo(summaryStatistics, kibanaQuery, numberCol, params, days2, thresholdParams);
                 if (!aboveAvgInfo.isEmpty()) {
                     mergeFilter(filter2, params, fieldQuery, aboveAvgInfo);
                     String join = join(aboveAvgInfo);
@@ -133,14 +132,15 @@ final class ConsultasHelper {
     }
 
     private static List<Map<String, String>> getAboveAvgInfo(DoubleSummaryStatistics summaryStatistics,
-            List<Map<String, String>> makeKibanaQuery, String numberCol, String[] params, Integer day) {
+            List<Map<String, String>> makeKibanaQuery, String numberCol, String[] params, Integer day,
+            double thresholdParams) {
         if (summaryStatistics.getCount() <= 1 || summaryStatistics.getSum() == 0) {
             return Collections.emptyList();
         }
         double avg = summaryStatistics.getAverage();
         double max = summaryStatistics.getMax();
         double min = summaryStatistics.getMin();
-        final double range = (max - min) * THRESHOLD_PARAMS;
+        final double range = (max - min) * thresholdParams;
         WhoIsScanner whoIsScanner = new WhoIsScanner();
         return makeKibanaQuery.parallelStream().filter(m -> !getFirst(params, m).matches(IGNORE_IPS_REGEX))
                 .filter(m -> getNumber(numberCol, m) > avg + range)

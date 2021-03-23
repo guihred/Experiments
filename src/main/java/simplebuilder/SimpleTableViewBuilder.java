@@ -21,6 +21,7 @@ import utils.ImageFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
+import utils.ex.SupplierEx;
 
 public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>, SimpleTableViewBuilder<T>> {
 
@@ -169,7 +170,8 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
 
     public static <T> void autoColumnsWidth(TableView<T> node) {
         double[] array = node.getColumns().stream().mapToDouble(e -> {
-            String cellData = StringSigaUtils.toStringSpecial(e.getCellData(0)).split("\n")[0];
+            String stringSpecial = SupplierEx.getIgnore(() -> StringSigaUtils.toStringSpecial(e.getCellData(0)), "");
+            String cellData = SupplierEx.getIgnore(() -> stringSpecial.split("\n+")[0], "");
             return Math.max(e.getText().length(), cellData.length());
         }).toArray();
         prefWidthColumns(node, array);

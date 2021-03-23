@@ -14,8 +14,4 @@ public class CidadeDAO extends BaseDAO {
         });
 	}
 
-	public synchronized void saveOrUpdate(Object cidade) {
-        executeRun(session -> session.saveOrUpdate(cidade));
-	}
-
 }

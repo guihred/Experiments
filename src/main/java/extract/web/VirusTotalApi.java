@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import utils.ProjectProperties;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
@@ -23,7 +24,7 @@ public final class VirusTotalApi {
     private static final String MALICIOUS_ATTR = "malicious";
     private static final String ATTRIBUTES = "attributes";
     private static final Logger LOG = HasLogging.log();
-    private static final String VIRUSTOTAL_APIKEY = "397249a87cac6415141dde0a2263710c23166cc759dc89b681e8df70cc536abd";
+    private static final String VIRUSTOTAL_APIKEY = ProjectProperties.getField();
 
     private VirusTotalApi() {
     }

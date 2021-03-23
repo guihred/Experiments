@@ -35,16 +35,16 @@ public final class DotsHelper {
     }
 
     public static void addPolygon(Group gridPane, double[] toArray, EventHandler<ActionEvent> onFinished, Color value,
-        ActionEvent f) {
+            ActionEvent f) {
         Polygon polygon = new Polygon(toArray);
         polygon.setFill(value);
         addPolygonOnFinished(gridPane, polygon, onFinished, f);
     }
 
     public static void bindText(String key, Text textEu2,
-        ObservableMap<String, ObservableSet<Set<DotsSquare>>> points2) {
+            ObservableMap<String, ObservableSet<Set<DotsSquare>>> points2) {
         textEu2.textProperty().bind(Bindings.createStringBinding(
-            () -> String.format("%s:%d", key, points2.get(key).size()), points2.get(key), points2));
+                () -> String.format("%s:%d", key, points2.get(key).size()), points2.get(key), points2));
     }
 
     public static Timeline createAnimation(int nplayed, double[] center, double[] center2, Line line2) {
@@ -54,10 +54,6 @@ public final class DotsHelper {
                 .addKeyFrame(Duration.seconds(1. / 2 + nplayed / 2.), line2.endYProperty(), center2[1]).build();
     }
 
-    public static boolean dNotContainsC(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
-        return a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a);
-    }
-
     public static List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities(DotsSquare[][] maze2) {
         List<Map.Entry<DotsSquare, DotsSquare>> melhor = new ArrayList<>();
         for (int i = 0; i < DotsHelper.MAZE_SIZE; i++) {
@@ -65,7 +61,7 @@ public final class DotsHelper {
                 final List<DotsSquare> checkMelhor = maze2[i][j].checkMelhor();
                 final DotsSquare maze1 = maze2[i][j];
                 melhor.addAll(checkMelhor.stream().map(e -> new AbstractMap.SimpleEntry<>(maze1, e))
-                    .collect(Collectors.toList()));
+                        .collect(Collectors.toList()));
             }
         }
         return melhor;
@@ -94,7 +90,7 @@ public final class DotsHelper {
     public static List<Map.Entry<DotsSquare, DotsSquare>> getBestPossibilities3(DotsSquare[][] maze2) {
         final List<Map.Entry<DotsSquare, DotsSquare>> possibilities = getPossibilities(maze2);
         final Map<Integer, List<Map.Entry<DotsSquare, DotsSquare>>> orderedPossibilities = possibilities.stream()
-            .collect(Collectors.groupingBy(e -> getCountMap(e.getKey(), e.getValue(), maze2)));
+                .collect(Collectors.groupingBy(e -> getCountMap(e.getKey(), e.getValue(), maze2)));
         final int bestPossibility = orderedPossibilities.keySet().stream().mapToInt(i -> i).min().orElse(0);
         return orderedPossibilities.getOrDefault(bestPossibility, Collections.emptyList());
     }
@@ -148,7 +144,7 @@ public final class DotsHelper {
     }
 
     public static int getSumBySquare(DotsSquare a, DotsSquare b, int s, DotsSquare c, DotsSquare d,
-        DotsSquare[][] maze) {
+            DotsSquare[][] maze) {
         int sum = s;
         if (cNotContainsA(a, b, c, d)) {
             sum++;
@@ -181,23 +177,16 @@ public final class DotsHelper {
 
     public static boolean isPointNeighborToCurrent(DotsSquare over, DotsSquare selected2) {
         return Math.abs(over.getI() - selected2.getI()) + Math.abs(over.getJ() - selected2.getJ()) == 1
-            && !over.contains(selected2);
+                && !over.contains(selected2);
     }
 
     public static List<Entry<DotsSquare, DotsSquare>> notEmpty(List<Map.Entry<DotsSquare, DotsSquare>> possibilities,
-        List<Entry<DotsSquare, DotsSquare>> bestPossibilities2) {
+            List<Entry<DotsSquare, DotsSquare>> bestPossibilities2) {
         return possibilities.isEmpty() ? bestPossibilities2 : possibilities;
     }
 
-    public static Text pointsDisplay(String key, ObservableMap<String, ObservableSet<Set<DotsSquare>>> points) {
-        Text tuPoints = new Text("0");
-        tuPoints.textProperty().bind(Bindings
-            .createStringBinding(() -> String.format("%s:%d", key, points.get(key).size()), points.get(key), points));
-        return tuPoints;
-    }
-
     private static void addPolygonOnFinished(Group gridPane, Polygon polygon, EventHandler<ActionEvent> onFinished,
-        ActionEvent f) {
+            ActionEvent f) {
         if (onFinished != null) {
             onFinished.handle(f);
         }
@@ -211,6 +200,10 @@ public final class DotsHelper {
 
     private static boolean cNotContainsA(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
         return a.contains(b) && b.contains(d) && d.contains(c) && !c.contains(a);
+    }
+
+    private static boolean dNotContainsC(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
+        return a.contains(b) && b.contains(d) && !d.contains(c) && c.contains(a);
     }
 
 }

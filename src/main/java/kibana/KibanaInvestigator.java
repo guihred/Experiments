@@ -43,7 +43,8 @@ public class KibanaInvestigator extends Application {
         SimpleTableViewBuilder.of(commonTable).copiable().savable()
                 .onSortClicked((c, a) -> QuickSortML.sortMapList(items, c, a));
         SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
-                .pasteable(s -> StringSigaUtils.getMatches(s, "(\\d+\\.\\d+\\.\\d+\\.\\d+/*\\d*)"));
+                .pasteable(s -> StringSigaUtils.getMatches(s, "(\\d+\\.\\d+\\.\\d+\\.\\d+/*\\d*)"))
+                .onDoubleClick(resultsFilter::setText);
     }
 
     public void onActionKibanaScan() {
@@ -62,8 +63,7 @@ public class KibanaInvestigator extends Application {
             progress.addListener(ob -> totalProgress.set(progresses.stream().mapToDouble(DoubleProperty::get).sum()));
             List<String> cols =
                     commonTable.getColumns().stream().map(TableColumn::getText).collect(Collectors.toList());
-            RunnableEx.runNewThread(
-                    () -> executeCall(ip, progress, cols),
+            RunnableEx.runNewThread(() -> executeCall(ip, progress, cols),
                     ns -> CommonsFX.runInPlatform(() -> addToTable(items2, ns)));
         }
     }

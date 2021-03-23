@@ -200,13 +200,6 @@ public class KibanaApi {
         return fullScan2;
     }
 
-    public static Map<String, String> makeKibanaSearch(File file, int days, String[] query, String... params) {
-        return SupplierEx.getHandle(() -> {
-            File outFile = searchIfDoesNotExist(file, days, query);
-            return JsonExtractor.makeMapFromJsonFile(outFile, params);
-        }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
-    }
-
     public static Map<String, String> makeKibanaSearch(String file, int days, Map<String, String> search,
             String... params) {
         return makeNewKibanaSearch(kibanaFile(file), days, search, params);
@@ -417,6 +410,13 @@ public class KibanaApi {
 
     private static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
         return makeKibanaSearch(file, days, new String[] { query }, params);
+    }
+
+    private static Map<String, String> makeKibanaSearch(File file, int days, String[] query, String... params) {
+        return SupplierEx.getHandle(() -> {
+            File outFile = searchIfDoesNotExist(file, days, query);
+            return JsonExtractor.makeMapFromJsonFile(outFile, params);
+        }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
     }
 
     private static File newSearch(File file, int days, Map<String, String> search) {

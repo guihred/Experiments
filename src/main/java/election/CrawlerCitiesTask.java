@@ -14,7 +14,7 @@ public class CrawlerCitiesTask extends CommonCrawlerTask<String> {
 
     private static final Logger LOG = HasLogging.log();
 
-    private CidadeDAO cidadeDAO = new CidadeDAO();
+    private final CidadeDAO cidadeDAO = new CidadeDAO();
 
     @Override
     protected List<String> getList() {

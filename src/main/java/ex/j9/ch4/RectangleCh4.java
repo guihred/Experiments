@@ -4,9 +4,9 @@ import static utils.ex.FunctionEx.mapIf;
 
 public class RectangleCh4 extends ShapeCh4 {
 
-    private double width;
+    private final double width;
 
-    private double height;
+    private final double height;
     public RectangleCh4(PointCh4 topLeft, double width, double height) {
         super(topLeft);
         this.width = width;

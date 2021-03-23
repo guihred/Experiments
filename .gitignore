@@ -11,4 +11,5 @@
 /*.jpg
 /out/
 /src/main/resources/out/
+/src/main/resources/project.properties
 /log.txt

@@ -29,9 +29,9 @@ public class VigenereXORCipher {
     private int current;
 
     // 0, 0, 140, 181, 87, 0, 53
-    private int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+    private final int[] keys = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 
-    private List<Integer>[] keysList = Stream.generate(ArrayList::new).limit(keys.length).toArray(List[]::new);
+    private final List<Integer>[] keysList = Stream.generate(ArrayList::new).limit(keys.length).toArray(List[]::new);
 
     public String decrypt(String k, String s) {
         current = 0;

@@ -64,6 +64,7 @@ public class IndependentTest {
         measureTime("Ch1.lotteryCombination", Ch1::lotteryCombination);
         measureTime("Ch1.pascalTriangle", () -> Ch1.pascalTriangle(10));
         measureTime("Ch1.average", () -> Ch1.average(1, 2, 3, 4, 5, 6, 7, 8));
+        measureTime("Ch1.randomLetters", () -> Ch1.randomLetters());
     }
 
     @Test

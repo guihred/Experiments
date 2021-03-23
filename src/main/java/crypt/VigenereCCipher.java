@@ -31,40 +31,6 @@ public final class VigenereCCipher {
     private VigenereCCipher() {
     }
 
-    public static double freqEveryNth(final int[] msg, int len, int interval, char[] key) {
-        double[] out = new double[NUMBER_OF_LETTERS];
-        double[] accu = new double[NUMBER_OF_LETTERS];
-        for (int j = 0; j < interval; j++) {
-            for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
-                out[i] = 0;
-            }
-            for (int i = j; i < len; i += interval) {
-                out[msg[i]]++;
-            }
-            int rot = bestMatch(out, FREQ);
-            key[j] = (char) rot;
-            key[j] += 'A';
-            for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
-                accu[i] += out[(i + rot) % NUMBER_OF_LETTERS];
-            }
-        }
-        double sum = 0;
-        for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
-            sum += accu[i];
-        }
-        if (sum <= 0) {
-            return 0;
-        }
-        double ret = 0;
-        for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
-            double d = accu[i] / sum - FREQ[i];
-            ret += d * d / FREQ[i];
-        }
-
-        key[interval] = '\0';
-        return ret;
-    }
-
     public static int inicio() {
         int len = 0;
         char[] key = new char[100];
@@ -113,6 +79,40 @@ public final class VigenereCCipher {
         }
 
         return bestRotate;
+    }
+
+    private static double freqEveryNth(final int[] msg, int len, int interval, char[] key) {
+        double[] out = new double[NUMBER_OF_LETTERS];
+        double[] accu = new double[NUMBER_OF_LETTERS];
+        for (int j = 0; j < interval; j++) {
+            for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
+                out[i] = 0;
+            }
+            for (int i = j; i < len; i += interval) {
+                out[msg[i]]++;
+            }
+            int rot = bestMatch(out, FREQ);
+            key[j] = (char) rot;
+            key[j] += 'A';
+            for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
+                accu[i] += out[(i + rot) % NUMBER_OF_LETTERS];
+            }
+        }
+        double sum = 0;
+        for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
+            sum += accu[i];
+        }
+        if (sum <= 0) {
+            return 0;
+        }
+        double ret = 0;
+        for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
+            double d = accu[i] / sum - FREQ[i];
+            ret += d * d / FREQ[i];
+        }
+
+        key[interval] = '\0';
+        return ret;
     }
 
 }

@@ -125,8 +125,10 @@ public class CredentialInvestigator extends KibanaInvestigator {
         return document.select("input").stream()
                 .map(e -> new AbstractMap.SimpleEntry<>(e.attr("id"), Objects.toString(e.attr("value"), "").trim()))
                 .filter(e -> StringUtils.isNotBlank(e.getValue())).filter(e -> StringUtils.isNotBlank(e.getKey()))
-                .filter(e -> include.contains(e.getKey())).distinct().collect(Collectors.groupingBy(e -> e.getKey(),
-                        LinkedHashMap::new, Collectors.mapping(e -> e.getValue(), Collectors.joining(" - "))));
+                .filter(e -> include.contains(e.getKey())).distinct()
+                .collect(Collectors.groupingBy(Entry<String, String>::getKey,
+                        LinkedHashMap::new,
+                        Collectors.mapping(Entry<String, String>::getValue, Collectors.joining(" - "))));
     }
 
     public static void main(String[] args) {
@@ -169,6 +171,15 @@ public class CredentialInvestigator extends KibanaInvestigator {
         return headers;
     }
 
+    private static Map<String, Object> lookupDisplay(Map<String, Object> m) {
+        Map<String, Object> collect = m.entrySet().stream()
+                .filter(e -> e.getKey()
+                        .matches("Receive Time|client_os|srcregion|private_ip|Source User|public_ip"))
+                .collect(Collectors.toMap(Entry<String, Object>::getKey,
+                        Entry<String, Object>::getValue));
+        return collect;
+    }
+
     private static Map<String, SupplierEx<String>> scanCredentials(String query, Integer days1, String index,
             Map<String, String> result) {
         Map<String, SupplierEx<String>> scanByIp = new LinkedHashMap<>();
@@ -209,13 +220,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
                     String header = !CIDRUtils.isPrivateNetwork(ip) ? "public_ip" : "private_ip";
                     List<Map<String, Object>> findFirst =
                             DATAFRAME_LOOKUP.findAll(header, s -> Objects.equals(query, s));
-                    return findFirst.stream().map(m -> {
-                        return m.entrySet().stream()
-                                .filter(e -> e.getKey()
-                                        .matches("Receive Time|client_os|srcregion|private_ip|Source User|public_ip"))
-                                .collect(Collectors.toMap(Entry<String, Object>::getKey,
-                                        Entry<String, Object>::getValue));
-                    }).map(KibanaApi::display).collect(Collectors.joining("\n"));
+                    return findFirst.stream().map(CredentialInvestigator::lookupDisplay).map(KibanaApi::display).collect(Collectors.joining("\n"));
                 }).collect(Collectors.joining("\n"));
             });
         }

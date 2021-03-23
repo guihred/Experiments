@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class LabeledPoint extends PointCh4 {
 
-    private String label;
+    private final String label;
 
     public LabeledPoint(String label, double x, double y) {
         super(x, y);

@@ -43,10 +43,11 @@ public final class Mapping {
     private Mapping() {
     }
 
-    public static List<Method> getMethods() {
+    public static synchronized List<Method> getMethods() {
         List<Class<?>> allowedTypes = Arrays.asList(Double.class, String.class, Integer.class, Long.class, int.class,
                 Object.class, long.class, double.class, Number.class);
-        List<Class<?>> returnTypes = Arrays.asList(Double.class, String.class, Integer.class, Long.class, int.class,
+        List<Class<?>> returnTypes = Arrays.asList(Double.class, String.class, Integer.class, Long.class, boolean.class,
+                int.class,
                 Object.class, long.class, double.class, Map.class, List.class, Collection.class, String[].class);
         return SupplierEx.orElse(methods,
                 () -> methods = JavaFileDependency.getAllFileDependencies().stream()
@@ -62,32 +63,6 @@ public final class Mapping {
                         .collect(Collectors.toList()));
     }
 
-    public static void showDialog(Node barChart, DataframeML dataframe, String[] dependencies, ConsumerEx<File> run) {
-        List<Class<?>> allowedTypes = Stream.of(dependencies).map(dataframe::getFormat).collect(Collectors.toList());
-        ObservableList<Method> methods2 = FXCollections.observableArrayList(Mapping.getMethods())
-                .filtered(m -> ClassReflectionUtils.isAllowed(allowedTypes, m.getParameterTypes()));
-        VBox vBox = new VBox();
-        
-        ComboBox<Method> methodsCombo =
-                new SimpleComboBoxBuilder<>(methods2).id("methodCombo").select(0).converter(Mapping::methodName)
-                .onChange((old, method) -> adjustToMethod(dependencies, vBox, method)).build();
-        
-        TextField crossFeature = new TextField(Stream.of(dependencies).collect(Collectors.joining("_")) + 1);
-        SimpleDialogBuilder dialog = new SimpleDialogBuilder().bindWindow(barChart).node(crossFeature);
-        for (String string : dependencies) {
-            dialog.text(string + " (" + dataframe.getFormat(string).getSimpleName() + ")");
-        }
-        dialog.node(methodsCombo).node(vBox)
-        .button("Add", () -> {
-            Method method = methodsCombo.getSelectionModel().getSelectedItem();
-            List<Object> otherParams = otherParams(dependencies, vBox, method);
-            return addMapping(dataframe, method, crossFeature.getText(), dependencies, otherParams);
-        }, () -> {
-            File outFile = ResourceFXUtils.getOutFile("csv/" + dataframe.getFile().getName());
-            DataframeUtils.save(dataframe, outFile);
-            ConsumerEx.accept(run, outFile);
-        }).displayDialog();
-    }
 
     public static void showDialog(Node barChart, String[] dependencies, DataframeML dataframe, ConsumerEx<File> run) {
         List<Class<?>> allowedTypes = Stream.of(dependencies).map(dataframe::getFormat).collect(Collectors.toList());

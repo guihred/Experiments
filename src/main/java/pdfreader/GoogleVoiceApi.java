@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import utils.ProjectProperties;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
 
 public class GoogleVoiceApi {
-    private static final String API_KEY = "AIzaSyBEMO6bUszqedhYmKm-bAu91gVLqKEBRZ4";
+    private static final String GOOGLEAPIS_SYNTHESIZE_URL = ProjectProperties.getField();
+    private static final String API_KEY = ProjectProperties.getField();
 
     /**
      * POST https://texttospeech.googleapis.com/v1/text:synthesize?key=
@@ -28,32 +30,30 @@ public class GoogleVoiceApi {
      */
 
     public static void main(String[] args) throws IOException {
-        BufferedReader newBufferedReader = Files.newBufferedReader(
-                new File("C:\\Users\\guigu\\Downloads\\Padrão.txt").toPath(), StandardCharsets.UTF_8);
-        List<String> lines = newBufferedReader.lines().map(FunctionEx.makeFunction(s -> {
-            String[] split = s.split("\t");
-            File audio = synthesize(split[0], "en-US");
-            return Stream.of(split[0] + "[sound:" + audio.getName() + "]", split[1], "")
-                    .collect(Collectors.joining("\t"));
-        })).collect(Collectors.toList());
-        Files.write(ResourceFXUtils.getOutFile("mp3/BaralhoGoogle.txt").toPath(), lines);
+        synthesize("How are you today?", "en-US");
+    }
 
+    public static void makeCards(File file) throws IOException {
+        try (BufferedReader newBufferedReader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);) {
+            List<String> lines = newBufferedReader.lines().map(FunctionEx.makeFunction(s -> {
+                String[] split = s.split("\t");
+                File audio = synthesize(split[0], "en-US");
+                return Stream.of(split[0] + "[sound:" + audio.getName() + "]", split[1], "")
+                        .collect(Collectors.joining("\t"));
+            })).collect(Collectors.toList());
+            Files.write(ResourceFXUtils.getOutFile("mp3/BaralhoGoogle.txt").toPath(), lines);
+        }
     }
 
     public static File synthesize(String phrase, String language) throws IOException {
-        String content = String.format(
-                "{"
-                + "\"input\": {\"text\": \"%s\"},"
-                + "\"voice\": {\"languageCode\": \"%s\","
-                        + "\"name\": \"\"},"
-                + "\"audioConfig\": {\"audioEncoding\": \"MP3\"}"
-                + "}",
-                phrase, language);
+        String content =
+                String.format("{\"input\": {\"text\": \"%s\"},\"voice\": {\"languageCode\": \"%s\",\"name\": \"\"},"
+                        + "\"audioConfig\": {\"audioEncoding\": \"MP3\"}}", phrase, language);
         Map<String, String> headers = new LinkedHashMap<>();
         headers.put("Content-Type", "application/json");
         String md5Hash = HashVerifier.getMD5Hash(phrase);
         File outFile = ResourceFXUtils.getOutFile("mp3/" + md5Hash + ".mp3");
-        PhantomJSUtils.postJson("https://texttospeech.googleapis.com/v1/text:synthesize?key=" + API_KEY, content,
+        PhantomJSUtils.postJson(GOOGLEAPIS_SYNTHESIZE_URL + API_KEY, content,
                 headers, outFile);
         Map<String, Object> object = JsonExtractor.toObject(outFile, "audioContent", "error");
         if (object.containsKey("audioContent")) {

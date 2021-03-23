@@ -24,18 +24,6 @@ public class DataframeML extends BaseDataframe {
         row.forEach(this::add);
     }
 
-    @SuppressWarnings("unchecked")
-    public void add(String header, Object obj) {
-        List<Object> list = list(header);
-        if (list == null) {
-            dataframe.put(header, new ArrayList<>());
-            formatMap.put(header, (Class<? extends Comparable<?>>) obj.getClass());
-            list = list(header);
-        }
-        list.add(obj);
-        size = Math.max(size, list.size());
-    }
-
     public void addAll(Object... obj) {
         Collection<List<Object>> values = dataframe.values();
         int i = 0;
@@ -176,5 +164,17 @@ public class DataframeML extends BaseDataframe {
         }
         return list(header).stream().filter(Objects::nonNull).map(Number.class::cast).mapToDouble(Number::doubleValue)
                 .summaryStatistics();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void add(String header, Object obj) {
+        List<Object> list = list(header);
+        if (list == null) {
+            dataframe.put(header, new ArrayList<>());
+            formatMap.put(header, (Class<? extends Comparable<?>>) obj.getClass());
+            list = list(header);
+        }
+        list.add(obj);
+        size = Math.max(size, list.size());
     }
 }

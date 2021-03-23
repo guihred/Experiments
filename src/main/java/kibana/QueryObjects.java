@@ -30,7 +30,7 @@ import utils.ex.ConsumerEx;
 
 public class QueryObjects {
     private static final String MDC_UID_KEYWORD = "mdc.uid";
-    public static final String URL_QUERY = "request";
+    public static final String URL_QUERY = "request.keyword";
 
     public static final String CLIENT_IP_QUERY = "clientip";
     public static final String ACESSOS_SISTEMA_QUERY = "dtpsistema";
@@ -47,19 +47,19 @@ public class QueryObjects {
 
     private String group = "";
 
-    private TableView<Map<String, String>> table;
+    private final TableView<Map<String, String>> table;
 
     private final ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
     private final ObservableList<Series<Number, Number>> series = observableArrayList();
 
-    private LineChart<Number, Number> lineChart;
+    private final LineChart<Number, Number> lineChart;
 
     public QueryObjects(String query, String queryFile, LineChart<Number, Number> lineChart) {
         this.query = query;
         this.queryFile = queryFile;
         this.lineChart = lineChart;
         params = new String[] {};
-
+        table = null;
     }
 
     public QueryObjects(String query, String queryFile, TableView<Map<String, String>> table, String[] params) {
@@ -67,6 +67,7 @@ public class QueryObjects {
         this.queryFile = queryFile;
         this.table = table;
         this.params = params;
+        lineChart = null;
     }
 
     public QueryObjects configureTable(TextField resultsFilter, ConsumerEx<List<Map<String, String>>> onClick) {

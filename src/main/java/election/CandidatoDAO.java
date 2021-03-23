@@ -32,18 +32,6 @@ public class CandidatoDAO extends BaseDAO {
         });
     }
 
-    public long distinctNumber(String field) {
-        return execute(session -> {
-            StringBuilder hql = new StringBuilder();
-            hql.append("SELECT  ");
-            hql.append(" COUNT(DISTINCT ");
-            hql.append(field);
-            hql.append(")");
-            hql.append(" FROM Candidato ");
-            return session.createQuery(hql.toString(), Long.class).uniqueResult();
-        }).longValue();
-    }
-
     public Map<String, Long> histogram(String field, Map<String, Set<String>> fieldMap) {
 
         List<Object[]> execute = execute(session -> {
@@ -87,9 +75,6 @@ public class CandidatoDAO extends BaseDAO {
         });
     }
 
-    public Candidato retrieve(String href) {
-        return execute(session -> session.get(Candidato.class, href));
-    }
 
     public void saveOrUpdate(Candidato candidato) {
         executeRun(session -> session.merge(candidato));

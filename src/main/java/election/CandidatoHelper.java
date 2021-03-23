@@ -26,7 +26,7 @@ import utils.fx.ImageTableCell;
 
 public final class CandidatoHelper {
     private static final int RELEVANT_FIELD_THRESHOLD = 410;
-    private static CandidatoDAO candidatoDAO = new CandidatoDAO();
+    private final static CandidatoDAO DAO = new CandidatoDAO();
 
     private static final Logger LOG = HasLogging.log();
 
@@ -51,11 +51,11 @@ public final class CandidatoHelper {
     }
 
     public static List<String> distinct(String field) {
-        return candidatoDAO.distinct(field);
+        return DAO.distinct(field);
     }
 
     public static List<String> getRelevantFields() {
-        return candidatoDAO.distinctFields().entrySet().stream().filter(i -> i.getValue() < RELEVANT_FIELD_THRESHOLD)
+        return DAO.distinctFields().entrySet().stream().filter(i -> i.getValue() < RELEVANT_FIELD_THRESHOLD)
                 .map(Entry<String, Long>::getKey).collect(Collectors.toList());
     }
 
@@ -79,9 +79,9 @@ public final class CandidatoHelper {
         int max = maxResult == 0 ? 10 : maxResult;
         LOG.info("SCANNING CANDIDATES PAGE {} MAX {} COLUMN {} fields {}", pagination.getCurrentPageIndex(), maxResult,
                 column, fieldMap);
-        List<Candidato> list = candidatoDAO.list(first.get() * max, max, fieldMap);
+        List<Candidato> list = DAO.list(first.get() * max, max, fieldMap);
         observableArrayList.setAll(list);
-        Map<String, Long> histogram = candidatoDAO.histogram(column, fieldMap);
+        Map<String, Long> histogram = DAO.histogram(column, fieldMap);
         pieGraph.setHistogram(histogram);
         pagination.setPageCount((int) histogram.values().stream().mapToLong(s -> s).sum() / max);
     }

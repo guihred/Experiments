@@ -147,10 +147,6 @@ public class WandTool extends AreaTool {
         getArea().setHeight(Math.abs(Math.max(y, y2 + getArea().getHeight()) - getArea().getLayoutY()));
     }
 
-    protected boolean closeColor(final PixelHelper pixel, final int color) {
-        return pixel.diff(color) < threshold.get();
-    }
-
     protected WritableImage cutArea(WritableImage selectedImage) {
         int width2 = Math.max(1, (int) getArea().getWidth() + 1);
         int height2 = Math.max(1, (int) getArea().getHeight() + 1);
@@ -213,6 +209,10 @@ public class WandTool extends AreaTool {
         if (!toGo.contains(e) && within(e, (double) width * height)) {
             toGo.add(e);
         }
+    }
+
+    private boolean closeColor(final PixelHelper pixel, final int color) {
+        return pixel.diff(color) < threshold.get();
     }
 
     private Slider getThresholdSlider() {

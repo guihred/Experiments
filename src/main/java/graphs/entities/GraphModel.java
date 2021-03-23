@@ -82,9 +82,7 @@ public class GraphModel {
         }
     }
 
-    public List<Cell> adjacents(Cell c) {
-        return GraphModelAlgorithms.adjacents(c, allEdges);
-    }
+
 
     public void attachOrphansToGraphParent(Iterable<Cell> cellList) {
 
