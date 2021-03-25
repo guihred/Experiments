@@ -150,9 +150,9 @@ public final class FXMLCreator {
                     .collect(toMap(m -> m, m -> invoke(ob1, m), SupplierEx::nonNull, LinkedHashMap::new));
             diffFields.putAll(fieldMap);
         }
-        Map<String, Object> collect = persistentFields.stream().filter(s -> ClassReflectionUtils.hasGetter(cl, s))
+        Map<String, Object> different = persistentFields.stream().filter(s -> ClassReflectionUtils.hasGetter(cl, s))
                 .collect(Collectors.toMap(s -> s, s -> invoke(ob1, s)));
-        diffFields.putAll(collect);
+        diffFields.putAll(different);
         return diffFields;
     }
 

@@ -98,25 +98,26 @@ public class ConsultasInvestigator extends Application {
         configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setAllowEmpty(false);
         SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> {
             String string = filter.get(e.getKey());
-            String collect = Stream.of(string.split("\n")).filter(t -> !Objects.equals(e.getValue(), t))
+            String newFilterValue = Stream.of(string.split("\n")).filter(t -> !Objects.equals(e.getValue(), t))
                     .collect(Collectors.joining("\n"));
-            if (StringUtils.isBlank(collect)) {
+            if (StringUtils.isBlank(newFilterValue)) {
                 filter.remove(e.getKey());
             } else {
-                filter.put(e.getKey(), collect);
+                filter.put(e.getKey(), newFilterValue);
             }
         }).pasteable(s -> {
             addToFilter(s);
             return null;
         }).copiable().multipleSelection();
         filter.addListener((Change<? extends String, ? extends String> change) -> {
-            List<Entry<String, String>> collect = change.getMap().entrySet().stream().flatMap(
+            List<Entry<String, String>> newComposition = change.getMap().entrySet().stream().flatMap(
                     entry -> Stream.of(entry.getValue().split("\n")).distinct().sorted()
                             .map(s -> JsonExtractor.newEntry(entry.getKey(), s)))
                     .collect(Collectors.toList());
-            filterList.getItems().removeIf(s -> !collect.contains(s));
+            filterList.getItems().removeIf(s -> !newComposition.contains(s));
             filterList.getItems().addAll(
-                    collect.stream().filter(s -> !filterList.getItems().contains(s)).collect(Collectors.toList()));
+                    newComposition.stream().filter(s -> !filterList.getItems().contains(s))
+                            .collect(Collectors.toList()));
         });
         splitPane0.setDividerPositions(1. / 10);
     }

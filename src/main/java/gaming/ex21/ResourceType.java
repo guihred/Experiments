@@ -45,10 +45,6 @@ public enum ResourceType {
         return terrain;
     }
 
-    public static HBox createResourceChoices(Consumer<ResourceType> onSelect) {
-        HBox res = new HBox();
-        return createResourceChoices(onSelect, res);
-    }
 
     public static HBox createResourceChoices(Consumer<ResourceType> onSelect, HBox res) {
         SimpleToggleGroupBuilder group = new SimpleToggleGroupBuilder();

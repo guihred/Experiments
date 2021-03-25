@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
+import utils.ProjectProperties;
 import utils.ResourceFXUtils;
 import utils.SimpleMap;
 import utils.ex.HasLogging;
@@ -24,7 +25,7 @@ import utils.ex.SupplierEx;
 public class WhoIsScanner {
     public static final String REVERSE_DNS = "HostName";
 
-    private static final String SANS_API_URL = "http://isc.sans.edu/api/ip/";
+    private static final String SANS_API_URL = ProjectProperties.getField();
 
     public static final String IP_REGEX = "^\\d+\\.\\d+\\.\\d+\\.\\d+$";
 

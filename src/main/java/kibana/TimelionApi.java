@@ -12,13 +12,14 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import org.slf4j.Logger;
 import utils.CommonsFX;
+import utils.ProjectProperties;
 import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class TimelionApi extends KibanaApi {
-    private static final String TIMELION_URL = "https://n321p000124.fast.prevnet/api/timelion/run";
+    private static final String TIMELION_URL = ProjectProperties.getField();
     private static final Logger LOG = HasLogging.log();
     public static final String TIMELINE_USERS =
             ".es(index=*apache-prod*,q=\\\"dtptype:nginx OR dtptype:apache OR dtptype:varnish\\\","

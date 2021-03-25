@@ -24,6 +24,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.FileTreeWalker;
+import utils.ProjectProperties;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -36,11 +37,11 @@ public class SanarHelper {
 
     private static final Logger LOG = HasLogging.log();
 
-    private static final String PREFIX = "https://www.e-sanar.com.br/aluno/curso/292";
+    public static final String PREFIX = ProjectProperties.getField();
 
     public static final File consulta = new File("C:" + "\\Users" + "\\guigu" + "\\Documents" + "\\Carol" + "\\eSanar");
 
-    public static final String E_SANAR_DOMAIN = "https://www.e-sanar.com.br";
+    public static final String E_SANAR_DOMAIN = ProjectProperties.getField();
 
     public static void adjustStyleClass(TreeCell<Entry<String, String>> cell, Entry<String, String> c) {
         String con2 = c.getValue();

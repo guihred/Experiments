@@ -153,10 +153,10 @@ final class EditSongHelper {
             if (!pathByExtension.isEmpty()) {
                 CommonsFX.runInPlatform(() -> {
                     LOG.info("ADDING FOLDER IMAGES");
-                    List<ImageView> collect = pathByExtension.stream().map(
+                    List<ImageView> images = pathByExtension.stream().map(
                             e -> ImageLoader.convertToImage(ResourceFXUtils.convertToURL(e.toFile()).toExternalForm()))
                             .collect(Collectors.toList());
-                    children.addAll(0, collect);
+                    children.addAll(0, images);
                 });
             }
         });

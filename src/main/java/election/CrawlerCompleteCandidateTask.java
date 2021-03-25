@@ -33,7 +33,7 @@ public final class CrawlerCompleteCandidateTask extends CommonCrawlerTask<Intege
     private void extractCandidateInfo(Candidato candidato) {
         for (int tried = 0; tried < 3; tried++) {
             try {
-                Document parse = JsoupUtils.getDocument("https://www.todapolitica.com" + candidato.getHref());
+                Document parse = JsoupUtils.getDocument(CrawlerCandidateTask.ELEICOES_2018_URL + candidato.getHref());
                 Elements select = parse.select(".info-candidato");
                 Elements children = select.first().children();
                 String nomeCompleto = children.get(0).child(1).text();

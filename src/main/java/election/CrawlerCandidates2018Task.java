@@ -1,4 +1,5 @@
 package election;
+import static election.CrawlerCandidateTask.ELEICOES_2018_URL;
 
 import com.google.common.collect.ImmutableMap;
 import extract.web.JsoupUtils;
@@ -14,7 +15,6 @@ import utils.ex.HasLogging;
 
 public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
 
-    private static final String ELEICOES_2018_URL = "https://www.todapolitica.com";
 
     private static final Logger LOG = HasLogging.log();
 
@@ -80,7 +80,7 @@ public class CrawlerCandidates2018Task extends CommonCrawlerTask<String> {
                     boolean equals = "Eleito".equals(text2);
                     umEleito |= equals;
                     candidato.setEleito(equals);
-                    Document detailsDocument = JsoupUtils.getDocument(ELEICOES_2018_URL + href);
+                    Document detailsDocument = JsoupUtils.getDocument(CrawlerCandidateTask.ELEICOES_2018_URL + href);
                     Map<String, String> fields = new HashMap<>();
                     Elements children = detailsDocument.select(".info-candidato").first().children();
                     String nomeCompleto = children.get(0).child(1).text();

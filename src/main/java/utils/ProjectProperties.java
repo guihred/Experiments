@@ -49,12 +49,14 @@ public class ProjectProperties {
         RunnableEx.run(() -> {
             File file = ResourceFXUtils.toFile("project.properties");
             Files.lines(file.toPath()).forEach(s -> {
-                String[] split = s.split(" *=");
-                if (split.length != 2) {
+                String regex = "(.+?)=(.+)";
+                String property = s.replaceAll(regex, "$1").trim();
+                String value = s.replaceAll(regex, "$2");
+                if (StringUtils.isBlank(property) || StringUtils.isBlank(value)) {
                     LOG.error("ERROR IN LINE {}", s);
                     return;
                 }
-                linkedHashMap.put(split[0], split[1]);
+                linkedHashMap.put(property, value);
             });
         });
 

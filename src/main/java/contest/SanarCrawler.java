@@ -32,7 +32,6 @@ import utils.ex.RunnableEx;
 
 public class SanarCrawler extends Application {
 
-    private static final String PREFIX = "https://www.e-sanar.com.br/aluno/curso/292";
     private static final Logger LOG = HasLogging.log();
     @FXML
     private ListView<Map.Entry<String, String>> vagasList;
@@ -58,7 +57,7 @@ public class SanarCrawler extends Application {
     public void initialize() {
 
         Map.Entry<String, String> simpleEntry =
-                new SimpleEntry<>("Area do aluno", PREFIX + ",preparatorio-para-farmacia.html");
+                new SimpleEntry<>("Area do aluno", SanarHelper.PREFIX + ",preparatorio-para-farmacia.html");
 
         tableColumn4.setCellFactory(SimpleTableViewBuilder.newCellFactory(SanarHelper::concursoCellFactory));
         SimpleTreeViewBuilder.of(treeBuilder).root(simpleEntry)

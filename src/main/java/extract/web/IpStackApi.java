@@ -8,6 +8,7 @@ import utils.ProjectProperties;
 import utils.ResourceFXUtils;
 
 public final class IpStackApi {
+    private static final String IPSTACK_URL = "http://api.ipstack.com/";
     private static final String IP_STACK_APIKEY = ProjectProperties.getField();
 
     private IpStackApi() {
@@ -16,7 +17,7 @@ public final class IpStackApi {
     public static Map<String, String> getIPGeoInformation(String ip) throws IOException {
         File outFile = newJsonFile(ip + "geoip");
         if (!outFile.exists()) {
-            getFromURL("http://api.ipstack.com/" + ip, outFile);
+            getFromURL(IPSTACK_URL + ip, outFile);
         }
         Map<String, Object> geoInfo =
                 JsonExtractor.toObject(outFile, "city", "region_code", "country_code");

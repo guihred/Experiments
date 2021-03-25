@@ -20,18 +20,12 @@ import ml.graph.DataframeExplorer;
 import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.CSVUtils;
-import utils.CommonsFX;
-import utils.QuickSortML;
-import utils.ResourceFXUtils;
+import utils.*;
 import utils.ex.SupplierEx;
 
 public class SonarApi extends Application {
 
-    public static final String SONAR_API_ISSUES =
-            "http://localhost:9000/api/issues/search?componentKeys=Experiments%3AExperiments" + "&s=FILE_LINE"
-                    + "&resolved=false" + "&ps=100" + "&organization=default-organization"
-                    + "&facets=severities%2Ctypes%2Crules" + "&additionalFields=_all";
+    public static final String SONAR_API_ISSUES = ProjectProperties.getField();
 
     private static final Map<String,
             String> GET_HEADERS = ImmutableMap.<String, String>builder()
@@ -101,11 +95,11 @@ public class SonarApi extends Application {
                     map.computeIfPresent("component", (k, v) -> Objects.toString(v, "").replaceAll(".+java/", ""));
             components.add(Objects.toString(compute, ""));
         }
-        List<String> collect = components.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting()))
+        List<String> resources = components.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting()))
                 .entrySet().stream().sorted(Comparator.comparingLong(Entry<String, Long>::getValue).reversed())
                 .map(e -> e.getKey() + "\t" + e.getValue()).collect(Collectors.toList());
         components.clear();
-        components.addAll(collect);
+        components.addAll(resources);
         List<String> ruless = issuesList.stream()
                 .collect(Collectors.groupingBy(s -> Objects.toString(s.get("rule")), Collectors.counting())).entrySet()
                 .stream().sorted(Comparator.comparing(Entry<String, Long>::getValue).reversed())

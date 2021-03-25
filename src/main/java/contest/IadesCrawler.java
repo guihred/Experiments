@@ -32,10 +32,11 @@ import simplebuilder.SimpleTreeViewBuilder;
 import utils.CommonsFX;
 import utils.ExtractUtils;
 import utils.HibernateUtil;
+import utils.ProjectProperties;
 import utils.ex.RunnableEx;
 
 public class IadesCrawler extends Application {
-    private static final String DOMAIN = "https://www.iades.com.br";
+    private static final String DOMAIN = ProjectProperties.getField();
     @FXML
     private TableView<Concurso> tableView2;
     @FXML

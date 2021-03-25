@@ -6,11 +6,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
+import utils.ProjectProperties;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 
 public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
 
+    public static final String ELEICOES_2018_URL = ProjectProperties.getField();
     private static final Logger LOG = HasLogging.log();
 
     private final CidadeDAO cidadeDAO = new CidadeDAO();
@@ -25,7 +27,7 @@ public final class CrawlerCandidateTask extends CommonCrawlerTask<Cidade> {
         int i = 1;
         while (true) {
             try {
-                String url = "https://www.todapolitica.com" + cidade.getHref() + i + "/";
+                String url = ELEICOES_2018_URL + cidade.getHref() + i + "/";
                 Document parse = JsoupUtils.getDocument(url);
 
                 Elements select = parse.select(".cr-js");

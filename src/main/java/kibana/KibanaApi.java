@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -33,21 +35,26 @@ public class KibanaApi {
 
     private static final String KIBANA_FOLDER = "kibana/";
 
-    private static final String ELASTICSEARCH_MSEARCH_URL =
-            "https://n321p000124.fast.prevnet/elasticsearch/_msearch?rest_total_hits_as_int=true&ignore_throttled=true";
-
+    private static final String ELASTICSEARCH_MSEARCH_URL = ProjectProperties.getField();
     private static final Logger LOG = HasLogging.log();
 
     private static final Map<String, String> GET_HEADERS = ImmutableMap.<String, String>builder()
             .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0")
             .put("Accept", "application/json, text/plain, */*")
-            .put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3").put("Accept-Encoding", "gzip, deflate, br")
-            .put("kbn-version", "6.6.2").put("Origin", "https://n321p000124.fast.prevnet").put("DNT", "1")
-            .put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization()).put("Connection", "keep-alive")
-            .put("Referer", "https://n321p000124.fast.prevnet/app/kibana").put("Cookie", "io=3PIP6uXMWNC7_9EfAAAE")
+            .put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3")
+            .put("Accept-Encoding", "gzip, deflate, br")
+            .put("kbn-version", "6.6.2")
+            .put("Origin", "https://n321p000124.fast.prevnet")
+            .put("DNT", "1")
+            .put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization())
+            .put("Connection", "keep-alive")
+            .put("Referer", "https://n321p000124.fast.prevnet/app/kibana")
+            .put("Cookie", "io=3PIP6uXMWNC7_9EfAAAE")
             .build();
 
     private static final WhoIsScanner WHOIS_SCANNER = new WhoIsScanner();
+
+    public static final String IP_REGEX = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
 
     protected KibanaApi() {
     }
@@ -56,14 +63,13 @@ public class KibanaApi {
         String key = "key";
         String valueCol = "value";
         String buckets = "buckets";
-        List<Map<Object, Object>> accessList = JsonExtractor.accessList(
-                makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { "DestinationIP", "SourceIP", ip },
-                        "aggregations"),
-                "aggregations", "3", buckets);
-        List<Map<Object, Object>> accessList2 = JsonExtractor.accessList(
-                makeKibanaSearchObj("destinationPortQuery.json", days, new String[] { "SourceIP", "DestinationIP", ip },
-                        "aggregations"),
-                "aggregations", "3", buckets);
+        List<Map<Object, Object>> accessList = JsonExtractor.accessList(makeKibanaSearchObj("destinationPortQuery.json",
+                days, new String[] { "DestinationIP", "SourceIP", ip }, "aggregations"), "aggregations", "3", buckets);
+        List<Map<Object, Object>> accessList2 =
+                JsonExtractor.accessList(
+                        makeKibanaSearchObj("destinationPortQuery.json", days,
+                                new String[] { "SourceIP", "DestinationIP", ip }, "aggregations"),
+                        "aggregations", "3", buckets);
         accessList.addAll(accessList2);
         return accessList.stream().map((Map<Object, Object> map) -> {
             String ipd = JsonExtractor.access(map, String.class, key);
@@ -145,11 +151,13 @@ public class KibanaApi {
 
     public static String getLoginTimeCredencial(String query, String index, int days) {
         List<String> message = getMessageList(query, index, days);
-        String whenRegex = "WHEN: (.+)";
-        return message.stream().flatMap(m -> Stream.of(m.split("\n"))).filter(s -> s.matches(whenRegex))
-                .map(s -> s.replaceAll(whenRegex, "$1"))
-                .map(s -> DateFormatUtils.parse(s, "E MMM dd HH:mm:ss z yyyy", ZonedDateTime::from))
-                .collect(new SimpleSummary<>()).format(t -> DateFormatUtils.format("dd/MM/yyyy HH:mm:ss", t));
+        String timeRegex = "WHEN: (.+)";
+        String credentialRegex = "WHO:\\s+(\\d+)|WHAT: supplied credentials: .+?(\\d{11}).+";
+        String fieldRegex = query.matches(IP_REGEX) ? credentialRegex : "(" + IP_REGEX + ")";
+        return message.stream().filter(s -> StringUtils.isNotBlank(StringSigaUtils.getMatches(s, fieldRegex)))
+                .collect(groupBy(timeRegex, fieldRegex)).entrySet().stream()
+                .map(e -> e.getKey() + " " + e.getValue().format(t -> DateFormatUtils.format("dd/MM/yyyy HH:mm:ss", t)))
+                .collect(Collectors.joining("\n"));
     }
 
     public static List<String> getMessageList(String finalIP, String index, int days) {
@@ -398,6 +406,17 @@ public class KibanaApi {
         return groupStream(collect, d).collect(Collectors.joining("\n"));
     }
 
+    private static Collector<String, ?, Map<String, SimpleSummary<ChronoZonedDateTime<?>>>> groupBy(String whenRegex,
+            String whenRegex2) {
+        return Collectors
+                .groupingBy(s -> StringSigaUtils.getMatches(s, whenRegex2),
+                        Collectors
+                                .mapping(
+                                        s -> DateFormatUtils.parse(StringSigaUtils.getMatches(s, whenRegex),
+                                                "E MMM dd HH:mm:ss z yyyy", ZonedDateTime::from),
+                                        new SimpleSummary<>()));
+    }
+
     private static Stream<String> groupStream(List<String> collect, final int d) {
         return IntStream.range(0, collect.size() / d)
                 .mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size()).mapToObj(j -> collect.get(j))
@@ -438,9 +457,8 @@ public class KibanaApi {
     }
 
     private static File searchIfDoesNotExist(File file, int days, String[] query) {
-        File outFile =
-                newJsonFile(
-                        removeExtension(file) + Stream.of(query).distinct().collect(Collectors.joining()) + "_" + days);
+        File outFile = newJsonFile(
+                removeExtension(file) + Stream.of(query).distinct().collect(Collectors.joining()) + "_" + days);
         if (JsonExtractor.isNotRecentFile(outFile)) {
             String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
             String lte = Objects.toString(Instant.now().toEpochMilli());

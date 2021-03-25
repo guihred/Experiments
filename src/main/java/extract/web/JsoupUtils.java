@@ -23,12 +23,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
+import utils.ProjectProperties;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class JsoupUtils {
-    private static final String USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0";
+    public static final String USER_AGENT = ProjectProperties.getField();
     private static final Logger LOG = HasLogging.log();
 
     private JsoupUtils() {
@@ -51,7 +51,7 @@ public final class JsoupUtils {
         return doc.html();
     }
 
-    public static Response executeRequest(String url, Map<String, String> cookies) throws IOException {
+    public static Response executeRequest(String url, Map<String, String> cookies) {
         Connection connect = HttpConnection.connect(url);
         if (!ExtractUtils.isNotProxied()) {
             addProxyAuthorization(connect);
@@ -67,10 +67,6 @@ public final class JsoupUtils {
             }
         }).get();
 
-    }
-
-    public static String extractBodyFromHTML(File inputFile) throws IOException {
-        return Jsoup.parse(inputFile, "UTF-8").body().text();
     }
 
     // A simple authentication POST request with Jsoup

@@ -61,9 +61,9 @@ protected ObservableList<Map<String, String>> items = synchronizedObservableList
         new FileChooserBuilder().extensions("All Files", "*.*").name("Scan PE").onSelect(f -> {
             items.clear();
             resultsFilter.setText("");
-            List<File> collect = FileTreeWalker.getFirstFileMatch(f, p -> p.toFile().isFile()).stream()
+            List<File> filesToScan = FileTreeWalker.getFirstFileMatch(f, p -> p.toFile().isFile()).stream()
                     .map(Path::toFile).collect(Collectors.toList());
-            scanFiles(collect);
+            scanFiles(filesToScan);
         }).openDirectoryAction(e);
     }
 

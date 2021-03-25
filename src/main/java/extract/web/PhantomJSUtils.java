@@ -2,11 +2,13 @@ package extract.web;
 
 import gui.ava.html.image.generator.HtmlImageGenerator;
 import java.awt.Dimension;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,24 +104,7 @@ public final class PhantomJSUtils {
         return allLines;
     }
 
-    public static void makeGetAppend(String url, Map<String, String> headers, File outFile) throws IOException {
-        HttpClient client = HttpClientBuilder.create().build();
-        HttpGet post = new HttpGet(url);
-        headers.forEach(post::addHeader);
-        HttpResponse response = client.execute(post);
-        HttpEntity entity = response.getEntity();
-        try (InputStream in = entity.getContent()) {
 
-            Path path = outFile.toPath();
-            final int bufferSize = 256;
-            byte[] b = new byte[bufferSize];
-            int read;
-            do {
-                read = in.read(b);
-                Files.write(path, b, StandardOpenOption.APPEND);
-            } while (read != -1);
-        }
-    }
 
     public static Map<String, String> postContent(String url, String content, ContentType applicationJson,
             Map<String, String> headers, File outFile) throws IOException {
@@ -154,6 +139,7 @@ public final class PhantomJSUtils {
         ExtractUtils.insertProxyConfig();
 
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
+            
         HttpPost get = new HttpPost(url);
         String content = cont.replaceAll("[\n\t]+", "").replaceFirst("\\}\\{", "}\n{") + "\n";
         get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());
@@ -161,9 +147,9 @@ public final class PhantomJSUtils {
                 StringSigaUtils.fixEncoding(content, StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1),
                 ContentType.create("application/x-ndjson")));
         headers.forEach(get::addHeader);
-        String collect = headers.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue())
+        String headersString = headers.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue())
                 .collect(Collectors.joining("\n"));
-        LOG.info("Request \n\t{} \n\t{} \n\t{}", url, collect, content);
+        LOG.info("Request \n\t{} \n\t{} \n\t{}", url, headersString, content);
         HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
             InstallCert.installCertificate(url);
             return client.execute(get);

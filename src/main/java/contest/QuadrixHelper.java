@@ -28,12 +28,13 @@ import org.slf4j.Logger;
 import simplebuilder.SimpleDialogBuilder;
 import utils.CommonsFX;
 import utils.ExtractUtils;
+import utils.ProjectProperties;
 import utils.ex.*;
 
 public final class QuadrixHelper {
 
     private static final Logger LOG = HasLogging.log();
-    public static final String QUADRIX_DOMAIN = "http://www.quadrix.org.br";
+    public static final String QUADRIX_DOMAIN = ProjectProperties.getField();
     private static final Map<String, String> COOKIES = new HashMap<>();
     private static final List<String> LINK_KEYWORDS = Arrays.asList("aplicada", "Gabarito Definitivo", "Caderno");
 

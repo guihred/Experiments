@@ -223,7 +223,12 @@ public class StringSigaUtils extends StringUtils {
         Matcher matcher = Pattern.compile(classRegex).matcher(line);
         List<String> linkedList = new LinkedList<>();
         while (matcher.find()) {
-            linkedList.add(matcher.group(1));
+            int groupCount = matcher.groupCount();
+            String group = "";
+            for (int i = 1; i <= groupCount; i++) {
+                group += Objects.toString(matcher.group(i), "");
+            }
+            linkedList.add(group);
         }
         return linkedList;
     }

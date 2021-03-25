@@ -26,6 +26,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
+import utils.ProjectProperties;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.*;
@@ -48,7 +49,7 @@ public class CrawlerFuriganaTask extends CrawlerTask {
             + "\u4e5d\u5341\u5341\u4e00\u5341\u4e8c\u4e8c\u5341\u4e94\u5341\u767e\u5343\u4e07\u5104\u5146]+");
     private static final int STEP = 10;
 
-    private static final String URL_BASE = "http://jisho.org/search/";
+    private static final String URL_BASE = ProjectProperties.getField();
 
     private ObservableMap<String, String> mapReading =
             FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());

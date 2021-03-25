@@ -1,4 +1,5 @@
 package kibana;
+import static kibana.KibanaApi.IP_REGEX;
 
 import com.google.common.io.Files;
 import extract.web.*;
@@ -33,8 +34,12 @@ import utils.ex.SupplierEx;
 
 public class CredentialInvestigator extends KibanaInvestigator {
 
+    private static final String ACESSO = "https://www-acesso";
+
+    private static final String ACESSO_GWDC = "https://www-acesso/gwdc/";
+
     private static final Logger LOG = HasLogging.log();
-    private static final String IP_REGEX = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
+
     private static Map<String, String> cookies = new LinkedHashMap<>();
     private static DataframeML DATAFRAME_LOOKUP;
     @FXML
@@ -115,7 +120,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
                 RunnableEx.run(() -> getCookies());
             }
             document = JsoupUtils.getDocument(
-                    "https://www-acesso/gwdc/?action=search&object=personUser&filter=" + credencial, cookies);
+                    ACESSO_GWDC + "?action=search&object=personUser&filter=" + credencial, cookies);
             Files.write(document.toString(), outFile, StandardCharsets.UTF_8);
         } else {
             document = JsoupUtils.normalParse(outFile);
@@ -138,46 +143,45 @@ public class CredentialInvestigator extends KibanaInvestigator {
     private static void getCookies() throws IOException {
         File outFile = ResourceFXUtils.getOutFile("html/test.html");
         if (cookies.isEmpty()) {
-            RunnableEx.make(() -> JsoupUtils.getDocument("https://www-acesso/gwdc/", cookies), e -> {
+            RunnableEx.make(() -> JsoupUtils.getDocument(ACESSO_GWDC, cookies), e -> {
                 InstallCert.installCertificate("https://www-acesso/");
-                JsoupUtils.getDocument("https://www-acesso/gwdc/", cookies);
+                JsoupUtils.getDocument(ACESSO_GWDC, cookies);
             }).run();
 
-            String collect = cookies.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
+            String cookiesString = cookies.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
             Map<String, String> headers = getHeaders();
-            headers.put("Cookie", collect);
+            headers.put("Cookie", cookiesString);
             Map<String, String> postContent =
-                    PhantomJSUtils.postContent("https://www-acesso/gwdc/?action=&next_action=&object=&filter=",
+                    PhantomJSUtils.postContent(ACESSO_GWDC + "?action=&next_action=&object=&filter=",
                             "uid=" + ExtractUtils.getHTTPUsername() + "&password=" + ExtractUtils.getHTTPPassword(),
                             ContentType.APPLICATION_FORM_URLENCODED, headers, outFile);
             String string = postContent.get("Location");
-            JsoupUtils.getDocument("https://www-acesso/gwdc/" + string, cookies);
+            JsoupUtils.getDocument(ACESSO_GWDC + string, cookies);
             LOG.info("Cookies Acquired");
         }
     }
 
     private static Map<String, String> getHeaders() {
         Map<String, String> headers = new LinkedHashMap<>();
-        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0");
+        headers.put("User-Agent", JsoupUtils.USER_AGENT);
         headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
         headers.put("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3");
         headers.put("Accept-Encoding", "gzip, deflate, br");
         headers.put("Content-Type", "application/x-www-form-urlencoded");
-        headers.put("Origin", "https://www-acesso");
+        headers.put("Origin", ACESSO);
         headers.put("DNT", "1");
         headers.put("Connection", "keep-alive");
-        headers.put("Referer", "https://www-acesso/gwdc/");
+        headers.put("Referer", ACESSO_GWDC);
         headers.put("Upgrade-Insecure-Requests", "1");
         return headers;
     }
 
     private static Map<String, Object> lookupDisplay(Map<String, Object> m) {
-        Map<String, Object> collect = m.entrySet().stream()
+        return m.entrySet().stream()
                 .filter(e -> e.getKey()
                         .matches("Receive Time|client_os|srcregion|private_ip|Source User|public_ip"))
                 .collect(Collectors.toMap(Entry<String, Object>::getKey,
                         Entry<String, Object>::getValue));
-        return collect;
     }
 
     private static Map<String, SupplierEx<String>> scanCredentials(String query, Integer days1, String index,
@@ -216,12 +220,19 @@ public class CredentialInvestigator extends KibanaInvestigator {
         File outFile = ResourceFXUtils.getOutFile("csv/paloAlto.csv");
         if (JsonExtractor.isRecentFile(outFile, 24)) {
             scanByIp.put("Lookup", () -> {
-                return Stream.of(result.get("IP").split("\n")).map(ip -> {
+                String searchByIp = Stream.of(result.getOrDefault("IP", "").split("\n")).map(ip -> {
                     String header = !CIDRUtils.isPrivateNetwork(ip) ? "public_ip" : "private_ip";
                     List<Map<String, Object>> findFirst =
                             DATAFRAME_LOOKUP.findAll(header, s -> Objects.equals(query, s));
                     return findFirst.stream().map(CredentialInvestigator::lookupDisplay).map(KibanaApi::display).collect(Collectors.joining("\n"));
                 }).collect(Collectors.joining("\n"));
+                if (StringUtils.isNotBlank(searchByIp)) {
+                    return searchByIp;
+                }
+                String orDefault = result.getOrDefault("Credencial Info", "");
+                List<String> matches = StringSigaUtils.matches(orDefault, "([a-z\\.]+@[a-z\\.]+)");
+                List<Map<String, Object>> findFirst =  DATAFRAME_LOOKUP.findAll("Source User", s -> matches.contains(s));
+                 return findFirst.stream().map(CredentialInvestigator::lookupDisplay).map(KibanaApi::display).collect(Collectors.joining("\n"));
             });
         }
     }
