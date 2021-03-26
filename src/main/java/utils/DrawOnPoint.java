@@ -18,7 +18,6 @@ public interface DrawOnPoint {
         return value;
     }
 
-
     static WritableImage drawTransparentPattern(int size) {
         WritableImage transparentPattern = new WritableImage(size, size);
 

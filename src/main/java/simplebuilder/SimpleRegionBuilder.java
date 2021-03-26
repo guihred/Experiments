@@ -31,10 +31,7 @@ public class SimpleRegionBuilder<T extends Region, Z extends SimpleBuilder<T>> e
     }
 
 
-    public Z scaleShape(final boolean value) {
-        node.setScaleShape(value);
-        return (Z) this;
-    }
+
 
     public static <T extends SimpleRegionBuilder<Region, SimpleRegionBuilder<Region, SimpleBuilder<Region>>>>
         SimpleRegionBuilder<Region, T> create() {

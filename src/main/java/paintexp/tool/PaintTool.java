@@ -49,13 +49,7 @@ public abstract class PaintTool extends Group implements CommonTool {
         this.icon = icon;
     }
 
-    public static VBox addSlider(final PaintModel model, String string, Slider lengthSlider2) {
-        Text text = new Text();
-        text.textProperty().bind(lengthSlider2.valueProperty().asString(string + " %.0f"));
-        VBox e = new VBox(text, lengthSlider2);
-        model.getToolOptions().getChildren().add(e);
-        return e;
-    }
+
 
     public static VBox addSlider(final PaintModel model, String string, Slider slider, DoubleExpression prop) {
         Text text = new Text();
@@ -137,38 +131,7 @@ public abstract class PaintTool extends Group implements CommonTool {
         }
     }
 
-    public static boolean moveArea(KeyEvent e, Rectangle area2) {
 
-        KeyCode code = e.getCode();
-        final double initialX = area2.getLayoutX();
-        double x = initialX;
-        final double initialY = area2.getLayoutY();
-        double y = initialY;
-
-        switch (code) {
-            case RIGHT:
-                x += 1;
-                break;
-            case LEFT:
-                x -= 1;
-                break;
-            case DOWN:
-                y += 1;
-                break;
-            case UP:
-                y -= 1;
-                break;
-            default:
-        }
-        area2.setLayoutX(Math.min(x, initialX));
-        area2.setLayoutY(Math.min(y, initialY));
-        if (e.isShiftDown()) {
-            area2.setWidth(Math.abs(x - initialX));
-            area2.setHeight(Math.abs(y - initialY));
-        }
-
-        return true;
-    }
 
     public static FlowPane propertiesPane(Shape area2, Map<String, Double> maxMap, String... exclude) {
         FlowPane flowPane = new FlowPane(Orientation.VERTICAL, 5.0, 5.0);

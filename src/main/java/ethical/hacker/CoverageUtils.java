@@ -95,10 +95,10 @@ public final class CoverageUtils {
         List<JavaFileDependency> visited = new ArrayList<>();
         List<JavaFileDependency> path = new ArrayList<>();
         List<Class<? extends Application>> classes = CoverageUtils.getClasses(Application.class);
-        List<String> collect2 = allFileDependencies.stream().filter(e -> uncovered.contains(e.getName()))
+        List<String> uncoveredApps = allFileDependencies.stream().filter(e -> uncovered.contains(e.getName()))
                 .filter(d -> d.search(m -> contains(classes, m), visited, path)).distinct()
                 .map(JavaFileDependency::getName).collect(Collectors.toList());
-        uncovered.addAll(collect2);
+        uncovered.addAll(uncoveredApps);
         uncovered.addAll(path.stream().map(JavaFileDependency::getName).collect(Collectors.toList()));
         return classes.stream().filter(e -> uncovered.contains(e.getSimpleName())).collect(Collectors.toList());
     }

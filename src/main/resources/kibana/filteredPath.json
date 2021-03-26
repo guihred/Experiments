@@ -3,19 +3,29 @@
 	"aggs": {
 		"2": {
 			"terms": {
-				"field": "request.keyword",
-				"size": 500,
+				"field": "clientip.keyword",
+				"size": 30,
 				"order": {
-					"_count": "desc"
+					"1": "desc"
 				}
 			},
 			"aggs": {
-				"3": {
-					"terms": {
-						"field": "dtpsistema.keyword",
-						"size": 5,
-						"order": {
-							"_count": "desc"
+				"1": {
+					"cardinality": {
+						"field": "request.keyword"
+					}
+				},
+				"5": {
+					"filters": {
+						"filters": {
+							%s
+						}
+					},
+					"aggs": {
+						"1": {
+							"cardinality": {
+								"field": "request.keyword"
+							}
 						}
 					}
 				}
@@ -41,7 +51,13 @@
 	"query": {
 		"bool": {
 			"must": [
-			     %s
+				{
+					"query_string": {
+						"query": "clientip:(%s)",
+						"analyze_wildcard": true,
+						"default_field": "*"
+					}
+				},
 				{
 					"range": {
 						"@timestamp": {
@@ -53,8 +69,8 @@
 				},
 				{
 					"match_phrase": {
-						"dtpcategoria": {
-							"query": "access"
+						"dtpsistema.keyword": {
+							"query": "mteempregabr"
 						}
 					}
 				}

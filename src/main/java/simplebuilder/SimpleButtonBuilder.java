@@ -22,11 +22,6 @@ public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonB
         return this;
     }
 
-    public static Button newButton(final double layoutX, final double layoutY, final String nome,
-            final EventHandler<ActionEvent> onAction) {
-        return new SimpleButtonBuilder().text(nome).layoutX(layoutX).layoutY(layoutY).onAction(onAction).build();
-    }
-
     public static Button newButton(final Node graphic, final String id, final EventHandler<ActionEvent> onAction) {
         Button node = new Button(null, graphic);
         node.setId(id);

@@ -38,8 +38,10 @@ public final class WikiImagesUtils {
             String replaceAll = imageString.replaceAll("data:image/" + formatName + ";base64,", "");
             byte[] imageByte = Base64.getDecoder().decode(replaceAll);
             ImageReader next = ImageIO.getImageReadersByFormatName(formatName).next();
-            next.setInput(new ByteArrayImageInputStream(imageByte));
-            return next.read(0);
+            try (ByteArrayImageInputStream input = new ByteArrayImageInputStream(imageByte)) {
+                next.setInput(input);
+                return next.read(0);
+            }
         });
     }
 

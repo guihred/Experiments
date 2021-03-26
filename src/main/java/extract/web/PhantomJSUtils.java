@@ -139,7 +139,6 @@ public final class PhantomJSUtils {
         ExtractUtils.insertProxyConfig();
 
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
-            
         HttpPost get = new HttpPost(url);
         String content = cont.replaceAll("[\n\t]+", "").replaceFirst("\\}\\{", "}\n{") + "\n";
         get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());
@@ -176,12 +175,12 @@ public final class PhantomJSUtils {
     }
 
     public static Image textToImage(String s, String highlight) {
-        String collect2 = Stream.of(s.split("\n")).filter(StringUtils::isNotBlank)
+        String textParagraphs = Stream.of(s.split("\n")).filter(StringUtils::isNotBlank)
                 .map(str -> "<p>" + str.replaceAll(highlight, "<font>$1</font>") + "</p>")
                 .collect(Collectors.joining("\n"));
         String format =
                 String.format("<!DOCTYPE html>\n<html>\n<head>\n<style>\nfont {background-color: yellow;}</style>\n"
-                        + "</head><body>%s</body>\n</html>", collect2);
+                        + "</head><body>%s</body>\n</html>", textParagraphs);
         return saveHtmlImage(format);
     }
 

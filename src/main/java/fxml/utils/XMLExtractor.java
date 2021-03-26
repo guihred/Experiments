@@ -114,11 +114,11 @@ public final class XMLExtractor {
         }
     }
 
-    private static void addHeader(List<Map<String, String>> finalList, Map<String, String> collect) {
-        if (!collect.keySet().stream().allMatch(e -> e.matches("\\w+\\d+"))) {
-            Map<String, String> collect3 = collect.keySet().stream().collect(toLinkedHashMap2());
-            if (!finalList.contains(collect3)) {
-                finalList.add(collect3);
+    private static void addHeader(List<Map<String, String>> finalList, Map<String, String> map) {
+        if (!map.keySet().stream().allMatch(e -> e.matches("\\w+\\d+"))) {
+            Map<String, String> item = map.keySet().stream().collect(toLinkedHashMap2());
+            if (!finalList.contains(item)) {
+                finalList.add(item);
             }
         }
     }

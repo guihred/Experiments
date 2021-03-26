@@ -53,31 +53,7 @@ public class DecisionTree {
         LOG.trace("{}", predict);
     }
 
-    public static double gini(DataframeML dataframe, String header) {
-        double size = dataframe.getSize();
-        if (size <= 0) {
-            return 0.;
-        }
-        if (dataframe.getFormat(header) == String.class) {
-            Set<String> categorize = dataframe.categorize(header);
-            Map<String, Long> histogram = dataframe.histogram(header);
-            double impurity = 1.;
-            for (Object cat : categorize) {
-                double prob = histogram.get(cat) / size;
-                impurity -= prob * prob;
-            }
-            return impurity;
-        }
-        Set<Object> categorize = dataframe.freeCategory(header);
-        Map<Double, Long> histogram = DataframeUtils.histogram(dataframe, header, categorize.size());
-        double impurity = 1.;
-        for (Object cat : categorize) {
-            double prob = histogram.get(cat) / size;
-            impurity -= prob * prob;
-        }
-        return impurity;
 
-    }
 
     public static void main(String[] args) {
         testCatanDecisionTree();

@@ -19,7 +19,6 @@ import javafx.concurrent.Worker.State;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import ml.data.DataframeBuilder;
@@ -34,7 +33,6 @@ import utils.*;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
-import utils.fx.RectBuilder;
 
 public final class ReportHelper {
     private static final Logger LOG = HasLogging.log();
@@ -90,8 +88,9 @@ public final class ReportHelper {
         CommonsFX.update(progress, 1);
     }
 
-    public static Map<String, String> adjustParams(Map<String, Object> mapaSubstituicao, int days, String ipParam,String index ) {
-        Map<String,String> paramText = new LinkedHashMap<>();
+    public static Map<String, String> adjustParams(Map<String, Object> mapaSubstituicao, int days, String ipParam,
+            String index) {
+        Map<String, String> paramText = new LinkedHashMap<>();
         Set<String> credentialText = new LinkedHashSet<>();
         for (String ipValue : ipParam.split("[, ]+")) {
             String authenticationSuccess = " AND \\\"AUTHENTICATION_SUCCESS\\\"";
@@ -116,10 +115,9 @@ public final class ReportHelper {
                         i -> paramText.merge("\\$orIps", i, (o, n) -> ReportHelper.mergeStrings(o, n, " OR ")));
                 LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
             }
-    
+
             paramText.merge("\\$creds", credentialMap.keySet().stream().map(CredentialInvestigator::credentialInfo)
-                    .collect(Collectors.joining("\n")),
-                    ReportHelper::mergeStrings);
+                    .collect(Collectors.joining("\n")), ReportHelper::mergeStrings);
         }
         mergeImage(mapaSubstituicao,
                 credentialText.stream().distinct().map(ReportHelper::textToImage).collect(Collectors.toList()));
@@ -127,7 +125,7 @@ public final class ReportHelper {
     }
 
     public static Map<String, String> adjustParams(String ipParam, int days, Property<Number> progress) {
-        Map<String,String> paramText = new LinkedHashMap<>();
+        Map<String, String> paramText = new LinkedHashMap<>();
         for (String ipValue : ipParam.split("[, ]+")) {
             KibanaApi.kibanaFullScan(ipValue, days, progress)
                     .forEach((k, v) -> paramText.merge("\\$" + k, v, ReportHelper::mergeStrings));
@@ -170,10 +168,7 @@ public final class ReportHelper {
                 collection.stream()
                         .filter(o -> o instanceof Image
                                 && Objects.equals(selectedItem, ClassReflectionUtils.invoke(o, "impl_getUrl")))
-                        .findFirst().ifPresent(o -> {
-                            int indexOf = collection.indexOf(o);
-                            collection.set(indexOf, img);
-                        });
+                        .findFirst().ifPresent(o -> collection.set(collection.indexOf(o), img));
             }
         }
         build.getItems().remove(selectedItem);
@@ -197,21 +192,12 @@ public final class ReportHelper {
         return PhantomJSUtils.textToImage(s, highlight);
     }
 
-
-
     private static WritableImage crop(Map<String, Object> info, File outFile) {
-        String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
-        Image value = new Image(externalForm);
-        double width = value.getWidth();
-        double height = value.getHeight();
-        double width2 = width * toDouble(info.get("width"));
-        double height2 = height * toDouble(info.get("height"));
-        Rectangle a = new Rectangle(width2, height2);
-        a.setLayoutX(width * toDouble(info.get("x")));
-        a.setLayoutY(height * toDouble(info.get("y")));
-        WritableImage destImage = new WritableImage((int) a.getWidth(), (int) a.getHeight());
-        RectBuilder.copyImagePart(value, destImage, a);
-        return destImage;
+        Double widthProp = toDouble(info.get("width"));
+        Double heightProp = toDouble(info.get("height"));
+        Double xOffset = toDouble(info.get("x"));
+        Double yOffset = toDouble(info.get("y"));
+        return ImageFXUtils.cropProportionally(outFile, widthProp, heightProp, xOffset, yOffset);
     }
 
     private static Object getCSV(Map<String, Object> imageObj, Map<String, String> params) {

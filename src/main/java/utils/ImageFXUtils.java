@@ -21,16 +21,34 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javax.imageio.ImageIO;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
+import utils.fx.RectBuilder;
 
 public final class ImageFXUtils {
     private static boolean showImage = true;
 
     private ImageFXUtils() {
+    }
+
+    public static WritableImage cropProportionally(File imageFile, Double widthProp, Double heightProp, Double xOffset,
+            Double yOffset) {
+        String externalForm = ResourceFXUtils.convertToURL(imageFile).toExternalForm();
+        Image value = new Image(externalForm);
+        double width = value.getWidth();
+        double height = value.getHeight();
+        double width2 = width * widthProp;
+        double height2 = height * heightProp;
+        Rectangle a = new Rectangle(width2, height2);
+        a.setLayoutX(width * xOffset);
+        a.setLayoutY(height * yOffset);
+        WritableImage destImage = new WritableImage((int) a.getWidth(), (int) a.getHeight());
+        RectBuilder.copyImagePart(value, destImage, a);
+        return destImage;
     }
 
     public static WritableImage copyImage(Image selectedImage, double width, double height) {

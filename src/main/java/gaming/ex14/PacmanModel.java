@@ -152,12 +152,7 @@ public class PacmanModel {
         }
     }
 
-    public static void addRectangle(Group group, double value, double value2, int width, int height, Color blue) {
-        Rectangle rectangle = new Rectangle(width, height, blue);
-        rectangle.setLayoutX(value);
-        rectangle.setLayoutY(value2);
-        group.getChildren().add(rectangle);
-    }
+
 
     public static PacmanModel create(Group group, Scene scene) {
         return new PacmanModel(group, scene);

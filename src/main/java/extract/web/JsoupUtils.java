@@ -59,7 +59,7 @@ public final class JsoupUtils {
         connect.timeout(ExtractUtils.HUNDRED_SECONDS);
         connect.cookies(cookies);
         connect.ignoreContentType(true);
-        connect.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0");
+        connect.userAgent(USER_AGENT);
 
         return SupplierEx.makeSupplier(() -> connect.execute(), e -> {
             if (e instanceof SSLHandshakeException) {
@@ -178,7 +178,7 @@ public final class JsoupUtils {
             addProxyAuthorization(connect);
         }
         return connect
-                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101         Firefox/52.0")
+                .userAgent(USER_AGENT)
                 .get();
     }
 
