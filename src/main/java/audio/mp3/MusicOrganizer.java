@@ -44,7 +44,7 @@ public class MusicOrganizer extends Application {
     public void initialize() {
         MusicHandler musicHandler = new MusicHandler(musicaTable);
         imageColumn.setCellValueFactory(m -> new SimpleObjectProperty<>(
-                MusicHandler.view(SupplierEx.nonNull(m.getValue().getImage(), DEFAULT_VIEW))));
+                MusicHandler.view(SupplierEx.nonNull(m.getValue().getImage(), DEFAULT_VIEW), imageColumn.widthProperty())));
         SimpleTableViewBuilder.of(musicaTable).sortable(true).multipleSelection().equalColumns().copiable().savable()
                 .onMousePressed(musicHandler).onKeyReleased(musicHandler::handle).onSortClicked(this::sortBy);
         configurarFiltroRapido(filterText, musicaTable, FXCollections.observableArrayList());

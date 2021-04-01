@@ -73,9 +73,10 @@ public final class PaginatedTableView extends VBox {
 
     }
 
-    public <T> void addColumn(String name, FunctionEx<Integer, T> func) {
-        SimpleTableViewBuilder.addClosableColumn(table, name, func);
+    public <T> TableColumn<Integer, T> addColumn(String name, FunctionEx<Integer, T> func) {
+        TableColumn<Integer, T> column = SimpleTableViewBuilder.addClosableColumn(table, name, func);
         updateItems();
+        return column;
     }
 
     public <T> void addColumn(StringProperty name, FunctionEx<Integer, T> func) {

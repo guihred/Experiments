@@ -8,7 +8,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -16,12 +16,14 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
+import utils.CommonsFX;
 import utils.ExcelService;
 import utils.ex.FunctionEx;
 import utils.fx.PaginatedTableView;
 
 public class ImageCrackerApp extends Application {
     private Map<File, String> crackImages;
+    private TableColumn<Integer, ImageView> imageCol;
 
     @Override
     public void start(Stage primaryStage) {
@@ -31,14 +33,24 @@ public class ImageCrackerApp extends Application {
         PaginatedTableView paginatedTableView = new PaginatedTableView();
         paginatedTableView.addColumn("Name", i -> value.get(i).getName());
         paginatedTableView.addColumn("Read", i -> textField(value, i));
-        paginatedTableView.addColumn("Image", i -> new ImageView(value.get(i).toURI().toURL().toExternalForm()));
-        Button buildOpenDirectoryButton = new FileChooserBuilder()
-                .name("Load Images").onSelect(file -> {
+        imageCol = paginatedTableView.addColumn("Image", i -> {
+            File file = value.get(i);
+            ImageView imageView = new ImageView(file.toURI().toURL().toExternalForm());
+            CommonsFX.bind(imageCol.widthProperty(), imageView.fitWidthProperty());
+            return imageView;
+        });
+        FileChooserBuilder chooserBuilder = new FileChooserBuilder()
+                .onSelect(file -> {
+                    paginatedTableView.setListSize(0);
                     crackImages = ImageCracker.crackImages(file);
                     paginatedTableView.setListSize(crackImages.size());
-                    value.setAll(crackImages.keySet());
-                }).title("Images to LOAD").buildOpenDirectoryButton();
-        root.getChildren().add(new VBox(buildOpenDirectoryButton, new FileChooserBuilder().name("Export Excel")
+                    value.addAll(crackImages.keySet());
+                }).title("Images to LOAD");
+        root.getChildren()
+                .add(new VBox(chooserBuilder.name("Load Images Directory").buildOpenDirectoryButton(),
+                        chooserBuilder.extensions("Image", "*.png", "*.jpg", "*.gif", "*.jpeg").name("Open image")
+                                .buildOpenButton(),
+                        new FileChooserBuilder().name("Export Excel")
                 .title("Export Excel").extensions("Excel", "*.xlsx").onSelect(file -> {
                     Map<String, FunctionEx<Integer, Object>> mapa = new LinkedHashMap<>();
                     mapa.put("Name", i -> value.get(i).getName());

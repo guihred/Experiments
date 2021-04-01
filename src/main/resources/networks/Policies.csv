@@ -485,7 +485,7 @@
 "Dataprev_Block_WebScan","Block_7_dias","Block","Custom Violation"
 "VulnDB 220591: Nagios XI - RCE","Dataprev_ELK","Block","Custom Violation"
 "CVE-2004-2776: GoScript 2.0 - RCE","Dataprev_ELK_SIEM","Block","Custom Violation"
-"Dataprev	Automated Vulnerability Scanning","Dataprev_ELK","Block","Custom Violation"
+"Dataprev Automated Vulnerability Scanning","Dataprev_ELK","Block","Custom Violation"
 "Dataprev_Block_W3B2_URL_Desativada","Dataprev_ELK","Block","Custom Violation"
 "Dataprev_SIAC_KBA_Automatizado","Dataprev_ELK","Block","Custom Violation"
 "Dataprev_ConsultasINSS_Block_Provedor","Block_6horas","Block","Custom Violation"

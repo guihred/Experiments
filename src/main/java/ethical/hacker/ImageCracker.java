@@ -3,6 +3,7 @@ package ethical.hacker;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import utils.DrawOnPoint;
 import utils.FileTreeWalker;
 import utils.PixelHelper;
 import utils.ResourceFXUtils;
+import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public final class ImageCracker {
@@ -40,6 +42,14 @@ public final class ImageCracker {
     }
 
     public static Map<File, String> crackImages(File imageFile) {
+        if (imageFile.isFile()) {
+            Map<File, String> hashMap = new HashMap<>();
+            RunnableEx.run(() -> {
+                hashMap.put(imageFile, ImageCracker.crackImage(
+                        new Image(imageFile.toURI().toURL().toExternalForm())));
+            });
+            return hashMap;
+        }
         List<Path> pathByExtension = FileTreeWalker.getPathByExtension(imageFile, ".png", ".PNG");
         return pathByExtension.stream().map(Path::toFile)
                 .collect(Collectors.toMap(e -> e, ImageCracker::crackImage));

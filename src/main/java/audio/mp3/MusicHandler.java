@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javafx.beans.NamedArg;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
@@ -97,7 +98,7 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         }
         Image imageData = music.getImage();
         if (imageData != null) {
-            vBox.getChildren().addAll(MusicHandler.view(imageData));
+            vBox.getChildren().addAll(MusicHandler.view(imageData, vBox.widthProperty()));
         }
         vBox.getChildren().add(SimpleButtonBuilder.newButton("_Fix", f -> {
             MusicReader.saveMetadata(music);
@@ -112,10 +113,12 @@ public final class MusicHandler implements EventHandler<MouseEvent> {
         handleMousePressed(Arrays.asList(songs));
     }
 
-    public static ImageView view(Image music) {
+
+    public static ImageView view(Image music, ReadOnlyDoubleProperty widthProperty) {
         ImageView imageView = new ImageView(music);
         final int prefWidth = 50;
         imageView.setFitWidth(prefWidth);
+        CommonsFX.bind(widthProperty, imageView.fitWidthProperty());
         imageView.setPreserveRatio(true);
         return imageView;
     }

@@ -376,8 +376,9 @@ public class KibanaApi {
 
     private static String filterUrls(int days, String pattern) {
         String urls = urls(days, pattern);
-        String collect = Stream.of(urls.split("\n")).filter(s -> s.startsWith("/") && s.contains("*")).map(s -> {
-            String replaceAll = s.replace("/", "\\\\/").replace("*", ".*").replaceAll("\\?.+", ".*");
+        String collect = Stream.of(urls.split("\n")).filter(s -> s.startsWith("/")).map(s -> {
+            String replaceAll = s.replaceAll(" \\d+$", "")
+                    .replace("/", "\\\\/").replace("*", ".*").replaceAll("\\?.+", ".*");
             return String.format(
                     "\"%s\":{\"query_string\":{\"query\":\"request.keyword:/%s/\","
                             + "\"analyze_wildcard\": true,\"default_field\":\"*\"}}",
@@ -391,7 +392,10 @@ public class KibanaApi {
         Map<Object, Object> accessMap = JsonExtractor.accessMap(nsInformation, "5", "buckets");
         String collect2 = accessMap.entrySet().stream()
                 .map(e -> JsonExtractor.newEntry(e.getKey(),
-                        JsonExtractor.access(e.getValue(), Number.class, "1", "value").intValue()))
+                        JsonExtractor.access(e.getValue(), Number.class, "1", "value").intValue()
+                                * JsonExtractor.access(e.getValue(), Number.class, "doc_count").intValue()
+
+                ))
                 .filter(e -> e.getValue() > 0)
                 .sorted(Comparator.comparingInt((Entry<Object, Integer> e) -> e.getValue()).reversed())
                 .map(e -> e.getKey() + " " + e.getValue()).collect(Collectors.joining("\n"));
@@ -511,7 +515,7 @@ public class KibanaApi {
                                     Collectors.summingLong(SimpleEntry<String, Long>::getValue)));
             String collect3 = collect.entrySet().stream()
                     .sorted(Comparator.comparingLong(Entry<String, Long>::getValue).reversed())
-                    .map(Entry<String, Long>::getKey).filter(s -> !s.startsWith("*")).collect(Collectors.joining("\n"));
+                    .filter(s -> !s.getKey().startsWith("*")).map(t -> t.getKey()).collect(Collectors.joining("\n"));
             return entry.getKey() + "\n" + collect3;
         }).collect(Collectors.joining("\n"));
     }

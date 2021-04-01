@@ -61,7 +61,22 @@
 			],
 			"filter": [],
 			"should": [],
-			"must_not": []
+			"must_not": [
+			     {
+                    "query_string" : {
+                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|svg|ico|eot|js|ttf)/",
+                        "analyze_wildcard": true,
+                        "default_field":"*"
+                    }
+                },
+                {
+                    "query_string" : {
+                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|svg|ico|eot|js|ttf)\\?.+/",
+                        "analyze_wildcard": true,
+                        "default_field":"*"
+                    }
+                }
+			]
 		}
 	},
 	"timeout": "30000ms"
