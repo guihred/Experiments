@@ -214,13 +214,14 @@ public class DataframeUtils extends DataframeML {
             dataframeML.size = 0;
             List<String> header = getHeaders(scanner);
             for (String column : header) {
-                dataframeML.getDataframe().put(column, new ArrayList<>());
-                dataframeML.putFormat(column, String.class);
+                String col = dataframeML.renaming.getOrDefault(column, column);
+                dataframeML.getDataframe().put(col, new ArrayList<>());
+                dataframeML.putFormat(col, String.class);
             }
             readRows(dataframeML, scanner, header, progress, totalSize);
         } catch (Exception e) {
-            LOG.error("ERROR IN FILE {} - {}", csvFile, e.getMessage());
-            LOG.trace("FILE NOT FOUND " + csvFile, e);
+            LOG.error("ERROR IN FILE {} -  {}", csvFile, e.getMessage());
+            LOG.error("FILE NOT FOUND " + csvFile, e);
         }
         update(progress, 1);
         return dataframeML;
@@ -368,7 +369,8 @@ public class DataframeUtils extends DataframeML {
             Entry<String[], FunctionEx<Object[], ?>> crossMapping = entry.getValue();
             List<Object> computeIfAbsent = dataframe.getDataframe().computeIfAbsent(header, h -> new ArrayList<>());
             String[] key = crossMapping.getKey();
-            Object[] array = Stream.of(key).map(dataframe::list).map(l -> l.get(l.size() - 1)).toArray();
+            Object[] array = Stream.of(key).map(k -> dataframe.renaming.getOrDefault(k, k)).map(dataframe::list)
+                    .map(l -> l.get(l.size() - 1)).toArray();
             Object apply = FunctionEx.apply(crossMapping.getValue(), array);
             Class<? extends Object> columnFormat = FunctionEx.mapIf(apply, Object::getClass);
             // dataframe.add
@@ -521,7 +523,7 @@ public class DataframeUtils extends DataframeML {
 
     private static boolean filterOut(DataframeML dataframeML, List<String> header, List<String> line2) {
         return line2.isEmpty() || IntStream.range(0, header.size()).anyMatch(i -> {
-            String key = header.get(i);
+            String key = dataframeML.renaming.getOrDefault(header.get(i), header.get(i));
             String field = getFromList(i, line2);
             Object tryNumber = tryNumber(dataframeML, key, field);
             return dataframeML.filters.containsKey(key) && !PredicateEx.test(dataframeML.filters.get(key), tryNumber);
@@ -585,7 +587,7 @@ public class DataframeUtils extends DataframeML {
             CSVUtils.fixEmptyLine(header, line2, dataframe.size);
             dataframe.size++;
             for (int i = 0; i < header.size(); i++) {
-                String key = header.get(i);
+                String key = dataframe.renaming.getOrDefault(header.get(i), header.get(i));
                 String field = getFromList(i, line2);
                 Object tryNumber = tryNumber(dataframe, key, field);
                 categorizeIfCategorizable(dataframe, key, tryNumber);

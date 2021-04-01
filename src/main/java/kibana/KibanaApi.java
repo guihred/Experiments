@@ -163,8 +163,9 @@ public class KibanaApi {
     }
 
     public static String getURL(String string) {
-        return string.replaceAll("(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+"
-                + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|svg|ico|eot))|.+(?=\\.(js)$)", "*");
+        return string
+                .replaceAll("(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+" + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|svg|ico|eot))"
+                        + "|.+(?=\\.(js)($|\\?))" + "|.+(?=\\.(js\\.xhtml)($|\\?))", "*");
     }
 
     public static String isInBlacklist(String query) {
@@ -377,20 +378,23 @@ public class KibanaApi {
         String urls = urls(days, pattern);
         String collect = Stream.of(urls.split("\n")).filter(s -> s.startsWith("/") && s.contains("*")).map(s -> {
             String replaceAll = s.replace("/", "\\\\/").replace("*", ".*").replaceAll("\\?.+", ".*");
-            return String.format("\"%s\":{\"query_string\":{\"query\":\"request.keyword:/%s/\","
-                    + "\"analyze_wildcard\": true,\"default_field\":\"*\"}}", s, replaceAll);
-        }).limit(30).collect(Collectors.joining(","));
-
+            return String.format(
+                    "\"%s\":{\"query_string\":{\"query\":\"request.keyword:/%s/\","
+                            + "\"analyze_wildcard\": true,\"default_field\":\"*\"}}",
+                    s.replaceAll("\\?", "\\\\\\\\?"), replaceAll);
+        }).limit(10).collect(Collectors.joining(",\n"));
+        if (StringUtils.isBlank(collect)) {
+            return urls;
+        }
         Object nsInformation =
                 KibanaApi.makeKibanaSearchObj("filteredPath.json", days, new String[] { collect, pattern }, "5");
         Map<Object, Object> accessMap = JsonExtractor.accessMap(nsInformation, "5", "buckets");
         String collect2 = accessMap.entrySet().stream()
-                .filter(e -> JsonExtractor.access(e.getValue(), Number.class, "1", "value").intValue() > 0)
-                .sorted(Comparator.comparingInt(
-                        (Entry<?, ?> e) -> JsonExtractor.access(e.getValue(), Number.class, "1", "value").intValue())
-                        .reversed())
-                .map(e -> e.getKey() + " " + JsonExtractor.access(e.getValue(), Number.class, "1", "value"))
-                .collect(Collectors.joining("\n"));
+                .map(e -> JsonExtractor.newEntry(e.getKey(),
+                        JsonExtractor.access(e.getValue(), Number.class, "1", "value").intValue()))
+                .filter(e -> e.getValue() > 0)
+                .sorted(Comparator.comparingInt((Entry<Object, Integer> e) -> e.getValue()).reversed())
+                .map(e -> e.getKey() + " " + e.getValue()).collect(Collectors.joining("\n"));
         if (StringUtils.isBlank(collect2)) {
             return urls;
         }
@@ -426,14 +430,12 @@ public class KibanaApi {
     }
 
     private static Collector<String, ?, Map<String, SimpleSummary<ChronoZonedDateTime<?>>>> groupBy(String whenRegex,
-            String whenRegex2) {
-        return Collectors
-                .groupingBy(s -> StringSigaUtils.getMatches(s, whenRegex2),
-                        Collectors
-                                .mapping(
-                                        s -> DateFormatUtils.parse(StringSigaUtils.getMatches(s, whenRegex),
-                                                "E MMM dd HH:mm:ss z yyyy", ZonedDateTime::from),
-                                        new SimpleSummary<>()));
+            String fieldRegex) {
+        String fmt = "E MMM dd HH:mm:ss z yyyy";
+        return Collectors.groupingBy(s -> StringSigaUtils.getMatches(s, fieldRegex),
+                Collectors.mapping(
+                        s -> DateFormatUtils.parse(StringSigaUtils.getMatches(s, whenRegex), fmt, ZonedDateTime::from),
+                        new SimpleSummary<>()));
     }
 
     private static Stream<String> groupStream(List<String> collect, final int d) {

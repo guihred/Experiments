@@ -7,6 +7,7 @@ import extract.WordService;
 import extract.web.JsonExtractor;
 import extract.web.PhantomJSUtils;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,8 +23,8 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import ml.data.DataframeBuilder;
-import ml.data.DataframeML;
 import ml.data.DataframeUtils;
+import ml.data.Mapping;
 import ml.data.Question;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -341,33 +342,54 @@ public final class ReportHelper {
         return replaceString(params, e);
     }
 
+    @SuppressWarnings("unchecked")
     private static void saveCSV(File srcFile, Map<String, Object> params, File outFile) {
-        DataframeML dataframe = DataframeBuilder.build(srcFile);
+        DataframeBuilder dataframe = DataframeBuilder.builder(srcFile);
+        List<String> cols2 = dataframe.columns().stream().map(e -> e.getKey()).collect(Collectors.toList());
         if (params.containsKey("mappings")) {
-            Map<String, String> mapping = JsonExtractor.accessMap(params, "mappings");
-            List<String> cols2 = dataframe.cols();
+            Map<String, Object> mapping = JsonExtractor.accessMap(params, "mappings");
             mapping.forEach((k, v) -> {
-                if (cols2.contains(k)) {
-                    dataframe.map(v, k, m -> m);
+                if (!cols2.contains(k)) {
+                    if (v instanceof String) {
+                        dataframe.rename((String) v, k);
+                        dataframe.putFormat(k, String.class);
+                    } else {
+                        Method method = Mapping.getMethod(JsonExtractor.access(v, String.class, "method"));
+                        Object[] ob = new Object[method.getParameterCount()];
+                        String[] dependencies = JsonExtractor.accessList(v, "dependencies").toArray(new String[0]);
+                        List<Object> otherParams = JsonExtractor.accessList(v, "otherParams");
+                        for (int i = 0; i < otherParams.size(); i++) {
+                            ob[i + dependencies.length] = otherParams.get(i);
+                        }
+                        dataframe.addCrossFeature(k, o -> {
+                            for (int i = 0; i < o.length; i++) {
+                                ob[i] = o[i];
+                            }
+                            return method.invoke(null, ob);
+                        }, dependencies);
+                        dataframe.putFormat(k, (Class<? extends Comparable<?>>) method.getReturnType());
+                    }
                 }
             });
         }
-        List<String> cols = dataframe.cols();
+        List<String> o = JsonExtractor.accessList(params, "questions");
+        List<Question> a = o.stream().map(t -> Question.parseQuestion(dataframe, t)).collect(Collectors.toList());
+        for (Question question : a) {
+            dataframe.filterOut(question.getColName(), question);
+        }
         String columns = params.getOrDefault("columns", "").toString();
+        List<String> finalHeaders = Stream.of(columns.split("\\|")).collect(Collectors.toList());
+        List<Map<String, Object>> items2 = new ArrayList<>();
+        dataframe.build();
+        dataframe.sortHeaders(finalHeaders);
+
+        List<String> cols = dataframe.cols();
         cols.removeIf(s -> s.matches(columns));
         dataframe.removeCol(cols.toArray(new String[0]));
         if (params.containsKey("sort")) {
             Object object = params.get("sort");
             DataframeUtils.sort(dataframe, Objects.toString(object));
         }
-        List<String> o = JsonExtractor.accessList(params, "questions");
-        List<Question> a = o.stream().map(t -> Question.parseQuestion(dataframe, t)).collect(Collectors.toList());
-        for (Question question : a) {
-            dataframe.filter(question.getColName(), question);
-        }
-        List<String> finalHeaders = Stream.of(columns.split("\\|")).collect(Collectors.toList());
-        dataframe.sortHeaders(finalHeaders);
-        List<Map<String, Object>> items2 = new ArrayList<>();
         dataframe.forEachRow(items2::add);
         if (items2.isEmpty()) {
             Map<String, Object> e = new LinkedHashMap<>();

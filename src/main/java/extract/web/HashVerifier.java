@@ -58,7 +58,7 @@ public final class HashVerifier {
         return notRepeatedEntries;
     }
 
-    public static List<Entry<Path, Path>> listRepeatedFiles(File file) {
+    public static List<Entry<Path, Path>> listRepeatedFiles(File file, String... extension) {
         List<Entry<Path, Path>> repeatedEntries = new ArrayList<>();
         Map<String, Path> fileMap = new LinkedHashMap<>();
 
@@ -70,7 +70,7 @@ public final class HashVerifier {
                 LOG.info("{}", e);
                 repeatedEntries.add(e);
             }
-        }, ".mp3");
+        }, extension);
 
         return repeatedEntries;
     }

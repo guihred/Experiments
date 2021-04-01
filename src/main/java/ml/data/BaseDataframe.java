@@ -19,6 +19,7 @@ public class BaseDataframe {
     protected final Map<String, Class<? extends Comparable<?>>> formatMap = new LinkedHashMap<>();
     protected Map<String, UnaryOperator<Object>> mapping = new LinkedHashMap<>();
     protected Map<String, Map.Entry<String[], FunctionEx<Object[], ?>>> crossFeature = new LinkedHashMap<>();
+    protected Map<String, String> renaming = new LinkedHashMap<>();
     protected int size;
     protected File file;
 
@@ -98,7 +99,7 @@ public class BaseDataframe {
     }
 
     public Class<? extends Comparable<?>> getFormat(String header) {
-        return formatMap.get(header);
+        return formatMap.computeIfAbsent(header, h -> String.class);
     }
 
     public Map<String, Class<? extends Comparable<?>>> getFormatMap() {

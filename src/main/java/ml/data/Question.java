@@ -110,8 +110,10 @@ public class Question implements PredicateEx<Object> {
         }
         if (type == QuestionType.IN) {
             List<Object> arrayList = new ArrayList<>();
-            for (String string : Objects.toString(text2, "").split("[,;\t\n]+")) {
-                arrayList.add(DataframeUtils.tryNumber(dataframe2, colName, string));
+            String[] split = Objects.toString(text2, "").split("[,;\t\n]+");
+            for (String string : split) {
+                Object tryNumber = DataframeUtils.tryNumber(dataframe2, colName, string);
+                arrayList.add(tryNumber);
             }
             return arrayList;
         }
@@ -129,9 +131,13 @@ public class Question implements PredicateEx<Object> {
         QuestionType type = QuestionType.getBySign(not ? tokens[2] : tokens[1]);
         String string2 = type == QuestionType.EMPTY ? null : tokens[tokens.length - 1];
         String colName2 = tokens[0];
-        if (!build.cols().contains(colName2)) {
-            return null;
-        }
+        // if (!build.cols().contains(colName2)) {
+        // if (!build.crossFeature.containsKey(colName2)) {
+        // if (!build.renaming.containsKey(colName2)) {
+        // return null;
+        // }
+        // }
+        // }
 
         Object queryObject = Question.getQueryObject(build, type, colName2, string2);
         return new Question(colName2, queryObject, type, not);

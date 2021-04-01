@@ -106,6 +106,10 @@ public final class JsonExtractor {
         return yaml2;
     }
 
+    public static <K,T> Map.Entry<K, T> newEntry(K key, T value) {
+        return new AbstractMap.SimpleEntry<>(key, value);
+    }
+
     public static Map.Entry<String, String> newEntry(String key, String value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }

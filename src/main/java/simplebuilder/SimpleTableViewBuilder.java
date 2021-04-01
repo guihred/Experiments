@@ -68,6 +68,11 @@ public class SimpleTableViewBuilder<T> extends SimpleRegionBuilder<TableView<T>,
         return this;
     }
 
+    public SimpleTableViewBuilder<T> deletable() {
+        onKey(KeyCode.DELETE, node.getItems()::remove);
+        return this;
+    }
+
     public SimpleTableViewBuilder<T> equalColumns() {
         equalColumns(node);
         return this;

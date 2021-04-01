@@ -19,8 +19,16 @@
 	-fx-background-color: yellow;
 	-fx-text-fill: black;
 }
+.cell:selected>.certo,.certo.cell:selected {
+	-fx-background-color: green;
+	-fx-text-fill: black;
+}
 
 .cell:selected>.vermelho,.list-cell:selected>.vermelho {
+	-fx-background-color: red;
+	-fx-text-fill: black;
+}
+.cell:selected>.errado,.list-cell:selected>.errado {
 	-fx-background-color: red;
 	-fx-text-fill: black;
 }

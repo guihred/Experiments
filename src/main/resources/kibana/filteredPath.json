@@ -1,32 +1,16 @@
-{"index":"*apache-prod*","ignore_unavailable":true,"preference":1600782162418}
+{"index":"*apache-prod*","ignore_unavailable":true,"preference":1616770952293}
 {
 	"aggs": {
-		"2": {
-			"terms": {
-				"field": "clientip.keyword",
-				"size": 30,
-				"order": {
-					"1": "desc"
+		"5": {
+			"filters": {
+				"filters": {
+					%s
 				}
 			},
 			"aggs": {
 				"1": {
 					"cardinality": {
 						"field": "request.keyword"
-					}
-				},
-				"5": {
-					"filters": {
-						"filters": {
-							%s
-						}
-					},
-					"aggs": {
-						"1": {
-							"cardinality": {
-								"field": "request.keyword"
-							}
-						}
 					}
 				}
 			}
@@ -64,13 +48,6 @@
 							"gte": %s,
 							"lte": %s,
 							"format": "epoch_millis"
-						}
-					}
-				},
-				{
-					"match_phrase": {
-						"dtpsistema.keyword": {
-							"query": "mteempregabr"
 						}
 					}
 				}

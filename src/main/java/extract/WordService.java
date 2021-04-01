@@ -78,13 +78,6 @@ public final class WordService {
     }
 
 
-    private static void removerLinks(XWPFParagraph paragraph) {
-        int size = paragraph.getCTP().getHyperlinkList().size();
-        for (int i = 0; i < size; i++) {
-            paragraph.getCTP().removeHyperlink(0);
-        }
-    }
-
     private static void replaceCollection(XWPFRun xwpfRun, Collection<?> object) {
         for (Object ob0 :  object) {
             if (ob0 instanceof String) {

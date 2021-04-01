@@ -39,13 +39,9 @@ public final class DateFormatUtils {
         return format(fmt, LocalDateTime.now());
     }
 
-
-
     public static LocalDate extractDate(final String children) {
         return SupplierEx.get(() -> LocalDate.parse(children, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     }
-
-
 
     public static String format(String fmt, long now) {
         return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt)
@@ -64,8 +60,6 @@ public final class DateFormatUtils {
         return DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(temporal);
     }
 
-
-
     public static int getYearCreation(Path path) {
         return SupplierEx.getFirst(() -> ResourceFXUtils.computeAttributes(path.toFile()).creationTime().toInstant()
                 .atZone(ZoneId.systemDefault()).getYear(), () -> ZonedDateTime.now().getYear());
@@ -75,12 +69,12 @@ public final class DateFormatUtils {
         return TIME_OF_SECONDS_FORMAT.parse(text);
     }
 
-
-
     public static <T> T parse(String now, String fmt, TemporalQuery<T> query) {
-        return SupplierEx.getHandle(() -> DateTimeFormatter.ofPattern(fmt, Locale.US).parse(now).query(query), null,
-                e -> HasLogging.log(1).error("\"{}\" could be parsed fmt=\"{}\" now = \"{}\"", now, fmt,
-                        format(fmt, ZonedDateTime.now())));
+        return SupplierEx.getFirst(() -> DateTimeFormatter.ofPattern(fmt, Locale.US).parse(now).query(query),
+                () -> DateTimeFormatter.ofPattern(fmt, Locale.getDefault()).parse(now).query(query), () -> {
+                    HasLogging.log(2).error("\"{}\" could be parsed fmt=\"{}\" ", now, fmt);
+                    return null;
+                });
     }
 
     public static long toNumber(String fmt, String now) {

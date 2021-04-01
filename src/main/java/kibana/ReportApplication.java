@@ -26,6 +26,7 @@ import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import ml.data.Mapping;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.SimpleComboBoxBuilder;
@@ -77,6 +78,7 @@ public class ReportApplication extends Application {
                 .distinct().collect(Collectors.toList());
         SimpleComboBoxBuilder.of(model).converter(p -> p.getFileName().toString()).items(firstFileMatch)
                 .onSelect(this::onModelChange).select(0);
+        RunnableEx.runNewThread(Mapping::getMethods);
     }
 
     public void makeReportConsultas() {

@@ -38,9 +38,8 @@ public class KibanaInvestigator extends Application {
     protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
 
     public void initialize() {
-        commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
-        commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        SimpleTableViewBuilder.of(commonTable).copiable().savable()
+        SimpleTableViewBuilder.of(commonTable).copiable().savable().deletable().multipleSelection()
+                .items(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)))
                 .onSortClicked((c, a) -> QuickSortML.sortMapList(items, c, a));
         SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
                 .pasteable(s -> StringSigaUtils.getMatches(s, "(\\d+\\.\\d+\\.\\d+\\.\\d+/*\\d*)"))

@@ -43,7 +43,7 @@ public class DataframeBuilder extends DataframeML {
     }
 
     public DataframeML build() {
-        return build(new SimpleDoubleProperty(0));
+        return SupplierEx.measureTime("building " + file.getName(), () -> build(new SimpleDoubleProperty(0)));
     }
 
     public DataframeML build(DoubleProperty progress) {
@@ -83,12 +83,15 @@ public class DataframeBuilder extends DataframeML {
         return this;
     }
 
+    public DataframeBuilder rename(String destination, String source) {
+        renaming.put(destination, source);
+        return this;
+    }
+
     public DataframeBuilder setMaxSize(int maxSize) {
         this.maxSize = maxSize;
         return this;
     }
-
-
 
     public static DataframeML build(File csvFile) {
         DataframeML dataframeML = new DataframeML();

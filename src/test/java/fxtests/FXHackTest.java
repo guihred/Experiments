@@ -123,6 +123,8 @@ public class FXHackTest extends AbstractTestExecution {
         File userFolder = ResourceFXUtils.getUserFolder("Music");
         measureTime("HashVerifier.listNotRepeatedFiles", () -> HashVerifier
                 .listNotRepeatedFiles(new File(userFolder, "PalavraCantada"), new File(userFolder, "Bita")));
+        FXTesting.runInTime("HashVerifier.listRepeatedFiles",
+                () -> HashVerifier.listRepeatedFiles(new File(userFolder, "Cellphone"), ".mp3"), 100_000);
         Path firstMp3 = FileTreeWalker.getFirstPathByExtension(userFolder, ".mp3");
         measureTime("HashVerifier.getMD5Hash", () -> HashVerifier.getMD5Hash(firstMp3));
         measureTime("HashVerifier.getSha1Hash", () -> HashVerifier.getSha1Hash(firstMp3));

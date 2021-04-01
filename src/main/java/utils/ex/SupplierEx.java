@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.assertj.core.api.exception.RuntimeIOException;
 
 @FunctionalInterface
@@ -53,10 +54,20 @@ public interface SupplierEx<T> {
         return getHandle(run, orElse, e -> HasLogging.log(1).trace("", e));
     }
 
-
-
     static <A> Supplier<A> makeSupplier(SupplierEx<A> run, ConsumerEx<Throwable> onError) {
         return () -> getHandle(run, null, onError);
+    }
+
+
+
+    static <A> A  measureTime(String name, SupplierEx<A> runnable) {
+        long currentTimeMillis = System.currentTimeMillis();
+        A remap = remap(runnable, "ERROR IN (" + name + ")");
+        long currentTimeMillis2 = System.currentTimeMillis();
+        long arg2 = currentTimeMillis2 - currentTimeMillis;
+        String formatDuration = DurationFormatUtils.formatDuration(arg2, "HHH:mm:ss.SSS");
+        HasLogging.log(1).info("{} took {}", name, formatDuration);
+        return remap;
     }
 
     @SafeVarargs

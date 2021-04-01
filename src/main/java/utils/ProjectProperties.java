@@ -28,10 +28,9 @@ public class ProjectProperties {
             Path javaPath = FileTreeWalker.getFirstPathByExtension(new File("src"), fileName + ".java");
             try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
                 String orElse = lines.skip(StringSigaUtils.toLong(line) - 1L).filter(s -> s.contains("=")).findFirst()
-                        .map(s -> Stream.of(s.split("[\\s=]+")).filter(StringUtils::isNotBlank)
-                                .filter(m -> Character.isUpperCase(m.charAt(0)))
+                        .map(s -> Stream.of(s.split("[\\s]+")).filter(StringUtils::isNotBlank)
                                 .filter(t -> !TermFrequency.getJavaKeywords().contains(t))
-                                .filter(t -> !"String".equals(t)).findFirst().orElse(s))
+                                .skip(1).findFirst().orElse(s))
                         .orElse(null);
                 String key = fileName + "." + orElse;
                 String string = PROPERTIES.get(key);

@@ -111,15 +111,21 @@
 			"name": "ConexoesForaBrasil$dateInverted",
 			"columns": "event.time|country.src|ip.src|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host",
 			"mappings": {
-				"Source User": "user.dst",
-				"public_ip": "ip.src",
-				"client_os_ver": "OS",
-				"Generate Time": "event.time",
-				"srcregion": "country.src",
-				"machinename": "domain.src",
-				"status": "ec.outcome",
-				"action": "ec.activity",
-				"error": "event.cat.name"
+				"user.dst":"Source User",
+				"ip.src":"public_ip",
+				"OS":"client_os_ver",
+				"event.time":"Generate Time",
+				"country.src":"srcregion",
+				"domain.src":"machinename",
+				"ec.outcome":"status",
+				"ec.activity":"stage",
+				"event.cat.name":"error",
+				"alias.host":"Type",
+				"org.src":{
+    				"method":"String KibanaApi.getHostname(Object)",
+    				"dependencies":["ip.src"],
+    				"otherParams":[]
+				}
 			},
 			"sort": "OS",
 			"questions": [
@@ -135,15 +141,21 @@
 			"name": "ConexoesClientLinux$dateInverted",
 			"columns": "ip.src|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
 			"mappings": {
-				"Source User": "user.dst",
-				"public_ip": "ip.src",
-				"client_os_ver": "OS",
-				"Generate Time": "event.time",
-				"srcregion": "country.src",
-				"machinename": "domain.src",
-				"status": "ec.outcome",
-				"action": "ec.activity",
-				"error": "event.cat.name"
+				"user.dst":"Source User",
+				"ip.src":"public_ip",
+				"OS":"client_os_ver",
+				"event.time":"Generate Time",
+				"country.src":"srcregion",
+				"domain.src":"machinename",
+				"ec.outcome":"status",
+				"ec.activity":"stage",
+				"event.cat.name":"error",
+				"alias.host":"Type",
+				"org.src":{
+                    "method":"String KibanaApi.getHostname(Object)",
+                    "dependencies":["ip.src"],
+                    "otherParams":[]
+                }
 			},
 			"questions": [
 				"ip.src not empty",
@@ -160,15 +172,25 @@
 			"name": "VPN-via-OS-Server$dateInverted",
 			"columns": "ip.src|user.dst|country.src|OS|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme",
 			"mappings": {
-				"Source User": "user.dst",
-				"public_ip": "ip.src",
-				"client_os_ver": "OS",
-				"Generate Time": "event.time",
-				"srcregion": "country.src",
-				"machinename": "domain.src",
-				"status": "ec.outcome",
-				"action": "ec.activity",
-				"error": "event.cat.name"
+				"user.dst":"Source User",
+				"ip.src":"public_ip",
+				"OS":"client_os_ver",
+				"event.time":"Generate Time",
+				"country.src":"srcregion",
+				"domain.src":"machinename",
+				"ec.activity":"stage",
+				"event.cat.name":"error",
+				"alias.host":"Type",
+				"ec.outcome":{
+                    "method":"String StringSigaUtils.changeCase(String)",
+                    "dependencies":["status"],
+                    "otherParams":[]
+				},
+				"org.src":{
+                    "method":"String KibanaApi.getHostname(Object)",
+                    "dependencies":["ip.src"],
+                    "otherParams":[]
+                }
 			},
 			"questions": [
 				"ip.src not empty",

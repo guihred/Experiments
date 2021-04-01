@@ -164,7 +164,7 @@ public final class VirusTotalApi {
 
     private static File newJsonFile(String string) {
         String replaceAll = string.replaceAll("[:/\\?]+", "_");
-        return ResourceFXUtils.getOutFile("json/" + replaceAll + ".json");
+        return ResourceFXUtils.getOutFile("json/ip/" + replaceAll + ".json");
     }
 
     private static String tryToCreateUrl(String url) throws MalformedURLException {

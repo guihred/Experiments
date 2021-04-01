@@ -55,10 +55,10 @@ public class StringSigaUtils extends StringUtils {
         }
         return str.substring(0, 1).toLowerCase() + str.substring(1);
     }
+
     public static String codificar(String nome) {
         return getIgnore(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
-
     public static Integer convertNumerico(final String nome) {
         String replaceAll = Objects.toString(nome, "").replaceAll("\\D", "");
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
@@ -100,6 +100,7 @@ public class StringSigaUtils extends StringUtils {
     public static String floatFormating(int length) {
         return "\t%" + Math.max(length, 1) + ".1f";
     }
+
     public static String format(int length, Object mean) {
         int max = Math.max(length, 1);
 
@@ -109,7 +110,6 @@ public class StringSigaUtils extends StringUtils {
         }
         return String.format(floatFormating(max), mean);
     }
-
     public static String formating(String s) {
         if (StringUtils.isBlank(s)) {
             return "%s\t";
@@ -213,6 +213,10 @@ public class StringSigaUtils extends StringUtils {
             HasLogging.log(1).error("NUMBER NOT PARSED \"{}\" {}", v, HasLogging.getCurrentLine(1));
             return null;
         }
+    }
+
+    public static String join(String line, String classRegex) {
+        return Stream.of(line,classRegex).flatMap(s->Stream.of(s.split(","))).distinct().collect(Collectors.joining(","));
     }
 
     public static String[] lines(String nome) {

@@ -128,7 +128,12 @@ public class DataframeML extends BaseDataframe {
 
     @SuppressWarnings("unchecked")
     public List<Object> map(String destination, String header, UnaryOperator<Object> mapper) {
-        List<Object> collect = dataframe.get(header).stream().map(mapper).collect(Collectors.toList());
+        List<Object> list = dataframe.get(header);
+        if (list == null) {
+            HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
+            return null;
+        }
+        List<Object> collect = list.stream().map(mapper).collect(Collectors.toList());
         dataframe.put(destination, collect);
         Class<? extends Object> orElse =
                 collect.stream().filter(Objects::nonNull).findFirst().map(Object::getClass).orElse(null);
@@ -151,11 +156,12 @@ public class DataframeML extends BaseDataframe {
         }
     }
 
-    public void sortHeaders(List<String> headersOrder) {
+    public DataframeML sortHeaders(List<String> headersOrder) {
         List<Entry<String, List<Object>>> frameHeader = dataframe.entrySet().stream().collect(Collectors.toList());
         dataframe.clear();
         frameHeader.sort(Comparator.comparing(e -> headersOrder.indexOf(e.getKey())));
         frameHeader.forEach(e -> dataframe.put(e.getKey(), e.getValue()));
+        return this;
     }
 
     public DoubleSummaryStatistics summary(String header) {

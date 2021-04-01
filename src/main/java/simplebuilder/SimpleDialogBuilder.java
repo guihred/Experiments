@@ -161,7 +161,9 @@ public class SimpleDialogBuilder implements SimpleBuilder<Stage> {
 
     private final Stage getStage() {
         group.setAlignment(Pos.CENTER);
-        return MAPPED_STAGES.computeIfAbsent(HasLogging.getCurrentLine(1), s -> new Stage());
+        String currentLine = HasLogging.getStackMatch(s -> !s.contains(SimpleDialogBuilder.class.getName()));
+
+        return MAPPED_STAGES.computeIfAbsent(currentLine, s -> new Stage());
     }
 
     public static Stage bindWindow(Stage stage, Node node1) {
