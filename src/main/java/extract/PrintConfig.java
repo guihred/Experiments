@@ -50,11 +50,9 @@ public class PrintConfig extends Application {
     @FXML
     private CheckBox repeat;
     @FXML
-    private CheckBox vertical;
+    private ComboBox<String> vertical;
     @FXML
     private CheckBox center;
-    @FXML
-    private CheckBox unaltered;
     @FXML
     private Slider hgap;
     @FXML
@@ -193,7 +191,9 @@ public class PrintConfig extends Application {
         double fitHeight = panel.getPrefHeight() / lines - panel.getVgap() * (lines + 1);
         Image image =
                 repeat.isSelected() || k < images.size() ? images.get(k % images.size()) : new WritableImage(1, 1);
-        if (!unaltered.isSelected() && vertical.isSelected() == image.getWidth() > image.getHeight()) {
+        String selectedItem = vertical.getSelectionModel().getSelectedItem();
+        if (!"Unaltered".equals(selectedItem)
+                && "Vertical".equals(selectedItem) == image.getWidth() > image.getHeight()) {
             image = ImageFXUtils.flip(image);
         }
         ImageView child = new ImageView(image);

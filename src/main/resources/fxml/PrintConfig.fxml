@@ -19,7 +19,7 @@
 	<fx:define>
 		<ToggleGroup fx:id="printType" onSelectedToggleChange="#toggleChanged" />
 		<Insets fx:id="empty" topRightBottomLeft="0" />
-		<CornerRadii fx:id="emptyRadii" radius="0"/>
+		<CornerRadii fx:id="emptyRadii" radius="0" />
 	</fx:define>
 
 	<padding>
@@ -89,8 +89,16 @@
 				<RadioButton text="Whole Paper" toggleGroup="$printType"></RadioButton>
 				<RadioButton text="Expand" toggleGroup="$printType" />
 				<CheckBox text="Repeat" fx:id="repeat" onAction="#changeConfig" />
-				<CheckBox text="Vertical" fx:id="vertical" onAction="#changeConfig" />
-				<CheckBox text="Unaltered" fx:id="unaltered" onAction="#changeConfig" />
+				<ComboBox fx:id="vertical" onAction="#changeConfig" value="Unaltered">
+					<items>
+						<FXCollections fx:factory="observableArrayList">
+							<String fx:value="Vertical" />
+							<String fx:value="Horizontal" />
+							<String fx:value="Unaltered" />
+						</FXCollections>
+					</items>
+				</ComboBox>
+
 				<CheckBox text="Center" fx:id="center" selected="true"
 					onAction="#changeConfig" />
 				<Button text="_Print To PDF" onAction="#printToPDF" />
@@ -111,7 +119,8 @@
 			<background>
 				<Background>
 					<fills>
-						<BackgroundFill fill="WHITE" radii="$emptyRadii" insets="$empty"/>
+						<BackgroundFill fill="WHITE" radii="$emptyRadii"
+							insets="$empty" />
 					</fills>
 				</Background>
 			</background>
