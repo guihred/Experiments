@@ -1,2 +1,71 @@
-{"index":"*apache-prod*","ignore_unavailable":true,"preference":1600792228289}
-{"aggs":{"2":{"terms":{"field":"clientip.keyword","size":200,"order":{"_count":"desc"}}}},"size":0,"_source":{"excludes":[]},"stored_fields":["*"],"script_fields":{},"docvalue_fields":[{"field":"@timestamp","format":"date_time"}],"query":{"bool":{"must":[{"match_all":{}},{"match_all":{}},%s{"range":{"@timestamp":{"gte":%s,"lte":%s,"format":"epoch_millis"}}}],"filter":[],"should":[],"must_not":[{"match_phrase":{"clientip.keyword":{"query":"189.9.32.130"}}}]}},"timeout":"30000ms"}
+{
+	"index": "*apache-prod*",
+	"ignore_unavailable": true,
+	"preference": 1600792228289
+}
+{
+	"aggs": {
+		"2": {
+			"terms": {
+				"field": "clientip.keyword",
+				"size": 200,
+				"order": {
+					"_count": "desc"
+				}
+			}
+		}
+	},
+	"size": 0,
+	"_source": {
+		"excludes": []
+	},
+	"stored_fields": [
+		"*"
+	],
+	"script_fields": {
+		
+	},
+	"docvalue_fields": [
+		{
+			"field": "@timestamp",
+			"format": "date_time"
+		}
+	],
+	"query": {
+		"bool": {
+			"must": [
+				{
+					"match_all": {
+						
+					}
+				},
+				{
+					"match_all": {
+						
+					}
+				},%s
+				{
+					"range": {
+						"@timestamp": {
+							"gte": %s,
+							"lte": %s,
+							"format": "epoch_millis"
+						}
+					}
+				}
+			],
+			"filter": [],
+			"should": [],
+			"must_not": [
+				 {
+                     "query_string": {
+                         "query": "clientip.keyword:(192.168.* OR 189.9.32.130 OR 10.130.* OR 10.0.* OR *.prevnet OR 10.128.* OR 10.189.* OR \"::1\" OR 127.* OR 10.144.*)",
+                         "analyze_wildcard": true,
+                         "default_field": "*"
+                    }
+                }
+			]
+		}
+	},
+	"timeout": "30000ms"
+}

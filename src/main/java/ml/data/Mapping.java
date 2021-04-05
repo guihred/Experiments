@@ -2,6 +2,7 @@
 package ml.data;
 
 import static utils.ex.FunctionEx.makeFunction;
+import static utils.ex.PredicateEx.makeTest;
 import static utils.ex.RunnableEx.runNewThread;
 
 import java.io.File;
@@ -137,15 +138,19 @@ public final class Mapping {
     }
 
     private static List<Method> loadMethods(List<Class<?>> returnTypes, List<Class<?>> allowedTypes) {
-        List<Method> collect = JavaFileDependency.getAllFileDependencies().stream().map(JavaFileDependency::getFullName)
-                .filter(s -> !s.startsWith("fxtests")).filter(s -> !s.contains("HibernateUtil"))
-                .map(makeFunction(Class::forName))
-                .flatMap(e -> ClassReflectionUtils.getAllMethodsRecursive(e, 2).stream()
-                        .filter(m -> Modifier.isStatic(m.getModifiers()))
-                        .filter(m -> Modifier.isPublic(m.getModifiers())).filter(m -> m.getParameterCount() > 0)
-                        .filter(m -> Stream.of(m.getParameterTypes()).allMatch(allowedTypes::contains))
-                        .filter(m -> returnTypes.contains(m.getReturnType())))
-                .distinct().sorted(Comparator.comparing((Method m) -> m.getDeclaringClass().getSimpleName())
+        List<Method> collect =
+                JavaFileDependency.getAllFileDependencies().stream()
+                        .filter(makeTest(e -> !e.getPublicStaticMethods().isEmpty()))
+                        .map(JavaFileDependency::getFullName)
+                        .filter(s -> !s.startsWith("fxtests"))
+                        .filter(s -> !s.contains("HibernateUtil"))
+                        .map(makeFunction(Class::forName))
+                        .flatMap(e -> ClassReflectionUtils.getAllMethodsRecursive(e, 2).stream()
+                                .filter(m -> Modifier.isStatic(m.getModifiers()))
+                                .filter(m -> Modifier.isPublic(m.getModifiers()))
+                                .filter(m -> Stream.of(m.getParameterTypes()).allMatch(allowedTypes::contains))
+                                .filter(m -> returnTypes.contains(m.getReturnType())))
+                        .distinct().sorted(Comparator.comparing((Method m) -> m.getDeclaringClass().getSimpleName())
                         .thenComparing(Method::getName))
                 .collect(Collectors.toList());
         LOG.info("Methods Loaded");

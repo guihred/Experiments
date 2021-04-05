@@ -4,7 +4,7 @@
 		"3": {
 			"terms": {
 				"field": "%s",
-				"size": 3,
+				"size": 2,
 				"order": {
 					"1": "desc"
 				}

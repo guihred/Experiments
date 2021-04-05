@@ -3,7 +3,7 @@
     "params":{
         "ip":"",
         "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h","-96h","-108h","-120h","-132h","-144h","-156h"],
-        "sistemaDtp":["vip-pmeuinssprxr.inss.gov.br","servicos.mte.gov.br","mteempregabr","postos","geridmte","meuinss","www2","psabiwebapl01","refisprod.dataprev.gov.br","www2sp.dataprev.gov.br","agendamento.inss.gov.br","papimgateway.prevnet","esisrec.inss.gov.br","tarefas.pmf.economia.gov.br","vip-auxilioemergencial.dataprev.gov.br",""]
+        "sistemaDtp":["vip-pmeuinssprxr.inss.gov.br","servicos.mte.gov.br","mteempregabr","postos","geridmte","meuinss","www2","psabiwebapl01","refisprod.dataprev.gov.br","www2sp.dataprev.gov.br","agendamento.inss.gov.br","papimgateway.prevnet","esisrec.inss.gov.br","tarefas.pmf.economia.gov.br","vip-auxilioemergencial.dataprev.gov.br","auxilio.dataprev.gov.br",""]
     },
     
     "name": "Reporte_Eventos_$sistemaDtp_$ip.docx",

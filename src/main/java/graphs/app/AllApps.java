@@ -58,7 +58,8 @@ public class AllApps extends Application {
     public void initialize() {
         ExtractUtils.insertProxyConfig();
         RunnableEx.runNewThread(
-                () -> getAllFileDependencies().stream().filter(makeTest(d -> d.getPublicMethods().contains("main")))
+                () -> getAllFileDependencies().stream()
+                        .filter(makeTest(d -> d.getPublicStaticMethods().contains("main")))
                         .map(JavaFileDependency::getFullName).collect(Collectors.toList()),
                 items -> CommonsFX.runInPlatform(() -> getApplications().setAll(items)));
         System.setOut(SupplierEx.remap(() -> new PrintTextStream(out, true, "UTF-8", textArea5.textProperty()),

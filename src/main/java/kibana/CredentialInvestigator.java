@@ -131,6 +131,12 @@ public class CredentialInvestigator extends KibanaInvestigator {
                 .filter(e -> StringUtils.isNotBlank(e.getValue())).filter(e -> StringUtils.isNotBlank(e.getKey()))
                 .filter(e -> include.contains(e.getKey()))
                 .filter(e -> !"memberOf".equals(e.getKey()) || e.getValue().contains("vpn")).distinct()
+                .peek(e -> {
+                    if ("memberOf".equals(e.getKey())) {
+                        e.setValue(StringSigaUtils.getMatches(e.getValue(), "([\\-\\w]+vpn[\\-\\w]+)"));
+                    }
+                })
+
                 .collect(Collectors.groupingBy(Entry<String, String>::getKey, LinkedHashMap::new,
                         Collectors.mapping(Entry<String, String>::getValue, Collectors.joining(" - "))));
     }

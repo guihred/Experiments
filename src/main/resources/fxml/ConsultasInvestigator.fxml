@@ -45,6 +45,7 @@
 				</HBox>
 				<Text text="Threshold" fx:id="thresholdText"/>
 				<Slider fx:id="threshold" max="0.5" min="0.3" majorTickUnit="0.01"
+				    blockIncrement="0.01"
 					value="0.4" />
 				<Text text="Filters" />
 				<ListView fx:id="filterList" prefWidth="175.0" VBox.vgrow="NEVER" />

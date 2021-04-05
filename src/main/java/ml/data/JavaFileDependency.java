@@ -25,12 +25,14 @@ public class JavaFileDependency {
             "import ([\\w\\.]+)\\.[\\w\\*]+;" + "|import static ([\\w\\.]+)\\.\\w+\\.\\w+;";
     private static final String CLASS_REGEX = "\\W+([A-Z]\\w+)\\W";
     private static final String PUBLIC_METHOD_REGEX = "\\W+public .+ (\\w+)\\(.+";
+    private static final String PUBLIC_STATIC_METHOD_REGEX = "\\W+public +static .+ (\\w+)\\(.+";
     private static final String INVOKE_METHOD_REGEX = "\\W+(\\w+)\\(";
     private static final String PACKAGE_REGEX = "package ([\\w\\.]+);";
     private final Path javaPath;
     private List<String> dependencies;
     private List<JavaFileDependency> dependsOn;
     private List<String> publicMethods;
+    private List<String> publicStaticMethods;
     private List<String> classes;
     private List<JavaFileDependency> dependents;
     private String name;
@@ -124,6 +126,17 @@ public class JavaFileDependency {
                 return methodMap;
             }
         }));
+    }
+
+    public List<String> getPublicStaticMethods() {
+        return orElse(publicStaticMethods, () -> publicStaticMethods = get(() -> {
+            try (Stream<String> lines = Files.lines(javaPath, StandardCharsets.UTF_8)) {
+                return lines.map(JavaFileDependency::removeStrings)
+                        .map(t -> StringSigaUtils.matches(t, PUBLIC_STATIC_METHOD_REGEX))
+                        .flatMap(List<String>::stream).collect(Collectors.toList());
+            }
+        }));
+        
     }
 
     public boolean search(Predicate<JavaFileDependency> test, List<JavaFileDependency> visited,

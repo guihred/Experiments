@@ -17,20 +17,13 @@
 					"filter": [],
 					"should": [],
 					"must_not": [
-						{
-							"match_phrase": {
-								"clientip.keyword": {
-									"query": "189.9.32.130"
-								}
-							}
-						},
-						{
-							"match_phrase": {
-								"mdc.ip": {
-									"query": "189.9.32.130"
-								}
-							}
-						}
+			            {
+			                 "query_string": {
+			                     "query": "clientip.keyword:(192.168.* OR 189.9.32.130 OR 10.130.* OR 10.0.* OR *.prevnet OR 10.128.* OR 10.189.* OR \"::1\" OR 127.* OR 10.144.*)",
+			                     "analyze_wildcard": true,
+                                 "default_field": "*"
+                            }
+                        }
 					]
 				}
 			}

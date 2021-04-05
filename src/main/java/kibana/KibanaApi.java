@@ -68,7 +68,7 @@ public class KibanaApi {
         accessList.addAll(accessList2);
         return accessList.stream().map((Map<Object, Object> map) -> {
             String ipd = JsonExtractor.access(map, String.class, key);
-            String reverseDNS = getHostname(ipd);
+            String reverseDNS = CIDRUtils.getReverseDNS(ipd);
             String ongValue = JsonExtractor.<Map<Object, Object>>accessList(map, "4", buckets).stream().map(s -> {
                 Integer port = JsonExtractor.access(s, Integer.class, key);
                 PortServices serviceByPort = PortServices.getServiceByPort(port);
@@ -236,10 +236,10 @@ public class KibanaApi {
 
     public static Map<String, String> makeNewKibanaSearch(File file, int days, Map<String, String> search,
             String... params) {
-        return SupplierEx.get(() -> {
+        return SupplierEx.getHandle(() -> {
             File outFile = newSearch(file, days, search);
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
-        }, new HashMap<>());
+        }, new HashMap<>(), e -> LOG.info("ERROR IN {}", file.getName()));
     }
 
     public static Map<String, SupplierEx<String>> scanByIp(String ip, int days) {
@@ -377,8 +377,8 @@ public class KibanaApi {
     private static String filterUrls(int days, String pattern) {
         String urls = urls(days, pattern);
         String collect = Stream.of(urls.split("\n")).filter(s -> s.startsWith("/")).map(s -> {
-            String replaceAll = s.replaceAll(" \\d+$", "")
-                    .replace("/", "\\\\/").replace("*", ".*").replaceAll("\\?.+", ".*");
+            String replaceAll =
+                    s.replaceAll(" \\d+$", "").replace("/", "\\\\/").replace("*", ".*").replaceAll("\\?.+", ".*");
             return String.format(
                     "\"%s\":{\"query_string\":{\"query\":\"request.keyword:/%s/\","
                             + "\"analyze_wildcard\": true,\"default_field\":\"*\"}}",
@@ -392,10 +392,7 @@ public class KibanaApi {
         Map<Object, Object> accessMap = JsonExtractor.accessMap(nsInformation, "5", "buckets");
         String collect2 = accessMap.entrySet().stream()
                 .map(e -> JsonExtractor.newEntry(e.getKey(),
-                        JsonExtractor.access(e.getValue(), Number.class, "1", "value").intValue()
-                                * JsonExtractor.access(e.getValue(), Number.class, "doc_count").intValue()
-
-                ))
+                        JsonExtractor.access(e.getValue(), Number.class, "1", "value").intValue()))
                 .filter(e -> e.getValue() > 0)
                 .sorted(Comparator.comparingInt((Entry<Object, Integer> e) -> e.getValue()).reversed())
                 .map(e -> e.getKey() + " " + e.getValue()).collect(Collectors.joining("\n"));
