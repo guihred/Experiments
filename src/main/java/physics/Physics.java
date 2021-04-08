@@ -9,8 +9,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.jbox2d.common.Vec2;
 
 /**
  *
@@ -20,7 +22,7 @@ public class Physics extends Application {
 
     public static final int PHYSICAL_WIDTH = 100;
     public static final int PHYSICAL_HEIGHT = 100;
-    public static final int MAX_BALLS = 200;
+    public static final int MAX_BALLS = 10;
     private final Random random = new Random();
 
     @Override
@@ -52,6 +54,14 @@ public class Physics extends Application {
         // create a keyFrame, the keyValue is reached at time 2s
         Duration duration = Duration.seconds(1.0 / 60.0);
         // one can add a specific action when the keyframe is reached
+        scene.setOnKeyReleased(e -> {
+            KeyCode code = e.getCode();
+            if (code == KeyCode.ENTER) {
+                for (int i = 0; i < MAX_BALLS; i++) {
+                    ball[i].body.applyLinearImpulse(new Vec2(0, 20), new Vec2(0, 0));
+                }
+            }
+        });
         EventHandler<ActionEvent> onFinished = t -> {
             PhysicalScene.getWorld().step(1.0F / 60.F, 1, 1);
             for (int i = 0; i < MAX_BALLS; i++) {
@@ -59,8 +69,10 @@ public class Physics extends Application {
                 float ypos = BasePhysicalObject.toPixelY(ball[i].body.getPosition().y);
                 ball[i].node.setLayoutX(xpos);
                 ball[i].node.setLayoutY(ypos);
+
             }
         };
+
 
         KeyFrame keyFrame = new KeyFrame(duration, onFinished, null, null);
 

@@ -28,6 +28,7 @@ import javafx.scene.transform.Translate;
 import utils.DrawOnPoint;
 import utils.ImageFXUtils;
 import utils.ex.ConsumerEx;
+import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
 public final class RotateUtils {
@@ -287,8 +288,12 @@ public final class RotateUtils {
             return;
         }
 
-        WritableImage srcImage = ImageFXUtils.copyImage(image, image.getWidth(), image.getHeight());
-        double p = srcImage.getWidth() / imageView.getFitWidth();
+        double imgHeight = image.getHeight();
+        double imgWidth = image.getWidth();
+        WritableImage srcImage = ImageFXUtils.copyImage(image, imgWidth, imgHeight);
+        double fitWidth = imageView.getFitWidth();
+        double fitHeight = fitWidth * imgHeight / imgWidth;
+        double p = srcImage.getWidth() / fitWidth;
         double width1 = width * p;
         double height1 = height * p;
         if (width1 <= 0 || height1 <= 0) {
@@ -297,6 +302,8 @@ public final class RotateUtils {
         WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
         double x = area.getLayoutX() * p;
         double y = area.getLayoutY() * p;
+        HasLogging.log().info("\"x\":{},\"y\":{},\"width\":{},\"height\":{}", area.getLayoutX() / fitWidth,
+                area.getLayoutY() / fitHeight, width / fitWidth, height / fitHeight);
         RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage, imageSelected,
                 Color.TRANSPARENT);
         ConsumerEx.accept(onImageCropped, imageSelected);

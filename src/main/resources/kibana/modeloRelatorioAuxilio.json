@@ -58,7 +58,7 @@
         "- Volumetria de acessos acima dos demais usuários"
 	],
 	"enderecoOrigem": [
-		"Informações endereço de origem",
+		"Informações endereço de origem ($Provedor – $Geolocation)",
 		{
 			"url": "https://registro.br/tecnologia/ferramentas/whois/?search=$ip",
 			"name": "whoIs$ip",

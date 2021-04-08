@@ -204,16 +204,16 @@ public final class PhantomJSUtils {
             ghostDriver.setLogLevel(Level.OFF);
             ghostDriver.manage().window().maximize();
             ghostDriver.get(url);
-            cookies.forEach((k, v) -> RunnableEx.run(() -> ghostDriver.manage().addCookie(new Cookie(k, v))));
+            cookies.forEach((k, v) -> RunnableEx.ignore(() -> ghostDriver.manage().addCookie(new Cookie(k, v))));
             ghostDriver.get(url);
             Set<Cookie> cookies2 = ghostDriver.manage().getCookies();
             for (Cookie cookie : cookies2) {
                 cookies.put(cookie.getName(), cookie.getValue());
             }
-            RunnableEx.run(() -> cookies.forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v))));
+            RunnableEx.ignore(() -> cookies.forEach((k, v) -> ghostDriver.manage().addCookie(new Cookie(k, v))));
             RunnableEx.sleepSeconds(1. / 2);
             String pageSource = ghostDriver.getPageSource();
-            for (int i = 0; StringUtils.isNotBlank(loadingStr) && pageSource.contains(loadingStr) && i < 10; i++) {
+            for (int i = 0; StringUtils.isNotBlank(loadingStr) && pageSource.contains(loadingStr) && i < 20; i++) {
                 RunnableEx.sleepSeconds(5);
                 pageSource = ghostDriver.getPageSource();
             }

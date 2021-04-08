@@ -54,6 +54,11 @@ public class DataframeML extends BaseDataframe {
 
     public DataframeML filter(String header, PredicateEx<Object> v) {
         List<Object> list = dataframe.get(header);
+        if (list == null) {
+            HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
+            return this;
+        }
+
         int off = 0;
         for (int i = 0; i - off < list.size(); i++) {
             int j = i - off;
