@@ -41,7 +41,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
     private static final Logger LOG = HasLogging.log();
 
     private static Map<String, String> cookies = new LinkedHashMap<>();
-    private static DataframeML DATAFRAME_LOOKUP;
+    private static DataframeML dataframeLookup;
     @FXML
     private Pane pane;
     private ComboBox<String> indexCombo;
@@ -58,14 +58,14 @@ public class CredentialInvestigator extends KibanaInvestigator {
         SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
                 .pasteable(s -> StringSigaUtils.getMatches(s, "(" + IP_REGEX + "|\\d{11})"))
                 .onDoubleClick(resultsFilter::setText);
-        RunnableEx.runNewThread(() -> getCookies());
+        RunnableEx.runNewThread(CredentialInvestigator::getCookies);
     }
 
     @Override
     public void onActionKibanaScan() {
 
         if (cookies.isEmpty()) {
-            RunnableEx.run(() -> getCookies());
+            RunnableEx.run(CredentialInvestigator::getCookies);
         }
         super.onActionKibanaScan();
     }
@@ -76,8 +76,9 @@ public class CredentialInvestigator extends KibanaInvestigator {
         primaryStage.setTitle("Credential Investigator");
         RunnableEx.runNewThread(() -> {
             File outFile = ResourceFXUtils.getOutFile("csv/paloAlto.csv");
-            if (JsonExtractor.isRecentFile(outFile, 24)) {
-                DATAFRAME_LOOKUP = SupplierEx.orElse(DATAFRAME_LOOKUP,
+            final int oneDay = 24;
+            if (JsonExtractor.isRecentFile(outFile, oneDay)) {
+                dataframeLookup = SupplierEx.orElse(dataframeLookup,
                         () -> DataframeBuilder.builder(outFile).build(progressIndicator.progressProperty()));
             }
         });
@@ -124,15 +125,15 @@ public class CredentialInvestigator extends KibanaInvestigator {
         } else {
             document = JsoupUtils.normalParse(outFile);
         }
-        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", "memberOf");
+        String memberOf = "memberOf";
+        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", memberOf);
 
         return document.select("input").stream()
                 .map(e -> new AbstractMap.SimpleEntry<>(e.attr("id"), Objects.toString(e.attr("value"), "").trim()))
                 .filter(e -> StringUtils.isNotBlank(e.getValue())).filter(e -> StringUtils.isNotBlank(e.getKey()))
                 .filter(e -> include.contains(e.getKey()))
-                .filter(e -> !"memberOf".equals(e.getKey()) || e.getValue().contains("vpn")).distinct()
-                .peek(e -> {
-                    if ("memberOf".equals(e.getKey())) {
+                .filter(e -> !memberOf.equals(e.getKey()) || e.getValue().contains("vpn")).distinct().peek(e -> {
+                    if (memberOf.equals(e.getKey())) {
                         e.setValue(StringSigaUtils.getMatches(e.getValue(), "([\\-\\w]+vpn[\\-\\w]+)"));
                     }
                 })
@@ -210,10 +211,10 @@ public class CredentialInvestigator extends KibanaInvestigator {
         scanByIp.put("Message", () -> {
             if (query.matches(IP_REGEX)) {
                 Map<String, String> iPsByCredencial = KibanaApi.getGeridCredencial(query, index, days1);
-                return iPsByCredencial.values().stream().map(s -> s.trim()).collect(Collectors.joining("\n"));
+                return iPsByCredencial.values().stream().map(String::trim).collect(Collectors.joining("\n"));
             }
             Map<String, String> iPsByCredencial = KibanaApi.getIPsByCredencial(query, index, days1);
-            return iPsByCredencial.values().stream().map(s -> s.trim()).collect(Collectors.joining("\n"));
+            return iPsByCredencial.values().stream().map(String::trim).collect(Collectors.joining("\n"));
         });
         scanPaloAlto(query, result, scanByIp);
         return scanByIp;
@@ -222,12 +223,13 @@ public class CredentialInvestigator extends KibanaInvestigator {
     private static void scanPaloAlto(String query, Map<String, String> result,
             Map<String, SupplierEx<String>> scanByIp) {
         File outFile = ResourceFXUtils.getOutFile("csv/paloAlto.csv");
-        if (JsonExtractor.isRecentFile(outFile, 24)) {
+        final int oneDay = 24;
+        if (JsonExtractor.isRecentFile(outFile, oneDay)) {
             scanByIp.put("Lookup", () -> {
                 String searchByIp = Stream.of(result.getOrDefault("IP", "").split("\n")).map(ip -> {
                     String header = !CIDRUtils.isPrivateNetwork(ip) ? "public_ip" : "private_ip";
                     List<Map<String, Object>> findFirst =
-                            DATAFRAME_LOOKUP.findAll(header, s -> StringUtils.equals(query, Objects.toString(s, "")));
+                            dataframeLookup.findAll(header, s -> StringUtils.equals(query, Objects.toString(s, "")));
                     return findFirst.stream().map(CredentialInvestigator::lookupDisplay).map(KibanaApi::display)
                             .collect(Collectors.joining("\n"));
                 }).collect(Collectors.joining("\n"));
@@ -236,7 +238,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
                 }
                 String orDefault = result.getOrDefault("Credencial Info", "");
                 List<String> matches = StringSigaUtils.matches(orDefault, "([a-z\\.]+@[a-z\\.]+)");
-                List<Map<String, Object>> findFirst = DATAFRAME_LOOKUP.findAll("Source User", s -> matches.contains(s));
+                List<Map<String, Object>> findFirst = dataframeLookup.findAll("Source User", matches::contains);
                 return findFirst.stream().map(CredentialInvestigator::lookupDisplay).map(KibanaApi::display)
                         .collect(Collectors.joining("\n"));
             });

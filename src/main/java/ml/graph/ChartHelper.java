@@ -10,14 +10,18 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import ml.data.DataframeML;
+import ml.data.BaseDataframe;
 import ml.data.DataframeStatisticAccumulator;
 import utils.CommonsFX;
 import utils.ex.ConsumerEx;
 import utils.ex.RunnableEx;
 
-public class ChartHelper {
-    public static void addToLineChart(DataframeML dataframeML, LineChart<Number, Number> lineChart,
+public final class ChartHelper {
+
+    private ChartHelper() {
+    }
+
+    public static void addToLineChart(BaseDataframe dataframeML, LineChart<Number, Number> lineChart,
             Entry<String, DataframeStatisticAccumulator> old, Entry<String, DataframeStatisticAccumulator> val,
             String name) {
 

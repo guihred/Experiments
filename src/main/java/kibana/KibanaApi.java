@@ -33,6 +33,10 @@ import utils.ex.SupplierEx;
 
 public class KibanaApi {
 
+    private static final String KEY = "key";
+
+    private static final String VALUE = "value";
+
     private static final String KIBANA_FOLDER = "kibana/";
 
     private static final String ELASTICSEARCH_MSEARCH_URL = ProjectProperties.getField();
@@ -51,31 +55,33 @@ public class KibanaApi {
 
     public static final String IP_REGEX = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
 
+    private static final String[] HOSTS_KEYS = { "as_owner", "Nome", "HostName", "Descrição", "asname", "id" };
+    private static final String[] LOCATION_KEYS = { "country", "ascountry", "Descrição" };
+    private static final String[] OWNER_KEYS = { "as_owner", "Nome", "Descrição", "asname", "id" };
+
     protected KibanaApi() {
     }
 
     public static String destinationPorts(String ip, int days) {
-        String key = "key";
-        String valueCol = "value";
         String buckets = "buckets";
+        final String aggregations = "aggregations";
         List<Map<Object, Object>> accessList = JsonExtractor.accessList(makeKibanaSearchObj("destinationPortQuery.json",
-                days, new String[] { "DestinationIP", "SourceIP", ip }, "aggregations"), "aggregations", "3", buckets);
+                days, new String[] { "DestinationIP", "SourceIP", ip }, aggregations), aggregations, "3", buckets);
         List<Map<Object, Object>> accessList2 =
                 JsonExtractor.accessList(
                         makeKibanaSearchObj("destinationPortQuery.json", days,
-                                new String[] { "SourceIP", "DestinationIP", ip }, "aggregations"),
-                        "aggregations", "3", buckets);
+                                new String[] { "SourceIP", "DestinationIP", ip }, aggregations),
+                        aggregations, "3", buckets);
         accessList.addAll(accessList2);
         return accessList.stream().map((Map<Object, Object> map) -> {
-            String ipd = JsonExtractor.access(map, String.class, key);
+            String ipd = JsonExtractor.access(map, String.class, KEY);
             String reverseDNS = CIDRUtils.getReverseDNS(ipd);
-            String ongValue = JsonExtractor.<Map<Object, Object>>accessList(map, "4", buckets).stream().map(s -> {
-                Integer port = JsonExtractor.access(s, Integer.class, key);
+            return JsonExtractor.<Map<Object, Object>>accessList(map, "4", buckets).stream().map(s -> {
+                Integer port = JsonExtractor.access(s, Integer.class, KEY);
                 PortServices serviceByPort = PortServices.getServiceByPort(port);
-                Number size = JsonExtractor.access(s, Number.class, "1", valueCol);
+                Number size = JsonExtractor.access(s, Number.class, "1", VALUE);
                 return reverseDNS + " " + serviceByPort + " " + StringSigaUtils.getFileSize(size.longValue());
             }).collect(Collectors.joining("\n"));
-            return ongValue;
         }).collect(Collectors.joining("\n"));
     }
 
@@ -96,9 +102,8 @@ public class KibanaApi {
             return "";
         }
 
-        return Stream.of(ip.split("\n")).map(s -> WHOIS_SCANNER.getGeoIpInformation(s))
-                .map(s -> StringSigaUtils.getKey(s, "Descrição", "country", "ascountry"))
-                .collect(Collectors.joining("\n"));
+        return Stream.of(ip.split("\n")).map(WHOIS_SCANNER::getGeoIpInformation)
+                .map(s -> StringSigaUtils.getKey(s, LOCATION_KEYS)).collect(Collectors.joining("\n"));
 
     }
 
@@ -122,11 +127,12 @@ public class KibanaApi {
     public static String getHostname(Object e) {
         String ip = Objects.toString(e, "");
         Map<String, String> ipInformation = WHOIS_SCANNER.getIpInformation(ip);
-        String key = StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "HostName", "Descrição", "asname");
+
+        String key = StringSigaUtils.getKey(ipInformation, HOSTS_KEYS);
         if (!key.equals(ip)) {
             return key;
         }
-        String key2 = StringSigaUtils.getKey(ipInformation, "as_owner", "Nome", "Descrição", "asname", "id");
+        String key2 = StringSigaUtils.getKey(ipInformation, OWNER_KEYS);
         if (StringUtils.isNotBlank(key2)) {
             return key2;
         }
@@ -243,14 +249,10 @@ public class KibanaApi {
     }
 
     public static Map<String, SupplierEx<String>> scanByIp(String ip, int days) {
-        String key = "key";
-        String valueCol = "value";
         Map<String, SupplierEx<String>> fullScan = new LinkedHashMap<>();
         fullScan.put("IP", () -> ip);
-        fullScan.put("Provedor", () -> StringSigaUtils.getKey(WHOIS_SCANNER.getIpInformation(ip), "as_owner", "Nome",
-                "HostName", "asname"));
-        fullScan.put("Geolocation", () -> StringSigaUtils.getKey(WHOIS_SCANNER.getGeoIpInformation(ip), "country",
-                "ascountry", "Descrição"));
+        fullScan.put("Provedor", () -> StringSigaUtils.getKey(WHOIS_SCANNER.getIpInformation(ip), HOSTS_KEYS));
+        fullScan.put("Geolocation", () -> StringSigaUtils.getKey(WHOIS_SCANNER.getGeoIpInformation(ip), LOCATION_KEYS));
         String pattern = CIDRUtils.addressToPattern(ip);
         fullScan.put("WAF_Policy", () -> {
             String policy = "policy-name";
@@ -262,8 +264,8 @@ public class KibanaApi {
         fullScan.put("PaloAlto_Threat", () -> {
             if (CIDRUtils.isVPNNetwork(ip)) {
                 Map<String, Object> userQuery =
-                        makeKibanaSearchObj("userQuery.json", days, new String[] { ip }, key, valueCol);
-                userQuery.computeIfPresent(valueCol, (k, v) -> {
+                        makeKibanaSearchObj("userQuery.json", days, new String[] { ip }, KEY, VALUE);
+                userQuery.computeIfPresent(VALUE, (k, v) -> {
                     List<String> dates = JsonExtractor.<Number>accessList(v).stream()
                             .map(s -> DateFormatUtils.format("dd/MM/yy HH:mm", s.longValue()))
                             .collect(Collectors.toList());
@@ -271,37 +273,34 @@ public class KibanaApi {
                 });
                 return displayDistinct(userQuery);
             }
-            return displayDistinct(makeKibanaSearch("threatQuery.json", days, ip, key));
+            return displayDistinct(makeKibanaSearch("threatQuery.json", days, ip, KEY));
         });
         fullScan.put("TOP_FW", () -> {
-            Map<String, Object> destinationSearch =
-                    makeKibanaSearchObj("destinationQuery.json", days, ip, key, valueCol);
-            destinationSearch.computeIfPresent(key, (k, v) -> JsonExtractor.<String>accessList(v).stream()
+            Map<String, Object> destinationSearch = makeKibanaSearchObj("destinationQuery.json", days, ip, KEY, VALUE);
+            destinationSearch.computeIfPresent(KEY, (k, v) -> JsonExtractor.<String>accessList(v).stream()
                     .map(WHOIS_SCANNER::reverseDNS).collect(Collectors.joining("\n")));
-            convertToBytes(destinationSearch, valueCol);
+            convertToBytes(destinationSearch, VALUE);
             return displayDistinct(destinationSearch);
         });
         fullScan.put("TOP_WEB",
-                () -> displayDistinct(makeKibanaSearch("acessosQuery.json", days, pattern, key, "doc_count")));
-        fullScan.put("Ports", () -> {
-            return destinationPorts(ip, days);
-        });
+                () -> displayDistinct(makeKibanaSearch("acessosQuery.json", days, pattern, KEY, "doc_count")));
+        fullScan.put("Ports", () -> destinationPorts(ip, days));
         fullScan.put("Acesso", () -> {
-            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", days, ip, valueCol);
-            trafficSearch.computeIfPresent(valueCol,
+            Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", days, ip, VALUE);
+            trafficSearch.computeIfPresent(VALUE,
                     (k, v) -> Stream.of(v.split("\n"))
                             .map(i -> DateFormatUtils.format("dd/MM/yyyy", StringSigaUtils.toLong(i))).distinct()
                             .collect(Collectors.joining(" – ")));
             return displayDistinct(trafficSearch);
         });
         fullScan.put("Bytes_Received", () -> {
-            Map<String, Object> totalBytesQuery = makeKibanaSearchObj("totalBytesQuery.json", days, ip, valueCol);
-            convertToStats(valueCol, totalBytesQuery);
+            Map<String, Object> totalBytesQuery = makeKibanaSearchObj("totalBytesQuery.json", days, ip, VALUE);
+            convertToStats(VALUE, totalBytesQuery);
             return displayDistinct(totalBytesQuery);
         });
         fullScan.put("Bytes_Sent", () -> {
-            Map<String, Object> totalBytesSent = makeKibanaSearchObj("paloAltoQuery.json", days, ip, valueCol);
-            convertToStats(valueCol, totalBytesSent);
+            Map<String, Object> totalBytesSent = makeKibanaSearchObj("paloAltoQuery.json", days, ip, VALUE);
+            convertToStats(VALUE, totalBytesSent);
             return display(totalBytesSent);
         });
         fullScan.put("URLs", () -> filterUrls(days, pattern));
@@ -392,9 +391,9 @@ public class KibanaApi {
         Map<Object, Object> accessMap = JsonExtractor.accessMap(nsInformation, "5", "buckets");
         String collect2 = accessMap.entrySet().stream()
                 .map(e -> JsonExtractor.newEntry(e.getKey(),
-                        JsonExtractor.access(e.getValue(), Number.class, "1", "value").intValue()))
+                        JsonExtractor.access(e.getValue(), Number.class, "1", VALUE).intValue()))
                 .filter(e -> e.getValue() > 0)
-                .sorted(Comparator.comparingInt((Entry<Object, Integer> e) -> e.getValue()).reversed())
+                .sorted(Comparator.comparingInt(Entry<Object, Integer>::getValue).reversed())
                 .map(e -> e.getKey() + " " + e.getValue()).collect(Collectors.joining("\n"));
         if (StringUtils.isBlank(collect2)) {
             return urls;
@@ -441,7 +440,7 @@ public class KibanaApi {
 
     private static Stream<String> groupStream(List<String> collect, final int d) {
         return IntStream.range(0, collect.size() / d)
-                .mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size()).mapToObj(j -> collect.get(j))
+                .mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size()).mapToObj(collect::get)
                         .flatMap(s -> Stream.of(s.split(" "))).distinct().collect(Collectors.joining(" ")));
     }
 
@@ -496,7 +495,7 @@ public class KibanaApi {
         Map<String, String> filter1 = new LinkedHashMap<>();
         filter1.put("clientip", pattern);
         String docCount = "doc_count";
-        String key = "key";
+        String key = KEY;
         Map<String, String> nsInformation =
                 KibanaApi.makeKibanaSearch("requestedPath.json", days, filter1, key, docCount);
         List<Map<String, String>> remap = JsonExtractor.remap(nsInformation, "^/.*");
@@ -512,7 +511,8 @@ public class KibanaApi {
                                     Collectors.summingLong(SimpleEntry<String, Long>::getValue)));
             String collect3 = collect.entrySet().stream()
                     .sorted(Comparator.comparingLong(Entry<String, Long>::getValue).reversed())
-                    .filter(s -> !s.getKey().startsWith("*")).map(t -> t.getKey()).collect(Collectors.joining("\n"));
+                    .filter(s -> !s.getKey().startsWith("*")).map(Entry<String, Long>::getKey)
+                    .collect(Collectors.joining("\n"));
             return entry.getKey() + "\n" + collect3;
         }).collect(Collectors.joining("\n"));
     }

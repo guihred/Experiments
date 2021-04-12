@@ -11,10 +11,11 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
+import simplebuilder.SimpleAnimationBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import utils.PixelHelper;
+import utils.RectBuilder;
 import utils.ex.HasLogging;
-import utils.fx.RectBuilder;
 
 public class SprayTool extends PaintTool {
 
@@ -26,12 +27,7 @@ public class SprayTool extends PaintTool {
     private int frontColor;
     private PixelReader pixelReader;
     private PaintModel paintModel;
-    private final AnimationTimer animationTimer = new AnimationTimer() {
-        @Override
-        public void handle(final long currentNanoTime) {
-            drawPoints();
-        }
-    };
+    private final AnimationTimer animationTimer = SimpleAnimationBuilder.timer(now -> drawPoints());
     private Slider lengthSlider;
 
     @Override

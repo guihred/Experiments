@@ -13,7 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Labeled;
 import utils.ex.FunctionEx;
 
-public class TreeElement<T> {
+public final class TreeElement<T> {
 
     private static final String CHILDREN_FIELD = "children";
     private Collection<TreeElement<T>> children;

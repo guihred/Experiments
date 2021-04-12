@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
 
@@ -28,7 +27,6 @@ import utils.ex.HasLogging;
 public final class MatrixSolver {
 
     private static final Logger LOGGER = HasLogging.log();
-    private final static boolean debug = true;
 
     private MatrixSolver() {
     }
@@ -100,10 +98,6 @@ public final class MatrixSolver {
         return coef;
     }
 
-    public static double[] sub(double[] v, double[] lastV) {
-        return IntStream.range(0, v.length).mapToDouble(i -> v[i] - lastV[i]).toArray();
-    }
-
     private static void correctOrder(double[] coef, double[][] temp) {
         for (int i = 0; i < coef.length; i++) {
             if (temp[i][0] == 0 && i < coef.length - 1) {
@@ -149,18 +143,16 @@ public final class MatrixSolver {
     }
 
     private static void printMatrix(double[][] matr, double[] coef) {
-        if (debug) {
-            StringBuilder desc = new StringBuilder();
-            for (int i = 0; i < matr.length; i++) {
-                desc.append("\n\t");
-                desc.append(DoubleStream.of(matr[i]).mapToObj(e -> String.format(Locale.US, "[%.3f]", e))
+        StringBuilder desc = new StringBuilder();
+        for (int i = 0; i < matr.length; i++) {
+            desc.append("\n\t");
+            desc.append(DoubleStream.of(matr[i]).mapToObj(e -> String.format(Locale.US, "[%.3f]", e))
                     .collect(Collectors.joining(", ")));
-                if (coef != null && coef.length > 0) {
-                    desc.append(String.format(Locale.US, "[%.1f]", coef[i % coef.length]));
-                }
+            if (coef != null && coef.length > 0) {
+                desc.append(String.format(Locale.US, "[%.1f]", coef[i % coef.length]));
             }
-            LOGGER.info("{}", desc);
         }
+        LOGGER.debug("{}", desc);
     }
 
     private static void swap(double[][] temp, int i) {

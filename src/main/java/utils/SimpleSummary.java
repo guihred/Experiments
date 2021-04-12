@@ -11,8 +11,8 @@ import utils.ex.FunctionEx;
 
 public class SimpleSummary<T extends Comparable<T>> implements Collector<T, SimpleSummary<T>, SimpleSummary<T>> {
     private int count;
-    private T max = null;
-    private T min = null;
+    private T max;
+    private T min;
 
     @Override
     public BiConsumer<SimpleSummary<T>, T> accumulator() {
@@ -58,7 +58,7 @@ public class SimpleSummary<T extends Comparable<T>> implements Collector<T, Simp
 
     @Override
     public Supplier<SimpleSummary<T>> supplier() {
-        return () -> new SimpleSummary<>();
+        return SimpleSummary::new;
     }
 
     @Override
@@ -73,11 +73,17 @@ public class SimpleSummary<T extends Comparable<T>> implements Collector<T, Simp
     }
 
     private T max(T a) {
-        return max == null ? a : max.compareTo(a) < 0 ? a : max;
+        if (max == null) {
+            return a;
+        }
+        return max.compareTo(a) < 0 ? a : max;
     }
 
     private T min(T a) {
-        return min == null ? a : min.compareTo(a) > 0 ? a : min;
+        if (min == null) {
+            return a;
+        }
+        return min.compareTo(a) > 0 ? a : min;
     }
 
 }

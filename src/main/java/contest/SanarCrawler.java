@@ -122,11 +122,11 @@ public class SanarCrawler extends Application {
         if (newValue == null) {
             return;
         }
-        Entry<String, String> entry = newValue.getValue();
         if (!newValue.getChildren().isEmpty()) {
             return;
         }
         int level = tree.getTreeItemLevel(newValue);
+        Entry<String, String> entry = newValue.getValue();
         RunnableEx.runNewThread(() -> {
             if (level == 1) {
                 getFilesFromPage(entry);

@@ -15,7 +15,7 @@ import org.apache.commons.math3.linear.QRDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import utils.ex.SupplierEx;
 
-public class RegressionModel {
+public final class RegressionModel {
 
     private static final double MIN_DIFFERENCE = 1E-4;
     private static final int MAX_SIZE = 50;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class RoundMazeHandler {
+public final class RoundMazeHandler {
     public static final int MAZE_WIDTH = 7;
     public static final int MAZE_HEIGHT = 40;
     private int r;

@@ -171,7 +171,7 @@ final class ConsultasHelper {
     private static boolean isNotBlocked(Integer days, String ip) {
         if (ip.matches(WhoIsScanner.IP_REGEX)) {
             String blocked = SupplierEx.get(KibanaApi.scanByIp(ip, days).get("WAF_Policy"), "");
-            return BLOCK.stream().noneMatch(s -> blocked.contains(s));
+            return BLOCK.stream().noneMatch(blocked::contains);
         }
         return true;
     }

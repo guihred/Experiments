@@ -23,7 +23,7 @@ import simplebuilder.SimpleDialogBuilder;
  *
  * @author Note
  */
-public class SolitaireModel {
+public final class SolitaireModel {
     private CardStack[] ascendingStacks = new CardStack[4];
 
     private CardDragContext dragContext = new CardDragContext();

@@ -115,7 +115,7 @@ public class ContestQuestion extends BaseEntity implements HasImage {
     }
 
     public boolean hasAnswer() {
-        return options != null && options.stream().anyMatch(e -> e.getCorrect());
+        return options != null && options.stream().anyMatch(ContestQuestionAnswer::getCorrect);
     }
 
     @Override

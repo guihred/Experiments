@@ -223,7 +223,7 @@ public class SanarHelper {
     }
 
     private static void rename(String folder, String out, File f) throws IOException {
-        File outFile2 = new File(consulta, folder.replaceAll(":", "_") + "\\" + out);
+        File outFile2 = new File(consulta, folder.replaceAll(":", "_") + File.pathSeparator + out);
         if (!outFile2.getParentFile().exists()) {
             outFile2.getParentFile().mkdir();
         }

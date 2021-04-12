@@ -24,7 +24,7 @@ import javafx.util.Duration;
  *
  * @author Note
  */
-public class MazeModel {
+public final class MazeModel {
 
     private MazeSquare[][] maze = new MazeSquare[MAZE_SIZE][MAZE_SIZE];
     private int x;

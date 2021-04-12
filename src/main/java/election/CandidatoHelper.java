@@ -1,3 +1,4 @@
+
 package election;
 
 import static simplebuilder.SimpleTableViewBuilder.autoColumnsWidth;
@@ -26,7 +27,7 @@ import utils.fx.ImageTableCell;
 
 public final class CandidatoHelper {
     private static final int RELEVANT_FIELD_THRESHOLD = 410;
-    private final static CandidatoDAO DAO = new CandidatoDAO();
+    private static final CandidatoDAO DAO = new CandidatoDAO();
 
     private static final Logger LOG = HasLogging.log();
 

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.scene.image.Image;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -119,8 +120,8 @@ public final class PhantomJSUtils {
             InstallCert.installCertificate(url);
             return client.execute(get);
         });
-        Map<String, String> d = Stream.of(response.getAllHeaders()).collect(Collectors.groupingBy(h -> h.getName(),
-                Collectors.mapping(e -> e.getValue(), Collectors.joining("; "))));
+        Map<String, String> d = Stream.of(response.getAllHeaders()).collect(
+                Collectors.groupingBy(Header::getName, Collectors.mapping(Header::getValue, Collectors.joining("; "))));
         HttpEntity entity = response.getEntity();
         try (BufferedReader rd =
                 new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8))) {

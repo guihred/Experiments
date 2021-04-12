@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 
-public class JavaFileDependency {
+public final class JavaFileDependency {
     private static final Logger LOG = HasLogging.log();
     private static final String IMPORT_REGEX =
             "import ([\\w\\.]+)\\.[\\w\\*]+;" + "|import static ([\\w\\.]+)\\.\\w+\\.\\w+;";

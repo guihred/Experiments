@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class HuffmanTree {
+public final class HuffmanTree {
 
     private HuffmanTree zerod;
     private HuffmanTree oned;

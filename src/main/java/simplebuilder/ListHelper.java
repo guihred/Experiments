@@ -66,19 +66,20 @@ public final class ListHelper {
     }
 
     public static <T, D> void referenceMapping(ObservableList<T> center1, FunctionEx<T, D> map,
-            ObservableList<D> observableArrayList) {
-        ReferenceMap<T,D> a = new ReferenceMap<>();
+            ObservableList<D> finalList) {
+        ReferenceMap<T, D> a = new ReferenceMap<>();
         center1.addListener((ListChangeListener<T>) c -> {
             while (c.next()) {
                 if (c.wasPermutated()) {
                     break;
                 }
                 if (c.wasAdded()) {
-                    c.getAddedSubList().forEach(e1 -> observableArrayList.add(a.computeIfAbsent(e1, FunctionEx.makeFunction(map))));
+                    ConsumerEx.foreach(c.getAddedSubList(),
+                            e1 -> finalList.add(a.computeIfAbsent(e1, FunctionEx.makeFunction(map))));
                 }
                 if (c.wasRemoved()) {
-                    c.getRemoved()
-                    .forEach(ConsumerEx.ignore(e2 -> observableArrayList.remove(a.computeIfAbsent(e2, FunctionEx.makeFunction(map)))));
+                    ConsumerEx.foreach(c.getRemoved(),
+                            e2 -> finalList.remove(a.computeIfAbsent(e2, FunctionEx.makeFunction(map))));
                 }
             }
         });

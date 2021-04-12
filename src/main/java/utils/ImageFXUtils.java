@@ -27,7 +27,6 @@ import javax.imageio.ImageIO;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
-import utils.fx.RectBuilder;
 
 public final class ImageFXUtils {
     private static boolean showImage = true;

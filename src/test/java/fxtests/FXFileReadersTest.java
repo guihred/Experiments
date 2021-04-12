@@ -126,6 +126,9 @@ public class FXFileReadersTest extends AbstractTestExecution {
     @Test
     public void textBalabolkaApi() {
         measureTime("BalabolkaApi.speak", () -> BalabolkaApi.speak("It Worked"));
+        File file = new File("C:\\Users\\guigu\\Downloads\\Padrão.txt");
+
+        measureTime("BalabolkaApi.makeDictionary", () -> BalabolkaApi.makeDictionary(file));
     }
 
 

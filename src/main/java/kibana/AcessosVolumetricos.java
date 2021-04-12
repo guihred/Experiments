@@ -31,7 +31,7 @@ public class AcessosVolumetricos {
         destinationSearch.forEach(dataframeML::add);
 
         dataframeML.map("IP", keyHeader, e -> e);
-        dataframeML.map("Hostname", keyHeader, e -> KibanaApi.getHostname(e));
+        dataframeML.map("Hostname", keyHeader, KibanaApi::getHostname);
 
         dataframeML.map(TRAFEGO, "value", e -> StringSigaUtils.getFileSize(StringSigaUtils.toLong(e)));
         DataframeML build = DataframeBuilder.build(new File(
@@ -62,7 +62,7 @@ public class AcessosVolumetricos {
         getVolumetria("destinationQuery.json", "destination");
     }
 
-    private static String getPorts(String ip) throws Exception {
+    private static String getPorts(String ip) {
         return KibanaApi.destinationPorts(ip, 1);
     }
 

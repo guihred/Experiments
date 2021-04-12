@@ -7,8 +7,9 @@ import java.util.Objects;
 import javafx.scene.control.TableColumn;
 import org.apache.commons.lang3.StringUtils;
 
-public class QuickSortML {
-
+public final class QuickSortML {
+    private QuickSortML() {
+    }
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Comparator<Integer> getComparator(TableColumn<Integer, ?> col, Boolean ascending) {
         Comparator<Integer> comparing = Comparator.comparing(m -> {
@@ -56,8 +57,8 @@ public class QuickSortML {
             if (StringUtils.isNumeric(string)) {
                 return String.format("%09d", Long.valueOf(string));
             }
-            List<String> fileSizes;
-            if (!(fileSizes = StringSigaUtils.matches(string, "([\\d\\.]+ ?[MKGT]?B)")).isEmpty()) {
+            List<String> fileSizes = StringSigaUtils.matches(string, "([\\d\\.]+ ?[MKGT]?B)");
+            if (!fileSizes.isEmpty()) {
                 return String.format("%12d", StringSigaUtils.strToFileSize(fileSizes.get(0)));
             }
             return string;

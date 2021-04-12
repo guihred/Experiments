@@ -22,7 +22,7 @@ import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
-public class CSVUtils {
+public final class CSVUtils {
 
     private static final Logger LOGGER = HasLogging.log();
     private static final char DEFAULT_SEPARATOR = ',';

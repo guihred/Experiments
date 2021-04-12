@@ -84,7 +84,6 @@ public class FXHackTest extends AbstractTestExecution {
 
     @Test
     public void testAcesso() {
-
         measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate("www-acesso"));
         measureTime("Acesso", () -> {
             String credencial = "70812788176";
@@ -271,11 +270,13 @@ public class FXHackTest extends AbstractTestExecution {
 
     @Test
     public void verifyVirusTotalApi() {
+        measureTime("VirusTotalApi.getFilesInformation", () -> VirusTotalApi.getFilesInformation("killall",
+                "00264284405acad804177a20f0f9730ed17a90766c6430e6df58af024776b61c"));
+        measureTime("VirusTotalApi.getIpInformation", () -> VirusTotalApi.getIpInformation("111.229.255.22"));
+        measureTime("VirusTotalApi.getIpTotalInfo", () -> VirusTotalApi.getIpTotalInfo("23.95.188.163"));
         Path firstPathByExtension = measureTime("ResourceFXUtils.getFirstPathByExtension",
                 () -> FileTreeWalker.getRandomPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), ".exe"));
         measureTime("VirusTotalApi.getFilesInformation", () -> VirusTotalApi.getFilesInformation(firstPathByExtension));
-        measureTime("VirusTotalApi.getIpInformation", () -> VirusTotalApi.getIpInformation("111.229.255.22"));
-        measureTime("VirusTotalApi.getIpTotalInfo", () -> VirusTotalApi.getIpTotalInfo("23.95.188.163"));
         String randomItem = randomItem("safebrowsing.googleapis.com", "tracking-protection.cdn.mozilla.net",
                 "shavar.services.mozilla.com", "lh6.googleusercontent.com", "lh3.googleusercontent.com",
                 "people-pa.clients6.google.com", "people-pa.clients6.google.com", "clients6.google.com",

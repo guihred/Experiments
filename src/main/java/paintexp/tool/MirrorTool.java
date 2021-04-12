@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.SimpleSvgPathBuilder;
-import utils.fx.RectBuilder;
+import utils.RectBuilder;
 
 public class MirrorTool extends PaintTool {
 

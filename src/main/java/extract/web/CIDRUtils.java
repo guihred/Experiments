@@ -27,9 +27,8 @@ public class CIDRUtils {
     private static final String NETWORKS_CSV = "csv/networks.csv";
     private static DataframeML networkFile;
 
-    private static final List<String> PRIVATE_NETWORKS = Arrays.asList("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16");
-    private static final List<String> VPN_NETWORKS =
-            Arrays.asList("10.0.164.0/22", "10.0.168.0/24", "10.122.186.0/24", "10.122.188.0/22", "10.253.0.0/17");
+    private static final List<String> PRIVATE_NETWORKS = ProjectProperties.getFieldList();
+    private static final List<String> VPN_NETWORKS = ProjectProperties.getFieldList();
 
     private static final String CIDR_REGEX = "\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+";
     private static final String IP_REGEX = "\\d+\\.\\d+\\.\\d+\\.\\d+";
@@ -118,7 +117,8 @@ public class CIDRUtils {
     }
 
     public static void main(String[] args) {
-        makeNetworkCSV();
+        System.out.println(VPN_NETWORKS);
+        System.out.println(PRIVATE_NETWORKS);
     }
 
     public static synchronized List<Map<String, Object>> makeNetworkCSV() {

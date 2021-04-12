@@ -43,12 +43,10 @@ public final class ImageCracker {
 
     public static Map<File, String> crackImages(File imageFile) {
         if (imageFile.isFile()) {
-            Map<File, String> hashMap = new HashMap<>();
-            RunnableEx.run(() -> {
-                hashMap.put(imageFile, ImageCracker.crackImage(
-                        new Image(imageFile.toURI().toURL().toExternalForm())));
-            });
-            return hashMap;
+            Map<File, String> crackInfo = new HashMap<>();
+            RunnableEx.run(() -> crackInfo.put(imageFile,
+                    ImageCracker.crackImage(new Image(imageFile.toURI().toURL().toExternalForm()))));
+            return crackInfo;
         }
         List<Path> pathByExtension = FileTreeWalker.getPathByExtension(imageFile, ".png", ".PNG");
         return pathByExtension.stream().map(Path::toFile)

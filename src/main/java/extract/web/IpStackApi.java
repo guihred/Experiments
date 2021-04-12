@@ -24,10 +24,6 @@ public final class IpStackApi {
         return JsonExtractor.accessMap(geoInfo);
     }
 
-    public static void main(String[] args) throws IOException {
-        getIPGeoInformation("152.250.210.24");
-    }
-
     private static void getFromURL(String url, File outFile) throws IOException {
         PhantomJSUtils.makeGet(url + "?access_key=" + IP_STACK_APIKEY, new HashMap<>(), outFile);
     }

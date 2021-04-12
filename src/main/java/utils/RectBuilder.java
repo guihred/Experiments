@@ -1,5 +1,5 @@
 
-package utils.fx;
+package utils;
 
 import static utils.DrawOnPoint.within;
 import static utils.DrawOnPoint.withinImage;
@@ -13,8 +13,6 @@ import javafx.scene.image.PixelFormat.Type;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Transform;
-import utils.DrawOnPoint;
-import utils.PixelHelper;
 
 public final class RectBuilder {
     private static final int N_POINTS_MULTIPLIER = 16;
@@ -26,12 +24,9 @@ public final class RectBuilder {
     private double width;
 
     private double arc;
+
     private RectBuilder() {
     }
-
-
-
-
 
     public void copyImagePart(final Image srcImage, final WritableImage destImage, final Color ignoreColor) {
         int argb = PixelHelper.toArgb(ignoreColor);
@@ -83,8 +78,6 @@ public final class RectBuilder {
         }
     }
 
-
-
     public void drawCirclePattern(WritableImage image, WritableImage currentImage, Color backcolor, double opacity) {
         for (double w = 0; w <= width; w++) {
             for (double h = 0; h <= height; h++) {
@@ -105,7 +98,6 @@ public final class RectBuilder {
             }
         }
     }
-
 
     public void drawLine(WritableImage image, Color frontColor) {
         drawLine(image, (x, y) -> image.getPixelWriter().setColor(x, y, frontColor));
@@ -177,7 +169,6 @@ public final class RectBuilder {
             }
         }
     }
-
 
     public RectBuilder endX(double value) {
         endX = Math.round(value);
@@ -264,8 +255,8 @@ public final class RectBuilder {
     private int getColor(PixelReader pixelReader, Type type, int i, int j) {
         if (Type.BYTE_BGRA_PRE == type) {
             Color color2 = pixelReader.getColor(i + (int) startX, j + (int) startY);
-           return PixelHelper.toArgb(Color.hsb(color2.getHue(), color2.getSaturation(),
-                    color2.getBrightness(), color2.getOpacity()));
+            return PixelHelper.toArgb(
+                    Color.hsb(color2.getHue(), color2.getSaturation(), color2.getBrightness(), color2.getOpacity()));
         }
         return pixelReader.getArgb(i + (int) startX, j + (int) startY);
     }

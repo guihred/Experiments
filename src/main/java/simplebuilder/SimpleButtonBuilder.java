@@ -17,7 +17,7 @@ public class SimpleButtonBuilder extends SimpleNodeBuilder<Button, SimpleButtonB
         return this;
     }
 
-    private SimpleButtonBuilder text(String string) {
+    public SimpleButtonBuilder text(String string) {
         node.setText(string);
         return this;
     }

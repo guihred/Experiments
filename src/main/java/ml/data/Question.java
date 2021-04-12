@@ -93,7 +93,7 @@ public class Question implements PredicateEx<Object> {
                 ob instanceof String ? "\"" + ob + "\"" : Objects.toString(ob, ""));
     }
 
-    public static DataframeBuilder builderWithQuestions(File file, List<Question> questions) {
+    public static DataframeBuilder builderWithQuestions(File file, Iterable<Question> questions) {
         DataframeBuilder builder = DataframeBuilder.builder(file);
         for (Question question : questions) {
             if (question.getType() == QuestionType.DISTINCT) {
@@ -109,13 +109,13 @@ public class Question implements PredicateEx<Object> {
             return new LinkedHashSet<>();
         }
         if (type == QuestionType.IN) {
-            List<Object> arrayList = new ArrayList<>();
+            List<Object> inParameter = new ArrayList<>();
             String[] split = Objects.toString(text2, "").split("[,;\t\n]+");
             for (String string : split) {
                 Object tryNumber = DataframeUtils.tryNumber(dataframe2, colName, string);
-                arrayList.add(tryNumber);
+                inParameter.add(tryNumber);
             }
-            return arrayList;
+            return inParameter;
         }
         return DataframeUtils.tryNumber(dataframe2, colName, text2);
     }
@@ -131,14 +131,6 @@ public class Question implements PredicateEx<Object> {
         QuestionType type = QuestionType.getBySign(not ? tokens[2] : tokens[1]);
         String string2 = type == QuestionType.EMPTY ? null : tokens[tokens.length - 1];
         String colName2 = tokens[0];
-        // if (!build.cols().contains(colName2)) {
-        // if (!build.crossFeature.containsKey(colName2)) {
-        // if (!build.renaming.containsKey(colName2)) {
-        // return null;
-        // }
-        // }
-        // }
-
         Object queryObject = Question.getQueryObject(build, type, colName2, string2);
         return new Question(colName2, queryObject, type, not);
     }

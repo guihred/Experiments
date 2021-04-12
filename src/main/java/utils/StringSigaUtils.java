@@ -59,6 +59,7 @@ public class StringSigaUtils extends StringUtils {
     public static String codificar(String nome) {
         return getIgnore(() -> URLEncoder.encode(Objects.toString(nome, ""), "UTF-8"), nome);
     }
+
     public static Integer convertNumerico(final String nome) {
         String replaceAll = Objects.toString(nome, "").replaceAll("\\D", "");
         return StringUtils.isNumeric(replaceAll) ? Long.valueOf(replaceAll).intValue() : 0;
@@ -110,6 +111,7 @@ public class StringSigaUtils extends StringUtils {
         }
         return String.format(floatFormating(max), mean);
     }
+
     public static String formating(String s) {
         if (StringUtils.isBlank(s)) {
             return "%s\t";
@@ -183,7 +185,7 @@ public class StringSigaUtils extends StringUtils {
 
     public static <T> T getKey(Map<String, T> first, String... keys) {
         return Stream.of(keys).map(FunctionEx.ignore(first::get)).filter(Objects::nonNull).findFirst().orElse(null);
-    
+
     }
 
     public static List<String> getLinks(String content) {
@@ -216,7 +218,8 @@ public class StringSigaUtils extends StringUtils {
     }
 
     public static String join(String line, String classRegex) {
-        return Stream.of(line,classRegex).flatMap(s->Stream.of(s.split(","))).distinct().collect(Collectors.joining(","));
+        return Stream.of(line, classRegex).flatMap(s -> Stream.of(s.split(","))).distinct()
+                .collect(Collectors.joining(","));
     }
 
     public static String[] lines(String nome) {
@@ -225,18 +228,17 @@ public class StringSigaUtils extends StringUtils {
 
     public static List<String> matches(String line, String classRegex) {
         Matcher matcher = Pattern.compile(classRegex).matcher(line);
-        List<String> linkedList = new LinkedList<>();
+        List<String> matchesList = new LinkedList<>();
         while (matcher.find()) {
             int groupCount = matcher.groupCount();
-            String group = "";
+            StringBuilder group = new StringBuilder();
             for (int i = 1; i <= groupCount; i++) {
-                group += Objects.toString(matcher.group(i), "");
+                group.append(Objects.toString(matcher.group(i), ""));
             }
-            linkedList.add(group);
+            matchesList.add(group.toString());
         }
-        return linkedList;
+        return matchesList;
     }
-
 
     public static String putNumbers(List<String> map) {
         int orElse = map.stream().map(v -> Objects.toString(v, "")).mapToInt(String::length).max().orElse(0);

@@ -95,7 +95,7 @@ public class DataframeML extends BaseDataframe {
                     .mapToObj(this::rowMap).collect(Collectors.toList());
         }
         HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
-        return null;
+        return Collections.emptyList();
     }
 
     @SuppressWarnings("unchecked")
@@ -136,14 +136,14 @@ public class DataframeML extends BaseDataframe {
         List<Object> list = dataframe.get(header);
         if (list == null) {
             HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
-            return null;
+            return Collections.emptyList();
         }
-        List<Object> collect = list.stream().map(mapper).collect(Collectors.toList());
-        dataframe.put(destination, collect);
+        List<Object> mappedList = list.stream().map(mapper).collect(Collectors.toList());
+        dataframe.put(destination, mappedList);
         Class<? extends Object> orElse =
-                collect.stream().filter(Objects::nonNull).findFirst().map(Object::getClass).orElse(null);
+                mappedList.stream().filter(Objects::nonNull).findFirst().map(Object::getClass).orElse(null);
         putFormat(destination, (Class<? extends Comparable<?>>) orElse);
-        return collect;
+        return mappedList;
     }
 
     public List<Object> map(String header, UnaryOperator<Object> mapper) {

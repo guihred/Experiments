@@ -28,7 +28,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
 
-public class PacmanModel {
+public final class PacmanModel {
 
     private static final Logger LOG = HasLogging.log();
 

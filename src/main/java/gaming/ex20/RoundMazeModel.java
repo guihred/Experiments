@@ -19,7 +19,7 @@ import simplebuilder.SimpleDialogBuilder;
  *
  * @author Note
  */
-public class RoundMazeModel {
+public final class RoundMazeModel {
 
     private static final double FULL_CIRCLE = 360.;
     private static final double CANVAS_WIDTH = 500;

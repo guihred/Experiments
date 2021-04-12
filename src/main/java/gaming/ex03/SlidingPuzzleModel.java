@@ -18,7 +18,7 @@ import simplebuilder.SimpleDialogBuilder;
  *
  * @author Note
  */
-public class SlidingPuzzleModel {
+public final class SlidingPuzzleModel {
 
     private GridPane gridPane;
     private SlidingPuzzleSquare[][] map = new SlidingPuzzleSquare[MAP_SIZE][MAP_SIZE];

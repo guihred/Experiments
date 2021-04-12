@@ -17,9 +17,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import utils.DrawOnPoint;
+import utils.RectBuilder;
 import utils.ex.SupplierEx;
 import utils.fx.PixelatedImageView;
-import utils.fx.RectBuilder;
 import utils.fx.ZoomableScrollPane;
 
 public class PaintModel {

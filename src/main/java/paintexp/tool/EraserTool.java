@@ -18,7 +18,7 @@ import javafx.scene.shape.Rectangle;
 import simplebuilder.SimpleSliderBuilder;
 import utils.DrawOnPoint;
 import utils.PixelHelper;
-import utils.fx.RectBuilder;
+import utils.RectBuilder;
 
 public class EraserTool extends PaintTool {
 

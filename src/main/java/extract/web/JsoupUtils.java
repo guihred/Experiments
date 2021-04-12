@@ -61,7 +61,7 @@ public final class JsoupUtils {
         connect.ignoreContentType(true);
         connect.userAgent(USER_AGENT);
 
-        return SupplierEx.makeSupplier(() -> connect.execute(), e -> {
+        return SupplierEx.makeSupplier(connect::execute, e -> {
             if (e instanceof SSLHandshakeException) {
                 InstallCert.installCertificate(url);
             }

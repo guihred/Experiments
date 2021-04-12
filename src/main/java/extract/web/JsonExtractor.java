@@ -106,7 +106,7 @@ public final class JsonExtractor {
         return yaml2;
     }
 
-    public static <K,T> Map.Entry<K, T> newEntry(K key, T value) {
+    public static <K, T> Map.Entry<K, T> newEntry(K key, T value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }
 
@@ -363,8 +363,9 @@ public final class JsonExtractor {
     }
 
     private static boolean isAggregatable(Class<? extends Object> orElse) {
-        return Arrays.asList(Integer.class, Boolean.class, Double.class, Long.class, String.class).contains(orElse)
-                || orElse.isPrimitive();
+        return orElse != null
+                && (Arrays.asList(Integer.class, Boolean.class, Double.class, Long.class, String.class).contains(orElse)
+                        || orElse.isPrimitive());
     }
 
     private static void merge(String regex, List<String> keys, List<String> collect2, Map<String, String> linkedHashMap,
@@ -378,7 +379,7 @@ public final class JsonExtractor {
                 break;
             }
         }
-    
+
         linkedHashMap.merge(keys.get(k) + l, collect2.get(k), (o, n) -> Objects.equals(o, n) ? n : o + "\n" + n);
     }
 
@@ -399,8 +400,7 @@ public final class JsonExtractor {
             ((List) b).add(a);
             return b;
         }
-        if (b instanceof List && a instanceof List 
-                && getListClass((List)b) == getListClass((List)a)) {
+        if (b instanceof List && a instanceof List && getListClass((List) b) == getListClass((List) a)) {
             ((List) b).addAll((List) a);
             return b;
         }
@@ -411,7 +411,7 @@ public final class JsonExtractor {
         return a;
     }
 
-    private static boolean moreThanXHoursModified(File outFile,int hours) {
+    private static boolean moreThanXHoursModified(File outFile, int hours) {
         FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
         Instant instant = lastModifiedTime.toInstant();
         long between = ChronoUnit.HOURS.between(instant, Instant.now());
@@ -426,7 +426,7 @@ public final class JsonExtractor {
     }
 
     private static boolean oneHourModified(File outFile) {
-        return moreThanXHoursModified(outFile,1);
+        return moreThanXHoursModified(outFile, 1);
     }
 
     private static String processNode(JsonNode jsonNode, Map<String, String> yaml, int depth, String... filters) {

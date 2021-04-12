@@ -18,7 +18,7 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleSliderBuilder;
 import simplebuilder.StageHelper;
 import utils.CommonsFX;
-import utils.fx.RectBuilder;
+import utils.RectBuilder;
 
 public class AdjustImageController {
     private PaintModel paintModel;

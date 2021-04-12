@@ -21,13 +21,11 @@ public final class BalabolkaApi {
     private BalabolkaApi() {
     }
 
-    public static void main(String[] args) throws IOException {
-        // You should take the
-        // subway.[sound:sapi5js-6e93fdd5-e02ac668-a24726b9-2fb6956d-720b8c84.mp3] Você
-        // deveria pegar o metrô.
+
+    public static void makeDictionary(File file) throws IOException {
         CommonsFX.initializeFX();
         try (BufferedReader newBufferedReader = Files.newBufferedReader(
-                new File("C:\\Users\\guigu\\Downloads\\Padrão.txt").toPath(), StandardCharsets.UTF_8)) {
+                file.toPath(), StandardCharsets.UTF_8)) {
             List<String> lines = newBufferedReader.lines().map(s -> {
                 String[] split = s.split("\t");
                 File audio = toAudio(split[0]);
@@ -36,7 +34,6 @@ public final class BalabolkaApi {
             }).collect(Collectors.toList());
             Files.write(ResourceFXUtils.getOutFile("wav/Baralho.txt").toPath(), lines);
         }
-
     }
 
     public static File speak(String s) {

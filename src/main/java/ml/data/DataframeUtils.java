@@ -367,15 +367,19 @@ public class DataframeUtils extends DataframeML {
         for (Entry<String, Entry<String[], FunctionEx<Object[], ?>>> entry : dataframe.crossFeature.entrySet()) {
             String header = entry.getKey();
             Entry<String[], FunctionEx<Object[], ?>> crossMapping = entry.getValue();
-            List<Object> computeIfAbsent = dataframe.getDataframe().computeIfAbsent(header, h -> new ArrayList<>());
             String[] key = crossMapping.getKey();
             Object[] array = Stream.of(key).map(k -> dataframe.renaming.getOrDefault(k, k)).map(dataframe::list)
                     .map(l -> l.get(l.size() - 1)).toArray();
             Object apply = FunctionEx.apply(crossMapping.getValue(), array);
-            Class<? extends Object> columnFormat = FunctionEx.mapIf(apply, Object::getClass);
-            // dataframe.add
+
+            List<Object> computeIfAbsent = dataframe.getDataframe().computeIfAbsent(header, h -> new ArrayList<>());
+            if (filterOut(dataframe, header, apply)) {
+                return;
+            }
+
             computeIfAbsent.add(apply);
 
+            Class<? extends Object> columnFormat = FunctionEx.mapIf(apply, Object::getClass);
             if (columnFormat != null && columnFormat.isArray()) {
                 crossFeatureArray(dataframe, header, apply, columnFormat);
             } else if (columnFormat != null && Collection.class.isAssignableFrom(columnFormat)) {
@@ -467,8 +471,10 @@ public class DataframeUtils extends DataframeML {
         List<Object> max = m.keySet().stream().collect(Collectors.toList());
         for (Object j : max) {
             Object crossFeature = m.get(j);
-            dataframe.getDataframe().computeIfAbsent(header + j, h -> new ArrayList<>()).add(crossFeature);
-            dataframe.formatMap.putIfAbsent(header + j,
+            String key = header + j;
+
+            dataframe.getDataframe().computeIfAbsent(key, h -> new ArrayList<>()).add(crossFeature);
+            dataframe.formatMap.putIfAbsent(key,
                     (Class<? extends Comparable<?>>) FunctionEx.mapIf(crossFeature, Object::getClass));
         }
     }
@@ -522,12 +528,27 @@ public class DataframeUtils extends DataframeML {
     }
 
     private static boolean filterOut(DataframeML dataframeML, List<String> header, List<String> line2) {
-        return line2.isEmpty() || IntStream.range(0, header.size()).anyMatch(i -> {
-            String key = dataframeML.renaming.getOrDefault(header.get(i), header.get(i));
-            String field = getFromList(i, line2);
-            Object tryNumber = tryNumber(dataframeML, key, field);
-            return dataframeML.filters.containsKey(key) && !PredicateEx.test(dataframeML.filters.get(key), tryNumber);
-        });
+        return line2.isEmpty() || IntStream.range(0, header.size())
+
+                .anyMatch(i -> {
+                    String key2 = header.get(i);
+                    String key = dataframeML.renaming.getOrDefault(key2, key2);
+                    String field = getFromList(i, line2);
+                    Object tryNumber = tryNumber(dataframeML, key, field);
+                    PredicateEx<Object> run = dataframeML.filters.get(key);
+                    return run != null && !PredicateEx.test(run, tryNumber);
+                });
+    }
+
+    private static boolean filterOut(DataframeML dataframe, String header, Object apply) {
+        PredicateEx<Object> run = dataframe.filters.get(header);
+        if (run != null && !PredicateEx.test(run, apply)) {
+            int i = dataframe.size;
+            dataframe.getDataframe().entrySet().stream().filter(e -> e.getValue().size() == i)
+                    .forEach(e -> e.getValue().remove(e.getValue().size() - 1));
+            return true;
+        }
+        return false;
     }
 
     private static String fixNumber(String field, Class<?> currentFormat) {

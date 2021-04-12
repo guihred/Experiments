@@ -112,7 +112,7 @@
 			"columns": "event.time|country.src|ip.src|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host",
 			"mappings": {
 				"user.dst":"Source User",
-				"ip.src":"public_ip",
+			     "ip.src":["public_ip","public.ip"],
 				"OS":"client_os_ver",
 				"event.time":"Generate Time",
 				"country.src":"srcregion",
@@ -142,7 +142,7 @@
 			"columns": "ip.src|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
 			"mappings": {
 				"user.dst":"Source User",
-				"ip.src":"public_ip",
+			     "ip.src":["public_ip","public.ip"],
 				"OS":"client_os_ver",
 				"event.time":"Generate Time",
 				"country.src":"srcregion",
@@ -173,14 +173,18 @@
 			"columns": "ip.src|user.dst|country.src|OS|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme",
 			"mappings": {
 				"user.dst":"Source User",
-				"ip.src":"public_ip",
-				"OS":"client_os_ver",
+				"ip.src":["public_ip","public.ip"],
 				"event.time":"Generate Time",
 				"country.src":"srcregion",
 				"domain.src":"machinename",
 				"ec.activity":"stage",
 				"event.cat.name":"error",
 				"alias.host":"Type",
+				"os.name":{
+                    "method":"String StringSigaUtils.join(String,String)",
+                    "dependencies":["OS","version","client_ver","client_os_ver"],
+                    "otherParams":[]
+                },
 				"ec.outcome":{
                     "method":"String StringSigaUtils.changeCase(String)",
                     "dependencies":["status"],
@@ -194,7 +198,7 @@
 			},
 			"questions": [
 				"ip.src not empty",
-				"OS like (?i).+server.+|.+other.+",
+				"os.name like (?i).+server.+|.+other.+",
 				"user.dst not empty",
 				"ip.src distinct"
 			]

@@ -7,7 +7,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import simplebuilder.SimpleLineBuilder;
-import utils.fx.RectBuilder;
+import utils.RectBuilder;
 import utils.fx.RotateUtils;
 
 public class LineTool extends PaintTool {

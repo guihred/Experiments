@@ -12,7 +12,7 @@ import utils.ex.FunctionEx;
 import utils.ex.PredicateEx;
 import utils.ex.SupplierEx;
 
-public class DataframeBuilder extends DataframeML {
+public final class DataframeBuilder extends DataframeML {
 
     private DataframeBuilder(File csvFile) {
         file = csvFile;
@@ -56,6 +56,10 @@ public class DataframeBuilder extends DataframeML {
 
     public Set<Entry<String, DataframeStatisticAccumulator>> columns() {
         return SupplierEx.get(() -> {
+
+            if (getStats() != null && !getStats().isEmpty()) {
+                return getStats().entrySet();
+            }
             List<String> addHeaders;
             try (Scanner scanner = new Scanner(file, "UTF-8")) {
                 addHeaders = DataframeUtils.addHeaders(this, scanner);

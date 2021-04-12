@@ -18,7 +18,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
 
-public class ArkanoidModel {
+public final class ArkanoidModel {
 
     private Circle circle = new Circle(5, Color.RED);
     private Group group;

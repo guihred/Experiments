@@ -239,7 +239,7 @@ public class DataframeStatisticAccumulator {
 
     private <T> Object getByProportion(double d, Map<T, Integer> countMap2) {
         List<Entry<T, Integer>> array = SupplierEx.getIgnore(
-                () -> countMap2.entrySet().stream().sorted(comparator().thenComparing(e -> e.getKey()))
+                () -> countMap2.entrySet().stream().sorted(DataframeStatisticAccumulator.comparator())
                         .collect(Collectors.toList()),
                 Collections.emptyList());
         if (array.isEmpty()) {
@@ -313,8 +313,8 @@ public class DataframeStatisticAccumulator {
                         DataframeStatisticAccumulator.throwError(), LinkedHashMap<String, Object>::new));
     }
 
-    private static Comparator<Entry<?, Integer>> comparator() {
-        return Comparator.comparing(Entry<?, Integer>::getValue);
+    private static <M> Comparator<Entry<M, Integer>> comparator() {
+        return Comparator.comparing(Entry<M, Integer>::getValue).thenComparing(Entry::getKey);
     }
 
     private static BinaryOperator<Object> throwError() {

@@ -5,7 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -13,15 +15,16 @@ import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
-public class ProjectProperties {
-
+public final class ProjectProperties {
     private static final Map<String, String> PROPERTIES = loadProperties();
-
     private static final Logger LOG = HasLogging.log();
+
+    private ProjectProperties() {
+    }
 
     public static String getField() {
         return SupplierEx.get(() -> {
-            String stackMatch = HasLogging.getStackMatch(s -> !s.contains("ProjectProperties"));
+            String stackMatch = HasLogging.getStackMatch(s -> !s.contains(ProjectProperties.class.getSimpleName()));
             String[] stackParts = stackMatch.split("[:\\.]+");
             String line = stackParts[stackParts.length - 1];
             String fileName = stackParts[stackParts.length - 2];
@@ -34,13 +37,15 @@ public class ProjectProperties {
                         .orElse(null);
                 String key = fileName + "." + orElse;
                 String string = PROPERTIES.get(key);
-                if (string != null) {
-                    return string;
+                if (string == null) {
+                    LOG.error("FIELD {} DOES NOT EXISTS", key);
                 }
-                LOG.error("FIELD {} DOES NOT EXISTS", key);
                 return string;
             }
         });
+    }
+    public static List<String> getFieldList() {
+        return Stream.of(getField().split(",")).collect(Collectors.toList())    ;
     }
 
     private static Map<String, String> loadProperties() {

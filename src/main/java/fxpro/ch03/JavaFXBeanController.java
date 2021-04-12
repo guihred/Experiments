@@ -15,7 +15,7 @@ import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
 
-public class JavaFXBeanController {
+public final class JavaFXBeanController {
 
 	private static final Logger LOG = HasLogging.log();
     private final JavaFXBeanModelExample model;

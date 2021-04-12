@@ -18,6 +18,7 @@ import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
 
 public final class VirusTotalApi {
+    private static final String API_V3_FILES = "api/v3/files/";
     private static final String VIRUSTOTAL_COM = ProjectProperties.getField();
     private static final String ERROR_TAG = "error";
     private static final String MALICIOUS_POSITIVE_REGEX = "malicious=([^0]\\d*)";
@@ -26,6 +27,8 @@ public final class VirusTotalApi {
     private static final String ATTRIBUTES = "attributes";
     private static final Logger LOG = HasLogging.log();
     private static final String VIRUSTOTAL_APIKEY = ProjectProperties.getField();
+    private static final String[] FILE_ATTRIBUTES = { "data", ATTRIBUTES, LAST_ANALYSIS_STATS, MALICIOUS_ATTR,
+            "type_description", "tags", "type", "trid", "magic", "meaningful_name", "file_type", "probability" };
 
     private VirusTotalApi() {
     }
@@ -34,11 +37,9 @@ public final class VirusTotalApi {
         String filename = path.getName(path.getNameCount() - 1).toString();
         File outFile = newJsonFile(filename);
         if (!outFile.exists()) {
-            getFromURL(VIRUSTOTAL_COM + "api/v3/files/" + HashVerifier.getSha256Hash(path), outFile);
+            getFromURL(VIRUSTOTAL_COM + API_V3_FILES + HashVerifier.getSha256Hash(path), outFile);
         }
-        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES, LAST_ANALYSIS_STATS,
-                MALICIOUS_ATTR, "type_description", "tags", "type", "trid", "magic", "meaningful_name", "file_type",
-                "probability");
+        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, FILE_ATTRIBUTES);
         Matcher matcher = Pattern.compile(MALICIOUS_POSITIVE_REGEX).matcher(displayJsonFromFile);
         if (matcher.find()) {
             String group = matcher.group(1);
@@ -50,17 +51,41 @@ public final class VirusTotalApi {
     public static File getFilesInformation(String hash) throws IOException {
         File outFile = newJsonFile(hash);
         if (!outFile.exists()) {
-            getFromURL(VIRUSTOTAL_COM + "api/v3/files/" + hash, outFile);
+            getFromURL(VIRUSTOTAL_COM + API_V3_FILES + hash, outFile);
         }
-        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, "data", ATTRIBUTES, LAST_ANALYSIS_STATS,
-                MALICIOUS_ATTR, "type_description", "tags", "type", "trid", "magic", "meaningful_name", "file_type",
-                "probability");
+        String displayJsonFromFile = JsonExtractor.displayJsonFromFile(outFile, FILE_ATTRIBUTES);
         Matcher matcher = Pattern.compile(MALICIOUS_POSITIVE_REGEX).matcher(displayJsonFromFile);
         if (matcher.find()) {
             String group = matcher.group(1);
             LOG.info("Malicious FILE {} {}", hash, group);
         }
         return outFile;
+    }
+
+    public static Map<String, Object> getFilesInformation(String filename, String hash) throws IOException {
+        File outFile = newJsonFile(filename);
+        if (!outFile.exists()) {
+            getFromURL(VIRUSTOTAL_COM + API_V3_FILES + hash, outFile);
+        }
+        String trid = "trid";
+        String data = "data";
+        String idkey = "id";
+        Map<String, Object> object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, FILE_ATTRIBUTES));
+        String string = Objects.toString(object.get(idkey), "");
+        if (StringUtils.isNotBlank(string) && !string.equals(hash)) {
+            outFile = newJsonFile(filename + "_" + hash);
+            if (!outFile.exists()) {
+                getFromURL(VIRUSTOTAL_COM + API_V3_FILES + hash, outFile);
+            }
+            object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, FILE_ATTRIBUTES));
+        }
+        object.remove(idkey);
+        object.remove(data);
+        object.remove(ATTRIBUTES);
+        object.remove(trid);
+        LOG.info("{}", object);
+
+        return object;
     }
 
     public static Entry<File, List<String>> getIpInformation(String ip) throws IOException {
@@ -122,39 +147,6 @@ public final class VirusTotalApi {
         return outFile;
     }
 
-
-
-    public static void main(String[] args) throws IOException {
-        getFilesInformation("killall", "00264284405acad804177a20f0f9730ed17a90766c6430e6df58af024776b61c");
-    }
-
-    private static Map<String, Object> getFilesInformation(String filename, String hash) throws IOException {
-        File outFile = newJsonFile(filename);
-        if (!outFile.exists()) {
-            getFromURL(VIRUSTOTAL_COM + "api/v3/files/" + hash, outFile);
-        }
-        String trid = "trid";
-        String data = "data";
-        String idkey = "id";
-        String[] params = { data, ATTRIBUTES, LAST_ANALYSIS_STATS, MALICIOUS_ATTR, "type_description", "tags", trid,
-                "magic", "meaningful_name", "file_type", "probability", "file_type", idkey };
-        Map<String, Object> object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
-        String string = Objects.toString(object.get(idkey), "");
-        if (StringUtils.isNotBlank(string) && !string.equals(hash)) {
-            outFile = newJsonFile(filename + "_" + hash);
-            if (!outFile.exists()) {
-                getFromURL(VIRUSTOTAL_COM + "api/v3/files/" + hash, outFile);
-            }
-            object = JsonExtractor.accessMap(JsonExtractor.toObject(outFile, params));
-        }
-        object.remove(idkey);
-        object.remove(data);
-        object.remove(ATTRIBUTES);
-        object.remove(trid);
-        LOG.info("{}", object);
-
-        return object;
-    }
 
     private static void getFromURL(String url, File outFile) throws IOException {
         Map<String, String> hashMap = new HashMap<>();

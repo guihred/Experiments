@@ -25,8 +25,7 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class PEPythonApp extends Application {
-    private static final String YARA_64=FileTreeWalker.getFirstPathByExtension(new File("C:\\cygwin64\\usr\\local\\bin"), "yara64.exe")
-    .toFile().getAbsolutePath();
+    private static final String YARA_64 = ProjectProperties.getField();
     @FXML
     protected TextField resultsFilter;
     @FXML
@@ -35,7 +34,8 @@ public class PEPythonApp extends Application {
     protected ProgressIndicator progressIndicator;
     @FXML
     protected TableView<Map<String, String>> commonTable;
-protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
+    protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
+
     public void initialize() {
         commonTable.setItems(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)));
         commonTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -47,7 +47,8 @@ protected ObservableList<Map<String, String>> items = synchronizedObservableList
     public void onActionPeScan(ActionEvent e) {
 
         CommonsFX.update(progressIndicator.progressProperty(), 0);
-        new FileChooserBuilder().extensions("All Files", "*.*").title("Scan PE").name("Scan PE")
+        String buttonName = "Scan PE";
+        new FileChooserBuilder().extensions("All Files", "*.*").title(buttonName).name(buttonName)
                 .openFileMultipleAction(s -> {
                     items.clear();
                     resultsFilter.setText("");
@@ -73,6 +74,30 @@ protected ObservableList<Map<String, String>> items = synchronizedObservableList
         CommonsFX.loadFXML("PE Analyzer", "PEPythonApp.fxml", this, primaryStage, width, width);
     }
 
+    private void runAnalysis(List<File> filesToAnalyze, ObservableList<File> items2, List<String> tableColumns) {
+        for (File file : items2) {
+            Map<String, SupplierEx<String>> linkedHashMap = getAnalysis(file);
+            Map<String, String> ns = new LinkedHashMap<>();
+            for (Entry<String, SupplierEx<String>> ip : linkedHashMap.entrySet()) {
+                if (tableColumns.isEmpty() || tableColumns.contains(ip.getKey())) {
+                    ns.put(ip.getKey(), SupplierEx.get(ip.getValue()));
+                }
+                CommonsFX.addProgress(progressIndicator.progressProperty(),
+                        1. / linkedHashMap.size() / filesToAnalyze.size());
+            }
+            CommonsFX.runInPlatform(() -> {
+                if (commonTable.getColumns().isEmpty()) {
+                    SimpleTableViewBuilder.addColumns(commonTable, ns.keySet());
+                }
+                items.add(ns);
+                if (items.size() == filesToAnalyze.size()) {
+                    CommonsFX.update(progressIndicator.progressProperty(), 1);
+                }
+                SimpleTableViewBuilder.autoColumnsWidth(commonTable);
+            });
+        }
+    }
+
     private void scanFiles(List<File> asList) {
         ObservableList<File> items2 = filterList.getItems();
         for (File file : asList) {
@@ -82,29 +107,7 @@ protected ObservableList<Map<String, String>> items = synchronizedObservableList
         }
         List<String> cols = commonTable.getColumns().stream().map(TableColumn::getText).collect(Collectors.toList());
 
-        RunnableEx.runNewThread(() -> {
-            for (File file : items2) {
-                Map<String, SupplierEx<String>> linkedHashMap = getAnalysis(file);
-                Map<String, String> ns = new LinkedHashMap<>();
-                for (Entry<String, SupplierEx<String>> ip : linkedHashMap.entrySet()) {
-                    if (cols.isEmpty() || cols.contains(ip.getKey())) {
-                        ns.put(ip.getKey(), SupplierEx.get(ip.getValue()));
-                    }
-                    CommonsFX.addProgress(progressIndicator.progressProperty(),
-                            1. / linkedHashMap.size() / asList.size());
-                }
-                CommonsFX.runInPlatform(() -> {
-                    if (commonTable.getColumns().isEmpty()) {
-                        SimpleTableViewBuilder.addColumns(commonTable, ns.keySet());
-                    }
-                    items.add(ns);
-                    if (items.size() == asList.size()) {
-                        CommonsFX.update(progressIndicator.progressProperty(),1);
-                    }
-                    SimpleTableViewBuilder.autoColumnsWidth(commonTable);
-                });
-            }
-        });
+        RunnableEx.runNewThread(() -> runAnalysis(asList, items2, cols));
     }
 
     public static String getFileType(File file) {
@@ -154,8 +157,7 @@ protected ObservableList<Map<String, String>> items = synchronizedObservableList
         String format = String.format("%s -f -m %s  %s", YARA_64, file, fullPath);
         return ConsoleUtils.executeInConsoleInfo(format).stream()
                 .map(f -> f.replaceAll(",?(version|author)=\".+?\",?", "")).map(f -> f.replaceAll("\\w+=", ""))
-                .map(f -> f.replace(fullPath, ""))
-                .collect(Collectors.toList())
+                .map(f -> f.replace(fullPath, "")).collect(Collectors.toList())
 
         ;
     }
@@ -163,7 +165,6 @@ protected ObservableList<Map<String, String>> items = synchronizedObservableList
     private static String join(List<String> sections2) {
         return sections2.stream().map(s -> s.replaceAll("b'|'$|\\\\x00", "")).collect(Collectors.joining("\n"));
     }
-
 
     private static List<String> simpleExecution(String magicPath, File file, String... s) {
         String file2 = fullPath(ResourceFXUtils.toFile(magicPath));

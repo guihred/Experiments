@@ -17,24 +17,19 @@ import utils.ProjectProperties;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public class GoogleVoiceApi {
     private static final String GOOGLEAPIS_SYNTHESIZE_URL = ProjectProperties.getField();
     private static final String API_KEY = ProjectProperties.getField();
 
-    /**
-     * POST https://texttospeech.googleapis.com/v1/text:synthesize?key=
-     * AIzaSyBEMO6bUszqedhYmKm-bAu91gVLqKEBRZ4 { "input": { "text": "", }, "voice":
-     * { "languageCode": "en-US", "name": "en-US-Standard-G", "ssmlGender": "FEMALE"
-     * }, "audioConfig": { "audioEncoding": "MP3" } }
-     */
 
-    public static void main(String[] args) throws IOException {
-        synthesize("How are you today?", "en-US");
+    public static void main(String[] args) {
+        RunnableEx.run(() -> synthesize("How are you today?", "en-US"));
     }
 
     public static void makeCards(File file) throws IOException {
-        try (BufferedReader newBufferedReader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);) {
+        try (BufferedReader newBufferedReader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
             List<String> lines = newBufferedReader.lines().map(FunctionEx.makeFunction(s -> {
                 String[] split = s.split("\t");
                 File audio = synthesize(split[0], "en-US");
@@ -55,9 +50,10 @@ public class GoogleVoiceApi {
         File outFile = ResourceFXUtils.getOutFile("mp3/" + md5Hash + ".mp3");
         PhantomJSUtils.postJson(GOOGLEAPIS_SYNTHESIZE_URL + API_KEY, content,
                 headers, outFile);
-        Map<String, Object> object = JsonExtractor.toObject(outFile, "audioContent", "error");
-        if (object.containsKey("audioContent")) {
-            String access = JsonExtractor.access(object, String.class, "audioContent");
+        String audioContentKey = "audioContent";
+        Map<String, Object> object = JsonExtractor.toObject(outFile, audioContentKey, "error");
+        if (object.containsKey(audioContentKey)) {
+            String access = JsonExtractor.access(object, String.class, audioContentKey);
             Files.write(outFile.toPath(), StringSigaUtils.decode64Bytes(access));
         }
         return outFile;

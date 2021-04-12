@@ -22,13 +22,13 @@ import utils.ex.RunnableEx;
 public final class JapaneseLessonReader {
     private static final String JAP_REGEX = ".*([\u2E80-\u6FFF]+.*)$";
     private static final Logger LOGGER = HasLogging.log();
-    private final static LessonDAO lessonDAO = new LessonDAO();
+    private static final LessonDAO LESSON_DAO = new LessonDAO();
 
     private JapaneseLessonReader() {
     }
 
     public static Long getCountExerciseByLesson(Integer lesson) {
-        return lessonDAO.getCountExerciseByLesson(lesson);
+        return LESSON_DAO.getCountExerciseByLesson(lesson);
     }
 
     public static ObservableList<JapaneseLesson> getLessons(String arquivo) {
@@ -44,12 +44,12 @@ public final class JapaneseLessonReader {
 
     public static ObservableList<JapaneseLesson> getLessonsWait() {
         ObservableList<JapaneseLesson> lessons = FXCollections.observableArrayList();
-        lessons.addAll(lessonDAO.list());
+        lessons.addAll(LESSON_DAO.list());
         return lessons;
     }
 
     public static LocalTime getMaxTimeLesson(Integer lesson, Integer exercise) {
-        return lessonDAO.getMaxTimeLesson(lesson, exercise);
+        return LESSON_DAO.getMaxTimeLesson(lesson, exercise);
     }
 
     public static void main(String[] args) {
@@ -57,7 +57,7 @@ public final class JapaneseLessonReader {
     }
 
     public static void update(JapaneseLesson japaneseLesson) {
-        lessonDAO.saveOrUpdate(japaneseLesson);
+        LESSON_DAO.saveOrUpdate(japaneseLesson);
     }
 
     private static void addJapanese(JapaneseLesson japaneseLesson, String text) {
@@ -98,13 +98,13 @@ public final class JapaneseLessonReader {
 
     private static void extractJapanese() {
         try (BufferedWriter newBufferedWriter =
-                Files.newBufferedWriter(ResourceFXUtils.getOutFile("mp3/japanese.txt").toPath());) {
-            List<JapaneseLesson> list = lessonDAO.list();
+                Files.newBufferedWriter(ResourceFXUtils.getOutFile("mp3/japanese.txt").toPath())) {
+            List<JapaneseLesson> list = LESSON_DAO.list();
             for (JapaneseLesson japaneseLesson : list) {
                 RunnableEx.run(() -> {
                     String japanese = japaneseLesson.getJapanese();
                     File synthesize = GoogleVoiceApi.synthesize(japanese, "ja-JP");
-                    newBufferedWriter.append(String.format("%s[source:%s]\t%s\t%s\t\n", japanese, synthesize.getName(),
+                    newBufferedWriter.append(String.format("%s[source:%s]\t%s\t%s\t%n", japanese, synthesize.getName(),
                             japaneseLesson.getEnglish(), japaneseLesson.getRomaji()));
                 });
             }
@@ -116,7 +116,7 @@ public final class JapaneseLessonReader {
     private static int saveIfPossible(ObservableList<JapaneseLesson> listaExercises, JapaneseLesson japaneseLesson,
             int lesson, Integer exerciseNumber) {
         if (japaneseLesson != null) {
-            lessonDAO.saveOrUpdate(japaneseLesson);
+            LESSON_DAO.saveOrUpdate(japaneseLesson);
             listaExercises.add(japaneseLesson);
             if (japaneseLesson.getExercise() > exerciseNumber) {
                 return lesson + 1;
