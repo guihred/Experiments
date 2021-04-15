@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import utils.fx.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.event.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.geometry.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<HBox xmlns:fx="http://javafx.com/fxml">
+	<fx:define>
+
+	</fx:define>
+	<children>
+		<VBox>
+			<children>
+				<Button alignment="CENTER" fx:id="loadImagesDirectory" id="Load Images Directory"
+					onAction="#onActionLoadImagesDirectory" text="Load Images Directory">
+				</Button>
+				<Button alignment="CENTER" fx:id="openimage" id="Open image"
+					onAction="#onActionOpenimage" text="Open image">
+				</Button>
+				<Button alignment="CENTER" fx:id="exportExcel" id="Export Excel"
+					onAction="#onActionExportExcel" text="Export Excel">
+				</Button>
+			</children>
+		</VBox>
+		<PaginatedTableView fx:id="paginatedTableView" HBox.hgrow="ALWAYS"/>
+	</children>
+</HBox>

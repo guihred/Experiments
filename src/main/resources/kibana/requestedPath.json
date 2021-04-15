@@ -4,7 +4,7 @@
 		"2": {
 			"terms": {
 				"field": "request.keyword",
-				"size": 500,
+				"size": 200,
 				"order": {
 					"_count": "desc"
 				}
@@ -64,14 +64,14 @@
 			"must_not": [
 			     {
                     "query_string" : {
-                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|svg|ico|eot|js|ttf)/",
+                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|svg|ico|eot|js|ttf|map)/",
                         "analyze_wildcard": true,
                         "default_field":"*"
                     }
                 },
                 {
                     "query_string" : {
-                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|svg|ico|eot|js|ttf)\\?.+/",
+                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|svg|ico|eot|js|ttf|map)\\?.+/",
                         "analyze_wildcard": true,
                         "default_field":"*"
                     }

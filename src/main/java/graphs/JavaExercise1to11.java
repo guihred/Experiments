@@ -310,7 +310,7 @@ public final class JavaExercise1to11 {
         }
     }
 
-    private static class Person {
+    private static final class Person {
         private String name;
         protected int age;
         private float height;

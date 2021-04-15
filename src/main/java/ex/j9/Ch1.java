@@ -15,9 +15,7 @@ import org.slf4j.Logger;
 import utils.ex.HasLogging;
 
 public class Ch1 {
-
-	private static final Logger LOG = HasLogging.log();
-
+    private static final Logger LOG = HasLogging.log();
 	/**
 	 * 13. Write a program that prints a lottery combination, picking six distinct
 	 * numbers between 1 and 50. To pick six distinct numbers, start with an array
@@ -25,6 +23,9 @@ public class Ch1 {
 	 * six times. Print the result in sorted order.
 	 */
     private static final Random RANDOM = new Random();
+
+	private Ch1() {
+    }
 
 	/**
 	 * 16. Improve the average method so that it is called with at least one

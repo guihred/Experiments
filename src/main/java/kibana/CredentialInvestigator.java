@@ -117,7 +117,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
         Document document;
         if (!outFile.exists()) {
             if (cookies.isEmpty()) {
-                RunnableEx.run(() -> getCookies());
+                RunnableEx.run(CredentialInvestigator::getCookies);
             }
             document = JsoupUtils.getDocument(ACESSO_GWDC + "?action=search&object=personUser&filter=" + credencial,
                     cookies);
