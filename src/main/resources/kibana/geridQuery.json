@@ -1,40 +1,24 @@
-{"index":"*apache-prod*","ignore_unavailable":true,"preference":1600856234369}
+{"index":"*apache-prod*","ignore_unavailable":true,"preference":1618570790280}
 {
 	"aggs": {
 		"2": {
-			"filters": {
-				"filters": {
-					"Origem Internet": {
-						"query_string": {
-							"query": "NOT clientip.keyword:/10\\..*/ AND NOT clientip.keyword:/127\\..*/ AND NOT clientip.keyword:\"::1\" AND NOT clientip.keyword:/192.168.*/ AND NOT clientip.keyword:/v.*/",
-							"analyze_wildcard": true,
-							"default_field": "*"
-						}
-					}
+			"terms": {
+				"field": "clientip.keyword",
+				"size": 50,
+				"order": {
+					"1": "desc"
 				}
 			},
 			"aggs": {
-				"6": {
-					"terms": {
-						"field": "clientip.keyword",
-						"size": 40,
-						"order": {
-							"1": "desc"
-						}
-					},
-					"aggs": {
-						"1": {
-							"cardinality": {
-								"field": "request.keyword"
-							}
-						}
+				"1": {
+					"cardinality": {
+						"field": "request.keyword"
 					}
 				}
 			}
 		}
 	},
 	"size": 0,
-	"version": true,
 	"_source": {
 		"excludes": []
 	},
@@ -75,30 +59,26 @@
 					}
 				}
 			],
-			"filter": [
+			"filter": [],
+			"should": [],
+			"must_not": [
 				{
-					"match_all": {
-						
+					"bool": {
+						"should": [
+							{
+								"query_string": {
+									"fields": [
+										"clientip.keyword"
+									],
+									"query": "\\1\\0\\.*"
+								}
+							}
+						],
+						"minimum_should_match": 1
 					}
 				}
-			],
-			"should": [],
-			"must_not": []
+			]
 		}
 	},
-	"highlight": {
-		"pre_tags": [
-			"@kibana-highlighted-field@"
-		],
-		"post_tags": [
-			"@/kibana-highlighted-field@"
-		],
-		"fields": {
-			"*": {
-				
-			}
-		},
-		"fragment_size": 2147483647
-	},
-	"timeout": "200000ms"
+	"timeout": "100000ms"
 }

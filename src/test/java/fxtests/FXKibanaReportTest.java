@@ -24,8 +24,9 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     public void testAcessosVolumetricos() {
         measureTime("AcessosVolumetricos", () -> {
             ExtractUtils.insertProxyConfig();
-            AcessosVolumetricos.getVolumetria("destinationQuery.json", "destination");
-            AcessosVolumetricos.getVolumetria("sourceQuery.json", "source");
+            AcessosVolumetricos acessos = new AcessosVolumetricos();
+            acessos.getVolumetria("destinationQuery.json", "destination");
+            acessos.getVolumetria("sourceQuery.json", "source");
         });
     }
 

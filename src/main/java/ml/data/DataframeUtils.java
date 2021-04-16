@@ -521,9 +521,11 @@ public class DataframeUtils extends DataframeML {
 
     private static void exchange(List<List<Object>> trimmedColumns, int i, int j) {
         for (List<Object> list2 : trimmedColumns) {
-            Object object = list2.get(i);
-            list2.set(i, list2.get(j));
-            list2.set(j, object);
+            if (i < list2.size() && j < list2.size()) {
+                Object object = list2.get(i);
+                list2.set(i, list2.get(j));
+                list2.set(j, object);
+            }
         }
     }
 

@@ -8,7 +8,7 @@
 		"2": {
 			"terms": {
 				"field": "clientip.keyword",
-				"size": 200,
+				"size": 150,
 				"order": {
 					"_count": "desc"
 				}
@@ -59,7 +59,7 @@
 			"must_not": [
 				 {
                      "query_string": {
-                         "query": "clientip.keyword:(192.168.* OR 189.9.32.130 OR 10.130.* OR 10.0.* OR *.prevnet OR 10.128.* OR 10.189.* OR \"::1\" OR 127.* OR 10.144.*)",
+                         "query": "clientip.keyword:(192.168.* OR 189.9.32.130 OR 10.130.* OR 10.0.* OR *.prevnet OR 10.128.* OR 10.189.* OR \"::1\" OR 127.* OR 10.138.*)",
                          "analyze_wildcard": true,
                          "default_field": "*"
                     }

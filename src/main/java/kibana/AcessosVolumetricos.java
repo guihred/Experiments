@@ -22,8 +22,15 @@ public class AcessosVolumetricos {
     private static final Logger LOG = HasLogging.log();
     private static final String TRAFEGO = "Tráfego";
     private static final String TRAFEGO_ESPERADO = "Tráfego esperado";
+    private final DataframeML recurringIps;
 
-    public static void getVolumetria(String queryFile, String result) {
+    public AcessosVolumetricos() {
+        recurringIps = DataframeBuilder.build(new File("C:" + "\\Users\\guigu" + "\\OneDrive - Dataprev"
+                + "\\Acessos volumétricos - Firewall - IPs recorrentes.xlsx"));
+        recurringIps.map("IP", StringSigaUtils::formatIP);
+    }
+
+    public DataframeML getVolumetria(String queryFile, String result) {
         String keyHeader = "key";
         List<Map<String, String>> destinationSearch =
                 JsonExtractor.remap(KibanaApi.makeKibanaSearch(queryFile, 1, "*", keyHeader, "value"));
@@ -34,14 +41,11 @@ public class AcessosVolumetricos {
         dataframeML.map("Hostname", keyHeader, KibanaApi::getHostname);
 
         dataframeML.map(TRAFEGO, "value", e -> StringSigaUtils.getFileSize(StringSigaUtils.toLong(e)));
-        DataframeML build = DataframeBuilder.build(new File(
-                "C:" + "\\Users\\guigu" + "\\OneDrive - Dataprev"
-                        + "\\Acessos volumétricos - Firewall - IPs recorrentes.xlsx"));
-        build.map("IP", StringSigaUtils::formatIP);
-        DataframeUtils.crossFeatureObject(dataframeML, "Tipo de Tráfego", ip -> getTipoTrafego(build, ip), keyHeader,
+        DataframeUtils.crossFeatureObject(dataframeML, "Tipo de Tráfego", ip -> getTipoTrafego(recurringIps, ip),
+                keyHeader,
                 TRAFEGO);
         DataframeUtils.crossFeatureObject(dataframeML, TRAFEGO_ESPERADO, ip -> {
-            Map<String, Object> findFirst = build.findFirst("IP", e -> Objects.equals(e, ip[0]));
+            Map<String, Object> findFirst = recurringIps.findFirst("IP", e -> Objects.equals(e, ip[0]));
             return StringSigaUtils.getKey(findFirst, TRAFEGO_ESPERADO);
         }, keyHeader, TRAFEGO);
         DataframeUtils.crossFeatureObject(dataframeML, "motivação",
@@ -53,13 +57,15 @@ public class AcessosVolumetricos {
                 ResourceFXUtils.getOutFile("csv/" + result + DateFormatUtils.currentTime("ddMMyyyy") + ".csv"));
         String string = DataframeUtils.toString(dataframeML);
         LOG.info("{}", string);
+        return dataframeML;
     }
 
 
     public static void main(String[] args) {
         ExtractUtils.insertProxyConfig();
-        getVolumetria("sourceQuery.json", "source");
-        getVolumetria("destinationQuery.json", "destination");
+        AcessosVolumetricos acessos = new AcessosVolumetricos();
+        acessos.getVolumetria("sourceQuery.json", "source");
+        acessos.getVolumetria("destinationQuery.json", "destination");
     }
 
     private static String getPorts(String ip) {

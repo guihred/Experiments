@@ -109,10 +109,10 @@
 		{
 			"csv": "",
 			"name": "ConexoesForaBrasil$dateInverted",
-			"columns": "event.time|country.src|ip.src|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host",
+			"columns": "event.time|country.src|ip.src|public.ip|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host",
 			"mappings": {
 				"user.dst":"Source User",
-			     "ip.src":["public_ip","public.ip"],
+ 			    "public.ip":"public_ip",
 				"OS":"client_os_ver",
 				"event.time":"Generate Time",
 				"country.src":"srcregion",
@@ -131,7 +131,7 @@
 			"questions": [
 				"user.dst not empty",
 				"country.src != BR",
-				"ip.src distinct"
+				"public.ip distinct"
 			]
 		}
 	],
@@ -139,10 +139,10 @@
 		{
 			"csv": "",
 			"name": "ConexoesClientLinux$dateInverted",
-			"columns": "ip.src|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
+			"columns": "ip.src|public.ip|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
 			"mappings": {
 				"user.dst":"Source User",
-			     "ip.src":["public_ip","public.ip"],
+			     "public.ip":"public_ip",
 				"OS":"client_os_ver",
 				"event.time":"Generate Time",
 				"country.src":"srcregion",
@@ -158,10 +158,9 @@
                 }
 			},
 			"questions": [
-				"ip.src not empty",
 				"OS contains linux",
 				"user.dst not empty",
-				"ip.src distinct",
+				"public.ip distinct",
 				"user.dst not contains dataprev"
 			]
 		}
@@ -170,10 +169,10 @@
 		{
 			"csv": "",
 			"name": "VPN-via-OS-Server$dateInverted",
-			"columns": "ip.src|user.dst|country.src|OS|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme",
+			"columns": "ip.src|public.ip|user.dst|country.src|OS|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme",
 			"mappings": {
 				"user.dst":"Source User",
-				"ip.src":["public_ip","public.ip"],
+				"public.ip":"public_ip",
 				"event.time":"Generate Time",
 				"country.src":"srcregion",
 				"domain.src":"machinename",
@@ -197,10 +196,10 @@
                 }
 			},
 			"questions": [
-				"ip.src not empty",
+				
 				"os.name like (?i).+server.+|.+other.+",
 				"user.dst not empty",
-				"ip.src distinct"
+				"public.ip distinct"
 			]
 		}
 	],
