@@ -5,10 +5,7 @@ import static javafx.collections.FXCollections.synchronizedObservableList;
 
 import com.google.common.collect.ImmutableMap;
 import extract.web.JsonExtractor;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -27,18 +24,24 @@ import utils.CommonsFX;
 import utils.DateFormatUtils;
 import utils.QuickSortML;
 import utils.ex.ConsumerEx;
+import utils.ex.FunctionEx;
 
 public class QueryObjects {
     private static final String MDC_UID_KEYWORD = "mdc.uid";
     public static final String URL_QUERY = "request.keyword";
 
+    public static final String SOURCE_IP_QUERY = "SourceIP";
+    public static final String DESTINATION_PORT_QUERY = "DestinationPort";
+    public static final String DESTINATION_IP_QUERY = "DestinationIP";
     public static final String CLIENT_IP_QUERY = "clientip";
     public static final String ACESSOS_SISTEMA_QUERY = "dtpsistema";
     private static final String USER_NAME_QUERY = "http.user-name";
-    private static final ImmutableMap<String, String> REPLACEMENT_MAP = ImmutableMap.<String, String>builder()
-            .put(USER_NAME_QUERY, MDC_UID_KEYWORD).build();
+    private static final ImmutableMap<String, String> REPLACEMENT_MAP =
+            ImmutableMap.<String, String>builder().put(USER_NAME_QUERY, MDC_UID_KEYWORD).build();
 
     private final String query;
+    private Map<String, FunctionEx<String, String>> formatMap = new LinkedHashMap<>();
+    private Map<String, FunctionEx<Map<String, String>, String>> mappedColumn = new LinkedHashMap<>();
     private boolean allowEmpty = true;
 
     private final String queryFile;
@@ -150,12 +153,18 @@ public class QueryObjects {
             return getItems();
         }
         List<Map<String, String>> remap = searchRemap(filter1, days);
+        mappedColumn.forEach((k, v) -> remap.forEach(map -> map.computeIfAbsent(k, k0 -> FunctionEx.apply(v, map))));
         CommonsFX.runInPlatform(() -> getItems().clear());
         CommonsFX.runInPlatform(() -> {
             if (getTable().getColumns().isEmpty()) {
-                SimpleTableViewBuilder.addColumns(getTable(),
-                        remap.stream().flatMap(e -> e.keySet().stream()).distinct().collect(Collectors.toList()));
+                List<String> columns =
+                        remap.stream().flatMap(e -> e.keySet().stream()).filter(t -> !mappedColumn.keySet().contains(t))
+                                .distinct().collect(Collectors.toList());
+                columns.addAll(0, mappedColumn.keySet());
+                SimpleTableViewBuilder.addColumns(getTable(), columns);
             }
+            formatMap.forEach(
+                    (k, v) -> remap.forEach(map -> map.computeIfPresent(k, (k0, v0) -> FunctionEx.apply(v, v0, v0))));
             getItems().addAll(remap);
         });
         return remap;
@@ -178,13 +187,13 @@ public class QueryObjects {
     }
 
     public List<Map<String, String>> searchRemap(Map<String, String> filter1, Integer days) {
-        Map<String, String> nsInformation =
-                KibanaApi.makeKibanaSearch(getQueryFile(), days, filter1, params);
+        Map<String, String> nsInformation = KibanaApi.makeKibanaSearch(getQueryFile(), days, filter1, params);
         return JsonExtractor.remap(nsInformation, getGroup());
     }
 
-    public void setAllowEmpty(boolean allowEmpty) {
+    public QueryObjects setAllowEmpty(boolean allowEmpty) {
         this.allowEmpty = allowEmpty;
+        return this;
     }
 
     public QueryObjects setGroup(String group) {
@@ -192,5 +201,14 @@ public class QueryObjects {
         return this;
     }
 
+    public QueryObjects setMappedColumn(String key, FunctionEx<Map<String, String>, String> mappedColumn0) {
+        mappedColumn.put(key, mappedColumn0);
+        return this;
+    }
+
+    public QueryObjects setValueFormat(String key, FunctionEx<String, String> valueFormat) {
+        formatMap.put(key, valueFormat);
+        return this;
+    }
 
 }

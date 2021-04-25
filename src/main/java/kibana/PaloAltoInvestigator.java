@@ -3,10 +3,11 @@ package kibana;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static kibana.QueryObjects.ACESSOS_SISTEMA_QUERY;
-import static kibana.QueryObjects.CLIENT_IP_QUERY;
-import static kibana.QueryObjects.URL_QUERY;
+import static kibana.QueryObjects.DESTINATION_IP_QUERY;
+import static kibana.QueryObjects.DESTINATION_PORT_QUERY;
+import static kibana.QueryObjects.SOURCE_IP_QUERY;
 
+import ethical.hacker.PortServices;
 import extract.web.CIDRUtils;
 import extract.web.JsonExtractor;
 import extract.web.WhoIsScanner;
@@ -36,8 +37,7 @@ import utils.*;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
-public class ConsultasInvestigator extends Application {
-
+public class PaloAltoInvestigator extends Application {
     private static final List<String> APPLICATION_LIST = Arrays.asList("consultas.inss.gov.br",
             "vip-pmeuinssprxr.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br", "auxilio.dataprev.gov.br");
     @FXML
@@ -62,21 +62,12 @@ public class ConsultasInvestigator extends Application {
     private ObservableMap<String, String> filter = FXCollections.observableHashMap();
 
     @FXML
-    private ComboBox<String> ipCombo;
-    @FXML
     private Text thresholdText;
     @FXML
     private Slider threshold;
-    @FXML
-    private ComboBox<String> uidCombo;
 
-    @FXML
-    private LineChart<Number, Number> timelineUsuarios;
     @FXML
     private SplitPane splitPane0;
-
-    @FXML
-    private LineChart<Number, Number> timelineIPs;
 
     public List<QueryObjects> getQueryList() {
         return queryList;
@@ -87,15 +78,20 @@ public class ConsultasInvestigator extends Application {
                 .bind(Bindings.createStringBinding(
                         () -> String.format(Locale.ENGLISH, "%s (%.2f)", "Threshold", threshold.getValue()),
                         threshold.valueProperty()));
-        String count = "doc_count";
+        String va = "value";
+        WhoIsScanner whoIsScanner = new WhoIsScanner();
         QueryObjects configureTable =
-                configureTable(ACESSOS_SISTEMA_QUERY, "acessosSistemaQuery.json", acessosSistemaTable, "key", count);
+                configureTable(DESTINATION_IP_QUERY, "topDestinationQuery.json", acessosSistemaTable, "key", va)
+                        .setValueFormat(va, StringSigaUtils::getFileSize)
+                        .setMappedColumn("DNS", map -> whoIsScanner.reverseDNS(map.get("key")));
         RunnableEx.runNewThread(() -> configureTable.makeKibanaQuery(filter, days.getValue()));
-        configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count).setAllowEmpty(false);
-        configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^/.*").setAllowEmpty(false);
-        configureTimeline(ACESSOS_SISTEMA_QUERY, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
-        configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
-        configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setAllowEmpty(false);
+        configureTable(SOURCE_IP_QUERY, "topSourceQuery.json", consultasTable, "key", va).setAllowEmpty(false)
+                .setValueFormat(va, StringSigaUtils::getFileSize);
+        // configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key",
+        // count).setGroup("^/.*").setAllowEmpty(false);
+        configureTable(DESTINATION_PORT_QUERY, "topDestinationPortQuery.json", pathsTable, "key", va)
+                .setValueFormat(va, StringSigaUtils::getFileSize).setMappedColumn("Service",
+                        map -> PortServices.getServiceByPort(StringSigaUtils.toInteger(map.get("key"))).toString());
         SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> {
             String string = filter.get(e.getKey());
             String newFilterValue = Stream.of(string.split("\n")).filter(t -> !Objects.equals(e.getValue(), t))
@@ -110,26 +106,17 @@ public class ConsultasInvestigator extends Application {
             return null;
         }).copiable().multipleSelection();
         filter.addListener((Change<? extends String, ? extends String> change) -> {
-            List<Entry<String, String>> newComposition = change.getMap().entrySet().stream().flatMap(
-                    entry -> Stream.of(entry.getValue().split("\n")).distinct().sorted()
-                            .map(s -> JsonExtractor.newEntry(entry.getKey(), s)))
-                    .collect(Collectors.toList());
+            List<Entry<String,
+                    String>> newComposition =
+                            change.getMap().entrySet().stream()
+                                    .flatMap(entry -> Stream.of(entry.getValue().split("\n")).distinct().sorted()
+                                            .map(s -> JsonExtractor.newEntry(entry.getKey(), s)))
+                                    .collect(Collectors.toList());
             filterList.getItems().removeIf(s -> !newComposition.contains(s));
-            filterList.getItems().addAll(
-                    newComposition.stream().filter(s -> !filterList.getItems().contains(s))
-                            .collect(Collectors.toList()));
+            filterList.getItems().addAll(newComposition.stream().filter(s -> !filterList.getItems().contains(s))
+                    .collect(Collectors.toList()));
         });
         splitPane0.setDividerPositions(1. / 10);
-    }
-
-    public void makeAutomatedNetworkSearch() {
-        RunnableEx.runNewThread(() -> {
-            List<QueryObjects> queries = queryList.stream()
-                    .filter(q -> q.getLineChart() == null && QueryObjects.CLIENT_IP_QUERY.equals(q.getQuery()))
-                    .collect(Collectors.toList());
-            ConsultasHelper.networkSearch(filter, queries, getApplicationList(), days.getValue(),
-                    progress.progressProperty());
-        });
     }
 
     public void makeAutomatedSearch() {
@@ -137,10 +124,8 @@ public class ConsultasInvestigator extends Application {
             List<QueryObjects> queries =
                     queryList.stream().filter(q -> q.getLineChart() == null).collect(Collectors.toList());
             List<String> applicationList = getApplicationList();
-            String queryField = QueryObjects.ACESSOS_SISTEMA_QUERY;
-            ConsultasHelper.automatedSearch(queryField, queries, applicationList, progress.progressProperty(),
-                    days.getValue(),
-                    filter, threshold.getValue());
+            ConsultasHelper.automatedSearch(DESTINATION_IP_QUERY, queries, applicationList, progress.progressProperty(),
+                    days.getValue(), filter, threshold.getValue());
         });
     }
 
@@ -204,7 +189,7 @@ public class ConsultasInvestigator extends Application {
     @Override
     public void start(final Stage primaryStage) {
         final int width = 800;
-        CommonsFX.loadFXML("Consultas Investigator", "ConsultasInvestigator.fxml", this, primaryStage, width, width);
+        CommonsFX.loadFXML("PaloAlto Investigator", "PaloAltoInvestigator.fxml", this, primaryStage, width, width);
     }
 
     private void addProgress(double d) {
@@ -218,21 +203,12 @@ public class ConsultasInvestigator extends Application {
             return;
         }
         if (s.matches(WhoIsScanner.IP_REGEX)) {
-            filter.merge(CLIENT_IP_QUERY, s, ConsultasHelper::merge);
+            filter.merge(SOURCE_IP_QUERY, s, ConsultasHelper::merge);
             return;
         }
         if (s.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
-            filter.merge(CLIENT_IP_QUERY, CIDRUtils.addressToPattern(s), ConsultasHelper::merge);
+            filter.merge(SOURCE_IP_QUERY, CIDRUtils.addressToPattern(s), ConsultasHelper::merge);
             return;
-        }
-        if (s.startsWith("/")) {
-            String fieldQuery = URL_QUERY;
-            String fixParam = ConsultasHelper.fixParam(fieldQuery, s);
-            filter.merge(fieldQuery, fixParam, ConsultasHelper::merge);
-            return;
-        }
-        if (!StringUtils.isNumeric(s)) {
-            filter.merge(ACESSOS_SISTEMA_QUERY, s, ConsultasHelper::merge);
         }
     }
 
@@ -249,11 +225,6 @@ public class ConsultasInvestigator extends Application {
             resultsFilter.setText("");
             onActionKibanaScan();
         });
-    }
-
-    private QueryObjects configureTimeline(String field, String userNameQuery, LineChart<Number, Number> lineChart,
-            ComboBox<String> combo) {
-        return configureTimeline(field, queryList, userNameQuery, lineChart, combo);
     }
 
     private List<String> getApplicationList() {

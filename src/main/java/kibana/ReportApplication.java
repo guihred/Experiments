@@ -132,7 +132,8 @@ public class ReportApplication extends Application {
         }
         if (mapaSubstituicao.containsKey("gerid")) {
             String index = params.get("\\$index");
-            params.putAll(ReportHelper.adjustParams(mapaSubstituicao, days, ipParam, index));
+            params.putAll(ReportHelper.adjustParams(mapaSubstituicao, days, ipParam, index,
+                    progressIndicator.progressProperty()));
         }
 
     }

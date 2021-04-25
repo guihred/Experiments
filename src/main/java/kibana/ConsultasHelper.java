@@ -31,14 +31,15 @@ final class ConsultasHelper {
     private ConsultasHelper() {
     }
 
-    public static void automatedSearch(Collection<QueryObjects> queries, Collection<String> applicationList,
-            DoubleProperty progressp, Integer days2, Map<String, String> filter2, double thresholdParams) {
+    public static void automatedSearch(String queryField, Collection<QueryObjects> queries,
+            Collection<String> applicationList, DoubleProperty progressp, Integer days2, Map<String, String> filter2,
+            double thresholdParams) {
 
         CommonsFX.update(progressp, 0);
         Map<String, String> filter1 = new HashMap<>();
         for (String application : applicationList) {
             for (QueryObjects queryObjects : queries) {
-                filter1.put(QueryObjects.ACESSOS_SISTEMA_QUERY, application);
+                filter1.put(queryField, application);
                 String[] params = queryObjects.getParams();
                 String numberCol = params[queryObjects.getParams().length - 1];
                 List<Map<String, String>> kibanaQuery = queryObjects.searchRemap(filter1, days2);

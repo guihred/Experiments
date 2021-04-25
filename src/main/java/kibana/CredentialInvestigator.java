@@ -35,12 +35,9 @@ import utils.ex.SupplierEx;
 public class CredentialInvestigator extends KibanaInvestigator {
 
     private static final String ACESSO = "https://www-acesso";
-
     private static final String ACESSO_GWDC = "https://www-acesso/gwdc/";
-
     private static final Logger LOG = HasLogging.log();
-
-    private static Map<String, String> cookies = new LinkedHashMap<>();
+    private static final Map<String, String> COOKIES = new LinkedHashMap<>();
     private static DataframeML dataframeLookup;
     @FXML
     private Pane pane;
@@ -64,7 +61,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
     @Override
     public void onActionKibanaScan() {
 
-        if (cookies.isEmpty()) {
+        if (COOKIES.isEmpty()) {
             RunnableEx.run(CredentialInvestigator::getCookies);
         }
         super.onActionKibanaScan();
@@ -116,11 +113,11 @@ public class CredentialInvestigator extends KibanaInvestigator {
         File outFile = ResourceFXUtils.getOutFile("html/" + credencial + ".html");
         Document document;
         if (!outFile.exists()) {
-            if (cookies.isEmpty()) {
+            if (COOKIES.isEmpty()) {
                 RunnableEx.run(CredentialInvestigator::getCookies);
             }
             document = JsoupUtils.getDocument(ACESSO_GWDC + "?action=search&object=personUser&filter=" + credencial,
-                    cookies);
+                    COOKIES);
             Files.write(document.toString(), outFile, StandardCharsets.UTF_8);
         } else {
             document = JsoupUtils.normalParse(outFile);
@@ -137,7 +134,6 @@ public class CredentialInvestigator extends KibanaInvestigator {
                         e.setValue(StringSigaUtils.getMatches(e.getValue(), "([\\-\\w]+vpn[\\-\\w]+)"));
                     }
                 })
-
                 .collect(Collectors.groupingBy(Entry<String, String>::getKey, LinkedHashMap::new,
                         Collectors.mapping(Entry<String, String>::getValue, Collectors.joining(" - "))));
     }
@@ -148,13 +144,13 @@ public class CredentialInvestigator extends KibanaInvestigator {
 
     private static void getCookies() throws IOException {
         File outFile = ResourceFXUtils.getOutFile("html/test.html");
-        if (cookies.isEmpty()) {
-            RunnableEx.make(() -> JsoupUtils.getDocument(ACESSO_GWDC, cookies), e -> {
+        if (COOKIES.isEmpty()) {
+            RunnableEx.make(() -> JsoupUtils.getDocument(ACESSO_GWDC, COOKIES), e -> {
                 InstallCert.installCertificate("https://www-acesso/");
-                JsoupUtils.getDocument(ACESSO_GWDC, cookies);
+                JsoupUtils.getDocument(ACESSO_GWDC, COOKIES);
             }).run();
 
-            String cookiesString = cookies.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
+            String cookiesString = COOKIES.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
             Map<String, String> headers = getHeaders();
             headers.put("Cookie", cookiesString);
             Map<String, String> postContent =
@@ -162,7 +158,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
                             "uid=" + ExtractUtils.getHTTPUsername() + "&password=" + ExtractUtils.getHTTPPassword(),
                             ContentType.APPLICATION_FORM_URLENCODED, headers, outFile);
             String string = postContent.get("Location");
-            JsoupUtils.getDocument(ACESSO_GWDC + string, cookies);
+            JsoupUtils.getDocument(ACESSO_GWDC + string, COOKIES);
             LOG.info("Cookies Acquired");
         }
     }
@@ -224,25 +220,26 @@ public class CredentialInvestigator extends KibanaInvestigator {
             Map<String, SupplierEx<String>> scanByIp) {
         File outFile = ResourceFXUtils.getOutFile("csv/paloAlto.csv");
         final int oneDay = 24;
-        if (JsonExtractor.isRecentFile(outFile, oneDay)) {
-            scanByIp.put("Lookup", () -> {
-                String searchByIp = Stream.of(result.getOrDefault("IP", "").split("\n")).map(ip -> {
-                    String header = !CIDRUtils.isPrivateNetwork(ip) ? "public_ip" : "private_ip";
-                    List<Map<String, Object>> findFirst =
-                            dataframeLookup.findAll(header, s -> StringUtils.equals(query, Objects.toString(s, "")));
-                    return findFirst.stream().map(CredentialInvestigator::lookupDisplay).map(KibanaApi::display)
-                            .collect(Collectors.joining("\n"));
-                }).collect(Collectors.joining("\n"));
-                if (StringUtils.isNotBlank(searchByIp)) {
-                    return searchByIp;
-                }
-                String orDefault = result.getOrDefault("Credencial Info", "");
-                List<String> matches = StringSigaUtils.matches(orDefault, "([a-z\\.]+@[a-z\\.]+)");
-                List<Map<String, Object>> findFirst = dataframeLookup.findAll("Source User", matches::contains);
+        if (!JsonExtractor.isRecentFile(outFile, oneDay)) {
+            return;
+        }
+        scanByIp.put("Lookup", () -> {
+            String searchByIp = Stream.of(result.getOrDefault("IP", "").split("\n")).map(ip -> {
+                String header = !CIDRUtils.isPrivateNetwork(ip) ? "public_ip" : "private_ip";
+                List<Map<String, Object>> findFirst =
+                        dataframeLookup.findAll(header, s -> StringUtils.equals(query, Objects.toString(s, "")));
                 return findFirst.stream().map(CredentialInvestigator::lookupDisplay).map(KibanaApi::display)
                         .collect(Collectors.joining("\n"));
-            });
-        }
+            }).collect(Collectors.joining("\n"));
+            if (StringUtils.isNotBlank(searchByIp)) {
+                return searchByIp;
+            }
+            String orDefault = result.getOrDefault("Credencial Info", "");
+            List<String> matches = StringSigaUtils.matches(orDefault, "([a-z\\.]+@[a-z\\.]+)");
+            List<Map<String, Object>> findFirst = dataframeLookup.findAll("Source User", matches::contains);
+            return findFirst.stream().map(CredentialInvestigator::lookupDisplay).map(KibanaApi::display)
+                    .collect(Collectors.joining("\n"));
+        });
     }
 
 }

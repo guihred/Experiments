@@ -1,0 +1,68 @@
+{"index":"dtp-pl*","ignore_unavailable":true,"preference":1611142058423}
+{
+	"aggs": {
+		"2": {
+			"terms": {
+				"field": "SourceIP",
+				"size": 50,
+				"order": {
+					"1": "desc"
+				}
+			},
+			"aggs": {
+				"1": {
+					"sum": {
+						"field": "Bytes"
+					}
+				}
+			}
+		}
+	},
+	"size": 0,
+	"_source": {
+		"excludes": []
+	},
+	"stored_fields": [
+		"*"
+	],
+	"script_fields": {
+		
+	},
+	"docvalue_fields": [
+		{
+			"field": "@timestamp",
+			"format": "date_time"
+		},
+		{
+			"field": "GeneratedTime",
+			"format": "date_time"
+		},
+		{
+			"field": "ReceiveTime",
+			"format": "date_time"
+		},
+		{
+			"field": "StartTime",
+			"format": "date_time"
+		}
+	],
+	"query": {
+		"bool": {
+			"must": [%s
+				{
+					"range": {
+						"@timestamp": {
+							"gte": %s,
+							"lte": %s,
+							"format": "epoch_millis"
+						}
+					}
+				}
+			],
+			"filter": [],
+			"should": [],
+			"must_not": []
+		}
+	},
+	"timeout": "30000ms"
+}
