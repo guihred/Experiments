@@ -86,6 +86,13 @@
 						</VBox>
 					</content>
 				</Tab>
+				<Tab closable="false" text="Top Application">
+					<content>
+						<VBox>
+							<TableView fx:id="ipsTable" VBox.vgrow="ALWAYS" />
+						</VBox>
+					</content>
+				</Tab>
 			</tabs>
 		</TabPane>
 

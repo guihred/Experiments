@@ -8,7 +8,6 @@ import static kibana.QueryObjects.DESTINATION_PORT_QUERY;
 import static kibana.QueryObjects.SOURCE_IP_QUERY;
 
 import ethical.hacker.PortServices;
-import extract.web.CIDRUtils;
 import extract.web.JsonExtractor;
 import extract.web.WhoIsScanner;
 import java.io.File;
@@ -38,8 +37,7 @@ import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
 public class PaloAltoInvestigator extends Application {
-    private static final List<String> APPLICATION_LIST = Arrays.asList("consultas.inss.gov.br",
-            "vip-pmeuinssprxr.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br", "auxilio.dataprev.gov.br");
+    private static final List<String> APPLICATION_LIST = ProjectProperties.getFieldList();
     @FXML
     private TextField resultsFilter;
     @FXML
@@ -92,6 +90,8 @@ public class PaloAltoInvestigator extends Application {
         configureTable(DESTINATION_PORT_QUERY, "topDestinationPortQuery.json", pathsTable, "key", va)
                 .setValueFormat(va, StringSigaUtils::getFileSize).setMappedColumn("Service",
                         map -> PortServices.getServiceByPort(StringSigaUtils.toInteger(map.get("key"))).toString());
+        configureTable("Application.keyword", "topApplicationQuery.json", ipsTable, "key", va).setValueFormat(va,
+                StringSigaUtils::getFileSize);
         SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> {
             String string = filter.get(e.getKey());
             String newFilterValue = Stream.of(string.split("\n")).filter(t -> !Objects.equals(e.getValue(), t))
@@ -202,12 +202,8 @@ public class PaloAltoInvestigator extends Application {
             filter.merge(entry[0], entry[1], ConsultasHelper::merge);
             return;
         }
-        if (s.matches(WhoIsScanner.IP_REGEX)) {
+        if (s.matches(WhoIsScanner.IP_REGEX) || s.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
             filter.merge(SOURCE_IP_QUERY, s, ConsultasHelper::merge);
-            return;
-        }
-        if (s.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
-            filter.merge(SOURCE_IP_QUERY, CIDRUtils.addressToPattern(s), ConsultasHelper::merge);
             return;
         }
     }

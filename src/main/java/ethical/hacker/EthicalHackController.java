@@ -56,9 +56,13 @@ public class EthicalHackController extends EthicalHackApp {
 
     public void onActionDNSLookup() {
         items.clear();
-        Map<String, String> nsInformation = NameServerLookup.getNSInformation(dns.getText());
-        items.add(nsInformation);
-        SimpleTableViewBuilder.addColumns(commonTable, nsInformation.keySet());
+        String text = dns.getText();
+        String[] split = text.split("[, ]+");
+        for (String string : split) {
+            Map<String, String> nsInformation = NameServerLookup.getNSInformation(string);
+            items.add(nsInformation);
+            SimpleTableViewBuilder.addColumns(commonTable, nsInformation.keySet());
+        }
     }
 
     public void onActionIps(ActionEvent event) {
