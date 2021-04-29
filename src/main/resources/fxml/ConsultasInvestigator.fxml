@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.control.cell.*?>
-<SplitPane xmlns:fx="http://javafx.com/fxml" fx:id="splitPane0"
-	styleClass="root split-pane">
+<SplitPane xmlns:fx="http://javafx.com/fxml" fx:id="splitPane0">
 	<padding>
 		<Insets topRightBottomLeft="10" />
 	</padding>
@@ -43,10 +42,9 @@
 						</value>
 					</ComboBox>
 				</HBox>
-				<Text text="Threshold" fx:id="thresholdText"/>
+				<Text text="Threshold" fx:id="thresholdText" />
 				<Slider fx:id="threshold" max="0.5" min="0.3" majorTickUnit="0.01"
-				    blockIncrement="0.01"
-					value="0.4" />
+					blockIncrement="0.01" value="0.4" />
 				<Text text="Filters" />
 				<ListView fx:id="filterList" prefWidth="175.0" VBox.vgrow="NEVER" />
 				<HBox spacing="10">

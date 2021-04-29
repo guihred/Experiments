@@ -202,8 +202,12 @@ public class PaloAltoInvestigator extends Application {
             filter.merge(entry[0], entry[1], ConsultasHelper::merge);
             return;
         }
-        if (s.matches(WhoIsScanner.IP_REGEX) || s.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
+        if (s.matches(WhoIsScanner.IP_REGEX)) {
             filter.merge(SOURCE_IP_QUERY, s, ConsultasHelper::merge);
+            return;
+        }
+        if (s.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
+            filter.merge(SOURCE_IP_QUERY, "\\\"" + s + "\\\"", ConsultasHelper::merge);
             return;
         }
     }

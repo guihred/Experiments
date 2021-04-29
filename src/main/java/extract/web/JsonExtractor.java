@@ -523,7 +523,7 @@ public final class JsonExtractor {
 
     private static Object toObject(JsonNode jsonNode, int depth) {
         if (jsonNode.isValueNode()) {
-            return convertObj(jsonNode);
+            return fullObj(jsonNode);
         }
         if (jsonNode.isArray()) {
             List<Object> arrayObject = new ArrayList<>();

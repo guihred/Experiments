@@ -190,7 +190,7 @@ public class DataframeUtils extends DataframeML {
     }
 
     public static Map<String, DataframeStatisticAccumulator> makeStats(BaseDataframe dataframe) {
-        return dataframe.getDataframe().entrySet().stream()
+        return dataframe.stats = dataframe.getDataframe().entrySet().stream()
                 .collect(Collectors.toMap(Entry<String, List<Object>>::getKey,
                         e -> e.getValue().stream().collect(() -> accumulator(dataframe, e.getKey()),
                                 DataframeStatisticAccumulator::accept, DataframeStatisticAccumulator::combine),

@@ -57,7 +57,14 @@
 							"format": "epoch_millis"
 						}
 					}
-				}
+				},
+                 {
+                     "query_string": {
+                         "query": "DestinationIP:(\"200.152.0.0/16\")",
+                         "analyze_wildcard": true,
+                         "default_field": "*"
+                    }
+                }
 			],
 			"filter": [],
 			"should": [],

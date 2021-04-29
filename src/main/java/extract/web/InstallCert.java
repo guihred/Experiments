@@ -60,18 +60,12 @@ public final class InstallCert {
         SSLSocketFactory factory = context.getSocketFactory();
 
         LOG.info("Opening connection to {}:{}...", host, port);
-        try (SSLSocket socket = (SSLSocket) factory.createSocket(host, port)) {
-            final int timeout = 10000;
-            socket.setSoTimeout(timeout);
-            LOG.info("Starting SSL handshake...");
-            socket.startHandshake();
-            LOG.info("");
-            LOG.info("No errors, certificate is already trusted");
+        if (isTrusted(host, port, factory)) {
             return;
-        } catch (Exception e) {
-            LOG.info("ERROR STARTING HANDSHAKE");
-            LOG.trace("ERROR STARTING HANDSHAKE", e);
         }
+        // if (isTrusted(host, port, factory)) {
+        // return ;
+        // }
 
         X509Certificate[] chain = tm.getAcceptedIssuers();
         if (chain == null || chain.length == 0) {
@@ -96,6 +90,22 @@ public final class InstallCert {
         }
 
         saveKeyStore(passphrase, file, ks);
+    }
+
+    private static boolean isTrusted(String host, int port, SSLSocketFactory factory) {
+        try (SSLSocket socket = (SSLSocket) factory.createSocket(host, port)) {
+            final int timeout = 10000;
+            socket.setSoTimeout(timeout);
+            LOG.info("Starting SSL handshake...");
+            socket.startHandshake();
+            LOG.info("");
+            LOG.info("No errors, certificate is already trusted");
+            return true;
+        } catch (Exception e) {
+            LOG.info("ERROR STARTING HANDSHAKE");
+            LOG.trace("ERROR STARTING HANDSHAKE", e);
+            return false;
+        }
     }
 
     private static KeyStore loadKeyStore(char[] passphrase, File file) {

@@ -27,7 +27,6 @@ import utils.ex.SupplierEx;
 
 public class DataframeExplorer extends ExplorerVariables implements HasLogging {
 
-
     public void addStats(File file) {
         interruptCurrentThread();
         currentThread = RunnableEx.runNewThread(() -> {
@@ -67,7 +66,23 @@ public class DataframeExplorer extends ExplorerVariables implements HasLogging {
                 .onKey(KeyCode.DELETE, col -> {
                     columns.remove(col);
                     getDataframe().removeCol(col.getKey());
-                }).addContextMenu("Spli_t", e -> splitByColumn())
+                }).addContextMenu("Spli_t", e -> splitByColumn()).addContextMenu("Merge", e -> {
+                    new FileChooserBuilder().extensions("Data", "*.xls", "*.xlsx", "*.csv")
+                            .title("Choose File to merge").onSelect(f -> {
+                                if (getDataframe() != null) {
+                                    RunnableEx.runNewThread(() -> {
+                                        DataframeBuilder.builder(f).build(progress.progressProperty()).forEachRow(m -> {
+                                            getDataframe().add(m);
+                                        });
+                                        CommonsFX.runInPlatform(() -> dataTable.setListSize(getDataframe().getSize()));
+                                        CommonsFX.runInPlatform(() -> columns.setAll(SupplierEx
+                                                .get(() -> DataframeUtils.makeStats(getDataframe())).entrySet()));
+
+                                    });
+
+                                }
+                            }).openFileAction(e);
+                })
                 .addContextMenu("_Sort By",
                         e -> RunnableEx.runIf(columnsList.getSelectionModel().getSelectedItem(),
                                 item -> DataframeUtils.sort(getDataframe(), item.getKey())))
@@ -235,7 +250,6 @@ public class DataframeExplorer extends ExplorerVariables implements HasLogging {
         t.toggleNot();
         questions.set(questions.indexOf(t), t);
     }
-
 
     public static void main(String[] args) {
         launch(args);

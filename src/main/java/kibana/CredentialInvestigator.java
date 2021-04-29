@@ -34,8 +34,8 @@ import utils.ex.SupplierEx;
 
 public class CredentialInvestigator extends KibanaInvestigator {
 
-    private static final String ACESSO = "https://www-acesso";
-    private static final String ACESSO_GWDC = "https://www-acesso/gwdc/";
+    private static final String ACESSO = ProjectProperties.getField();
+    private static final String ACESSO_GWDC = ProjectProperties.getField();
     private static final Logger LOG = HasLogging.log();
     private static final Map<String, String> COOKIES = new LinkedHashMap<>();
     private static DataframeML dataframeLookup;
@@ -146,7 +146,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
         File outFile = ResourceFXUtils.getOutFile("html/test.html");
         if (COOKIES.isEmpty()) {
             RunnableEx.make(() -> JsoupUtils.getDocument(ACESSO_GWDC, COOKIES), e -> {
-                InstallCert.installCertificate("https://www-acesso/");
+                InstallCert.installCertificate(ACESSO);
                 JsoupUtils.getDocument(ACESSO_GWDC, COOKIES);
             }).run();
 

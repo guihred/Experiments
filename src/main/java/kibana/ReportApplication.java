@@ -198,6 +198,12 @@ public class ReportApplication extends Application {
                 return new SimpleComboBoxBuilder<>().items(v2.toArray())
                         .onSelect(s -> params.put("\\$" + k, s.toString())).select(0).build();
             }
+            if (v instanceof Boolean) {
+                CheckBox checkBox = new CheckBox();
+                checkBox.selectedProperty().addListener((ob, old, val) -> params.put("\\$" + k, val + ""));
+                checkBox.setSelected((Boolean) v);
+                return checkBox;
+            }
             TextField textField = new TextField();
             textField.textProperty().addListener((ob, old, val) -> params.put("\\$" + k, val));
             return textField;
@@ -213,7 +219,7 @@ public class ReportApplication extends Application {
 
     private void onModelChange(Path path) throws IOException {
         paramsPane.getChildren().clear();
-        Map<Object, Object> accessMap = JsonExtractor.accessMap(JsonExtractor.toObject(path.toFile()), "params");
+        Map<Object, Object> accessMap = JsonExtractor.accessMap(JsonExtractor.toFullObject(path.toFile()), "params");
         accessMap.forEach((k, v) -> {
             Node node = getNode(k.toString(), v);
             paramsPane.getChildren().add(SimpleVBoxBuilder.newVBox(StringSigaUtils.changeCase(k + ""), node));
