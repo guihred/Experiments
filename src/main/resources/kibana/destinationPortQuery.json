@@ -17,8 +17,8 @@
 				},
 				"4": {
 					"terms": {
-						"field": "DestinationPort",
-						"size": 1,
+						"field": "Application.keyword",
+						"size": 3,
 						"order": {
 							"1": "desc"
 						}

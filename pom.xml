@@ -237,8 +237,8 @@
 		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk16 -->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk16</artifactId>
-			<version>1.45</version>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.61</version>
 		</dependency>
 
 		<dependency>

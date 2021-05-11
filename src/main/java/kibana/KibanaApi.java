@@ -4,7 +4,6 @@ import static utils.ex.RunnableEx.measureTime;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
-import ethical.hacker.PortServices;
 import extract.web.CIDRUtils;
 import extract.web.JsonExtractor;
 import extract.web.PhantomJSUtils;
@@ -77,8 +76,7 @@ public class KibanaApi {
             String ipd = JsonExtractor.access(map, String.class, KEY);
             String reverseDNS = CIDRUtils.getReverseDNS(ipd);
             return JsonExtractor.<Map<Object, Object>>accessList(map, "4", buckets).stream().map(s -> {
-                Integer port = JsonExtractor.access(s, Integer.class, KEY);
-                PortServices serviceByPort = PortServices.getServiceByPort(port);
+                String serviceByPort = JsonExtractor.access(s, String.class, KEY);
                 Number size = JsonExtractor.access(s, Number.class, "1", VALUE);
                 return reverseDNS + " " + serviceByPort + " " + StringSigaUtils.getFileSize(size.longValue());
             }).collect(Collectors.joining("\n"));
@@ -170,7 +168,8 @@ public class KibanaApi {
 
     public static String getURL(String string) {
         return string
-                .replaceAll("(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+" + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|svg|ico|eot))"
+                .replaceAll(
+                        "(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+" + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|jpeg|svg|ico|eot))"
                         + "|.+(?=\\.(js)($|\\?))" + "|.+(?=\\.(js\\.xhtml)($|\\?))", "*");
     }
 

@@ -85,9 +85,9 @@ public class FXHackTest extends AbstractTestExecution {
     @Test
     public void testAcesso() {
 
+        measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate("n321p000124.fast.prevnet"));
         measureTime("ExtractUtils.insertProxyConfig", () -> ExtractUtils.insertProxyConfig());
         measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate("10.198.216.52"));
-        measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate("n321p000124.fast.prevnet"));
         measureTime("Acesso", () -> {
             String credencial = "70812788176";
             return CredentialInvestigator.getCredentialInfo(credencial);

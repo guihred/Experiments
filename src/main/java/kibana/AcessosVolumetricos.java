@@ -74,14 +74,14 @@ public class AcessosVolumetricos {
 
     private static String getTipoTrafego(DataframeML build, Object[] ip) {
         Map<String, Object> findFirst = build.findFirst("IP", e -> Objects.equals(e, ip[0]));
-        if (findFirst != null && findFirst.containsKey(TRAFEGO_ESPERADO)) {
-            Object object = findFirst.get(TRAFEGO_ESPERADO);
-            String[] split = Objects.toString(object, "").split("[^\\d\\.]+");
-            DoubleSummaryStatistics stats = Stream.of(split).mapToDouble(StringSigaUtils::toLong).summaryStatistics();
-            Double a = StringSigaUtils.toDouble(ip[1]) * (Objects.toString(ip[1]).contains("TB") ? 1000 : 1);
-            return stats.getMax() < a ? "Acima" : "Esperado";
+        if (findFirst == null || !findFirst.containsKey(TRAFEGO_ESPERADO)) {
+            return "acima";
         }
-        return "acima";
+        Object object = findFirst.get(TRAFEGO_ESPERADO);
+        String[] split = Objects.toString(object, "").split("[^\\d\\.]+");
+        DoubleSummaryStatistics stats = Stream.of(split).mapToDouble(StringSigaUtils::toLong).summaryStatistics();
+        Double a = StringSigaUtils.toDouble(ip[1]) * (Objects.toString(ip[1]).contains("TB") ? 1000 : 1);
+        return stats.getMax() < a ? "Acima" : "Esperado";
     }
 
 }

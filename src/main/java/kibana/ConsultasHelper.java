@@ -26,7 +26,8 @@ final class ConsultasHelper {
     private static final List<String> EXCLUDE_OWNERS =
             Arrays.asList("CAIXA ECONOMICA FEDERAL", "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO",
                     "CIA. DE TECNOL. DA INFOR. E COMUNICAÇÃO DO PARANÁ", "Tribunal Regional Federal da Terceira Regiao",
-                    "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC", "BANCO MERCANTIL DO BRASIL S/A");
+                    "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC", "BANCO MERCANTIL DO BRASIL S/A",
+                    "Cia. de Processamento de Dados do Estado da Bahia", "BANCO BRADESCO SA");
 
     private ConsultasHelper() {
     }

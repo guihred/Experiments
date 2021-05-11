@@ -64,14 +64,14 @@
 			"must_not": [
 			     {
                     "query_string" : {
-                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|svg|ico|eot|js|ttf|map)/",
+                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|jpeg|svg|ico|eot|js|ttf|map)/",
                         "analyze_wildcard": true,
                         "default_field":"*"
                     }
                 },
                 {
                     "query_string" : {
-                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|svg|ico|eot|js|ttf|map)\\?.+/",
+                        "query": "request.keyword:/.*\\.(css|png|woff2?|ttf|gif|jpg|jpeg|svg|ico|eot|js|ttf|map)\\?.+/",
                         "analyze_wildcard": true,
                         "default_field":"*"
                     }

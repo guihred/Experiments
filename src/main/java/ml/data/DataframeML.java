@@ -181,7 +181,7 @@ public class DataframeML extends BaseDataframe {
     private void add(String header, Object obj) {
         List<Object> list = list(header);
         if (list == null) {
-            list = Stream.generate(() -> null).limit(size - 1).collect(Collectors.toList());
+            list = Stream.generate(() -> null).limit(Math.max(0, size - 1)).collect(Collectors.toList());
             dataframe.put(header, list);
             formatMap.put(header, (Class<? extends Comparable<?>>) obj.getClass());
         }
