@@ -6,6 +6,7 @@ import static utils.ex.RunnableEx.runIf;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
@@ -28,6 +29,9 @@ public final class SongUtils {
     private static final String FFMPEG =
             FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "ffmpeg.exe").toFile()
                     .getAbsolutePath();
+    private static final String YOUTUBE_DL =
+            FileTreeWalker.getFirstPathByExtension(ResourceFXUtils.getUserFolder("Downloads"), "youtube-dl.exe")
+                    .toFile().getAbsolutePath();
 
     private SongUtils() {
     }
@@ -85,6 +89,25 @@ public final class SongUtils {
                 ConsoleUtils.executeInConsoleAsync(cmd.toString(), responses);
 
         return ConsoleUtils.defineProgress(key2, key, executeInConsoleAsync, DateFormatUtils::convertTimeToMillis);
+    }
+
+    public static List<String> downloadYoutubeVideo(String url, File mp4File) {
+        StringBuilder cmd = new StringBuilder();
+        cmd.append(YOUTUBE_DL);
+        cmd.append(" -o \"");
+        cmd.append(mp4File);
+        cmd.append("\" -f \"(mp4)[height<480]\" ");
+        cmd.append(url);
+        Map<String, String> responses = new HashMap<>();
+        String key = "size=\\s*.+ time=(.+) bitrate=.+";
+
+        // [download] 100% of 138.32MiB in 01:10
+
+        responses.put(key, "$1");
+        String key2 = "\\s*Duration: ([\\.:\\d]+),.+";
+        responses.put(key2, "$1");
+        List<String> executeInConsoleAsync = ConsoleUtils.executeInConsoleInfo(cmd.toString());
+        return executeInConsoleAsync;
     }
 
     public static String formatDuration(Duration duration) {

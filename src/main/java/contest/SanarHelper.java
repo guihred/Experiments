@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TreeCell;
@@ -22,10 +23,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
-import utils.ExtractUtils;
-import utils.FileTreeWalker;
-import utils.ProjectProperties;
-import utils.ResourceFXUtils;
+import utils.*;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
@@ -33,7 +31,7 @@ import utils.ex.SupplierEx;
 public class SanarHelper {
     private static final String EXTENSION_REGEX = "\\.\\w$";
 
-    private static final String E_SANAR_FOLDER = "eSanar/";
+    private static final String E_SANAR_FOLDER = ProjectProperties.getField();
 
     private static final Logger LOG = HasLogging.log();
 
@@ -78,7 +76,7 @@ public class SanarHelper {
     }
 
     public static Document downloadMainPage(String url1) {
-        File outFile = ResourceFXUtils.getOutFile("farmacia.html");
+        File outFile = ResourceFXUtils.getOutFile("inteligencia.html");
         return SupplierEx.getFirst(() -> Jsoup.parse(outFile, StandardCharsets.UTF_8.toString()),
                 () -> loadFile(url1, outFile));
     }
@@ -90,6 +88,12 @@ public class SanarHelper {
         }
         File file = toVideoFileName(nome);
         LOG.info("DOWNLOADING {} ...", file.getName());
+        if (url.contains("player.vimeo.com/video/")) {
+            SimpleDoubleProperty progress = new SimpleDoubleProperty(0);
+            RunnableEx.runNewThread(() -> SongUtils.downloadYoutubeVideo(url, file),
+                    l -> CommonsFX.runInPlatform(() -> progress.set(1)));
+            return progress;
+        }
         LinkedHashMap<String, String> headers = new LinkedHashMap<>();
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0");
 
@@ -148,6 +152,9 @@ public class SanarHelper {
 
     public static boolean isValidLink(int level, Map.Entry<String, String> t) {
         return level == 1 || containsIgnoreCase(t.getValue(), E_SANAR_DOMAIN + "/arquivos/esanar_assuntos/");
+    }
+    public static boolean isVimeoValidLink(int level, Map.Entry<String, String> t) {
+        return level == 1 || containsIgnoreCase(t.getValue(), "https://player.vimeo.com/video/");
     }
 
     public static void main(String[] args) {

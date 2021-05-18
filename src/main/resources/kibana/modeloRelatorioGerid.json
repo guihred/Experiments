@@ -62,7 +62,7 @@
         "Informações endereço de origem ($Provedor - $Geolocation)",	
 		{
 		    "zoom":1.5,
-			"url": "https://registro.br/tecnologia/ferramentas/whois/?search=$ip",
+			"url": "https://isc.sans.edu/ipinfo.html?ip=$ip",
 			"name": "whoIs$ip",
 			"width": 0.25,
             "height": 0.42,

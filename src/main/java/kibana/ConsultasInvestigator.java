@@ -39,7 +39,8 @@ import utils.ex.RunnableEx;
 public class ConsultasInvestigator extends Application {
 
     private static final List<String> APPLICATION_LIST = Arrays.asList("consultas.inss.gov.br",
-            "vip-pmeuinssprxr.inss.gov.br", "vip-auxilioemergencial.dataprev.gov.br", "auxilio.dataprev.gov.br");
+            "vip-pmeuinssprxr.inss.gov.br", "refisprod.dataprev.gov.br", "vip-auxilioemergencial.dataprev.gov.br",
+            "auxilio.dataprev.gov.br");
     @FXML
     private TextField resultsFilter;
     @FXML
