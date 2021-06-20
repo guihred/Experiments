@@ -66,6 +66,10 @@ public class PaloAltoInvestigator extends Application {
 
     @FXML
     private SplitPane splitPane0;
+    @FXML
+    private LineChart<Number, Number> timelineSourceIP;
+    @FXML
+    private ComboBox<String> ipCombo;
 
     public List<QueryObjects> getQueryList() {
         return queryList;
@@ -85,8 +89,7 @@ public class PaloAltoInvestigator extends Application {
         RunnableEx.runNewThread(() -> configureTable.makeKibanaQuery(filter, days.getValue()));
         configureTable(SOURCE_IP_QUERY, "topSourceQuery.json", consultasTable, "key", va).setAllowEmpty(false)
                 .setValueFormat(va, StringSigaUtils::getFileSize);
-        // configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key",
-        // count).setGroup("^/.*").setAllowEmpty(false);
+        configureTimeline(SOURCE_IP_QUERY, TimelionApi.BYTE_BY_IP, timelineSourceIP, ipCombo);
         configureTable(DESTINATION_PORT_QUERY, "topDestinationPortQuery.json", pathsTable, "key", va)
                 .setValueFormat(va, StringSigaUtils::getFileSize).setMappedColumn("Service",
                         map -> PortServices.getServiceByPort(StringSigaUtils.toInteger(map.get("key"))).toString());
@@ -227,6 +230,11 @@ public class PaloAltoInvestigator extends Application {
         });
     }
 
+    private QueryObjects configureTimeline(String field, String userNameQuery, LineChart<Number, Number> lineChart,
+            ComboBox<String> combo) {
+        return configureTimeline(field, queryList, userNameQuery, lineChart, combo);
+    }
+
     private List<String> getApplicationList() {
         if (!acessosSistemaTable.getSelectionModel().getSelectedItems().isEmpty()) {
             return acessosSistemaTable.getSelectionModel().getSelectedItems().stream().map(e -> e.get("key"))
@@ -240,13 +248,13 @@ public class PaloAltoInvestigator extends Application {
     }
 
     private void makeTimelionQuery(QueryObjects queryObjects) {
-        queryObjects.makeTimelionQuery(filter, days.getSelectionModel().getSelectedItem());
+        queryObjects.makeTimelionFullQuery(filter, days.getSelectionModel().getSelectedItem());
     }
 
     public static QueryObjects configureTimeline(String field, List<QueryObjects> queryList, String userNameQuery,
             LineChart<Number, Number> lineChart, ComboBox<String> combo) {
         QueryObjects fieldObjects = new QueryObjects(field, userNameQuery, lineChart);
-        queryList.add(fieldObjects.configureTimeline(combo));
+        queryList.add(fieldObjects.configureTimeline(combo, StringSigaUtils::getFileSize));
         return fieldObjects;
     }
 

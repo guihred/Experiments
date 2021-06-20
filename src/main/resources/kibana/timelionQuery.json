@@ -1,0 +1,31 @@
+{
+	"sheet": [
+		"%s"
+	],
+	"extended": {
+		"es": {
+			"filter": {
+				"bool": {
+					"must": [
+						%s
+						{
+							"match_all": {
+								
+							}
+						}
+					],
+					"filter": [],
+					"should": [],
+					"must_not": []
+				}
+			}
+		}
+	},
+	"time": {
+		"from": "%s",
+		"to": "now",
+		"mode": "quick",
+		"interval": "auto",
+		"timezone": "America/Argentina/Buenos_Aires"
+	}
+}

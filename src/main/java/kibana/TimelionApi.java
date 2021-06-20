@@ -13,7 +13,6 @@ import javafx.scene.chart.XYChart.Series;
 import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ProjectProperties;
-import utils.ResourceFXUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
@@ -27,24 +26,20 @@ public final class TimelionApi extends KibanaApi {
     public static final String TIMELINE_IPS =
             ".es(index=*apache-prod*,q=\\\"dtptype:nginx OR dtptype:apache OR dtptype:varnish\\\","
                     + "split=clientip.keyword:12).label('$1','.*>.*:(.*)>.*')";
+    public static final String BYTE_BY_IP =
+            ".es(index=dtp-pl*,split=SourceIP:12,metric='sum:Bytes').label('$1','.*>.*:(.*)>.*')";
 
     private TimelionApi() {
     }
 
-
+    public static ObservableList<Series<Number, Number>> timelionFullScan(ObservableList<Series<Number, Number>> series,
+            String timelionQuery, Map<String, String> filterMap, String time) {
+        return runTimelionScan(series, timelionQuery, filterMap, time, "timelionQuery.json");
+    }
 
     public static ObservableList<Series<Number, Number>> timelionScan(ObservableList<Series<Number, Number>> series,
             String timelineUsers, Map<String, String> filterMap, String time) {
-        return SupplierEx.getHandle(() -> {
-            Map<String, Object> policiesSearch =
-                    maketimelionSearch(ResourceFXUtils.toFile("kibana/acessosTarefasQuery.json"),
-                    timelineUsers, filterMap, time);
-            if (policiesSearch.containsKey("sheet")) {
-                List<Object> accessList = JsonExtractor.accessList(policiesSearch, "sheet");
-                CommonsFX.runInPlatform(() -> convertToSeries(series, accessList));
-            }
-            return series;
-        }, FXCollections.observableArrayList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
+        return runTimelionScan(series, timelineUsers, filterMap, time, "acessosTarefasQuery.json");
     }
 
     private static void addToSeries(XYChart.Series<Number, Number> java, Object f) {
@@ -79,6 +74,18 @@ public final class TimelionApi extends KibanaApi {
             }
             return JsonExtractor.accessMap(JsonExtractor.toFullObject(outFile));
         });
+    }
+
+    private static ObservableList<Series<Number, Number>> runTimelionScan(ObservableList<Series<Number, Number>> series,
+            String timelineUsers, Map<String, String> filterMap, String time, String file) {
+        return SupplierEx.getHandle(() -> {
+            Map<String, Object> policiesSearch = maketimelionSearch(kibanaFile(file), timelineUsers, filterMap, time);
+            if (policiesSearch.containsKey("sheet")) {
+                List<Object> accessList = JsonExtractor.accessList(policiesSearch, "sheet");
+                CommonsFX.runInPlatform(() -> convertToSeries(series, accessList));
+            }
+            return series;
+        }, FXCollections.observableArrayList(), e -> LOG.error("ERROR RUNNING {} {}", timelineUsers, e.getMessage()));
     }
 
 }

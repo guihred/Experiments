@@ -179,6 +179,10 @@ public class KibanaApi {
                 "não");
     }
 
+    public static File kibanaFile(String file) {
+        return ResourceFXUtils.toFile(KIBANA_FOLDER + file);
+    }
+
     public static Map<String, String> kibanaFullScan(String query, int days) {
         return kibanaFullScan(query, days, null);
 
@@ -441,10 +445,6 @@ public class KibanaApi {
         return IntStream.range(0, collect.size() / d)
                 .mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size()).mapToObj(collect::get)
                         .flatMap(s -> Stream.of(s.split(" "))).distinct().collect(Collectors.joining(" ")));
-    }
-
-    private static File kibanaFile(String file) {
-        return ResourceFXUtils.toFile(KIBANA_FOLDER + file);
     }
 
     private static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {

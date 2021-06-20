@@ -3,9 +3,12 @@ package kibana;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.collections.FXCollections.synchronizedObservableList;
 
-import com.google.common.collect.ImmutableMap;
 import extract.web.JsonExtractor;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -19,15 +22,16 @@ import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.ListHelper;
+import simplebuilder.SimpleConverter;
 import simplebuilder.SimpleTableViewBuilder;
 import utils.CommonsFX;
 import utils.DateFormatUtils;
 import utils.QuickSortML;
+import utils.StringSigaUtils;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
 
 public class QueryObjects {
-    private static final String MDC_UID_KEYWORD = "mdc.uid";
     public static final String URL_QUERY = "request.keyword";
 
     public static final String SOURCE_IP_QUERY = "SourceIP";
@@ -35,10 +39,6 @@ public class QueryObjects {
     public static final String DESTINATION_IP_QUERY = "DestinationIP";
     public static final String CLIENT_IP_QUERY = "clientip";
     public static final String ACESSOS_SISTEMA_QUERY = "dtpsistema";
-    private static final String USER_NAME_QUERY = "http.user-name";
-    private static final ImmutableMap<String, String> REPLACEMENT_MAP =
-            ImmutableMap.<String, String>builder().put(USER_NAME_QUERY, MDC_UID_KEYWORD).build();
-
     private final String query;
     private Map<String, FunctionEx<String, String>> formatMap = new LinkedHashMap<>();
     private Map<String, FunctionEx<Map<String, String>, String>> mappedColumn = new LinkedHashMap<>();
@@ -83,7 +83,12 @@ public class QueryObjects {
     }
 
     public QueryObjects configureTimeline(ComboBox<String> combo) {
+        return configureTimeline(combo, StringSigaUtils::toStringSpecial);
+    }
+
+    public QueryObjects configureTimeline(ComboBox<String> combo, Function<Number, String> func) {
         NumberAxis xAxis = (NumberAxis) lineChart.getXAxis();
+        NumberAxis yAxis = (NumberAxis) lineChart.getYAxis();
         final String FORMAT = "H:m:s\nd/M/yy";
         xAxis.setTickLabelFormatter(new StringConverter<Number>() {
             @Override
@@ -96,6 +101,7 @@ public class QueryObjects {
                 return DateFormatUtils.format(FORMAT, object.longValue());
             }
         });
+        yAxis.setTickLabelFormatter(new SimpleConverter<>(func));
         QueryObjects fieldObjects = new QueryObjects(query, queryFile, lineChart);
         ObservableList<Series<Number, Number>> timelionFullScan = fieldObjects.getSeries();
 
@@ -170,19 +176,21 @@ public class QueryObjects {
         return remap;
     }
 
+    public void makeTimelionFullQuery(Map<String, String> filter, Integer days) {
+        ObservableList<Series<Number, Number>> data = getSeries();
+        CommonsFX.runInPlatformSync(() -> {
+            data.clear();
+            getLineChart().getYAxis().setAutoRanging(true);
+        });
+        TimelionApi.timelionFullScan(data, getQueryFile(), filter, "now-" + days * 24 + "h");
+    }
+
     public void makeTimelionQuery(Map<String, String> filter, Integer days) {
         ObservableList<Series<Number, Number>> data = getSeries();
         CommonsFX.runInPlatformSync(() -> {
             data.clear();
             getLineChart().getYAxis().setAutoRanging(true);
         });
-        Map<String, String> hashMap = new HashMap<>(filter);
-        REPLACEMENT_MAP.entrySet().forEach(e -> {
-            if (hashMap.containsKey(e.getKey())) {
-                hashMap.put(e.getValue(), hashMap.remove(e.getKey()));
-            }
-        });
-
         TimelionApi.timelionScan(data, getQueryFile(), filter, "now-" + days * 24 + "h");
     }
 

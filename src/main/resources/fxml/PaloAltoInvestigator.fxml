@@ -11,7 +11,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.control.cell.*?>
 <SplitPane xmlns:fx="http://javafx.com/fxml" fx:id="splitPane0"
-	styleClass="root split-pane">
+	styleClass="root split-pane" >
 	<padding>
 		<Insets topRightBottomLeft="10" />
 	</padding>
@@ -92,7 +92,35 @@
 							<TableView fx:id="ipsTable" VBox.vgrow="ALWAYS" />
 						</VBox>
 					</content>
-				</Tab>
+				</Tab><Tab text="Timeline Sistemas">
+                    <content>
+                        <VBox>
+                            <children>
+                                <Text text="SourceIP" />
+                                <ComboBox fx:id="ipCombo">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="" />
+                                        </FXCollections>
+                                    </items>
+                                </ComboBox>
+                                <LineChart fx:id="timelineSourceIP" title="Timeline SourceIP"
+                                    legendSide="LEFT" verticalZeroLineVisible="false" animated="false"
+                                    createSymbols="false">
+                                    <yAxis>
+                                        <NumberAxis animated="false" side="LEFT"
+                                            tickLabelFill="0x585858ff" tickUnit="10.0" upperBound="110.0" />
+                                    </yAxis>
+                                    <xAxis>
+                                        <NumberAxis animated="false" forceZeroInRange="false"
+                                            side="BOTTOM" tickLabelFill="0x585858ff" tickUnit="50.0"
+                                            upperBound="150.0" />
+                                    </xAxis>
+                                </LineChart>
+                            </children>
+                        </VBox>
+                    </content>
+                </Tab>
 			</tabs>
 		</TabPane>
 

@@ -109,18 +109,26 @@
 		{
 			"csv": "",
 			"name": "ConexoesForaBrasil$dateInverted",
-			"columns": "event.time|country.src|ip.src|public.ip|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host",
+			"columns": "event.time|country.src|ip.src|public.ip|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host|region.code",
 			"mappings": {
 				"user.dst":"Source User",
  			    "public.ip":"public_ip",
-				"OS":"client_os_ver",
 				"event.time":"Generate Time",
-				"country.src":"srcregion",
+				"country.src":{
+                    "method":"String StringSigaUtils.join(String,String)",
+                    "dependencies":["region.code","srcregion","country.src"],
+                    "otherParams":[]
+                },
 				"domain.src":"machinename",
 				"ec.outcome":"status",
 				"ec.activity":"stage",
 				"event.cat.name":"error",
 				"alias.host":"Type",
+				"OS":{
+                    "method":"String StringSigaUtils.join(String,String)",
+                    "dependencies":["OS","version","client_ver","client_os_ver"],
+                    "otherParams":[]
+                },
 				"org.src":{
     				"method":"String KibanaApi.getHostname(Object)",
     				"dependencies":["ip.src"],
@@ -139,7 +147,7 @@
 		{
 			"csv": "",
 			"name": "ConexoesClientLinux$dateInverted",
-			"columns": "ip.src|public.ip|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS",
+			"columns": "ip.src|public.ip|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|region.code",
 			"mappings": {
 				"user.dst":"Source User",
 			     "public.ip":"public_ip",
@@ -169,7 +177,7 @@
 		{
 			"csv": "",
 			"name": "VPN-via-OS-Server$dateInverted",
-			"columns": "ip.src|public.ip|user.dst|country.src|OS|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme",
+			"columns": "ip.src|public.ip|user.dst|country.src|OS|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|region.code",
 			"mappings": {
 				"user.dst":"Source User",
 				"public.ip":"public_ip",
