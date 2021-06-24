@@ -34,22 +34,6 @@ public final class ImageFXUtils {
     private ImageFXUtils() {
     }
 
-    public static WritableImage cropProportionally(File imageFile, Double widthProp, Double heightProp, Double xOffset,
-            Double yOffset) {
-        String externalForm = ResourceFXUtils.convertToURL(imageFile).toExternalForm();
-        Image value = new Image(externalForm);
-        double width = value.getWidth();
-        double height = value.getHeight();
-        double width2 = width * widthProp;
-        double height2 = height * heightProp;
-        Rectangle a = new Rectangle(width2, height2);
-        a.setLayoutX(width * xOffset);
-        a.setLayoutY(height * yOffset);
-        WritableImage destImage = new WritableImage((int) a.getWidth(), (int) a.getHeight());
-        RectBuilder.copyImagePart(value, destImage, a);
-        return destImage;
-    }
-
     public static WritableImage copyImage(Image selectedImage, double width, double height) {
         int max = (int) Math.max(selectedImage.getWidth(), width);
         int max2 = (int) Math.max(selectedImage.getHeight(), height);
@@ -80,6 +64,22 @@ public final class ImageFXUtils {
             }
         }
         return wr;
+    }
+
+    public static WritableImage cropProportionally(File imageFile, Double widthProp, Double heightProp, Double xOffset,
+            Double yOffset) {
+        String externalForm = ResourceFXUtils.convertToURL(imageFile).toExternalForm();
+        Image value = new Image(externalForm);
+        double width = value.getWidth();
+        double height = value.getHeight();
+        double width2 = width * widthProp;
+        double height2 = height * heightProp;
+        Rectangle a = new Rectangle(width2, height2);
+        a.setLayoutX(width * xOffset);
+        a.setLayoutY(height * yOffset);
+        WritableImage destImage = new WritableImage((int) a.getWidth(), (int) a.getHeight());
+        RectBuilder.copyImagePart(value, destImage, a);
+        return destImage;
     }
 
     public static WritableImage flip(Image selectedImage) {
@@ -124,6 +124,19 @@ public final class ImageFXUtils {
 
     public static WritableImage imageCopy(Image image) {
         return new WritableImage(image.getPixelReader(), (int) image.getWidth(), (int) image.getHeight());
+    }
+
+    public static boolean isWhiteImage(Image selectedImage) {
+        PixelReader pixelReader = selectedImage.getPixelReader();
+        for (int i = 0; i < selectedImage.getWidth(); i++) {
+            for (int j = 0; j < selectedImage.getHeight(); j++) {
+                 Color color = pixelReader.getColor(i, j);
+                 if(!Color.WHITE.equals(color)) {
+                    return false;
+                 }
+            }
+        }
+        return true;
     }
 
     public static void openInDesktop(File destination) {

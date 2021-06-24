@@ -56,7 +56,11 @@ public final class PhantomJSUtils {
     private PhantomJSDriver ghostDriver;
 
     public PhantomJSUtils() {
-        ghostDriver = getGhostDriver();
+        this(false);
+    }
+
+    public PhantomJSUtils(boolean withProxy) {
+        ghostDriver = getGhostDriver(withProxy);
     }
 
     public void quit() {
@@ -68,7 +72,7 @@ public final class PhantomJSUtils {
     }
 
     public Document render(String url, Map<String, String> cookies, double delay) {
-        ghostDriver.setLogLevel(Level.OFF);
+        ghostDriver.setLogLevel(Level.FINE);
         ghostDriver.manage().window().maximize();
         Set<Cookie> cookies2 = ghostDriver.manage().getCookies();
         ghostDriver.get(url);
@@ -82,6 +86,10 @@ public final class PhantomJSUtils {
             RunnableEx.sleepSeconds(delay);
         }
         return Jsoup.parse(ghostDriver.getPageSource());
+    }
+
+    public void screenshot(File outFile) throws IOException {
+        ExtractUtils.copy(ghostDriver.getScreenshotAs(OutputType.FILE), outFile);
     }
 
     public static List<String> makeGet(String url, Map<String, String> headers) throws IOException {
@@ -104,8 +112,6 @@ public final class PhantomJSUtils {
         Files.write(outFile.toPath(), allLines);
         return allLines;
     }
-
-
 
     public static Map<String, String> postContent(String url, String content, ContentType applicationJson,
             Map<String, String> headers, File outFile) throws IOException {
@@ -186,14 +192,21 @@ public final class PhantomJSUtils {
     }
 
     private static PhantomJSDriver getGhostDriver() {
-        PhantomJSDriverService createDefaultService =
-                new PhantomJSDriverService.Builder().usingPhantomJSExecutable(PHANTOM_JS.toFile()).usingAnyFreePort()
-                        .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log"))
-                        .usingGhostDriverCommandLineArguments(new String[] { "examples/responsive-screenshot.js" })
+        return getGhostDriver(false);
+    }
 
-                        .build();
+    private static PhantomJSDriver getGhostDriver(boolean withProxy) {
+
+        PhantomJSDriverService createDefaultService = new PhantomJSDriverService.Builder()
+                .usingPhantomJSExecutable(PHANTOM_JS.toFile()).usingAnyFreePort()
+                .withLogFile(ResourceFXUtils.getOutFile("log/phantomjsdriver.log"))
+                .usingGhostDriverCommandLineArguments(new String[] { "examples/responsive-screenshot.js" }).build();
         DesiredCapabilities firefox = DesiredCapabilities.firefox();
-        firefox.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, new String[] { "--webdriver-loglevel=NONE" });
+        String[] value = withProxy
+                ? new String[] { "--webdriver-loglevel=NONE",
+                        "--proxy=" + ExtractUtils.PROXY_ADDRESS + ":" + ExtractUtils.PROXY_PORT }
+                : new String[] { "--webdriver-loglevel=NONE" };
+        firefox.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, value);
         return new PhantomJSDriver(createDefaultService, firefox);
     }
 

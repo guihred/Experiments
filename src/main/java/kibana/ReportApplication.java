@@ -1,6 +1,7 @@
 package kibana;
 
 import extract.web.JsonExtractor;
+import extract.web.JsoupUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -69,6 +70,7 @@ public class ReportApplication extends Application {
                 () -> String.format(Locale.ENGLISH, "%s (%.2f)", "Zoom", browser.getZoom()), browser.zoomProperty()));
 
         WebEngine engine = browser.getEngine();
+        engine.setUserAgent(JsoupUtils.USER_AGENT + "\nAuthorization: Basic " + ExtractUtils.getEncodedAuthorization());
         Worker<Void> loadWorker = engine.getLoadWorker();
         engine.locationProperty().addListener((ob, old, val) -> loc.setText(StringUtils.abbreviate(val, 100)));
         CommonsFX.bind(loadWorker.progressProperty(), progressIndicator.progressProperty());
@@ -86,7 +88,7 @@ public class ReportApplication extends Application {
         LOG.info("MAKING REPORT {} {}", params, modelFile.getName());
         RunnableEx.runNewThread(() -> {
             Map<String, Object> mapaSubstituicao = getReplacementMap(modelFile);
-            File reportFile = reportName(mapaSubstituicao);
+            File reportFile = ReportHelper.reportName(mapaSubstituicao, params);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
             ReportHelper.addParameters(mapaSubstituicao, params, browser, progressBar.progressProperty());
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
@@ -99,7 +101,7 @@ public class ReportApplication extends Application {
         LOG.info("MAKING REPORT {} {}", params, modelFile.getName());
         RunnableEx.runNewThread(() -> {
             Map<String, Object> mapaSubstituicao = getReplacementMap(modelFile);
-            File reportFile = reportName(mapaSubstituicao);
+            File reportFile = ReportHelper.reportName(mapaSubstituicao, params);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
             ReportHelper.addParametersNotCrop(mapaSubstituicao, params, browser, progressBar.progressProperty());
             displayEditDialog(mapaSubstituicao, reportFile);
@@ -110,6 +112,7 @@ public class ReportApplication extends Application {
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Report Application", "ReportApplication.fxml", this, primaryStage);
         primaryStage.setMaximized(true);
+        CommonsFX.onCloseWindow(primaryStage, ReportHelper::quit);
     }
 
     private void addCommonParams() {
@@ -226,13 +229,6 @@ public class ReportApplication extends Application {
         });
     }
 
-    private File reportName(Map<String, Object> mapaSubstituicao) {
-        String replaceString = ReportHelper.replaceString(params, mapaSubstituicao.get("name"))
-                .replaceAll("\\.(inss|gov|br|prevnet|dataprev)|vip-p?", "");
-
-        String extension = ReportHelper.getExtension(replaceString);
-        return ResourceFXUtils.getOutFile(extension + "/" + replaceString);
-    }
 
     public static void main(String[] args) {
         launch(args);

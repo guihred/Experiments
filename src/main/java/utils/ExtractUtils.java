@@ -161,12 +161,19 @@ public final class ExtractUtils {
         if (isNotProxied()) {
             return;
         }
+
+//        System.setProperty("java.net.useSystemProxies", "false");
         System.setProperty("http.proxyHost", PROXY_ADDRESS);
         System.setProperty("http.proxyPort", PROXY_PORT);
         System.setProperty("https.proxyHost", PROXY_ADDRESS);
         System.setProperty("https.proxyPort", PROXY_PORT);
+        // System.setProperty("http.proxyUser", getHTTPUsername());
+        // System.setProperty("http.proxyPassword", getHTTPPassword());
+        // System.setProperty("https.proxyUser", getHTTPUsername());
+        // System.setProperty("https.proxyPassword", getHTTPPassword());
         System.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
 
+        // System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
         Authenticator.setDefault(new Authenticator() {
             @Override
             public PasswordAuthentication getPasswordAuthentication() {
