@@ -33,6 +33,20 @@ public final class ExtractUtils {
     private ExtractUtils() {
     }
 
+    public static void addAuthorizationConfig() {
+        System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
+        System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
+        boolean b = true;
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
+        Authenticator.setDefault(new Authenticator() {
+            @Override
+            public PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(getHTTPUsername(), getHTTPPassword().toCharArray());
+            }
+
+        });
+    }
+
     public static String addDomain(Property<String> domain, String url) {
         String value = domain.getValue();
         return addDomain(value, url);
@@ -111,6 +125,13 @@ public final class ExtractUtils {
         });
     }
 
+    public static Proxy findProxy(URI uri) {
+        return SupplierEx.get(() -> {
+            insertProxyConfig();
+            return ProxySelector.getDefault().select(uri).get(0);
+        }, Proxy.NO_PROXY);
+    }
+
     public static String getEncodedAuthorization() {
         return Base64.getEncoder()
                 .encodeToString((getHTTPUsername() + ":" + getHTTPPassword()).getBytes(StandardCharsets.UTF_8));
@@ -154,15 +175,10 @@ public final class ExtractUtils {
     }
 
     public static void insertProxyConfig() {
-        System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
-        System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
-        boolean b = true;
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
+        addAuthorizationConfig();
         if (isNotProxied()) {
             return;
         }
-
-//        System.setProperty("java.net.useSystemProxies", "false");
         System.setProperty("http.proxyHost", PROXY_ADDRESS);
         System.setProperty("http.proxyPort", PROXY_PORT);
         System.setProperty("https.proxyHost", PROXY_ADDRESS);
@@ -171,16 +187,10 @@ public final class ExtractUtils {
         // System.setProperty("http.proxyPassword", getHTTPPassword());
         // System.setProperty("https.proxyUser", getHTTPUsername());
         // System.setProperty("https.proxyPassword", getHTTPPassword());
-        System.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
+        System.setProperty("http.nonProxyHosts", "localhost|127.0.0.1|n321p000124.fast.prevnet");
+        System.setProperty("https.nonProxyHosts", "localhost|127.0.0.1|n321p000124.fast.prevnet");
 
         // System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(getHTTPUsername(), getHTTPPassword().toCharArray());
-            }
-
-        });
     }
 
     public static boolean isNotProxied() {
@@ -201,6 +211,16 @@ public final class ExtractUtils {
         }, ip0);
 
     }
+
+    public static void removeProxyConfig() {
+        System.clearProperty("http.proxyHost");
+        System.clearProperty("http.proxyPort");
+        System.clearProperty("https.proxyHost");
+        System.clearProperty("https.proxyPort");
+        System.clearProperty("http.nonProxyHosts");
+        System.clearProperty("https.nonProxyHosts");
+    }
+
     private static void addBasicAuthorization(HttpURLConnection con) {
         con.addRequestProperty("Proxy-Authorization", "Basic " + getEncodedAuthorization());
     }
@@ -208,8 +228,7 @@ public final class ExtractUtils {
     private static String getProxyAddress() {
         final int timeout = 5000;
         return Stream.of(PROXY_CONFIG2, PROXY_CONFIG).filter(PredicateEx.makeTest(s -> isPortOpen(s, 3128, timeout)))
-                .findFirst()
-                .orElse(null);
+                .findFirst().orElse(null);
     }
 
     private static boolean isPortOpen(String ip0, int porta) {

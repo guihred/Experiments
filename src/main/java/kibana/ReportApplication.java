@@ -1,7 +1,6 @@
 package kibana;
 
 import extract.web.JsonExtractor;
-import extract.web.JsoupUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -64,13 +63,14 @@ public class ReportApplication extends Application {
     private Map<String, Node> paramsNode = new LinkedHashMap<>();
 
     public void initialize() {
-        ExtractUtils.insertProxyConfig();
+        ExtractUtils.addAuthorizationConfig();
         CommonsFX.bindBidirectional(browser.zoomProperty(), zoom.valueProperty());
         zoomText.textProperty().bind(Bindings.createStringBinding(
                 () -> String.format(Locale.ENGLISH, "%s (%.2f)", "Zoom", browser.getZoom()), browser.zoomProperty()));
 
         WebEngine engine = browser.getEngine();
-        engine.setUserAgent(JsoupUtils.USER_AGENT + "\nAuthorization: Basic " + ExtractUtils.getEncodedAuthorization());
+        // engine.setUserAgent(JsoupUtils.USER_AGENT + "\nAuthorization: Basic " +
+        // ExtractUtils.getEncodedAuthorization());
         Worker<Void> loadWorker = engine.getLoadWorker();
         engine.locationProperty().addListener((ob, old, val) -> loc.setText(StringUtils.abbreviate(val, 100)));
         CommonsFX.bind(loadWorker.progressProperty(), progressIndicator.progressProperty());
@@ -138,6 +138,7 @@ public class ReportApplication extends Application {
             params.putAll(ReportHelper.adjustParams(mapaSubstituicao, days, ipParam, index,
                     progressIndicator.progressProperty()));
         }
+        ExtractUtils.removeProxyConfig();
 
     }
 

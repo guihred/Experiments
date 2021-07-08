@@ -45,7 +45,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
 
     @Override
     public void initialize() {
-        ExtractUtils.insertProxyConfig();
+        ExtractUtils.addAuthorizationConfig();
         SimpleTableViewBuilder.of(commonTable).items(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)))
                 .copiable().savable().deletable().multipleSelection()
                 .onSortClicked((c, a) -> QuickSortML.sortMapList(items, c, a));
@@ -143,13 +143,12 @@ public class CredentialInvestigator extends KibanaInvestigator {
     }
 
     private static void getCookies() throws IOException {
-        File outFile = ResourceFXUtils.getOutFile("html/test.html");
         if (COOKIES.isEmpty()) {
+            File outFile = ResourceFXUtils.getOutFile("html/test.html");
             RunnableEx.make(() -> JsoupUtils.getDocument(ACESSO_GWDC, COOKIES), e -> {
                 InstallCert.installCertificate(ACESSO);
                 JsoupUtils.getDocument(ACESSO_GWDC, COOKIES);
             }).run();
-
             String cookiesString = COOKIES.entrySet().stream().map(Objects::toString).collect(Collectors.joining("; "));
             Map<String, String> headers = getHeaders();
             headers.put("Cookie", cookiesString);
@@ -172,6 +171,8 @@ public class CredentialInvestigator extends KibanaInvestigator {
         headers.put("Content-Type", "application/x-www-form-urlencoded");
         headers.put("Origin", ACESSO);
         headers.put("DNT", "1");
+        headers.put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization());
+
         headers.put("Connection", "keep-alive");
         headers.put("Referer", ACESSO_GWDC);
         headers.put("Upgrade-Insecure-Requests", "1");

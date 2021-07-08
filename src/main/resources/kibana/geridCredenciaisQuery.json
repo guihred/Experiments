@@ -52,7 +52,7 @@
 				{
 					"match_phrase": {
 						"dtpsistema": {
-							"query": "geridcas"
+							"query": "gerid5"
 						}
 					}
 				},

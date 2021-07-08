@@ -2,12 +2,15 @@ package kibana;
 
 import static utils.StringSigaUtils.toDouble;
 
+import com.google.common.io.Files;
 import extract.PPTService;
 import extract.WordService;
 import extract.web.JsonExtractor;
+import extract.web.JsoupUtils;
 import extract.web.PhantomJSUtils;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,10 +25,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import ml.data.DataframeBuilder;
-import ml.data.DataframeUtils;
-import ml.data.Mapping;
-import ml.data.Question;
+import ml.data.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import simplebuilder.FileChooserBuilder;
@@ -36,7 +36,14 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public final class ReportHelper {
+    private static final List<String> REMOVE_IPS = ProjectProperties.getFieldList();
+    private static final String OR_IPS_KEY = "\\$orIps";
+    private static final String SPLIT_REGEX = "[, ]+";
+    private static final String IP_KEY = "\\$ip";
     private static final Logger LOG = HasLogging.log();
+
+    private static PhantomJSUtils phantomJs;
+
 
     private ReportHelper() {
     }
@@ -64,20 +71,25 @@ public final class ReportHelper {
             WebView browser, DoubleProperty progress) {
         List<String> keys = mapaSubstituicao.keySet().stream().collect(Collectors.toList());
         CommonsFX.update(progress, 0);
+        List<String> urls = new ArrayList<>();
         for (String key : keys) {
             mapaSubstituicao.compute(key, (k, v) -> {
                 if (v instanceof List) {
                     List<?> list = (List<?>) v;
                     return list.stream().flatMap(e -> {
-                        if (StringUtils.isNotBlank(params.get("\\$ip"))) {
-                            return Stream.of(params.get("\\$ip").split("[, ]+")).filter(StringUtils::isNotBlank)
+                        if (StringUtils.isNotBlank(params.get(IP_KEY))) {
+                            Set<Object> set = new LinkedHashSet<>();
+                            return Stream.of(params.get(IP_KEY).split(SPLIT_REGEX)).filter(StringUtils::isNotBlank)
                                     .map(s -> {
                                         Map<String, String> linkedHashMap = new LinkedHashMap<>(params);
-                                        linkedHashMap.put("\\$ip", s);
+                                        linkedHashMap.put(IP_KEY, s);
                                         return linkedHashMap;
-                                    }).map(pa -> remapUncroppred(pa, browser, e)).distinct();
+                                    }).map(pa -> remapUncroppred(pa, browser, e, urls))
+                                    .filter(o -> !(o instanceof Image)
+                                            || set.add(ClassReflectionUtils.invoke(o, "impl_getUrl")))
+                                    .distinct();
                         }
-                        return Stream.of(remapUncroppred(params, browser, e));
+                        return Stream.of(remapUncroppred(params, browser, e, urls));
                     }).filter(Objects::nonNull)
                             .peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
                             .collect(Collectors.toList());
@@ -86,34 +98,54 @@ public final class ReportHelper {
                 return replaceString(params, v);
             });
         }
+        String collect =
+                urls.stream()
+                        .distinct()
+                        .map(s -> "<tr><td><iframe style=\"border: 0\" src=\"" + s
+                                + "\" height=\"660\" width=\"1200\"></iframe></tr></td>")
+                        .collect(Collectors.joining("\n", "<html><head><meta charset=\"UTF-8\"></head><body><table>\n",
+                                "\n</table></body></html>"));
+        LOG.info("\n{}", collect);
+        RunnableEx.run(() -> {
+
+            String reportName = getReportName(mapaSubstituicao, params).replaceAll("(pptx|docx)", "html");
+            Files.append(collect, ResourceFXUtils.getOutFile("html/" + reportName), StandardCharsets.UTF_8);
+        });
         CommonsFX.update(progress, 1);
     }
 
     public static Map<String, String> adjustParams(Map<String, Object> mapaSubstituicao, int days, String ipParam,
-            String index) {
+            String index, DoubleProperty doubleProperty) {
         Map<String, String> paramText = new LinkedHashMap<>();
         Set<String> credentialText = new LinkedHashSet<>();
-        for (String ipValue : ipParam.split("[, ]+")) {
+        CommonsFX.update(doubleProperty, 0);
+        String[] split = ipParam.split(SPLIT_REGEX);
+        for (String ipValue : split) {
             String authenticationSuccess = " AND \\\"AUTHENTICATION_SUCCESS\\\"";
             Map<String, String> credentialMap =
                     KibanaApi.getGeridCredencial(ipValue + authenticationSuccess, index, days);
             if (credentialMap.isEmpty()) {
                 credentialMap = KibanaApi.getGeridCredencial(ipValue, index, days);
             }
+            CommonsFX.addProgress(doubleProperty, 1. / (credentialMap.size() + 1) / split.length);
             LOG.info("GETTING GERID CREDENTIALS {} {}", ipValue, credentialMap.keySet());
             credentialText.addAll(credentialMap.values());
             List<String> collect = credentialMap.keySet().stream().collect(Collectors.toList());
-            paramText.merge("\\$orIps", ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
+            paramText.merge(OR_IPS_KEY, ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
             for (String credencial : collect) {
+                if (!Boolean.valueOf(mapaSubstituicao.getOrDefault("searchCredencial", "true").toString())) {
+                    break;
+                }
+
                 Map<String, String> iPsByCredencial =
                         KibanaApi.getIPsByCredencial("\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
-                iPsByCredencial.remove("189.9.32.130");
-
+                REMOVE_IPS.forEach(iPsByCredencial::remove);
                 credentialText.addAll(iPsByCredencial.values());
                 String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
                 paramText.merge("\\$otherIps", collect2, ReportHelper::mergeStrings);
+                CommonsFX.addProgress(doubleProperty, 1. / collect.size() / split.length);
                 iPsByCredencial.keySet().forEach(
-                        i -> paramText.merge("\\$orIps", i, (o, n) -> ReportHelper.mergeStrings(o, n, " OR ")));
+                        i -> paramText.merge(OR_IPS_KEY, i, (o, n) -> ReportHelper.mergeStrings(o, n, " OR ")));
                 LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
             }
 
@@ -122,15 +154,17 @@ public final class ReportHelper {
         }
         mergeImage(mapaSubstituicao,
                 credentialText.stream().distinct().map(ReportHelper::textToImage).collect(Collectors.toList()));
+        CommonsFX.update(doubleProperty, 1);
+
         return paramText;
     }
 
     public static Map<String, String> adjustParams(String ipParam, int days, Property<Number> progress) {
         Map<String, String> paramText = new LinkedHashMap<>();
-        for (String ipValue : ipParam.split("[, ]+")) {
+        for (String ipValue : ipParam.split(SPLIT_REGEX)) {
             KibanaApi.kibanaFullScan(ipValue, days, progress)
                     .forEach((k, v) -> paramText.merge("\\$" + k, v, ReportHelper::mergeStrings));
-            paramText.merge("\\$orIps", ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
+            paramText.merge(OR_IPS_KEY, ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
             paramText.merge("\\$otherIps", ipValue, ReportHelper::mergeStrings);
         }
         return paramText;
@@ -150,6 +184,11 @@ public final class ReportHelper {
     public static String getExtension(String replaceString) {
         return replaceString.replaceAll(".+\\.(\\w+)$", "$1");
     }
+
+    public static PhantomJSUtils getPhantomJs() {
+        return phantomJs == null ? phantomJs = new PhantomJSUtils(true) : phantomJs;
+    }
+
 
     public static Stream<Image> objectList(Object e) {
         if (!(e instanceof Collection)) {
@@ -180,6 +219,12 @@ public final class ReportHelper {
         }
     }
 
+    public static void quit() {
+        if (phantomJs != null) {
+            phantomJs.quit();
+        }
+    }
+
     public static String replaceString(Map<String, String> params, Object v) {
         String string = v.toString();
         for (Entry<String, String> entry : params.entrySet()) {
@@ -188,9 +233,57 @@ public final class ReportHelper {
         return string;
     }
 
+    public static File reportName(Map<String, Object> mapaSubstituicao, Map<String, String> params2) {
+        String replaceString = getReportName(mapaSubstituicao, params2);
+
+        String extension = ReportHelper.getExtension(replaceString);
+        return ResourceFXUtils.getOutFile(extension + "/" + replaceString);
+    }
+
     public static Image textToImage(String s) {
         String highlight = "(\\d+\\.\\d+\\.\\d+\\.\\d+|\\d{11})";
         return PhantomJSUtils.textToImage(s, highlight);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void addMapping(DataframeBuilder dataframe, List<String> cols2, String k, Object v) {
+
+        if (v instanceof Map) {
+            Method method = Mapping.getMethod(JsonExtractor.access(v, String.class, "method"));
+            Object[] ob = new Object[method.getParameterCount()];
+            String[] dependencies = JsonExtractor.<String>accessList(v, "dependencies").stream().filter(cols2::contains)
+                    .toArray(i -> new String[i]);
+            List<Object> otherParams = JsonExtractor.accessList(v, "otherParams");
+            for (int i = 0; i < otherParams.size(); i++) {
+                ob[i + dependencies.length] = otherParams.get(i);
+            }
+            if (dependencies.length + otherParams.size() != method.getParameterCount()) {
+                HasLogging.log().error("\"{}\" METHOD {} DOES NOT MATCH Parameters {} {}", k, method, dependencies,
+                        otherParams);
+                return;
+            }
+            dataframe.addCrossFeature(k, o -> {
+                for (int i = 0; i < o.length; i++) {
+                    ob[i] = o[i];
+                }
+                return method.invoke(null, ob);
+            }, dependencies);
+            dataframe.putFormat(k, (Class<? extends Comparable<?>>) method.getReturnType());
+        }
+        if (cols2.contains(k)) {
+            return;
+        }
+        if (v instanceof List) {
+            for (Object m : (List<?>) v) {
+                dataframe.rename(Objects.toString(m, ""), k);
+            }
+            dataframe.putFormat(k, String.class);
+            return;
+        }
+        if (v instanceof String) {
+            dataframe.rename((String) v, k);
+            dataframe.putFormat(k, String.class);
+        }
     }
 
     private static WritableImage crop(Map<String, Object> info, File outFile) {
@@ -248,6 +341,12 @@ public final class ReportHelper {
         return image.getValue();
     }
 
+    private static String getReportName(Map<String, Object> mapaSubstituicao, Map<String, String> params2) {
+        String replaceString = ReportHelper.replaceString(params2, mapaSubstituicao.get("name"))
+                .replaceAll("\\.(inss|gov|br|prevnet|dataprev)|vip-p?", "");
+        return replaceString;
+    }
+
     private static Image getUncroppedImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
         File outFile = ResourceFXUtils
                 .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
@@ -267,31 +366,42 @@ public final class ReportHelper {
             }
             loadSite(engine, finalURL);
         });
-        RunnableEx.measureTime("Load Site " + imageObj.get("name"), () -> {
-            AtomicBoolean atomicBoolean = new AtomicBoolean(true);
-            while (atomicBoolean.get()) {
-                RunnableEx.sleepSeconds(6);
-                CommonsFX.runInPlatform(() -> atomicBoolean.set(isLoading(engine)));
-                RunnableEx.sleepSeconds(6);
-            }
-            CommonsFX.runInPlatformSync(() -> saveHtmlImage(browser, outFile));
-            String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
-            image.setValue(new Image(externalForm));
-        });
+        RunnableEx.measureTime("Load Site " + imageObj.get("name"),
+                () -> image.setValue(loadURL(browser, outFile, engine)));
         return image.getValue();
     }
 
     private static boolean isLoading(WebEngine engine) {
         return engine.getLoadWorker().getState() == State.RUNNING;
     }
-
     private static void loadSite(WebEngine engine2, String url) {
         RunnableEx.ignore(() -> {
             if (!Objects.equals(engine2.getLocation(), url)) {
+                engine2.setUserAgent(
+                        JsoupUtils.USER_AGENT + "\nAuthorization: Basic " + ExtractUtils.getEncodedAuthorization()
+                                + "\nProxy-Authorization: Basic " + ExtractUtils.getEncodedAuthorization()
+
+                );
                 engine2.load(url);
             }
             LOG.info("LOADED {}", url);
         });
+    }
+
+    private static Image loadURL(WebView browser, File outFile, WebEngine engine) {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(true);
+        while (atomicBoolean.get()) {
+            RunnableEx.sleepSeconds(6);
+            CommonsFX.runInPlatform(() -> atomicBoolean.set(isLoading(engine)));
+            RunnableEx.sleepSeconds(6);
+        }
+        CommonsFX.runInPlatformSync(() -> saveHtmlImage(browser, outFile));
+        String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
+        Image value = new Image(externalForm);
+        if (!ImageFXUtils.isWhiteImage(value)) {
+            return value;
+        }
+        return new Image(externalForm);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -327,11 +437,12 @@ public final class ReportHelper {
         return replaceString(params, e);
     }
 
-    @SuppressWarnings("unchecked")
-    private static Object remapUncroppred(Map<String, String> params, WebView browser, Object e) {
+    private static Object remapUncroppred(Map<String, String> params, WebView browser, Object e, List<String> urls) {
         if (e instanceof Map) {
-            Map<String, Object> e2 = (Map<String, Object>) e;
+            Map<String, Object> e2 = JsonExtractor.accessMap(e);
             if (e2.containsKey("url")) {
+                String kibanaURL = Objects.toString(e2.get("url"), "");
+                urls.add(replaceString(params, kibanaURL));
                 return getUncroppedImage(e2, browser, params);
             }
             return getCSV(e2, params);
@@ -342,35 +453,13 @@ public final class ReportHelper {
         return replaceString(params, e);
     }
 
-    @SuppressWarnings("unchecked")
     private static void saveCSV(File srcFile, Map<String, Object> params, File outFile) {
         DataframeBuilder dataframe = DataframeBuilder.builder(srcFile);
-        List<String> cols2 = dataframe.columns().stream().map(e -> e.getKey()).collect(Collectors.toList());
+        List<String> cols2 = dataframe.columns().stream().map(Entry<String, DataframeStatisticAccumulator>::getKey)
+                .collect(Collectors.toList());
         if (params.containsKey("mappings")) {
             Map<String, Object> mapping = JsonExtractor.accessMap(params, "mappings");
-            mapping.forEach((k, v) -> {
-                if (!cols2.contains(k)) {
-                    if (v instanceof String) {
-                        dataframe.rename((String) v, k);
-                        dataframe.putFormat(k, String.class);
-                    } else {
-                        Method method = Mapping.getMethod(JsonExtractor.access(v, String.class, "method"));
-                        Object[] ob = new Object[method.getParameterCount()];
-                        String[] dependencies = JsonExtractor.accessList(v, "dependencies").toArray(new String[0]);
-                        List<Object> otherParams = JsonExtractor.accessList(v, "otherParams");
-                        for (int i = 0; i < otherParams.size(); i++) {
-                            ob[i + dependencies.length] = otherParams.get(i);
-                        }
-                        dataframe.addCrossFeature(k, o -> {
-                            for (int i = 0; i < o.length; i++) {
-                                ob[i] = o[i];
-                            }
-                            return method.invoke(null, ob);
-                        }, dependencies);
-                        dataframe.putFormat(k, (Class<? extends Comparable<?>>) method.getReturnType());
-                    }
-                }
-            });
+            mapping.forEach((k, v) -> addMapping(dataframe, cols2, k, v));
         }
         List<String> o = JsonExtractor.accessList(params, "questions");
         List<Question> a = o.stream().map(t -> Question.parseQuestion(dataframe, t)).collect(Collectors.toList());

@@ -35,6 +35,7 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteStatus;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.FileTreeWalker;
@@ -61,6 +62,12 @@ public final class PhantomJSUtils {
 
     public PhantomJSUtils(boolean withProxy) {
         ghostDriver = getGhostDriver(withProxy);
+    }
+
+    public Document load(String url) {
+        ghostDriver.manage().window().maximize();
+        ghostDriver.get(url);
+        return Jsoup.parse(ghostDriver.getPageSource());
     }
 
     public void quit() {
