@@ -53,7 +53,7 @@ public final class JsoupUtils {
 
     public static Response executeRequest(String url, Map<String, String> cookies) {
         Connection connect = HttpConnection.connect(url);
-        if (!ExtractUtils.isNotProxied()) {
+        if (ExtractUtils.isProxySet()) {
             addProxyAuthorization(connect);
         }
         connect.timeout(ExtractUtils.HUNDRED_SECONDS);
@@ -177,9 +177,7 @@ public final class JsoupUtils {
         if (!ExtractUtils.isNotProxied()) {
             addProxyAuthorization(connect);
         }
-        return connect
-                .userAgent(USER_AGENT)
-                .get();
+        return connect.userAgent(USER_AGENT).get();
     }
 
     public static Document getDocument(String url, Map<String, String> cookies) throws IOException {

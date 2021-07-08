@@ -35,7 +35,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteStatus;
 import org.slf4j.Logger;
 import utils.ExtractUtils;
 import utils.FileTreeWalker;
@@ -122,7 +121,6 @@ public final class PhantomJSUtils {
 
     public static Map<String, String> postContent(String url, String content, ContentType applicationJson,
             Map<String, String> headers, File outFile) throws IOException {
-        ExtractUtils.insertProxyConfig();
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
         get.setConfig(RequestConfig.custom().setSocketTimeout(WAIT_TIME).build());

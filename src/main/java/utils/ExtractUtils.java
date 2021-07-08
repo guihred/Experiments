@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
 import utils.ex.PredicateEx;
@@ -210,6 +211,10 @@ public final class ExtractUtils {
             }
         }, ip0);
 
+    }
+
+    public static boolean isProxySet() {
+        return StringUtils.isNotBlank(System.getProperty("https.proxyHost"));
     }
 
     public static void removeProxyConfig() {

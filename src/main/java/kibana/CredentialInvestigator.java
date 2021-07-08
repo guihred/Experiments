@@ -111,17 +111,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
 
     public static Map<String, String> getCredentialInfo(String credencial) throws IOException {
         File outFile = ResourceFXUtils.getOutFile("html/" + credencial + ".html");
-        Document document;
-        if (!outFile.exists()) {
-            if (COOKIES.isEmpty()) {
-                RunnableEx.run(CredentialInvestigator::getCookies);
-            }
-            document = JsoupUtils.getDocument(ACESSO_GWDC + "?action=search&object=personUser&filter=" + credencial,
-                    COOKIES);
-            Files.write(document.toString(), outFile, StandardCharsets.UTF_8);
-        } else {
-            document = JsoupUtils.normalParse(outFile);
-        }
+        Document document = getCachedDocument(credencial, outFile);
         String memberOf = "memberOf";
         List<String> include = Arrays.asList("search", "mail", "l", "rgUf", memberOf);
 
@@ -133,13 +123,27 @@ public class CredentialInvestigator extends KibanaInvestigator {
                     if (memberOf.equals(e.getKey())) {
                         e.setValue(StringSigaUtils.getMatches(e.getValue(), "([\\-\\w]+vpn[\\-\\w]+)"));
                     }
-                })
-                .collect(Collectors.groupingBy(Entry<String, String>::getKey, LinkedHashMap::new,
+                }).collect(Collectors.groupingBy(Entry<String, String>::getKey, LinkedHashMap::new,
                         Collectors.mapping(Entry<String, String>::getValue, Collectors.joining(" - "))));
     }
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static Document getCachedDocument(String credencial, File outFile) throws IOException {
+        if (outFile.exists()) {
+            return JsoupUtils.normalParse(outFile);
+        }
+        if (COOKIES.isEmpty()) {
+            RunnableEx.run(CredentialInvestigator::getCookies);
+        }
+        return SupplierEx.get(() -> {
+            Document doc = JsoupUtils.getDocument(ACESSO_GWDC + "?action=search&object=personUser&filter=" + credencial,
+                    COOKIES);
+            Files.write(doc.toString(), outFile, StandardCharsets.UTF_8);
+            return doc;
+        });
     }
 
     private static void getCookies() throws IOException {
@@ -171,7 +175,6 @@ public class CredentialInvestigator extends KibanaInvestigator {
         headers.put("Content-Type", "application/x-www-form-urlencoded");
         headers.put("Origin", ACESSO);
         headers.put("DNT", "1");
-        headers.put("Authorization", "Basic " + ExtractUtils.getEncodedAuthorization());
 
         headers.put("Connection", "keep-alive");
         headers.put("Referer", ACESSO_GWDC);
