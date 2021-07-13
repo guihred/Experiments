@@ -72,15 +72,17 @@ public class KibanaApi {
                                 new String[] { "SourceIP", "DestinationIP", ip }, aggregations),
                         aggregations, "3", buckets);
         accessList.addAll(accessList2);
-        return accessList.stream().map((Map<Object, Object> map) -> {
+        String collect = accessList.stream().flatMap((Map<Object, Object> map) -> {
             String ipd = JsonExtractor.access(map, String.class, KEY);
             String reverseDNS = CIDRUtils.getReverseDNS(ipd);
-            return JsonExtractor.<Map<Object, Object>>accessList(map, "4", buckets).stream().map(s -> {
-                String serviceByPort = JsonExtractor.access(s, String.class, KEY);
-                Number size = JsonExtractor.access(s, Number.class, "1", VALUE);
-                return reverseDNS + " " + serviceByPort + " " + StringSigaUtils.getFileSize(size.longValue());
-            }).collect(Collectors.joining("\n"));
-        }).collect(Collectors.joining("\n"));
+            return JsonExtractor.<Map<Object, Object>>accessList(map, "4", buckets).stream()
+                    .map(s -> formatLines(reverseDNS, s));
+        }).sorted(Comparator.comparingLong(
+                s -> -StringSigaUtils.strToFileSize(StringSigaUtils.getMatches(s, "((?i)[\\d\\.]+ ?[KMGT]?B)"))))
+                .limit(2)
+                .collect(Collectors.joining("\n"));
+
+        return collect;
     }
 
     public static <T> String display(Map<String, T> ob) {
@@ -154,7 +156,7 @@ public class KibanaApi {
         String credentialRegex = "WHO:\\s+(\\d+)|WHAT: supplied credentials: .+?(\\d{11}).+";
         String fieldRegex = query.matches(IP_REGEX) ? credentialRegex : "(" + IP_REGEX + ")";
         return message.stream().filter(s -> StringUtils.isNotBlank(StringSigaUtils.getMatches(s, fieldRegex)))
-                .collect(groupBy(timeRegex, fieldRegex)).entrySet().stream()
+                .collect(groupBy(timeRegex, fieldRegex)).entrySet().stream().filter(v -> v.getValue() != null)
                 .map(e -> e.getKey() + " " + e.getValue().format(t -> DateFormatUtils.format("dd/MM/yyyy HH:mm:ss", t)))
                 .collect(Collectors.joining("\n"));
     }
@@ -167,10 +169,10 @@ public class KibanaApi {
     }
 
     public static String getURL(String string) {
-        return string
-                .replaceAll(
-                        "(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+" + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|jpeg|svg|ico|eot))"
-                        + "|.+(?=\\.(js)($|\\?))" + "|.+(?=\\.(js\\.xhtml)($|\\?))", "*");
+        return string.replaceAll(
+                "(?<=[/])[\\-\\d]+|(?<=(=|%3B))[^&]+" + "|.+(?=\\.(css|png|woff|ttf|gif|jpg|jpeg|svg|ico|eot))"
+                        + "|.+(?=\\.(js)($|\\?))" + "|.+(?=\\.(js\\.xhtml)($|\\?))",
+                "*");
     }
 
     public static String isInBlacklist(String query) {
@@ -402,6 +404,12 @@ public class KibanaApi {
             return urls;
         }
         return collect2;
+    }
+
+    private static String formatLines(String reverseDNS, Map<Object, Object> s) {
+        String serviceByPort = JsonExtractor.access(s, String.class, KEY);
+        Number size = JsonExtractor.access(s, Number.class, "1", VALUE);
+        return reverseDNS + " " + serviceByPort + " " + StringSigaUtils.getFileSize(size.longValue());
     }
 
     private static <T> List<List<String>> getFieldList(Map<String, T> ob) {

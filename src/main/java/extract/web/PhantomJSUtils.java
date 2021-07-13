@@ -148,7 +148,6 @@ public final class PhantomJSUtils {
 
     public static void postNdJson(String url, String cont, Map<String, String> headers, File outFile)
             throws IOException {
-        ExtractUtils.insertProxyConfig();
 
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
