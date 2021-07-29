@@ -154,10 +154,11 @@ public class KibanaApi {
         List<String> message = getMessageList(query, index, days);
         String timeRegex = "WHEN: (.+)";
         String credentialRegex = "WHO:\\s+(\\d+)|WHAT: supplied credentials: .+?(\\d{11}).+";
-        String fieldRegex = query.matches(IP_REGEX) ? credentialRegex : "(" + IP_REGEX + ")";
+        String fieldRegex = query.matches(IP_REGEX) ? credentialRegex : "(?<=CLIENT IP ADDRESS: )(" + IP_REGEX + ")";
         return message.stream().filter(s -> StringUtils.isNotBlank(StringSigaUtils.getMatches(s, fieldRegex)))
                 .collect(groupBy(timeRegex, fieldRegex)).entrySet().stream().filter(v -> v.getValue() != null)
                 .map(e -> e.getKey() + " " + e.getValue().format(t -> DateFormatUtils.format("dd/MM/yyyy HH:mm:ss", t)))
+                .flatMap(e -> Stream.of(e.split("\n"))).distinct()
                 .collect(Collectors.joining("\n"));
     }
 
@@ -250,7 +251,7 @@ public class KibanaApi {
         return SupplierEx.getHandle(() -> {
             File outFile = newSearch(file, days, search);
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
-        }, new HashMap<>(), e -> LOG.info("ERROR IN {}", file.getName()));
+        }, new HashMap<>(), e -> LOG.info("ERROR IN {}", file.getName(), e));
     }
 
     public static Map<String, SupplierEx<String>> scanByIp(String ip, int days) {
@@ -265,20 +266,6 @@ public class KibanaApi {
             makeKibanaSearch.computeIfPresent(policy, (k, v) -> JsonExtractor.<String>accessList(v).stream()
                     .map(WHOIS_SCANNER::lookupPolicy).map(KibanaApi::displayDistinct).collect(Collectors.toList()));
             return displayDistinct(makeKibanaSearch);
-        });
-        fullScan.put("PaloAlto_Threat", () -> {
-            if (CIDRUtils.isVPNNetwork(ip)) {
-                Map<String, Object> userQuery =
-                        makeKibanaSearchObj("userQuery.json", days, new String[] { ip }, KEY, VALUE);
-                userQuery.computeIfPresent(VALUE, (k, v) -> {
-                    List<String> dates = JsonExtractor.<Number>accessList(v).stream()
-                            .map(s -> DateFormatUtils.format("dd/MM/yy HH:mm", s.longValue()))
-                            .collect(Collectors.toList());
-                    return group(dates, 2);
-                });
-                return displayDistinct(userQuery);
-            }
-            return displayDistinct(makeKibanaSearch("threatQuery.json", days, ip, KEY));
         });
         fullScan.put("TOP_FW", () -> {
             Map<String, Object> destinationSearch = makeKibanaSearchObj("destinationQuery.json", days, ip, KEY, VALUE);
@@ -303,12 +290,26 @@ public class KibanaApi {
             convertToStats(VALUE, totalBytesQuery);
             return displayDistinct(totalBytesQuery);
         });
+        fullScan.put("URLs", () -> filterUrls(days, pattern));
         fullScan.put("Bytes_Sent", () -> {
             Map<String, Object> totalBytesSent = makeKibanaSearchObj("paloAltoQuery.json", days, ip, VALUE);
             convertToStats(VALUE, totalBytesSent);
             return display(totalBytesSent);
         });
-        fullScan.put("URLs", () -> filterUrls(days, pattern));
+        fullScan.put("PaloAlto_Threat", () -> {
+            if (CIDRUtils.isVPNNetwork(ip)) {
+                Map<String, Object> userQuery =
+                        makeKibanaSearchObj("userQuery.json", days, new String[] { ip }, KEY, VALUE);
+                userQuery.computeIfPresent(VALUE, (k, v) -> {
+                    List<String> dates = JsonExtractor.<Number>accessList(v).stream()
+                            .map(s -> DateFormatUtils.format("dd/MM/yy HH:mm", s.longValue()))
+                            .collect(Collectors.toList());
+                    return group(dates, 2);
+                });
+                return displayDistinct(userQuery);
+            }
+            return displayDistinct(makeKibanaSearch("threatQuery.json", days, ip, KEY));
+        });
         return fullScan;
     }
 

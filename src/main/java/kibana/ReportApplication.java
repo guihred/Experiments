@@ -135,7 +135,8 @@ public class ReportApplication extends Application {
         }
         if (mapaSubstituicao.containsKey("gerid")) {
             String index = params.get("\\$index");
-            params.putAll(ReportHelper.adjustParams(mapaSubstituicao, days, ipParam, index,
+            Boolean searchCredencial = Boolean.valueOf(params.getOrDefault("\\$searchCredencial", "true").toString());
+            params.putAll(ReportHelper.adjustParams(mapaSubstituicao, days, ipParam, index, searchCredencial,
                     progressIndicator.progressProperty()));
         }
         ExtractUtils.removeProxyConfig();

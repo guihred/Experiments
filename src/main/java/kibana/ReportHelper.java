@@ -44,7 +44,6 @@ public final class ReportHelper {
 
     private static PhantomJSUtils phantomJs;
 
-
     private ReportHelper() {
     }
 
@@ -98,13 +97,11 @@ public final class ReportHelper {
                 return replaceString(params, v);
             });
         }
-        String collect =
-                urls.stream()
-                        .distinct()
-                        .map(s -> "<tr><td><iframe style=\"border: 0\" src=\"" + s
-                                + "\" height=\"660\" width=\"1200\"></iframe></tr></td>")
-                        .collect(Collectors.joining("\n", "<html><head><meta charset=\"UTF-8\"></head><body><table>\n",
-                                "\n</table></body></html>"));
+        String collect = urls.stream().distinct()
+                .map(s -> "<tr><td><iframe style=\"border: 0\" src=\"" + s
+                        + "\" height=\"660\" width=\"1200\"></iframe></tr></td>")
+                .collect(Collectors.joining("\n", "<html><head><meta charset=\"UTF-8\"></head><body><table>\n",
+                        "\n</table></body></html>"));
         LOG.info("\n{}", collect);
         RunnableEx.run(() -> {
 
@@ -115,7 +112,7 @@ public final class ReportHelper {
     }
 
     public static Map<String, String> adjustParams(Map<String, Object> mapaSubstituicao, int days, String ipParam,
-            String index, DoubleProperty doubleProperty) {
+            String index, Boolean searchCredencial, DoubleProperty doubleProperty) {
         Map<String, String> paramText = new LinkedHashMap<>();
         Set<String> credentialText = new LinkedHashSet<>();
         CommonsFX.update(doubleProperty, 0);
@@ -132,21 +129,20 @@ public final class ReportHelper {
             credentialText.addAll(credentialMap.values());
             List<String> collect = credentialMap.keySet().stream().collect(Collectors.toList());
             paramText.merge(OR_IPS_KEY, ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
-            for (String credencial : collect) {
-                if (!Boolean.valueOf(mapaSubstituicao.getOrDefault("searchCredencial", "true").toString())) {
-                    break;
-                }
+            if (searchCredencial) {
+                for (String credencial : collect) {
 
-                Map<String, String> iPsByCredencial =
-                        KibanaApi.getIPsByCredencial("\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
-                REMOVE_IPS.forEach(iPsByCredencial::remove);
-                credentialText.addAll(iPsByCredencial.values());
-                String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
-                paramText.merge("\\$otherIps", collect2, ReportHelper::mergeStrings);
-                CommonsFX.addProgress(doubleProperty, 1. / collect.size() / split.length);
-                iPsByCredencial.keySet().forEach(
-                        i -> paramText.merge(OR_IPS_KEY, i, (o, n) -> ReportHelper.mergeStrings(o, n, " OR ")));
-                LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
+                    Map<String, String> iPsByCredencial =
+                            KibanaApi.getIPsByCredencial("\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
+                    REMOVE_IPS.forEach(iPsByCredencial::remove);
+                    credentialText.addAll(iPsByCredencial.values());
+                    String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
+                    paramText.merge("\\$otherIps", collect2, ReportHelper::mergeStrings);
+                    CommonsFX.addProgress(doubleProperty, 1. / collect.size() / split.length);
+                    iPsByCredencial.keySet().forEach(
+                            i -> paramText.merge(OR_IPS_KEY, i, (o, n) -> ReportHelper.mergeStrings(o, n, " OR ")));
+                    LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
+                }
             }
 
             paramText.merge("\\$creds", credentialMap.keySet().stream().map(CredentialInvestigator::credentialInfo)
@@ -188,7 +184,6 @@ public final class ReportHelper {
     public static PhantomJSUtils getPhantomJs() {
         return phantomJs == null ? phantomJs = new PhantomJSUtils(true) : phantomJs;
     }
-
 
     public static Stream<Image> objectList(Object e) {
         if (!(e instanceof Collection)) {
@@ -374,6 +369,7 @@ public final class ReportHelper {
     private static boolean isLoading(WebEngine engine) {
         return engine.getLoadWorker().getState() == State.RUNNING;
     }
+
     private static void loadSite(WebEngine engine2, String url) {
         RunnableEx.ignore(() -> {
             if (!Objects.equals(engine2.getLocation(), url)) {

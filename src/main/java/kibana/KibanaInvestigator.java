@@ -38,6 +38,8 @@ public class KibanaInvestigator extends Application {
     protected ObservableList<Map<String, String>> items = synchronizedObservableList(observableArrayList());
 
     public void initialize() {
+
+        ExtractUtils.addAuthorizationConfig();
         SimpleTableViewBuilder.of(commonTable).copiable().savable().deletable().multipleSelection()
                 .items(CommonsFX.newFastFilter(resultsFilter, items.filtered(e -> true)))
                 .onSortClicked((c, a) -> QuickSortML.sortMapList(items, c, a));

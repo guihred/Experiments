@@ -23,7 +23,7 @@ import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
 public class CIDRUtils {
-    private static final String NETWORK = "network";
+    public static final String NETWORK = "network";
     private static final String NETWORKS_CSV = "csv/networks.csv";
     private static DataframeML networkFile;
 

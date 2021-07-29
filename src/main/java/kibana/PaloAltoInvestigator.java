@@ -76,6 +76,7 @@ public class PaloAltoInvestigator extends Application {
     }
 
     public void initialize() {
+        ExtractUtils.addAuthorizationConfig();
         thresholdText.textProperty()
                 .bind(Bindings.createStringBinding(
                         () -> String.format(Locale.ENGLISH, "%s (%.2f)", "Threshold", threshold.getValue()),

@@ -38,9 +38,9 @@ import utils.ex.RunnableEx;
 
 public class ConsultasInvestigator extends Application {
 
-    private static final List<String> APPLICATION_LIST = Arrays.asList("consultas.inss.gov.br",
-            "vip-pmeuinssprxr.inss.gov.br", "refisprod.dataprev.gov.br", "vip-auxilioemergencial.dataprev.gov.br",
-            "auxilio.dataprev.gov.br");
+    private static final List<String> APPLICATION_LIST =
+            Arrays.asList("consultas.inss.gov.br", "vip-pmeuinssprxr.inss.gov.br", "refisprod.dataprev.gov.br",
+                    "vip-auxilioemergencial.dataprev.gov.br", "auxilio.dataprev.gov.br");
     @FXML
     private TextField resultsFilter;
     @FXML
@@ -84,6 +84,8 @@ public class ConsultasInvestigator extends Application {
     }
 
     public void initialize() {
+
+        ExtractUtils.addAuthorizationConfig();
         thresholdText.textProperty()
                 .bind(Bindings.createStringBinding(
                         () -> String.format(Locale.ENGLISH, "%s (%.2f)", "Threshold", threshold.getValue()),
@@ -111,14 +113,15 @@ public class ConsultasInvestigator extends Application {
             return null;
         }).copiable().multipleSelection();
         filter.addListener((Change<? extends String, ? extends String> change) -> {
-            List<Entry<String, String>> newComposition = change.getMap().entrySet().stream().flatMap(
-                    entry -> Stream.of(entry.getValue().split("\n")).distinct().sorted()
-                            .map(s -> JsonExtractor.newEntry(entry.getKey(), s)))
-                    .collect(Collectors.toList());
+            List<Entry<String,
+                    String>> newComposition =
+                            change.getMap().entrySet().stream()
+                                    .flatMap(entry -> Stream.of(entry.getValue().split("\n")).distinct().sorted()
+                                            .map(s -> JsonExtractor.newEntry(entry.getKey(), s)))
+                                    .collect(Collectors.toList());
             filterList.getItems().removeIf(s -> !newComposition.contains(s));
-            filterList.getItems().addAll(
-                    newComposition.stream().filter(s -> !filterList.getItems().contains(s))
-                            .collect(Collectors.toList()));
+            filterList.getItems().addAll(newComposition.stream().filter(s -> !filterList.getItems().contains(s))
+                    .collect(Collectors.toList()));
         });
         splitPane0.setDividerPositions(1. / 10);
     }
@@ -140,8 +143,7 @@ public class ConsultasInvestigator extends Application {
             List<String> applicationList = getApplicationList();
             String queryField = QueryObjects.ACESSOS_SISTEMA_QUERY;
             ConsultasHelper.automatedSearch(queryField, queries, applicationList, progress.progressProperty(),
-                    days.getValue(),
-                    filter, threshold.getValue());
+                    days.getValue(), filter, threshold.getValue());
         });
     }
 

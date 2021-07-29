@@ -54,7 +54,7 @@ public final class JsoupUtils {
     public static Response executeRequest(String url, Map<String, String> cookies) {
         Connection connect = HttpConnection.connect(url);
         if (ExtractUtils.isProxySet()) {
-            // addProxyAuthorization(connect);
+            addProxyAuthorization(connect);
         }
         connect.timeout(ExtractUtils.HUNDRED_SECONDS);
         connect.cookies(cookies);
