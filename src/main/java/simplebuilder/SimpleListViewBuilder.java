@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -91,6 +92,11 @@ public class SimpleListViewBuilder<T> extends SimpleRegionBuilder<ListView<T>, S
     public SimpleListViewBuilder<T> onSelect(final BiConsumer<T, T> value) {
         node.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> value.accept(oldValue, newValue));
+        return this;
+    }
+
+    public SimpleListViewBuilder<T> orientation(Orientation horizontal) {
+        node.setOrientation(horizontal);
         return this;
     }
 

@@ -70,7 +70,13 @@ public final class ListHelper {
         ReferenceMap<T, D> a = new ReferenceMap<>();
         center1.addListener((ListChangeListener<T>) c -> {
             while (c.next()) {
-                if (c.wasPermutated()) {
+                if (c.wasReplaced()) {
+                    List<? extends T> addedSubList = c.getAddedSubList();
+                    for (int i = 0; i < addedSubList.size(); i++) {
+                        T e1 = addedSubList.get(i);
+                        D d = a.computeIfAbsent(e1, FunctionEx.makeFunction(map));
+                        finalList.set(c.getFrom() + i, d);
+                    }
                     break;
                 }
                 if (c.wasAdded()) {

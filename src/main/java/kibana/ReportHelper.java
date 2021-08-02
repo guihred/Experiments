@@ -42,7 +42,6 @@ public final class ReportHelper {
     private static final String IP_KEY = "\\$ip";
     private static final Logger LOG = HasLogging.log();
 
-    private static PhantomJSUtils phantomJs;
 
     private ReportHelper() {
     }
@@ -106,7 +105,7 @@ public final class ReportHelper {
         RunnableEx.run(() -> {
 
             String reportName = getReportName(mapaSubstituicao, params).replaceAll("(pptx|docx)", "html");
-            Files.append(collect, ResourceFXUtils.getOutFile("html/" + reportName), StandardCharsets.UTF_8);
+            Files.write(collect, ResourceFXUtils.getOutFile("html/" + reportName), StandardCharsets.UTF_8);
         });
         CommonsFX.update(progress, 1);
     }
@@ -181,9 +180,6 @@ public final class ReportHelper {
         return replaceString.replaceAll(".+\\.(\\w+)$", "$1");
     }
 
-    public static PhantomJSUtils getPhantomJs() {
-        return phantomJs == null ? phantomJs = new PhantomJSUtils(true) : phantomJs;
-    }
 
     public static Stream<Image> objectList(Object e) {
         if (!(e instanceof Collection)) {
@@ -214,11 +210,6 @@ public final class ReportHelper {
         }
     }
 
-    public static void quit() {
-        if (phantomJs != null) {
-            phantomJs.quit();
-        }
-    }
 
     public static String replaceString(Map<String, String> params, Object v) {
         String string = v.toString();

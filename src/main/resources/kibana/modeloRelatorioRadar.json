@@ -9,7 +9,7 @@
 	"Volumes de acesso a portais e aplicações WEB": [
 		{
 			"zoom": 1.5,
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/cee8c5d0-87c5-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))",
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/cee8c5d0-87c5-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-12h,mode:quick,to:now))",
 			"name": "volumetria$dateInverted",
 			"width": 1,
 			"height": 1,
@@ -20,7 +20,7 @@
 	"Número de origens de acesso aos portais e aplicações WEB": [
 		{
 			"zoom": 1,
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/e248a510-7a77-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:lucene,query:'DestinationPort:80%20OR%20%20DestinationPort:443'),uiState:(vis:(defaultColors:('0%20-%20100':'rgb(0,104,55)','100%20-%20500':'rgb(255,255,190)','500%20-%203000':'rgb(165,0,38)'))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'IP%20%C3%9Anico',field:SourceIP),schema:metric,type:cardinality),(enabled:!t,id:'2',params:(filters:!((input:(query:'DestinationIP:%22200.152.35.66%22'),label:Servicos.MTE),(input:(query:'DestinationIP:%22200.152.33.10%22%20OR%20DestinationIP:%22200.152.35.199%22'),label:MeuINSS),(input:(query:'DestinationIP:%22200.152.47.17%22'),label:'RH%20Saude'),(input:(query:'DestinationIP:%22200.152.40.36%22'),label:'Portal%20DTP'),(input:(query:'DestinationIP:%22200.152.35.44%22%20OR%20DestinationIP:%22200.152.35.45%22'),label:'Aux.%20Emerg.'))),schema:group,type:filters)),params:(addLegend:!f,addTooltip:!t,gauge:(autoExtend:!f,backStyle:Full,colorSchema:'Green%20to%20Red',colorsRange:!((from:0,to:100),(from:100,to:500),(from:500,to:3000)),gaugeColorMode:None,gaugeStyle:Full,gaugeType:Arc,invertColors:!f,labels:(color:black,show:!t),orientation:vertical,percentageMode:!f,scale:(color:%23333,labels:!f,show:!t,width:2),style:(bgColor:!f,bgFill:%23000,fontSize:60,labelColor:!f,subText:''),type:meter,useRanges:!f,verticalSplit:!f),isDisplayWarning:!f,type:gauge),title:'%5BPalo%20Alto%5D%5BTraffic%5D%20Total%20de%20Endere%C3%A7os%20de%20Origem',type:goal))",
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/e248a510-7a77-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-12h,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:lucene,query:'DestinationPort:80%20OR%20%20DestinationPort:443'),uiState:(vis:(defaultColors:('0%20-%20100':'rgb(0,104,55)','100%20-%20500':'rgb(255,255,190)','500%20-%203000':'rgb(165,0,38)'))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'IP%20%C3%9Anico',field:SourceIP),schema:metric,type:cardinality),(enabled:!t,id:'2',params:(filters:!((input:(query:'DestinationIP:%22200.152.35.66%22'),label:Servicos.MTE),(input:(query:'DestinationIP:%22200.152.33.10%22%20OR%20DestinationIP:%22200.152.35.199%22'),label:MeuINSS),(input:(query:'DestinationIP:%22200.152.47.17%22'),label:'RH%20Saude'),(input:(query:'DestinationIP:%22200.152.40.36%22'),label:'Portal%20DTP'),(input:(query:'DestinationIP:%22200.152.35.44%22%20OR%20DestinationIP:%22200.152.35.45%22'),label:'Aux.%20Emerg.'))),schema:group,type:filters)),params:(addLegend:!f,addTooltip:!t,gauge:(autoExtend:!f,backStyle:Full,colorSchema:'Green%20to%20Red',colorsRange:!((from:0,to:100),(from:100,to:500),(from:500,to:3000)),gaugeColorMode:None,gaugeStyle:Full,gaugeType:Arc,invertColors:!f,labels:(color:black,show:!t),orientation:vertical,percentageMode:!f,scale:(color:%23333,labels:!f,show:!t,width:2),style:(bgColor:!f,bgFill:%23000,fontSize:60,labelColor:!f,subText:''),type:meter,useRanges:!f,verticalSplit:!f),isDisplayWarning:!f,type:gauge),title:'%5BPalo%20Alto%5D%5BTraffic%5D%20Total%20de%20Endere%C3%A7os%20de%20Origem',type:goal))",
 			"name": "origens$dateInverted",
 			"width": 1,
 			"height": 0.4,
@@ -42,7 +42,7 @@
 	"Acessos volumétricos por origem - Firewall": [
 		{
 		    "zoom":2,
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/b93157a0-8156-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/b93157a0-8156-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "firewallOrigem$dateInverted",
 			"width": 1,
 			"height": 1,
@@ -59,7 +59,7 @@
 	"Acessos volumétricos por destino - Firewall": [
 		{
 		    "zoom":2,
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/9637fbe0-8157-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/9637fbe0-8157-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "firewallDestino$dateInverted",
 			"width": 1,
 			"height": 1,
@@ -76,7 +76,7 @@
 	"Volume de Ataques barrados pelo WAF": [
 		{
 			"zoom": 2.5,
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/c2da6850-88d0-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/c2da6850-88d0-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "ataques$dateInverted",
 			"width": 1,
 			"height": 0.3,
@@ -87,7 +87,7 @@
 	"Volume de Ataques barrados pelo WAF Timeline": [
 		{
 			"zoom": 2,
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/0cd081a0-88b9-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/0cd081a0-88b9-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "ataquesTimeline$dateInverted",
 			"width": 1,
 			"height": 1,
@@ -97,80 +97,12 @@
 	],
 	"Volume de Ataques por geolocalização barrados pelo WAF": [
 		{
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fd2fedf0-0f5e-11e9-ac1b-331041153b51?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fd2fedf0-0f5e-11e9-ac1b-331041153b51?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "geolocation$dateInverted",
 			"width": 1,
 			"height": 1,
 			"x": 0,
 			"y": 0
-		}
-	],
-	"Conexões VPN via: Conexões fora do Brasil": [
-		{
-			"csv": "",
-			"name": "ConexoesForaBrasil$dateInverted",
-			"columns": "event.time|country.src|ip.src|public.ip|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host|region.code",
-			"mappings": {
-				"user.dst":"Source User",
- 			    "public.ip":"public_ip",
-				"event.time":"Generate Time",
-				"country.src":{
-                    "method":"String StringSigaUtils.join(String,String)",
-                    "dependencies":["region.code","srcregion","country.src"],
-                    "otherParams":[]
-                },
-				"domain.src":"machinename",
-				"ec.outcome":"status",
-				"ec.activity":"stage",
-				"event.cat.name":"error",
-				"alias.host":"Type",
-				"OS":{
-                    "method":"String StringSigaUtils.join(String,String)",
-                    "dependencies":["OS","version","client_ver","client_os_ver"],
-                    "otherParams":[]
-                },
-				"org.src":{
-    				"method":"String KibanaApi.getHostname(Object)",
-    				"dependencies":["ip.src"],
-    				"otherParams":[]
-				}
-			},
-			"sort": "OS",
-			"questions": [
-				"user.dst not empty",
-				"country.src != BR",
-				"public.ip distinct"
-			]
-		}
-	],
-	"Conexões VPN via: Client Linux": [
-		{
-			"csv": "",
-			"name": "ConexoesClientLinux$dateInverted",
-			"columns": "ip.src|public.ip|user.dst|country.src|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|region.code",
-			"mappings": {
-				"user.dst":"Source User",
-			     "public.ip":"public_ip",
-				"OS":"client_os_ver",
-				"event.time":"Generate Time",
-				"country.src":"srcregion",
-				"domain.src":"machinename",
-				"ec.outcome":"status",
-				"ec.activity":"stage",
-				"event.cat.name":"error",
-				"alias.host":"Type",
-				"org.src":{
-                    "method":"String KibanaApi.getHostname(Object)",
-                    "dependencies":["ip.src"],
-                    "otherParams":[]
-                }
-			},
-			"questions": [
-				"OS contains linux",
-				"user.dst not empty",
-				"public.ip distinct",
-				"user.dst not contains dataprev"
-			]
 		}
 	],
 	"Conexões VPN via: SO Server": [
@@ -213,7 +145,7 @@
 	],
 	"Volume de ataques detectados pelo Firewall": [
 		{
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fdaf4750-87d4-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fdaf4750-87d4-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "ataquesFirewall$dateInverted",
 			"width": 1,
 			"height": 1,
@@ -221,13 +153,20 @@
 			"y": 0
 		},
 		{
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/f7a5c1d0-87d5-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-24h%2Cmode%3Aquick%2Cto%3Anow))",
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/f7a5c1d0-87d5-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "threatID$dateInverted",
 			"width": 1,
 			"height": 0.5,
 			"x": 0,
 			"y": 0
+		},
+		{
+			"url": "https://10.146.116.1/respond/incidents",
+			"name": "incidents$dateInverted",
+			"width": 1,
+			"height": 0.5,
+			"x": 0,
+			"y": 0
 		}
-	],
-	"paramss": ""
+	]
 }

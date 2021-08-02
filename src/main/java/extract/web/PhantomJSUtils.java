@@ -62,7 +62,6 @@ public final class PhantomJSUtils {
     public PhantomJSUtils(boolean withProxy) {
         ghostDriver = getGhostDriver(withProxy);
     }
-
     public Document load(String url) {
         ghostDriver.manage().window().maximize();
         ghostDriver.get(url);
@@ -96,6 +95,12 @@ public final class PhantomJSUtils {
 
     public void screenshot(File outFile) throws IOException {
         ExtractUtils.copy(ghostDriver.getScreenshotAs(OutputType.FILE), outFile);
+    }
+
+    public static void main(String[] args) {
+        PhantomJSUtils phantomJSUtils = new PhantomJSUtils();
+        phantomJSUtils.load("https://10.146.116.1/respond/incidents ");
+        phantomJSUtils.quit();
     }
 
     public static List<String> makeGet(String url, Map<String, String> headers) throws IOException {

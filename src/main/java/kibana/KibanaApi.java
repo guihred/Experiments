@@ -216,13 +216,13 @@ public class KibanaApi {
         return fullScan2;
     }
 
+    public static Map<String, String> makeKibanaSearch(String file, double days, String query, String... params) {
+        return makeKibanaSearch(kibanaFile(file), days, query, params);
+    }
+
     public static Map<String, String> makeKibanaSearch(String file, int days, Map<String, String> search,
             String... params) {
         return makeNewKibanaSearch(kibanaFile(file), days, search, params);
-    }
-
-    public static Map<String, String> makeKibanaSearch(String file, int days, String query, String... params) {
-        return makeKibanaSearch(kibanaFile(file), days, query, params);
     }
 
     public static Map<String, String> makeKibanaSearch(String file, int days, String[] query, String... params) {
@@ -456,11 +456,11 @@ public class KibanaApi {
                         .flatMap(s -> Stream.of(s.split(" "))).distinct().collect(Collectors.joining(" ")));
     }
 
-    private static Map<String, String> makeKibanaSearch(File file, int days, String query, String... params) {
+    private static Map<String, String> makeKibanaSearch(File file, double days, String query, String... params) {
         return makeKibanaSearch(file, days, new String[] { query }, params);
     }
 
-    private static Map<String, String> makeKibanaSearch(File file, int days, String[] query, String... params) {
+    private static Map<String, String> makeKibanaSearch(File file, double days, String[] query, String... params) {
         return SupplierEx.getHandle(() -> {
             File outFile = searchIfDoesNotExist(file, days, query);
             return JsonExtractor.makeMapFromJsonFile(outFile, params);
@@ -485,11 +485,12 @@ public class KibanaApi {
         return file.getName().replaceAll("\\.json", "");
     }
 
-    private static File searchIfDoesNotExist(File file, int days, String[] query) {
+    private static File searchIfDoesNotExist(File file, double days, String[] query) {
         File outFile = newJsonFile(removeExtension(file)
-                + Stream.of(query).filter(s -> !s.contains("/")).distinct().collect(Collectors.joining()) + "_" + days);
+                + Stream.of(query).filter(s -> !s.contains("/")).distinct().collect(Collectors.joining()) + "_"
+                + (int) days);
         if (JsonExtractor.isNotRecentFile(outFile)) {
-            String gte = Objects.toString(Instant.now().minus(days, ChronoUnit.DAYS).toEpochMilli());
+            String gte = Objects.toString(Instant.now().minus((int) days * 24, ChronoUnit.HOURS).toEpochMilli());
             String lte = Objects.toString(Instant.now().toEpochMilli());
             RunnableEx.make(
                     () -> getFromURL(ELASTICSEARCH_MSEARCH_URL,

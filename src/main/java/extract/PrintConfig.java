@@ -1,12 +1,14 @@
 package extract;
 
 import static java.lang.Math.nextDown;
+import static simplebuilder.SimpleButtonBuilder.newButton;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -21,16 +23,18 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import simplebuilder.FileChooserBuilder;
-import simplebuilder.StageHelper;
+import simplebuilder.*;
 import utils.CommonsFX;
 import utils.FileTreeWalker;
 import utils.ImageFXUtils;
@@ -121,11 +125,51 @@ public class PrintConfig extends Application {
 
     public void printToPDF(Event e) {
         new FileChooserBuilder().name("Export PDF").title("Export PDF").extensions("PDF", "*.pdf")
-                .initialFilename("oi" + images.hashCode() + ".pdf")
-                .onSelect(this::generatePDF).saveFileAction(e);
+                .initialFilename("oi" + images.hashCode() + ".pdf").onSelect(this::generatePDF).saveFileAction(e);
         if (closeOnPrint) {
             StageHelper.closeStage(panel);
         }
+
+    }
+
+    public void reorderImages() {
+        ObservableList<ImageView> mapping = FXCollections.observableArrayList();
+        ObservableList<Image> newImages = FXCollections.observableArrayList();
+        ListView<ImageView> build =
+                new SimpleListViewBuilder<ImageView>().items(mapping).orientation(Orientation.HORIZONTAL).build();
+
+        ListHelper.referenceMapping(newImages, t -> {
+            ImageView imageView = new ImageView(t);
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(200);
+            return imageView;
+        }, mapping);
+        newImages.addAll(images);
+        HBox.setHgrow(build, Priority.ALWAYS);
+        Button up = newButton("\u02C2", () -> {
+            int i = build.getSelectionModel().getSelectedIndex();
+            if (i <= 0) {
+                return;
+            }
+            Collections.swap(newImages, i, i - 1);
+        });
+        Button down = newButton("\u02C3", () -> {
+            int i = build.getSelectionModel().getSelectedIndex();
+            if (i >= newImages.size() - 1) {
+                return;
+            }
+            Collections.swap(newImages, i, i + 1);
+        });
+        Button remove = newButton("\u292B", () -> {
+            int i = build.getSelectionModel().getSelectedIndex();
+            if (i < 0 || i >= newImages.size()) {
+                return;
+            }
+            newImages.remove(i);
+        });
+        new SimpleDialogBuilder().title("Reorder")
+                .node(Priority.ALWAYS, build).node(up, remove, down)
+                .button("Ok", () -> images.setAll(newImages)).bindWindow(center).displayDialog();
 
     }
 

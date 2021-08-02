@@ -72,6 +72,8 @@ public class ReportApplication extends Application {
         // engine.setUserAgent(JsoupUtils.USER_AGENT + "\nAuthorization: Basic " +
         // ExtractUtils.getEncodedAuthorization());
         Worker<Void> loadWorker = engine.getLoadWorker();
+        engine.setOnError(e -> LOG.error("ERROR LOADING", e));
+        engine.setOnAlert(e -> LOG.error("ALERT LOADING", e));
         engine.locationProperty().addListener((ob, old, val) -> loc.setText(StringUtils.abbreviate(val, 100)));
         CommonsFX.bind(loadWorker.progressProperty(), progressIndicator.progressProperty());
         File parentFile = ResourceFXUtils.toFile("kibana/modeloRelatorio.json").getParentFile();
@@ -112,7 +114,6 @@ public class ReportApplication extends Application {
     public void start(Stage primaryStage) {
         CommonsFX.loadFXML("Report Application", "ReportApplication.fxml", this, primaryStage);
         primaryStage.setMaximized(true);
-        CommonsFX.onCloseWindow(primaryStage, ReportHelper::quit);
     }
 
     private void addCommonParams() {

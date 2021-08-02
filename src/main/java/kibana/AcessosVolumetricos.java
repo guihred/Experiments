@@ -33,7 +33,7 @@ public class AcessosVolumetricos {
     public DataframeML getVolumetria(String queryFile, String result) {
         String keyHeader = "key";
         List<Map<String, String>> destinationSearch =
-                JsonExtractor.remap(KibanaApi.makeKibanaSearch(queryFile, 1, "*", keyHeader, "value"));
+                JsonExtractor.remap(KibanaApi.makeKibanaSearch(queryFile, 1. / 2, "*", keyHeader, "value"));
         DataframeML dataframeML = new DataframeML();
         destinationSearch.forEach(dataframeML::add);
 
