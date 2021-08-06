@@ -8,68 +8,61 @@ import static kibana.QueryObjects.DESTINATION_PORT_QUERY;
 import static kibana.QueryObjects.SOURCE_IP_QUERY;
 
 import ethical.hacker.PortServices;
-import extract.web.JsonExtractor;
 import extract.web.WhoIsScanner;
 import java.io.File;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.graph.DataframeExplorer;
-import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleDialogBuilder;
-import simplebuilder.SimpleListViewBuilder;
 import utils.*;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
 public class PaloAltoInvestigator extends Application {
-    private static final List<String> APPLICATION_LIST = ProjectProperties.getFieldList();
+    protected static final List<String> APPLICATION_LIST = ProjectProperties.getFieldList();
     @FXML
-    private TextField resultsFilter;
+    protected TextField resultsFilter;
     @FXML
-    private ListView<Map.Entry<String, String>> filterList;
+    protected ListView<Map.Entry<String, String>> filterList;
     @FXML
-    private ComboBox<Integer> days;
+    protected ComboBox<Integer> days;
     @FXML
-    private ProgressIndicator progress;
+    protected ProgressIndicator progress;
     @FXML
-    private TableView<Map<String, String>> ipsTable;
+    protected TableView<Map<String, String>> ipsTable;
     @FXML
-    private TableView<Map<String, String>> acessosSistemaTable;
+    protected TableView<Map<String, String>> acessosSistemaTable;
     @FXML
-    private TableView<Map<String, String>> consultasTable;
+    protected TableView<Map<String, String>> consultasTable;
     @FXML
-    private TableView<Map<String, String>> pathsTable;
+    protected TableView<Map<String, String>> pathsTable;
     @FXML
-    private TabPane tabPane0;
-    private final List<QueryObjects> queryList = new ArrayList<>();
-    private ObservableMap<String, String> filter = FXCollections.observableHashMap();
+    protected TabPane tabPane0;
+    protected final List<QueryObjects> queryList = new ArrayList<>();
+    protected ObservableMap<String, String> filter = FXCollections.observableHashMap();
 
     @FXML
-    private Text thresholdText;
+    protected Text thresholdText;
     @FXML
-    private Slider threshold;
+    protected Slider threshold;
 
     @FXML
-    private SplitPane splitPane0;
+    protected SplitPane splitPane0;
     @FXML
-    private LineChart<Number, Number> timelineSourceIP;
+    protected LineChart<Number, Number> timelineSourceIP;
     @FXML
-    private ComboBox<String> ipCombo;
+    protected ComboBox<String> ipCombo;
 
     public List<QueryObjects> getQueryList() {
         return queryList;
@@ -96,30 +89,7 @@ public class PaloAltoInvestigator extends Application {
                         map -> PortServices.getServiceByPort(StringSigaUtils.toInteger(map.get("key"))).toString());
         configureTable("Application.keyword", "topApplicationQuery.json", ipsTable, "key", va).setValueFormat(va,
                 StringSigaUtils::getFileSize);
-        SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> {
-            String string = filter.get(e.getKey());
-            String newFilterValue = Stream.of(string.split("\n")).filter(t -> !Objects.equals(e.getValue(), t))
-                    .collect(Collectors.joining("\n"));
-            if (StringUtils.isBlank(newFilterValue)) {
-                filter.remove(e.getKey());
-            } else {
-                filter.put(e.getKey(), newFilterValue);
-            }
-        }).pasteable(s -> {
-            addToFilter(s);
-            return null;
-        }).copiable().multipleSelection();
-        filter.addListener((Change<? extends String, ? extends String> change) -> {
-            List<Entry<String,
-                    String>> newComposition =
-                            change.getMap().entrySet().stream()
-                                    .flatMap(entry -> Stream.of(entry.getValue().split("\n")).distinct().sorted()
-                                            .map(s -> JsonExtractor.newEntry(entry.getKey(), s)))
-                                    .collect(Collectors.toList());
-            filterList.getItems().removeIf(s -> !newComposition.contains(s));
-            filterList.getItems().addAll(newComposition.stream().filter(s -> !filterList.getItems().contains(s))
-                    .collect(Collectors.toList()));
-        });
+        QueryObjects.linkFilter(filterList, filter, s -> addToFilter(s));
         splitPane0.setDividerPositions(1. / 10);
     }
 
@@ -196,11 +166,11 @@ public class PaloAltoInvestigator extends Application {
         CommonsFX.loadFXML("PaloAlto Investigator", "PaloAltoInvestigator.fxml", this, primaryStage, width, width);
     }
 
-    private void addProgress(double d) {
+    protected void addProgress(double d) {
         CommonsFX.addProgress(progress.progressProperty(), d);
     }
 
-    private void addToFilter(String s) {
+    protected void addToFilter(String s) {
         if (s.matches("[\\.\\w]+=.+")) {
             String[] entry = s.split("=");
             filter.merge(entry[0], entry[1], ConsultasHelper::merge);
@@ -216,7 +186,7 @@ public class PaloAltoInvestigator extends Application {
         }
     }
 
-    private QueryObjects configureTable(String userNameQuery, String queryFile,
+    protected QueryObjects configureTable(String userNameQuery, String queryFile,
             TableView<Map<String, String>> ipsTable2, String... params) {
         QueryObjects fieldObjects = new QueryObjects(userNameQuery, queryFile, ipsTable2, params);
         queryList.add(fieldObjects);
@@ -231,12 +201,12 @@ public class PaloAltoInvestigator extends Application {
         });
     }
 
-    private QueryObjects configureTimeline(String field, String userNameQuery, LineChart<Number, Number> lineChart,
+    protected QueryObjects configureTimeline(String field, String userNameQuery, LineChart<Number, Number> lineChart,
             ComboBox<String> combo) {
         return configureTimeline(field, queryList, userNameQuery, lineChart, combo);
     }
 
-    private List<String> getApplicationList() {
+    protected List<String> getApplicationList() {
         if (!acessosSistemaTable.getSelectionModel().getSelectedItems().isEmpty()) {
             return acessosSistemaTable.getSelectionModel().getSelectedItems().stream().map(e -> e.get("key"))
                     .collect(toList());
@@ -244,11 +214,11 @@ public class PaloAltoInvestigator extends Application {
         return APPLICATION_LIST;
     }
 
-    private void makeKibanaQuery(QueryObjects queryObjects) {
+    protected void makeKibanaQuery(QueryObjects queryObjects) {
         queryObjects.makeKibanaQuery(filter, days.getSelectionModel().getSelectedItem());
     }
 
-    private void makeTimelionQuery(QueryObjects queryObjects) {
+    protected void makeTimelionQuery(QueryObjects queryObjects) {
         queryObjects.makeTimelionFullQuery(filter, days.getSelectionModel().getSelectedItem());
     }
 

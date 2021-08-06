@@ -35,7 +35,7 @@ public class TimelionDisplay extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Tab content = getTimelineGraph("Timeline Usuários", TimelionApi.TIMELINE_USERS, "mdc.uid.keyword");
+        Tab content = getTimelineGraph("Timeline Usuários", TimelionApi.TIMELINE_SISTEMAS, "mdc.uid.keyword");
         Tab content2 = getTimelineGraph("Timeline Endereço de Origem", TimelionApi.TIMELINE_IPS, "clientip.keyword");
         TabPane tabPane = new TabPane(content, content2);
         tabPane.setSide(Side.LEFT);

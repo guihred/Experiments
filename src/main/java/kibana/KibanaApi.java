@@ -490,7 +490,7 @@ public class KibanaApi {
                 + Stream.of(query).filter(s -> !s.contains("/")).distinct().collect(Collectors.joining()) + "_"
                 + (int) days);
         if (JsonExtractor.isNotRecentFile(outFile)) {
-            String gte = Objects.toString(Instant.now().minus((int) days * 24, ChronoUnit.HOURS).toEpochMilli());
+            String gte = Objects.toString(Instant.now().minus((int) (days * 24), ChronoUnit.HOURS).toEpochMilli());
             String lte = Objects.toString(Instant.now().toEpochMilli());
             RunnableEx.make(
                     () -> getFromURL(ELASTICSEARCH_MSEARCH_URL,

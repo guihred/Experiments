@@ -125,7 +125,7 @@ public class FXKibanaReportTest extends AbstractTestExecution {
     @Test
     public void testTimelionScan() {
         measureTime("TimelionApi.timelionScan", () -> TimelionApi.timelionScan(FXCollections.observableArrayList(),
-                TimelionApi.TIMELINE_USERS, new HashMap<>(), "now-1d"));
+                TimelionApi.TIMELINE_SISTEMAS, new HashMap<>(), "now-1d"));
     }
 
     @Test

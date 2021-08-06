@@ -67,30 +67,22 @@
 			<tabs>
 				<Tab closable="false" text="Top Destinations">
 					<content>
-						<VBox>
 							<TableView fx:id="acessosSistemaTable" VBox.vgrow="ALWAYS" />
-						</VBox>
 					</content>
 				</Tab>
 				<Tab closable="false" text="Top Sources">
 					<content>
-						<VBox>
 							<TableView fx:id="consultasTable" VBox.vgrow="ALWAYS" />
-						</VBox>
 					</content>
 				</Tab>
 				<Tab closable="false" text="Top Destination Ports">
 					<content>
-						<VBox>
 							<TableView fx:id="pathsTable" VBox.vgrow="ALWAYS" />
-						</VBox>
 					</content>
 				</Tab>
 				<Tab closable="false" text="Top Application">
 					<content>
-						<VBox>
 							<TableView fx:id="ipsTable" VBox.vgrow="ALWAYS" />
-						</VBox>
 					</content>
 				</Tab><Tab text="Timeline Sistemas">
                     <content>

@@ -20,7 +20,10 @@ import utils.ex.SupplierEx;
 public final class TimelionApi extends KibanaApi {
     private static final String TIMELION_URL = ProjectProperties.getField();
     private static final Logger LOG = HasLogging.log();
-    public static final String TIMELINE_USERS =
+    public static final String TIMELINE_USERNAME =
+            ".es(index=dtp-waf*,q=\\\"http.user-name.keyword:*\\\",split=http.user-name.keyword:12).label('$1','.*>.*:(.*)>.*')";
+
+    public static final String TIMELINE_SISTEMAS =
             ".es(index=*apache-prod*,q=\\\"dtptype:nginx OR dtptype:apache OR dtptype:varnish\\\","
                     + "split=dtpsistema.keyword:12).label('$1','.*>.*:(.*)>.*')";
     public static final String TIMELINE_IPS =

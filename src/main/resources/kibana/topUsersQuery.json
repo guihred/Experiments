@@ -1,24 +1,18 @@
-{"index":"dtp-pl*","ignore_unavailable":true,"preference":1611142058423}
+{"index":"dtp-pl*","ignore_unavailable":true,"preference":1628207105021}
 {
 	"aggs": {
 		"2": {
 			"terms": {
-				"field": "SourceIP",
-				"size": 10,
+				"field": "SourceUser.keyword",
+				"size": 50,
 				"order": {
-					"1": "desc"
-				}
-			},
-			"aggs": {
-				"1": {
-					"sum": {
-						"field": "Bytes"
-					}
+					"_count": "desc"
 				}
 			}
 		}
 	},
 	"size": 0,
+	"version": true,
 	"_source": {
 		"excludes": []
 	},
@@ -48,14 +42,7 @@
 	],
 	"query": {
 		"bool": {
-			"must": [
-			    {
-                    "query_string": {
-                        "query": "DestinationIP:%s",
-                        "analyze_wildcard": true,
-                        "default_field": "*"
-                    }
-                },
+			"must": [%s
 				{
 					"range": {
 						"@timestamp": {
@@ -68,8 +55,29 @@
 			],
 			"filter": [],
 			"should": [],
-			"must_not": []
+			"must_not": [
+				{
+					"match_phrase": {
+						"dtpcategoria": {
+							"query": "threat"
+						}
+					}
+				}
+			]
 		}
 	},
-	"timeout": "100000ms"
+	"highlight": {
+		"pre_tags": [
+			"@kibana-highlighted-field@"
+		],
+		"post_tags": [
+			"@/kibana-highlighted-field@"
+		],
+		"fields": {
+			"*": {
+			}
+		},
+		"fragment_size": 2147483647
+	},
+	"timeout": "30000ms"
 }

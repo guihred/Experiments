@@ -67,31 +67,22 @@
 			<tabs>
 				<Tab closable="false" text="Acessos por Sistema">
 					<content>
-						<VBox>
-
 							<TableView fx:id="acessosSistemaTable" VBox.vgrow="ALWAYS" />
-						</VBox>
 					</content>
 				</Tab>
 				<Tab closable="false" text="Usuários x Número consultas">
 					<content>
-						<VBox>
 							<TableView fx:id="consultasTable" VBox.vgrow="ALWAYS" />
-						</VBox>
 					</content>
 				</Tab>
 				<Tab closable="false" text="Requisições por Sistema">
 					<content>
-						<VBox>
 							<TableView fx:id="pathsTable" VBox.vgrow="ALWAYS" />
-						</VBox>
 					</content>
 				</Tab>
 				<Tab closable="false" text="IP x Qtde URLs">
 					<content>
-						<VBox>
 							<TableView fx:id="ipsTable" VBox.vgrow="ALWAYS" />
-						</VBox>
 					</content>
 				</Tab>
 				<Tab text="Timeline Sistemas">

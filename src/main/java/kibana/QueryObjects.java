@@ -7,32 +7,35 @@ import extract.web.JsonExtractor;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.ListHelper;
 import simplebuilder.SimpleConverter;
+import simplebuilder.SimpleListViewBuilder;
 import simplebuilder.SimpleTableViewBuilder;
-import utils.CommonsFX;
-import utils.DateFormatUtils;
-import utils.QuickSortML;
-import utils.StringSigaUtils;
+import utils.*;
 import utils.ex.ConsumerEx;
 import utils.ex.FunctionEx;
+import utils.ex.RunnableEx;
 
 public class QueryObjects {
     public static final String URL_QUERY = "request.keyword";
+    public static final String POLICY_NAME = "policy-name.keyword";
+    public static final String USER_NAME = "http.user-name.keyword";
 
     public static final String SOURCE_IP_QUERY = "SourceIP";
     public static final String DESTINATION_PORT_QUERY = "DestinationPort";
@@ -77,6 +80,11 @@ public class QueryObjects {
         ObservableList<Map<String, String>> ipItems2 = getItems();
         table.setItems(CommonsFX.newFastFilter(resultsFilter, ipItems2));
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        String splitMergeCamelCase =
+                StringSigaUtils
+                        .changeCase(StringSigaUtils.splitMergeCamelCase(queryFile.replaceAll("Query|\\.json", "")));
+        table.parentProperty().addListener((ob, old, val) -> RunnableEx.runIf(val,
+                v -> ((Tab) ClassReflectionUtils.getFieldValue(v, "tab")).setText(splitMergeCamelCase)));
         SimpleTableViewBuilder.of(table).copiable().savable().onDoubleClickMany(onClick)
                 .onSortClicked((col, ascending) -> QuickSortML.sortMapList(ipItems2, col, ascending));
         return this;
@@ -217,6 +225,34 @@ public class QueryObjects {
     public QueryObjects setValueFormat(String key, FunctionEx<String, String> valueFormat) {
         formatMap.put(key, valueFormat);
         return this;
+    }
+
+    public static void linkFilter(ListView<Entry<String, String>> filterList2, ObservableMap<String, String> filter,
+            ConsumerEx<String> onPaste) {
+        SimpleListViewBuilder.of(filterList2).onKey(KeyCode.DELETE, e -> {
+            String string = filter.get(e.getKey());
+            String newFilterValue = Stream.of(string.split("\n")).filter(t -> !Objects.equals(e.getValue(), t))
+                    .collect(Collectors.joining("\n"));
+            if (StringUtils.isBlank(newFilterValue)) {
+                filter.remove(e.getKey());
+            } else {
+                filter.put(e.getKey(), newFilterValue);
+            }
+        }).pasteable(s -> {
+            onPaste.accept(s);
+            return null;
+        }).copiable().multipleSelection();
+        filter.addListener((Change<? extends String, ? extends String> change) -> {
+            List<Entry<String,
+                    String>> newComposition =
+                            change.getMap().entrySet().stream()
+                                    .flatMap(entry -> Stream.of(entry.getValue().split("\n")).distinct().sorted()
+                                            .map(s -> JsonExtractor.newEntry(entry.getKey(), s)))
+                                    .collect(Collectors.toList());
+            filterList2.getItems().removeIf(s -> !newComposition.contains(s));
+            filterList2.getItems().addAll(newComposition.stream().filter(s -> !filterList2.getItems().contains(s))
+                    .collect(Collectors.toList()));
+        });
     }
 
 }

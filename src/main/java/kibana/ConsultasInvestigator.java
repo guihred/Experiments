@@ -8,30 +8,24 @@ import static kibana.QueryObjects.CLIENT_IP_QUERY;
 import static kibana.QueryObjects.URL_QUERY;
 
 import extract.web.CIDRUtils;
-import extract.web.JsonExtractor;
 import extract.web.WhoIsScanner;
 import java.io.File;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener.Change;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ml.graph.DataframeExplorer;
 import org.apache.commons.lang3.StringUtils;
 import simplebuilder.SimpleDialogBuilder;
-import simplebuilder.SimpleListViewBuilder;
 import utils.*;
 import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
@@ -96,33 +90,10 @@ public class ConsultasInvestigator extends Application {
         RunnableEx.runNewThread(() -> configureTable.makeKibanaQuery(filter, days.getValue()));
         configureTable(CLIENT_IP_QUERY, "consultasQuery.json", consultasTable, "key", count).setAllowEmpty(false);
         configureTable(URL_QUERY, "requestedPath.json", pathsTable, "key", count).setGroup("^/.*").setAllowEmpty(false);
-        configureTimeline(ACESSOS_SISTEMA_QUERY, TimelionApi.TIMELINE_USERS, timelineUsuarios, uidCombo);
+        configureTimeline(ACESSOS_SISTEMA_QUERY, TimelionApi.TIMELINE_SISTEMAS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
         configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setAllowEmpty(false);
-        SimpleListViewBuilder.of(filterList).onKey(KeyCode.DELETE, e -> {
-            String string = filter.get(e.getKey());
-            String newFilterValue = Stream.of(string.split("\n")).filter(t -> !Objects.equals(e.getValue(), t))
-                    .collect(Collectors.joining("\n"));
-            if (StringUtils.isBlank(newFilterValue)) {
-                filter.remove(e.getKey());
-            } else {
-                filter.put(e.getKey(), newFilterValue);
-            }
-        }).pasteable(s -> {
-            addToFilter(s);
-            return null;
-        }).copiable().multipleSelection();
-        filter.addListener((Change<? extends String, ? extends String> change) -> {
-            List<Entry<String,
-                    String>> newComposition =
-                            change.getMap().entrySet().stream()
-                                    .flatMap(entry -> Stream.of(entry.getValue().split("\n")).distinct().sorted()
-                                            .map(s -> JsonExtractor.newEntry(entry.getKey(), s)))
-                                    .collect(Collectors.toList());
-            filterList.getItems().removeIf(s -> !newComposition.contains(s));
-            filterList.getItems().addAll(newComposition.stream().filter(s -> !filterList.getItems().contains(s))
-                    .collect(Collectors.toList()));
-        });
+        QueryObjects.linkFilter(filterList, filter, s -> addToFilter(s));
         splitPane0.setDividerPositions(1. / 10);
     }
 
