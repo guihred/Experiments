@@ -69,8 +69,6 @@ public class ReportApplication extends Application {
                 () -> String.format(Locale.ENGLISH, "%s (%.2f)", "Zoom", browser.getZoom()), browser.zoomProperty()));
 
         WebEngine engine = browser.getEngine();
-        // engine.setUserAgent(JsoupUtils.USER_AGENT + "\nAuthorization: Basic " +
-        // ExtractUtils.getEncodedAuthorization());
         Worker<Void> loadWorker = engine.getLoadWorker();
         engine.setOnError(e -> LOG.error("ERROR LOADING", e));
         engine.setOnAlert(e -> LOG.error("ALERT LOADING", e));
@@ -136,7 +134,7 @@ public class ReportApplication extends Application {
         }
         if (mapaSubstituicao.containsKey("gerid")) {
             String index = params.get("\\$index");
-            Boolean searchCredencial = Boolean.valueOf(params.getOrDefault("\\$searchCredencial", "true").toString());
+            Boolean searchCredencial = Boolean.valueOf(params.getOrDefault("\\$searchCredencial", "true"));
             params.putAll(ReportHelper.adjustParams(mapaSubstituicao, days, ipParam, index, searchCredencial,
                     progressIndicator.progressProperty()));
         }
@@ -190,30 +188,7 @@ public class ReportApplication extends Application {
     }
 
     private Node getNode(String k, Object v) {
-        return paramsNode.computeIfAbsent(k, key -> {
-            if (v instanceof List) {
-                List<?> v2 = (List<?>) v;
-                if (v2.contains("")) {
-                    AutocompleteField textField = new AutocompleteField();
-                    textField.setEntries(v2.stream().map(Objects::toString).collect(Collectors.toList()));
-                    textField.textProperty().addListener((ob, old, val) -> params.put("\\$" + k, val));
-                    textField.setText(v2.stream().findFirst().map(Objects::toString).orElse(""));
-                    return textField;
-                }
-
-                return new SimpleComboBoxBuilder<>().items(v2.toArray())
-                        .onSelect(s -> params.put("\\$" + k, s.toString())).select(0).build();
-            }
-            if (v instanceof Boolean) {
-                CheckBox checkBox = new CheckBox();
-                checkBox.selectedProperty().addListener((ob, old, val) -> params.put("\\$" + k, val + ""));
-                checkBox.setSelected((Boolean) v);
-                return checkBox;
-            }
-            TextField textField = new TextField();
-            textField.textProperty().addListener((ob, old, val) -> params.put("\\$" + k, val));
-            return textField;
-        });
+        return paramsNode.computeIfAbsent(k, key -> mapNode(k, v));
     }
 
     private Map<String, Object> getReplacementMap(File modelFile) throws IOException {
@@ -221,6 +196,31 @@ public class ReportApplication extends Application {
         addCommonParams();
         addGeridInfo(mapaSubstituicao);
         return mapaSubstituicao;
+    }
+
+    private Node mapNode(String k, Object v) {
+        if (v instanceof List) {
+            List<?> v2 = (List<?>) v;
+            if (v2.contains("")) {
+                AutocompleteField textField = new AutocompleteField();
+                textField.setEntries(v2.stream().map(Objects::toString).collect(Collectors.toList()));
+                textField.textProperty().addListener((ob, old, val) -> params.put("\\$" + k, val));
+                textField.setText(v2.stream().findFirst().map(Objects::toString).orElse(""));
+                return textField;
+            }
+
+            return new SimpleComboBoxBuilder<>().items(v2.toArray())
+                    .onSelect(s -> params.put("\\$" + k, s.toString())).select(0).build();
+        }
+        if (v instanceof Boolean) {
+            CheckBox checkBox = new CheckBox();
+            checkBox.selectedProperty().addListener((ob, old, val) -> params.put("\\$" + k, val + ""));
+            checkBox.setSelected((Boolean) v);
+            return checkBox;
+        }
+        TextField textField = new TextField();
+        textField.textProperty().addListener((ob, old, val) -> params.put("\\$" + k, val));
+        return textField;
     }
 
     private void onModelChange(Path path) throws IOException {

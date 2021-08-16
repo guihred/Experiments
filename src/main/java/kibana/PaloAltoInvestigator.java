@@ -89,7 +89,7 @@ public class PaloAltoInvestigator extends Application {
                         map -> PortServices.getServiceByPort(StringSigaUtils.toInteger(map.get("key"))).toString());
         configureTable("Application.keyword", "topApplicationQuery.json", ipsTable, "key", va).setValueFormat(va,
                 StringSigaUtils::getFileSize);
-        QueryObjects.linkFilter(filterList, filter, s -> addToFilter(s));
+        QueryObjects.linkFilter(filterList, filter, this::addToFilter);
         splitPane0.setDividerPositions(1. / 10);
     }
 
@@ -182,7 +182,6 @@ public class PaloAltoInvestigator extends Application {
         }
         if (s.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {
             filter.merge(SOURCE_IP_QUERY, "\\\"" + s + "\\\"", ConsultasHelper::merge);
-            return;
         }
     }
 

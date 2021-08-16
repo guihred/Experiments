@@ -22,7 +22,7 @@ import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
-public class CIDRUtils {
+public final class CIDRUtils {
     public static final String NETWORK = "network";
     private static final String NETWORKS_CSV = "csv/networks.csv";
     private static DataframeML networkFile;
@@ -32,6 +32,9 @@ public class CIDRUtils {
 
     private static final String CIDR_REGEX = "\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+";
     private static final String IP_REGEX = "\\d+\\.\\d+\\.\\d+\\.\\d+";
+
+    private CIDRUtils() {
+    }
 
     public static String addressToPattern(String cidr) {
         if (StringUtils.isBlank(cidr) || !cidr.matches(CIDR_REGEX)) {
@@ -116,10 +119,6 @@ public class CIDRUtils {
         return VPN_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
     }
 
-    public static void main(String[] args) {
-        System.out.println(VPN_NETWORKS);
-        System.out.println(PRIVATE_NETWORKS);
-    }
 
     public static synchronized List<Map<String, Object>> makeNetworkCSV() {
         File outFile = ResourceFXUtils.getOutFile(NETWORKS_CSV);

@@ -43,7 +43,7 @@ public final class SlidingPuzzleModel {
         reset();
     }
 
-    private final EventHandler<MouseEvent> createMouseClickedEvento(SlidingPuzzleSquare mem) {
+    private EventHandler<MouseEvent> createMouseClickedEvento(SlidingPuzzleSquare mem) {
         return e -> slideIfPossible(mem);
     }
 
@@ -59,7 +59,7 @@ public final class SlidingPuzzleModel {
             || isNeighborEmpty(i, j, -1, 0);
     }
 
-    private final void reset() {
+    private void reset() {
         for (int i = 0; i < 100; i++) {
             int nextI = random.nextInt(MAP_SIZE);
             int nextJ = random.nextInt(MAP_SIZE);
@@ -85,7 +85,7 @@ public final class SlidingPuzzleModel {
         }
     }
 
-    private final void swapEmptyNeighbor(int i, int j) {
+    private void swapEmptyNeighbor(int i, int j) {
         for (int k = -1; k < 2; k++) {
             for (int l = -1; l < 2; l++) {
                 if ((k == 0 || l == 0) && k != l && isNeighborEmpty(i, j, k, l)) {

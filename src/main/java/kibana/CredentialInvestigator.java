@@ -53,7 +53,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
         indexCombo = new SimpleComboBoxBuilder<>(Arrays.asList("inss-*-prod-*", "mte-log4j-prod-*")).select(0).build();
         pane.getChildren().add(2, SimpleVBoxBuilder.newVBox("Index", indexCombo));
         SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
-                .pasteable(s -> StringSigaUtils.getMatches(s, "(" + IP_REGEX + "|\\d{11})"))
+                .pasteable(s -> StringSigaUtils.getMatches(s, "(" + IP_REGEX + "|\\d{11}|[\\w\\.]+@[\\w\\.]+)"))
                 .onDoubleClick(resultsFilter::setText);
         RunnableEx.runNewThread(CredentialInvestigator::getCookies);
     }
@@ -75,8 +75,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
             File outFile = ResourceFXUtils.getOutFile("csv/paloAlto.csv");
             final int oneDay = 24;
             if (JsonExtractor.isRecentFile(outFile, oneDay)) {
-                dataframeLookup = SupplierEx.orElse(dataframeLookup,
-                        () -> DataframeBuilder.builder(outFile).build(progressIndicator.progressProperty()));
+                setDataframeLookup(outFile, progressIndicator.progressProperty());
             }
         });
 
@@ -113,7 +112,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
         File outFile = ResourceFXUtils.getOutFile("html/" + credencial + ".html");
         Document document = getCachedDocument(credencial, outFile);
         String memberOf = "memberOf";
-        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", memberOf);
+        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", memberOf, "pwdChangedTime");
 
         return document.select("input").stream()
                 .map(e -> new AbstractMap.SimpleEntry<>(e.attr("id"), Objects.toString(e.attr("value"), "").trim()))
@@ -244,6 +243,11 @@ public class CredentialInvestigator extends KibanaInvestigator {
             return findFirst.stream().map(CredentialInvestigator::lookupDisplay).map(KibanaApi::display)
                     .collect(Collectors.joining("\n"));
         });
+    }
+
+    private static void setDataframeLookup(File outFile, DoubleProperty doubleProperty) {
+        dataframeLookup = SupplierEx.orElse(dataframeLookup,
+                () -> DataframeBuilder.builder(outFile).build(doubleProperty));
     }
 
 }

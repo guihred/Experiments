@@ -56,6 +56,34 @@ public class SanarCrawler extends Application {
 
     private PhantomJSUtils phantomJSUtils;
 
+    public List<Entry<String, String>> getVimeoLinks(Entry<String, String> entry, int level, Document doc) {
+        List<SimpleEntry<String, String>> allLinks = doc.select("button[data-tipo=VIDEO]").stream()
+                .map(FunctionEx.ignore(l -> new AbstractMap.SimpleEntry<>(l.attr("data-nome"),
+                        "https://player.vimeo.com/video/" + l.attr("data-src"))))
+                .filter(Objects::nonNull).filter(t -> !"#".equals(t.getValue())).filter(t -> links.add(t.getValue()))
+                .collect(Collectors.toList());
+        List<Map.Entry<String, String>> linksFound =
+                allLinks.stream().filter(t -> isValidLink(level, t) || isVimeoValidLink(level, t)).distinct()
+                        .collect(Collectors.toList());
+        if (level == 1) {
+            RunnableEx.run(() -> {
+                getFilesFromPage(entry);
+                nextInTree();
+            });
+        }
+        if (level == 0) {
+            for (SimpleEntry<String, String> url : allLinks) {
+                Concurso e2 = new Concurso();
+                e2.setUrl(url.getValue());
+                String key = url.getKey();
+                e2.setNome(key);
+                concursos.add(e2);
+            }
+
+        }
+        return linksFound;
+    }
+
     public void initialize() {
 
         Map.Entry<String, String> simpleEntry = new SimpleEntry<>("Area do aluno", SanarHelper.PREFIX + "");
@@ -147,34 +175,6 @@ public class SanarCrawler extends Application {
 
     }
 
-    private List<Entry<String, String>> getVimeoLinks(Entry<String, String> entry, int level, Document doc) {
-        List<SimpleEntry<String, String>> allLinks = doc.select("button[data-tipo=VIDEO]").stream()
-                .map(FunctionEx.ignore(l -> new AbstractMap.SimpleEntry<>(l.attr("data-nome"),
-                        "https://player.vimeo.com/video/" + l.attr("data-src"))))
-                .filter(Objects::nonNull).filter(t -> !"#".equals(t.getValue())).filter(t -> links.add(t.getValue()))
-                .collect(Collectors.toList());
-        List<Map.Entry<String, String>> linksFound =
-                allLinks.stream().filter(t -> isValidLink(level, t) || isVimeoValidLink(level, t)).distinct()
-                        .collect(Collectors.toList());
-        if (level == 1) {
-            RunnableEx.run(() -> {
-                getFilesFromPage(entry);
-                nextInTree();
-            });
-        }
-        if (level == 0) {
-            for (SimpleEntry<String, String> url : allLinks) {
-                Concurso e2 = new Concurso();
-                e2.setUrl(url.getValue());
-                String key = url.getKey();
-                e2.setNome(key);
-                concursos.add(e2);
-            }
-
-        }
-        return linksFound;
-    }
-
     private void nextInTree() {
         CommonsFX.runInPlatform(() -> {
             int selectedIndex = treeBuilder.getSelectionModel().getSelectedIndex();
@@ -196,9 +196,7 @@ public class SanarCrawler extends Application {
         File file = toVideoFileName(nome);
         if (url.contains("player.vimeo.com/video/")) {
             LOG.info("DOWNLOADING {} ...", file.getName());
-            RunnableEx.runNewThread(() -> {
-                return SongUtils.downloadYoutubeVideo(url, file);
-            }, l -> {
+            RunnableEx.runNewThread(() -> SongUtils.downloadYoutubeVideo(url, file), l -> {
                 if (l.stream().anyMatch(s -> s.contains("100%"))) {
                     LOG.info("DOWNLOADED {} SUCCESSFULLY", file.getName());
                 }

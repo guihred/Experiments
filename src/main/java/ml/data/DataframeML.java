@@ -55,7 +55,7 @@ public class DataframeML extends BaseDataframe {
     public DataframeML filter(String header, PredicateEx<Object> v) {
         List<Object> list = dataframe.get(header);
         if (list == null) {
-            HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
+            HasLogging.log(1).error("header \"{}\" does not exist in {}", header, file.getName());
             return this;
         }
 
@@ -94,7 +94,7 @@ public class DataframeML extends BaseDataframe {
             return IntStream.range(0, list.size()).filter(i -> v.test(list.get(i)))
                     .mapToObj(this::rowMap).collect(Collectors.toList());
         }
-        HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
+        HasLogging.log(1).error("\"{}\" may not exist in {}", header, file.getName());
         return Collections.emptyList();
     }
 
@@ -105,7 +105,7 @@ public class DataframeML extends BaseDataframe {
             return (Map<String, T>) IntStream.range(0, list.size()).filter(i -> v.test(list.get(i)))
                     .mapToObj(this::rowMap).findFirst().orElse(null);
         }
-        HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
+        HasLogging.log(1).error("header \"{}\" not found in {}", header, file.getName());
         return null;
     }
 
@@ -135,7 +135,7 @@ public class DataframeML extends BaseDataframe {
     public List<Object> map(String destination, String header, UnaryOperator<Object> mapper) {
         List<Object> list = dataframe.get(header);
         if (list == null) {
-            HasLogging.log(1).error("ERROR header \"{}\" does not exist in {}", header, file.getName());
+            HasLogging.log(1).error("header \"{}\" could not be mapped in {}", header, file.getName());
             return Collections.emptyList();
         }
         List<Object> mappedList = list.stream().map(mapper).collect(Collectors.toList());

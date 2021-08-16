@@ -32,6 +32,12 @@ import utils.ex.SupplierEx;
 
 public class KibanaApi {
 
+    private static final String DOC_COUNT = "doc_count";
+
+    private static final String SOURCE_IP = "SourceIP";
+
+    private static final String DESCRIPTION_KEY = "Descrição";
+
     private static final String KEY = "key";
 
     private static final String VALUE = "value";
@@ -54,9 +60,9 @@ public class KibanaApi {
 
     public static final String IP_REGEX = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
 
-    private static final String[] HOSTS_KEYS = { "as_owner", "Nome", "HostName", "Descrição", "asname", "id" };
-    private static final String[] LOCATION_KEYS = { "country", "ascountry", "Descrição" };
-    private static final String[] OWNER_KEYS = { "as_owner", "Nome", "Descrição", "asname", "id" };
+    private static final String[] HOSTS_KEYS = { "as_owner", "Nome", "HostName", DESCRIPTION_KEY, "asname", "id" };
+    private static final String[] LOCATION_KEYS = { "country", "ascountry", DESCRIPTION_KEY };
+    private static final String[] OWNER_KEYS = { "as_owner", "Nome", DESCRIPTION_KEY, "asname", "id" };
 
     protected KibanaApi() {
     }
@@ -65,14 +71,14 @@ public class KibanaApi {
         String buckets = "buckets";
         final String aggregations = "aggregations";
         List<Map<Object, Object>> accessList = JsonExtractor.accessList(makeKibanaSearchObj("destinationPortQuery.json",
-                days, new String[] { "DestinationIP", "SourceIP", ip }, aggregations), aggregations, "3", buckets);
+                days, new String[] { "DestinationIP", SOURCE_IP, ip }, aggregations), aggregations, "3", buckets);
         List<Map<Object, Object>> accessList2 =
                 JsonExtractor.accessList(
                         makeKibanaSearchObj("destinationPortQuery.json", days,
-                                new String[] { "SourceIP", "DestinationIP", ip }, aggregations),
+                                new String[] { SOURCE_IP, "DestinationIP", ip }, aggregations),
                         aggregations, "3", buckets);
         accessList.addAll(accessList2);
-        String collect = accessList.stream().flatMap((Map<Object, Object> map) -> {
+        return accessList.stream().flatMap((Map<Object, Object> map) -> {
             String ipd = JsonExtractor.access(map, String.class, KEY);
             String reverseDNS = CIDRUtils.getReverseDNS(ipd);
             return JsonExtractor.<Map<Object, Object>>accessList(map, "4", buckets).stream()
@@ -81,8 +87,6 @@ public class KibanaApi {
                 s -> -StringSigaUtils.strToFileSize(StringSigaUtils.getMatches(s, "((?i)[\\d\\.]+ ?[KMGT]?B)"))))
                 .limit(2)
                 .collect(Collectors.joining("\n"));
-
-        return collect;
     }
 
     public static <T> String display(Map<String, T> ob) {
@@ -233,9 +237,17 @@ public class KibanaApi {
     public static Map<String, Object> makeKibanaSearchObj(File file, int days, String[] query, String... params) {
         return SupplierEx.getHandle(() -> {
             File outFile = searchIfDoesNotExist(file, days, query);
-            Object object = JsonExtractor.toObject(outFile, params);
-            return JsonExtractor.accessMap(object);
+            return JsonExtractor.toObject(outFile, params);
         }, new HashMap<>(), e -> LOG.error("ERROR MAKING SEARCH {} {} {}", file.getName(), query, e.getMessage()));
+    }
+
+    public static Map<String, Object> makeKibanaSearchObj(String file, int days, Map<String, String> search,
+            String... params) {
+        File file1 = kibanaFile(file);
+        return SupplierEx.getHandle(() -> {
+            File outFile = newSearch(file1, days, search);
+            return JsonExtractor.toObject(outFile, params);
+        }, new HashMap<>(), e -> LOG.info("ERROR IN {}", file1.getName(), e));
     }
 
     public static Map<String, Object> makeKibanaSearchObj(String file, int days, String query, String... params) {
@@ -275,7 +287,7 @@ public class KibanaApi {
             return displayDistinct(destinationSearch);
         });
         fullScan.put("TOP_WEB",
-                () -> displayDistinct(makeKibanaSearch("acessosQuery.json", days, pattern, KEY, "doc_count")));
+                () -> displayDistinct(makeKibanaSearch("acessosQuery.json", days, pattern, KEY, DOC_COUNT)));
         fullScan.put("Ports", () -> destinationPorts(ip, days));
         fullScan.put("Acesso", () -> {
             Map<String, String> trafficSearch = makeKibanaSearch("trafficQuery.json", days, ip, VALUE);
@@ -291,10 +303,11 @@ public class KibanaApi {
             return displayDistinct(totalBytesQuery);
         });
         fullScan.put("URLs", () -> filterUrls(days, pattern));
-        fullScan.put("Bytes_Sent", () -> {
-            Map<String, Object> totalBytesSent = makeKibanaSearchObj("paloAltoQuery.json", days, ip, VALUE);
-            convertToStats(VALUE, totalBytesSent);
-            return display(totalBytesSent);
+        fullScan.put("Top Users", () -> {
+            Map<String, String> search = new LinkedHashMap<>();
+            search.put(SOURCE_IP, ip);
+            Map<String, String> nsInformation = makeKibanaSearch("topUsersQuery.json", days, search, KEY, DOC_COUNT);
+            return display(nsInformation);
         });
         fullScan.put("PaloAlto_Threat", () -> {
             if (CIDRUtils.isVPNNetwork(ip)) {
@@ -490,7 +503,9 @@ public class KibanaApi {
                 + Stream.of(query).filter(s -> !s.contains("/")).distinct().collect(Collectors.joining()) + "_"
                 + (int) days);
         if (JsonExtractor.isNotRecentFile(outFile)) {
-            String gte = Objects.toString(Instant.now().minus((int) (days * 24), ChronoUnit.HOURS).toEpochMilli());
+            final int hoursInADay = 24;
+            String gte =
+                    Objects.toString(Instant.now().minus((int) (days * hoursInADay), ChronoUnit.HOURS).toEpochMilli());
             String lte = Objects.toString(Instant.now().toEpochMilli());
             RunnableEx.make(
                     () -> getFromURL(ELASTICSEARCH_MSEARCH_URL,
@@ -503,7 +518,7 @@ public class KibanaApi {
     private static String urls(int days, String pattern) {
         Map<String, String> filter1 = new LinkedHashMap<>();
         filter1.put("clientip", pattern);
-        String docCount = "doc_count";
+        String docCount = DOC_COUNT;
         String key = KEY;
         Map<String, String> nsInformation =
                 KibanaApi.makeKibanaSearch("requestedPath.json", days, filter1, key, docCount);
@@ -527,3 +542,4 @@ public class KibanaApi {
     }
 
 }
+

@@ -93,7 +93,7 @@ public class ConsultasInvestigator extends Application {
         configureTimeline(ACESSOS_SISTEMA_QUERY, TimelionApi.TIMELINE_SISTEMAS, timelineUsuarios, uidCombo);
         configureTimeline(CLIENT_IP_QUERY, TimelionApi.TIMELINE_IPS, timelineIPs, ipCombo);
         configureTable(CLIENT_IP_QUERY, "geridQuery.json", ipsTable, "key", "value").setAllowEmpty(false);
-        QueryObjects.linkFilter(filterList, filter, s -> addToFilter(s));
+        QueryObjects.linkFilter(filterList, filter, this::addToFilter);
         splitPane0.setDividerPositions(1. / 10);
     }
 

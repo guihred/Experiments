@@ -20,7 +20,7 @@ import javafx.util.Duration;
 import simplebuilder.SimpleTimelineBuilder;
 
 public final class DotsHelper {
-    protected static final int MAZE_SIZE = 6;
+    public static final int MAZE_SIZE = 6;
 
     private DotsHelper() {
     }

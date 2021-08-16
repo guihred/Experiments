@@ -3,9 +3,10 @@
 	"params": {
 		
 	},
-	"name": "Radar_Eventos_v$gatheredDateREL1.pptx",
+	"name": "Radar_Eventos_v$gatheredDate-Turno-D.pptx",
 	"Dia: 01/12/2020": "DIA: $date",
 	"Dezembro 2020": "$currentMonth",
+	"Hora: 10:30 h":"Hora: $currentHour h",
 	"Volumes de acesso a portais e aplicações WEB": [
 		{
 			"zoom": 1.5,

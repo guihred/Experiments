@@ -33,7 +33,7 @@ public class ImageCrackerApp extends Application {
 
     public void initialize() {
         paginatedTableView.addColumn("Name", i -> imageFiles.get(i).getName());
-        paginatedTableView.addColumn("Read", i -> textField(i));
+        paginatedTableView.addColumn("Read", this::textField);
         imageCol = paginatedTableView.addColumn("Image", i -> {
             File file = imageFiles.get(i);
             ImageView imageView = new ImageView(file.toURI().toURL().toExternalForm());

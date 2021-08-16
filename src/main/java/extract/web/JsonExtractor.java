@@ -126,18 +126,8 @@ public final class JsonExtractor {
     public static List<Map<String, String>> remap(Map<String, String> object) {
         List<List<String>> listOfFields =
                 object.values().stream().map(s -> Arrays.asList(s.split("\n"))).collect(Collectors.toList());
-        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
         List<String> keys = object.keySet().stream().collect(Collectors.toList());
-        List<Map<String, String>> remappedObjs = new ArrayList<>();
-        for (int i = 0; i < maxNumFields; i++) {
-            Map<String, String> mapOfFields = new LinkedHashMap<>();
-            int j = i;
-            List<String> remapped =
-                    listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
-            IntStream.range(0, keys.size()).forEach(k -> mapOfFields.put(keys.get(k), remapped.get(k)));
-            remappedObjs.add(mapOfFields);
-        }
-        return remappedObjs;
+        return organizeList(listOfFields, keys);
     }
 
     public static List<Map<String, String>> remap(Map<String, String> ob, String regex) {
@@ -172,6 +162,15 @@ public final class JsonExtractor {
 
         }
         return finalList;
+    }
+
+    public static List<Map<String, String>> remapObj(Map<String, Object> object) {
+        List<List<String>> listOfFields = object
+                .values().stream().map(s -> JsonExtractor.<Object>accessList(s).stream()
+                        .map(StringSigaUtils::toStringSpecial).collect(Collectors.toList()))
+                .collect(Collectors.toList());
+        List<String> keys = object.keySet().stream().collect(Collectors.toList());
+        return organizeList(listOfFields, keys);
     }
 
     public static boolean splitList(List<Map<String, String>> list, Map<String, String> newItem) {
@@ -427,6 +426,20 @@ public final class JsonExtractor {
 
     private static boolean oneHourModified(File outFile) {
         return moreThanXHoursModified(outFile, 1);
+    }
+
+    private static List<Map<String, String>> organizeList(List<List<String>> listOfFields, List<String> keys) {
+        int maxNumFields = listOfFields.stream().mapToInt(List<String>::size).max().orElse(0);
+        List<Map<String, String>> remappedObjs = new ArrayList<>();
+        for (int i = 0; i < maxNumFields; i++) {
+            Map<String, String> mapOfFields = new LinkedHashMap<>();
+            int j = i;
+            List<String> remapped =
+                    listOfFields.stream().map(e -> j < e.size() ? e.get(j) : "").collect(Collectors.toList());
+            IntStream.range(0, keys.size()).forEach(k -> mapOfFields.put(keys.get(k), remapped.get(k)));
+            remappedObjs.add(mapOfFields);
+        }
+        return remappedObjs;
     }
 
     private static String processNode(JsonNode jsonNode, Map<String, String> yaml, int depth, String... filters) {

@@ -63,9 +63,6 @@ public final class InstallCert {
         if (isTrusted(host, port, factory)) {
             return;
         }
-        // if (isTrusted(host, port, factory)) {
-        // return ;
-        // }
 
         X509Certificate[] chain = tm.getAcceptedIssuers();
         if (chain == null || chain.length == 0) {

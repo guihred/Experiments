@@ -94,9 +94,13 @@ public class WhoIsScanner {
         return map;
     }
 
+    public static String makeDescription(Map<String, String> internalScan) {
+        return internalScan.values().stream().map(Objects::toString)
+                .filter(StringUtils::isNotBlank).map(String::trim).distinct().collect(Collectors.joining(" - "));
+    }
+
     private static Map<String, String> addDescricao(Map<String, String> internalScan) {
-        internalScan.put("Descrição", internalScan.values().stream().map(Objects::toString)
-                .filter(StringUtils::isNotBlank).map(String::trim).distinct().collect(Collectors.joining(" - ")));
+        internalScan.put("Descrição", makeDescription(internalScan));
         return internalScan;
     }
 

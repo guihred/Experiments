@@ -24,6 +24,10 @@ import utils.ex.RunnableEx;
 
 public final class SongUtils {
 
+    private static final String DURATION_REGEX = "\\s*Duration: ([\\.:\\d]+),.+";
+
+    private static final String BITRATE_REGEX = "size=\\s*.+ time=(.+) bitrate=.+";
+
     private static final int SECONDS_IN_A_MINUTE = 60;
 
     private static final String FFMPEG =
@@ -58,16 +62,14 @@ public final class SongUtils {
         cmd.append(obj);
         cmd.append("\"");
         Map<String, String> responses = new HashMap<>();
-        String key = "size=\\s*.+ time=(.+) bitrate=.+";
-
-        responses.put(key, "$1");
-        String key2 = "\\s*Duration: ([\\.:\\d]+),.+";
+        responses.put(BITRATE_REGEX, "$1");
+        String key2 = DURATION_REGEX;
         responses.put(key2, "$1");
-        // ffmpeg.exe -i mix-gameOfThrone.mp3 -r 1 -t 164 teste.mp3
         Map<String, ObservableList<String>> executeInConsoleAsync =
                 ConsoleUtils.executeInConsoleAsync(cmd.toString(), responses);
 
-        return ConsoleUtils.defineProgress(key2, key, executeInConsoleAsync, DateFormatUtils::convertTimeToMillis);
+        return ConsoleUtils.defineProgress(key2, BITRATE_REGEX, executeInConsoleAsync,
+                DateFormatUtils::convertTimeToMillis);
     }
 
     public static DoubleProperty downloadVideo(String url, File mp4File) {
@@ -79,10 +81,10 @@ public final class SongUtils {
         cmd.append(mp4File);
         cmd.append("\"");
         Map<String, String> responses = new HashMap<>();
-        String key = "size=\\s*.+ time=(.+) bitrate=.+";
+        String key = BITRATE_REGEX;
 
         responses.put(key, "$1");
-        String key2 = "\\s*Duration: ([\\.:\\d]+),.+";
+        String key2 = DURATION_REGEX;
         responses.put(key2, "$1");
 
         Map<String, ObservableList<String>> executeInConsoleAsync =
@@ -99,15 +101,14 @@ public final class SongUtils {
         cmd.append("\" -f \"(mp4)[height<480]\" ");
         cmd.append(url);
         Map<String, String> responses = new HashMap<>();
-        String key = "size=\\s*.+ time=(.+) bitrate=.+";
+        String key = BITRATE_REGEX;
 
         // [download] 100% of 138.32MiB in 01:10
 
         responses.put(key, "$1");
-        String key2 = "\\s*Duration: ([\\.:\\d]+),.+";
+        String key2 = DURATION_REGEX;
         responses.put(key2, "$1");
-        List<String> executeInConsoleAsync = ConsoleUtils.executeInConsoleInfo(cmd.toString());
-        return executeInConsoleAsync;
+        return ConsoleUtils.executeInConsoleInfo(cmd.toString());
     }
 
     public static String formatDuration(Duration duration) {

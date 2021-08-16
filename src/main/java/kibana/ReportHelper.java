@@ -42,7 +42,6 @@ public final class ReportHelper {
     private static final String IP_KEY = "\\$ip";
     private static final Logger LOG = HasLogging.log();
 
-
     private ReportHelper() {
     }
 
@@ -71,30 +70,7 @@ public final class ReportHelper {
         CommonsFX.update(progress, 0);
         List<String> urls = new ArrayList<>();
         for (String key : keys) {
-            mapaSubstituicao.compute(key, (k, v) -> {
-                if (v instanceof List) {
-                    List<?> list = (List<?>) v;
-                    return list.stream().flatMap(e -> {
-                        if (StringUtils.isNotBlank(params.get(IP_KEY))) {
-                            Set<Object> set = new LinkedHashSet<>();
-                            return Stream.of(params.get(IP_KEY).split(SPLIT_REGEX)).filter(StringUtils::isNotBlank)
-                                    .map(s -> {
-                                        Map<String, String> linkedHashMap = new LinkedHashMap<>(params);
-                                        linkedHashMap.put(IP_KEY, s);
-                                        return linkedHashMap;
-                                    }).map(pa -> remapUncroppred(pa, browser, e, urls))
-                                    .filter(o -> !(o instanceof Image)
-                                            || set.add(ClassReflectionUtils.invoke(o, "impl_getUrl")))
-                                    .distinct();
-                        }
-                        return Stream.of(remapUncroppred(params, browser, e, urls));
-                    }).filter(Objects::nonNull)
-                            .peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
-                            .collect(Collectors.toList());
-                }
-                CommonsFX.addProgress(progress, 1. / keys.size());
-                return replaceString(params, v);
-            });
+            mapaSubstituicao.compute(key, (k, v) -> replace(params, browser, progress, keys, urls, v));
         }
         String collect = urls.stream().distinct()
                 .map(s -> "<tr><td><iframe style=\"border: 0\" src=\"" + s
@@ -131,8 +107,8 @@ public final class ReportHelper {
             if (searchCredencial) {
                 for (String credencial : collect) {
 
-                    Map<String, String> iPsByCredencial =
-                            KibanaApi.getIPsByCredencial("\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
+                    Map<String, String> iPsByCredencial = KibanaApi
+                            .getIPsByCredencial("\\\"" + credencial + "\\\"" + authenticationSuccess, index, days);
                     REMOVE_IPS.forEach(iPsByCredencial::remove);
                     credentialText.addAll(iPsByCredencial.values());
                     String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
@@ -180,7 +156,6 @@ public final class ReportHelper {
         return replaceString.replaceAll(".+\\.(\\w+)$", "$1");
     }
 
-
     public static Stream<Image> objectList(Object e) {
         if (!(e instanceof Collection)) {
             return Stream.empty();
@@ -209,7 +184,6 @@ public final class ReportHelper {
             RunnableEx.runNewThread(() -> finalizeReport(mapaSubstituicao, reportFile));
         }
     }
-
 
     public static String replaceString(Map<String, String> params, Object v) {
         String string = v.toString();
@@ -328,9 +302,8 @@ public final class ReportHelper {
     }
 
     private static String getReportName(Map<String, Object> mapaSubstituicao, Map<String, String> params2) {
-        String replaceString = ReportHelper.replaceString(params2, mapaSubstituicao.get("name"))
+        return ReportHelper.replaceString(params2, mapaSubstituicao.get("name"))
                 .replaceAll("\\.(inss|gov|br|prevnet|dataprev)|vip-p?", "");
-        return replaceString;
     }
 
     private static Image getUncroppedImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
@@ -438,6 +411,29 @@ public final class ReportHelper {
             return e;
         }
         return replaceString(params, e);
+    }
+
+    private static Object replace(Map<String, String> params, WebView browser, DoubleProperty progress,
+            List<String> keys, List<String> urls, Object v) {
+        if (v instanceof List) {
+            List<?> list = (List<?>) v;
+            return list.stream().flatMap(e -> {
+                if (StringUtils.isNotBlank(params.get(IP_KEY))) {
+                    Set<Object> set = new LinkedHashSet<>();
+                    return Stream.of(params.get(IP_KEY).split(SPLIT_REGEX)).filter(StringUtils::isNotBlank).map(s -> {
+                        Map<String, String> linkedHashMap = new LinkedHashMap<>(params);
+                        linkedHashMap.put(IP_KEY, s);
+                        return linkedHashMap;
+                    }).map(pa -> remapUncroppred(pa, browser, e, urls)).filter(
+                            o -> !(o instanceof Image) || set.add(ClassReflectionUtils.invoke(o, "impl_getUrl")))
+                            .distinct();
+                }
+                return Stream.of(remapUncroppred(params, browser, e, urls));
+            }).filter(Objects::nonNull).peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
+                    .collect(Collectors.toList());
+        }
+        CommonsFX.addProgress(progress, 1. / keys.size());
+        return replaceString(params, v);
     }
 
     private static void saveCSV(File srcFile, Map<String, Object> params, File outFile) {

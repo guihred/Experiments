@@ -8,6 +8,7 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -70,23 +71,7 @@ public final class ListHelper {
         ReferenceMap<T, D> a = new ReferenceMap<>();
         center1.addListener((ListChangeListener<T>) c -> {
             while (c.next()) {
-                if (c.wasReplaced()) {
-                    List<? extends T> addedSubList = c.getAddedSubList();
-                    for (int i = 0; i < addedSubList.size(); i++) {
-                        T e1 = addedSubList.get(i);
-                        D d = a.computeIfAbsent(e1, FunctionEx.makeFunction(map));
-                        finalList.set(c.getFrom() + i, d);
-                    }
-                    break;
-                }
-                if (c.wasAdded()) {
-                    ConsumerEx.foreach(c.getAddedSubList(),
-                            e1 -> finalList.add(a.computeIfAbsent(e1, FunctionEx.makeFunction(map))));
-                }
-                if (c.wasRemoved()) {
-                    ConsumerEx.foreach(c.getRemoved(),
-                            e2 -> finalList.remove(a.computeIfAbsent(e2, FunctionEx.makeFunction(map))));
-                }
+                remapByReference(map, finalList, a, c);
             }
         });
     }
@@ -107,6 +92,27 @@ public final class ListHelper {
                 }
             }
         });
+    }
+
+    private static <T, D> void remapByReference(FunctionEx<T, D> map, ObservableList<D> finalList, ReferenceMap<T, D> a,
+            Change<? extends T> c) {
+        if (c.wasReplaced()) {
+            List<? extends T> addedSubList = c.getAddedSubList();
+            for (int i = 0; i < addedSubList.size(); i++) {
+                T e1 = addedSubList.get(i);
+                D d = a.computeIfAbsent(e1, FunctionEx.makeFunction(map));
+                finalList.set(c.getFrom() + i, d);
+            }
+            return;
+        }
+        if (c.wasAdded()) {
+            ConsumerEx.foreach(c.getAddedSubList(),
+                    e1 -> finalList.add(a.computeIfAbsent(e1, FunctionEx.makeFunction(map))));
+        }
+        if (c.wasRemoved()) {
+            ConsumerEx.foreach(c.getRemoved(),
+                    e2 -> finalList.remove(a.computeIfAbsent(e2, FunctionEx.makeFunction(map))));
+        }
     }
 
 }

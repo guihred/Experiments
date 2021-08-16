@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import utils.ex.HasLogging;
 
-public class Ch1 {
+public final class Ch1 {
     private static final Logger LOG = HasLogging.log();
 	/**
 	 * 13. Write a program that prints a lottery combination, picking six distinct

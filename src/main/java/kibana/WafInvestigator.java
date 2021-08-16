@@ -9,6 +9,7 @@ import static kibana.QueryObjects.USER_NAME;
 import extract.web.WhoIsScanner;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.stage.Stage;
@@ -32,7 +33,14 @@ public class WafInvestigator extends PaloAltoInvestigator {
         QueryObjects configureTable =
                 configureTable(DESTINATION_IP_QUERY, "topAttackerQuery.json", acessosSistemaTable, KEY, docCount)
                         .setMappedColumn("DNS", map -> whoIsScanner.reverseDNS(map.get("key")));
-        configureTable(POLICY_NAME, "topAlertsDestinationQuery.json", consultasTable, KEY, docCount);
+        configureTable(POLICY_NAME, "topAlertsDestinationQuery.json", consultasTable, KEY, docCount)
+                .setMappedColumn("Action", map -> {
+                    String string = map.get(KEY);
+                    Map<String, String> lookupPolicy = whoIsScanner.lookupPolicy(string);
+                    lookupPolicy.remove("Policy Name");
+                    lookupPolicy.remove("Rule Name");
+                    return WhoIsScanner.makeDescription(lookupPolicy);
+                });
         RunnableEx.runNewThread(() -> configureTable.makeKibanaQuery(filter, days.getValue()));
         configureTable(SOURCE_IP_QUERY, "topAttackedQuery.json", ipsTable, KEY, docCount);
         configureTimeline(USER_NAME, TimelionApi.TIMELINE_USERNAME, timelineSourceIP, ipCombo);

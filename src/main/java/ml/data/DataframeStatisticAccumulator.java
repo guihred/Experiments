@@ -237,7 +237,7 @@ public class DataframeStatisticAccumulator {
         return null;
     }
 
-    private <T> Object getByProportion(double d, Map<T, Integer> countMap2) {
+    private <T extends Comparable<? super T>> Object getByProportion(double d, Map<T, Integer> countMap2) {
         List<Entry<T, Integer>> array = SupplierEx.getIgnore(
                 () -> countMap2.entrySet().stream().sorted(DataframeStatisticAccumulator.comparator())
                         .collect(Collectors.toList()),
@@ -312,9 +312,8 @@ public class DataframeStatisticAccumulator {
                 .collect(Collectors.toMap(Entry<String, List<Object>>::getKey, e -> e.getValue().get(i),
                         DataframeStatisticAccumulator.throwError(), LinkedHashMap<String, Object>::new));
     }
-
-    private static <M> Comparator<Entry<M, Integer>> comparator() {
-        return Comparator.comparing(Entry<M, Integer>::getValue).thenComparing(Entry::getKey);
+    private static <U extends Comparable<? super U>> Comparator<Entry<U, Integer>> comparator() {
+        return Comparator.comparing(Entry<U, Integer>::getValue).thenComparing(Entry<U, Integer>::getKey);
     }
 
     private static BinaryOperator<Object> throwError() {

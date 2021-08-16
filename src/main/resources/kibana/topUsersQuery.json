@@ -1,9 +1,9 @@
-{"index":"dtp-pl*","ignore_unavailable":true,"preference":1628207105021}
+{"index":"dtp-waf*","ignore_unavailable":true,"preference":1628207105021}
 {
 	"aggs": {
 		"2": {
 			"terms": {
-				"field": "SourceUser.keyword",
+				"field": "http.user-name.keyword",
 				"size": 50,
 				"order": {
 					"_count": "desc"

@@ -18,6 +18,7 @@ import utils.ex.PredicateEx;
 import utils.ex.SupplierEx;
 
 public final class ExtractUtils {
+    private static final String HTTPS_PROXY_HOST_PROPERTY = "https.proxyHost";
     public static final String EXTRACT_FOLDER = ProjectProperties.getField();
     public static final String PROXY_PORT = "3128";
     public static final int HUNDRED_SECONDS = 100_000;
@@ -182,16 +183,10 @@ public final class ExtractUtils {
         }
         System.setProperty("http.proxyHost", PROXY_ADDRESS);
         System.setProperty("http.proxyPort", PROXY_PORT);
-        System.setProperty("https.proxyHost", PROXY_ADDRESS);
+        System.setProperty(HTTPS_PROXY_HOST_PROPERTY, PROXY_ADDRESS);
         System.setProperty("https.proxyPort", PROXY_PORT);
-        // System.setProperty("http.proxyUser", getHTTPUsername());
-        // System.setProperty("http.proxyPassword", getHTTPPassword());
-        // System.setProperty("https.proxyUser", getHTTPUsername());
-        // System.setProperty("https.proxyPassword", getHTTPPassword());
         System.setProperty("http.nonProxyHosts", "localhost|127.0.0.1|n321p000124.fast.prevnet");
         System.setProperty("https.nonProxyHosts", "localhost|127.0.0.1|n321p000124.fast.prevnet");
-
-        // System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
     }
 
     public static boolean isNotProxied() {
@@ -214,13 +209,13 @@ public final class ExtractUtils {
     }
 
     public static boolean isProxySet() {
-        return StringUtils.isNotBlank(System.getProperty("https.proxyHost"));
+        return StringUtils.isNotBlank(System.getProperty(HTTPS_PROXY_HOST_PROPERTY));
     }
 
     public static void removeProxyConfig() {
         System.clearProperty("http.proxyHost");
         System.clearProperty("http.proxyPort");
-        System.clearProperty("https.proxyHost");
+        System.clearProperty(HTTPS_PROXY_HOST_PROPERTY);
         System.clearProperty("https.proxyPort");
         System.clearProperty("http.nonProxyHosts");
         System.clearProperty("https.nonProxyHosts");

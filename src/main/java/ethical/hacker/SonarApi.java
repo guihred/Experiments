@@ -51,8 +51,9 @@ public class SonarApi extends Application {
                 .items(CommonsFX.newFastFilter(filterField, issuesList.filtered(s -> true)))
                 .onSortClicked((s, b) -> QuickSortML.sortMapList(issuesList, s, b)).build();
         SimpleListViewBuilder.of(componentsList).items(components)
+                .copiable()
                 .onDoubleClick(s -> filterField.setText(s.replaceAll("\t.+", ""))).build();
-        SimpleListViewBuilder.of(rulesList).items(rules)
+        SimpleListViewBuilder.of(rulesList).items(rules).copiable()
                 .onDoubleClick(s -> filterField.setText(s.replaceAll("\t.+", ""))).build();
     }
 

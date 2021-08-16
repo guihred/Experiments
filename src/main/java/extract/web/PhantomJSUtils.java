@@ -97,12 +97,6 @@ public final class PhantomJSUtils {
         ExtractUtils.copy(ghostDriver.getScreenshotAs(OutputType.FILE), outFile);
     }
 
-    public static void main(String[] args) {
-        PhantomJSUtils phantomJSUtils = new PhantomJSUtils();
-        phantomJSUtils.load("https://10.146.116.1/respond/incidents ");
-        phantomJSUtils.quit();
-    }
-
     public static List<String> makeGet(String url, Map<String, String> headers) throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet post = new HttpGet(url);
