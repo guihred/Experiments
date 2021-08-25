@@ -90,7 +90,7 @@ public class FXHackTest extends AbstractTestExecution {
         measureTime("InstallCert.installCertificate", () -> InstallCert.installCertificate("10.198.216.52"));
         measureTime("Acesso", () -> {
             String credencial = "70812788176";
-            return CredentialInvestigator.getCredentialInfo(credencial);
+            return CredentialInvestigator.credentialInfo(credencial);
 
         });
     }

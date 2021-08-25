@@ -25,8 +25,12 @@ public class AcessosVolumetricos {
     private final DataframeML recurringIps;
 
     public AcessosVolumetricos() {
-        recurringIps = DataframeBuilder.build(new File("C:" + "\\Users\\guigu" + "\\OneDrive - Dataprev"
+        File outFile = ResourceFXUtils.getOutFile("xlsx/Acessos volumétricos - Firewall - IPs recorrentes.xlsx");
+        recurringIps = DataframeBuilder.build(outFile.exists() ? outFile :
+
+                new File("C:" + "\\Users\\guigu" + "\\OneDrive - Dataprev"
                 + "\\Acessos volumétricos - Firewall - IPs recorrentes.xlsx"));
+        LOG.info("File READ");
         recurringIps.map("IP", StringSigaUtils::formatIP);
     }
 

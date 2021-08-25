@@ -6,7 +6,6 @@ import com.google.common.io.Files;
 import extract.PPTService;
 import extract.WordService;
 import extract.web.JsonExtractor;
-import extract.web.JsoupUtils;
 import extract.web.PhantomJSUtils;
 import java.io.File;
 import java.lang.reflect.Method;
@@ -16,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -35,25 +35,30 @@ import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
-public final class ReportHelper {
+public class ReportHelper {
     private static final List<String> REMOVE_IPS = ProjectProperties.getFieldList();
     private static final String OR_IPS_KEY = "\\$orIps";
     private static final String SPLIT_REGEX = "[, ]+";
     private static final String IP_KEY = "\\$ip";
     private static final Logger LOG = HasLogging.log();
+    private final WebView browser;
+    private final DoubleProperty progress;
+    private final BooleanProperty playing;
 
-    private ReportHelper() {
+    public ReportHelper(WebView browser, DoubleProperty progress, BooleanProperty playing) {
+        this.browser = browser;
+        this.progress = progress;
+        this.playing = playing;
     }
 
-    public static void addParameters(Map<String, Object> mapaSubstituicao, Map<String, String> params, WebView browser,
-            DoubleProperty progress) {
+    public void addParameters(Map<String, Object> mapaSubstituicao, Map<String, String> params) {
         List<String> keys = mapaSubstituicao.keySet().stream().collect(Collectors.toList());
         CommonsFX.update(progress, 0);
         for (String key : keys) {
             mapaSubstituicao.compute(key, (k, v) -> {
                 if (v instanceof List) {
                     List<?> list = (List<?>) v;
-                    return list.stream().map(e -> remap(params, e, browser)).filter(Objects::nonNull)
+                    return list.stream().map(e -> remap(params, e)).filter(Objects::nonNull)
                             .peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
                             .collect(Collectors.toList());
                 }
@@ -64,13 +69,12 @@ public final class ReportHelper {
         CommonsFX.update(progress, 1);
     }
 
-    public static void addParametersNotCrop(Map<String, Object> mapaSubstituicao, Map<String, String> params,
-            WebView browser, DoubleProperty progress) {
+    public void addParametersNotCrop(Map<String, Object> mapaSubstituicao, Map<String, String> params) {
         List<String> keys = mapaSubstituicao.keySet().stream().collect(Collectors.toList());
         CommonsFX.update(progress, 0);
         List<String> urls = new ArrayList<>();
         for (String key : keys) {
-            mapaSubstituicao.compute(key, (k, v) -> replace(params, browser, progress, keys, urls, v));
+            mapaSubstituicao.compute(key, (k, v) -> replace(params, keys, urls, v));
         }
         String collect = urls.stream().distinct()
                 .map(s -> "<tr><td><iframe style=\"border: 0\" src=\"" + s
@@ -86,11 +90,11 @@ public final class ReportHelper {
         CommonsFX.update(progress, 1);
     }
 
-    public static Map<String, String> adjustParams(Map<String, Object> mapaSubstituicao, int days, String ipParam,
-            String index, Boolean searchCredencial, DoubleProperty doubleProperty) {
+    public Map<String, String> adjustParams(Map<String, Object> mapaSubstituicao, int days, String ipParam,
+            String index, Boolean searchCredencial) {
         Map<String, String> paramText = new LinkedHashMap<>();
         Set<String> credentialText = new LinkedHashSet<>();
-        CommonsFX.update(doubleProperty, 0);
+        CommonsFX.update(progress, 0);
         String[] split = ipParam.split(SPLIT_REGEX);
         for (String ipValue : split) {
             String authenticationSuccess = " AND \\\"AUTHENTICATION_SUCCESS\\\"";
@@ -99,7 +103,7 @@ public final class ReportHelper {
             if (credentialMap.isEmpty()) {
                 credentialMap = KibanaApi.getGeridCredencial(ipValue, index, days);
             }
-            CommonsFX.addProgress(doubleProperty, 1. / (credentialMap.size() + 1) / split.length);
+            CommonsFX.addProgress(progress, 1. / (credentialMap.size() + 1) / split.length);
             LOG.info("GETTING GERID CREDENTIALS {} {}", ipValue, credentialMap.keySet());
             credentialText.addAll(credentialMap.values());
             List<String> collect = credentialMap.keySet().stream().collect(Collectors.toList());
@@ -113,7 +117,7 @@ public final class ReportHelper {
                     credentialText.addAll(iPsByCredencial.values());
                     String collect2 = iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
                     paramText.merge("\\$otherIps", collect2, ReportHelper::mergeStrings);
-                    CommonsFX.addProgress(doubleProperty, 1. / collect.size() / split.length);
+                    CommonsFX.addProgress(progress, 1. / collect.size() / split.length);
                     iPsByCredencial.keySet().forEach(
                             i -> paramText.merge(OR_IPS_KEY, i, (o, n) -> ReportHelper.mergeStrings(o, n, " OR ")));
                     LOG.info("GETTING GERID IP by CREDENTIALS {} {}", credencial, iPsByCredencial.keySet());
@@ -125,12 +129,12 @@ public final class ReportHelper {
         }
         mergeImage(mapaSubstituicao,
                 credentialText.stream().distinct().map(ReportHelper::textToImage).collect(Collectors.toList()));
-        CommonsFX.update(doubleProperty, 1);
+        CommonsFX.update(progress, 1);
 
         return paramText;
     }
 
-    public static Map<String, String> adjustParams(String ipParam, int days, Property<Number> progress) {
+    public Map<String, String> adjustParams(String ipParam, int days) {
         Map<String, String> paramText = new LinkedHashMap<>();
         for (String ipValue : ipParam.split(SPLIT_REGEX)) {
             KibanaApi.kibanaFullScan(ipValue, days, progress)
@@ -139,6 +143,154 @@ public final class ReportHelper {
             paramText.merge("\\$otherIps", ipValue, ReportHelper::mergeStrings);
         }
         return paramText;
+    }
+
+    private Image getImage(Map<String, Object> imageObj, Map<String, String> params) {
+        File outFile = ResourceFXUtils
+                .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
+        if (!JsonExtractor.isNotRecentFile(outFile)) {
+            return crop(imageObj, outFile);
+        }
+
+
+        Property<Image> image = new SimpleObjectProperty<>();
+        String kibanaURL = Objects.toString(imageObj.get("url"), "");
+
+        String finalURL = replaceString(params, kibanaURL);
+        CommonsFX.runInPlatform(() -> {
+            if (imageObj.containsKey("zoom")) {
+                Double zoom = StringSigaUtils.toDouble(imageObj.getOrDefault("zoom", 1));
+                browser.zoomProperty().set(zoom);
+            }
+            if (imageObj.containsKey("proxy")) {
+                ExtractUtils.insertProxyConfig();
+            }
+
+            loadSite(finalURL);
+        });
+        RunnableEx.measureTime("Load Site " + replaceString(params, imageObj.get("name")), () -> {
+            waitLoading(imageObj);
+            image.setValue(saveImage(imageObj, outFile, browser));
+        });
+        return image.getValue();
+    }
+
+    private Image getUncroppedImage(Map<String, Object> imageObj, Map<String, String> params) {
+        File outFile = ResourceFXUtils
+                .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
+        if (JsonExtractor.isRecentFile(outFile, 6)) {
+            String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
+            return new Image(externalForm);
+        }
+
+        Property<Image> image = new SimpleObjectProperty<>();
+        String kibanaURL = Objects.toString(imageObj.get("url"), "");
+        String finalURL = replaceString(params, kibanaURL);
+        CommonsFX.runInPlatform(() -> {
+            if (imageObj.containsKey("zoom")) {
+                Double zoom = StringSigaUtils.toDouble(imageObj.getOrDefault("zoom", 1));
+                browser.zoomProperty().set(zoom);
+            }
+
+            loadSite(finalURL);
+        });
+        RunnableEx.measureTime("Load Site " + imageObj.get("name"),
+                () -> image.setValue(saveSiteImage(imageObj, outFile)));
+        return image.getValue();
+    }
+
+    private boolean isLoading() {
+        WebEngine engine = browser.getEngine();
+        return engine.getLoadWorker().getState() == State.RUNNING;
+    }
+
+    private void loadSite(String url) {
+        WebEngine engine2 = browser.getEngine();
+        RunnableEx.ignore(() -> {
+            if (!Objects.equals(engine2.getLocation(), url)) {
+                engine2.load(url);
+            }
+            LOG.info("LOADED {}", url);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object remap(Map<String, String> params, Object e) {
+        if (e instanceof Map) {
+            Map<String, Object> e2 = (Map<String, Object>) e;
+            if (e2.containsKey("url")) {
+                return getImage(e2, params);
+            }
+
+            return getCSV(e2, params);
+        }
+        if (e instanceof Image) {
+            return e;
+        }
+        return replaceString(params, e);
+    }
+
+    private Object remapUncroppred(Map<String, String> params, Object e, List<String> urls) {
+        if (e instanceof Map) {
+            Map<String, Object> e2 = JsonExtractor.accessMap(e);
+            if (e2.containsKey("url")) {
+                String kibanaURL = Objects.toString(e2.get("url"), "");
+                urls.add(replaceString(params, kibanaURL));
+                return getUncroppedImage(e2, params);
+            }
+            return getCSV(e2, params);
+        }
+        if (e instanceof Image) {
+            return e;
+        }
+        return replaceString(params, e);
+    }
+
+    private Object replace(Map<String, String> params, List<String> keys, List<String> urls, Object v) {
+        if (v instanceof List) {
+            List<?> list = (List<?>) v;
+            return list.stream().flatMap(e -> {
+                if (StringUtils.isNotBlank(params.get(IP_KEY))) {
+                    Set<Object> set = new LinkedHashSet<>();
+                    return Stream.of(params.get(IP_KEY).split(SPLIT_REGEX)).filter(StringUtils::isNotBlank).map(s -> {
+                        Map<String, String> linkedHashMap = new LinkedHashMap<>(params);
+                        linkedHashMap.put(IP_KEY, s);
+                        return linkedHashMap;
+                    }).map(pa -> remapUncroppred(pa, e, urls)).filter(
+                            o -> !(o instanceof Image) || set.add(ClassReflectionUtils.invoke(o, "impl_getUrl")))
+                            .distinct();
+                }
+                return Stream.of(remapUncroppred(params, e, urls));
+            }).filter(Objects::nonNull).peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
+                    .collect(Collectors.toList());
+        }
+        CommonsFX.addProgress(progress, 1. / keys.size());
+        return replaceString(params, v);
+    }
+
+    private Image saveSiteImage(Map<String, Object> imageObj, File outFile) {
+        waitLoading(imageObj);
+        CommonsFX.runInPlatformSync(() -> saveHtmlImage(browser, outFile));
+        String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
+        Image value = new Image(externalForm);
+        if (!ImageFXUtils.isWhiteImage(value)) {
+            return value;
+        }
+        return new Image(externalForm);
+    }
+
+    private void waitLoading(Map<String, Object> imageObj) {
+        if (imageObj.containsKey("wait")) {
+            CommonsFX.runInPlatform(() -> playing.set(false));
+        }
+        AtomicBoolean atomicBoolean = new AtomicBoolean(true);
+        while (atomicBoolean.get()) {
+            RunnableEx.sleepSeconds(6);
+            CommonsFX.runInPlatform(() -> atomicBoolean.set(isLoading()));
+            do {
+                RunnableEx.sleepSeconds(6);
+            } while (!playing.get());
+        }
     }
 
     public static void finalizeReport(Map<String, Object> mapaSubstituicao, File reportFile) {
@@ -195,7 +347,6 @@ public final class ReportHelper {
 
     public static File reportName(Map<String, Object> mapaSubstituicao, Map<String, String> params2) {
         String replaceString = getReportName(mapaSubstituicao, params2);
-
         String extension = ReportHelper.getExtension(replaceString);
         return ResourceFXUtils.getOutFile(extension + "/" + replaceString);
     }
@@ -270,98 +421,9 @@ public final class ReportHelper {
         return outFile;
     }
 
-    private static Image getImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
-        File outFile = ResourceFXUtils
-                .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
-        if (!JsonExtractor.isNotRecentFile(outFile)) {
-            return crop(imageObj, outFile);
-        }
-
-        WebEngine engine = browser.getEngine();
-        Property<Image> image = new SimpleObjectProperty<>();
-        String kibanaURL = Objects.toString(imageObj.get("url"), "");
-
-        String finalURL = replaceString(params, kibanaURL);
-        CommonsFX.runInPlatform(() -> {
-            if (imageObj.containsKey("zoom")) {
-                Double zoom = StringSigaUtils.toDouble(imageObj.getOrDefault("zoom", 1));
-                browser.zoomProperty().set(zoom);
-            }
-            loadSite(engine, finalURL);
-        });
-        RunnableEx.measureTime("Load Site " + replaceString(params, imageObj.get("name")), () -> {
-            AtomicBoolean atomicBoolean = new AtomicBoolean(true);
-            while (atomicBoolean.get()) {
-                RunnableEx.sleepSeconds(6);
-                CommonsFX.runInPlatform(() -> atomicBoolean.set(isLoading(engine)));
-                RunnableEx.sleepSeconds(6);
-            }
-            image.setValue(saveImage(imageObj, outFile, browser));
-        });
-        return image.getValue();
-    }
-
     private static String getReportName(Map<String, Object> mapaSubstituicao, Map<String, String> params2) {
         return ReportHelper.replaceString(params2, mapaSubstituicao.get("name"))
                 .replaceAll("\\.(inss|gov|br|prevnet|dataprev)|vip-p?", "");
-    }
-
-    private static Image getUncroppedImage(Map<String, Object> imageObj, WebView browser, Map<String, String> params) {
-        File outFile = ResourceFXUtils
-                .getOutFile("print/" + replaceString(params, imageObj.getOrDefault("name", "erro")) + ".png");
-        if (JsonExtractor.isRecentFile(outFile, 6)) {
-            String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
-            return new Image(externalForm);
-        }
-
-        WebEngine engine = browser.getEngine();
-        Property<Image> image = new SimpleObjectProperty<>();
-        String kibanaURL = Objects.toString(imageObj.get("url"), "");
-        String finalURL = replaceString(params, kibanaURL);
-        CommonsFX.runInPlatform(() -> {
-            if (imageObj.containsKey("zoom")) {
-                Double zoom = StringSigaUtils.toDouble(imageObj.getOrDefault("zoom", 1));
-                browser.zoomProperty().set(zoom);
-            }
-            loadSite(engine, finalURL);
-        });
-        RunnableEx.measureTime("Load Site " + imageObj.get("name"),
-                () -> image.setValue(loadURL(browser, outFile, engine)));
-        return image.getValue();
-    }
-
-    private static boolean isLoading(WebEngine engine) {
-        return engine.getLoadWorker().getState() == State.RUNNING;
-    }
-
-    private static void loadSite(WebEngine engine2, String url) {
-        RunnableEx.ignore(() -> {
-            if (!Objects.equals(engine2.getLocation(), url)) {
-                engine2.setUserAgent(
-                        JsoupUtils.USER_AGENT + "\nAuthorization: Basic " + ExtractUtils.getEncodedAuthorization()
-                                + "\nProxy-Authorization: Basic " + ExtractUtils.getEncodedAuthorization()
-
-                );
-                engine2.load(url);
-            }
-            LOG.info("LOADED {}", url);
-        });
-    }
-
-    private static Image loadURL(WebView browser, File outFile, WebEngine engine) {
-        AtomicBoolean atomicBoolean = new AtomicBoolean(true);
-        while (atomicBoolean.get()) {
-            RunnableEx.sleepSeconds(6);
-            CommonsFX.runInPlatform(() -> atomicBoolean.set(isLoading(engine)));
-            RunnableEx.sleepSeconds(6);
-        }
-        CommonsFX.runInPlatformSync(() -> saveHtmlImage(browser, outFile));
-        String externalForm = ResourceFXUtils.convertToURL(outFile).toExternalForm();
-        Image value = new Image(externalForm);
-        if (!ImageFXUtils.isWhiteImage(value)) {
-            return value;
-        }
-        return new Image(externalForm);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -379,61 +441,6 @@ public final class ReportHelper {
     private static String mergeStrings(String o, String n, String delimiter) {
         return Stream.of(o, n).flatMap(m -> Stream.of(m.split(delimiter))).distinct()
                 .collect(Collectors.joining(delimiter));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Object remap(Map<String, String> params, Object e, WebView browser) {
-        if (e instanceof Map) {
-            Map<String, Object> e2 = (Map<String, Object>) e;
-            if (e2.containsKey("url")) {
-                return getImage(e2, browser, params);
-            }
-
-            return getCSV(e2, params);
-        }
-        if (e instanceof Image) {
-            return e;
-        }
-        return replaceString(params, e);
-    }
-
-    private static Object remapUncroppred(Map<String, String> params, WebView browser, Object e, List<String> urls) {
-        if (e instanceof Map) {
-            Map<String, Object> e2 = JsonExtractor.accessMap(e);
-            if (e2.containsKey("url")) {
-                String kibanaURL = Objects.toString(e2.get("url"), "");
-                urls.add(replaceString(params, kibanaURL));
-                return getUncroppedImage(e2, browser, params);
-            }
-            return getCSV(e2, params);
-        }
-        if (e instanceof Image) {
-            return e;
-        }
-        return replaceString(params, e);
-    }
-
-    private static Object replace(Map<String, String> params, WebView browser, DoubleProperty progress,
-            List<String> keys, List<String> urls, Object v) {
-        if (v instanceof List) {
-            List<?> list = (List<?>) v;
-            return list.stream().flatMap(e -> {
-                if (StringUtils.isNotBlank(params.get(IP_KEY))) {
-                    Set<Object> set = new LinkedHashSet<>();
-                    return Stream.of(params.get(IP_KEY).split(SPLIT_REGEX)).filter(StringUtils::isNotBlank).map(s -> {
-                        Map<String, String> linkedHashMap = new LinkedHashMap<>(params);
-                        linkedHashMap.put(IP_KEY, s);
-                        return linkedHashMap;
-                    }).map(pa -> remapUncroppred(pa, browser, e, urls)).filter(
-                            o -> !(o instanceof Image) || set.add(ClassReflectionUtils.invoke(o, "impl_getUrl")))
-                            .distinct();
-                }
-                return Stream.of(remapUncroppred(params, browser, e, urls));
-            }).filter(Objects::nonNull).peek(o -> CommonsFX.addProgress(progress, 1. / keys.size() / list.size()))
-                    .collect(Collectors.toList());
-        }
-        CommonsFX.addProgress(progress, 1. / keys.size());
-        return replaceString(params, v);
     }
 
     private static void saveCSV(File srcFile, Map<String, Object> params, File outFile) {

@@ -58,11 +58,16 @@ public class ReportApplication extends Application {
     private Slider zoom;
     @FXML
     private ComboBox<Path> model;
+    @FXML
+    private ToggleButton playing;
 
     private Map<String, String> params = new LinkedHashMap<>();
     private Map<String, Node> paramsNode = new LinkedHashMap<>();
+    private ReportHelper reportHelper;
+
 
     public void initialize() {
+        reportHelper = new ReportHelper(browser, progressBar.progressProperty(), playing.selectedProperty());
         ExtractUtils.addAuthorizationConfig();
         CommonsFX.bindBidirectional(browser.zoomProperty(), zoom.valueProperty());
         zoomText.textProperty().bind(Bindings.createStringBinding(
@@ -82,15 +87,15 @@ public class ReportApplication extends Application {
                 .onSelect(this::onModelChange).select(0);
         RunnableEx.runNewThread(Mapping::getMethods);
     }
-
     public void makeReportConsultas() {
         File modelFile = model.getSelectionModel().getSelectedItem().toFile();
         LOG.info("MAKING REPORT {} {}", params, modelFile.getName());
         RunnableEx.runNewThread(() -> {
             Map<String, Object> mapaSubstituicao = getReplacementMap(modelFile);
-            File reportFile = ReportHelper.reportName(mapaSubstituicao, params);
+            File reportFile =
+                    ReportHelper.reportName(mapaSubstituicao, params);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
-            ReportHelper.addParameters(mapaSubstituicao, params, browser, progressBar.progressProperty());
+            reportHelper.addParameters(mapaSubstituicao, params);
             LOG.info("APPLYING MAP {}", mapaSubstituicao);
             ReportHelper.finalizeReport(mapaSubstituicao, reportFile);
         });
@@ -103,7 +108,7 @@ public class ReportApplication extends Application {
             Map<String, Object> mapaSubstituicao = getReplacementMap(modelFile);
             File reportFile = ReportHelper.reportName(mapaSubstituicao, params);
             LOG.info("OUTPUT REPORT {} ", reportFile.getName());
-            ReportHelper.addParametersNotCrop(mapaSubstituicao, params, browser, progressBar.progressProperty());
+            reportHelper.addParametersNotCrop(mapaSubstituicao, params);
             displayEditDialog(mapaSubstituicao, reportFile);
         });
     }
@@ -129,14 +134,13 @@ public class ReportApplication extends Application {
         int days = (int) Math.max(1., Math.ceil(StringSigaUtils.toInteger(params.get("\\$hour")) / hoursInADay));
         String ipParam = params.get("\\$ip");
         if (JsonExtractor.accessMap(mapaSubstituicao, "params").containsKey("ip")) {
-            params.putAll(ReportHelper.adjustParams(ipParam, days, progressIndicator.progressProperty()));
+            params.putAll(reportHelper.adjustParams(ipParam, days));
 
         }
         if (mapaSubstituicao.containsKey("gerid")) {
             String index = params.get("\\$index");
             Boolean searchCredencial = Boolean.valueOf(params.getOrDefault("\\$searchCredencial", "true"));
-            params.putAll(ReportHelper.adjustParams(mapaSubstituicao, days, ipParam, index, searchCredencial,
-                    progressIndicator.progressProperty()));
+            params.putAll(reportHelper.adjustParams(mapaSubstituicao, days, ipParam, index, searchCredencial));
         }
         ExtractUtils.removeProxyConfig();
 

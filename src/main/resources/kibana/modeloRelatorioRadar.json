@@ -7,7 +7,20 @@
 	"Dia: 01/12/2020": "DIA: $date",
 	"Dezembro 2020": "$currentMonth",
 	"Hora: 10:30 h":"Hora: $currentHour h",
-	"Volumes de acesso a portais e aplicações WEB": [
+	"Últimas 24 horas":"Últimas 12 horas",
+	"Ataques DDoS - TIM": [
+        {
+            "zoom": 1.5,
+            "url": "https://sightline.timbrasil.com.br",
+            "name": "ddosTim$dateInverted",
+            "width": 1,
+            "wait":true,
+            "height": 1,
+            "x": 0,
+            "y": 0
+        }
+    ],
+	"Acesso WEB - Volumetria Aplicações": [
 		{
 			"zoom": 1.5,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/cee8c5d0-87c5-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-12h,mode:quick,to:now))",
@@ -18,7 +31,7 @@
 			"y": 0
 		}
 	],
-	"Número de origens de acesso aos portais e aplicações WEB": [
+	"Total de Endereços de Origem": [
 		{
 			"zoom": 1,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/e248a510-7a77-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-12h,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:lucene,query:'DestinationPort:80%20OR%20%20DestinationPort:443'),uiState:(vis:(defaultColors:('0%20-%20100':'rgb(0,104,55)','100%20-%20500':'rgb(255,255,190)','500%20-%203000':'rgb(165,0,38)'))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'IP%20%C3%9Anico',field:SourceIP),schema:metric,type:cardinality),(enabled:!t,id:'2',params:(filters:!((input:(query:'DestinationIP:%22200.152.35.66%22'),label:Servicos.MTE),(input:(query:'DestinationIP:%22200.152.33.10%22%20OR%20DestinationIP:%22200.152.35.199%22'),label:MeuINSS),(input:(query:'DestinationIP:%22200.152.47.17%22'),label:'RH%20Saude'),(input:(query:'DestinationIP:%22200.152.40.36%22'),label:'Portal%20DTP'),(input:(query:'DestinationIP:%22200.152.35.44%22%20OR%20DestinationIP:%22200.152.35.45%22'),label:'Aux.%20Emerg.'))),schema:group,type:filters)),params:(addLegend:!f,addTooltip:!t,gauge:(autoExtend:!f,backStyle:Full,colorSchema:'Green%20to%20Red',colorsRange:!((from:0,to:100),(from:100,to:500),(from:500,to:3000)),gaugeColorMode:None,gaugeStyle:Full,gaugeType:Arc,invertColors:!f,labels:(color:black,show:!t),orientation:vertical,percentageMode:!f,scale:(color:%23333,labels:!f,show:!t,width:2),style:(bgColor:!f,bgFill:%23000,fontSize:60,labelColor:!f,subText:''),type:meter,useRanges:!f,verticalSplit:!f),isDisplayWarning:!f,type:gauge),title:'%5BPalo%20Alto%5D%5BTraffic%5D%20Total%20de%20Endere%C3%A7os%20de%20Origem',type:goal))",
@@ -85,7 +98,7 @@
 			"y": 0
 		}
 	],
-	"Volume de Ataques barrados pelo WAF Timeline": [
+	"Eventos Bloqueados - TOP 10": [
 		{
 			"zoom": 2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/0cd081a0-88b9-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
@@ -96,7 +109,7 @@
 			"y": 0
 		}
 	],
-	"Volume de Ataques por geolocalização barrados pelo WAF": [
+	"WAF – Alertas por Localização": [
 		{
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fd2fedf0-0f5e-11e9-ac1b-331041153b51?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "geolocation$dateInverted",
@@ -137,37 +150,92 @@
                 }
 			},
 			"questions": [
-				
 				"os.name like (?i).+server.+|.+other.+",
 				"user.dst not empty",
 				"public.ip distinct"
 			]
 		}
 	],
-	"Volume de ataques detectados pelo Firewall": [
+    "Top Threat ID – Total – Drop - Allow": [
+    	{
+		    "zoom":1.1,
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/8b944480-fe2f-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
+			"name": "threatID$dateInverted",
+			"width": 1,
+			"height": 0.5,
+			"x": 0,
+			"y": 0
+		}
+	],
+	"TOP Destinos Atacados": [
 		{
+		    "zoom":1.5,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fdaf4750-87d4-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
-			"name": "ataquesFirewall$dateInverted",
+			"name": "destinosAtacados$dateInverted",
+			"width": 1,
+			"height": 1,
+			"x": 0,
+			"y": 0
+		}
+	],
+	"Top Destination IP x Total Bytes Monitoração Especial": [
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/296ee6d0-fc71-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
+			"name": "destinationMonitoracaoEspecial$dateInverted",
+			"width": 1,
+			"height": 1,
+			"x": 0,
+			"y": 0
+		}
+	],
+	"Top Source IP x Total Bytes Monitoração Especial": [
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/6d457840-fc73-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
+			"name": "sourceMonitoracaoEspecial$dateInverted",
+			"width": 1,
+			"height": 1,
+			"x": 0,
+			"y": 0
+		}
+	],
+	"Top talkers - Origem/Destino - Total Bytes Monitoração Especial": [
+		{
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fbf17d20-fc76-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
+			"name": "talkersMonitoracaoEspecial$dateInverted",
+			"width": 1,
+			"height": 1,
+			"x": 0,
+			"y": 0
+		}
+	],
+	"Top Destination/Source IP x Total Bytes Internet": [
+		{
+		    "zoom":1.5,  
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/e3a18d60-f5ea-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
+			"name": "srcTotalBytes$dateInverted",
 			"width": 1,
 			"height": 1,
 			"x": 0,
 			"y": 0
 		},
 		{
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/f7a5c1d0-87d5-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
-			"name": "threatID$dateInverted",
+		      "zoom":2,
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/44a30cd0-f5ee-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
+			"name": "dstTotalBytes$dateInverted",
 			"width": 1,
-			"height": 0.5,
-			"x": 0,
-			"y": 0
-		},
-		{
-			"url": "https://10.146.116.1/respond/incidents",
-			"name": "incidents$dateInverted",
-			"width": 1,
-			"height": 0.5,
+			"height": 1,
 			"x": 0,
 			"y": 0
 		}
+	],
+	"INCIDENTES NO RESPOND DO NW DURANTE O TURNO": [
+        {
+            "url": "https://10.146.116.1/respond/incidents",
+            "name": "incidents$dateInverted",
+            "width": 1,
+            "height": 0.5,
+            "x": 0,
+            "y": 0
+        }
 	]
 }

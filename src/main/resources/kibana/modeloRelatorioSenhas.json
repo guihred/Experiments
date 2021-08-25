@@ -2,63 +2,102 @@
     "model":"ModeloGeralReporteConsultas.docx",
     "params":{
         "ip":"",
-        "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h"],
-        "index":["inss-*-prod-*","mte-log4j-prod-*"],
-        "searchCredencial":true,
-        "gerid":["geridinss","geridprevic","consultas.inss.gov.br","tarefas.inss.gov.br","mteempregabr","postos",""]
+        "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h"]
     },
-    "name": "Reporte_Eventos_$gerid_$ip.docx",
+    "name": "Reporte_Eventos_Troca_Senhas_$ip.docx",
     "figurasSat": [
-        "Alta quantidade de tráfego registrado",   
+        "VPN Correio - Troca senha",
         {
-            "zoom":2,
-            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/ead869e0-d1a2-11ea-b3aa-4f2d12d8184e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:kuery,query:'SourceIP:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:2,direction:desc)))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'Total+de+Bytes',field:Bytes),schema:metric,type:sum),(enabled:!t,id:'2',params:(customLabel:'IP+de+Origem',field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms),(enabled:!t,id:'3',params:(customLabel:'IP+de+Destino',field:DestinationIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:10),schema:bucket,type:terms),(enabled:!t,id:'4',params:(customLabel:'Bytes+recebidos',field:BytesReceived),schema:metric,type:sum)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:2,direction:desc),totalFunc:sum),title:'%5BPalo+Alto%5D+Top+talkers+-+Origem%2FDestino+-+Total+Bytes',type:table))",
-            "name": "paloAlto$orIps",
-            "width": 0.25,
-            "height": 0.42,
-            "x": 0.25,
-            "y": 0.15
-        }
+            "zoom": 1.5,
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/47841030-efad-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:paloalto,key:DestinationIP,negate:!f,params:(query:'200.152.40.95',type:phrase),type:phrase,value:'200.152.40.95'),query:(match:(DestinationIP:(query:'200.152.40.95',type:phrase))))),linked:!t,query:(language:kuery,query:'SourceIP:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms),(enabled:!t,id:'3',params:(field:SourceUser.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BPalo%20Alto%5D%20VPN%20Correio%20-%20Troca%20senha',type:table))",
+            "name": "correiosTrocas$orIps",
+            "width": 0.85,
+            "height": 0.3,
+            "x": 0,
+            "y": 0.05
+        }   
     ],
 
 	"figurasContexto": [
-		"Número de acessos concentrado em páginas",
-		{
-		    "zoom":1.75,
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/feecd360-fa19-11e8-a078-93662b30045b?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'3008cad0-f1b4-11e8-a078-93662b30045b',key:dtpcategoria,negate:!f,params:(query:access,type:phrase),type:phrase,value:access),query:(match:(dtpcategoria:(query:access,type:phrase))))),linked:!f,query:(language:lucene,query:'clientip:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:request.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:500),schema:bucket,type:terms),(enabled:!t,id:'3',params:(field:dtpsistema.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20WEB%5D%20TOP%20Request%20PATH',type:table))",
-			"name": "urls$orIps",
-			"width": 1,
+		
+        "Reset de senhas - IPs x Usuarios",
+        {
+            "zoom": 2,
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/15579bc0-d2c7-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'1fd36b10-f700-11e8-a078-93662b30045b',key:policy-name.keyword,negate:!f,params:(query:Dataprev_Monitora_troca_senha,type:phrase),type:phrase,value:Dataprev_Monitora_troca_senha),query:(match:(policy-name.keyword:(query:Dataprev_Monitora_troca_senha,type:phrase))))),linked:!t,query:(language:lucene,query:'SourceIP:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:2,direction:desc)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'3',params:(customLabel:Usu%C3%A1rio,exclude:form-sendToken,field:http.user-name.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:100),schema:bucket,type:terms),(enabled:!t,id:'4',params:(field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:2,direction:desc),totalFunc:sum),title:'%5BWAF%5D%20%20Reset%20de%20senhas%20-%20IPs%20x%20Usuarios',type:table))",
+            "name": "resetsUsuarios$orIps",
+            "width": 0.85,
+            "height": 0.3,
+            "x": 0,
+            "y": 0.05
+        },
+        "Timeline Troca de Senhas",
+        {
+            "zoom": 1.5,
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/eca75ed0-ae5f-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:kuery,query:''),uiState:(),vis:(aggs:!(),params:(expression:'.es(index%3Ddtp-pl*,%20q%3D%22Type:TRAFFIC%20AND%20SourceZone:VPN%20AND%20SourceIP:($orIps)%20AND%20DestinationIP:200.152.40.95%22,split%3D%20%09SourceUser.keyword:5).label(!'VPN%20$1!',!'.*%3E.*:(.*)%3E.*!'),.es(index%3Ddtp-waf*,q%3D%22policy-name:Dataprev_Monitora_troca_senha*%20OR%20policy-name:Dataprev_Monitora_Troca_Senha_VPN%22,split%3Dhttp.user-name.keyword:5).label(!'$1!',!'.*%3E.*:(.*)%3E.*!')',interval:auto),title:'Timeline%20Troca%20de%20Senhas',type:timelion))",
+            "name": "timelineTrocas$orIps",
+            "width": 0.85,
+            "height": 0.3,
+            "x": 0,
+            "y": 0.05
+        },
+        "IPs x Usuarios Trocas com Sucesso",
+        {
+            "zoom":1.75,
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/8aacee80-ae5e-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'1fd36b10-f700-11e8-a078-93662b30045b',key:policy-name.keyword,negate:!f,params:(query:Dataprev_Monitora_troca_senha_Sucesso,type:phrase),type:phrase,value:Dataprev_Monitora_troca_senha_Sucesso),query:(match:(policy-name.keyword:(query:Dataprev_Monitora_troca_senha_Sucesso,type:phrase))))),linked:!t,query:(language:lucene,query:'SourceIP:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:2,direction:desc)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'3',params:(customLabel:Usu%C3%A1rio,exclude:form-sendToken,field:http.user-name.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:100),schema:bucket,type:terms),(enabled:!t,id:'4',params:(field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:2,direction:desc),totalFunc:sum),title:'%5BWAF%5D%20%20IPs%20x%20Usuarios%20Trocas%20com%20Sucesso',type:table))",
+            "name": "trocasSucesso$orIps",
+            "width": 1,
             "height": 0.4,
             "x": 0,
             "y": 0.05
-		},
-        "Padrão de acesso automatizado",
+        },
+        "IPs x Numero Trocas",
         {
             "zoom":2,
-            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/09fbe670-fa19-11e8-a078-93662b30045b?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:kuery,query:''),uiState:(),vis:(aggs:!(),params:(expression:'.es(index%3D*apache-prod*,q%3D%22clientip:($orIps)%20AND%20(%20dtptype:nginx%20OR%20dtptype:apache%20OR%20dtptype:varnish)%22,split%3Dclientip.keyword:5).label(!'$1!',!'.*%3E.*:(.*)%3E.*!')',interval:auto),title:'%5BAcesso%20Web%5D%20Top%20Aplica%C3%A7%C3%B5es%20por%20n%C3%BAmero%20de%20requisi%C3%A7%C3%B5es%20-%20Timeline',type:timelion))",
-            "name": "timeline$orIps",
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/2f9e8cc0-ae62-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'1fd36b10-f700-11e8-a078-93662b30045b',key:policy-name.keyword,negate:!f,params:!(Dataprev_Monitora_Troca_Senha_VPN,Dataprev_Monitora_troca_senha,Dataprev_Monitora_troca_senha_Falha,Dataprev_Monitora_troca_senha_Sucesso),type:phrases,value:'Dataprev_Monitora_Troca_Senha_VPN,%20Dataprev_Monitora_troca_senha,%20Dataprev_Monitora_troca_senha_Falha,%20Dataprev_Monitora_troca_senha_Sucesso'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(policy-name.keyword:Dataprev_Monitora_Troca_Senha_VPN)),(match_phrase:(policy-name.keyword:Dataprev_Monitora_troca_senha)),(match_phrase:(policy-name.keyword:Dataprev_Monitora_troca_senha_Falha)),(match_phrase:(policy-name.keyword:Dataprev_Monitora_troca_senha_Sucesso))))))),linked:!t,query:(language:lucene,query:'SourceIP:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:1,direction:desc)))),vis:(aggs:!((enabled:!t,id:'7',params:(customLabel:'Usu%C3%A1rios%20%C3%BAnicos',field:http.user-name.keyword),schema:metric,type:cardinality),(enabled:!t,id:'8',params:(field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:200),schema:bucket,type:terms),(enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'5',params:(filters:!((input:(query:'policy-name.keyword:%20%22Dataprev_Monitora_Troca_Senha_VPN%22%20OR%20%20policy-name.keyword:%20%22Dataprev_Monitora_troca_senha%22'),label:'Solicita%C3%A7%C3%A3o%20de%20Reset'),(input:(query:'policy-name.keyword:%20%22Dataprev_Monitora_troca_senha_Sucesso%22%20OR%20%20policy-name.keyword:%20%22Dataprev_Monitora_troca_senha_Falha%22'),label:'Tentativas%20de%20Troca'))),schema:bucket,type:filters)),params:(perPage:10,showMetricsAtAllLevels:!t,showPartialRows:!f,showTotal:!f,sort:(columnIndex:4,direction:desc),totalFunc:sum),title:'%5BWAF%5D%20%20IPs%20x%20Numero%20Trocas',type:table))",
+            "name": "numeroTrocas$orIps",
             "width": 1,
             "height": 1,
             "x": 0,
             "y": 0
         },
-        "Acessos a outros sistemas",
+        "Tentativas de Troca x IPs Distintos",
 		{
-		    "zoom": 2,
-			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/191e1a10-9e56-11e9-bffd-37ab21b02682?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(),linked:!f,query:(language:lucene,query:'clientip:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'2',params:(field:dtpsistema.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:200),schema:bucket,type:terms)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BAcesso%20Web%5D%20Quantidade%20de%20Acessos%20por%20Sistema',type:table))",
-			"name": "sistemas$orIps",
+		    "zoom": 1.5,
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/18340a20-ae5c-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'1fd36b10-f700-11e8-a078-93662b30045b',key:policy-name.keyword,negate:!f,params:!(Dataprev_Monitora_troca_senha_Sucesso,Dataprev_Monitora_troca_senha,Dataprev_Monitora_troca_senha_Falha),type:phrases,value:'Dataprev_Monitora_troca_senha_Sucesso,%20Dataprev_Monitora_troca_senha,%20Dataprev_Monitora_troca_senha_Falha'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(policy-name.keyword:Dataprev_Monitora_troca_senha_Sucesso)),(match_phrase:(policy-name.keyword:Dataprev_Monitora_troca_senha)),(match_phrase:(policy-name.keyword:Dataprev_Monitora_troca_senha_Falha))))))),linked:!t,query:(language:lucene,query:'SourceIP:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:2,direction:desc)))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'IPs%20%C3%9Anicos',field:SourceIP),schema:metric,type:cardinality),(enabled:!t,id:'3',params:(customLabel:Usu%C3%A1rio,exclude:form-sendToken,field:http.user-name.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:100),schema:bucket,type:terms),(enabled:!t,id:'4',params:(customLabel:'Total%20de%20trocas'),schema:metric,type:count)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:2,direction:desc),totalFunc:sum),title:'%5BWAF%5D%20Tentativas%20de%20Troca%20x%20IPs%20Distintos%20(Reset%2Fsucesso%2Ffalha)',type:table))",
+			"name": "tentativasTrocas$orIps",
 			"width": 0.85,
             "height": 0.3,
             "x": 0,
             "y": 0.05
-		}
+		},
+        "Troca-Senha - Falha",
+		{
+		    "zoom": 1.5,
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/aae0ce80-c7c0-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'1fd36b10-f700-11e8-a078-93662b30045b',key:policy-name.keyword,negate:!f,params:(query:Dataprev_Monitora_troca_senha_Falha,type:phrase),type:phrase,value:Dataprev_Monitora_troca_senha_Falha),query:(match:(policy-name.keyword:(query:Dataprev_Monitora_troca_senha_Falha,type:phrase))))),linked:!t,query:(language:kuery,query:'SourceIP:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:!n,direction:!n)))),vis:(aggs:!((enabled:!t,id:'2',params:(customLabel:Usu%C3%A1rio,field:http.user-name.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms),(enabled:!t,id:'3',params:(customLabel:'IP%20de%20origem',field:SourceIP),schema:metric,type:cardinality),(enabled:!t,id:'1',params:(customLabel:total),schema:metric,type:count)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BWAF%5D%20Troca-Senha%20-%20Falha',type:table))",
+			"name": "tentativasFalhasTrocas$orIps",
+			"width": 0.85,
+            "height": 0.3,
+            "x": 0,
+            "y": 0.05
+		},
+        "Troca-Senha - IP x Qtde Falha",
+        {
+            "zoom": 1.5,
+            "url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/12d741d0-dea1-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now$hour,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'1fd36b10-f700-11e8-a078-93662b30045b',key:policy-name.keyword,negate:!f,params:(query:Dataprev_Monitora_troca_senha_Falha,type:phrase),type:phrase,value:Dataprev_Monitora_troca_senha_Falha),query:(match:(policy-name.keyword:(query:Dataprev_Monitora_troca_senha_Falha,type:phrase))))),linked:!t,query:(language:kuery,query:'SourceIP:($orIps)'),uiState:(vis:(params:(sort:(columnIndex:2,direction:desc)))),vis:(aggs:!((enabled:!t,id:'2',params:(customLabel:'IP%20de%20origem',field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:50),schema:bucket,type:terms),(enabled:!t,id:'3',params:(customLabel:'qtd%20usu%C3%A1rios',field:http.user-name.keyword),schema:metric,type:cardinality),(enabled:!t,id:'1',params:(customLabel:total),schema:metric,type:count)),params:(perPage:10,showMetricsAtAllLevels:!f,showPartialRows:!f,showTotal:!f,sort:(columnIndex:!n,direction:!n),totalFunc:sum),title:'%5BWAF%5D%20Troca-Senha%20-%20IP%20x%20Qtde%20Falha',type:table))",
+            "name": "falhasTrocas$orIps",
+            "width": 0.85,
+            "height": 0.3,
+            "x": 0,
+            "y": 0.05
+        }
 	],
 	"Informar os indicadores de ameaça": [
-		"– A aplicação possui histórico de padrão de ataques automatizados, utilizam acessos autenticados para exfiltrar informações",
-        "– Volumetria de acessos acima da média dos demais usuários",
-        "– Padrão de acesso alto e automatizado" 
+    	"– Trocas de senha de diversos usuários realizados pelo mesmo endereço IP de origem",
+        "– Endereço IP de provedor de acesso reincidente",
+        "– Trocas realizadas em curto período",
+        "– Credenciais de acesso de usuários dispersos geograficamente"
 	],
-	"Log Aplicação- Consultas/SAT - ELK":"Palo Alto - ELK",
+	"Log Aplicação- Consultas/SAT - ELK":"LDAP - www-acesso",
 	"enderecoOrigem": [
         "Informações endereço de origem ($Provedor - $Geolocation)",	
 		{
@@ -71,10 +110,12 @@
             "y": 0.15
 		}
 	],
-	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Acessos volumétricos originados do IP $ip direcionados ao $gerid",
+	"Acessos volumétricos originados do IP 191.235.64.85 direcionados ao vip-pmeuinssprxr.inss.gov.br": "Suspeita de comprometimento de credenciais utilizando troca-senhas origem $ip",
 	"Informar data de início/fim": "$Acesso",
 	"ips": "$otherIps",
-	"Foi realizado o bloqueio temporário dos endereços no WAF.": "Foi realizado o bloqueio temporário dos endereços e de credenciais no WAF.",
-	"cred": "$creds",
+	"IP de Origem":"Análise",
+	"Foi realizado o bloqueio temporário dos endereços no WAF.": "O endereço IP foi bloqueado em EDL por sete dias. As credenciais foram bloqueadas no WAF e para acesso por VPN.",
+	"cred": "$Top Users",
+	
 	"gerid": ["Uso de Credenciais pelo IP $ip"]
 }

@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
 import utils.CommonsFX;
 import utils.ResourceFXUtils;
@@ -125,7 +124,7 @@ public final class LeitorArquivos {
                 Medicamento medicamento = SupplierEx.get(() -> tryReadRosarioLine(intMapper, linhas, j));
                 if (medicamento != null) {
                     medicamentos.add(medicamento);
-                    if (StringUtil.isBlank(medicamento.getNome())) {
+                    if (StringUtils.isBlank(medicamento.getNome())) {
                         medicamento.setNome(medicamentos.get(medicamentos.size() - 2).getNome());
                     }
                 }
@@ -387,12 +386,12 @@ public final class LeitorArquivos {
         Medicamento medicamento = m;
         try {
             String[] words = linhas[i].trim().split("\\s+");
-            if ("Página:".equals(words[0]) || !StringUtil.isNumeric(words[words.length - 1])) {
+            if ("Página:".equals(words[0]) || !StringUtils.isNumeric(words[words.length - 1])) {
                 return medicamento;
             }
             if (words.length == 4 || words.length == 3) {
                 medicamento
-                        .setLote(!StringUtil.isNumeric(words[0]) ? words[0]
+                        .setLote(!StringUtils.isNumeric(words[0]) ? words[0]
                                 : Integer.toString(Integer.valueOf(words[0])));
                 medicamento.setRegistro(words[1].replaceAll("\\D+", ""));
                 medicamento.setQuantidade(Integer.valueOf(words[words.length - 1]));

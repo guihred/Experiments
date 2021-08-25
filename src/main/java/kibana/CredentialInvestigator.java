@@ -53,7 +53,8 @@ public class CredentialInvestigator extends KibanaInvestigator {
         indexCombo = new SimpleComboBoxBuilder<>(Arrays.asList("inss-*-prod-*", "mte-log4j-prod-*")).select(0).build();
         pane.getChildren().add(2, SimpleVBoxBuilder.newVBox("Index", indexCombo));
         SimpleListViewBuilder.of(filterList).multipleSelection().copiable().deletable()
-                .pasteable(s -> StringSigaUtils.getMatches(s, "(" + IP_REGEX + "|\\d{11}|[\\w\\.]+@[\\w\\.]+)"))
+                .pasteable(s -> StringSigaUtils.getMatches(s,
+                        "(" + IP_REGEX + "|\\d{11}|[\\w\\.]+@[\\w\\.]+|[\\w]+\\.[\\w]+)"))
                 .onDoubleClick(resultsFilter::setText);
         RunnableEx.runNewThread(CredentialInvestigator::getCookies);
     }
@@ -99,20 +100,24 @@ public class CredentialInvestigator extends KibanaInvestigator {
     }
 
     public static String credentialInfo(String credencial) {
+        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", "memberOf", "pwdChangedTime");
+        return credentialInfo(credencial, include);
+    }
+    public static String credentialInfo(String credencial, List<String> include) {
         if (StringUtils.isBlank(credencial)) {
             return "";
         }
+
         return SupplierEx.get(() -> Stream.of(credencial.split("\n")).filter(StringUtils::isNotBlank)
-                .map(c -> FunctionEx.apply(CredentialInvestigator::getCredentialInfo, c, new SimpleMap("search", c)))
+                .map(c -> FunctionEx.apply(s -> getCredentialInfo(s, include), c, new SimpleMap("search", c)))
                 .map(m -> m.values().stream().distinct().map(StringUtils::trim).collect(Collectors.joining(" - ")))
                 .map(Objects::toString).distinct().collect(Collectors.joining("\n")), "");
     }
 
-    public static Map<String, String> getCredentialInfo(String credencial) throws IOException {
+    public static Map<String, String> getCredentialInfo(String credencial, List<String> include) throws IOException {
         File outFile = ResourceFXUtils.getOutFile("html/" + credencial + ".html");
         Document document = getCachedDocument(credencial, outFile);
         String memberOf = "memberOf";
-        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", memberOf, "pwdChangedTime");
 
         return document.select("input").stream()
                 .map(e -> new AbstractMap.SimpleEntry<>(e.attr("id"), Objects.toString(e.attr("value"), "").trim()))
@@ -199,13 +204,20 @@ public class CredentialInvestigator extends KibanaInvestigator {
         });
         scanByIp.put("GeoIP", () -> KibanaApi.geoLocation(result.getOrDefault("IP", "")));
         scanByIp.put("Credencial", () -> {
-            if (query.matches(IP_REGEX)) {
-                Map<String, String> iPsByCredencial = KibanaApi.getGeridCredencial(query, index, days1);
-                return iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
+            if (!query.matches(IP_REGEX)) {
+                return query;
             }
-            return query;
+            if (!index.contains("*")) {
+                return KibanaApi.scanByIp(query, days1).get("Top Users").get();
+            }
+            Map<String, String> iPsByCredencial = KibanaApi.getGeridCredencial(query, index, days1);
+            return iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
         });
-        scanByIp.put("Credencial Info", () -> credentialInfo(result.getOrDefault("Credencial", "")));
+        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", "memberOf", "pwdChangedTime");
+
+        scanByIp.put("Credencial Info", () -> credentialInfo(result.getOrDefault("Credencial", ""), include));
+        List<String> include2 = Arrays.asList("search", "cn", "cpf", "accountStatus", "l", "rgUf");
+        scanByIp.put("Extra Info", () -> credentialInfo(result.getOrDefault("Credencial", ""), include2));
         scanByIp.put("Login", () -> KibanaApi.getLoginTimeCredencial(query, index, days1));
         scanByIp.put("Message", () -> {
             if (query.matches(IP_REGEX)) {

@@ -34,6 +34,7 @@
 				<Slider fx:id="zoom" GridPane.columnIndex="6" max="3" min="0.6" majorTickUnit="0.01" value="1"
 				    blockIncrement="0.1" 
                     GridPane.rowIndex="1" />
+                 <ToggleButton fx:id="playing" GridPane.columnIndex="7" GridPane.rowIndex="1" text="Playing" selected="true"/>   
 			</children>
 		</GridPane>
 	</top>
