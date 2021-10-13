@@ -154,6 +154,9 @@ public final class RotateUtils {
             area.setStroke(Color.BLACK);
         });
         stackPane.sceneProperty().addListener((ob, old, val) -> val.setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                area.setStroke(Color.TRANSPARENT);
+            }
             if (e.getCode() == KeyCode.A && e.isAltDown()) {
                 area.setLayoutX(0);
                 area.setLayoutY(0);
@@ -285,7 +288,7 @@ public final class RotateUtils {
     private static void cropImage(Rectangle area, ImageView imageView, ConsumerEx<Image> onImageCropped, int width,
             int height) {
         Image image = imageView.getImage();
-        if (image == null) {
+        if (image == null || Color.TRANSPARENT.equals(area.getStroke())) {
             return;
         }
 

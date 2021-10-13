@@ -410,11 +410,11 @@ public final class JsonExtractor {
         return a;
     }
 
-    private static boolean moreThanXHoursModified(File outFile, int hours) {
+    private static boolean moreThanXHoursModified(File outFile, double hours) {
         FileTime lastModifiedTime = ResourceFXUtils.computeAttributes(outFile).lastModifiedTime();
         Instant instant = lastModifiedTime.toInstant();
-        long between = ChronoUnit.HOURS.between(instant, Instant.now());
-        return between > hours;
+        long between = ChronoUnit.MINUTES.between(instant, Instant.now());
+        return between > hours * 60.;
     }
 
     private static Map<String, String> newMap(Entry<String, JsonNode> item) {
@@ -425,7 +425,7 @@ public final class JsonExtractor {
     }
 
     private static boolean oneHourModified(File outFile) {
-        return moreThanXHoursModified(outFile, 1);
+        return moreThanXHoursModified(outFile, 0.5);
     }
 
     private static List<Map<String, String>> organizeList(List<List<String>> listOfFields, List<String> keys) {

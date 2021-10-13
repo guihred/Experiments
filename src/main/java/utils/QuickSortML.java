@@ -109,9 +109,4 @@ public final class QuickSortML {
             quickSort(i, higherIndex, array, onSwap, compa);
         }
     }
-
-    @FunctionalInterface
-    public static interface BiIntConsumer {
-        void consume(int i, int j);
-    }
 }

@@ -160,7 +160,7 @@ public final class PhantomJSUtils {
                 .collect(Collectors.joining("\n"));
         LOG.info("Request \n\t{} \n\t{} \n\t{}", url, headersString, content);
         HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
-            InstallCert.installCertificate(url);
+            // InstallCert.installCertificate(url);
             return client.execute(get);
         });
         HttpEntity entity = response.getEntity();

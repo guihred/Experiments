@@ -1,31 +1,67 @@
- INFO: schema.sngpc.FXMLCreatorHelper:89 - INITIALIZING TimelineExample 
- INFO: schema.sngpc.FXMLCreatorHelper:95 - New instance TimelineExample 
- INFO: schema.sngpc.FXMLCreatorHelper:98 - Starting TimelineExample 
- INFO: ml.TimelineExample:68 - Available Columns [﻿Country Name, Country Code, Indicator Name, Indicator Code, 1960, 1961, 1962, 1963, 1964, 1965, 1966, 1967, 1968, 1969, 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, ] 
- INFO: schema.sngpc.FXMLCreatorHelper:109 - Started TimelineExample 
- INFO: schema.sngpc.FXMLCreatorHelper:113 - CREATING TimelineExample.fxml 
- INFO: schema.sngpc.FXMLCreator:230 -  [class ml.TimelineExample$$Lambda$114/515638966, interface javafx.util.Callback] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ListView does have cellFactory 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ListView$ListViewFocusModel, class javafx.scene.control.FocusModel] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ListView does have focusModel 
- INFO: schema.sngpc.FXMLCreator:283 - attribute items type com.sun.javafx.collections.ObservableMapWrapper$ObservableEntry of class javafx.scene.control.ListView not set 
- INFO: schema.sngpc.FXMLCreator:284 - value [Caribbean small states=0x7f7f7fff, Central Europe and the Baltics=0xbfbfbfff, Early-demographic dividend=0x3fff7fff, East Asia & Pacific=0x3f7f7fff, East Asia & Pacific (IDA & IBRD countries)=0xbfff7fff, East Asia & Pacific (excluding high income)=0x3fffbfff, Euro area=0x7f3f3fff, Europe & Central Asia=0x3f7fffff, Europe & Central Asia (IDA & IBRD countries)=0x7f7fbfff, Europe & Central Asia (excluding high income)=0xbf3f3fff, European Union=0xffffbfff, High income=0x7fffffff, IBRD only=0xbf7fbfff, IDA & IBRD total=0x3fbfbfff, IDA blend=0x7f3fffff, IDA total=0x7fbfbfff, Late-demographic dividend=0xbfff3fff, Latin America & Caribbean=0x7fff3fff, Latin America & Caribbean (excluding high income)=0x3f7fbfff, Latin America & the Caribbean (IDA & IBRD countries)=0xff3f7fff, Low & middle income=0xff7fffff, Lower middle income=0xffbf3fff, Middle East & North Africa (IDA & IBRD countries)=0xffbfbfff, Middle East & North Africa (excluding high income)=0xbf7fffff, Middle income=0x3f3f3fff, North America=0xffbf7fff, OECD members=0x7f7fffff, Other small states=0x3f7f3fff, Pacific island small states=0xbf3fffff, Post-demographic dividend=0xff7f3fff, Small states=0x3fbfffff, South Asia=0xff3fffff, South Asia (IDA & IBRD)=0xff7fbfff, Sub-Saharan Africa=0x3fff3fff, Sub-Saharan Africa (IDA & IBRD countries)=0x7f3f7fff, Sub-Saharan Africa (excluding high income)=0xbf3f7fff, Upper middle income=0xff3fbfff, World=0xffffffff] 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ListView$ListViewBitSetSelectionModel, class javafx.scene.control.MultipleSelectionModelBase, class javafx.scene.control.MultipleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ListView does have selectionModel 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$1, class javafx.util.StringConverter] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have converter 
- INFO: schema.sngpc.FXMLCreator:230 -  [class javafx.scene.control.ComboBox$ComboBoxSelectionModel, class javafx.scene.control.SingleSelectionModel, class javafx.scene.control.SelectionModel] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have selectionModel 
- INFO: schema.sngpc.FXMLCreator:230 -  [class com.sun.javafx.scene.traversal.ParentTraversalEngine, class com.sun.javafx.scene.traversal.TraversalEngine] not in ATTRIBUTE_CLASSES 
- INFO: schema.sngpc.FXMLCreator:233 - class javafx.scene.control.ComboBox does have impl_traversalEngine 
- INFO: schema.sngpc.FXMLCreatorHelper:135 - TimelineExample successfull 
- INFO: schema.sngpc.FXMLCreatorHelper:78 - TimelineExample has different tree 
- INFO: schema.sngpc.FXMLCreatorHelper:81 - MISSING 
-javafx.scene.layout.HBox
--javafx.scene.control.ListView
---com.sun.javafx.scene.control.skin.VirtualFlow
----javafx.scene.Group
-----ml.CheckColorItemCell
----com.sun.javafx.scene.control.skin.VirtualFlow$ClippedContainer
-----javafx.scene.Group
------ml.CheckColorItemCell 
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for Experiments:Experiments:jar:0.0.1
+[WARNING] 'dependencies.dependency.systemPath' for com.sample:jim:jar should not point at files within the project directory, ${project.basedir}/jimStlMeshImporterJFX.jar will be unresolvable by dependent projects @ line 300, column 16
+[WARNING] 'dependencies.dependency.systemPath' for gui.ava:html2image:jar should not point at files within the project directory, ${project.basedir}/html2image-0.9.jar will be unresolvable by dependent projects @ line 307, column 16
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Experiments 0.0.1
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] >>> maven-dependency-plugin:3.1.2:analyze (default-cli) > test-compile @ Experiments >>>
+[INFO] 
+[INFO] --- jacoco-maven-plugin:0.8.4:prepare-agent (before-unit-test-execution) @ Experiments ---
+[INFO] surefire.jacoco.args set to -javaagent:C:\\Users\\guigu\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.4\\org.jacoco.agent-0.8.4-runtime.jar=destfile=C:\\Users\\guigu\\Documents\\Dev\\Experiments\\target\\jacoco-output\\jacoco-unit-tests.exec
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ Experiments ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 816 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ Experiments ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ Experiments ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory C:\Users\guigu\Documents\Dev\Experiments\src\test\resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ Experiments ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] <<< maven-dependency-plugin:3.1.2:analyze (default-cli) < test-compile @ Experiments <<<
+[INFO] 
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.1.2:analyze (default-cli) @ Experiments ---
+[WARNING] Used undeclared dependencies found:
+[WARNING]    org.apache.commons:commons-lang3:jar:3.4:compile
+[WARNING]    joda-time:joda-time:jar:2.8:compile
+[WARNING]    org.apache.xmlbeans:xmlbeans:jar:3.1.0:compile
+[WARNING]    it.unimi.dsi:fastutil:jar:6.5.7:compile
+[WARNING]    commons-lang:commons-lang:jar:2.6:compile
+[WARNING]    com.twelvemonkeys.imageio:imageio-core:jar:3.1.1:compile
+[WARNING]    org.hibernate.javax.persistence:hibernate-jpa-2.1-api:jar:1.0.0.Final:compile
+[WARNING]    org.nd4j:nd4j-common:jar:1.0.0-beta:compile
+[WARNING]    xml-apis:xml-apis:jar:1.4.01:compile
+[WARNING]    org.apache.httpcomponents:httpclient:jar:4.3.4:compile
+[WARNING]    org.apache.httpcomponents:httpcore:jar:4.4.1:compile
+[WARNING]    org.nd4j:jackson:jar:1.0.0-beta:compile
+[WARNING]    net.sourceforge.htmlunit:htmlunit:jar:2.15:compile
+[WARNING]    org.hamcrest:hamcrest-core:jar:1.3:compile
+[WARNING]    org.apache.commons:commons-collections4:jar:4.4:compile
+[WARNING]    org.seleniumhq.selenium:selenium-api:jar:2.44.0:compile
+[WARNING]    commons-codec:commons-codec:jar:1.13:compile
+[WARNING]    com.google.guava:guava:jar:18.0:compile
+[WARNING]    org.apache.poi:poi:jar:4.1.2:compile
+[WARNING] Unused declared dependencies found:
+[WARNING]    com.h2database:h2:jar:1.4.193:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 14.611 s
+[INFO] Finished at: 2021-08-25T23:02:30-03:00
+[INFO] Final Memory: 20M/311M
+[INFO] ------------------------------------------------------------------------

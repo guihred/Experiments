@@ -11,6 +11,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -150,11 +152,12 @@ public class ReportApplication extends Application {
         ImageView imageView = new ImageView();
         imageView.setFitWidth(500);
         imageView.setPreserveRatio(true);
-        List<String> imageUrls = mapaSubstituicao.values().stream().flatMap(ReportHelper::objectList)
+        ObservableList<String> imageUrls = mapaSubstituicao.values().stream().flatMap(ReportHelper::objectList)
                 .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).distinct()
-                .collect(Collectors.toList());
-
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+        Map<String, Object> removedUrls = new LinkedHashMap<>();
         SimpleListViewBuilder<String> urlsListView = new SimpleListViewBuilder<>();
+        ListView<String> build = urlsListView.build();
         urlsListView.onSelect((old, val) -> RunnableEx.runIf(val, v -> imageView.setImage(new Image(v))))
                 .cellFactory((String st) -> st.replaceAll(".+/", "")).multipleSelection().onKey(KeyCode.DELETE, () -> {
                     SimpleDialogBuilder.closeStage(imageView);
@@ -169,14 +172,30 @@ public class ReportApplication extends Application {
                         LOG.info("APPLYING MAP {}", mapaSubstituicao);
                         RunnableEx.runNewThread(() -> ReportHelper.finalizeReport(mapaSubstituicao, reportFile));
                     }
-                }).items(imageUrls);
+                }).onKeyReleased(ev -> {
+                    if (ev.isControlDown() && KeyCode.Z == ev.getCode() && !removedUrls.isEmpty()) {
+                        List<String> urls = removedUrls.keySet().stream().collect(Collectors.toList());
+                        for (int i = urls.size() - 1; i >= 0; i--) {
+                            String url = urls.get(i);
+                            if (!imageUrls.contains(url)) {
+                                String string = urls.remove(i);
+                                int selectedIndex = build.getSelectionModel().getSelectedIndex();
+                                imageUrls.add(Math.max(0, Math.min(imageUrls.size(), selectedIndex)), string);
+                                build.getSelectionModel().select(string);
+                                break;
+                            }
+                        }
+
+                    }
+                })
+
+                .items(imageUrls);
         Rectangle rectangle = new Rectangle();
         rectangle.setStroke(Color.TRANSPARENT);
         rectangle.setFill(Color.TRANSPARENT);
         StackPane stackPane = new StackPane(imageView, rectangle);
         rectangle.setManaged(false);
         imageView.setManaged(false);
-        ListView<String> build = urlsListView.build();
         SplitPane pane = new SplitPane(build, stackPane);
 
         final double fitRatio = 0.99;
@@ -184,7 +203,7 @@ public class ReportApplication extends Application {
                 .setFitWidth((1 - val.doubleValue()) * fitRatio * imageView.getScene().getWidth()));
 
         RotateUtils.moveArea(stackPane, rectangle, imageView,
-                img -> ReportHelper.onImageSelected(mapaSubstituicao, reportFile, build, img));
+                img -> ReportHelper.onImageSelected(mapaSubstituicao, reportFile, build, img, removedUrls));
         CommonsFX.runInPlatform(() -> {
             new SimpleDialogBuilder().bindWindow(browser).title("Crop Images").node(pane).displayDialog();
             build.prefHeightProperty().bind(imageView.getScene().heightProperty());

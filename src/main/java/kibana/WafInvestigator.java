@@ -42,7 +42,8 @@ public class WafInvestigator extends PaloAltoInvestigator {
                     return WhoIsScanner.makeDescription(lookupPolicy);
                 });
         RunnableEx.runNewThread(() -> configureTable.makeKibanaQuery(filter, days.getValue()));
-        configureTable(SOURCE_IP_QUERY, "topAttackedQuery.json", ipsTable, KEY, docCount);
+        configureTable(SOURCE_IP_QUERY, "topAttackedQuery.json", ipsTable, KEY, docCount)
+                .setMappedColumn("Authorization", map -> KibanaApi.getAuthorization(map.get("key"), days.getValue()));
         configureTimeline(USER_NAME, TimelionApi.TIMELINE_USERNAME, timelineSourceIP, ipCombo);
         configureTable(USER_NAME, "topUsersQuery.json", pathsTable, KEY, docCount);
         QueryObjects.linkFilter(filterList, filter, this::addToFilter);
@@ -63,7 +64,7 @@ public class WafInvestigator extends PaloAltoInvestigator {
     @Override
     public void start(final Stage primaryStage) {
         final int width = 800;
-        CommonsFX.loadFXML("Waf Investigator", "PaloAltoInvestigator.fxml", this, primaryStage, width, width);
+        CommonsFX.loadFXML("Waf Investigator", "WafInvestigator.fxml", this, primaryStage, width, width);
     }
 
     @Override

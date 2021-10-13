@@ -5,7 +5,6 @@ import static utils.CommonsFX.newFastFilter;
 import static utils.HibernateUtil.shutdown;
 import static utils.ex.PredicateEx.makeTest;
 
-import ethical.hacker.ssh.PrintTextStream;
 import fxml.utils.FXMLCreatorHelper;
 import java.io.PrintStream;
 import java.util.Arrays;

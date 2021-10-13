@@ -85,8 +85,7 @@ public class KibanaApi {
                     .map(s -> formatLines(reverseDNS, s));
         }).sorted(Comparator.comparingLong(
                 s -> -StringSigaUtils.strToFileSize(StringSigaUtils.getMatches(s, "((?i)[\\d\\.]+ ?[KMGT]?B)"))))
-                .limit(2)
-                .collect(Collectors.joining("\n"));
+                .limit(2).collect(Collectors.joining("\n"));
     }
 
     public static <T> String display(Map<String, T> ob) {
@@ -109,6 +108,24 @@ public class KibanaApi {
         return Stream.of(ip.split("\n")).map(WHOIS_SCANNER::getGeoIpInformation)
                 .map(s -> StringSigaUtils.getKey(s, LOCATION_KEYS)).collect(Collectors.joining("\n"));
 
+    }
+
+    public static String getAuthorization(String ip, int days) {
+        String pattern = CIDRUtils.addressToPattern(ip);
+
+        String policy = "headers";
+        Map<String, Object> makeKibanaSearch = makeKibanaSearchObj("wafQuery.json", days, pattern, policy);
+        makeKibanaSearch.computeIfPresent(policy, (k, v) -> {
+            return JsonExtractor.<List<Map<String, Object>>>accessList(v).stream().flatMap(l -> l.stream())
+                    .filter(m -> "Authorization".equals(m.get("Name"))).map(m -> m.get("Value"))
+                    .map(Objects::toString)
+                    .distinct()
+                    .map(s -> new String(Base64.getDecoder().decode(s.replaceAll(".+\\.(.+?)\\..+", "$1"))))
+                    .map(s -> s.replaceAll(".+sub\":\"(.+?)\".+", "$1"))
+                    .distinct()
+                    .collect(Collectors.joining("\n"));
+        });
+        return makeKibanaSearch.getOrDefault(policy, "").toString();
     }
 
     public static String getContent(File file, Object... params) {
@@ -162,8 +179,7 @@ public class KibanaApi {
         return message.stream().filter(s -> StringUtils.isNotBlank(StringSigaUtils.getMatches(s, fieldRegex)))
                 .collect(groupBy(timeRegex, fieldRegex)).entrySet().stream().filter(v -> v.getValue() != null)
                 .map(e -> e.getKey() + " " + e.getValue().format(t -> DateFormatUtils.format("dd/MM/yyyy HH:mm:ss", t)))
-                .flatMap(e -> Stream.of(e.split("\n"))).distinct()
-                .collect(Collectors.joining("\n"));
+                .flatMap(e -> Stream.of(e.split("\n"))).distinct().collect(Collectors.joining("\n"));
     }
 
     public static List<String> getMessageList(String finalIP, String index, int days) {
@@ -279,6 +295,10 @@ public class KibanaApi {
                     .map(WHOIS_SCANNER::lookupPolicy).map(KibanaApi::displayDistinct).collect(Collectors.toList()));
             return displayDistinct(makeKibanaSearch);
         });
+        fullScan.put("Authorization", () -> {
+
+            return getAuthorization(ip, days);
+        });
         fullScan.put("TOP_FW", () -> {
             Map<String, Object> destinationSearch = makeKibanaSearchObj("destinationQuery.json", days, ip, KEY, VALUE);
             destinationSearch.computeIfPresent(KEY, (k, v) -> JsonExtractor.<String>accessList(v).stream()
@@ -309,20 +329,20 @@ public class KibanaApi {
             Map<String, String> nsInformation = makeKibanaSearch("topUsersQuery.json", days, search, KEY, DOC_COUNT);
             return display(nsInformation);
         });
-        fullScan.put("PaloAlto_Threat", () -> {
-            if (CIDRUtils.isVPNNetwork(ip)) {
-                Map<String, Object> userQuery =
-                        makeKibanaSearchObj("userQuery.json", days, new String[] { ip }, KEY, VALUE);
-                userQuery.computeIfPresent(VALUE, (k, v) -> {
-                    List<String> dates = JsonExtractor.<Number>accessList(v).stream()
-                            .map(s -> DateFormatUtils.format("dd/MM/yy HH:mm", s.longValue()))
-                            .collect(Collectors.toList());
-                    return group(dates, 2);
-                });
-                return displayDistinct(userQuery);
-            }
-            return displayDistinct(makeKibanaSearch("threatQuery.json", days, ip, KEY));
-        });
+        // fullScan.put("PaloAlto_Threat", () -> {
+        // if (CIDRUtils.isVPNNetwork(ip)) {
+        // Map<String, Object> userQuery =
+        // makeKibanaSearchObj("userQuery.json", days, new String[] { ip }, KEY, VALUE);
+        // userQuery.computeIfPresent(VALUE, (k, v) -> {
+        // List<String> dates = JsonExtractor.<Number>accessList(v).stream()
+        // .map(s -> DateFormatUtils.format("dd/MM/yy HH:mm", s.longValue()))
+        // .collect(Collectors.toList());
+        // return group(dates, 2);
+        // });
+        // return displayDistinct(userQuery);
+        // }
+        // return displayDistinct(makeKibanaSearch("threatQuery.json", days, ip, KEY));
+        // });
         return fullScan;
     }
 
@@ -542,4 +562,3 @@ public class KibanaApi {
     }
 
 }
-

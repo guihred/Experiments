@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?import java.lang.*?>
+<?import javafx.event.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<SplitPane xmlns:fx="http://javafx.com/fxml" fx:id="splitPane0"
+	styleClass="root split-pane" >
+	<padding>
+		<Insets topRightBottomLeft="10" />
+	</padding>
+	<items>
+		<VBox spacing="10">
+			<padding>
+				<Insets topRightBottomLeft="10" />
+			</padding>
+
+			<children>
+				<Text text="Filter Results" />
+				<TextField fx:id="resultsFilter" />
+				<HBox spacing="10">
+					<Text text="Days" />
+					<ComboBox fx:id="days">
+						<items>
+							<FXCollections fx:factory="observableArrayList">
+								<Integer fx:value="1" />
+								<Integer fx:value="2" />
+								<Integer fx:value="3" />
+								<Integer fx:value="4" />
+								<Integer fx:value="5" />
+								<Integer fx:value="6" />
+								<Integer fx:value="7" />
+							</FXCollections>
+						</items>
+						<value>
+							<Integer fx:value="1" />
+						</value>
+					</ComboBox>
+				</HBox>
+				<Text text="Threshold" fx:id="thresholdText"/>
+				<Slider fx:id="threshold" max="0.5" min="0.3" majorTickUnit="0.01"
+				    blockIncrement="0.01"
+					value="0.4" />
+				<Text text="Filters" />
+				<ListView fx:id="filterList" prefWidth="175.0" VBox.vgrow="NEVER" />
+				<HBox spacing="10">
+					<VBox spacing="10">
+						<Button onAction="#onActionKibanaScan" text="_Kibana Scan" />
+						<Button onAction="#makeAutomatedSearch" text="_Automated Search" />
+						<Button onAction="#onActionClear" text="_Clear" />
+						<Button onAction="#onExportExcel" text="_Export Excel" />
+						<Button onAction="#onOpenDataframe" text="_Open Dataframe" />
+					</VBox>
+					<ProgressIndicator fx:id="progress" HBox.hgrow="ALWAYS"
+						minHeight="40.0" minWidth="40.0" />
+				</HBox>
+			</children>
+		</VBox>
+		<TabPane fx:id="tabPane0" tabMaxHeight="22.0" HBox.hgrow="ALWAYS"
+			tabMinHeight="22.0">
+			<tabs>
+				<Tab closable="false" text="Top Destinations">
+					<content>
+							<TableView fx:id="acessosSistemaTable" VBox.vgrow="ALWAYS" />
+					</content>
+				</Tab>
+				<Tab closable="false" text="Top Sources">
+					<content>
+							<TableView fx:id="consultasTable" VBox.vgrow="ALWAYS" />
+					</content>
+				</Tab>
+				<Tab closable="false" text="Top Destination Ports">
+					<content>
+							<TableView fx:id="pathsTable" VBox.vgrow="ALWAYS" />
+					</content>
+				</Tab>
+				<Tab closable="false" text="Top Application">
+					<content>
+							<TableView fx:id="ipsTable" VBox.vgrow="ALWAYS" />
+					</content>
+				</Tab><Tab text="Timeline Sistemas">
+                    <content>
+                        <VBox>
+                            <children>
+                                <Text text="SourceIP" />
+                                <ComboBox fx:id="ipCombo">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="" />
+                                        </FXCollections>
+                                    </items>
+                                </ComboBox>
+                                <LineChart fx:id="timelineSourceIP" title="Timeline SourceIP"
+                                    legendSide="LEFT" verticalZeroLineVisible="false" animated="false"
+                                    createSymbols="false">
+                                    <yAxis>
+                                        <NumberAxis animated="false" side="LEFT"
+                                            tickLabelFill="0x585858ff" tickUnit="10.0" upperBound="110.0" />
+                                    </yAxis>
+                                    <xAxis>
+                                        <NumberAxis animated="false" forceZeroInRange="false"
+                                            side="BOTTOM" tickLabelFill="0x585858ff" tickUnit="50.0"
+                                            upperBound="150.0" />
+                                    </xAxis>
+                                </LineChart>
+                            </children>
+                        </VBox>
+                    </content>
+                </Tab>
+			</tabs>
+		</TabPane>
+
+	</items>
+</SplitPane>
+

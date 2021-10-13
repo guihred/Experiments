@@ -51,7 +51,7 @@ public class ReportHelper {
         this.playing = playing;
     }
 
-    public void addParameters(Map<String, Object> mapaSubstituicao, Map<String, String> params) {
+    public synchronized void addParameters(Map<String, Object> mapaSubstituicao, Map<String, String> params) {
         List<String> keys = mapaSubstituicao.keySet().stream().collect(Collectors.toList());
         CommonsFX.update(progress, 0);
         for (String key : keys) {
@@ -69,7 +69,7 @@ public class ReportHelper {
         CommonsFX.update(progress, 1);
     }
 
-    public void addParametersNotCrop(Map<String, Object> mapaSubstituicao, Map<String, String> params) {
+    public synchronized void addParametersNotCrop(Map<String, Object> mapaSubstituicao, Map<String, String> params) {
         List<String> keys = mapaSubstituicao.keySet().stream().collect(Collectors.toList());
         CommonsFX.update(progress, 0);
         List<String> urls = new ArrayList<>();
@@ -78,7 +78,7 @@ public class ReportHelper {
         }
         String collect = urls.stream().distinct()
                 .map(s -> "<tr><td><iframe style=\"border: 0\" src=\"" + s
-                        + "\" height=\"660\" width=\"1200\"></iframe></tr></td>")
+                        + "\" height=\"660\" width=\"1200\"></iframe></td></tr>")
                 .collect(Collectors.joining("\n", "<html><head><meta charset=\"UTF-8\"></head><body><table>\n",
                         "\n</table></body></html>"));
         LOG.info("\n{}", collect);
@@ -317,16 +317,23 @@ public class ReportHelper {
 
     @SuppressWarnings({ "unchecked" })
     public static void onImageSelected(Map<String, Object> mapaSubstituicao, File reportFile, ListView<String> build,
-            Image img) {
+            Image img, Map<String, Object> removedUrls) {
         String selectedItem = build.getSelectionModel().getSelectedItem();
         Collection<Object> values = mapaSubstituicao.values();
         for (Object e : values) {
             if (e instanceof List) {
                 List<Object> collection = (List<Object>) e;
-                collection.stream()
+                Optional<Object> findFirst = collection.stream()
                         .filter(o -> o instanceof Image
-                                && Objects.equals(selectedItem, ClassReflectionUtils.invoke(o, "impl_getUrl")))
-                        .findFirst().ifPresent(o -> collection.set(collection.indexOf(o), img));
+                                && (Objects.equals(selectedItem, ClassReflectionUtils.invoke(o, "impl_getUrl"))
+                                        || Objects.equals(o, removedUrls.get(selectedItem))))
+                        .findFirst();
+                if (findFirst.isPresent()) {
+                    Object o = findFirst.get();
+                    collection.set(collection.indexOf(o), img);
+                    removedUrls.put(selectedItem, img);
+                }
+
             }
         }
         build.getItems().remove(selectedItem);

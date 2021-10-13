@@ -8,11 +8,23 @@
 	"Dezembro 2020": "$currentMonth",
 	"Hora: 10:30 h":"Hora: $currentHour h",
 	"Últimas 24 horas":"Últimas 12 horas",
-	"Ataques DDoS - TIM": [
+    "Ataques DDoS - TIM": [
         {
             "zoom": 1.5,
             "url": "https://sightline.timbrasil.com.br",
             "name": "ddosTim$dateInverted",
+            "width": 1,
+            "wait":true,
+            "height": 1,
+            "x": 0, 
+            "y": 0
+        }
+    ],
+    "Ataques DDoS - Telebrás": [
+        {
+            "zoom": 1.5,
+            "url": "https://globalview.centurylink.com",
+            "name": "ddosTelebras$dateInverted",
             "width": 1,
             "wait":true,
             "height": 1,
@@ -31,6 +43,37 @@
 			"y": 0
 		}
 	],
+	"Conexões VPN via: Conexões fora do Brasil": [
+        {
+            "csv": "",
+            "name": "ConexoesForaBrasil$dateInverted",
+            "columns": "event.time|country.src|ip.src|public.ip|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host|region.code",
+            "mappings": {
+                "user.dst":"Source User",
+                "public.ip":"public_ip",
+                "OS":"client_os_ver",
+                "event.time":"Generate Time",
+                "country.src":"region.code",
+                "domain.src":"machinename",
+                "ec.outcome":"status",
+                "ec.activity":"stage",
+                "event.cat.name":"error",
+                "alias.host":"Type",
+                "org.src":{
+                    "method":"String KibanaApi.getHostname(Object)",
+                    "dependencies":["ip.src"],
+                    "otherParams":[]
+                }
+            },
+            "sort": "OS",
+            "questions": [
+                "user.dst not empty",
+                "country.src != BR",
+                "public.ip distinct"
+            ]
+        }
+    ],
+    
 	"Total de Endereços de Origem": [
 		{
 			"zoom": 1,
@@ -169,7 +212,7 @@
 	],
 	"TOP Destinos Atacados": [
 		{
-		    "zoom":1.5,
+			"zoom": 2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fdaf4750-87d4-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "destinosAtacados$dateInverted",
 			"width": 1,
@@ -180,6 +223,7 @@
 	],
 	"Top Destination IP x Total Bytes Monitoração Especial": [
 		{
+			"zoom": 2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/296ee6d0-fc71-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "destinationMonitoracaoEspecial$dateInverted",
 			"width": 1,
@@ -190,6 +234,7 @@
 	],
 	"Top Source IP x Total Bytes Monitoração Especial": [
 		{
+			"zoom": 2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/6d457840-fc73-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "sourceMonitoracaoEspecial$dateInverted",
 			"width": 1,
@@ -200,6 +245,7 @@
 	],
 	"Top talkers - Origem/Destino - Total Bytes Monitoração Especial": [
 		{
+			"zoom": 2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fbf17d20-fc76-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "talkersMonitoracaoEspecial$dateInverted",
 			"width": 1,
@@ -210,7 +256,7 @@
 	],
 	"Top Destination/Source IP x Total Bytes Internet": [
 		{
-		    "zoom":1.5,  
+			"zoom": 2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/e3a18d60-f5ea-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "srcTotalBytes$dateInverted",
 			"width": 1,

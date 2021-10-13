@@ -100,7 +100,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
     }
 
     public static String credentialInfo(String credencial) {
-        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", "memberOf", "pwdChangedTime");
+        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", "memberOf");
         return credentialInfo(credencial, include);
     }
     public static String credentialInfo(String credencial, List<String> include) {
@@ -213,10 +213,10 @@ public class CredentialInvestigator extends KibanaInvestigator {
             Map<String, String> iPsByCredencial = KibanaApi.getGeridCredencial(query, index, days1);
             return iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));
         });
-        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", "memberOf", "pwdChangedTime");
+        List<String> include = Arrays.asList("search", "mail", "l", "rgUf", "memberOf");
 
         scanByIp.put("Credencial Info", () -> credentialInfo(result.getOrDefault("Credencial", ""), include));
-        List<String> include2 = Arrays.asList("search", "cn", "cpf", "accountStatus", "l", "rgUf");
+        List<String> include2 = Arrays.asList("search", "cn", "cpf", "accountStatus", "l", "rgUf", "pwdChangedTime");
         scanByIp.put("Extra Info", () -> credentialInfo(result.getOrDefault("Credencial", ""), include2));
         scanByIp.put("Login", () -> KibanaApi.getLoginTimeCredencial(query, index, days1));
         scanByIp.put("Message", () -> {
