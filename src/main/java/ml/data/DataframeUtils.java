@@ -564,8 +564,17 @@ public class DataframeUtils extends DataframeML {
 
     private static List<String> getHeaders(Scanner scanner) {
         String nextLine = scanner.nextLine();
+        Set<String> cols = new LinkedHashSet<>();
         return CSVUtils.parseLine(nextLine).stream().map(e -> e.replaceAll("\"", ""))
-                .map(c -> StringSigaUtils.fixEncoding(c).replaceAll("\\?", "")).collect(Collectors.toList());
+                .map(c -> StringSigaUtils.fixEncoding(c).replaceAll("\\?", ""))
+                .map(f -> {
+                    int i;
+                    for (i = 0; !cols.add(f + (i == 0 ? "" : "" + i)); i++) {
+                        // DOES NOTHING
+                    }
+                    return f + (i == 0 ? "" : "" + i);
+                })
+                .collect(Collectors.toList());
     }
 
     private static int len(String k, Class<? extends Comparable<?>> class1) {

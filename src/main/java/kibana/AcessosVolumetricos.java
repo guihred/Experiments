@@ -19,6 +19,7 @@ import utils.StringSigaUtils;
 import utils.ex.HasLogging;
 
 public class AcessosVolumetricos {
+    private static final String TIPO_DO_TRAFEGO = "Tipo de tráfego";
     private static final Logger LOG = HasLogging.log();
     private static final String TRAFEGO = "Tráfego";
     private static final String TRAFEGO_ESPERADO = "Tráfego esperado";
@@ -45,7 +46,7 @@ public class AcessosVolumetricos {
         dataframeML.map("Hostname", keyHeader, KibanaApi::getHostname);
 
         dataframeML.map(TRAFEGO, "value", e -> StringSigaUtils.getFileSize(StringSigaUtils.toLong(e)));
-        DataframeUtils.crossFeatureObject(dataframeML, "Tipo de Tráfego", ip -> getTipoTrafego(recurringIps, ip),
+        DataframeUtils.crossFeatureObject(dataframeML, TIPO_DO_TRAFEGO, ip -> getTipoTrafego(recurringIps, ip),
                 keyHeader,
                 TRAFEGO);
         DataframeUtils.crossFeatureObject(dataframeML, TRAFEGO_ESPERADO, ip -> {
@@ -55,7 +56,7 @@ public class AcessosVolumetricos {
         DataframeUtils.crossFeatureObject(dataframeML, "motivação",
                 ip -> !StringUtils.equalsIgnoreCase("Acima", Objects.toString(ip[1])) ? ""
                         : getPorts(Objects.toString(ip[0])),
-                "IP", "Tipo de Tráfego");
+                "IP", TIPO_DO_TRAFEGO);
 
         DataframeUtils.save(dataframeML,
                 ResourceFXUtils.getOutFile("csv/" + result + DateFormatUtils.currentTime("ddMMyyyy") + ".csv"));

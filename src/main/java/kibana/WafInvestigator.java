@@ -12,14 +12,22 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
+import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 import utils.CommonsFX;
 import utils.ExtractUtils;
+import utils.ProjectProperties;
 import utils.ex.RunnableEx;
 
 public class WafInvestigator extends PaloAltoInvestigator {
-
+    protected static final List<String> APPLICATION_LIST = ProjectProperties.getFieldList();
     private static final String KEY = "key";
+    @FXML
+    protected LineChart<Number, Number> timelineCredencial;
+    @FXML
+    protected ComboBox<String> credencialCombo;
 
     @Override
     public void initialize() {
@@ -43,8 +51,11 @@ public class WafInvestigator extends PaloAltoInvestigator {
                 });
         RunnableEx.runNewThread(() -> configureTable.makeKibanaQuery(filter, days.getValue()));
         configureTable(SOURCE_IP_QUERY, "topAttackedQuery.json", ipsTable, KEY, docCount)
-                .setMappedColumn("Authorization", map -> KibanaApi.getAuthorization(map.get("key"), days.getValue()));
-        configureTimeline(USER_NAME, TimelionApi.TIMELINE_USERNAME, timelineSourceIP, ipCombo);
+        // .setMappedColumn("Authorization", map ->
+        // KibanaApi.getAuthorization(map.get("key"), days.getValue()))
+        ;
+        configureTimeline(USER_NAME, TimelionApi.TIMELINE_USERNAME, timelineCredencial, credencialCombo);
+        configureTimeline(SOURCE_IP_QUERY, TimelionApi.TIMELINE_SOURCE_IP, timelineSourceIP, ipCombo);
         configureTable(USER_NAME, "topUsersQuery.json", pathsTable, KEY, docCount);
         QueryObjects.linkFilter(filterList, filter, this::addToFilter);
         splitPane0.setDividerPositions(1. / 10);

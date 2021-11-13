@@ -425,7 +425,7 @@ public final class JsonExtractor {
     }
 
     private static boolean oneHourModified(File outFile) {
-        return moreThanXHoursModified(outFile, 0.5);
+        return moreThanXHoursModified(outFile, 1);
     }
 
     private static List<Map<String, String>> organizeList(List<List<String>> listOfFields, List<String> keys) {

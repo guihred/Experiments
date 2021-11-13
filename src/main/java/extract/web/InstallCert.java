@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.*;
 import org.slf4j.Logger;
+import utils.ExtractUtils;
 import utils.ResourceFXUtils;
 import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
@@ -29,12 +30,23 @@ public final class InstallCert {
         String host = c[0];
         int port = c.length == 1 ? HTTPS_PORT : Integer.parseInt(c[1]);
 
-        installCertificate(host, port, "changeit".toCharArray());
+        installCertificate(host, port, ExtractUtils.CERTIFICATION_PASS.toCharArray());
+    }
+
+    public static boolean isTrusted(String host) {
+        return isTrusted(getFullURL(host), HTTPS_PORT, (SSLSocketFactory) SSLSocketFactory.getDefault());
+    }
+
+    public static void main(String[] args) throws GeneralSecurityException {
+        installCertificate("https://n321p000124.fast.prevnet/");
+        // installCertificate("https://antiddos.vogeltelecom.com/");
+        installCertificate("https://10.146.116.1/");
+        // installCertificate("https://www-acesso/");
     }
 
     private static String getFullURL(String url) {
         return SupplierEx.remap(() -> {
-            if (!url.matches("^https*://(.*)/*.*")) {
+            if (!url.matches("^https*://([^/]+)/?.*")) {
                 return url;
             }
             URL url2 = new URL(url);
@@ -47,8 +59,9 @@ public final class InstallCert {
 
     }
 
-    private static void installCertificate(String host, int port, char[] passphrase) throws GeneralSecurityException {
-        File file = ResourceFXUtils.toFile("cacerts");
+    private static synchronized void installCertificate(String host, int port, char[] passphrase)
+            throws GeneralSecurityException {
+        File file = ResourceFXUtils.toFile(ExtractUtils.CERTIFICATION_FILE);
         LOG.info("Loading KeyStore {}...", file);
         KeyStore ks = loadKeyStore(passphrase, file);
         SSLContext context = SSLContext.getInstance("TLS");
@@ -59,10 +72,10 @@ public final class InstallCert {
         context.init(null, new TrustManager[] { tm }, null);
         SSLSocketFactory factory = context.getSocketFactory();
 
-        LOG.info("Opening connection to {}:{}...", host, port);
         if (isTrusted(host, port, factory)) {
             return;
         }
+        LOG.error("Host not trusted {}:{}...", host, port);
 
         X509Certificate[] chain = tm.getAcceptedIssuers();
         if (chain == null || chain.length == 0) {
@@ -83,7 +96,7 @@ public final class InstallCert {
             md5.digest();
             String alias = host + "-" + (i + 1);
             ks.setCertificateEntry(alias, cert);
-            LOG.info("Added certificate to keystore \"cacerts\" using alias \"{}\"", alias);
+            LOG.error("Added certificate to keystore \"cacerts\" using alias \"{}\"", alias);
         }
 
         saveKeyStore(passphrase, file, ks);

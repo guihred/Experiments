@@ -1,38 +1,50 @@
 {
-	"model": "Radar_Eventos_v01122020REL1.pptx",
+	"model": "Radar_Eventos_17_10_2021-Turno-D.pptx",
 	"params": {
 		
 	},
 	"name": "Radar_Eventos_v$gatheredDate-Turno-D.pptx",
-	"Dia: 01/12/2020": "DIA: $date",
-	"Dezembro 2020": "$currentMonth",
-	"Hora: 10:30 h":"Hora: $currentHour h",
-	"Últimas 24 horas":"Últimas 12 horas",
-    "Ataques DDoS - TIM": [
-        {
-            "zoom": 1.5,
-            "url": "https://sightline.timbrasil.com.br",
-            "name": "ddosTim$dateInverted",
-            "width": 1,
-            "wait":true,
-            "height": 1,
-            "x": 0, 
-            "y": 0
-        }
-    ],
-    "Ataques DDoS - Telebrás": [
-        {
-            "zoom": 1.5,
-            "url": "https://globalview.centurylink.com",
-            "name": "ddosTelebras$dateInverted",
-            "width": 1,
-            "wait":true,
-            "height": 1,
-            "x": 0,
-            "y": 0
-        }
-    ],
-	"Acesso WEB - Volumetria Aplicações": [
+	"Dia: 03/11/2021": "DIA: $date",
+	"17 de outubro de 2021": "$currentMonth",
+	"Hora: 11:00h": "Hora: $currentHour h",
+	"Últimas 24 horas": "Últimas 12 horas",
+	"Ataques DDoS – Vogel - RJ": [
+		{
+			"zoom": 1.5,
+			"url": "https://antiddos.vogeltelecom.com/",
+			"name": "ddosOi$dateInverted",
+			"width": 1,
+			"wait": true,
+			"height": 1,
+			"x": 0,
+			"y": 0
+		}
+	],
+	"Ataques DDoS - TIM": [
+		{
+			"zoom": 1.5,
+			"url": "https://sightline.timbrasil.com.br",
+			"name": "ddosTim$dateInverted",
+			"width": 1,
+			"wait": true,
+			"height": 1,
+			"x": 0,
+			"y": 0
+		}
+	],
+	"Ataques DDoS - LUMEN": [
+		{
+			"zoom": 1.5,
+			"url": "https://globalview.centurylink.com",
+			"name": "ddosTelebras$dateInverted",
+			"width": 1,
+			"wait": true,
+			"height": 1,
+			"x": 0,
+			"y": 0
+		}
+	],
+	"Volumes de acesso a portais e aplicações WEB": [
 		{
 			"zoom": 1.5,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/cee8c5d0-87c5-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-12h,mode:quick,to:now))",
@@ -43,40 +55,50 @@
 			"y": 0
 		}
 	],
-	"Conexões VPN via: Conexões fora do Brasil": [
-        {
-            "csv": "",
-            "name": "ConexoesForaBrasil$dateInverted",
-            "columns": "event.time|country.src|ip.src|public.ip|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host|region.code",
-            "mappings": {
-                "user.dst":"Source User",
-                "public.ip":"public_ip",
-                "OS":"client_os_ver",
-                "event.time":"Generate Time",
-                "country.src":"region.code",
-                "domain.src":"machinename",
-                "ec.outcome":"status",
-                "ec.activity":"stage",
-                "event.cat.name":"error",
-                "alias.host":"Type",
-                "org.src":{
-                    "method":"String KibanaApi.getHostname(Object)",
-                    "dependencies":["ip.src"],
-                    "otherParams":[]
-                }
-            },
-            "sort": "OS",
-            "questions": [
-                "user.dst not empty",
-                "country.src != BR",
-                "public.ip distinct"
-            ]
-        }
-    ],
-    
-	"Total de Endereços de Origem": [
+	"Acessos VPN Via: Fora do Brasil": [
 		{
-			"zoom": 1,
+			"csv": "",
+			"name": "ConexoesForaBrasil$dateInverted",
+			"columns": "event.time|evnet.time|time|country.src|ip.src|public.ip|user.dst|domain.src|org.src|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|OS|alias.host|region.code|domain",
+			"mappings": {
+				"user.dst": "Source User",
+				"public.ip": "public_ip",
+				"OS": "client_os_ver",
+				"event.time": "Generate Time",
+				"country.src": "region.code",
+				"domain.src": "machinename",
+				"ec.outcome": "status",
+				"ec.activity": "stage",
+				"event.cat.name": "error",
+				"alias.host": "Type",
+				"org.src": {
+					"method": "String KibanaApi.getHostname(Object)",
+					"dependencies": [
+						"ip.src"
+					],
+					"otherParams": []
+				},
+				"time": {
+					"method": "String DateFormatUtils.reformat(String,String,String)",
+					"dependencies": [
+						"event.time"
+					],
+					"otherParams": [
+						"dd-MM-yyyy'T'HH:mm:ss.SSSXXX",
+						"dd/MM/yyyy HH:mm:ss"
+					]
+				}
+			},
+			"sort": "OS",
+			"questions": [
+				"user.dst not empty",
+				"public.ip distinct"
+			]
+		}
+	],
+	"Número de origens de acesso aos portais e aplicações WEB": [
+		{
+			"zoom": 1.4,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/e248a510-7a77-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-12h,mode:quick,to:now))&_a=(filters:!(),linked:!t,query:(language:lucene,query:'DestinationPort:80%20OR%20%20DestinationPort:443'),uiState:(vis:(defaultColors:('0%20-%20100':'rgb(0,104,55)','100%20-%20500':'rgb(255,255,190)','500%20-%203000':'rgb(165,0,38)'))),vis:(aggs:!((enabled:!t,id:'1',params:(customLabel:'IP%20%C3%9Anico',field:SourceIP),schema:metric,type:cardinality),(enabled:!t,id:'2',params:(filters:!((input:(query:'DestinationIP:%22200.152.35.66%22'),label:Servicos.MTE),(input:(query:'DestinationIP:%22200.152.33.10%22%20OR%20DestinationIP:%22200.152.35.199%22'),label:MeuINSS),(input:(query:'DestinationIP:%22200.152.47.17%22'),label:'RH%20Saude'),(input:(query:'DestinationIP:%22200.152.40.36%22'),label:'Portal%20DTP'),(input:(query:'DestinationIP:%22200.152.35.44%22%20OR%20DestinationIP:%22200.152.35.45%22'),label:'Aux.%20Emerg.'))),schema:group,type:filters)),params:(addLegend:!f,addTooltip:!t,gauge:(autoExtend:!f,backStyle:Full,colorSchema:'Green%20to%20Red',colorsRange:!((from:0,to:100),(from:100,to:500),(from:500,to:3000)),gaugeColorMode:None,gaugeStyle:Full,gaugeType:Arc,invertColors:!f,labels:(color:black,show:!t),orientation:vertical,percentageMode:!f,scale:(color:%23333,labels:!f,show:!t,width:2),style:(bgColor:!f,bgFill:%23000,fontSize:60,labelColor:!f,subText:''),type:meter,useRanges:!f,verticalSplit:!f),isDisplayWarning:!f,type:gauge),title:'%5BPalo%20Alto%5D%5BTraffic%5D%20Total%20de%20Endere%C3%A7os%20de%20Origem',type:goal))",
 			"name": "origens$dateInverted",
 			"width": 1,
@@ -98,7 +120,7 @@
 	],
 	"Acessos volumétricos por origem - Firewall": [
 		{
-		    "zoom":2,
+			"zoom": 2.2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/b93157a0-8156-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "firewallOrigem$dateInverted",
 			"width": 1,
@@ -109,13 +131,13 @@
 		{
 			"csv": "",
 			"name": "source$gatheredDate",
-			"columns": "IP|Hostname|Tráfego|Tipo de Tráfego|Tráfego esperado|motivação",
+			"columns": "IP|Hostname|Tráfego|Tipo de tráfego|Tráfego esperado|motivação",
 			"questions": []
 		}
 	],
 	"Acessos volumétricos por destino - Firewall": [
 		{
-		    "zoom":2,
+			"zoom": 2.2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/9637fbe0-8157-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "firewallDestino$dateInverted",
 			"width": 1,
@@ -126,7 +148,7 @@
 		{
 			"csv": "",
 			"name": "destination$gatheredDate",
-			"columns": "IP|Hostname|Tráfego|Tipo de Tráfego|Tráfego esperado|motivação",
+			"columns": "IP|Hostname|Tráfego|Tipo de tráfego|Tráfego esperado|motivação",
 			"questions": []
 		}
 	],
@@ -141,7 +163,7 @@
 			"y": 0
 		}
 	],
-	"Eventos Bloqueados - TOP 10": [
+	"WAF – Eventos Bloqueados – TOP 10": [
 		{
 			"zoom": 2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/0cd081a0-88b9-11ea-9285-7145e1cc7623?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
@@ -162,35 +184,53 @@
 			"y": 0
 		}
 	],
-	"Conexões VPN via: SO Server": [
+	"Conexões VPN": [
 		{
 			"csv": "",
 			"name": "VPN-via-OS-Server$dateInverted",
-			"columns": "ip.src|public.ip|user.dst|country.src|OS|org.src|domain.src|alias.host|event.desc|event.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|region.code",
+			"columns": "time|ip.src|public.ip|user.dst|country.src|OS|org.src|domain.src|alias.host|event.desc|evnet.time|event.cat.name|ec.activity|ec.outcome|ec.subject|ec.theme|region.code|domain|version",
 			"mappings": {
-				"user.dst":"Source User",
-				"public.ip":"public_ip",
-				"event.time":"Generate Time",
-				"country.src":"srcregion",
-				"domain.src":"machinename",
-				"ec.activity":"stage",
-				"event.cat.name":"error",
-				"alias.host":"Type",
-				"os.name":{
-                    "method":"String StringSigaUtils.join(String,String)",
-                    "dependencies":["OS","version","client_ver","client_os_ver"],
-                    "otherParams":[]
-                },
-				"ec.outcome":{
-                    "method":"String StringSigaUtils.changeCase(String)",
-                    "dependencies":["status"],
-                    "otherParams":[]
+				"user.dst": "Source User",
+				"public.ip": "public_ip",
+				"country.src": "srcregion",
+				"domain.src": "machinename",
+				"ec.activity": "stage",
+				"event.cat.name": "error",
+				"alias.host": "Type",
+				"os.name": {
+					"method": "String StringSigaUtils.join(String,String)",
+					"dependencies": [
+						"OS",
+						"version",
+						"client_ver",
+						"client_os_ver"
+					],
+					"otherParams": []
 				},
-				"org.src":{
-                    "method":"String KibanaApi.getHostname(Object)",
-                    "dependencies":["ip.src"],
-                    "otherParams":[]
-                }
+				"time": {
+					"method": "String DateFormatUtils.reformat(String,String,String)",
+					"dependencies": [
+						"event.time"
+					],
+					"otherParams": [
+						"dd-MM-yyyy'T'HH:mm:ss.SSSXXX",
+						"dd/MM/yyyy HH:mm:ss"
+					]
+				},
+				"ec.outcome": {
+					"method": "String StringSigaUtils.changeCase(String)",
+					"dependencies": [
+						"status"
+					],
+					"otherParams": []
+				},
+				"org.src": {
+					"method": "String KibanaApi.getHostname(Object)",
+					"dependencies": [
+						"ip.src"
+					],
+					"otherParams": []
+				}
 			},
 			"questions": [
 				"os.name like (?i).+server.+|.+other.+",
@@ -199,9 +239,9 @@
 			]
 		}
 	],
-    "Top Threat ID – Total – Drop - Allow": [
-    	{
-		    "zoom":1.1,
+	"Top Threat ID - Total - Drop - Allow": [
+		{
+			"zoom": 1.1,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/8b944480-fe2f-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "threatID$dateInverted",
 			"width": 1,
@@ -210,7 +250,7 @@
 			"y": 0
 		}
 	],
-	"TOP Destinos Atacados": [
+	"Top Destinos Atacados": [
 		{
 			"zoom": 2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/fdaf4750-87d4-11e9-a19b-edf276112fe9?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
@@ -265,7 +305,7 @@
 			"y": 0
 		},
 		{
-		      "zoom":2,
+			"zoom": 2,
 			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/44a30cd0-f5ee-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-12h%2Cmode%3Aquick%2Cto%3Anow))",
 			"name": "dstTotalBytes$dateInverted",
 			"width": 1,
@@ -274,14 +314,35 @@
 			"y": 0
 		}
 	],
-	"INCIDENTES NO RESPOND DO NW DURANTE O TURNO": [
-        {
-            "url": "https://10.146.116.1/respond/incidents",
-            "name": "incidents$dateInverted",
-            "width": 1,
-            "height": 0.5,
-            "x": 0,
-            "y": 0
-        }
+    
+    "Top Destination/Source IP x Total Bytes Internet – IP’s identificados":[{
+            "csv": "",
+            "name": "ipsIdentificados$gatheredDate",
+            "columns": "IP|Hostname|Localizacao",
+            "questions": []
+        }],
+	"Incidentes No Respond Netwitness": [
+		{
+			"zoom": 1.6,
+			"url": "https://10.146.116.1/respond/incidents",
+			"name": "incidents$dateInverted",
+			"wait": true,
+			"width": 1,
+			"height": 0.5,
+			"x": 0,
+			"y": 0
+		}
+	],
+	"Monitoração do [WAF] Troca de Senhas": [
+		{
+			"zoom": 2.2,
+			"url": "https://n321p000124.fast.prevnet/app/kibana#/visualize/edit/2f9e8cc0-ae62-11eb-9565-83f53c798e8e?embed=true&_g=(refreshInterval:(pause:!t,value:0),time:(from:now-24h,mode:quick,to:now))&_a=(filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'1fd36b10-f700-11e8-a078-93662b30045b',key:policy-name.keyword,negate:!f,params:!(Dataprev_Monitora_Troca_Senha_VPN,Dataprev_Monitora_troca_senha,Dataprev_Monitora_troca_senha_Falha,Dataprev_Monitora_troca_senha_Sucesso),type:phrases,value:'Dataprev_Monitora_Troca_Senha_VPN,%20Dataprev_Monitora_troca_senha,%20Dataprev_Monitora_troca_senha_Falha,%20Dataprev_Monitora_troca_senha_Sucesso'),query:(bool:(minimum_should_match:1,should:!((match_phrase:(policy-name.keyword:Dataprev_Monitora_Troca_Senha_VPN)),(match_phrase:(policy-name.keyword:Dataprev_Monitora_troca_senha)),(match_phrase:(policy-name.keyword:Dataprev_Monitora_troca_senha_Falha)),(match_phrase:(policy-name.keyword:Dataprev_Monitora_troca_senha_Sucesso))))))),linked:!t,query:(language:lucene,query:''),uiState:(vis:(params:(sort:(columnIndex:1,direction:desc)))),vis:(aggs:!((enabled:!t,id:'7',params:(customLabel:'Usu%C3%A1rios%20%C3%BAnicos',field:http.user-name.keyword),schema:metric,type:cardinality),(enabled:!t,id:'8',params:(field:SourceIP,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:'1',otherBucket:!f,otherBucketLabel:Other,size:200),schema:bucket,type:terms),(enabled:!t,id:'1',params:(),schema:metric,type:count),(enabled:!t,id:'5',params:(filters:!((input:(query:'policy-name.keyword:%20%22Dataprev_Monitora_Troca_Senha_VPN%22%20OR%20%20policy-name.keyword:%20%22Dataprev_Monitora_troca_senha%22'),label:'Solicita%C3%A7%C3%A3o%20de%20Reset'),(input:(query:'policy-name.keyword:%20%22Dataprev_Monitora_troca_senha_Sucesso%22%20OR%20%20policy-name.keyword:%20%22Dataprev_Monitora_troca_senha_Falha%22'),label:'Tentativas%20de%20Troca'))),schema:bucket,type:filters)),params:(perPage:10,showMetricsAtAllLevels:!t,showPartialRows:!f,showTotal:!f,sort:(columnIndex:4,direction:desc),totalFunc:sum),title:'%5BWAF%5D%20%20IPs%20x%20Numero%20Trocas',type:table))",
+			"name": "trocaSenhas$dateInverted",
+			"wait": true,
+			"width": 1,
+			"height": 0.5,
+			"x": 0,
+			"y": 0
+		}
 	]
 }

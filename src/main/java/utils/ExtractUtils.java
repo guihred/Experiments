@@ -24,7 +24,8 @@ public final class ExtractUtils {
     public static final int HUNDRED_SECONDS = 100_000;
     private static final Logger LOG = HasLogging.log();
 
-    private static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath(ProjectProperties.getField());
+    public static final String CERTIFICATION_FILE = ResourceFXUtils.toFullPath(ProjectProperties.getField());
+    public static final String CERTIFICATION_PASS = ProjectProperties.getField();
     private static final String LOGIN = ProjectProperties.getField();
     private static final String PROXY_CONFIG = ProjectProperties.getField();
     private static final String PROXY_CONFIG2 = ProjectProperties.getField();
@@ -37,7 +38,7 @@ public final class ExtractUtils {
 
     public static void addAuthorizationConfig() {
         System.setProperty("javax.net.ssl.trustStore", CERTIFICATION_FILE);
-        System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
+        System.setProperty("javax.net.ssl.trustStorePassword", CERTIFICATION_PASS);
         boolean b = true;
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> b);
         Authenticator.setDefault(new Authenticator() {

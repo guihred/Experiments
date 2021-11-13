@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
@@ -32,15 +30,17 @@ public final class WordService {
         getWord(mapaSubstituicao, ResourceFXUtils.toFile("models/" + arquivo), outStream);
     }
 
+    public static void main(String[] args) {
+        getWord(new HashMap<>(), "template-iris-reporte-eventos-v1.2.docx",
+                ResourceFXUtils.getOutFile("docx/NotificacaoInc.docx"));
+    }
+
     private static void changeHeader(Map<String, Object> mapaSubstituicao, XWPFDocument document1) {
         for (XWPFHeader p : document1.getHeaderList()) {
             List<XWPFParagraph> paragraphs = p.getParagraphs();
             for (XWPFParagraph paragraph : paragraphs) {
-                String text = paragraph.getText();
-                if (mapaSubstituicao.containsKey(text) || mapaSubstituicao.containsKey(text.trim())) {
-                    Object object = getObject(mapaSubstituicao, text);
-                    substituirParagrafo(paragraph, Objects.toString(object, ""));
-                }
+
+                replaceParagraph(mapaSubstituicao, paragraph);
             }
         }
     }
@@ -64,10 +64,8 @@ public final class WordService {
                     FileOutputStream stream = new FileOutputStream(outStream)) {
                 changeHeader(mapaSubstituicao, document1);
                 List<IBodyElement> bodyElements = document1.getBodyElements();
-                bodyElements.stream().filter(e -> e.getElementType() == BodyElementType.PARAGRAPH).forEach(
-                        (IBodyElement element) -> substituirParagrafo((XWPFParagraph) element, mapaSubstituicao));
-                bodyElements.stream().filter(e -> e.getElementType() == BodyElementType.TABLE)
-                        .forEach(tabela -> substituirTabela(tabela, mapaSubstituicao));
+                replaceBodyElements(mapaSubstituicao, bodyElements);
+
                 document1.write(stream);
             }
         });
@@ -77,9 +75,23 @@ public final class WordService {
         return StringUtils.isBlank(cellText) || !map.containsKey(cellText) && !map.containsKey(cellText.trim());
     }
 
+    private static void replaceBodyElements(Map<String, Object> mapaSubstituicao, List<IBodyElement> bodyElements) {
+        bodyElements.stream().filter(e -> e.getElementType() == BodyElementType.PARAGRAPH)
+                .forEach((IBodyElement element) -> substituirParagrafo((XWPFParagraph) element, mapaSubstituicao));
+        bodyElements.stream().filter(e -> e.getElementType() == BodyElementType.TABLE)
+                .forEach(tabela -> substituirTabela(tabela, mapaSubstituicao));
+
+        Map<BodyElementType, List<IBodyElement>> collect = bodyElements.stream().filter(
+                p -> p.getElementType() != BodyElementType.TABLE && p.getElementType() != BodyElementType.PARAGRAPH)
+                .collect(Collectors.groupingBy(e -> e.getElementType()));
+        if (!collect.isEmpty()) {
+            LOG.info("{}", collect);
+        }
+
+    }
 
     private static void replaceCollection(XWPFRun xwpfRun, Collection<?> object) {
-        for (Object ob0 :  object) {
+        for (Object ob0 : object) {
             if (ob0 instanceof String) {
                 setText(xwpfRun, (String) ob0);
             }
@@ -95,16 +107,29 @@ public final class WordService {
             File outFile = File.createTempFile("png", imgFile);
             ImageIO.write(SwingFXUtils.fromFXImage(object, null), "PNG", outFile);
             try (FileInputStream pictureData = new FileInputStream(outFile)) {
-                createRun.addPicture(pictureData, Document.PICTURE_TYPE_PNG, imgFile,
-                    Units.toEMU(IMAGE_WIDTH), Units.toEMU(IMAGE_WIDTH / object.getWidth() * object.getHeight()));
+                createRun.addPicture(pictureData, Document.PICTURE_TYPE_PNG, imgFile, Units.toEMU(IMAGE_WIDTH),
+                        Units.toEMU(IMAGE_WIDTH / object.getWidth() * object.getHeight()));
             }
         });
+    }
+
+    private static void replaceParagraph(Map<String, Object> mapaSubstituicao, XWPFParagraph paragraph) {
+        String text = paragraph.getText();
+        if (StringUtils.isNotBlank(text)) {
+            LOG.info(text);
+        }
+
+        if (mapaSubstituicao.containsKey(text) || mapaSubstituicao.containsKey(text.trim())) {
+            Object object = getObject(mapaSubstituicao, text);
+            substituirParagrafo(paragraph, Objects.toString(object, ""));
+        }
     }
 
     private static void setText(XWPFParagraph paragraph, String string) {
         List<XWPFRun> runs = paragraph.getRuns();
         XWPFRun xwpfRun = runs.isEmpty() ? paragraph.createRun() : runs.get(0);
         setText(xwpfRun, string);
+        paragraph.setSpacingAfter(0);
     }
 
     private static void setText(XWPFRun xwpfRun, String string) {
@@ -141,21 +166,27 @@ public final class WordService {
     }
 
     private static void substituirParagrafo(XWPFParagraph paragraph, Map<String, Object> mapaSubstituicao) {
+        boolean repl = false;
         List<XWPFRun> runs = paragraph.getRuns();
         for (int i = 0; i < runs.size(); i++) {
             XWPFRun xwpfRun = runs.get(i);
             String text = xwpfRun.text();
+            // LOG.info(text);
             if (isNotInMap(mapaSubstituicao, text)) {
                 continue;
             }
-            LOG.info(text);
             Object object = getObject(mapaSubstituicao, text);
             if (object instanceof String) {
                 setText(xwpfRun, object.toString());
+                repl = true;
             }
             if (object instanceof Collection) {
-                replaceCollection(xwpfRun, (Collection<?>)object);
+                replaceCollection(xwpfRun, (Collection<?>) object);
+                repl = true;
             }
+        }
+        if (!repl) {
+            replaceParagraph(mapaSubstituicao, paragraph);
         }
     }
 
@@ -179,9 +210,10 @@ public final class WordService {
                 XWPFTableCell cell = row.getCell(j);
                 String cellText = cell.getText();
                 if (isNotInMap(map, cellText)) {
-                    LOG.info(cellText);
+                    replaceBodyElements(map, cell.getBodyElements());
                     continue;
                 }
+                LOG.info(cellText);
                 Object object = getObject(map, cellText);
                 if (object != null) {
                     substituirCell(cell, object);

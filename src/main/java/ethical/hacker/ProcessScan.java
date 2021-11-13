@@ -23,13 +23,17 @@ public class ProcessScan {
     public static List<Map<String, String>> scanCurrentTasks() {
         List<String> processes = ConsoleUtils.executeInConsoleInfo(
                 "wmic process get Name,ProcessId,ParentProcessId,SessionId,CommandLine,CreationDate"
-                        + ",ExecutablePath,Priority,ThreadCount,VirtualSize,WorkingSetSize /FORMAT:csv");
+                        + ",ExecutablePath,Priority,ThreadCount,VirtualSize,WorkingSetSize,ReadOperationCount /FORMAT:csv");
         // Node,Name,ParentProcessId,ProcessId,SessionId
         List<String> title = new ArrayList<>();
         return processes.stream().map(e -> Stream.of(e.trim().split(",")).collect(Collectors.toList()))
                 .map(key -> createMap(title, key)).filter(e -> !e.isEmpty())
                 .peek(s -> s.entrySet().stream().filter(e -> e.getKey().contains("Size")).collect(Collectors.toList())
                         .stream().forEach(e -> s.compute(e.getKey(), (k, v) -> StringSigaUtils.getFileSize(v))))
+                .peek(s -> s.entrySet().stream().filter(e -> e.getKey().contains("Read")).collect(Collectors.toList())
+                        .stream()
+                        .forEach(e -> s.compute(e.getKey(),
+                                (k, v) -> StringSigaUtils.getFileSize(Double.valueOf(v).longValue() * 1024))))
                 .peek(s -> s.entrySet().stream().filter(e -> e.getKey().contains("Date")).collect(Collectors.toList())
                         .stream()
                         .forEach(e -> s.compute(e.getKey(),

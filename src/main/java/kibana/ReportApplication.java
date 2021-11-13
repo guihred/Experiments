@@ -135,26 +135,30 @@ public class ReportApplication extends Application {
         final double hoursInADay = 24.;
         int days = (int) Math.max(1., Math.ceil(StringSigaUtils.toInteger(params.get("\\$hour")) / hoursInADay));
         String ipParam = params.get("\\$ip");
-        if (JsonExtractor.accessMap(mapaSubstituicao, "params").containsKey("ip")) {
-            params.putAll(reportHelper.adjustParams(ipParam, days));
-
-        }
         if (mapaSubstituicao.containsKey("gerid")) {
             String index = params.get("\\$index");
             Boolean searchCredencial = Boolean.valueOf(params.getOrDefault("\\$searchCredencial", "true"));
             params.putAll(reportHelper.adjustParams(mapaSubstituicao, days, ipParam, index, searchCredencial));
+        }
+        if (JsonExtractor.accessMap(mapaSubstituicao, "params").containsKey("ip")) {
+            params.putAll(reportHelper.adjustParams(ipParam, days));
+
         }
         ExtractUtils.removeProxyConfig();
 
     }
 
     private void displayEditDialog(Map<String, Object> mapaSubstituicao, File reportFile) {
-        ImageView imageView = new ImageView();
-        imageView.setFitWidth(500);
-        imageView.setPreserveRatio(true);
         ObservableList<String> imageUrls = mapaSubstituicao.values().stream().flatMap(ReportHelper::objectList)
                 .map(o -> (String) ClassReflectionUtils.invoke(o, "impl_getUrl")).distinct()
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
+        if (imageUrls.isEmpty()) {
+            ReportHelper.finalizeReport(mapaSubstituicao, reportFile);
+            return;
+        }
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(500);
+        imageView.setPreserveRatio(true);
         Map<String, Object> removedUrls = new LinkedHashMap<>();
         SimpleListViewBuilder<String> urlsListView = new SimpleListViewBuilder<>();
         ListView<String> build = urlsListView.build();

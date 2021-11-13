@@ -106,7 +106,7 @@ public class DataframeExplorer extends ExplorerVariables implements HasLogging {
         SimpleListViewBuilder.of(questionsList).items(questions).onKey(KeyCode.DELETE, questions::remove)
                 .onKey(KeyCode.MINUS, this::toggleQuestion).onKey(KeyCode.SUBTRACT, this::toggleQuestion).copiable()
                 .pasteable(s -> Question.parseQuestion(getDataframe(), s));
-        RunnableEx.runNewThread(Mapping::getMethods);
+        // RunnableEx.runNewThread(Mapping::getMethods);
     }
 
     public void onActionAdd() {

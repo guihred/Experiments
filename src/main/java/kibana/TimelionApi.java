@@ -32,6 +32,8 @@ public final class TimelionApi extends KibanaApi {
                     + "split=clientip.keyword:12).label('$1','.*>.*:(.*)>.*')";
     public static final String BYTE_BY_IP =
             ".es(index=dtp-pl*,split=SourceIP:12,metric='sum:Bytes').label('$1','.*>.*:(.*)>.*')";
+    public static final String TIMELINE_SOURCE_IP =
+            ".es(index=dtp-waf*,q=\\\"SourceIP:*\\\"," + "split=SourceIP:12).label('$1','.*>.*:(.*)>.*')";
 
     private TimelionApi() {
     }

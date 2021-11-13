@@ -1,0 +1,165 @@
+{"index":"dtp-pl*","ignore_unavailable":true,"preference":1636599978017}
+{
+	"aggs": {
+		"2": {
+			"terms": {
+				"field": "SourceIP",
+				"size": 10,
+				"order": {
+					"1": "desc"
+				}
+			},
+			"aggs": {
+				"1": {
+					"sum": {
+						"field": "Bytes"
+					}
+				},
+				"3": {
+					"terms": {
+						"field": "SourceIP",
+						"size": 5,
+						"order": {
+							"1": "desc"
+						}
+					},
+					"aggs": {
+						"1": {
+							"sum": {
+								"field": "Bytes"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"size": 0,
+	"version": true,
+	"_source": {
+		"excludes": []
+	},
+	"stored_fields": [
+		"*"
+	],
+	"script_fields": {
+		
+	},
+	"docvalue_fields": [
+		{
+			"field": "@timestamp",
+			"format": "date_time"
+		},
+		{
+			"field": "GeneratedTime",
+			"format": "date_time"
+		},
+		{
+			"field": "ParentStartTime",
+			"format": "date_time"
+		},
+		{
+			"field": "ReceiveTime",
+			"format": "date_time"
+		},
+		{
+			"field": "StartTime",
+			"format": "date_time"
+		}
+	],
+	"query": {
+		"bool": {
+			"must": [
+				{
+					"match_all": {
+						
+					}
+				},
+				{
+					"match_all": {
+						
+					}
+				},
+				{
+					"range": {
+						"@timestamp": {
+							"gte": 1636556779424,
+							"lte": 1636599979424,
+							"format": "epoch_millis"
+						}
+					}
+				}
+			],
+			"filter": [],
+			"should": [],
+			"must_not": [
+				{
+					"bool": {
+						"minimum_should_match": 1,
+						"should": [
+							{
+								"match_phrase": {
+									"SourceIP": "10.0.0.0/8"
+								}
+							}
+						]
+					}
+				},
+				{
+					"bool": {
+						"minimum_should_match": 1,
+						"should": [
+							{
+								"match_phrase": {
+									"SourceIP": "200.152.32.0/20"
+								}
+							}
+						]
+					}
+				},
+				{
+					"bool": {
+						"minimum_should_match": 1,
+						"should": [
+							{
+								"match_phrase": {
+									"SourceIP": "192.168.0.0/16"
+								}
+							}
+						]
+					}
+				},
+				{
+					"range": {
+						"SourceIP": {
+							"gte": "172.16.0.0",
+							"lt": "172.31.255.255"
+						}
+					}
+				},
+				{
+					"match_phrase": {
+						"dtpcategoria": {
+							"query": "threat"
+						}
+					}
+				}
+			]
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"@kibana-highlighted-field@"
+		],
+		"post_tags": [
+			"@/kibana-highlighted-field@"
+		],
+		"fields": {
+			"*": {
+				
+			}
+		},
+		"fragment_size": 2147483647
+	},
+	"timeout": "30000ms"
+}

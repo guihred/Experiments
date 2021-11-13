@@ -208,7 +208,7 @@ public class CredentialInvestigator extends KibanaInvestigator {
                 return query;
             }
             if (!index.contains("*")) {
-                return KibanaApi.scanByIp(query, days1).get("Top Users").get();
+                return KibanaApi.searchTopUsers(query, days1);
             }
             Map<String, String> iPsByCredencial = KibanaApi.getGeridCredencial(query, index, days1);
             return iPsByCredencial.keySet().stream().collect(Collectors.joining("\n"));

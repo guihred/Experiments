@@ -81,9 +81,8 @@ public class ReportHelper {
                         + "\" height=\"660\" width=\"1200\"></iframe></td></tr>")
                 .collect(Collectors.joining("\n", "<html><head><meta charset=\"UTF-8\"></head><body><table>\n",
                         "\n</table></body></html>"));
-        LOG.info("\n{}", collect);
-        RunnableEx.run(() -> {
 
+        RunnableEx.run(() -> {
             String reportName = getReportName(mapaSubstituicao, params).replaceAll("(pptx|docx)", "html");
             Files.write(collect, ResourceFXUtils.getOutFile("html/" + reportName), StandardCharsets.UTF_8);
         });

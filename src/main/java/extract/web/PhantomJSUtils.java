@@ -147,7 +147,6 @@ public final class PhantomJSUtils {
 
     public static void postNdJson(String url, String cont, Map<String, String> headers, File outFile)
             throws IOException {
-
         HttpClient client = HttpClientBuilder.create().setHostnameVerifier(new AllowAllHostnameVerifier()).build();
         HttpPost get = new HttpPost(url);
         String content = cont.replaceAll("[\n\t]+", "").replaceFirst("\\}\\{", "}\n{") + "\n";
@@ -160,9 +159,14 @@ public final class PhantomJSUtils {
                 .collect(Collectors.joining("\n"));
         LOG.info("Request \n\t{} \n\t{} \n\t{}", url, headersString, content);
         HttpResponse response = SupplierEx.getFirst(() -> client.execute(get), () -> {
-            // InstallCert.installCertificate(url);
+            InstallCert.installCertificate(url);
             return client.execute(get);
         });
+        if (response == null) {
+            LOG.error("Error when accessing {}", url);
+            return;
+        }
+
         HttpEntity entity = response.getEntity();
         BufferedReader rd = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8));
         ExtractUtils.copy(rd, outFile);

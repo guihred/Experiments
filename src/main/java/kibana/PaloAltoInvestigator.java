@@ -30,7 +30,7 @@ import utils.ex.FunctionEx;
 import utils.ex.RunnableEx;
 
 public class PaloAltoInvestigator extends Application {
-    protected static final List<String> APPLICATION_LIST = ProjectProperties.getFieldList();
+    private static final List<String> APPLICATION_LIST = ProjectProperties.getFieldList();
     @FXML
     protected TextField resultsFilter;
     @FXML

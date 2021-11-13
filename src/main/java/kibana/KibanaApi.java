@@ -295,10 +295,6 @@ public class KibanaApi {
                     .map(WHOIS_SCANNER::lookupPolicy).map(KibanaApi::displayDistinct).collect(Collectors.toList()));
             return displayDistinct(makeKibanaSearch);
         });
-        fullScan.put("Authorization", () -> {
-
-            return getAuthorization(ip, days);
-        });
         fullScan.put("TOP_FW", () -> {
             Map<String, Object> destinationSearch = makeKibanaSearchObj("destinationQuery.json", days, ip, KEY, VALUE);
             destinationSearch.computeIfPresent(KEY, (k, v) -> JsonExtractor.<String>accessList(v).stream()
@@ -323,12 +319,7 @@ public class KibanaApi {
             return displayDistinct(totalBytesQuery);
         });
         fullScan.put("URLs", () -> filterUrls(days, pattern));
-        fullScan.put("Top Users", () -> {
-            Map<String, String> search = new LinkedHashMap<>();
-            search.put(SOURCE_IP, ip);
-            Map<String, String> nsInformation = makeKibanaSearch("topUsersQuery.json", days, search, KEY, DOC_COUNT);
-            return display(nsInformation);
-        });
+        fullScan.put("Top Users", () -> searchTopUsers(ip, days));
         // fullScan.put("PaloAlto_Threat", () -> {
         // if (CIDRUtils.isVPNNetwork(ip)) {
         // Map<String, Object> userQuery =
@@ -344,6 +335,13 @@ public class KibanaApi {
         // return displayDistinct(makeKibanaSearch("threatQuery.json", days, ip, KEY));
         // });
         return fullScan;
+    }
+
+    public static String searchTopUsers(String ip, int days) {
+        Map<String, String> search = new LinkedHashMap<>();
+        search.put(SOURCE_IP, ip);
+        Map<String, String> nsInformation = makeKibanaSearch("topUsersQuery.json", days, search, KEY);
+        return display(nsInformation);
     }
 
     protected static String convertSearchKeywords(Map<String, String> search) {
@@ -470,9 +468,9 @@ public class KibanaApi {
                 replacement);
     }
 
-    private static String group(List<String> collect, final int d) {
-        return groupStream(collect, d).collect(Collectors.joining("\n"));
-    }
+    // private static String group(List<String> collect, final int d) {
+    // return groupStream(collect, d).collect(Collectors.joining("\n"));
+    // }
 
     private static Collector<String, ?, Map<String, SimpleSummary<ChronoZonedDateTime<?>>>> groupBy(String whenRegex,
             String fieldRegex) {
@@ -483,11 +481,14 @@ public class KibanaApi {
                         new SimpleSummary<>()));
     }
 
-    private static Stream<String> groupStream(List<String> collect, final int d) {
-        return IntStream.range(0, collect.size() / d)
-                .mapToObj(i -> IntStream.range(i, i + d).filter(j -> j < collect.size()).mapToObj(collect::get)
-                        .flatMap(s -> Stream.of(s.split(" "))).distinct().collect(Collectors.joining(" ")));
-    }
+    // private static Stream<String> groupStream(List<String> collect, final int d)
+    // {
+    // return IntStream.range(0, collect.size() / d)
+    // .mapToObj(i -> IntStream.range(i, i + d).filter(j -> j <
+    // collect.size()).mapToObj(collect::get)
+    // .flatMap(s -> Stream.of(s.split("
+    // "))).distinct().collect(Collectors.joining(" ")));
+    // }
 
     private static Map<String, String> makeKibanaSearch(File file, double days, String query, String... params) {
         return makeKibanaSearch(file, days, new String[] { query }, params);

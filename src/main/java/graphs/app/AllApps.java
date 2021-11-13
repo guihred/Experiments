@@ -23,7 +23,6 @@ import simplebuilder.SimpleDialogBuilder;
 import simplebuilder.SimpleListViewBuilder;
 import utils.ClassReflectionUtils;
 import utils.CommonsFX;
-import utils.ExtractUtils;
 import utils.ex.RunnableEx;
 import utils.ex.SupplierEx;
 
@@ -55,7 +54,7 @@ public class AllApps extends Application {
     }
 
     public void initialize() {
-        ExtractUtils.insertProxyConfig();
+        // ExtractUtils.insertProxyConfig();
         RunnableEx.runNewThread(
                 () -> getAllFileDependencies().stream()
                         .filter(makeTest(d -> d.getPublicStaticMethods().contains("main")))
@@ -114,8 +113,10 @@ public class AllApps extends Application {
                 new SimpleDialogBuilder(true).show(asAppClass(appClass));
                 return;
             }
-            Object[] args = new Object[] { new String[0] };
-            ClassReflectionUtils.invoke(null, appClass.getMethod("main", String[].class), args);
+            RunnableEx.runNewThread(() -> {
+                Object[] args = new Object[] { new String[0] };
+                ClassReflectionUtils.invoke(null, appClass.getMethod("main", String[].class), args);
+            });
         });
     }
 

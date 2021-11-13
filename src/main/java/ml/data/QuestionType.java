@@ -15,11 +15,9 @@ import utils.ex.PredicateEx;
 
 public enum QuestionType {
     EQ("==", (ob1, ob2) -> Objects.equals(ob1, ob2) || Objects.equals(ob1, StringSigaUtils.toStringSpecial(ob2)),
-            String.class,
-            Number.class),
+            String.class, Number.class),
     NE("!=", (ob1, ob2) -> !Objects.equals(ob1, ob2) && !Objects.equals(ob1, StringSigaUtils.toStringSpecial(ob2)),
-            String.class,
-            Number.class),
+            String.class, Number.class),
     CONTAINS("contains",
             (ob1, ob2) -> StringUtils.containsIgnoreCase(StringSigaUtils.toStringSpecial(ob1),
                     StringSigaUtils.toStringSpecial(ob2)),
@@ -56,7 +54,6 @@ public enum QuestionType {
         classes = clazz;
     }
 
-
     public boolean execute(Object t, Object u) {
         return test.test(t, u);
     }
@@ -70,12 +67,18 @@ public enum QuestionType {
     }
 
     public Boolean isTypeDisabled(Entry<String, DataframeStatisticAccumulator> it) {
-        return isTypeDisabled(this,it);
+        return isTypeDisabled(this, it);
     }
 
     public boolean matchesClass(Class<?> a) {
         return ClassReflectionUtils.hasClass(Arrays.asList(classes), a);
     }
+
+    @Override
+    public String toString() {
+        return sign;
+    }
+
     public static QuestionType getBySign(String a) {
         return Stream.of(values()).filter(v -> v.sign.equals(a)).findFirst().orElse(null);
     }

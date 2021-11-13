@@ -9,6 +9,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import utils.ex.FunctionEx;
 import utils.ex.HasLogging;
 import utils.ex.PredicateEx;
 
@@ -32,7 +33,7 @@ public class DataframeML extends BaseDataframe {
             list.add(obj[i]);
             i++;
         }
-        size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
+        size = computedSize();
     }
 
     public void apply(String header, DoubleUnaryOperator mapper) {
@@ -59,8 +60,7 @@ public class DataframeML extends BaseDataframe {
             return this;
         }
 
-        int off = 0;
-        for (int i = 0; i - off < list.size(); i++) {
+        for (int i = 0, off = 0; i - off < list.size(); i++) {
             int j = i - off;
             Object t = list.get(j);
             if (!PredicateEx.test(v, t)) {
@@ -68,31 +68,31 @@ public class DataframeML extends BaseDataframe {
                 off++;
             }
         }
-        size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
+        size = computedSize();
         return this;
     }
 
     public DataframeML filterString(String header, PredicateEx<String> v) {
         List<Object> list = dataframe.get(header);
-        if (list != null) {
-            int off = 0;
-            for (int i = 0; i - off < list.size(); i++) {
-                int j = i - off;
-                if (!PredicateEx.test(v, Objects.toString(list.get(j)))) {
-                    dataframe.forEach((c, l) -> l.remove(j));
-                    off++;
-                }
+        if (list == null) {
+            return this;
+        }
+        for (int i = 0, off = 0; i - off < list.size(); i++) {
+            int j = i - off;
+            if (!PredicateEx.test(v, Objects.toString(list.get(j)))) {
+                dataframe.forEach((c, l) -> l.remove(j));
+                off++;
             }
         }
-        size = dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
+        size = computedSize();
         return this;
     }
 
     public List<Map<String, Object>> findAll(String header, Predicate<Object> v) {
         List<Object> list = dataframe.get(header);
         if (list != null) {
-            return IntStream.range(0, list.size()).filter(i -> v.test(list.get(i)))
-                    .mapToObj(this::rowMap).collect(Collectors.toList());
+            return IntStream.range(0, list.size()).filter(i -> v.test(list.get(i))).mapToObj(this::rowMap)
+                    .collect(Collectors.toList());
         }
         HasLogging.log(1).error("\"{}\" may not exist in {}", header, file.getName());
         return Collections.emptyList();
@@ -129,6 +129,18 @@ public class DataframeML extends BaseDataframe {
         return (List<T>) dataframe.keySet().stream().filter(Objects::nonNull)
                 .filter(e -> Stream.of(header.split(" ")).allMatch(e::contains)).findFirst().map(dataframe::get)
                 .orElse(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Comparable<?>, D extends Comparable<?>> List<D> map(String header, Class<D> finalClass,
+            FunctionEx<T, D> mapper) {
+        Class<? extends Comparable<?>> class1 = formatMap.get(header);
+        List<D> collect = dataframe.get(header).stream()
+                .map(t -> (T) class1.cast(t)).map(FunctionEx.makeFunction(mapper))
+                .collect(Collectors.toList());
+        formatMap.put(header, finalClass);
+        dataframe.put(header, (List<Object>) collect);
+        return collect;
     }
 
     @SuppressWarnings("unchecked")
@@ -187,5 +199,9 @@ public class DataframeML extends BaseDataframe {
         }
         list.add(obj);
         size = Math.max(size, list.size());
+    }
+
+    private int computedSize() {
+        return dataframe.values().stream().mapToInt(List<Object>::size).max().orElse(0);
     }
 }

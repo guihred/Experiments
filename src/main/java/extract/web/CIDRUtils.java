@@ -91,10 +91,10 @@ public final class CIDRUtils {
     }
 
     public static boolean isPrivateNetwork(String ip) {
-        return ip.endsWith(".prevnet") || PRIVATE_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
+        return ip.endsWith(".prevnet") || PRIVATE_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(ip, net));
     }
 
-    public static boolean isSameNetworkAddress(String cidr, String ip) {
+    public static boolean isSameNetworkAddress(String ip, String cidr) {
         if (StringUtils.isBlank(cidr) || StringUtils.isBlank(ip)) {
             return false;
         }
@@ -116,7 +116,7 @@ public final class CIDRUtils {
     }
 
     public static boolean isVPNNetwork(String ip) {
-        return VPN_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(net, ip));
+        return VPN_NETWORKS.stream().anyMatch(net -> isSameNetworkAddress(ip, net));
     }
 
 
@@ -141,7 +141,7 @@ public final class CIDRUtils {
 
     public static Map<String, Object> searchInFile(DataframeML dataframe, String network2, String ip) {
         return dataframe.findFirst(network2,
-                v -> Objects.equals(v, ip) || isSameNetworkAddress(Objects.toString(v, ""), ip));
+                v -> Objects.equals(v, ip) || isSameNetworkAddress(ip, Objects.toString(v, "")));
     }
 
     public static Map<String, String> strMap(Map<String, Object> first) {

@@ -84,7 +84,37 @@
 					<content>
 							<TableView fx:id="ipsTable" VBox.vgrow="ALWAYS" />
 					</content>
-				</Tab><Tab text="Timeline Sistemas">
+				</Tab>
+				<Tab text="Timeline Credenciais">
+                    <content>
+                        <VBox>
+                            <children>
+                                <Text text="Credencial" />
+                                <ComboBox fx:id="credencialCombo">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="" />
+                                        </FXCollections>
+                                    </items>
+                                </ComboBox>
+                                <LineChart fx:id="timelineCredencial" title="Timeline Credencial"
+                                    legendSide="LEFT" verticalZeroLineVisible="false" animated="false"
+                                    createSymbols="false">
+                                    <yAxis>
+                                        <NumberAxis animated="false" side="LEFT"
+                                            tickLabelFill="0x585858ff" tickUnit="10.0" upperBound="110.0" />
+                                    </yAxis>
+                                    <xAxis>
+                                        <NumberAxis animated="false" forceZeroInRange="false"
+                                            side="BOTTOM" tickLabelFill="0x585858ff" tickUnit="50.0"
+                                            upperBound="150.0" />
+                                    </xAxis>
+                                </LineChart>
+                            </children>
+                        </VBox>
+                    </content>
+                </Tab>
+				<Tab text="Timeline SourceIP">
                     <content>
                         <VBox>
                             <children>

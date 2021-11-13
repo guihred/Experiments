@@ -1,0 +1,70 @@
+{
+	"model": "template-iris-reporte-eventos-v1.2.docx",
+	"params": {
+		"ip": "",
+		"ioc": [
+			"VPN - utilização de SO Server",
+			"VPN – conexões simultâneas",
+			"VPN - hostid malicioso",
+			"Gerid – utilização de credencial de terceiros",
+			"Troca de senha - credencial de terceiros (alerta4)",
+			"Endereço IP diferente da localização do usuário",
+			"Endereço IP público (hosting/má reputação)",
+			""
+		],
+		"index": [
+			"inss-*-prod-*",
+			"mte-log4j-prod-*",
+			"tudo"
+		],
+		"hour": [
+			"-12h",
+			"-24h",
+			"-36h",
+			"-48h",
+			"-60h",
+			"-72h",
+			"-84h"
+		]
+	},
+	"name": "Reporte_eventos_IRIS_$ip.docx",
+	"ips": "$otherIps",
+	"Acesso indevido (VPN)": "$otherIps",
+	"Evento ID:": [
+		"Evento ID:",
+		"$incidente"
+	],
+	"Data / hora:": [
+		"Data / hora:",
+		"$Acesso $currentHour"
+	],
+	"Período analisado:": [
+		"Período analisado:",
+		"$Acesso"
+	],
+	"(escreva um breve resumo do evento sobre o que foi encontrado)": "",
+	"(incluir o domínio no usuário ex. @inss.gov.br)": "$creds",
+	"VPN - utilização de SO Server": "$ioc",
+	"VPN – conexões simultâneas": "$ioc",
+	"VPN - hostid malicioso": "$ioc",
+	"Gerid – utilização de credencial de terceiros": "$ioc",
+	"Troca de senha - credencial de terceiros (alerta4)": "$ioc",
+	"Endereço IP diferente da localização do usuário": "$ioc",
+	"Endereço IP público (hosting/má reputação)": "$ioc",
+	"gerid": [
+		"$creds"
+	],
+	"Usuário(s)": [
+		"Usuário(s)",
+		"$Credencial Info"
+	],
+	"(caso exista)": "$Lookup",
+	"Credenciais de VPN": [],
+	"figurasContexto": [],
+	"Informar os indicadores de ameaça": [
+		"– Trocas de senha de diversos usuários realizados pelo mesmo endereço IP de origem",
+		"– Endereço IP de provedor de acesso reincidente",
+		"– Trocas realizadas em curto período",
+		"– Credenciais de acesso de usuários dispersos geograficamente"
+	]
+}

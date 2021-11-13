@@ -4,8 +4,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
+import utils.CommonsFX;
 
 public final class PrintTextStream extends PrintStream {
     private final StringProperty text2;
@@ -19,9 +19,9 @@ public final class PrintTextStream extends PrintStream {
     @Override
     public void write(byte[] b, int off, int len) {
         super.write(b, off, len);
-        if (Platform.isFxApplicationThread()) {
+        CommonsFX.runInPlatform(() -> {
             text2.setValue(text2.getValue()
-                    + new String(b, off, len, StandardCharsets.UTF_8).replaceAll("[\\dm (\\w+)[0;\\d+m:", "$1"));
-        }
+                    + new String(b, off, len, StandardCharsets.UTF_8).replaceAll("\\[34m (\\w+)\\[0;39m:", "$1"));
+        });
     }
 }

@@ -10,6 +10,8 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQuery;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import utils.ex.HasLogging;
 import utils.ex.SupplierEx;
@@ -65,6 +67,18 @@ public final class DateFormatUtils {
                 .atZone(ZoneId.systemDefault()).getYear(), () -> ZonedDateTime.now().getYear());
     }
 
+    public static void main(String[] args) {
+        List<String> s = Arrays.asList("10-11-2021T03:48:26.000-03:00\r\n", "10-11-2021T05:19:14.000-03:00\r\n",
+                "09-11-2021T20:35:49.000-03:00\r\n", "09-11-2021T22:19:33.000-03:00\r\n",
+                "10-11-2021T12:50:47.000-03:00\r\n", "10-11-2021T12:53:05.000-03:00\r\n",
+                "10-11-2021T10:26:48.000-03:00\r\n", "10-11-2021T11:48:15.000-03:00\r\n");
+        for (String string : s) {
+
+            System.out.println(reformat(string, "dd-MM-yyyy'T'HH:mm:ss.SSSXXX", "dd/MM/yyyy HH:mm:ss"));
+        }
+
+    }
+
     public static TemporalAccessor parse(CharSequence text) {
         return TIME_OF_SECONDS_FORMAT.parse(text);
     }
@@ -77,7 +91,13 @@ public final class DateFormatUtils {
                 });
     }
 
+    public static String reformat(String src, String srcFmt, String convert) {
+        return SupplierEx.get(() -> DateTimeFormatter.ofPattern(convert)
+                .format(DateTimeFormatter.ofPattern(srcFmt).parse(src.trim())), src);
+    }
+
     public static long toNumber(String fmt, String now) {
         return SupplierEx.get(() -> DateTimeFormatter.ofPattern(fmt).parse(now).get(ChronoField.INSTANT_SECONDS));
     }
+
 }

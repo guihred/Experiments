@@ -5,9 +5,14 @@
         "hour":["-12h","-24h","-36h","-48h","-60h","-72h","-84h"],
         "index":["inss-*-prod-*","mte-log4j-prod-*"],
         "searchCredencial":true,
-        "gerid":["geridinss","geridmte","geriddtp","geridprevic","consultas.inss.gov.br","tarefas.inss.gov.br","mteempregabr","postos",""]
+        "gerid":["geridinss","geridmte","geriddtp","geridprevic","consultas.inss.gov.br","tarefas.inss.gov.br","mteempregabr","postos","tarefasareameio.inss.gov.br",""]
     },
     "name": "Reporte_Eventos_$gerid_$ip.docx",
+    "ELK":"ELK - Palo Alto - www-acesso",
+    "DIT – Diretoria de Tecnologia e Operações": "DIT – Diretoria de Tecnologia e Operações",
+    "SUOP – Superintendência de Operações": "SUOP – Superintendência de Operações",
+    "DESO – Departamento de Segurança da Operação": "DESO – Departamento de Segurança da Operação",
+    "DMPR – Divisão de Monit., Prev. e Resposta a Incidente de Segurança": "DMPR – Divisão de Monit., Prev. e Resposta a Incidente de Segurança",
     "figurasSat": [
         "Alta quantidade de tráfego registrado",   
         {

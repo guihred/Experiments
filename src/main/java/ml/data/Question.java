@@ -89,7 +89,7 @@ public class Question implements PredicateEx<Object> {
     @Override
     public String toString() {
         String string = not ? "%s not %s %s" : "%s %s %s";
-        return String.format(string, getColName(), getType().getSign(),
+        return String.format(string, colName, type,
                 ob instanceof String ? "\"" + ob + "\"" : Objects.toString(ob, ""));
     }
 

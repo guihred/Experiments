@@ -23,11 +23,11 @@ final class ConsultasHelper {
     private static final String IGNORE_IPS_REGEX = "::1|127.0.0.1";
     private static final List<String> BLOCK = Arrays.asList("Block_48h", "Block_7_dias", "Block_6horas", "Block_12h",
             "Block_24h_SIEM", "Dataprev_SOM_BlackList_Customizada_APP");
-    private static final List<String> EXCLUDE_OWNERS =
-            Arrays.asList("CAIXA ECONOMICA FEDERAL", "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO",
-                    "CIA. DE TECNOL. DA INFOR. E COMUNICAÇÃO DO PARANÁ", "Tribunal Regional Federal da Terceira Regiao",
-                    "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC", "BANCO MERCANTIL DO BRASIL S/A",
-                    "Cia. de Processamento de Dados do Estado da Bahia", "BANCO BRADESCO SA");
+    private static final List<String> EXCLUDE_OWNERS = Arrays.asList("CAIXA ECONOMICA FEDERAL",
+            "SERVICO FEDERAL DE PROCESSAMENTO DE DADOS - SERPRO", "CIA. DE TECNOL. DA INFOR. E COMUNICAÇÃO DO PARANÁ",
+            "Tribunal Regional Federal da Terceira Regiao", "BANCO DO BRASIL S.A.", "Itau Unibanco S.A.", "Google LLC",
+            "BANCO MERCANTIL DO BRASIL S/A", "Banco Santander (Brasil) S.A.",
+            "Cia. de Processamento de Dados do Estado da Bahia", "BANCO BRADESCO SA");
 
     private ConsultasHelper() {
     }
@@ -110,7 +110,7 @@ final class ConsultasHelper {
                     LOG.info("\n\tTOP NETWORKS\n\t{}\n\t{}\n{}", application, queryField, topNets);
                     List<Map<String, String>> aboveAvgInfo = kibanaQuery.parallelStream().filter(e -> {
                         String first = getFirst(params, e);
-                        return nets.stream().anyMatch(net -> CIDRUtils.isSameNetworkAddress(net, first));
+                        return nets.stream().anyMatch(net -> CIDRUtils.isSameNetworkAddress(first, net));
                     }).collect(Collectors.toList());
                     mergeFilter(filter, params, queryField, aboveAvgInfo);
                 }

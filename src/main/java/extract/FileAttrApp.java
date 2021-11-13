@@ -23,7 +23,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import simplebuilder.FileChooserBuilder;
 import simplebuilder.SimpleTreeViewBuilder;
-import utils.ExtractUtils;
 import utils.ResourceFXUtils;
 import utils.StringSigaUtils;
 import utils.ex.SupplierEx;
@@ -35,7 +34,7 @@ public class FileAttrApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        ExtractUtils.insertProxyConfig();
+        // ExtractUtils.insertProxyConfig();
         primaryStage.setTitle("File Attributes Application");
         primaryStage.setScene(new Scene(createSplitTreeListDemoNode()));
         primaryStage.show();
