@@ -1,10 +1,10 @@
-{"index":"dtp-pl*","ignore_unavailable":true,"preference":1636599978017}
+{"index":"dtp-pl*","ignore_unavailable":true,"preference":1637203610700}
 {
 	"aggs": {
 		"2": {
 			"terms": {
 				"field": "SourceIP",
-				"size": 10,
+				"size": 2,
 				"order": {
 					"1": "desc"
 				}
@@ -13,22 +13,6 @@
 				"1": {
 					"sum": {
 						"field": "Bytes"
-					}
-				},
-				"3": {
-					"terms": {
-						"field": "SourceIP",
-						"size": 5,
-						"order": {
-							"1": "desc"
-						}
-					},
-					"aggs": {
-						"1": {
-							"sum": {
-								"field": "Bytes"
-							}
-						}
 					}
 				}
 			}
@@ -70,25 +54,22 @@
 	"query": {
 		"bool": {
 			"must": [
-				{
-					"match_all": {
-						
-					}
-				},
-				{
-					"match_all": {
-						
-					}
-				},
-				{
-					"range": {
-						"@timestamp": {
-							"gte": 1636556779424,
-							"lte": 1636599979424,
-							"format": "epoch_millis"
-						}
-					}
-				}
+                {
+                    "query_string": {
+                        "query": "DestinationIP:%s",
+                        "analyze_wildcard": true,
+                        "default_field": "*"
+                    }
+                },
+                {
+                    "range": {
+                        "@timestamp": {
+                            "gte": %s,
+                            "lte": %s,
+                            "format": "epoch_millis"
+                        }
+                    }
+                }
 			],
 			"filter": [],
 			"should": [],

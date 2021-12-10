@@ -8,6 +8,10 @@
 <?import javafx.scene.input.*?>
 <?import javafx.geometry.*?>
 <HBox xmlns:fx="http://javafx.com/fxml" fx:id="parent">
+	
+            <padding>
+                <Insets topRightBottomLeft="5" />
+            </padding>
 	<children>
 		<VBox>
 			<padding>
@@ -21,8 +25,8 @@
 				<Button id="_Network Information" onAction="#onActionNetworkInformation"
 					text="_Network Information" />
 				<Button id="NetStats" onAction="#onActionNetstats" text="Net _Stats" />
-				<Button id="CurrentTasks" onAction="#onActionCurrentTasks"
-					text="_Current Tasks" />
+				<Button id="CurrentTasks" onAction="#onActionCurrentTasks" text="_Current Tasks" />
+				<Button onAction="#onActionCurrentServices" text="C_urrent Services" />
 				<Text text="DNS" />
 				<TextField fx:id="dns" text="google.com" />
 				<Button id="DNS _Lookup" onAction="#onActionDNSLookup" text="DNS _Lookup" />
@@ -53,7 +57,7 @@
 						<TextField fx:id="filterField" />
 						<TableView fx:id="servicesTable" minWidth="270">
 							<columns>
-								<TableColumn prefWidth="160" text="Service">
+								<TableColumn prefWidth="160" text="Service"> 
 									<cellValueFactory>
 										<PropertyValueFactory property="value" />
 									</cellValueFactory>

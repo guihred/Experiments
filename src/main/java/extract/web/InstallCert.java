@@ -38,14 +38,18 @@ public final class InstallCert {
     }
 
     public static void main(String[] args) throws GeneralSecurityException {
-        installCertificate("https://n321p000124.fast.prevnet/");
+        installCertificate("https://n321p000124.fast.prevnet/app");
+        installCertificate("https://10.146.116.1/respond");
         // installCertificate("https://antiddos.vogeltelecom.com/");
-        installCertificate("https://10.146.116.1/");
-        // installCertificate("https://www-acesso/");
+        // installCertificate("https://globalview.centurylink.com/");
+        // installCertificate("https://isc.sans.edu/");
+        // installCertificate("https://registro.br/tecnologia/ferramentas/whois");
+        // installCertificate("https://sightline.timbrasil.com.br");
     }
 
     private static String getFullURL(String url) {
         return SupplierEx.remap(() -> {
+
             if (!url.matches("^https*://([^/]+)/?.*")) {
                 return url;
             }

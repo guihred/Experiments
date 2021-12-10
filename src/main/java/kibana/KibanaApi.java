@@ -78,7 +78,7 @@ public class KibanaApi {
                                 new String[] { SOURCE_IP, "DestinationIP", ip }, aggregations),
                         aggregations, "3", buckets);
         accessList.addAll(accessList2);
-        return accessList.stream().flatMap((Map<Object, Object> map) -> {
+        return accessList.stream().flatMap((map) -> {
             String ipd = JsonExtractor.access(map, String.class, KEY);
             String reverseDNS = CIDRUtils.getReverseDNS(ipd);
             return JsonExtractor.<Map<Object, Object>>accessList(map, "4", buckets).stream()
@@ -100,13 +100,35 @@ public class KibanaApi {
                 .collect(Collectors.joining("\n"));
     }
 
+    public static String geoKibanaLocation(String ip) {
+        if (StringUtils.isBlank(ip)) {
+            return "";
+        }
+
+        List<String> fields = Arrays.asList("city_name", "region_code", "country_name");
+        return Stream.of(ip.split("\n")).map(s -> makeKibanaSearchObj("wafQuery.json", 1, ip, "plSourceGeo"))
+                .flatMap(s -> JsonExtractor.<Object>accessList(s, "plSourceGeo").stream())
+                .map(s -> JsonExtractor.<String, Object>accessMap(s))
+                .map(s -> s.entrySet().stream().filter(t -> fields.contains(t.getKey()))
+                        .sorted(Comparator.comparing(m -> fields.indexOf(m.getKey())))
+                        .collect(Collectors.toMap(Entry<String, Object>::getKey,
+                                Entry<String, Object>::getValue, SupplierEx::nonNull, LinkedHashMap::new)))
+                .map(KibanaApi::display).distinct().collect(Collectors.joining("\n"));
+
+    }
+
     public static String geoLocation(String ip) {
         if (StringUtils.isBlank(ip)) {
             return "";
         }
 
-        return Stream.of(ip.split("\n")).map(WHOIS_SCANNER::getGeoIpInformation)
-                .map(s -> StringSigaUtils.getKey(s, LOCATION_KEYS)).collect(Collectors.joining("\n"));
+        return Stream.of(ip.split("\n")).map(t -> {
+            String geoKibanaLocation = geoKibanaLocation(t);
+            if (StringUtils.isNotBlank(geoKibanaLocation)) {
+                return geoKibanaLocation;
+            }
+            return StringSigaUtils.getKey(WHOIS_SCANNER.getGeoIpInformation(t), LOCATION_KEYS);
+        }).collect(Collectors.joining("\n"));
 
     }
 
@@ -117,13 +139,9 @@ public class KibanaApi {
         Map<String, Object> makeKibanaSearch = makeKibanaSearchObj("wafQuery.json", days, pattern, policy);
         makeKibanaSearch.computeIfPresent(policy, (k, v) -> {
             return JsonExtractor.<List<Map<String, Object>>>accessList(v).stream().flatMap(l -> l.stream())
-                    .filter(m -> "Authorization".equals(m.get("Name"))).map(m -> m.get("Value"))
-                    .map(Objects::toString)
-                    .distinct()
-                    .map(s -> new String(Base64.getDecoder().decode(s.replaceAll(".+\\.(.+?)\\..+", "$1"))))
-                    .map(s -> s.replaceAll(".+sub\":\"(.+?)\".+", "$1"))
-                    .distinct()
-                    .collect(Collectors.joining("\n"));
+                    .filter(m -> "Authorization".equals(m.get("Name"))).map(m -> m.get("Value")).map(Objects::toString)
+                    .distinct().map(s -> new String(Base64.getDecoder().decode(s.replaceAll(".+\\.(.+?)\\..+", "$1"))))
+                    .map(s -> s.replaceAll(".+sub\":\"(.+?)\".+", "$1")).distinct().collect(Collectors.joining("\n"));
         });
         return makeKibanaSearch.getOrDefault(policy, "").toString();
     }

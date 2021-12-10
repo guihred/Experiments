@@ -35,7 +35,7 @@ public class EthicalHackController extends EthicalHackApp {
                 FXCollections.synchronizedObservableList(FXCollections.observableArrayList(tcpServices.entrySet()
                         .stream().map(AbstractMap.SimpleEntry::new).collect(Collectors.toList())));
 
-        servicesTable.setItems(CommonsFX.newFastFilter(filterField, tcpItems.filtered(e -> true)));
+        servicesTable.setItems(newFastFilter(filterField, tcpItems.filtered(e -> true)));
         address.setText(TracerouteScanner.IP_TO_SCAN);
         networkAddress.setText(TracerouteScanner.NETWORK_ADDRESS);
         Map<Integer, CheckBox> portChecks = new HashMap<>();
@@ -43,6 +43,15 @@ public class EthicalHackController extends EthicalHackApp {
             cell.setGraphic(getCheckBox(portsSelected, portChecks, item));
             cell.setText(Objects.toString(item.getKey()));
         }));
+    }
+
+    public void onActionCurrentServices() {
+        items.clear();
+        List<Map<String, String>> currentTasks = ProcessScan.scanCurrentServices();
+        items.addAll(currentTasks);
+        Set<String> keySet =
+                items.stream().flatMap(m -> m.keySet().stream()).collect(Collectors.toCollection(LinkedHashSet::new));
+        SimpleTableViewBuilder.addColumns(commonTable, keySet);
     }
 
     public void onActionCurrentTasks() {

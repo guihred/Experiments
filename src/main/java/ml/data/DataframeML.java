@@ -23,6 +23,11 @@ public class DataframeML extends BaseDataframe {
 
     public <T> void add(Map<String, T> row) {
         row.forEach(this::add);
+        forEach((c, l) -> {
+            if (l.size() < size) {
+                l.add(null);
+            }
+        });
     }
 
     public void addAll(Object... obj) {

@@ -1,10 +1,10 @@
-{"index":"dtp-pl*","ignore_unavailable":true,"preference":1636596896560}
+{"index":"dtp-pl*","ignore_unavailable":true,"preference":1637203774062}
 {
 	"aggs": {
 		"2": {
 			"terms": {
 				"field": "DestinationIP",
-				"size": 10,
+				"size": 2,
 				"order": {
 					"1": "desc"
 				}
@@ -13,22 +13,6 @@
 				"1": {
 					"sum": {
 						"field": "Bytes"
-					}
-				},
-				"3": {
-					"terms": {
-						"field": "DestinationIP",
-						"size": 5,
-						"order": {
-							"1": "desc"
-						}
-					},
-					"aggs": {
-						"1": {
-							"sum": {
-								"field": "Bytes"
-							}
-						}
 					}
 				}
 			}
@@ -71,20 +55,17 @@
 		"bool": {
 			"must": [
 				{
-					"match_all": {
-						
-					}
-				},
-				{
-					"match_all": {
-						
+					"query_string": {
+						"query": "SourceIP:%s",
+						"analyze_wildcard": true,
+						"default_field": "*"
 					}
 				},
 				{
 					"range": {
 						"@timestamp": {
-							"gte": 1636555700749,
-							"lte": 1636598900749,
+							"gte": %s,
+							"lte": %s,
 							"format": "epoch_millis"
 						}
 					}
@@ -95,38 +76,38 @@
 			"must_not": [
 				{
 					"bool": {
+						"minimum_should_match": 1,
 						"should": [
 							{
 								"match_phrase": {
 									"DestinationIP": "200.152.32.0/20"
 								}
 							}
-						],
-						"minimum_should_match": 1
+						]
 					}
 				},
 				{
 					"bool": {
+						"minimum_should_match": 1,
 						"should": [
 							{
 								"match_phrase": {
 									"DestinationIP": "10.0.0.0/8"
 								}
 							}
-						],
-						"minimum_should_match": 1
+						]
 					}
 				},
 				{
 					"bool": {
+						"minimum_should_match": 1,
 						"should": [
 							{
 								"match_phrase": {
 									"DestinationIP": "192.168.0.0/16"
 								}
 							}
-						],
-						"minimum_should_match": 1
+						]
 					}
 				},
 				{

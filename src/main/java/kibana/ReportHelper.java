@@ -5,6 +5,7 @@ import static utils.StringSigaUtils.toDouble;
 import com.google.common.io.Files;
 import extract.PPTService;
 import extract.WordService;
+import extract.web.InstallCert;
 import extract.web.JsonExtractor;
 import extract.web.PhantomJSUtils;
 import java.io.File;
@@ -138,6 +139,10 @@ public class ReportHelper {
         for (String ipValue : ipParam.split(SPLIT_REGEX)) {
             KibanaApi.kibanaFullScan(ipValue, days, progress)
                     .forEach((k, v) -> paramText.merge("\\$" + k, v, ReportHelper::mergeStrings));
+            CredentialInvestigator.lookupPaloAlto(ipValue).forEach(m -> {
+                m.forEach((k, v) -> paramText.merge("\\$" + k, v + "", ReportHelper::mergeStrings));
+            });
+            paramText.merge(OR_IPS_KEY, ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
             paramText.merge(OR_IPS_KEY, ipValue, (o, n) -> ReportHelper.mergeStrings(o, n, " OR "));
             paramText.merge("\\$otherIps", ipValue, ReportHelper::mergeStrings);
         }
@@ -150,7 +155,6 @@ public class ReportHelper {
         if (!JsonExtractor.isNotRecentFile(outFile)) {
             return crop(imageObj, outFile);
         }
-
 
         Property<Image> image = new SimpleObjectProperty<>();
         String kibanaURL = Objects.toString(imageObj.get("url"), "");
@@ -185,6 +189,9 @@ public class ReportHelper {
         Property<Image> image = new SimpleObjectProperty<>();
         String kibanaURL = Objects.toString(imageObj.get("url"), "");
         String finalURL = replaceString(params, kibanaURL);
+        if (!InstallCert.isTrusted(finalURL)) {
+            LOG.info("NOT TRUSTED {}", finalURL);
+        }
         CommonsFX.runInPlatform(() -> {
             if (imageObj.containsKey("zoom")) {
                 Double zoom = StringSigaUtils.toDouble(imageObj.getOrDefault("zoom", 1));

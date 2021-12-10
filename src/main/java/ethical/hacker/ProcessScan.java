@@ -1,9 +1,6 @@
 package ethical.hacker;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +14,30 @@ public class ProcessScan {
     private static final Logger LOG = HasLogging.log();
 
     public static void main(String[] args) {
-        LOG.info("{}", scanNetstats());
+        LOG.info("{}", scanCurrentServices());
+    }
+
+    public static List<Map<String, String>> scanCurrentServices() {
+        List<String> processes = ConsoleUtils.executeInConsoleInfo(
+                "WMIC SERVICE get Caption,DelayedAutoStart,Description,DisplayName,Name,PathName,ProcessId,Started,StartMode,State,Status");
+        // Node,Name,ParentProcessId,ProcessId,SessionId
+        String[] headers = processes.get(0).split("(?<= )(?=[A-Z])");
+        return processes
+                .stream().skip(1).map((String e) -> {
+                    Map<String, String> map = new LinkedHashMap<>();
+                    if (StringUtils.isBlank(e)) {
+                        return null;
+                    }
+                    int i = 0;
+                    for (String string : headers) {
+                        String substring = e.substring(i, i + string.length() - 1);
+                        map.put(string.trim(), substring.trim());
+                        i += string.length();
+                    }
+                    return map;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public static List<Map<String, String>> scanCurrentTasks() {

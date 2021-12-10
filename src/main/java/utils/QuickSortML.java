@@ -59,7 +59,8 @@ public final class QuickSortML {
             }
             List<String> fileSizes = StringSigaUtils.matches(string, "([\\d\\.]+ ?[MKGT]?B)");
             if (!fileSizes.isEmpty()) {
-                return String.format("%15d", StringSigaUtils.strToFileSize(fileSizes.get(0)));
+                String sizeInBytes = fileSizes.get(0);
+                return String.format("%015d", StringSigaUtils.strToFileSize(sizeInBytes));
             }
             return string;
         });

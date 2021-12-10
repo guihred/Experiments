@@ -124,7 +124,7 @@ public final class PPTService {
                 xslfTableCell.setText(StringSigaUtils.toStringSpecial(at));
             }
         }
-        table.updateCellAnchor();
+        RunnableEx.run(() -> table.updateCellAnchor());
     }
 
     private static void getPowerPoint(Map<String, Object> replacementMap, File arquivo, File outStream) {

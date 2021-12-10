@@ -12,10 +12,7 @@ import ml.data.DataframeML;
 import ml.data.DataframeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import utils.DateFormatUtils;
-import utils.ExtractUtils;
-import utils.ResourceFXUtils;
-import utils.StringSigaUtils;
+import utils.*;
 import utils.ex.HasLogging;
 
 public class AcessosVolumetricos {
@@ -71,6 +68,13 @@ public class AcessosVolumetricos {
         AcessosVolumetricos acessos = new AcessosVolumetricos();
         acessos.getVolumetria("sourceQuery.json", "source");
         acessos.getVolumetria("destinationQuery.json", "destination");
+        DataframeML volumetria = acessos.getVolumetria("sourceEspecialQuery.json", "sourceEspecial");
+        DataframeML volumetria2 = acessos.getVolumetria("destinationEspecialQuery.json", "destinationEspecial");
+        volumetria2.add(new SimpleMap("IP", "Tabela Destination"));
+        volumetria.forEachRow(volumetria2::add);
+        DataframeUtils.save(volumetria2,
+                ResourceFXUtils.getOutFile("csv/" + "ips" + DateFormatUtils.currentTime("ddMMyyyy") + ".csv"));
+
     }
 
     private static String getPorts(String ip) {

@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toMap;
 import static kibana.QueryObjects.DESTINATION_IP_QUERY;
 import static kibana.QueryObjects.DESTINATION_PORT_QUERY;
 import static kibana.QueryObjects.SOURCE_IP_QUERY;
+import static kibana.QueryObjects.USER_NAME;
 
 import ethical.hacker.PortServices;
 import extract.web.WhoIsScanner;
@@ -178,6 +179,10 @@ public class PaloAltoInvestigator extends Application {
         }
         if (s.matches(WhoIsScanner.IP_REGEX)) {
             filter.merge(SOURCE_IP_QUERY, s, ConsultasHelper::merge);
+            return;
+        }
+        if (s.matches("^[\\w\\.]+@[\\w\\.]+|\\d{11}$")) {
+            filter.merge(USER_NAME, s, ConsultasHelper::merge);
             return;
         }
         if (s.matches("\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+")) {

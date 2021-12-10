@@ -29,7 +29,6 @@ import utils.DrawOnPoint;
 import utils.ImageFXUtils;
 import utils.RectBuilder;
 import utils.ex.ConsumerEx;
-import utils.ex.HasLogging;
 import utils.ex.RunnableEx;
 
 public final class RotateUtils {
@@ -305,9 +304,10 @@ public final class RotateUtils {
         WritableImage imageSelected = new WritableImage((int) width1, (int) height1);
         double x = area.getLayoutX() * p;
         double y = area.getLayoutY() * p;
-        double fitHeight = fitWidth * imgHeight / imgWidth;
-        HasLogging.log().info("\"x\":{},\"y\":{},\"width\":{},\"height\":{}", area.getLayoutX() / fitWidth,
-                area.getLayoutY() / fitHeight, width / fitWidth, height / fitHeight);
+        // double fitHeight = fitWidth * imgHeight / imgWidth;
+        // HasLogging.log().info("\"x\":{},\"y\":{},\"width\":{},\"height\":{}",
+        // area.getLayoutX() / fitWidth,
+        // area.getLayoutY() / fitHeight, width / fitWidth, height / fitHeight);
         RectBuilder.build().startX(x).startY(y).width(width1).height(height1).copyImagePart(srcImage, imageSelected,
                 Color.TRANSPARENT);
         ConsumerEx.accept(onImageCropped, imageSelected);

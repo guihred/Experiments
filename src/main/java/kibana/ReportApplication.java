@@ -88,6 +88,8 @@ public class ReportApplication extends Application {
         SimpleComboBoxBuilder.of(model).converter(p -> p.getFileName().toString()).items(firstFileMatch)
                 .onSelect(this::onModelChange).select(0);
         RunnableEx.runNewThread(Mapping::getMethods);
+        RunnableEx.runNewThread(() -> CredentialInvestigator.loadDataframe(progressIndicator.progressProperty()));
+
     }
     public void makeReportConsultas() {
         File modelFile = model.getSelectionModel().getSelectedItem().toFile();
